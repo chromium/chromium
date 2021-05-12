@@ -2444,8 +2444,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_A11Y_REMOVE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: A11Y label for remove button.">
     Remove eSIM profile named <ph name="PROFILE_NAME">$1<ex>Verizon</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING" desc="Settings > Internet > Network details >Rename profile dialog | Remove profile dialog: The Label for the dialog warning message informing the user they may disconnect from their current cellular network connection if they proceed.">
-    This may cause a brief cellular network disconnection.
+  <message name="IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING" desc="Settings > Internet > Network details > Rename profile dialog | Remove profile dialog: The Label for the dialog warning message informing the user they may disconnect from their current cellular network connection if they proceed.">
+    This may cause your mobile network to briefly disconnect
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being installed">
     Installing profile. This may take up to 30 seconds.

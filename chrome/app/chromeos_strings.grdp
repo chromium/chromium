@@ -313,7 +313,7 @@
     Looking for available profiles...
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_CONNECTION_WARNING" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles informing the user that cellular setup may disconnect their current cellular network connection.">
-    This may cause a brief cellular network disconnection.
+    This may cause your mobile network to briefly disconnect
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE" desc="Label informing the user that they are able to select multiple eSIM profiles for downloading.">
     We've found multiple profiles available to download. Select the ones you would like to download before proceeding.

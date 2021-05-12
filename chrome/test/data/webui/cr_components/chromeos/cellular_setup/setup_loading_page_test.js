@@ -37,9 +37,7 @@ suite('CrComponentsSetupLoadingPageTest', function() {
 
   test('Warning message is shown', function() {
     simDetectPage.state = LoadingPageState.CELLULAR_DISCONNECT_WARNING;
-    assertEquals(
-        basePage.message,
-        'This may cause a brief cellular network disconnection.');
+    assertEquals(basePage.message, simDetectPage.i18n('eSimConnectionWarning'));
     assertFalse(messageIcon.hidden);
   });
 

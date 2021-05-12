@@ -13,7 +13,7 @@
   <template>
     <style>
       :host {
-        --cr-dialog-width: 324px;
+        --cr-dialog-width: 416px;
       }
 
       #title {
@@ -52,7 +52,7 @@
       <div slot="body">
         <div id="description">$i18n{eSimRemoveProfileDialogDescription}</div>
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
-          <iron-icon icon="cellular-setup:warning"></iron-icon>
+          <iron-icon icon="cr:info-outline"></iron-icon>
           <div>$i18n{eSimDialogConnectionWarning}</div>
         </div>
       </div>

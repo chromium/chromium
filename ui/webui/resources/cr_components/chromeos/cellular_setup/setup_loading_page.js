@@ -79,8 +79,11 @@ Polymer({
    * @private
    */
   getMessageIcon_(state) {
-    return state === LoadingPageState.CELLULAR_DISCONNECT_WARNING ? 'warning' :
-                                                                    '';
+    if (state === LoadingPageState.CELLULAR_DISCONNECT_WARNING) {
+      return 'info';
+    }
+
+    return '';
   },
 
   /**
