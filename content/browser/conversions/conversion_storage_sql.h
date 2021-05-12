@@ -97,18 +97,6 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool HasCapacityForStoringImpression(const std::string& serialized_origin);
   int GetCapacityForStoringConversion(const std::string& serialized_origin);
 
-  enum class ImpressionFilter { kAll, kOnlyActive };
-
-  // Returns rows of the impressions table. |filter| indicates whether to
-  // only retrieve active impressions. |min_expiry_time| controls the minimum
-  // impression expiry time to filter by. |start_impression_id| is the smallest
-  // impression id that can be returned. |num_impressions| limits the number
-  // of rows returned; use a negative number for no limit.
-  std::vector<StorableImpression> GetImpressions(ImpressionFilter filter,
-                                                 base::Time min_expiry_time,
-                                                 int64_t start_impression_id,
-                                                 int num_impressions);
-
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.

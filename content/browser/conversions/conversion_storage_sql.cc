@@ -416,16 +416,6 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   return conversions;
 }
 
-std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
-    int limit) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return {};
-
-  return GetImpressions(ImpressionFilter::kOnlyActive, clock_->Now(),
-                        /*start_impression_id=*/0, /*num_impressions=*/limit);
-}
-
 int ConversionStorageSql::DeleteExpiredImpressions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
@@ -746,27 +736,26 @@ int ConversionStorageSql::GetCapacityForStoringConversion(
   return std::max(0, delegate_->GetMaxConversionsPerOrigin() - count);
 }
 
-std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
-    ImpressionFilter active,
-    base::Time min_expiry_time,
-    int64_t start_impression_id,
-    int num_impressions) {
+std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
+    int limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return {};
+
   // Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
-  const char kGetImpressionsSql[] =
+  const char kGetActiveImpressionsSql[] =
       "SELECT impression_data, impression_origin, conversion_origin, "
       "reporting_origin, impression_time, expiry_time, impression_id, "
       "source_type, priority "
       "FROM impressions "
-      "WHERE impression_id >= ? AND active >= ? AND expiry_time > ? "
+      "WHERE active = 1 and expiry_time > ? "
       "LIMIT ?";
 
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
-  statement.BindInt64(0, start_impression_id);
-  statement.BindInt(1, active == ImpressionFilter::kOnlyActive ? 1 : 0);
-  statement.BindTime(2, min_expiry_time);
-  statement.BindInt(3, num_impressions);
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetActiveImpressionsSql));
+  statement.BindTime(0, clock_->Now());
+  statement.BindInt(1, limit);
 
   std::vector<StorableImpression> impressions;
   while (statement.Step()) {

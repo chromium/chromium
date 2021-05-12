@@ -18,8 +18,8 @@ namespace content {
 
 namespace {
 
-// |ConversionStorageSql::GetImpressions()| cannot be used for migration logic
-// as it may use columns that are not present in older versions.
+// |ConversionStorageSql::GetActiveImpressions()| cannot be used for migration
+// logic as it may use columns that are not present in older versions.
 std::vector<StorableImpression> GetImpressions(sql::Database* db,
                                                int64_t start_impression_id,
                                                int num_impressions) {
