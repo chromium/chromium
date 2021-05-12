@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 from page_sets.desktop_ui.browser_utils import Resize
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn, IsMac, PressKey
@@ -42,7 +43,9 @@ class DownloadShelfStory(MultiTabStory):
     return 'webui' in self.NAME
 
   def RunPageInteractions(self, action_runner):
-    action_runner.Wait(2)
+    # Wait for download items to show up, this may take quite some time
+    # for lowend machines.
+    action_runner.Wait(10)
     if self.IsWebUI():
       action_runner = Inspect(action_runner.tab.browser,
                               WEBUI_DOWNLOAD_SHELF_URL)
@@ -55,18 +58,21 @@ class DownloadShelfStory(MultiTabStory):
   def ContextMenu(self, action_runner):
     if IsMac():
       return
-    if self.IsWebUI():
-      action_runner.ClickElement(
-          element_function=DROPDOWN_BUTTON_ELEMENT_FUNCTION)
-    else:
-      ClickOn(self._devtools,
-              'TransparentButton',
-              button=MOUSE_EVENT_BUTTON_RIGHT)
-    action_runner.Wait(1)
-    node_id = self._devtools.QueryNodes('<Window>')[
-        -1]  # Context menu lives in the last Window.
-    PressKey(self._devtools, node_id, 'Esc')
-    action_runner.Wait(1)
+    try:
+      if self.IsWebUI():
+        action_runner.ClickElement(
+            element_function=DROPDOWN_BUTTON_ELEMENT_FUNCTION)
+      else:
+        ClickOn(self._devtools,
+                'TransparentButton',
+                button=MOUSE_EVENT_BUTTON_RIGHT)
+      action_runner.Wait(1)
+      node_id = self._devtools.QueryNodes('<Window>')[
+          -1]  # Context menu lives in the last Window.
+      PressKey(self._devtools, node_id, 'Esc')
+      action_runner.Wait(1)
+    except Exception as e:
+      logging.warning('Failed to run context menu. Error: %s', e)
 
   def WillStartTracing(self, chrome_trace_config):
     super(DownloadShelfStory, self).WillStartTracing(chrome_trace_config)
