@@ -36,6 +36,8 @@ per-file profiles_strings.grdp=file://chrome/browser/profiles/OWNERS
 
 per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 
+per-file settings_chromium_strings.grdp=sauski@google.com
+per-file settings_google_chrome_strings.grdp=sauski@google.com
 per-file settings_strings.grdp=sauski@google.com
 
 per-file supervised_user_error_page_strings.grdp=file://chrome/browser/supervised_user/supervised_user_error_page/OWNERS
