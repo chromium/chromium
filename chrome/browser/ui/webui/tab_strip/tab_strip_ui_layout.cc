@@ -27,24 +27,13 @@ TabStripUILayout TabStripUILayout::CalculateForWebViewportSize(
   }
 
   // Size the thumbnail to match the web viewport's aspect ratio.
-  if (viewport_size.width() > viewport_size.height()) {
-    layout.tab_thumbnail_size.set_height(kThumbnailMinDimensionLength);
-    layout.tab_thumbnail_size.set_width(kThumbnailMinDimensionLength *
-                                        viewport_size.width() /
-                                        viewport_size.height());
-  } else {
-    layout.tab_thumbnail_size.set_width(kThumbnailMinDimensionLength);
-    // The height of the tab title is cropped from the thumbnail height to
-    // make the tabs appear less tall.
-    layout.tab_thumbnail_size.set_height(kThumbnailMinDimensionLength *
-                                             viewport_size.height() /
-                                             viewport_size.width() -
-                                         layout.tab_title_height);
-  }
-
-  layout.tab_thumbnail_aspect_ratio =
-      layout.tab_thumbnail_size.width() /
-      static_cast<double>(layout.tab_thumbnail_size.height());
+  // Limit aspect ratio to minimum of 1 to prevent thumbnails getting too
+  // narrow.
+  double ratio =
+      std::max(1.0, 1.0 * viewport_size.width() / viewport_size.height());
+  layout.tab_thumbnail_size.set_height(kThumbnailMinDimensionLength);
+  layout.tab_thumbnail_size.set_width(kThumbnailMinDimensionLength * ratio);
+  layout.tab_thumbnail_aspect_ratio = ratio;
 
   return layout;
 }
