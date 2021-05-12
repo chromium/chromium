@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, EmbedWithInitialCrossOriginFrame) {
 // potential race between the cross-origin renderer initiated navigation and
 // the navigation to "about:blank" started from the browser.
 //
-// Disabled on Linux due to flakiness: https://crbug.com/1002788.
-#if defined(OS_LINUX)
+// Disabled on Linux due to flakiness: https://crbug.com/1182355.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NavigationRaceFromEmbedder DISABLED_NavigationRaceFromEmbedder
 #else
 #define MAYBE_NavigationRaceFromEmbedder NavigationRaceFromEmbedder
