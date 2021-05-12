@@ -658,10 +658,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)initializeUIPostSafeMode {
-  // Make sure that safe mode is turned off before moving further with the
-  // browser startup.
-  self.inSafeMode = NO;
-
   // Fully start the browser.
   // Don't add code here. Add it in MainController's
   // -startUpBrowserForegroundInitialization.

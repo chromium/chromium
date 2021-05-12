@@ -148,15 +148,12 @@ TEST_F(SafeModeAppStateAgentTest, startSafeMode) {
   [[appStateMock expect] appState:appState
        didTransitionFromInitStage:InitStageSafeMode];
 
-  ASSERT_FALSE([appState isInSafeMode]);
-
   swizzleSafeModeShouldStart(YES);
 
   SafeModeAppAgent* agent = [[SafeModeAppAgent alloc] init];
   [agent setAppState:appStateMock];
 
   IterateToStage(InitStageStart, InitStageSafeMode, agent, appStateMock);
-  ASSERT_TRUE([appState isInSafeMode]);
 
   SceneState* sceneState = GetSceneState();
 
@@ -166,7 +163,6 @@ TEST_F(SafeModeAppStateAgentTest, startSafeMode) {
   [agent sceneState:sceneState
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 
-  EXPECT_TRUE([appState isInSafeMode]);
   EXPECT_OCMOCK_VERIFY(windowMock);
 
   // Exit safe mode.
@@ -185,8 +181,6 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotNeeded) {
   [[appStateMock expect] appState:appState
        didTransitionFromInitStage:InitStageSafeMode];
 
-  ASSERT_FALSE([appState isInSafeMode]);
-
   swizzleSafeModeShouldStart(NO);
 
   SafeModeAppAgent* agent = [[SafeModeAppAgent alloc] init];
@@ -197,7 +191,6 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotNeeded) {
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 
-  EXPECT_FALSE([appState isInSafeMode]);
   EXPECT_OCMOCK_VERIFY(appStateMock);
 }
 
@@ -205,8 +198,6 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotActiveLevel) {
   AppState* appState = getAppStateWithMock();
   id appStateMock = OCMPartialMock(appState);
   [[appStateMock reject] queueTransitionToNextInitStage];
-
-  ASSERT_FALSE([appState isInSafeMode]);
 
   swizzleSafeModeShouldStart(YES);
 
@@ -218,7 +209,6 @@ TEST_F(SafeModeAppStateAgentTest, dontStartSafeModeBecauseNotActiveLevel) {
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
 
-  EXPECT_TRUE([appState isInSafeMode]);
   EXPECT_OCMOCK_VERIFY(appStateMock);
 }
 
@@ -228,8 +218,6 @@ TEST_F(SafeModeAppStateAgentTest,
 
   id appStateMock = OCMPartialMock(appState);
   [[appStateMock reject] queueTransitionToNextInitStage];
-
-  ASSERT_FALSE([appState isInSafeMode]);
 
   swizzleSafeModeShouldStart(YES);
 
@@ -242,6 +230,5 @@ TEST_F(SafeModeAppStateAgentTest,
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 
-  EXPECT_TRUE([appState isInSafeMode]);
   EXPECT_OCMOCK_VERIFY(appStateMock);
 }

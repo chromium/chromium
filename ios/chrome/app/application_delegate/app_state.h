@@ -94,9 +94,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Timestamp of when a scene was last becoming active. Can be null.
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
-// Flag to track when the app is in safe mode.
-@property(nonatomic, assign, getter=isInSafeMode) BOOL inSafeMode;
-
 // The initialization stage the app is currently at.
 @property(nonatomic, readonly) InitStage initStage;
 
@@ -107,9 +104,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // -performActionForShortcutItem or -openURL by the system for example)
 - (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
                                stateBackground:(BOOL)stateBackground;
-
-// Whether the application is in Safe Mode.
-- (BOOL)isInSafeMode;
 
 // Logs duration of the session in the main tab model and records that chrome is
 // no longer in cold start.

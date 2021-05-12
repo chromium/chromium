@@ -514,7 +514,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   [[windowMock expect] makeKeyAndVisible];
 
   AppState* appState = getAppStateWithMock();
-  ASSERT_FALSE([appState isInSafeMode]);
+  ASSERT_EQ(InitStageStart, appState.initStage);
 
   id appStateObserverMock = getAppStateObserverMock();
   SetInitStageTransitionExpectations(appStateObserverMock, appState,
@@ -540,7 +540,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
         SceneActivationLevelForegroundActive;
 
   EXPECT_TRUE(result);
-  EXPECT_TRUE([appState isInSafeMode]);
+  EXPECT_EQ(appState.initStage, InitStageSafeMode);
 
   // Transition out of safe mode.
   [appState queueTransitionToNextInitStage];
@@ -567,7 +567,7 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
   [[[getWindowMock() stub] andReturn:nil] rootViewController];
 
   AppState* appState = getAppStateWithMock();
-  ASSERT_FALSE([appState isInSafeMode]);
+  ASSERT_EQ(appState.initStage, InitStageStart);
 
   id appStateObserverMock = getAppStateObserverMock();
   SetInitStageTransitionExpectations(appStateObserverMock, appState,
@@ -984,8 +984,6 @@ TEST_F(AppStateTest,
 
   // Verify that the app is still in safe mode after initializing the UI when
   // entering foreground from background.
-  EXPECT_TRUE([appState isInSafeMode]);
-
   EXPECT_EQ(InitStageSafeMode, appState.initStage);
 }
 
