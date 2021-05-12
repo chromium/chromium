@@ -11,8 +11,10 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/net/connectivity_checker.h"
 #include "chromecast/net/time_sync_tracker.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class GURL;
@@ -32,6 +34,18 @@ class SimpleURLLoader;
 
 namespace chromecast {
 
+// Default (HTTPS) url for connectivity checking.
+constexpr char kDefaultConnectivityCheckUrl[] =
+    "https://connectivitycheck.gstatic.com/generate_204";
+
+// HTTP url for connectivity checking.
+constexpr char kHttpConnectivityCheckUrl[] =
+    "http://connectivitycheck.gstatic.com/generate_204";
+
+// The default URLs above are expected to respond with HTTP 204 (no content).
+constexpr net::HttpStatusCode kConnectivitySuccessStatusCode =
+    net::HTTP_NO_CONTENT;
+
 // Simple class to check network connectivity by sending a HEAD http request
 // to given url.
 class ConnectivityCheckerImpl
@@ -39,6 +53,18 @@ class ConnectivityCheckerImpl
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public TimeSyncTracker::Observer {
  public:
+  // Types of errors that can occur when making a network URL request.
+  enum class ErrorType {
+    BAD_HTTP_STATUS = 1,
+    SSL_CERTIFICATE_ERROR = 2,
+    REQUEST_TIMEOUT = 3,
+
+    // A network error not captured by the ones above. See
+    // net/base/net_error_list.h for full set of errors that might fall under
+    // this category.
+    NET_ERROR = 4,
+  };
+
   // Connectivity checking and initialization will run on task_runner.
   static scoped_refptr<ConnectivityCheckerImpl> Create(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -50,6 +76,9 @@ class ConnectivityCheckerImpl
   // ConnectivityChecker implementation:
   bool Connected() const override;
   void Check() override;
+
+  void SetCastMetricsHelperForTesting(
+      metrics::CastMetricsHelper* cast_metrics_helper);
 
  protected:
   explicit ConnectivityCheckerImpl(
@@ -81,12 +110,6 @@ class ConnectivityCheckerImpl
   // Sets connectivity and alerts observers if it has changed
   void SetConnected(bool connected);
 
-  enum class ErrorType {
-    BAD_HTTP_STATUS = 1,
-    SSL_CERTIFICATE_ERROR = 2,
-    REQUEST_TIMEOUT = 3,
-  };
-
   // Called when URL request failed.
   void OnUrlRequestError(ErrorType type);
 
@@ -101,6 +124,7 @@ class ConnectivityCheckerImpl
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
   TimeSyncTracker* const time_sync_tracker_;
+  metrics::CastMetricsHelper* cast_metrics_helper_;
 
   // connected_lock_ protects access to connected_ which is shared across
   // threads.

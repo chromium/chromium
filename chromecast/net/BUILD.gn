@@ -107,6 +107,8 @@ cast_source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_shared_url_loader_factory.cc",
+    "fake_shared_url_loader_factory.h",
     "fake_stream_socket.cc",
     "fake_stream_socket.h",
     "mock_stream_socket.cc",
@@ -117,25 +119,36 @@ cast_source_set("test_support") {
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
 test("cast_net_unittests") {
   sources = [
+    "connectivity_checker_impl_unittest.cc",
     "fake_stream_socket_unittest.cc",
     "io_buffer_pool_unittest.cc",
     "small_message_socket_unittest.cc",
   ]
 
   deps = [
+    ":connectivity_checker",
     ":io_buffer_pool",
     ":small_message_socket",
     ":test_support",
     "//base",
-    "//base/test:run_all_unittests",
+    "//chromecast/base/metrics:test_support",
+    "//chromecast/mojo/test:run_all_unittests",
     "//net",
     "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
