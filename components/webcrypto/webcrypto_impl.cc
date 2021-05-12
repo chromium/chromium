@@ -419,7 +419,17 @@ void DoDecrypt(std::unique_ptr<DecryptState> passed_state) {
   state->status =
       webcrypto::Decrypt(state->algorithm, state->key,
                          webcrypto::CryptoData(state->data), &state->buffer);
-  recordreplay::Assert("DoDecrypt %d %lu", state->status.IsError(), state->buffer.size());
+
+  // Decryption might fail when replaying and not while recording.
+  // As with other record/replay issues in this file, record/replay the
+  // successful decryptions directly to workaround this.
+  if (recordreplay::RecordReplayValue("DoDecrypt success", state->status.IsSuccess())) {
+    state->status = Status::Success();
+    size_t numBytes = recordreplay::RecordReplayValue("DoDecrypt size", state->buffer.size());
+    state->buffer.resize(numBytes);
+    recordreplay::RecordReplayBytes("DoDecrypt buffer", &state->buffer[0], state->buffer.size());
+  }
+
   state->origin_thread->PostTask(
       FROM_HERE, base::BindOnce(DoDecryptReply, std::move(passed_state)));
 }
