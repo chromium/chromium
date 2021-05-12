@@ -20,6 +20,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -44,10 +45,10 @@
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_download_manager.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_form_structure.h"
@@ -604,24 +605,15 @@ class BrowserAutofillManagerTest : public testing::Test {
     return static_cast<CardUnmaskDelegate*>(full_card_request);
   }
 
-  void DisableCreditCardAutofillViaAblation(
-      base::test::ScopedFeatureList& scoped_feature_list) {
+  void DisableAutofillViaAblation(
+      base::test::ScopedFeatureList& scoped_feature_list,
+      bool for_addresses,
+      bool for_credit_cards) {
     base::FieldTrialParams feature_parameters{
         {features::kAutofillAblationStudyEnabledForAddressesParam.name,
-         "false"},
-        {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
-        {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
-         "1000"},
-    };
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kAutofillEnableAblationStudy, feature_parameters);
-  }
-
-  void DisableAddressAutofillViaAblation(
-      base::test::ScopedFeatureList& scoped_feature_list) {
-    base::FieldTrialParams feature_parameters{
-        {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
-        {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "false"},
+         for_addresses ? "true" : "false"},
+        {features::kAutofillAblationStudyEnabledForPaymentsParam.name,
+         for_credit_cards ? "true" : "false"},
         {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
          "1000"},
     };
@@ -2114,7 +2106,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        ShouldShowAddressSuggestionsIfCreditCardAutofillDisabled) {
   base::test::ScopedFeatureList features;
-  DisableCreditCardAutofillViaAblation(features);
+  DisableAutofillViaAblation(features, /*for_addresses=*/false,
+                             /*for_credit_cards=*/true);
 
   // Set up our form data.
   FormData form;
@@ -2131,7 +2124,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        ShouldShowCreditCardSuggestionsIfAddressAutofillDisabled) {
   base::test::ScopedFeatureList features;
-  DisableAddressAutofillViaAblation(features);
+  DisableAutofillViaAblation(features, /*for_addresses=*/true,
+                             /*for_credit_cards=*/false);
 
   // Set up our form data.
   FormData form;
@@ -2286,7 +2280,8 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
-  DisableCreditCardAutofillViaAblation(scoped_feature_list_);
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/false,
+                             /*for_credit_cards=*/true);
 
   // Set up our form data.
   FormData form;
@@ -2303,7 +2298,8 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowAddressSuggestionsIfAddressAutofillDisabled) {
-  DisableAddressAutofillViaAblation(scoped_feature_list_);
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
+                             /*for_credit_cards=*/false);
 
   // Set up our form data.
   FormData form;
@@ -2316,6 +2312,199 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Check that credit card suggestions will not be available.
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
+}
+
+struct LogAblationTestParams {
+  const char* description;
+  // Whether any autofillable data is stored.
+  bool run_with_data_on_file = true;
+  // If true, the credit card owner name field is filled with value that is not
+  // a prefix of any stored credit card and then autofill suggestions are
+  // queried a second time.
+  bool second_query_for_suggestions_with_typed_prefix = false;
+  // Whether the form should be submitted before validating the metrics.
+  bool submit_form = true;
+};
+
+enum class LogAblationFormType {
+  kAddress,
+  kPayment,
+  kMixed,  // address fields followed by payment fields
+};
+
+class BrowserAutofillManagerLogAblationTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<LogAblationTestParams, LogAblationFormType>> {
+ public:
+  BrowserAutofillManagerLogAblationTest() = default;
+  ~BrowserAutofillManagerLogAblationTest() override = default;
+};
+
+// Validate that UMA logging works correctly for ablation studies.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowserAutofillManagerLogAblationTest,
+    testing::Combine(
+        testing::Values(
+            // Test that if autofillable data is stored and the ablation is
+            // enabled, we record metrics as expected.
+            LogAblationTestParams{.description = "Having data to fill"},
+            // Test that if NO autofillable data is stored and the ablation is
+            // enabled, we record "UnconditionalAblation" metrics but no
+            // "ConditionalAblation" metrics. The latter only recoded on the
+            // condition that we have data to fill.
+            LogAblationTestParams{.description = "Having NO data to fill",
+                                  .run_with_data_on_file = false},
+            // In this test we trigger the GetAutofillSuggestions call twice. By
+            // the second time the user has typed a value that is not the prefix
+            // of any existing autofill data. This means that autofill would not
+            // create any suggestions. We still want to consider this a
+            // conditional ablation (the condition to have fillable data on file
+            // is met).
+            LogAblationTestParams{
+                .description = "Typed unknown prefix",
+                .second_query_for_suggestions_with_typed_prefix = false},
+            // Test that the right events are recorded in case the user
+            // interacts with a form but does not submit it.
+            LogAblationTestParams{.description = "No form submission",
+                                  .submit_form = false}),
+        testing::Values(LogAblationFormType::kAddress,
+                        LogAblationFormType::kPayment,
+                        LogAblationFormType::kMixed)));
+
+TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
+  const LogAblationTestParams& params = std::get<0>(GetParam());
+  LogAblationFormType form_type = std::get<1>(GetParam());
+
+  SCOPED_TRACE(testing::Message() << params.description << " Form type: "
+                                  << static_cast<int>(form_type));
+
+  if (!params.run_with_data_on_file) {
+    personal_data_.ClearAllServerData();
+    personal_data_.ClearAllLocalData();
+  }
+
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
+                             /*for_credit_cards=*/true);
+  TestAutofillTickClock clock;
+  clock.SetNowTicks(base::TimeTicks::Now());
+  base::HistogramTester histogram_tester;
+
+  // Set up our form data. In the kMixed case the form will contain the fields
+  // of an address form followed by the fields of fields of a payment form. The
+  // triggering for autofill suggestions will happen on an address field in this
+  // case.
+  FormData form;
+  if (form_type == LogAblationFormType::kAddress ||
+      form_type == LogAblationFormType::kMixed) {
+    test::CreateTestAddressFormData(&form);
+  }
+  if (form_type == LogAblationFormType::kPayment ||
+      form_type == LogAblationFormType::kMixed) {
+    CreateTestCreditCardFormData(&form, true, false);
+  }
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  // Simulate retrieving autofill suggestions with the first field as a trigger
+  // script. This should emit signals that lead to recorded metrics later on.
+  FormFieldData field = form.fields[0];
+  GetAutofillSuggestions(form, field);
+
+  // Simulate user typing into field (due to the ablation we would not fill).
+  field.value = u"Unknown User";
+  browser_autofill_manager_->OnTextFieldDidChange(
+      form, field, gfx::RectF(), AutofillTickClock::NowTicks());
+
+  if (params.second_query_for_suggestions_with_typed_prefix) {
+    // Do another lookup. We won't have any suggestions because they would not
+    // be compatible with the "Unknown User" username.
+    GetAutofillSuggestions(form, field);
+  }
+
+  // Advance time and possibly submit the form.
+  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(42);
+  clock.Advance(time_delta);
+  if (params.submit_form)
+    FormSubmitted(form);
+
+  // Flush FormEventLoggers.
+  browser_autofill_manager_->Reset();
+
+  // Validate the recorded metrics.
+  std::string form_type_str = (form_type == LogAblationFormType::kAddress ||
+                               form_type == LogAblationFormType::kMixed)
+                                  ? "Address"
+                                  : "CreditCard";
+
+  // If data was on file, we expect conditional ablation metrics.
+  if (params.run_with_data_on_file) {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ablation.FormSubmissionAfterInteraction." + form_type_str +
+            ".ConditionalAblation",
+        /*sample=*/params.submit_form ? 1 : 0,
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Ablation.FormSubmissionAfterInteraction." + form_type_str +
+            ".ConditionalAblation",
+        /*count=*/0);
+  }
+  // Only if data was on file an a submission happened, we can record the
+  // duration from interaction to submission.
+  if (params.run_with_data_on_file && params.submit_form) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
+            ".ConditionalAblation",
+        time_delta,
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
+            ".ConditionalAblation",
+        /*count=*/0);
+  }
+  // The unconditional ablation metrics should always be logged as this the
+  // ablation study is always enabled.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ablation.FormSubmissionAfterInteraction." + form_type_str +
+          ".UnconditionalAblation",
+      /*sample=*/params.submit_form ? 1 : 0,
+      /*expected_bucket_count=*/1);
+  // Expect a time from interaction to submission the form was submitted.
+  if (params.submit_form) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
+            ".UnconditionalAblation",
+        time_delta,
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Ablation.FillDurationSinceInteraction." + form_type_str +
+            ".UnconditionalAblation",
+        /*count=*/0);
+  }
+
+  // Ensure that no metrics are recorded for the complementary form type.
+  // I.e. if the trigger element is of an address form, the credit card form
+  // should have no metrics.
+  std::string complementary_form_type_str =
+      (form_type == LogAblationFormType::kAddress ||
+       form_type == LogAblationFormType::kMixed)
+          ? "CreditCard"
+          : "Address";
+  for (const char* metric :
+       {"FormSubmissionAfterInteraction", "FillDurationSinceInteraction"}) {
+    for (const char* ablation_type :
+         {"UnconditionalAblation", "ConditionalAblation"}) {
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Autofill.Ablation.", metric, ".",
+                        complementary_form_type_str.c_str(), ".",
+                        ablation_type}),
+          /*count=*/0);
+    }
+  }
 }
 
 // Test that we properly match typed values to stored state data.
@@ -9183,7 +9372,8 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
-  DisableAddressAutofillViaAblation(scoped_feature_list_);
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
+                             /*for_credit_cards=*/false);
 
   // Set up our form data.
   FormData form;
@@ -9229,7 +9419,8 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
-  DisableCreditCardAutofillViaAblation(scoped_feature_list_);
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/false,
+                             /*for_credit_cards=*/true);
 
   // Set up our form data.
   FormData form;

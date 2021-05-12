@@ -21,6 +21,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="Autofill.Ablation.FormType">
+  <variant name="Address" summary="The form is an address form."/>
+  <variant name="CreditCard" summary="The form is a credit card form."/>
+</variants>
+
+<variants name="Autofill.Ablation.Group">
+  <variant name="ConditionalAblation"
+      summary="The sample is recorded only when there was data available to
+               be filled and it was assigned to the ablation case."/>
+  <variant name="ConditionalControl"
+      summary="The sample is recorded only when there was data available to
+               be filled and it was assigned to the control case."/>
+  <variant name="UnconditionalAblation"
+      summary="The sample is recorded regardless whether data was available
+               to be filled and assigned to the ablation case."/>
+  <variant name="UnconditionalControl"
+      summary="The sample is recorded regardless whether data was available
+               to be filled and assigned to the control case."/>
+</variants>
+
 <variants name="Autofill.OfferNotification.Type">
   <variant name="CardLinkedOffer"
       summary="The bubble/infobar for an offer that is linked to a credit
@@ -31,6 +51,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="FirstShow" summary="The bubble is shown for the first time."/>
   <variant name="Reshows" summary="The bubble is re-shown."/>
 </variants>
+
+<histogram
+    name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
+    units="ms" expires_after="M100">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records for time from the first change to an input element (typed or
+    autofilled) on any form of a frame to a form submission. Note that the
+    change could even happen to a different form on the page than the one
+    submitted.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+  <token key="Group" variants="Autofill.Ablation.Group"/>
+</histogram>
+
+<histogram
+    name="Autofill.Ablation.FormSubmissionAfterInteraction.{FormType}.{Group}"
+    enum="Boolean" expires_after="M100">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records whether after changing the value of an input element (typed or
+    autofilled) in a frame, any form on that page is submitted.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+  <token key="Group" variants="Autofill.Ablation.Group"/>
+</histogram>
 
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2021-10-10">
@@ -666,7 +714,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between the user's first interaction with a form and the form's
-    submission, for an autofilled form.
+    submission, for an autofilled form. An interaction requires changing a form
+    control's value manually or via autofill. The interaction can happen on a
+    different form than the one which is submitted.
   </summary>
 </histogram>
 
@@ -676,7 +726,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between the user's first interaction with a form and the form's
-    submission, for a non-autofilled form.
+    submission, for a non-autofilled form. An interaction requires changing a
+    form control's value manually or via autofill. The interaction can happen on
+    a different form than the one which is submitted.
   </summary>
 </histogram>
 

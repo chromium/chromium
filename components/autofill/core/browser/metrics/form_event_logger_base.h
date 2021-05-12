@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/optional.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -64,6 +67,13 @@ class FormEventLoggerBase {
   void OnTypedIntoNonFilledField();
   void OnEditedAutofilledField();
 
+  // See BrowserAutofillManager::SuggestionContext for the definitions of the
+  // AblationGroup parameters.
+  void SetAblationStatus(AblationGroup ablation_group,
+                         AblationGroup conditional_ablation_group);
+  void SetTimeFromInteractionToSubmission(
+      base::TimeDelta time_from_interaction_to_submission);
+
  protected:
   virtual ~FormEventLoggerBase();
 
@@ -96,6 +106,11 @@ class FormEventLoggerBase {
   // because it is called in the destructor.
   void RecordFunnelAndKeyMetrics();
 
+  // Records UMA metrics if this form submission happened as part of an ablation
+  // study or the corresponding control group. This is not virtual because it is
+  // called in the destructor.
+  void RecordAblationMetrics();
+
   // Constructor parameters.
   std::string form_type_name_;
   bool is_in_main_frame_;
@@ -115,6 +130,9 @@ class FormEventLoggerBase {
   bool logged_suggestion_filled_was_server_data_ = false;
   bool has_logged_typed_into_non_filled_field_ = false;
   bool has_logged_edited_autofilled_field_ = false;
+  AblationGroup ablation_group_ = AblationGroup::kDefault;
+  AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
+  base::Optional<base::TimeDelta> time_from_interaction_to_submission_;
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;
