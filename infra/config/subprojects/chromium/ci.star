@@ -1567,6 +1567,28 @@ ci.chromium_builder(
 )
 
 ci.chromium_builder(
+    name = "mac-arm64-archive-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|arm",
+        short_name = "dbg",
+    ),
+    cores = 12,
+    main_console_view = "main",
+    os = os.MAC_DEFAULT,
+)
+
+ci.chromium_builder(
+    name = "mac-arm64-archive-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|arm",
+        short_name = "rel",
+    ),
+    main_console_view = "main",
+    cores = 12,
+    os = os.MAC_DEFAULT,
+)
+
+ci.chromium_builder(
     name = "mac-official",
     builderless = False,
     # TODO(https://crbug.com/1072012) Use the default console view and add

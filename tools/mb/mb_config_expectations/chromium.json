@@ -70,6 +70,25 @@
       "use_goma": true
     }
   },
+  "mac-arm64-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "mac-arm64-archive-rel": {
+    "gn_args": {
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-official": {
     "gn_args": {
       "is_official_build": true,

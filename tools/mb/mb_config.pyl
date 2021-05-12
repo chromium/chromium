@@ -81,6 +81,8 @@
       'linux-official': 'official_optimize_goma',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
       'mac-archive-dbg': 'debug_bot',
+      'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
+      'mac-arm64-archive-dbg': 'debug_bot_arm64',
       'mac-official': 'official_optimize_goma',
       'win32-official': 'x86_official_optimize_goma',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
@@ -2004,6 +2006,10 @@
       'debug_bot',
     ],
 
+    'debug_bot_arm64': [
+      'debug_bot', 'arm64',
+    ],
+
     'debug_bot_blink': [
       'debug_bot_blink',
     ],
@@ -2647,6 +2653,10 @@
 
     'release_bot_mac_strip_minimal_symbols': [
       'release_bot', 'mac_strip', 'minimal_symbols',
+    ],
+
+    'release_bot_mac_strip_minimal_symbols_arm64': [
+      'release_bot', 'mac_strip', 'minimal_symbols', 'arm64',
     ],
 
     'release_bot_mac_strip_minimal_symbols_deterministic': [
