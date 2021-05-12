@@ -3,6 +3,9 @@ sky@chromium.org
 
 per-file restore_on_startup_policy_handler*=atwilson@chromium.org
 
+per-file session_data_*=dullweber@chromium.org
+per-file better_session_restore_browsertest.cc=dullweber@chromium.org
+
 per-file session_restore_android*=yfriedman@chromium.org
 per-file session_restore_android*=felipeg@chromium.org
 
