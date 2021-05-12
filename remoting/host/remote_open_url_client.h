@@ -5,9 +5,15 @@
 #ifndef REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_H_
 #define REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
+
+namespace base {
+class Environment;
+}  // namespace base
 
 namespace remoting {
 
@@ -30,6 +36,7 @@ class RemoteOpenUrlClient final {
  private:
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
 
+  std::unique_ptr<base::Environment> environment_;
   GURL url_;
   base::OnceClosure done_;
   mojo::Remote<mojom::RemoteUrlOpener> remote_;

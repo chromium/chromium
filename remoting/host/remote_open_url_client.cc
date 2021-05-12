@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,6 +20,9 @@
 namespace remoting {
 
 namespace {
+
+constexpr char kChromeRemoteDesktopSessionEnvVar[] =
+    "CHROME_REMOTE_DESKTOP_SESSION";
 
 void OpenOnFallbackBrowserInternal(const GURL& url = GURL()) {
   std::string previous_default_browser =
@@ -38,7 +42,8 @@ void OpenOnFallbackBrowserInternal(const GURL& url = GURL()) {
 
 }  // namespace
 
-RemoteOpenUrlClient::RemoteOpenUrlClient() = default;
+RemoteOpenUrlClient::RemoteOpenUrlClient()
+    : environment_(base::Environment::Create()) {}
 
 RemoteOpenUrlClient::~RemoteOpenUrlClient() {
   DCHECK(!done_);
@@ -62,6 +67,13 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
   }
 
   url_ = url;
+
+  if (!environment_->HasVar(kChromeRemoteDesktopSessionEnvVar)) {
+    LOG(WARNING) << "The program is not run on a remote session. "
+                 << "Falling back to the previous default browser...";
+    OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
+    return;
+  }
 
   auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(
       GetRemoteOpenUrlIpcChannelName());
