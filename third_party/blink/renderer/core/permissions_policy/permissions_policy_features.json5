@@ -1,10 +1,8 @@
 {
   // All permissions policy (https://github.com/w3c/webappsec-permissions-policy)
   // features are defined here.
-  // All Features have to be defined in PermissionsPolicyFeature enum as well
-  // (defined in third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom).
-  // The enum value has to have the same name as the feature name here.
-  // This list is used to generate "permissions_policy_helper.cc".
+  // For more details on adding a new permissions policy, see:
+  // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/common/permissions_policy/README.md
   // TODO(yashard): Add all permissions policy features here.
 
   parameters: {

@@ -51,13 +51,20 @@ policy is undetermined, consider shipping the feature behind a runtime-enabled f
 1. Permissions policy features are defined in
 `third_party/blink/renderer/core/feature_policy/feature_policy_features.json5`. Add the new feature,
 placing any runtime-enabled feature or origin trial dependencies in its "depends_on" field as
-described in the file's comments.
+described in the file's comments.  This list is used to generate `permissions_policy_helper.cc`.
 
 2. Append the new feature enum with a brief description as well in
-`third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom`.
+`third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom`.
+The enum must have the same name as the name field in the json5 file from step 1.
+Run `tools/metrics/histograms/update_permissions_policy_enum.py`
+to update enums.xml from the mojo enum.
 
-3. Append the new feature name to `PermissionsPolicyFeature` enum in
+3. Append the new feature name to the `PermissionsPolicyFeature` enum in
 `third_party/blink/public/devtools_protocol/browser_protocol.pdl`.
+
+4. Send a Pull Request to the webappsec-permissions-policy github repo
+in order to propose the new permissions policy name.
+See: https://github.com/w3c/webappsec-permissions-policy/blob/main/features.md
 
 ##### Integrate the feature behaviour with permissions policy
 1. The most common way to check if features are enabled is `ExecutionContext::IsFeatureEnabled`.
