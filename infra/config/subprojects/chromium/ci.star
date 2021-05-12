@@ -1763,12 +1763,10 @@ ci.chromiumos_builder(
 # For Chromebox for meetings(CfM)
 ci.chromiumos_builder(
     name = "linux-cfm-rel",
-    branch_selector = branches.ALL_BRANCHES,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "cfm",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )
 
