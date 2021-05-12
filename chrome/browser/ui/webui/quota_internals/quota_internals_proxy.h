@@ -49,8 +49,8 @@ class QuotaInternalsProxy
       content::BrowserThread::IO>;
   friend class QuotaInternalsHandler;
 
-  typedef storage::QuotaManager::QuotaTableEntries QuotaTableEntries;
-  typedef storage::QuotaManager::BucketTableEntries BucketTableEntries;
+  using QuotaTableEntries = storage::QuotaManager::QuotaTableEntries;
+  using BucketTableEntries = storage::QuotaManager::BucketTableEntries;
 
   virtual ~QuotaInternalsProxy();
 

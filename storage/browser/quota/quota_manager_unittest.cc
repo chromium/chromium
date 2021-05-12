@@ -1677,12 +1677,12 @@ TEST_F(QuotaManagerImplTest, EvictOriginData) {
   int64_t predelete_host_pers = usage();
 
   for (const MockOriginData& data : kData1) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   for (const MockOriginData& data : kData2) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   task_environment_.RunUntilIdle();
 
@@ -1802,7 +1802,7 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataWithDeletionError) {
   int64_t predelete_host_pers = usage();
 
   for (const MockOriginData& data : kData)
-    NotifyStorageAccessed(url::Origin::Create(GURL(data.origin)), data.type);
+    NotifyStorageAccessed(ToOrigin(data.origin), data.type);
   task_environment_.RunUntilIdle();
 
   client->AddOriginToErrorSet(ToOrigin("http://foo.com/"), kTemp);
@@ -2115,8 +2115,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteOriginDataNoClients) {
-  DeleteOriginData(url::Origin::Create(GURL("http://foo.com/")), kTemp,
-                   AllQuotaClientTypes());
+  DeleteOriginData(ToOrigin("http://foo.com/"), kTemp, AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 }
@@ -2165,12 +2164,12 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultiple) {
   const int64_t predelete_bar_pers = usage();
 
   for (const MockOriginData& data : kData1) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   for (const MockOriginData& data : kData2) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   task_environment_.RunUntilIdle();
 
@@ -2258,12 +2257,12 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultipleClientsDifferentTypes) {
   const int64_t predelete_bar_pers = usage();
 
   for (const MockOriginData& data : kData1) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   for (const MockOriginData& data : kData2) {
-    quota_manager_impl()->NotifyStorageAccessed(
-        url::Origin::Create(GURL(data.origin)), data.type, base::Time::Now());
+    quota_manager_impl()->NotifyStorageAccessed(ToOrigin(data.origin),
+                                                data.type, base::Time::Now());
   }
   task_environment_.RunUntilIdle();
 
@@ -2514,10 +2513,9 @@ TEST_F(QuotaManagerImplTest, DumpQuotaTable) {
   task_environment_.RunUntilIdle();
 
   const QuotaTableEntry kEntries[] = {
-    QuotaTableEntry("example1.com", kPerm, 1),
-    QuotaTableEntry("example2.com", kPerm, 20),
-    QuotaTableEntry("example3.com", kPerm, 300),
-  };
+      {.host = "example1.com", .type = kPerm, .quota = 1},
+      {.host = "example2.com", .type = kPerm, .quota = 20},
+      {.host = "example3.com", .type = kPerm, .quota = 300}};
   std::set<QuotaTableEntry> entries(kEntries, kEntries + base::size(kEntries));
 
   for (const auto& quota_entry : quota_entries()) {

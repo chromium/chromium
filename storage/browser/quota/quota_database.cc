@@ -91,14 +91,6 @@ const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
 };
 const size_t QuotaDatabase::kIndexCount = base::size(QuotaDatabase::kIndexes);
 
-// Clang requires explicit out-of-line constructors for them.
-QuotaDatabase::QuotaTableEntry::QuotaTableEntry() = default;
-
-QuotaDatabase::QuotaTableEntry::QuotaTableEntry(const std::string& host,
-                                                StorageType type,
-                                                int64_t quota)
-    : host(host), type(type), quota(quota) {}
-
 QuotaDatabase::BucketTableEntry::BucketTableEntry() = default;
 
 QuotaDatabase::BucketTableEntry::BucketTableEntry(const BucketTableEntry&) =
@@ -572,9 +564,10 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
     if (base::Contains(exceptions, read_origin))
       continue;
 
+    GURL read_gurl = read_origin.GetURL();
     if (special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_origin.GetURL()) ||
-         special_storage_policy->IsStorageUnlimited(read_origin.GetURL()))) {
+        (special_storage_policy->IsStorageDurable(read_gurl) ||
+         special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
 
@@ -614,9 +607,10 @@ bool QuotaDatabase::GetLRUBucket(StorageType type,
 
     // TODO(crbug/1176774): Once BucketTable holds bucket durability info,
     // add logic to allow durable buckets to also bypass eviction.
+    GURL read_gurl = read_origin.GetURL();
     if (special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_origin.GetURL()) ||
-         special_storage_policy->IsStorageUnlimited(read_origin.GetURL()))) {
+        (special_storage_policy->IsStorageDurable(read_gurl) ||
+         special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
 
@@ -905,10 +899,10 @@ bool QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
-    QuotaTableEntry entry = QuotaTableEntry(
-      statement.ColumnString(0),
-      static_cast<StorageType>(statement.ColumnInt(1)),
-      statement.ColumnInt64(2));
+    QuotaTableEntry entry = {
+        .host = statement.ColumnString(0),
+        .type = static_cast<StorageType>(statement.ColumnInt(1)),
+        .quota = statement.ColumnInt64(2)};
 
     if (!callback.Run(entry))
       return true;

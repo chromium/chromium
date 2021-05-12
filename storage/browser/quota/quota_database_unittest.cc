@@ -50,6 +50,7 @@ url::Origin ToOrigin(const std::string& url) {
 class QuotaDatabaseTest : public testing::TestWithParam<bool> {
  protected:
   using QuotaTableEntry = QuotaDatabase::QuotaTableEntry;
+  using BucketTableEntry = QuotaDatabase::BucketTableEntry;
 
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
@@ -89,12 +90,10 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     return quota_database->DumpBucketTable(callback);
   }
 
-  template <typename Iterator>
-  void AssignQuotaTable(QuotaDatabase* quota_database,
-                        Iterator itr,
-                        Iterator end) {
+  template <typename Container>
+  void AssignQuotaTable(QuotaDatabase* quota_database, Container&& entries) {
     ASSERT_NE(quota_database->db_.get(), nullptr);
-    for (; itr != end; ++itr) {
+    for (const auto& entry : entries) {
       const char* kSql =
           // clang-format off
           "INSERT INTO quota(host, type, quota) "
@@ -105,20 +104,18 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           quota_database->db_.get()->GetCachedStatement(SQL_FROM_HERE, kSql));
       ASSERT_TRUE(statement.is_valid());
 
-      statement.BindString(0, itr->host);
-      statement.BindInt(1, static_cast<int>(itr->type));
-      statement.BindInt64(2, itr->quota);
+      statement.BindString(0, entry.host);
+      statement.BindInt(1, static_cast<int>(entry.type));
+      statement.BindInt64(2, entry.quota);
       EXPECT_TRUE(statement.Run());
     }
     quota_database->Commit();
   }
 
-  template <typename Iterator>
-  void AssignBucketTable(QuotaDatabase* quota_database,
-                         Iterator itr,
-                         Iterator end) {
+  template <typename Container>
+  void AssignBucketTable(QuotaDatabase* quota_database, Container&& entries) {
     ASSERT_NE(quota_database->db_.get(), (sql::Database*)nullptr);
-    for (; itr != end; ++itr) {
+    for (const auto& entry : entries) {
       const char* kSql =
           // clang-format off
           "INSERT INTO buckets("
@@ -138,13 +135,13 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           quota_database->db_->GetCachedStatement(SQL_FROM_HERE, kSql));
       ASSERT_TRUE(statement.is_valid());
 
-      statement.BindInt64(0, itr->bucket_id);
-      statement.BindString(1, itr->origin.GetURL().spec());
-      statement.BindInt(2, static_cast<int>(itr->type));
-      statement.BindString(3, itr->name);
-      statement.BindInt(4, itr->use_count);
-      statement.BindTime(5, itr->last_accessed);
-      statement.BindTime(6, itr->last_modified);
+      statement.BindInt64(0, entry.bucket_id);
+      statement.BindString(1, entry.origin.GetURL().spec());
+      statement.BindInt(2, static_cast<int>(entry.type));
+      statement.BindString(3, entry.name);
+      statement.BindInt(4, entry.use_count);
+      statement.BindTime(5, entry.last_accessed);
+      statement.BindTime(6, entry.last_modified);
       EXPECT_TRUE(statement.Run());
     }
     quota_database->Commit();
@@ -289,9 +286,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   Entry bucket3 = Entry(2, ToOrigin("http://c/"), kTemp, "C", 1, now, now);
   Entry bucket4 = Entry(3, ToOrigin("http://d/"), kPerm, "D", 5, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
-  Entry* begin = kTableEntries;
-  Entry* end = std::end(kTableEntries);
-  AssignBucketTable(&db, begin, end);
+  AssignBucketTable(&db, kTableEntries);
 
   // Update access time for three temporary storages, and
   EXPECT_TRUE(db.SetBucketLastAccessTime(bucket1.bucket_id,
@@ -459,9 +454,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   Entry bucket3 = Entry(2, ToOrigin("http://c/"), kTemp, "C", 0, now, now);
   Entry bucket4 = Entry(3, ToOrigin("http://d/"), kPerm, "D", 0, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
-  Entry* begin = kTableEntries;
-  Entry* end = std::end(kTableEntries);
-  AssignBucketTable(&db, begin, end);
+  AssignBucketTable(&db, kTableEntries);
 
   // Report last mod time for the buckets.
   EXPECT_TRUE(db.SetBucketLastModifiedTime(bucket1.bucket_id,
@@ -609,18 +602,17 @@ TEST_P(QuotaDatabaseTest, RegisterInitialOriginInfo) {
 }
 
 TEST_P(QuotaDatabaseTest, DumpQuotaTable) {
-  QuotaTableEntry kTableEntries[] = {QuotaTableEntry("http://go/", kTemp, 1),
-                                     QuotaTableEntry("http://oo/", kTemp, 2),
-                                     QuotaTableEntry("http://gle/", kPerm, 3)};
-  QuotaTableEntry* begin = kTableEntries;
-  QuotaTableEntry* end = std::end(kTableEntries);
+  QuotaTableEntry kTableEntries[] = {
+      {.host = "http://go/", .type = kTemp, .quota = 1},
+      {.host = "http://oo/", .type = kTemp, .quota = 2},
+      {.host = "http://gle/", .type = kPerm, .quota = 3}};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
-  AssignQuotaTable(&db, begin, end);
+  AssignQuotaTable(&db, kTableEntries);
 
   using Verifier = EntryVerifier<QuotaTableEntry>;
-  Verifier verifier(begin, end);
+  Verifier verifier(kTableEntries, std::end(kTableEntries));
   EXPECT_TRUE(DumpQuotaTable(
       &db, base::BindRepeating(&Verifier::Run, base::Unretained(&verifier))));
   EXPECT_TRUE(verifier.table.empty());
@@ -635,15 +627,13 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
       Entry(1, ToOrigin("http://oo/"), kTemp, kDefaultBucket, 0, now, now),
       Entry(2, ToOrigin("http://gle/"), kTemp, kDefaultBucket, 1, now, now),
   };
-  Entry* begin = kTableEntries;
-  Entry* end = std::end(kTableEntries);
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
-  AssignBucketTable(&db, begin, end);
+  AssignBucketTable(&db, kTableEntries);
 
   using Verifier = EntryVerifier<Entry>;
-  Verifier verifier(begin, end);
+  Verifier verifier(kTableEntries, std::end(kTableEntries));
   EXPECT_TRUE(DumpBucketTable(
       &db, base::BindRepeating(&Verifier::Run, base::Unretained(&verifier))));
   EXPECT_TRUE(verifier.table.empty());
@@ -654,12 +644,10 @@ TEST_P(QuotaDatabaseTest, GetOriginInfo) {
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry kTableEntries[] = {Entry(0, kOrigin, kTemp, kDefaultBucket, 100,
                                  base::Time(), base::Time())};
-  Entry* begin = kTableEntries;
-  Entry* end = std::end(kTableEntries);
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
-  AssignBucketTable(&db, begin, end);
+  AssignBucketTable(&db, kTableEntries);
 
   {
     Entry entry;
@@ -684,12 +672,10 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
   Entry kTableEntries[] = {Entry(123, ToOrigin("http://go/"), kTemp,
                                  "TestBucket", 100, base::Time(),
                                  base::Time())};
-  Entry* begin = kTableEntries;
-  Entry* end = std::end(kTableEntries);
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
-  AssignBucketTable(&db, begin, end);
+  AssignBucketTable(&db, kTableEntries);
 
   {
     Entry entry;

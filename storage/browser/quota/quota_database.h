@@ -176,13 +176,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
  private:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
-    QuotaTableEntry();
-    QuotaTableEntry(const std::string& host,
-                    blink::mojom::StorageType type,
-                    int64_t quota);
     std::string host;
-    blink::mojom::StorageType type{blink::mojom::StorageType::kUnknown};
-    int64_t quota{0};
+    blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
+    int64_t quota = 0;
   };
   friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
       const QuotaTableEntry& lhs,
