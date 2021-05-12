@@ -122,7 +122,7 @@ void CreateRequestContextGetterIfNecessary() {
         new base::Thread("grpc_support_test_io_thread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    bool started = test_io_thread_->StartWithOptions(options);
+    bool started = test_io_thread_->StartWithOptions(std::move(options));
     DCHECK(started);
 
     g_request_context_getter_.Get() =
