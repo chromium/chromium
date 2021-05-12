@@ -12,23 +12,25 @@
 namespace zip {
 namespace internal {
 
-bool ZipWriter::AddFileContent(const base::FilePath& file_path,
-                               base::File file) {
-  int num_bytes;
+bool ZipWriter::AddFileContent(const base::FilePath& path, base::File file) {
   char buf[zip::internal::kZipBufSize];
-  do {
-    num_bytes = file.ReadAtCurrentPos(buf, zip::internal::kZipBufSize);
+  while (true) {
+    const int num_bytes =
+        file.ReadAtCurrentPos(buf, zip::internal::kZipBufSize);
 
-    if (num_bytes > 0) {
-      if (zipWriteInFileInZip(zip_file_, buf, num_bytes) != ZIP_OK) {
-        DLOG(ERROR) << "Could not write data to zip for path "
-                    << file_path.value();
-        return false;
-      }
+    if (num_bytes < 0) {
+      DPLOG(ERROR) << "Cannot read file '" << path << "'";
+      return false;
     }
-  } while (num_bytes > 0);
 
-  return true;
+    if (num_bytes == 0)
+      return true;
+
+    if (zipWriteInFileInZip(zip_file_, buf, num_bytes) != ZIP_OK) {
+      DLOG(ERROR) << "Cannot write data from file '" << path << "' to ZIP";
+      return false;
+    }
+  }
 }
 
 bool ZipWriter::OpenNewFileEntry(const base::FilePath& path,
