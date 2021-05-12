@@ -76,7 +76,7 @@ class CryptoThreadPool {
   CryptoThreadPool() : worker_thread_("WebCrypto") {
     base::Thread::Options options;
     options.joinable = false;
-    worker_thread_.StartWithOptions(options);
+    worker_thread_.StartWithOptions(std::move(options));
   }
 
   static bool PostTask(const base::Location& from_here, base::OnceClosure task);
