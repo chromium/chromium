@@ -1730,11 +1730,9 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
     DVLOGF(2) << "Will inject SPS+PPS before each IDR, unsupported by device";
   }
 
-  // Optional H264 controls.
-  std::vector<V4L2ExtCtrl> h264_ctrls;
-
   // No B-frames, for lowest decoding latency.
-  h264_ctrls.emplace_back(V4L2_CID_MPEG_VIDEO_B_FRAMES, 0);
+  device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_B_FRAMES, 0)});
 
   // Set H.264 profile.
   int32_t profile_value =
@@ -1743,7 +1741,14 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
     NOTIFY_ERROR(kInvalidArgumentError);
     return false;
   }
-  h264_ctrls.emplace_back(V4L2_CID_MPEG_VIDEO_H264_PROFILE, profile_value);
+  if (!device_->SetExtCtrls(
+          V4L2_CTRL_CLASS_MPEG,
+          {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_PROFILE, profile_value)})) {
+    VLOGF(1) << "Unsupported profile: "
+             << GetProfileName(config.output_profile);
+    NOTIFY_ERROR(kInvalidArgumentError);
+    return false;
+  }
 
   // Set H.264 output level from config. Use Level 4.0 as fallback default.
   uint8_t h264_level = config.h264_output_level.value_or(H264SPS::kLevelIDC4p0);
@@ -1780,14 +1785,15 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   }
 
   int32_t level_value = V4L2Device::H264LevelIdcToV4L2H264Level(h264_level);
-  h264_ctrls.emplace_back(V4L2_CID_MPEG_VIDEO_H264_LEVEL, level_value);
+  device_->SetExtCtrls(
+      V4L2_CTRL_CLASS_MPEG,
+      {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_LEVEL, level_value)});
 
   // Ask not to put SPS and PPS into separate bitstream buffers.
-  h264_ctrls.emplace_back(V4L2_CID_MPEG_VIDEO_HEADER_MODE,
-                          V4L2_MPEG_VIDEO_HEADER_MODE_JOINED_WITH_1ST_FRAME);
-
-  // Ignore return value as these controls are optional.
-  device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG, std::move(h264_ctrls));
+  device_->SetExtCtrls(
+      V4L2_CTRL_CLASS_MPEG,
+      {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_HEADER_MODE,
+                   V4L2_MPEG_VIDEO_HEADER_MODE_JOINED_WITH_1ST_FRAME)});
 
   // H264 coding tools parameter. Since a driver may not support some of them,
   // EXT_S_CTRLS is called to each of them to enable as many coding tools as
