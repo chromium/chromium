@@ -66,10 +66,9 @@ void StoragePartitionCodeCacheDataRemover::ClearCache(
     return;
   }
 
-  // Create a callback that is copyable, even though it can only be called once,
-  // so that we can use it synchronously in case result != net::ERR_IO_PENDING.
-  net::CompletionRepeatingCallback copyable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  // Create a split version of callback so that we can use it synchronously in
+  // case result != net::ERR_IO_PENDING.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = net::ERR_FAILED;
   if (!url_predicate_.is_null()) {
     result =
@@ -79,18 +78,17 @@ void StoragePartitionCodeCacheDataRemover::ClearCache(
                           base::BindRepeating(
                               &GeneratedCodeCache::GetResourceURLFromKey),
                           begin_time_, end_time_)))
-            ->DeleteAndDestroySelfWhenFinished(copyable_callback);
+            ->DeleteAndDestroySelfWhenFinished(std::move(split_callback.first));
   } else if (begin_time_.is_null() && end_time_.is_max()) {
-    result = backend->DoomAllEntries(copyable_callback);
+    result = backend->DoomAllEntries(std::move(split_callback.first));
   } else {
-    result =
-        backend->DoomEntriesBetween(begin_time_, end_time_, copyable_callback);
+    result = backend->DoomEntriesBetween(begin_time_, end_time_,
+                                         std::move(split_callback.first));
   }
   // When result is ERR_IO_PENDING the callback would be called after the
   // operation has finished.
   if (result != net::ERR_IO_PENDING) {
-    DCHECK(copyable_callback);
-    copyable_callback.Run(result);
+    std::move(split_callback.second).Run(result);
   }
 }
 
