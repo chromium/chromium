@@ -259,8 +259,9 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
         self.didReachBottom = YES;
       } else {
         NSDictionary* textAttributes = @{
-          NSForegroundColorAttributeName :
-              [UIColor colorNamed:kSolidButtonTextColor],
+          NSForegroundColorAttributeName : self.unifiedButtonStyle
+              ? [UIColor colorNamed:kBlueColor]
+              : [UIColor colorNamed:kSolidButtonTextColor],
           NSFontAttributeName :
               [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
         };

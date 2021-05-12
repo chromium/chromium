@@ -27,6 +27,7 @@
 
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
   self.isTallBanner = NO;
+  self.scrollToEndMandatory = YES;
 
   // Add sync screen-specific content and its constraints.
   UILabel* label = [[UILabel alloc] init];
@@ -55,6 +56,8 @@
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [label.widthAnchor
         constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
+    [label.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
   ]];
 
   [super viewDidLoad];
