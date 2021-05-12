@@ -63,7 +63,10 @@ AppSessionServiceFactory* AppSessionServiceFactory::GetInstance() {
 AppSessionServiceFactory::AppSessionServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "AppSessionService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  // Ensure that session data is cleared before session restore can happen.
+  DependsOn(SessionDataServiceFactory::GetInstance());
+}
 
 AppSessionServiceFactory::~AppSessionServiceFactory() = default;
 

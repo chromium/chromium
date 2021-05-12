@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/session_data_service.h"
@@ -24,7 +26,10 @@ SessionDataServiceFactory* SessionDataServiceFactory::GetInstance() {
 SessionDataServiceFactory::SessionDataServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SessionDataService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(CookieSettingsFactory::GetInstance());
+}
 
 SessionDataServiceFactory::~SessionDataServiceFactory() = default;
 

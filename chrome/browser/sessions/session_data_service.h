@@ -53,11 +53,15 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  // Records the Status of the last session if there is any session-only origin.
+  // Records the Status of the last session.
   void RecordHistogramForLastSession(Status last_status);
+  // Starts another data deletion if the deletion at the end of the last session
+  // did not finish.
+  void MaybeContinueDeletionFromLastSesssion(Status last_status);
 
   void SetStatusPref(Status status);
-  void OnCleanupFinished(base::TimeTicks time_started);
+  void OnCleanupAtStartupFinished(base::TimeTicks time_started);
+  void OnCleanupAtSessionEndFinished(base::TimeTicks time_started);
 
   Profile* profile_;
   std::unique_ptr<SessionDataDeleter> deleter_;

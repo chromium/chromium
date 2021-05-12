@@ -6290,6 +6290,8 @@ static_library("browser") {
       "sessions/session_service_lookup.h",
       "sessions/session_service_utils.cc",
       "sessions/session_service_utils.h",
+      "sessions/sessions_features.cc",
+      "sessions/sessions_features.h",
       "sessions/tab_loader.cc",
       "sessions/tab_loader.h",
       "sessions/tab_loader_delegate.cc",

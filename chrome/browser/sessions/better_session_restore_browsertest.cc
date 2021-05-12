@@ -27,9 +27,12 @@
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/sessions/session_data_service.h"
+#include "chrome/browser/sessions/session_data_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -77,11 +80,9 @@ const char kTestHeaders[] = "HTTP/1.1 200 OK\nContent-type: text/html\n\n";
 class FakeBackgroundModeManager : public BackgroundModeManager {
  public:
   FakeBackgroundModeManager()
-      : BackgroundModeManager(
-            *base::CommandLine::ForCurrentProcess(),
-            &g_browser_process->profile_manager()->
-                GetProfileAttributesStorage()),
-        background_mode_active_(false) {}
+      : BackgroundModeManager(*base::CommandLine::ForCurrentProcess(),
+                              &g_browser_process->profile_manager()
+                                   ->GetProfileAttributesStorage()) {}
 
   void SetBackgroundModeActive(bool active) {
     background_mode_active_ = active;
@@ -90,8 +91,7 @@ class FakeBackgroundModeManager : public BackgroundModeManager {
   bool IsBackgroundModeActive() override { return background_mode_active_; }
 
  private:
-  bool background_mode_active_;
-
+  bool background_mode_active_ = false;
 };
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
@@ -170,6 +170,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     StoreDataWithPage(browser(), filename);
   }
 
+  // This function succeeds if data for |filename| could be stored successfully.
+  // It fails if data already exists or there is an error when writing it.
   void StoreDataWithPage(Browser* browser, const std::string& filename) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
@@ -187,6 +189,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     NavigateAndCheckStoredData(browser(), filename);
   }
 
+  // This function succeeds if data for |filename| is still stored.
   void NavigateAndCheckStoredData(Browser* browser,
                                   const std::string& filename) {
     // Navigate to a page which has previously stored data; check that the
@@ -347,7 +350,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
 class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
  public:
-  ContinueWhereILeftOffTest() { }
+  ContinueWhereILeftOffTest() = default;
 
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
@@ -557,14 +560,17 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class RestartTest : public BetterSessionRestoreTest {
  public:
-  RestartTest() { }
-  ~RestartTest() override {}
+  RestartTest() = default;
+  ~RestartTest() override = default;
 
  protected:
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
-    for (auto* browser : *BrowserList::GetInstance())
+    for (auto* browser : *BrowserList::GetInstance()) {
       content::BrowserContext::SaveSessionState(browser->profile());
+      SessionDataServiceFactory::GetForProfile(browser->profile())
+          ->SetForceKeepSessionState();
+    }
     PrefService* pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
@@ -639,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(RestartTest, PostWithPassword) {
 // when they shouldn't be.
 class NoSessionRestoreTest : public BetterSessionRestoreTest {
  public:
-  NoSessionRestoreTest() { }
+  NoSessionRestoreTest() = default;
 
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
@@ -718,7 +724,92 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnExit) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(std::string(url::kAboutBlankURL), web_contents->GetURL().spec());
+  StoreDataWithPage("cookies.html");
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnStartup) {
+  // Normally cookies are restored.
+  StoreDataWithPage("cookies.html");
+  content::EnsureCookiesFlushed(browser()->profile());
+  // ... but not if the content setting is set to clear on exit.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+
+  // Disable cookie and storage deletion on shutdown to simulate the
+  // process being killed before cleanup is finished.
+  content::BrowserContext::SaveSessionState(browser()->profile());
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnStartup) {
+  // Check that the deletion is performed on startup instead.
+  StoreDataWithPage("cookies.html");
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnStartup) {
+  // Normally localStorage is persisted.
   StoreDataWithPage("local_storage.html");
+  // ... but not if it's set to clear on exit.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+
+  // Disable cookie and storage deletion on shutdown to simulate the
+  // process being killed before cleanup is finished.
+  content::BrowserContext::SaveSessionState(browser()->profile());
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {
+  // Check that the deletion is performed on startup instead.
+  StoreDataWithPage("local_storage.html");
+}
+
+class NoSessionRestoreTestWithStartupDeletionDisabled
+    : public NoSessionRestoreTest {
+ public:
+  NoSessionRestoreTestWithStartupDeletionDisabled() {
+    feature_list_.InitAndDisableFeature(kDeleteSessionOnlyDataOnStartup);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
+                       PRE_CookiesClearedOnStartup) {
+  // Normally cookies are restored.
+  StoreDataWithPage("cookies.html");
+  content::EnsureCookiesFlushed(browser()->profile());
+  // ... but not if the content setting is set to clear on exit.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+
+  // Disable cookie and storage deletion handling on shutdown to simulate the
+  // process being killed before cleanup is finished.
+  content::BrowserContext::SaveSessionState(browser()->profile());
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
+                       CookiesClearedOnStartup) {
+  // Check that the deletion is not performed when the feature is disabled.
+  NavigateAndCheckStoredData("cookies.html");
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
+                       PRE_LocalStorageClearedOnStartup) {
+  // Normally localStorage is persisted.
+  StoreDataWithPage("local_storage.html");
+  // ... but not if it's set to clear on exit.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+
+  // Disable cookie and storage deletion handling on shutdown to simulate the
+  // process being killed before cleanup is finished.
+  content::BrowserContext::SaveSessionState(browser()->profile());
+}
+
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
+                       LocalStorageClearedOnStartup) {
+  // Check that the deletion is not performed when the feature is disabled.
+  NavigateAndCheckStoredData("local_storage.html");
 }
 
 // Tests that session cookies are not cleared when only a popup window is open.

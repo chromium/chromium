@@ -77,6 +77,8 @@ SessionServiceFactory::SessionServiceFactory()
     : BrowserContextKeyedServiceFactory(
         "SessionService",
         BrowserContextDependencyManager::GetInstance()) {
+  // Ensure that session data is cleared before session restore can happen.
+  DependsOn(SessionDataServiceFactory::GetInstance());
 }
 
 SessionServiceFactory::~SessionServiceFactory() = default;

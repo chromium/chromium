@@ -5,12 +5,14 @@
 #include "chrome/browser/sessions/session_data_service.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
+#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -45,7 +47,12 @@ SessionDataService::SessionDataService(
     last_status = Status::kUninitialized;
 
   SetStatusPref(Status::kInitialized);
-  RecordHistogramForLastSession(last_status);
+  auto* policy = profile_->GetSpecialStoragePolicy();
+  if (policy && policy->HasSessionOnlyOrigins()) {
+    RecordHistogramForLastSession(last_status);
+    if (base::FeatureList::IsEnabled(kDeleteSessionOnlyDataOnStartup))
+      MaybeContinueDeletionFromLastSesssion(last_status);
+  }
 
   for (Browser* browser : *BrowserList::GetInstance())
     OnBrowserAdded(browser);
@@ -60,13 +67,43 @@ SessionDataService::~SessionDataService() {
 void SessionDataService::RecordHistogramForLastSession(Status last_status) {
   if (last_status == Status::kUninitialized)
     return;
-
-  auto* policy = profile_->GetSpecialStoragePolicy();
-  if (!policy || !policy->HasSessionOnlyOrigins())
-    return;
-
   base::UmaHistogramEnumeration("Session.SessionData.StatusFromLastSession",
                                 last_status);
+}
+
+void SessionDataService::MaybeContinueDeletionFromLastSesssion(
+    Status last_status) {
+  switch (last_status) {
+    case Status::kUninitialized:
+    case Status::kDeletionFinished:
+    case Status::kNoDeletionDueToForceKeepSessionData:
+      return;  // No deletion needed.
+    case Status::kInitialized:
+      // Deletion did not happen on shutdown and we didn't even update the
+      // status preference. Check profile status:
+      switch (profile_->GetLastSessionExitType()) {
+        case Profile::EXIT_CRASHED:
+          // To allow the user to continue a session after a crash, we will not
+          // delete cookies.
+          return;
+        case Profile::EXIT_NORMAL:
+        case Profile::EXIT_SESSION_ENDED:
+          // In case of a regular shutdown that skipped deletion, we should
+          // delete cookies.
+          break;
+      }
+      break;
+    case Status::kDeletionStarted:
+    case Status::kNoDeletionDueToShutdown:
+      break;  // Deletion needed.
+  }
+
+  // Skip session cookie deletion as they already get cleared on startup.
+  // (SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup)
+  deleter_->DeleteSessionOnlyData(
+      /*skip_session_cookies=*/true,
+      base::BindOnce(&SessionDataService::OnCleanupAtStartupFinished,
+                     base::Unretained(this), base::TimeTicks::Now()));
 }
 
 void SessionDataService::SetStatusPref(Status status) {
@@ -119,11 +156,19 @@ void SessionDataService::StartCleanup() {
   // Using base::Unretained is safe as DeleteSessionOnlyData() uses a
   // ScopedProfileKeepAlive.
   deleter_->DeleteSessionOnlyData(
-      base::BindOnce(&SessionDataService::OnCleanupFinished,
+      /*skip_session_cookies=*/false,
+      base::BindOnce(&SessionDataService::OnCleanupAtSessionEndFinished,
                      base::Unretained(this), base::TimeTicks::Now()));
 }
 
-void SessionDataService::OnCleanupFinished(base::TimeTicks time_started) {
+void SessionDataService::OnCleanupAtStartupFinished(
+    base::TimeTicks time_started) {
+  base::UmaHistogramMediumTimes("Session.SessionData.StartupCleanupTime",
+                                base::TimeTicks::Now() - time_started);
+}
+
+void SessionDataService::OnCleanupAtSessionEndFinished(
+    base::TimeTicks time_started) {
   SetStatusPref(Status::kDeletionFinished);
   base::UmaHistogramMediumTimes("Session.SessionData.CleanupTime",
                                 base::TimeTicks::Now() - time_started);

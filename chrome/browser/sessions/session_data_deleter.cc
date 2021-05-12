@@ -151,7 +151,8 @@ SessionDataDeleter::SessionDataDeleter(Profile* profile) : profile_(profile) {}
 
 SessionDataDeleter::~SessionDataDeleter() = default;
 
-void SessionDataDeleter::DeleteSessionOnlyData(base::OnceClosure callback) {
+void SessionDataDeleter::DeleteSessionOnlyData(bool skip_session_cookies,
+                                               base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // As this function is creating KeepAlives, it should not be
   // called during shutdown.
@@ -162,9 +163,11 @@ void SessionDataDeleter::DeleteSessionOnlyData(base::OnceClosure callback) {
           *base::CommandLine::ForCurrentProcess(), profile_)
           .type;
 
+  bool delete_only_by_session_only_policy =
+      skip_session_cookies || startup_pref_type == SessionStartupPref::LAST;
+
   auto deleter = base::MakeRefCounted<SessionDataDeleterInternal>(
-      profile_, startup_pref_type == SessionStartupPref::LAST,
-      std::move(callback));
+      profile_, delete_only_by_session_only_policy, std::move(callback));
   deleter->Run(profile_->GetDefaultStoragePartition(),
                HostContentSettingsMapFactory::GetForProfile(profile_));
 }
