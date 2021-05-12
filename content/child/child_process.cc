@@ -108,7 +108,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
     thread_options.priority = base::ThreadPriority::DISPLAY;
   }
 #endif
-  CHECK(io_thread_.StartWithOptions(thread_options));
+  CHECK(io_thread_.StartWithOptions(std::move(thread_options)));
 }
 
 ChildProcess::~ChildProcess() {
