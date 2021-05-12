@@ -223,7 +223,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://management",
     "chrome://md-user-manager",
     "chrome://media-engagement",
-    "chrome://media-feeds",
     "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",

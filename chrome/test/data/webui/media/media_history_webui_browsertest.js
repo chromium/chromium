@@ -42,6 +42,8 @@ function MediaHistoryStatsWebUIBrowserTest() {}
 MediaHistoryStatsWebUIBrowserTest.prototype = {
   __proto__: MediaHistoryWebUIBrowserTest.prototype,
 
+  featureList: {enabled: ['media::kMediaFeeds']},
+
   /** @override */
   browsePreload: 'chrome://media-history#tab-stats',
 };

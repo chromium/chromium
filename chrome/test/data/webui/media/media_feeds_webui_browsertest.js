@@ -24,7 +24,12 @@ MediaFeedsWebUIBrowserTest.prototype = {
 
   browsePreload: 'chrome://media-feeds',
 
-  featureList: {enabled: ['media::kMediaFeeds']},
+  featureList: {
+    enabled: [
+      'media::kMediaFeeds', 'media::kMediaFeedsSafeSearch',
+      'media::kMediaFeedsBackgroundFetching'
+    ]
+  },
 
   isAsync: true,
 
