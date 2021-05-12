@@ -112,7 +112,7 @@ void MacFileChooserOnUiThread::Show() {
   [open_panel_ setDelegate:delegate_];
   [open_panel_ beginWithCompletionHandler:^(NSModalResponse result) {
     if (result == NSFileHandlingPanelOKButton) {
-      NSURL* url = [[open_panel_ URLs] objectAtIndex:0];
+      NSURL* url = [open_panel_ URLs][0];
       if (![url isFileURL]) {
         // Delegate should prevent this.
         RunCallback(protocol::MakeFileTransferError(

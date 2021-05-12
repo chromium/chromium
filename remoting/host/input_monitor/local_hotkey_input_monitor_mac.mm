@@ -66,7 +66,7 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   remoting::LocalHotkeyInputMonitorMac::EventHandler* _monitor;
 }
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalHotkeyInputMonitorMac::EventHandler*)monitor;
 
 // Called when the hotKey is hit.
@@ -80,7 +80,7 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 
 @implementation LocalHotkeyInputMonitorManager
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalHotkeyInputMonitorMac::EventHandler*)monitor {
   if ((self = [super init])) {
     _monitor = monitor;

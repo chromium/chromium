@@ -27,7 +27,7 @@ NSArray* convertToNSArray(const char** array) {
   int i = 0;
   const char* element = array[i++];
   while (element != nullptr) {
-    [ns_array addObject:[NSString stringWithUTF8String:element]];
+    [ns_array addObject:@(element)];
     element = array[i++];
   }
   return ns_array;
@@ -46,7 +46,7 @@ NSArray* convertToNSArray(const char** array) {
 
   @try {
     task = [[[NSTask alloc] init] autorelease];
-    [task setLaunchPath:[NSString stringWithUTF8String:cmd]];
+    [task setLaunchPath:@(cmd)];
     [task setArguments:arg_array];
     [task setStandardInput:[NSPipe pipe]];
     [task setStandardOutput:output];
@@ -108,8 +108,8 @@ NSArray* convertToNSArray(const char** array) {
   const char* argsStop[] = { "stop", remoting::kServiceName, nullptr };
   [self runCommand:launchCtl withArguments:argsStop];
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:
-       [NSString stringWithUTF8String:remoting::kServicePlistPath]]) {
+  if ([[NSFileManager defaultManager]
+          fileExistsAtPath:@(remoting::kServicePlistPath)]) {
     const char* argsUnload[] = { "unload", "-w", "-S", "Aqua",
                                 remoting::kServicePlistPath, nullptr };
     [self runCommand:launchCtl withArguments:argsUnload];

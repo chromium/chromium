@@ -60,7 +60,7 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
   remoting::LocalMouseInputMonitorMac::EventHandler* _monitor;
 }
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalMouseInputMonitorMac::EventHandler*)monitor;
 
 // Called when the local mouse moves
@@ -87,7 +87,7 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
 
 @implementation LocalInputMonitorManager
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalMouseInputMonitorMac::EventHandler*)monitor {
   if ((self = [super init])) {
     _monitor = monitor;

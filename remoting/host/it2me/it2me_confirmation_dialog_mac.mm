@@ -31,9 +31,9 @@
   remoting::It2MeConfirmationDialog::ResultCallback _dialog_action_callback;
 }
 
-- (id)initWithCallback:
-          (remoting::It2MeConfirmationDialog::ResultCallback)callback
-              username:(const std::string&)username;
+- (instancetype)initWithCallback:
+                    (remoting::It2MeConfirmationDialog::ResultCallback)callback
+                        username:(const std::string&)username;
 - (void)show;
 - (void)hide;
 - (void)onCancel:(id)sender;
@@ -125,9 +125,9 @@ It2MeConfirmationDialogFactory::Create() {
 
 @implementation It2MeConfirmationDialogMacController
 
-- (id)initWithCallback:
-          (remoting::It2MeConfirmationDialog::ResultCallback)callback
-              username:(const std::string&)username {
+- (instancetype)initWithCallback:
+                    (remoting::It2MeConfirmationDialog::ResultCallback)callback
+                        username:(const std::string&)username {
   if ((self = [super init])) {
     _username = base::UTF8ToUTF16(username);
     _dialog_action_callback = std::move(callback);

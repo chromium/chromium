@@ -27,10 +27,8 @@ void InitializeCrashReporting() {
     NSDictionary* info_dictionary = [main_bundle infoDictionary];
     NSMutableDictionary* breakpad_config =
         [[info_dictionary mutableCopy] autorelease];
-    [breakpad_config setObject:inspector_location
-                        forKey:@BREAKPAD_INSPECTOR_LOCATION];
-    [breakpad_config setObject:reporter_location
-                        forKey:@BREAKPAD_REPORTER_EXE_LOCATION];
+    breakpad_config[@BREAKPAD_INSPECTOR_LOCATION] = inspector_location;
+    breakpad_config[@BREAKPAD_REPORTER_EXE_LOCATION] = reporter_location;
 
     // Configure Breakpad settings here, if they are not already customized in
     // the Info.plist. These settings should be added to the plist, but the
@@ -39,21 +37,20 @@ void InitializeCrashReporting() {
     // TODO(lambroslambrou): Add these to the Info.plist, similarly to what is
     // done for Chrome Framework - see 'Tweak Info.plist' in
     // chrome/chrome_dll_bundle.gypi.
-    if (![breakpad_config objectForKey:@BREAKPAD_SKIP_CONFIRM]) {
+    if (!breakpad_config[@BREAKPAD_SKIP_CONFIRM]) {
       // Skip the upload confirmation dialog, since this is a remote-access
       // service that shouldn't rely on a console user to dismiss any prompt.
       // Also, this may be running in the LoginWindow context, where prompting
       // might not be possible.
-      [breakpad_config setObject:@"YES" forKey:@BREAKPAD_SKIP_CONFIRM];
+      breakpad_config[@BREAKPAD_SKIP_CONFIRM] = @"YES";
     }
-    if (![breakpad_config objectForKey:@BREAKPAD_REPORT_INTERVAL]) {
+    if (!breakpad_config[@BREAKPAD_REPORT_INTERVAL]) {
       // Set a minimum 6-hour interval between crash-reports, to match the
       // throttling used on Windows.
-      [breakpad_config setObject:@"21600" forKey:@BREAKPAD_REPORT_INTERVAL];
+      breakpad_config[@BREAKPAD_REPORT_INTERVAL] = @"21600";
     }
-    if (![breakpad_config objectForKey:@BREAKPAD_URL]) {
-      [breakpad_config setObject:@"https://clients2.google.com/cr/report"
-                          forKey:@BREAKPAD_URL];
+    if (!breakpad_config[@BREAKPAD_URL]) {
+      breakpad_config[@BREAKPAD_URL] = @"https://clients2.google.com/cr/report";
     }
 
     if (!BreakpadCreate(breakpad_config)) {

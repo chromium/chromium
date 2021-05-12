@@ -20,9 +20,9 @@
   std::u16string _username;
 }
 
-- (id)initWithCallback:(base::OnceClosure)disconnect_callback
-              username:(const std::string&)username
-                window:(NSWindow*)window;
+- (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
+                        username:(const std::string&)username
+                          window:(NSWindow*)window;
 - (void)initializeWindow;
 - (void)stopSharing:(id)sender;
 @end

@@ -26,10 +26,10 @@ void DesktopDisplayInfo::LoadCurrentDisplayInfo() {
   for (NSUInteger i = 0; i < [screens count]; ++i) {
     std::unique_ptr<DisplayGeometry> info(new DisplayGeometry());
 
-    NSScreen* screen = [screens objectAtIndex:i];
+    NSScreen* screen = screens[i];
     NSDictionary* device = [screen deviceDescription];
-    CGDirectDisplayID id = static_cast<CGDirectDisplayID>(
-        [[device objectForKey:@"NSScreenNumber"] intValue]);
+    CGDirectDisplayID id =
+        static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
     info->id = id;
 
     float dsf = 1.0f;

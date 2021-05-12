@@ -24,7 +24,7 @@
   remoting::ContinueWindow* _continue_window;
 }
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window;
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window;
 - (void)show;
 - (void)hide;
 - (void)onCancel:(id)sender;
@@ -89,7 +89,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
 
 @implementation ContinueWindowMacController
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window {
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window {
   if ((self = [super init])) {
     _continue_window = continue_window;
   }

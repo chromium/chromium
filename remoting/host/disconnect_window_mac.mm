@@ -112,9 +112,9 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 @synthesize connectedToField = _connectedToField;
 @synthesize disconnectButton = _disconnectButton;
 
-- (id)initWithCallback:(base::OnceClosure)disconnect_callback
-              username:(const std::string&)username
-                window:(NSWindow*)window {
+- (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
+                        username:(const std::string&)username
+                          window:(NSWindow*)window {
   self = [super initWithWindow:(NSWindow*)window];
   if (self) {
     _disconnect_callback = std::move(disconnect_callback);
@@ -231,10 +231,10 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 @implementation DisconnectWindow
 
-- (id)initWithContentRect:(NSRect)contentRect
-                styleMask:(NSUInteger)aStyle
-                  backing:(NSBackingStoreType)bufferingType
-                  defer:(BOOL)flag {
+- (instancetype)initWithContentRect:(NSRect)contentRect
+                          styleMask:(NSUInteger)aStyle
+                            backing:(NSBackingStoreType)bufferingType
+                              defer:(BOOL)flag {
   // Pass NSBorderlessWindowMask for the styleMask to remove the title bar.
   self = [super initWithContentRect:contentRect
                           styleMask:NSBorderlessWindowMask
