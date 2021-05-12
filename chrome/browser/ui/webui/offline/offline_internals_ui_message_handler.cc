@@ -504,7 +504,9 @@ void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
   std::sort(logs.begin(), logs.end());
 
   base::ListValue result;
-  result.AppendStrings(logs);
+  for (const std::string& log : logs) {
+    result.Append(log);
+  }
 
   ResolveJavascriptCallback(*callback_id, result);
 }
