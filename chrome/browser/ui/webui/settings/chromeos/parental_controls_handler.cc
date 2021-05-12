@@ -53,14 +53,14 @@ void ParentalControlsHandler::OnJavascriptDisallowed() {}
 
 void ParentalControlsHandler::HandleShowAddSupervisionDialog(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   AddSupervisionDialog::Show(
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }
 
 void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
 
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);

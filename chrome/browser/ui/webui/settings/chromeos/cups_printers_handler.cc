@@ -1286,12 +1286,12 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
 
 void CupsPrintersHandler::HandleOpenPrintManagementApp(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   chrome::ShowPrintManagementApp(profile_);
 }
 
 void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   chrome::ShowScanningApp(profile_);
 }
 
