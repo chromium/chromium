@@ -512,6 +512,9 @@ class VP9ConfigChangeDetector : public ConfigChangeDetector {
       color_space_ = fhdr.GetColorSpace();
 
       gfx::Size new_size(fhdr.frame_width, fhdr.frame_height);
+      if (!gfx::Rect(new_size).Contains(visible_rect_)) {
+        visible_rect_ = gfx::Rect(new_size);
+      }
       if (!size_.IsEmpty() && !pending_config_changed_ && !config_changed_ &&
           size_ != new_size) {
         pending_config_changed_ = true;
