@@ -166,6 +166,13 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /** @private {boolean} */
+    isDeviceInhibited_: {
+      type: Boolean,
+      computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
+          'cellularDeviceState.inhibitReason)',
+    },
   },
 
   listeners: {
@@ -466,7 +473,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isDeviceInhibited_() {
+  computeIsDeviceInhibited_() {
     if (!this.cellularDeviceState) {
       return false;
     }

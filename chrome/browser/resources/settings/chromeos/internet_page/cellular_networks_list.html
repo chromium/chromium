@@ -119,23 +119,19 @@
               </div>
             </div>
             <div id="inhibitedSubtext" class="header-row secondary-box-text"
-                hidden="[[!isDeviceInhibited_(cellularDeviceState,
-                    cellularDeviceState.inhibitReason)]]">
-              [[getInhibitedSubtextMessage_(cellularDeviceState,
-                  cellularDeviceState.inhibitReason)]]
+                hidden="[[!isDeviceInhibited_]]" aria-live="assertive">
+              [[getInhibitedSubtextMessage_(isDeviceInhibited_)]]
             </div>
           </div>
           <div id="alignEnd">
             <paper-spinner-lite id="inhibitedSpinner"
-                active="[[isDeviceInhibited_(cellularDeviceState,
-                    cellularDeviceState.inhibitReason)]]">
+                active="[[isDeviceInhibited_]]">
             </paper-spinner-lite>
             <template is="dom-if" if="[[showAddESimButton_(cellularDeviceState,
                 globalPolicy)]]" restamp>
               <cr-icon-button class="icon-add-cellular add-button"
                   aria-label="$i18n{internetAddCellular}" id="addESimButton"
-                  disabled="[[isDeviceInhibited_(cellularDeviceState,
-                    cellularDeviceState.inhibitReason)]]"
+                  disabled="[[isDeviceInhibited_]]"
                   on-click="onAddEsimButtonTap_">
               </cr-icon-button>
             </template>
@@ -158,8 +154,7 @@
         <div id="eSimNoNetworkFound"
             class="cellular-network-content cellular-not-setup">
           <settings-localized-link
-              link-disabled = "[[isDeviceInhibited_(cellularDeviceState,
-              cellularDeviceState.inhibitReason)]]"
+              link-disabled = "[[isDeviceInhibited_]]"
               on-link-clicked="onEsimLearnMoreClicked_"
               localized-string="$i18n{eSimNetworkNotSetup}">
           </settings-localized-link>
