@@ -26,6 +26,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/viz_utils.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/damage_frame_annotator.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -52,6 +53,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -600,6 +602,40 @@ void Display::OnContextLost() {
   client_->DisplayOutputSurfaceLost();
 }
 
+namespace {
+void DebugDrawFrame(const AggregatedFrame& frame) {
+  if (!VizDebugger::GetInstance()->IsEnabled())
+    return;
+
+  auto& root_render_pass = *frame.render_pass_list.back();
+  for (auto* quad : root_render_pass.quad_list) {
+    auto& transform = quad->shared_quad_state->quad_to_target_transform;
+    auto display_rect = gfx::RectF(quad->rect);
+    transform.TransformRect(&display_rect);
+
+    DBG_DRAW_RECT("frame.root.quad", display_rect);
+  }
+}
+
+void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
+                        gfx::Size current_surface_size,
+                        int64_t last_presented_trace_id) {
+  if (!VizDebugger::GetInstance()->IsEnabled())
+    return;
+
+  const gfx::Transform display_transform = gfx::OverlayTransformToTransform(
+      current_display_transform, gfx::SizeF(current_surface_size));
+  current_surface_size =
+      cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+          display_transform, gfx::Rect(current_surface_size))
+          .size();
+
+  VizDebugger::GetInstance()->CompleteFrame(
+      last_presented_trace_id, current_surface_size, base::TimeTicks::Now());
+}
+
+}  // namespace
+
 bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
@@ -636,6 +672,10 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     }
   }
 
+  base::ScopedClosureRunner visual_debugger_sync_scoped_exit(
+      base::BindOnce(&VisualDebuggerSync, current_display_transform,
+                     current_surface_size_, last_presented_trace_id_));
+
   // During aggregation, SurfaceAggregator marks all resources used for a draw
   // in the resource provider.  This has the side effect of deleting unused
   // resources and their textures, generating sync tokens, and returning the
@@ -668,6 +708,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
         current_surface_id_, expected_display_time, current_display_transform,
         target_damage_bounding_rect, ++swapped_trace_id_);
   }
+  DebugDrawFrame(frame);
 
   // Records whether the aggregated frame contains video or not.
   // TODO(vikassoni) : Extend this capability to record whether a video frame is

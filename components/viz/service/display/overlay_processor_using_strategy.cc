@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -151,6 +152,11 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   auto* render_pass = render_passes->back().get();
   bool success = false;
 
+  DBG_DRAW_RECT("overlay.incoming.damage", (*damage_rect));
+  for (auto&& each : surface_damage_rect_list) {
+    DBG_DRAW_RECT("overlay.surface.damage", each);
+  }
+
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
@@ -175,6 +181,11 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
 
   NotifyOverlayPromotion(resource_provider, *candidates,
                          render_pass->quad_list);
+
+  if (!candidates->empty()) {
+    DBG_DRAW_RECT("overlay.selected.rect", (*candidates)[0].display_rect);
+  }
+  DBG_DRAW_RECT("overlay.outgoing.dmage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
