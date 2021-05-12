@@ -19,8 +19,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 NetworkPortalDetector::CaptivePortalStatus GetCaptivePortalStatus() {
@@ -306,4 +305,4 @@ bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

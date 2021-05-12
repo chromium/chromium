@@ -34,7 +34,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-using policy::EnrollmentConfig;
+namespace ash {
+namespace {
+
+using ::policy::EnrollmentConfig;
 
 // Do not change the UMA histogram parameters without renaming the histograms!
 #define UMA_ENROLLMENT_TIME(histogram_name, elapsed_timer)                   \
@@ -44,8 +47,6 @@ using policy::EnrollmentConfig;
         base::TimeDelta::FromMilliseconds(100) /* min */,                    \
         base::TimeDelta::FromMinutes(15) /* max */, 100 /* bucket_count */); \
   } while (0)
-
-namespace {
 
 const char* const kMetricEnrollmentTimeCancel =
     "Enterprise.EnrollmentTime.Cancel";
@@ -84,8 +85,6 @@ std::string GetEnterpriseDomainManager() {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 std::string EnrollmentScreen::GetResultString(Result result) {
@@ -565,4 +564,4 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
                                    machine_name, username, error);
 }
 
-}  // namespace chromeos
+}  // namespace ash

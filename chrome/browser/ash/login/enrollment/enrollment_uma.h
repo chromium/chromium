@@ -8,13 +8,13 @@
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 
-namespace chromeos {
+namespace ash {
 
 // Logs an UMA `event` in "Enrollment.*" histogram. Histogram is chosen
 // depending on `mode`.
 void EnrollmentUMA(policy::MetricEnrollment sample,
                    policy::EnrollmentConfig::Mode mode);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_UMA_H_

@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 EnterpriseEnrollmentHelperMock::EnterpriseEnrollmentHelperMock() {}
 
@@ -17,4 +17,4 @@ EnterpriseEnrollmentHelperMock::status_consumer() const {
   return EnterpriseEnrollmentHelper::status_consumer();
 }
 
-}  // namespace chromeos
+}  // namespace ash

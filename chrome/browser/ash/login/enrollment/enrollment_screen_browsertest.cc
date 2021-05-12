@@ -26,11 +26,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::InvokeWithoutArgs;
-using testing::Mock;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
+using ::testing::Mock;
 
 class EnrollmentScreenTest : public OobeBaseTest {
  public:
@@ -210,4 +210,4 @@ IN_PROC_BROWSER_TEST_F(OobeCompletedUnownedTest, TriggerEnrollment) {
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

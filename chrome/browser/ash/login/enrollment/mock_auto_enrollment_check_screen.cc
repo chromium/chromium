@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockAutoEnrollmentCheckScreen::MockAutoEnrollmentCheckScreen(
     AutoEnrollmentCheckScreenView* view,
@@ -35,4 +35,4 @@ void MockAutoEnrollmentCheckScreenView::SetDelegate(Delegate* screen) {
   MockSetDelegate(screen);
 }
 
-}  // namespace chromeos
+}  // namespace ash

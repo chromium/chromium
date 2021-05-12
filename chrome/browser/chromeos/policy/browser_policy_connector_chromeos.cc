@@ -118,7 +118,7 @@ MarketSegment TranslateMarketSegment(
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return chromeos::AutoEnrollmentController::IsFREEnabled();
+  return ash::AutoEnrollmentController::IsFREEnabled();
 }
 
 }  // namespace

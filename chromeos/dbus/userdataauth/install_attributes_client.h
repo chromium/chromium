@@ -118,4 +118,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::InstallAttributesClient;
+}
+
 #endif  // CHROMEOS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_CLIENT_H_

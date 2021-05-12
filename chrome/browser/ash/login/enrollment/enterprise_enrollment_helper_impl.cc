@@ -35,7 +35,11 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace ash {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to ash::
+using ::chromeos::InstallAttributes;
 
 // A helper class that takes care of asynchronously revoking a given token.
 class TokenRevoker : public GaiaAuthConsumer {
@@ -73,8 +77,6 @@ void TokenRevoker::OnOAuth2RevokeTokenCompleted(
 }
 
 }  // namespace
-
-namespace chromeos {
 
 EnterpriseEnrollmentHelperImpl::EnterpriseEnrollmentHelperImpl() {
   // Init the TPM if it has not been done until now (in debug build we might
@@ -239,7 +241,7 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
     }
   }
   auth_data_ = policy::DMAuth::NoAuth();
-  chromeos::ProfileHelper::Get()->ClearSigninProfile(
+  ProfileHelper::Get()->ClearSigninProfile(
       base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -568,4 +570,4 @@ void EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared(
   std::move(callback).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

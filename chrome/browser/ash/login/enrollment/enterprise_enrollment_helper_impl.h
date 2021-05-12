@@ -24,7 +24,7 @@ namespace policy {
 class PolicyOAuth2TokenFetcher;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 class EnterpriseEnrollmentHelperImpl
     : public EnterpriseEnrollmentHelper,
@@ -122,6 +122,6 @@ class EnterpriseEnrollmentHelperImpl
   DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelperImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_IMPL_H_

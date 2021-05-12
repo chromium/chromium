@@ -11,6 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/chromeos/policy/active_directory_join_delegate.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
@@ -21,9 +23,7 @@ struct EnrollmentConfig;
 class EnrollmentStatus;
 }  // namespace policy
 
-namespace chromeos {
-
-class ActiveDirectoryJoinDelegate;
+namespace ash {
 
 // This class is capable to enroll the device into enterprise domain, using
 // either a profile containing authentication data or OAuth token.
@@ -165,12 +165,12 @@ class EnterpriseEnrollmentHelper {
   DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::EnterpriseEnrollmentHelper;
+namespace chromeos {
+using ::ash::EnterpriseEnrollmentHelper;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_H_

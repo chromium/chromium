@@ -12,7 +12,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockEnrollmentScreen : public EnrollmentScreen {
  public:
@@ -60,6 +60,13 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, Shutdown, ());
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockEnrollmentScreen;
+using ::ash::MockEnrollmentScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_ENROLLMENT_SCREEN_H_

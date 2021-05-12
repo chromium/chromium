@@ -8,9 +8,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr StaticOobeScreenId AutoEnrollmentCheckScreenView::kScreenId;
+
+}
+
+namespace chromeos {
 
 AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler(
     JSCallsContainer* js_calls_container)

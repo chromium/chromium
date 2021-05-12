@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockEnrollmentScreen::MockEnrollmentScreen(
     EnrollmentScreenView* view,
@@ -21,4 +21,4 @@ MockEnrollmentScreenView::MockEnrollmentScreenView() {}
 
 MockEnrollmentScreenView::~MockEnrollmentScreenView() {}
 
-}  // namespace chromeos
+}  // namespace ash

@@ -27,8 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
@@ -164,4 +163,4 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, EnrollmentError) {
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-}  // namespace chromeos
+}  // namespace ash

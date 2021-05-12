@@ -834,7 +834,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
       power_initial, power_limit,
       base::make_optional(power_outdated_server_detect),
       kUMAHashDanceSuffixInitialEnrollment,
-      chromeos::AutoEnrollmentController::IsPsmEnabled()
+      ash::AutoEnrollmentController::IsPsmEnabled()
           ? std::make_unique<PsmHelper>(
                 device_management_service, url_loader_factory, local_state,
                 ConstructDeviceRlweId(device_serial_number, device_brand_code))

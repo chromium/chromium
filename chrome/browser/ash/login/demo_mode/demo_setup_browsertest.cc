@@ -1032,7 +1032,7 @@ class DemoSetupFRETest : public DemoSetupArcSupportedTest {
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableForcedReEnrollment,
-        chromeos::AutoEnrollmentController::kForcedReEnrollmentAlways);
+        AutoEnrollmentController::kForcedReEnrollmentAlways);
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;

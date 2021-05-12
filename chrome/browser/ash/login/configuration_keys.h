@@ -61,4 +61,14 @@ void FilterConfiguration(const base::Value& configuration,
 }  // namespace configuration
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace configuration {
+using ::chromeos::configuration::kEnrollmentAssetId;
+using ::chromeos::configuration::kEnrollmentAutoAttributes;
+using ::chromeos::configuration::kEnrollmentLocation;
+}  // namespace configuration
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_

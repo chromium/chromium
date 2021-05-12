@@ -17,6 +17,8 @@
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/active_directory_join_delegate.h"
@@ -30,12 +32,12 @@ class ElapsedTimer;
 }
 
 namespace chromeos {
-
-class ScreenManager;
-
 namespace test {
 class EnrollmentHelperMixin;
 }
+}  // namespace chromeos
+
+namespace ash {
 
 // The screen implementation that links the enterprise enrollment UI into the
 // OOBE wizard.
@@ -109,7 +111,7 @@ class EnrollmentScreen
  private:
   friend class ZeroTouchEnrollmentScreenUnitTest;
   friend class AutomaticReenrollmentScreenUnitTest;
-  friend class test::EnrollmentHelperMixin;
+  friend class chromeos::test::EnrollmentHelperMixin;
 
   FRIEND_TEST_ALL_PREFIXES(AttestationAuthEnrollmentScreenTest, TestCancel);
   FRIEND_TEST_ALL_PREFIXES(ForcedAttestationAuthEnrollmentScreenTest,
@@ -215,6 +217,12 @@ class EnrollmentScreen
   DISALLOW_COPY_AND_ASSIGN(EnrollmentScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EnrollmentScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_SCREEN_H_

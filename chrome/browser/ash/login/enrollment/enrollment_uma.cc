@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 
+namespace ash {
 namespace {
 
 const char* const kMetricEnrollment = "Enterprise.Enrollment";
@@ -28,8 +29,6 @@ const char* const kMetricEnrollmentConfiguration =
     "Enterprise.EnrollmentConfiguration";
 
 }  // namespace
-
-namespace chromeos {
 
 void EnrollmentUMA(policy::MetricEnrollment sample,
                    policy::EnrollmentConfig::Mode mode) {
@@ -79,4 +78,4 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -53,9 +53,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to ash::
+using ::chromeos::InstallAttributes;
 
 constexpr test::UIPath kEnterprisePrimaryButton = {
     "enterprise-enrollment", "step-signin", "primary-action-button"};
@@ -80,8 +82,6 @@ void AllowlistSimpleChallengeSigningKey() {
               chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
               ""));
 }
-
-}  // namespace
 
 class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
  public:
@@ -123,7 +123,7 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
   }
 
   void TriggerEnrollmentAndSignInSuccessfully() {
-    host()->HandleAccelerator(ash::LoginAcceleratorAction::kStartEnrollment);
+    host()->HandleAccelerator(LoginAcceleratorAction::kStartEnrollment);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
     ASSERT_FALSE(StartupUtils::IsDeviceRegistered());
@@ -924,13 +924,13 @@ IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
 
   ASSERT_EQ(GetParam(),
             user_manager::UserManager::Get()->IsGuestSessionAllowed());
-  EXPECT_EQ(GetParam(), ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_EQ(GetParam(), LoginScreenTestApi::IsGuestButtonShown());
 
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
-  EXPECT_EQ(GetParam(), ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_EQ(GetParam(), LoginScreenTestApi::IsGuestButtonShown());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, OobeGuestButtonPolicy, ::testing::Bool());
@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, SwitchToViews) {
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
@@ -951,21 +951,21 @@ IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
   histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, SwitchToViewsLocales) {
-  auto initial_label = ash::LoginScreenTestApi::GetShutDownButtonLabel();
+  auto initial_label = LoginScreenTestApi::GetShutDownButtonLabel();
 
   SetLoginScreenLocale("ru-RU");
   base::HistogramTester histogram_tester;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_NE(ash::LoginScreenTestApi::GetShutDownButtonLabel(), initial_label);
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_NE(LoginScreenTestApi::GetShutDownButtonLabel(), initial_label);
   histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
@@ -1009,4 +1009,5 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
   KioskSessionInitializedWaiter().Wait();
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

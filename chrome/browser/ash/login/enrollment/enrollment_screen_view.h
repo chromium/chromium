@@ -18,7 +18,7 @@ struct EnrollmentConfig;
 class EnrollmentStatus;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 // Interface class for the enterprise enrollment screen view.
 class EnrollmentScreenView {
@@ -94,6 +94,12 @@ class EnrollmentScreenView {
   virtual void Shutdown() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EnrollmentScreenView;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_SCREEN_VIEW_H_

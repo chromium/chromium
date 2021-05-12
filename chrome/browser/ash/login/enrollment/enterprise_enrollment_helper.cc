@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 EnterpriseEnrollmentHelper*
     EnterpriseEnrollmentHelper::mock_enrollment_helper_ = nullptr;
@@ -52,4 +52,4 @@ void EnterpriseEnrollmentHelper::set_status_consumer(
   status_consumer_ = status_consumer;
 }
 
-}  // namespace chromeos
+}  // namespace ash

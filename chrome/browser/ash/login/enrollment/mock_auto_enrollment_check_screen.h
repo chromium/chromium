@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockAutoEnrollmentCheckScreen : public AutoEnrollmentCheckScreen {
  public:
@@ -39,6 +39,13 @@ class MockAutoEnrollmentCheckScreenView : public AutoEnrollmentCheckScreenView {
   Delegate* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockAutoEnrollmentCheckScreen;
+using ::ash::MockAutoEnrollmentCheckScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_AUTO_ENROLLMENT_CHECK_SCREEN_H_

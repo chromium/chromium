@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/login/oobe_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface between auto-enrollment check screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
@@ -31,6 +31,12 @@ class AutoEnrollmentCheckScreenView {
   virtual void SetDelegate(Delegate* delegate) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::AutoEnrollmentCheckScreenView;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CHECK_SCREEN_VIEW_H_

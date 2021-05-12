@@ -22,7 +22,7 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Drives the forced re-enrollment check (for historical reasons called
 // auto-enrollment check), running an AutoEnrollmentClient if appropriate to
@@ -296,7 +296,13 @@ class AutoEnrollmentController {
   DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::AutoEnrollmentController;
+}
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.

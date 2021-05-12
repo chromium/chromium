@@ -1100,7 +1100,7 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableForcedReEnrollment,
-        chromeos::AutoEnrollmentController::kForcedReEnrollmentAlways);
+        AutoEnrollmentController::kForcedReEnrollmentAlways);
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnrollmentInitialModulus, "1");
     command_line->AppendSwitchASCII(switches::kEnterpriseEnrollmentModulusLimit,
@@ -1466,7 +1466,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
-        chromeos::AutoEnrollmentController::kInitialEnrollmentAlways);
+        AutoEnrollmentController::kInitialEnrollmentAlways);
   }
 
   // Test initial enrollment. This method is shared by the tests for initial

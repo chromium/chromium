@@ -24,11 +24,11 @@
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Invoke;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Invoke;
 
 class EnrollmentScreenUnitTest : public testing::Test {
  public:
@@ -323,4 +323,4 @@ INSTANTIATE_TEST_SUITE_P(
         policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
         policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED));
 
-}  // namespace chromeos
+}  // namespace ash

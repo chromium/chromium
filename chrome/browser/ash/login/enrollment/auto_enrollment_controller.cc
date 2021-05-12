@@ -44,7 +44,15 @@
 // reports.
 #define LOG_DETERMINATION() LOG(WARNING)
 
-namespace chromeos {
+namespace ash {
+// TODO(https://crbug.com/1164001): remove when migrated to ash::
+namespace system {
+using ::chromeos::system::FactoryPingEmbargoState;
+using ::chromeos::system::GetEnterpriseManagementPingEmbargoState;
+using ::chromeos::system::kFirmwareTypeKey;
+using ::chromeos::system::kFirmwareTypeValueNonchrome;
+using ::chromeos::system::kRlzBrandCodeKey;
+}  // namespace system
 
 namespace {
 
@@ -903,4 +911,4 @@ AutoEnrollmentController::GetAutoEnrollmentClientFactory() {
   return default_factory.get();
 }
 
-}  // namespace chromeos
+}  // namespace ash

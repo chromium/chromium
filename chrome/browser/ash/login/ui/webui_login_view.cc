@@ -59,7 +59,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
-using chromeos::AutoEnrollmentController;
 using content::NativeWebKeyboardEvent;
 using content::RenderViewHost;
 using content::WebContents;

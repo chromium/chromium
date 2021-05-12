@@ -47,6 +47,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
+namespace ash {
+
+constexpr StaticOobeScreenId EnrollmentScreenView::kScreenId;
+
+}
+
 namespace chromeos {
 namespace {
 
@@ -166,8 +172,6 @@ authpolicy::KerberosEncryptionTypes TranslateEncryptionTypesString(
 }
 
 }  // namespace
-
-constexpr StaticOobeScreenId EnrollmentScreenView::kScreenId;
 
 // EnrollmentScreenHandler, public ------------------------------
 

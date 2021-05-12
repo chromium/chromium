@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 // Mocks out EnterpriseEnrollmentHelper.
 class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
@@ -37,12 +37,12 @@ class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
   MOCK_METHOD1(ClearAuth, void(base::OnceClosure callback));
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::EnterpriseEnrollmentHelperMock;
+namespace chromeos {
+using ::ash::EnterpriseEnrollmentHelperMock;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_MOCK_H_
