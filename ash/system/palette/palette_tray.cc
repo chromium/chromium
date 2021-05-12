@@ -298,7 +298,8 @@ void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
 
   // Flip the enable stylus tools setting if the user has never interacted
   // with it. crbug/1122609
-  if (!pref_change_registrar_user_->prefs()->HasPrefPath(
+  if (pref_change_registrar_user_ &&
+      !pref_change_registrar_user_->prefs()->HasPrefPath(
           prefs::kEnableStylusTools)) {
     pref_change_registrar_user_->prefs()->SetBoolean(prefs::kEnableStylusTools,
                                                      true);
