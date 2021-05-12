@@ -118,7 +118,7 @@ def find_screenshots(repo_root, translation_expectations):
     if not os.path.exists(screenshots_dir):
       continue
     for f in os.listdir(screenshots_dir):
-      if f in ('OWNERS', 'README.md') or f.endswith('.sha1'):
+      if f in ('OWNERS', 'README.md', 'DIR_METADATA') or f.endswith('.sha1'):
         continue
       if not f.endswith('.png'):
         print('File with unexpected extension: %s in %s' % (f, screenshots_dir))
