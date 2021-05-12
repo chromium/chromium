@@ -5933,10 +5933,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   const auto transform = media_video_frame->metadata().transformation.value_or(
       media::kNoTransformation);
 
-  // TODO(crbug.com/1175907): Reconcile usage of natural size versus visible
-  // rect. The existing <video> path uses natural size for |source_image_rect|
-  // and visible size centered at zero for actual Paint/Copy operations. So for
-  // now preserve the same behavior for all media::VideoFrame texturing.
   const GLint adjusted_internalformat =
       ConvertTexInternalFormat(internalformat, type);
   const bool source_image_rect_is_default =
@@ -6078,13 +6074,20 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   auto& image_cache =
       can_upload_via_gpu ? generated_video_cache_ : generated_image_cache_;
 
+  // Orient the destination rect based on the frame's transform.
+  const auto& visible_rect = media_video_frame->visible_rect();
+  auto dest_rect = gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
+  if (transform.rotation == media::VIDEO_ROTATION_90 ||
+      transform.rotation == media::VIDEO_ROTATION_270) {
+    dest_rect.Transpose();
+  }
+
   // Since TexImageImpl() and TexImageGPU() don't know how to handle tagged
   // orientation, we set |prefer_tagged_orientation| to false.
-  const auto visible_rect = media_video_frame->visible_rect();
   scoped_refptr<Image> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
-      image_cache.GetCanvasResourceProvider(IntSize(visible_rect.size())),
-      video_renderer, gfx::Rect(), /*prefer_tagged_orientation=*/false);
+      image_cache.GetCanvasResourceProvider(IntSize(dest_rect.size())),
+      video_renderer, dest_rect, /*prefer_tagged_orientation=*/false);
   if (!image)
     return;
 
