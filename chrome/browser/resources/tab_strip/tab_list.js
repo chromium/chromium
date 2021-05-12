@@ -12,6 +12,7 @@ import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://res
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
@@ -308,6 +309,11 @@ export class TabListElement extends CustomElement {
 
     const dragManager = new DragManager(this);
     dragManager.startObserving();
+
+    if (!loadTimeData.getBoolean('newTabButtonEnabled')) {
+      this.style.setProperty(LayoutVariable.NEW_TAB_BUTTON_MARGIN, '0');
+      this.style.setProperty(LayoutVariable.NEW_TAB_BUTTON_WIDTH, '0');
+    }
   }
 
   /**
