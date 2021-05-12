@@ -2615,6 +2615,8 @@ static_library("test_support") {
     ":*",
     "//ash/app_list:*",
     "//ash/shortcut_viewer:*",
+    "//chrome/test:accessibility_live_site_tests",
+    "//chrome/test:captured_sites_interactive_tests",
     "//chrome/test:test_support",
     "//components/exo:*",
     "//components/exo/wayland:*",

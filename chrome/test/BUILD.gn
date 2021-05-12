@@ -598,7 +598,10 @@ if (is_win) {
       "../browser/ui/startup/credential_provider_signin_dialog_win_test_data.cc",
       "../browser/ui/startup/credential_provider_signin_dialog_win_test_data.h",
     ]
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//chrome/credential_provider/common:common_constants",
+    ]
   }
 }
 
@@ -3433,6 +3436,12 @@ if (is_chromeos_lacros) {
     deps = [
       ":browser_tests_runner",
       ":test_support",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/cpp:stub",
+      "//chromeos/services/machine_learning/public/mojom",
+      "//ui/platform_window",
     ]
 
     data = [ "data/media/" ]
@@ -6712,6 +6721,9 @@ if (!is_android) {
         "//third_party/icu",
         "//third_party/libpng",
         "//ui/base:test_support",
+        "//ui/events:test_support",
+        "//ui/ozone",
+        "//ui/platform_window/common",
         "//ui/resources:ui_test_pak",
         "//ui/web_dialogs:test_support",
       ]
@@ -7615,11 +7627,14 @@ if (!is_fuchsia && !is_android) {
     # here without understanding how it affects link time (and factor them
     # differently if possible).
     deps = [
+      "//base",
       "//base/test:test_support_perf",
       "//media:media_buildflags",
+      "//media/cdm:cdm_paths",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/widevine/cdm:buildflags",
+      "//third_party/widevine/cdm:headers",
     ]
 
     data_deps = [ "//testing:run_perf_test" ]
@@ -7706,6 +7721,7 @@ if (!is_fuchsia && !is_android) {
       "//chrome/browser",
       "//chrome/browser/devtools",
       "//chrome/renderer",
+      "//components/javascript_dialogs",
       "//components/resources",
       "//components/sync",
       "//components/sync:test_support_model",
@@ -7734,6 +7750,22 @@ if (!is_fuchsia && !is_android) {
 
     if (enable_extensions) {
       deps += [ "//google_apis/drive:test_support" ]
+    }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (use_aura) {
+      deps += [ "//ui/aura:test_support" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      deps += [ "//ui/platform_window/common" ]
+    }
+
+    if (is_mac) {
+      deps += [ "//chrome/app:command_ids" ]
     }
 
     if (is_win) {
@@ -7801,13 +7833,10 @@ if (!is_fuchsia && !is_android) {
 
 if (is_win) {
   fuzzer_test("safe_browsing_binary_feature_extractor_fuzzer") {
-    sources = [
-      "../common/safe_browsing/binary_feature_extractor.cc",
-      "../common/safe_browsing/binary_feature_extractor_fuzzer.cc",
-      "../common/safe_browsing/binary_feature_extractor_win.cc",
-    ]
+    sources = [ "../common/safe_browsing/binary_feature_extractor_fuzzer.cc" ]
     deps = [
       "//base",
+      "//chrome/common/safe_browsing:binary_feature_extractor",
       "//components/safe_browsing/core:csd_proto",
       "//crypto",
     ]
