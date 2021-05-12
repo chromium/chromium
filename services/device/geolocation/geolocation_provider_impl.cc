@@ -178,7 +178,7 @@ void GeolocationProviderImpl::OnClientsChanged() {
 #if defined(OS_MAC)
       options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #endif
-      StartWithOptions(options);
+      StartWithOptions(std::move(options));
       if (user_did_opt_into_location_services_)
         InformProvidersPermissionGranted();
     }
