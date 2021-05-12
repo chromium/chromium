@@ -146,7 +146,7 @@ CronetURLRequestContext::CronetURLRequestContext(
     network_thread_ = std::make_unique<base::Thread>("network");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    network_thread_->StartWithOptions(options);
+    network_thread_->StartWithOptions(std::move(options));
     network_task_runner_ = network_thread_->task_runner();
   }
 }
