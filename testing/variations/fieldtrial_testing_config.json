@@ -5931,7 +5931,9 @@
                 {
                     "name": "Enabled_20210427",
                     "enable_features": [
-                        "PermissionChip"
+                        "PermissionChip",
+                        "PermissionChipGestureSensitive",
+                        "PermissionChipRequestTypeSensitive"
                     ]
                 }
             ]
