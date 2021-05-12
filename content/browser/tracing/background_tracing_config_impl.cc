@@ -268,7 +268,7 @@ BackgroundTracingConfigImpl::PreemptiveFromDict(
   if (!dict->GetList(kConfigsKey, &configs_list))
     return nullptr;
 
-  for (const auto& it : *configs_list) {
+  for (const auto& it : configs_list->GetList()) {
     const base::DictionaryValue* config_dict = nullptr;
     if (!it.GetAsDictionary(&config_dict))
       return nullptr;
@@ -319,7 +319,7 @@ BackgroundTracingConfigImpl::ReactiveFromDict(
   if (!dict->GetList(kConfigsKey, &configs_list))
     return nullptr;
 
-  for (const auto& it : *configs_list) {
+  for (const auto& it : configs_list->GetList()) {
     const base::DictionaryValue* config_dict = nullptr;
     if (!it.GetAsDictionary(&config_dict))
       return nullptr;
@@ -355,7 +355,7 @@ BackgroundTracingConfigImpl::SystemFromDict(const base::DictionaryValue* dict) {
   if (!dict->GetList(kConfigsKey, &configs_list))
     return nullptr;
 
-  for (const auto& it : *configs_list) {
+  for (const auto& it : configs_list->GetList()) {
     const base::DictionaryValue* config_dict = nullptr;
     if (!it.GetAsDictionary(&config_dict))
       return nullptr;
