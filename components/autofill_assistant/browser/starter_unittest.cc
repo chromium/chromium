@@ -40,6 +40,7 @@ namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -1769,6 +1770,66 @@ TEST_F(StarterTest, StaleCacheEntriesAreRemovedOnInsertingNewEntries) {
   EXPECT_THAT(*GetUserDenylistedCacheForTest(),
               UnorderedElementsAre(Pair("denylisted-t1.com", t1),
                                    Pair("supported.com", t2)));
+}
+
+TEST_F(StarterTest, CommandLineScriptParametersAreAddedToImplicitTriggers) {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+  ImplicitTriggeringDebugParametersProto proto;
+  auto* param = proto.add_additional_script_parameters();
+  param->set_name("DEBUG_SOCKET_ID");
+  param->set_value("FAKE_SOCKET_ID");
+
+  param = proto.add_additional_script_parameters();
+  param->set_name("DEBUG_BUNDLE_ID");
+  param->set_value("FAKE_BUNDLE_ID");
+
+  param = proto.add_additional_script_parameters();
+  param->set_name("INTENT");
+  param->set_value("NEW_INTENT");
+
+  param = proto.add_additional_script_parameters();
+  param->set_name("NOT_ALLOWLISTED");
+  param->set_value("SHOULD_NOT_BE_SENT_TO_BACKEND");
+
+  std::string implicit_triggering_debug_parameters;
+  proto.SerializeToString(&implicit_triggering_debug_parameters);
+  base::Base64UrlEncode(implicit_triggering_debug_parameters,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &implicit_triggering_debug_parameters);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantImplicitTriggeringDebugParameters,
+      implicit_triggering_debug_parameters);
+
+  // Create new instance of the starter to force the changed command line to
+  // take effect.
+  starter_ = std::make_unique<Starter>(web_contents(), &fake_platform_delegate_,
+                                       &ukm_recorder_,
+                                       mock_runtime_manager_.GetWeakPtr(),
+                                       task_environment()->GetMockTickClock());
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_,
+              OnSendRequest(
+                  GURL("https://automate-pa.googleapis.com/v1/triggers"), _, _))
+      .WillOnce(WithArg<1>([&](const std::string& request_body) {
+        GetTriggerScriptsRequestProto request;
+        ASSERT_TRUE(request.ParseFromString(request_body));
+        EXPECT_THAT(request.url(), Eq(GURL("https://example.com/cart")));
+        EXPECT_THAT(
+            request.script_parameters(),
+            UnorderedElementsAre(
+                AllOf(Property(&ScriptParameterProto::name, "DEBUG_SOCKET_ID"),
+                      Property(&ScriptParameterProto::value, "FAKE_SOCKET_ID")),
+                AllOf(Property(&ScriptParameterProto::name, "DEBUG_BUNDLE_ID"),
+                      Property(&ScriptParameterProto::value, "FAKE_BUNDLE_ID")),
+                AllOf(Property(&ScriptParameterProto::name, "INTENT"),
+                      Property(&ScriptParameterProto::value, "NEW_INTENT"))));
+      }));
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://example.com/cart"));
+  task_environment()->RunUntilIdle();
 }
 
 }  // namespace autofill_assistant

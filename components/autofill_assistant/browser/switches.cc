@@ -27,6 +27,11 @@ const char kAutofillAssistantForceFirstTimeUser[] =
 const char kAutofillAssistantForceOnboarding[] =
     "autofill-assistant-force-onboarding";
 
+// Base64-encoded |ImplicitTriggeringDebugParametersProto| containing debug
+// parameters for in-CCT and in-Tab trigger scenarios.
+const char kAutofillAssistantImplicitTriggeringDebugParameters[] =
+    "autofill-assistant-implicit-triggering-debug-parameters";
+
 // Sets the API key to be used instead of Chrome's default key when sending
 // requests to the backend.
 const char kAutofillAssistantServerKey[] = "autofill-assistant-key";

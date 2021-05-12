@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
@@ -134,6 +135,34 @@ bool HasFreshCacheEntry(
   return (it != cache.end() && (it->second > cutoff_ticks));
 }
 
+// Returns the debug parameters for implicit triggering specified in the command
+// line, or the default proto if the command line switch was not specified or
+// invalid.
+ImplicitTriggeringDebugParametersProto
+GetImplicitTriggeringDebugParametersFromCommandLine() {
+  std::string parameters =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAutofillAssistantImplicitTriggeringDebugParameters);
+  if (parameters.empty()) {
+    return {};
+  }
+
+  if (!base::Base64UrlDecode(parameters,
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &parameters)) {
+    VLOG(1) << "Failed to base64-decode debug trigger parameters: "
+            << parameters;
+    return {};
+  }
+
+  ImplicitTriggeringDebugParametersProto proto;
+  if (!proto.ParseFromString(parameters)) {
+    VLOG(1) << "Failed to parse debug trigger parameters: " << parameters;
+    return {};
+  }
+  return proto;
+}
+
 }  // namespace
 
 Starter::Starter(content::WebContents* web_contents,
@@ -146,6 +175,8 @@ Starter::Starter(content::WebContents* web_contents,
       cached_failed_trigger_script_fetches_(
           GetOrCreateFailedTriggerScriptFetchesCache()),
       user_denylisted_domains_(kMaxUserDenylistedCacheSize),
+      implicit_triggering_debug_parameters_(
+          GetImplicitTriggeringDebugParametersFromCommandLine()),
       platform_delegate_(platform_delegate),
       ukm_recorder_(ukm_recorder),
       runtime_manager_(runtime_manager),
@@ -250,15 +281,20 @@ void Starter::OnHeuristicMatch(const GURL& url,
     return;
   }
 
-  // TODO(arbesser): add new command line switches to allow adding debug script
-  // parameters, like DEBUG_SOCKET_ID
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"REQUEST_TRIGGER_SCRIPT", "true"},
+      {"ORIGINAL_DEEPLINK", url.spec()},
+      {"INTENT", *intent}};
+  // Add/overwrite with debug parameters if specified.
+  for (const auto& debug_param :
+       implicit_triggering_debug_parameters_.additional_script_parameters()) {
+    script_parameters[debug_param.name()] = debug_param.value();
+  }
+
   Start(std::make_unique<TriggerContext>(
-      std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"ENABLED", "true"},
-                                             {"START_IMMEDIATELY", "false"},
-                                             {"REQUEST_TRIGGER_SCRIPT", "true"},
-                                             {"ORIGINAL_DEEPLINK", url.spec()},
-                                             {"INTENT", *intent}}),
+      std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{/* experiment_ids = */ std::string(),
                               /* is_cct = */ is_custom_tab_,
                               /* onboarding_shown = */ false,

@@ -12,6 +12,7 @@ namespace switches {
 extern const char kAutofillAssistantAuth[];
 extern const char kAutofillAssistantForceFirstTimeUser[];
 extern const char kAutofillAssistantForceOnboarding[];
+extern const char kAutofillAssistantImplicitTriggeringDebugParameters[];
 extern const char kAutofillAssistantServerKey[];
 extern const char kAutofillAssistantUrl[];
 

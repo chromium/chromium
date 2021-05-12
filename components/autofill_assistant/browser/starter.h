@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/starter_heuristic.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/startup_util.h"
@@ -155,6 +156,10 @@ class Starter : public content::WebContentsObserver {
   // requests. The cache is size-limited and entries only last for a limited
   // amount of time before they go stale.
   base::HashingMRUCache<std::string, base::TimeTicks> user_denylisted_domains_;
+
+  // Debug parameters for in-CCT and in-Tab trigger scenarios. This is populated
+  // from the command line and intended only for debugging and testing.
+  ImplicitTriggeringDebugParametersProto implicit_triggering_debug_parameters_;
 
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
