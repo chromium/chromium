@@ -84,7 +84,10 @@ enum class BookmarksGUIDDuplicates {
 
 // Used in metrics: "Sync.ProblematicServerSideBookmarksDuringMerge". These
 // values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
+// values should never be reused. Note the existence of gaps because the
+// metric enum is reused for another UMA metric,
+// Sync.ProblematicServerSideBookmarks, which logs the analogous error cases
+// for non-initial updates.
 enum class RemoteBookmarkUpdateError {
   // Invalid specifics.
   kInvalidSpecifics = 1,
@@ -96,8 +99,10 @@ enum class RemoteBookmarkUpdateError {
   kUnexpectedGuid = 9,
   // Parent is not a folder.
   kParentNotFolder = 10,
+  // Unknown/unsupported permanent folder.
+  kUnsupportedPermanentFolder = 13,
 
-  kMaxValue = kParentNotFolder,
+  kMaxValue = kUnsupportedPermanentFolder,
 };
 
 void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
@@ -356,21 +361,27 @@ struct GroupedUpdates {
 // are grouped in a dedicated |permanent_node_updates| list in a returned value.
 GroupedUpdates GroupValidUpdates(UpdateResponseDataList updates) {
   GroupedUpdates grouped_updates;
+  int num_valid_updates = 0;
   for (UpdateResponseData& update : updates) {
     const EntityData& update_entity = update.entity;
     if (update_entity.is_deleted()) {
       continue;
     }
     if (!update_entity.server_defined_unique_tag.empty()) {
+      ++num_valid_updates;
       grouped_updates.permanent_node_updates.push_back(std::move(update));
       continue;
     }
     if (!IsValidUpdate(update)) {
       continue;
     }
+    ++num_valid_updates;
     grouped_updates.updates_per_parent_id[update_entity.parent_id].push_back(
         std::move(update));
   }
+
+  base::UmaHistogramCounts100000("Sync.BookmarkModelMerger.ValidInputUpdates",
+                                 num_valid_updates);
 
   return grouped_updates;
 }
@@ -476,6 +487,14 @@ BookmarkModelMerger::BookmarkModelMerger(
           FindGuidMatchesOrReassignLocal(remote_forest_, bookmark_model_)) {
   DCHECK(bookmark_tracker_->IsEmpty());
   DCHECK(favicon_service);
+
+  int num_updates_in_forest = 0;
+  for (const auto& tree_tag_and_root : remote_forest_) {
+    num_updates_in_forest +=
+        1 + CountRemoteTreeNodeDescendantsForUma(tree_tag_and_root.second);
+  }
+  base::UmaHistogramCounts100000(
+      "Sync.BookmarkModelMerger.ReachableInputUpdates", num_updates_in_forest);
 }
 
 BookmarkModelMerger::~BookmarkModelMerger() {}
@@ -506,6 +525,8 @@ void BookmarkModelMerger::Merge() {
     const bookmarks::BookmarkNode* permanent_folder =
         GetPermanentFolder(bookmark_model_, tree_tag_and_root.first);
     if (!permanent_folder) {
+      LogProblematicBookmark(
+          RemoteBookmarkUpdateError::kUnsupportedPermanentFolder);
       continue;
     }
     MergeSubtree(/*local_subtree_root=*/permanent_folder,
@@ -552,14 +573,23 @@ BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
   for (const auto& parent_id_and_updates :
        grouped_updates.updates_per_parent_id) {
     for (const UpdateResponseData& update : parent_id_and_updates.second) {
-      if (!update.entity.is_deleted() &&
-          update.entity.specifics.has_bookmark()) {
+      if (update.entity.specifics.has_bookmark()) {
         LogProblematicBookmark(RemoteBookmarkUpdateError::kMissingParentEntity);
       }
     }
   }
 
   return update_forest;
+}
+
+// static
+int BookmarkModelMerger::CountRemoteTreeNodeDescendantsForUma(
+    const RemoteTreeNode& node) {
+  int descendants = 0;
+  for (const RemoteTreeNode& child : node.children()) {
+    descendants += 1 + CountRemoteTreeNodeDescendantsForUma(child);
+  }
+  return descendants;
 }
 
 // static

@@ -119,6 +119,11 @@ class BookmarkModelMerger {
   // sends tombstones as part of the initial download.
   static RemoteForest BuildRemoteForest(syncer::UpdateResponseDataList updates);
 
+  // Recursively counts and returns the number of descendants for |node|,
+  // excluding |node| itself.
+  static int CountRemoteTreeNodeDescendantsForUma(
+      const BookmarkModelMerger::RemoteTreeNode& node);
+
   // Computes bookmark pairs that should be matched by GUID. Local bookmark
   // GUIDs may be regenerated for the case where they collide with a remote GUID
   // that is not compatible (e.g. folder vs non-folder).
