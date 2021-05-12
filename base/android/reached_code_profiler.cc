@@ -236,7 +236,7 @@ class ReachedCodeProfiler {
         std::make_unique<base::Thread>("ReachedCodeProfilerDumpingThread");
     base::Thread::Options options;
     options.priority = base::ThreadPriority::BACKGROUND;
-    dumping_thread_->StartWithOptions(options);
+    dumping_thread_->StartWithOptions(std::move(options));
     dumping_thread_->task_runner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DumpToFile, file_path, dumping_thread_->task_runner()),
