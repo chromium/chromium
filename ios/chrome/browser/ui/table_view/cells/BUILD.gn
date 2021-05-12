@@ -111,6 +111,7 @@ source_set("unit_tests") {
     ":cells",
     ":cells_constants",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",

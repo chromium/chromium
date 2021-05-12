@@ -300,14 +300,20 @@ class ScopedDisableTimerTracking {
   // default.
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 
   // Set 'Time Range' to 'All Time'.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE)]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(ButtonWithAccessibilityLabelId(
+                         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE),
+                     grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:
           ButtonWithAccessibilityLabelId(
@@ -329,8 +335,11 @@ class ScopedDisableTimerTracking {
   // Recheck "Saved Passwords" and "Autofill Data".
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 }
 
 @end

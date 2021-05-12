@@ -184,8 +184,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.2, 0.5)];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Delete")]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Delete"),
+                                          grey_kindOfClassName(
+                                              @"UISwipeActionStandardButton"),
+                                          nil)] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       assertWithMatcher:grey_nil()];

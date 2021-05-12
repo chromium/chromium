@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+#include "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -33,6 +35,9 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
 }
 
 TEST_F(TableViewItemTest, ConfigureCellWithStyler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSettingsRefresh);
+
   TableViewItem* item = [[TableViewItem alloc] initWithType:0];
   TableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
