@@ -63,6 +63,8 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     media_button->media_toolbar_button_controller()->ShowToolbarButton();
     toolbar_view->Layout();
   }
+  // Show the WebContents requesting a dialog.
+  initiator()->GetDelegate()->ActivateContents(initiator());
 
   Profile* const profile =
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
