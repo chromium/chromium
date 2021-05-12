@@ -29,6 +29,7 @@ using ShoppingCarts =
 
 const char kMockMerchantA[] = "foo.com";
 const char kMockMerchantCartURLA[] = "https://www.foo.com/cart";
+const char kMockMerchantAHighestDiscountString[] = "Up to $10 off";
 const int kMockMerchantALastTimestamp = 1;
 const int kThirtyMinutesInSeconds = 1800;
 
@@ -37,14 +38,14 @@ const char kEndpointResponse[] =
     "  \"discounts\": [ "
     "    { "
     "      \"merchantIdentifier\": { "
-    "        \"cartUrl\": \"http://foo.com/cart\", "
+    "        \"cartUrl\": \"https://www.foo.com/cart\", "
     "        \"merchantId\": \"0\" "
     "      }, "
     "      \"ruleDiscounts\": [ "
     "        { "
     "          \"ruleId\": \"0\", "
     "          \"discount\": { "
-    "            \"percentOff\": 99 "
+    "            \"percentOff\": 10 "
     "            }, "
     "          \"merchantRuleId\": \"1\", "
     "          \"rawMerchantOfferId\": \"offerID\"  "
@@ -54,8 +55,8 @@ const char kEndpointResponse[] =
     "          \"discount\": { "
     "            \"amountOff\": { "
     "              \"currencyCode\": \"USD\", "
-    "              \"units\": \"2\", "
-    "              \"nanos\": 1 "
+    "              \"units\": \"10\", "
+    "              \"nanos\": 0 "
     "            } "
     "          }, "
     "          \"merchantRuleId\": \"1\", "
@@ -147,4 +148,28 @@ TEST(CartDiscountFetcherTest, TestOnDiscountsAvailableParsing) {
   CartDiscountFetcherTest::OnDiscountsAvailable(
       std::move(mock_endpoint_fetcher), mock_callback.Get(),
       std::move(fake_responses));
+}
+
+TEST(CartDiscountFetcherTest, TestHighestDiscounts) {
+  std::unique_ptr<EndpointFetcher> mock_endpoint_fetcher =
+      std::make_unique<MockEndpointFetcher>(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  base::MockCallback<CartDiscountFetcher::CartDiscountFetcherCallback>
+      mock_callback;
+
+  auto fake_responses = std::make_unique<EndpointResponse>();
+  fake_responses->response = kEndpointResponse;
+
+  CartDiscountFetcher::CartDiscountMap cart_discount_map;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&cart_discount_map));
+
+  CartDiscountFetcherTest::OnDiscountsAvailable(
+      std::move(mock_endpoint_fetcher), mock_callback.Get(),
+      std::move(fake_responses));
+
+  EXPECT_EQ(cart_discount_map.size(), 1u);
+
+  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).highest_discount_string,
+            kMockMerchantAHighestDiscountString);
 }

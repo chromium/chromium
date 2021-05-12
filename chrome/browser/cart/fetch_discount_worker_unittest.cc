@@ -58,6 +58,7 @@ const char kMockMerchantACartUrl[] = "https://www.foo.com/cart";
 const char kMockMerchantAId[] = "123";
 const char kMockMerchantARuleId[] = "456";
 const char kMockMerchantARawMerchantOfferId[] = "789";
+const char kMockMerchantAHighestPercentOff[] = "10\% off";
 const int kMockMerchantAPercentOff = 10;
 const double kMockMerchantATimestamp = base::Time::Now().ToDoubleT();
 const cart_db::ChromeCartContentProto kMockMerchantACartContentProto =
@@ -152,11 +153,13 @@ class FakeCartDiscountUpdater : public CartDiscountUpdater {
   explicit FakeCartDiscountUpdater(Profile* profile)
       : CartDiscountUpdater(profile) {}
 
-  void setExpectedData(
+  void SetExpectedData(
       cart_db::ChromeCartContentProto fake_updater_expected_data,
-      bool has_discounts) {
+      bool has_discounts,
+      std::string& expected_highest_discount_string) {
     expected_update_data_ = fake_updater_expected_data;
     has_discounts_ = has_discounts;
+    expected_highest_discount_string_ = expected_highest_discount_string;
   }
 
   void update(const std::string& cart_url,
@@ -174,11 +177,20 @@ class FakeCartDiscountUpdater : public CartDiscountUpdater {
           new_proto.discount_info().discount_info(i),
           EqualsProto(expected_update_data_.discount_info().discount_info(i)));
     }
+
+    const std::string& discount_text =
+        new_proto.discount_info().discount_text();
+    if (has_discounts_) {
+      EXPECT_EQ(discount_text, expected_highest_discount_string_);
+    } else {
+      EXPECT_TRUE(discount_text.empty());
+    }
   }
 
  private:
   cart_db::ChromeCartContentProto expected_update_data_;
   bool has_discounts_;
+  std::string expected_highest_discount_string_;
 };
 
 class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
@@ -193,8 +205,9 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
   }
   std::unique_ptr<CartDiscountUpdater> createCartDiscountUpdater() override {
     auto fake_updater = std::make_unique<FakeCartDiscountUpdater>(profile_);
-    fake_updater->setExpectedData(fake_updater_expected_data_,
-                                  fake_updater_has_discounts_);
+    fake_updater->SetExpectedData(fake_updater_expected_data_,
+                                  fake_updater_has_discounts_,
+                                  fake_updater_highest_discount_string_);
     return fake_updater;
   }
 
@@ -204,9 +217,12 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
 
   void setCartDiscountUpdaterExpectedData(
       cart_db::ChromeCartContentProto fake_updater_expected_data,
-      bool has_discounts) {
+      bool has_discounts,
+      base::StringPiece fake_updater_highest_discount_string = "") {
     fake_updater_expected_data_ = fake_updater_expected_data;
     fake_updater_has_discounts_ = has_discounts;
+    fake_updater_highest_discount_string_ =
+        std::string(fake_updater_highest_discount_string);
   }
 
  private:
@@ -214,6 +230,7 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
   std::vector<CartDB::KeyAndValue> fake_loader_data_;
   cart_db::ChromeCartContentProto fake_updater_expected_data_;
   bool fake_updater_has_discounts_;
+  std::string fake_updater_highest_discount_string_;
 };
 
 class FetchDiscountWorkerTest : public testing::Test {
@@ -293,7 +310,8 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithDiscount) {
   CartDiscountFetcher::CartDiscountMap fake_result;
   fake_result.emplace(
       kMockMerchantACartUrl,
-      MerchantIdAndDiscounts(kMockMerchantAId, kMockMerchantADiscounts));
+      MerchantIdAndDiscounts(kMockMerchantAId, kMockMerchantADiscounts,
+                             kMockMerchantAHighestPercentOff));
   mock_fetcher_->DelegateToFake(std::move(fake_result));
 
   CreateCartDiscountFetcherFactory();
@@ -309,7 +327,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithDiscount) {
   cart_db::ChromeCartContentProto updater_expected_data = AddDiscountToProto(
       cart_content_proto, kMockMerchantAId, kMockMerchantADiscounts[0]);
   fake_cart_loader_and_updater_factory_->setCartDiscountUpdaterExpectedData(
-      updater_expected_data, true);
+      updater_expected_data, true, kMockMerchantAHighestPercentOff);
 
   CreateWorker();
 

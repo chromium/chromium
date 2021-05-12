@@ -188,12 +188,14 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
       continue;
     }
 
-    std::string merchant_id = discounts.at(cart_url).merchant_id;
+    const MerchantIdAndDiscounts& merchant_discounts = discounts.at(cart_url);
+    std::string merchant_id = merchant_discounts.merchant_id;
     cart_discount_proto->set_merchant_id(merchant_id);
 
-    std::vector<cart_db::DiscountInfoProto> discount_infos =
-        discounts.at(cart_url).discount_list;
-    cart_discount_proto->set_discount_text("discount");
+    const std::vector<cart_db::DiscountInfoProto>& discount_infos =
+        merchant_discounts.discount_list;
+    cart_discount_proto->set_discount_text(
+        merchant_discounts.highest_discount_string);
     *cart_discount_proto->mutable_discount_info() = {discount_infos.begin(),
                                                      discount_infos.end()};
 

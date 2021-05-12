@@ -20,13 +20,14 @@ struct MerchantIdAndDiscounts {
  public:
   std::string merchant_id;
   std::vector<cart_db::DiscountInfoProto> discount_list;
+  std::string highest_discount_string;
 
   explicit MerchantIdAndDiscounts(
       std::string merchant_id,
-      std::vector<cart_db::DiscountInfoProto> discount_list);
-  MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other) = delete;
-  MerchantIdAndDiscounts& operator=(const MerchantIdAndDiscounts& other) =
-      delete;
+      std::vector<cart_db::DiscountInfoProto> discount_list,
+      std::string discount_string);
+  MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other);
+  MerchantIdAndDiscounts& operator=(const MerchantIdAndDiscounts& other);
   MerchantIdAndDiscounts(MerchantIdAndDiscounts&& other);
   MerchantIdAndDiscounts& operator=(MerchantIdAndDiscounts&& other);
   ~MerchantIdAndDiscounts();
