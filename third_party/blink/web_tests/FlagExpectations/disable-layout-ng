@@ -927,8 +927,10 @@ crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container
 crbug.com/958381 external/wpt/css/css-tables/tentative/rowspan-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-minmax.html [ Failure ]
-crbug.com/958381 external/wpt/css/css-tables/tentative/tbody-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-width-redistribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/tbody-height-redistribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/td-box-sizing-001.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/td-box-sizing-002.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/paint/
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column-collapsed.html [ Failure ]
