@@ -1,10 +1,47 @@
-<style include="cr-shared-style"></style>
+<style include="cr-shared-style">
+:host {
+  --focus-border-width: 1px;
+}
+.navigation-item {
+  align-items: center;
+  border-block-end-width: var(--focus-border-width);
+  border-block-start-width: var(--focus-border-width);
+  border-color: transparent;
+  border-inline-end-width: var(--focus-border-width);
+  border-inline-start-width: 0;
+  border-radius: 0 20px 20px 0;
+  border-style: solid;
+  color: var(--cros-text-color-secondary);
+  cursor: pointer;
+  display: flex;
+  font-weight: 500;
+  margin-bottom: 8px;
+  margin-inline-end: 2px;
+  min-height: 32px;
+  padding-inline-start: 20px;
+  width: 225px;
+}
+
+div:hover:not(.selected).navigation-item {
+  background-color: var(--google-grey-100);
+}
+
+.navigation-item.selected {
+  background-color: var(--google-blue-50);
+  color: var(--google-blue-600);
+}
+
+cr-expand-button {
+  padding-inline-start: 20px;
+}
+
+</style>
 
 <div id="navigationSelectorComponent">
   <div id="navigationSelectorMenu">
     <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
       <template is="dom-if" if="[[!isCollapsible_(item)]]">
-        <div class="navigation-item" on-click="onSelected_">
+        <div class="navigation-item" tabindex="0" on-click="onSelected_">
           [[item.selectorItem.name]]
         </div>
       </template>
@@ -15,7 +52,7 @@
         <iron-collapse opened="[[item.properties.isExpanded]]">
           <template class="collapsed-list" is="dom-repeat"
               items="{{item.properties.subMenuItems}}">
-            <div class="navigation-item nested-item"
+            <div class="navigation-item nested-item" tabindex="0"
                 on-click="onNestedSelected_">
               [[item.name]]
             </div>

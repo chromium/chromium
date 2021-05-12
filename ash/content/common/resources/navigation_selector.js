@@ -6,6 +6,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 /**
@@ -76,6 +77,7 @@ export class NavigationSelectorElement extends PolymerElement {
    */
   onSelected_(e) {
     this.selectedItem = e.model.item.selectorItem;
+    this.updateCurrentSelection_();
   }
 
   /**
@@ -84,6 +86,37 @@ export class NavigationSelectorElement extends PolymerElement {
    */
   onNestedSelected_(e) {
     this.selectedItem = e.model.item;
+    this.updateCurrentSelection_();
+  }
+
+  /** @private */
+  updateCurrentSelection_() {
+    // Update any top-level entries.
+    const items = /** @type {!NodeList<!HTMLDivElement>} */(
+        this.shadowRoot.querySelectorAll('.navigation-item'));
+    this.updateSelected_(items);
+
+    // Update any nested entries.
+    const collapsedLists = this.shadowRoot.querySelectorAll('iron-collapse');
+    for (const list of collapsedLists) {
+      const nestedElements = /** @type {!NodeList<!HTMLDivElement>} */(
+          list.shadowRoot.querySelectorAll('.navigation-item'));
+      this.updateSelected_(nestedElements);
+    }
+  }
+
+  /**
+   * @param {!NodeList<!HTMLDivElement>} items
+   * @private
+   */
+  updateSelected_(items) {
+    for (let item of items) {
+      if (item.textContent.trim() === this.selectedItem.name) {
+        item.classList.add('selected');
+      } else {
+        item.classList.remove('selected');
+      }
+    }
   }
 
   /**
