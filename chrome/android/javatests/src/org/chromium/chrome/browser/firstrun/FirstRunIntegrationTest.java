@@ -148,6 +148,7 @@ public class FirstRunIntegrationTest {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         EnterpriseInfo.setInstanceForTest(null);
+        AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     private ActivityMonitor getMonitor(Class activityClass) {
@@ -311,6 +312,17 @@ public class FirstRunIntegrationTest {
 
     private ScopedObserverData getObserverData(FirstRunActivity freActivity) {
         return mTestObserver.getScopedObserverData(freActivity);
+    }
+
+    private void blockOnFlowIsKnown() {
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+    }
+
+    private void unblockOnFlowIsKnown() {
+        Mockito.verify(mAccountManagerFacade)
+                .tryGetGoogleAccounts(mGetGoogleAccountsCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mGetGoogleAccountsCaptor.getValue().onResult(Collections.emptyList()));
     }
 
     @Test
@@ -611,8 +623,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testInitialDrawBlocked() throws Exception {
-        // This should block the FRE from showing any UI, as #onFlowIsKnown will not be called.
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+        // This should block the FRE from showing any UI.
+        blockOnFlowIsKnown();
 
         launchViewIntent(TEST_URL);
         FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
@@ -634,11 +646,40 @@ public class FirstRunIntegrationTest {
 
         // Now return account status which should result in both the first fragment being generated,
         // and the first draw call being let happen.
-        Mockito.verify(mAccountManagerFacade)
-                .tryGetGoogleAccounts(mGetGoogleAccountsCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mGetGoogleAccountsCaptor.getValue().onResult(Collections.emptyList()));
+        unblockOnFlowIsKnown();
         onDrawCallbackHelper.waitForCallback(0);
+    }
+
+    @Test
+    @MediumTest
+    public void testNativeInitBeforeFragment() throws Exception {
+        // Inspired by https://crbug.com/1207683 where a notification was dropped because native
+        // initialized before the first fragment was attached to the activity.
+        blockOnFlowIsKnown();
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+                "native never initialized.");
+
+        unblockOnFlowIsKnown();
+        clickThroughFirstRun(firstRunActivity, SearchEnginePromoType.DONT_SHOW);
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testNativeInitBeforeFragmentSkip() throws Exception {
+        skipTosDialogViaPolicy();
+        blockOnFlowIsKnown();
+
+        launchCustomTabs(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+                "native never initialized.");
+
+        unblockOnFlowIsKnown();
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {

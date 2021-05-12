@@ -356,12 +356,19 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (!(fragment instanceof FirstRunFragment)) return;
 
         FirstRunFragment page = (FirstRunFragment) fragment;
-        getLifecycleDispatcher().register(new NativeInitObserver() {
-            @Override
-            public void onFinishNativeInitialization() {
-                page.onNativeInitialized();
-            }
-        });
+        // Important that this check delegates to the dispatcher instead of using
+        // mNativeSideIsInitialized, the two flags are not updated atomically. The dispatcher does
+        // not call #onFinishNativeInitialization() if it already happened.
+        if (getLifecycleDispatcher().isNativeInitializationFinished()) {
+            page.onNativeInitialized();
+        } else {
+            getLifecycleDispatcher().register(new NativeInitObserver() {
+                @Override
+                public void onFinishNativeInitialization() {
+                    page.onNativeInitialized();
+                }
+            });
+        }
     }
 
     @Override
