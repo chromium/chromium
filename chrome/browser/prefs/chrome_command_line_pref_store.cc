@@ -167,9 +167,12 @@ void ChromeCommandLinePrefStore::ApplyProxyMode() {
 void ChromeCommandLinePrefStore::ApplySSLSwitches() {
   if (command_line()->HasSwitch(switches::kCipherSuiteBlacklist)) {
     std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-    list_value->AppendStrings(base::SplitString(
+    const std::vector<std::string> str_list = base::SplitString(
         command_line()->GetSwitchValueASCII(switches::kCipherSuiteBlacklist),
-        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    for (const std::string& str : str_list) {
+      list_value->Append(str);
+    }
     SetValue(prefs::kCipherSuiteBlacklist, std::move(list_value),
              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   }
