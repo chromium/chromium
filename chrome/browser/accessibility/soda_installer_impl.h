@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/soda/soda_installer.h"
 
@@ -58,9 +58,9 @@ class SodaInstallerImpl : public SodaInstaller,
 
   std::map<std::string, update_client::CrxUpdateItem> downloading_components_;
 
-  ScopedObserver<component_updater::ComponentUpdateService,
-                 component_updater::ComponentUpdateService::Observer>
-      component_updater_observer_{this};
+  base::ScopedObservation<component_updater::ComponentUpdateService,
+                          component_updater::ComponentUpdateService::Observer>
+      component_updater_observation_{this};
 
   base::WeakPtrFactory<SodaInstallerImpl> weak_factory_{this};
 };

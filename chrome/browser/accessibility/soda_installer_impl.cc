@@ -76,7 +76,7 @@ void speech::SodaInstaller::RegisterLocalStatePrefs(
 SodaInstallerImpl::SodaInstallerImpl() = default;
 
 SodaInstallerImpl::~SodaInstallerImpl() {
-  component_updater_observer_.RemoveAll();
+  component_updater_observation_.Reset();
 }
 
 base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
@@ -98,9 +98,10 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
       base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
                          UpdateSodaComponentOnDemand));
 
-  if (!component_updater_observer_.IsObserving(
+  if (!component_updater_observation_.IsObservingSource(
           g_browser_process->component_updater())) {
-    component_updater_observer_.Add(g_browser_process->component_updater());
+    component_updater_observation_.Observe(
+        g_browser_process->component_updater());
   }
 }
 
@@ -112,9 +113,10 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
                      weak_factory_.GetWeakPtr()));
 
-  if (!component_updater_observer_.IsObserving(
+  if (!component_updater_observation_.IsObservingSource(
           g_browser_process->component_updater())) {
-    component_updater_observer_.Add(g_browser_process->component_updater());
+    component_updater_observation_.Observe(
+        g_browser_process->component_updater());
   }
 }
 
@@ -196,7 +198,7 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 void SodaInstallerImpl::OnSodaBinaryInstalled() {
   soda_binary_installed_ = true;
   if (language_installed_) {
-    component_updater_observer_.RemoveAll();
+    component_updater_observation_.Reset();
     NotifyOnSodaInstalled();
   }
 }
@@ -207,7 +209,7 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
   NotifyOnSodaLanguagePackInstalled(language_code);
 
   if (soda_binary_installed_) {
-    component_updater_observer_.RemoveAll();
+    component_updater_observation_.Reset();
     NotifyOnSodaInstalled();
   }
 }
