@@ -11,16 +11,13 @@ import os
 import requests
 
 LOGGER = logging.getLogger(__name__)
-# Max summaryHtml length (4 KiB) from
-# https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=96
-MAX_REPORT_LEN = 4 * 1024
 # VALID_STATUSES is a list of valid status values for test_result['status'].
 # The full list can be obtained at
 # https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=151-174
 VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 
 
-def compose_test_result(test_id, status, expected, test_log=None, tags=None):
+def _compose_test_result(test_id, status, expected, test_log=None, tags=None):
   """Composes the test_result dict item to be posted to result sink.
 
   Args:
@@ -56,21 +53,12 @@ def compose_test_result(test_id, status, expected, test_log=None, tags=None):
   }
 
   if test_log:
-    summary = '<pre>%s</pre>' % cgi.escape(test_log)
-    summary_trunc = ''
-
-    if len(summary) > MAX_REPORT_LEN:
-      summary_trunc = (
-          summary[:MAX_REPORT_LEN - 45] +
-          '...Full output in "Test Log" Artifact.</pre>')
-
-    test_result['summaryHtml'] = summary_trunc or summary
-    if summary_trunc:
-      test_result['artifacts'] = {
-          'Test Log': {
-              'contents': base64.b64encode(test_log)
-          },
-      }
+    test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
+    test_result['artifacts'] = {
+        'Test Log': {
+            'contents': base64.b64encode(test_log)
+        },
+    }
 
   return test_result
 
@@ -117,16 +105,32 @@ class ResultSinkClient(object):
     logging.getLogger("requests").setLevel(logging.DEBUG)
     self._session.close()
 
-  def post(self, test_result):
+  def post(self, test_id, status, expected, **kwargs):
+    """Composes and posts a test and status to result sink.
+
+    Args:
+      test_id: (str) A unique identifier of the test in LUCI context.
+      status: (str) Status of the test. Must be one in |VALID_STATUSES|.
+      expected: (bool) Whether the status is expected.
+      **kwargs: Optional keyword args. Namely:
+        test_log: (str) Log of the test. Optional.
+        tags: (list) List of tags. Each item in list should be a length 2 tuple
+          of string as ("key", "value"). Optional.
+    """
+    if not self.sink:
+      return
+    self._post_test_result(
+        _compose_test_result(test_id, status, expected, **kwargs))
+
+  def _post_test_result(self, test_result):
     """Posts single test result to server.
+
+    This method assumes |self.sink| is not None.
 
     Args:
         test_result: (dict) Confirming to protocol defined in
           https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
     """
-    if not self.sink:
-      return
-
     res = self._session.post(
         url=self.url,
         headers=self.headers,

@@ -60,9 +60,7 @@ class StdJson():
       LOGGER.warn('Empty or None test name passed to standard_json_util')
       return
 
-    result_sink_test_result = result_sink_util.compose_test_result(
-        test, 'PASS', True)
-    self.result_sink.post(result_sink_test_result)
+    self.result_sink.post(test, 'PASS', True)
 
     if test in self.tests:
       self.tests[test]['actual'] = self.tests[test]['actual'] + " PASS"
@@ -90,9 +88,7 @@ class StdJson():
       LOGGER.warn('Empty or None test name passed to standard_json_util')
       return
 
-    result_sink_test_result = result_sink_util.compose_test_result(
-        test, 'FAIL', False, test_log=test_log)
-    self.result_sink.post(result_sink_test_result)
+    self.result_sink.post(test, 'FAIL', False, test_log=test_log)
 
     if test in self.tests:
       self.tests[test]['actual'] = self.tests[test]['actual'] + " FAIL"
@@ -115,9 +111,7 @@ class StdJson():
       LOGGER.warn('Empty or None test name passed to standard_json_util')
       return
 
-    result_sink_test_result = result_sink_util.compose_test_result(
-        test, 'SKIP', True, tags=[('disabled_test', 'true')])
-    self.result_sink.post(result_sink_test_result)
+    self.result_sink.post(test, 'SKIP', True, tags=[('disabled_test', 'true')])
 
     self.tests[test] = self._init_test('SKIP', 'SKIP')
 
@@ -138,13 +132,12 @@ class StdJson():
     # Timeout tests in iOS test runner are tests that's unexpectedly not run.
     test_log = ('The test is compiled in test target but was unexpectedly not'
                 ' run or not finished.')
-    result_sink_test_result = result_sink_util.compose_test_result(
+    self.result_sink.post(
         test,
         'SKIP',
         False,
         test_log=test_log,
         tags=[('disabled_test', 'false')])
-    self.result_sink.post(result_sink_test_result)
 
     if test in self.tests:
       self.tests[test]['actual'] = self.tests[test]['actual'] + " TIMEOUT"

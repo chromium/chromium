@@ -4,6 +4,7 @@
 """Unittests for standard_json_util.py."""
 
 import collections
+import mock
 import os
 import unittest
 
@@ -113,6 +114,34 @@ class UnitTest(unittest.TestCase):
     output.mark_passed(test)
     self.assertEqual(output.tests['f']['shard'],
                      os.getenv('GTEST_SHARD_INDEX', 0))
+
+  @mock.patch('result_sink_util.ResultSinkClient')
+  def test_post_to_result_sink(self, mock_result_sink_class):
+    result_sink = mock_result_sink_class.return_value
+    passed_test = 'passed_test'
+    failed_test = 'failed_test'
+    skipped_test = 'skipped_test'
+    timeout_test = 'timeout_test'
+
+    output = sju.StdJson()
+    output.mark_passed('passed_test')
+    result_sink.post.assert_called_with('passed_test', 'PASS', True)
+    output.mark_failed('failed_test', 'logs')
+    result_sink.post.assert_called_with(
+        'failed_test', 'FAIL', False, test_log='logs')
+    output.mark_skipped('skipped_test')
+    result_sink.post.assert_called_with(
+        'skipped_test', 'SKIP', True, tags=[('disabled_test', 'true')])
+    output.mark_timeout('timeout_test')
+    timeout_log = (
+        'The test is compiled in test target but was unexpectedly not'
+        ' run or not finished.')
+    result_sink.post.assert_called_with(
+        'timeout_test',
+        'SKIP',
+        False,
+        test_log=timeout_log,
+        tags=[('disabled_test', 'false')])
 
 
 if __name__ == '__main__':
