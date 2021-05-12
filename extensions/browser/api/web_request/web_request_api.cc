@@ -2135,7 +2135,9 @@ std::unique_ptr<base::DictionaryValue> SummarizeResponseDelta(
   }
 
   std::unique_ptr<base::ListValue> deleted_headers(new base::ListValue());
-  deleted_headers->AppendStrings(delta.deleted_request_headers);
+  for (const std::string& header : delta.deleted_request_headers) {
+    deleted_headers->Append(header);
+  }
   if (!deleted_headers->GetList().empty()) {
     details->Set(activity_log::kDeletedRequestHeadersKey,
                  std::move(deleted_headers));
