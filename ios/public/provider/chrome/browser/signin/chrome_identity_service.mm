@@ -124,6 +124,11 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
   return nil;
 }
 
+base::Optional<bool> ChromeIdentityService::IsSubjectToMinorModeRestrictions(
+    ChromeIdentity* identity) {
+  return base::nullopt;
+}
+
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
     NSDictionary* user_info) {
   return 0;

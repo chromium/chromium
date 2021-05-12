@@ -299,6 +299,12 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
   return FakeGetHostedDomainForIdentity(identity);
 }
 
+base::Optional<bool>
+FakeChromeIdentityService::IsSubjectToMinorModeRestrictions(
+    ChromeIdentity* identity) {
+  return base::nullopt;
+}
+
 void FakeChromeIdentityService::SetUpForIntegrationTests() {}
 
 void FakeChromeIdentityService::AddManagedIdentities(NSArray* identitiesNames) {
