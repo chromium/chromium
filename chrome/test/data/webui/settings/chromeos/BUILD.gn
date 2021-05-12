@@ -90,6 +90,7 @@ js_modulizer("modulize") {
     "internet_subpage_tests.js",
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
+    "keyboard_shortcut_banner_test.js",
     "localized_link_test.js",
     "manage_accessibility_page_tests.js",
     "multidevice_feature_item_tests.js",

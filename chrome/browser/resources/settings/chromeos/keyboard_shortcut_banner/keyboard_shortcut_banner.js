@@ -16,9 +16,6 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// TODO(crbug.com/1201540): Add tests for this element. This includes verifying
-//     that the correct elements and text appears when passed in as variables,
-//     and that clicking the button fires the expected dismiss event.
 class KeyboardShortcutBanner extends PolymerElement {
   static get is() {
     return 'keyboard-shortcut-banner';

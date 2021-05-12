@@ -25,7 +25,7 @@
     flex: 1;
   }
 
-  h1 {
+  h2 {
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans', Roboto, sans-serif;
     font-size: 15px;
@@ -71,7 +71,7 @@
 <div id="icon"></div>
 
 <div id="text">
-  <h1>[[title]]</h1>
+  <h2>[[title]]</h2>
   <template is="dom-repeat" items="[[body]]" as="message">
     <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
         class="reminder-message" inner-h-t-m-l="[[message]]">
