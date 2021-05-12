@@ -465,6 +465,19 @@ void PopulateFrameBinders(RenderFrameHostImpl* host,
 }
 ```
 
+It's also possible to bind an interface on a different sequence by specifying a task runner:
+
+``` cpp
+// //content/browser/browser_interface_binders.cc
+void PopulateFrameBinders(RenderFrameHostImpl* host,
+                          mojo::BinderMap* map) {
+...
+  map->Add<magic::mojom::GoatTeleporter>(base::BindRepeating(
+      &RenderFrameHostImpl::GetGoatTeleporter, base::Unretained(host)),
+      GetIOThreadTaskRunner({}));
+}
+```
+
 For binding an embedder-specific document-scoped interface, override
 [`ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame()`](https://cs.chromium.org/chromium/src/content/public/browser/content_browser_client.h?rcl=3eb14ce219e383daa0cd8d743f475f9d9ce8c81a&l=999)
 and add the binders to the provided map.
