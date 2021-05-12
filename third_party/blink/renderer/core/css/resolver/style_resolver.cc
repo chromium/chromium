@@ -1819,14 +1819,16 @@ void StyleResolver::PropagateStyleToViewport() {
                    EOverscrollBehavior::kAuto);
 
     // Counts any time overscroll behavior break if we change its viewport
-    // propagation logic. Overscroll behavior only breaks if body has non-none
-    // type that is different from the document one.
+    // propagation logic. Overscroll behavior only breaks if the body style
+    // (i.e. non-document style) was propagated to the viewport and the
+    // body style has a different overscroll behavior from the document one.
     // TODO(954423): Remove once propagation logic change is complete.
-    if (document_element_style && body_style) {
+    if (document_element_style && overflow_style &&
+        overflow_style != document_element_style) {
       bool overscroll_behavior_is_different =
-          body_style->OverscrollBehaviorX() !=
+          overflow_style->OverscrollBehaviorX() !=
               document_element_style->OverscrollBehaviorX() ||
-          body_style->OverscrollBehaviorY() !=
+          overflow_style->OverscrollBehaviorY() !=
               document_element_style->OverscrollBehaviorY();
       if (overscroll_behavior_is_different) {
         UseCounter::Count(GetDocument(),
