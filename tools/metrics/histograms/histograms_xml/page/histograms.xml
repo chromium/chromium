@@ -106,6 +106,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded for all ad frames with non-zero bytes or cpu usage that receive a
     FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
 
+    Changes to how cross-origin content is loaded (e.g., security policies,
+    network prioritization) or to iframes can certainly affect this metric.
+
     Do not modify this metric in any way without contacting
     chrome-analysis-team@google.com.
   </summary>
