@@ -646,9 +646,6 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       type == WebInputEvent::Type::kPointerDown &&
       static_cast<const WebPointerEvent&>(event).hovering;
 
-  const bool uncancelled_pointermove =
-      type == WebInputEvent::Type::kPointerMove && !saw_pointercancel_;
-
   const bool should_trigger_shift_exclusion =
       type == WebInputEvent::Type::kMouseDown ||
       type == WebInputEvent::Type::kKeyDown ||
@@ -656,7 +653,7 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       // We need to explicitly include tap, as if there are no listeners, we
       // won't receive the pointer events.
       type == WebInputEvent::Type::kGestureTap || is_hovering_pointerdown ||
-      pointerdown_became_tap || uncancelled_pointermove;
+      pointerdown_became_tap;
 
   if (should_trigger_shift_exclusion) {
     observed_input_or_scroll_ = true;
@@ -674,15 +671,6 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   }
   if (type == WebInputEvent::Type::kPointerDown && !is_hovering_pointerdown)
     pointerdown_pending_data_.saw_pointerdown = true;
-
-  if (type == WebInputEvent::Type::kPointerCancel ||
-      type == WebInputEvent::Type::kPointerCausedUaAction) {
-    saw_pointercancel_ = true;
-  }
-  if (type == WebInputEvent::Type::kPointerDown ||
-      type == WebInputEvent::Type::kPointerUp) {
-    saw_pointercancel_ = false;
-  }
 }
 
 void LayoutShiftTracker::UpdateInputTimestamp(base::TimeTicks timestamp) {
