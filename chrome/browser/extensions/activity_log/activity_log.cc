@@ -672,10 +672,9 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
     // of content scripts will be empty.  We don't want to log it because
     // the call to tabs.executeScript will have already been logged anyway.
     if (!it->second.empty()) {
-      scoped_refptr<Action> action;
-      action = base::MakeRefCounted<Action>(extension->id(), base::Time::Now(),
-                                            Action::ACTION_CONTENT_SCRIPT,
-                                            "");  // no API call here
+      auto action = base::MakeRefCounted<Action>(
+          extension->id(), base::Time::Now(), Action::ACTION_CONTENT_SCRIPT,
+          "");  // no API call here
       action->set_page_url(on_url);
       action->set_page_title(base::UTF16ToUTF8(web_contents->GetTitle()));
       action->set_page_incognito(

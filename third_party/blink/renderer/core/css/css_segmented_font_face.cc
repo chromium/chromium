@@ -122,8 +122,8 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
       (*cached_font_data)->NumFaces())
     return *cached_font_data;
 
-  scoped_refptr<SegmentedFontData> created_font_data;
-  created_font_data = SegmentedFontData::Create();
+  scoped_refptr<SegmentedFontData> created_font_data =
+      SegmentedFontData::Create();
 
   FontDescription requested_font_description(font_description);
   if (!font_selection_capabilities_.HasRange()) {

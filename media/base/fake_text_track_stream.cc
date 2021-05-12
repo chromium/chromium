@@ -63,8 +63,8 @@ void FakeTextTrackStream::SatisfyPendingRead(
   const uint8_t* const sd_buf = &side_data[0];
   const int sd_len = static_cast<int>(side_data.size());
 
-  scoped_refptr<DecoderBuffer> buffer;
-  buffer = DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
 
   buffer->set_timestamp(start);
   buffer->set_duration(duration);

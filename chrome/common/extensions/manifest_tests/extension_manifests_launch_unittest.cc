@@ -22,9 +22,7 @@ class AppLaunchManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
-  scoped_refptr<Extension> extension;
-
-  extension = LoadAndExpectSuccess("launch_tab.json");
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");
   EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
@@ -107,8 +105,8 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 
-  scoped_refptr<Extension> extension;
-  extension = LoadAndExpectSuccess("launch_local_path.json");
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("launch_local_path.json");
   EXPECT_EQ(extension->url().spec() + "launch.html",
             AppLaunchInfo::GetFullLaunchURL(extension.get()).spec());
 

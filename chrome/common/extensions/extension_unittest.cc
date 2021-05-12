@@ -435,8 +435,8 @@ TEST(ExtensionTest, WantsFileAccess) {
 }
 
 TEST(ExtensionTest, ExtraFlags) {
-  scoped_refptr<Extension> extension;
-  extension = LoadManifest("app", "manifest.json", Extension::FROM_WEBSTORE);
+  scoped_refptr<Extension> extension =
+      LoadManifest("app", "manifest.json", Extension::FROM_WEBSTORE);
   EXPECT_TRUE(extension->from_webstore());
 
   extension = LoadManifest("app", "manifest.json", Extension::FROM_BOOKMARK);

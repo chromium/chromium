@@ -1090,9 +1090,8 @@ TEST_F(CountingPolicyTest, DuplicateRows) {
   policy->SetClockForTesting(&mock_clock_);
 
   // Record two actions with distinct URLs.
-  scoped_refptr<Action> action;
-  action = new Action("punky", mock_clock_.Now(), Action::ACTION_API_CALL,
-                      "brewster");
+  scoped_refptr<Action> action = base::MakeRefCounted<Action>(
+      "punky", mock_clock_.Now(), Action::ACTION_API_CALL, "brewster");
   action->set_page_url(GURL("http://www.google.com"));
   policy->ProcessAction(action);
 

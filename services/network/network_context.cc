@@ -577,11 +577,11 @@ void NetworkContext::SetClient(
 void NetworkContext::CreateURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
     mojom::URLLoaderFactoryParamsPtr params) {
-  scoped_refptr<ResourceSchedulerClient> resource_scheduler_client;
-  resource_scheduler_client = base::MakeRefCounted<ResourceSchedulerClient>(
-      params->process_id, ++current_resource_scheduler_client_id_,
-      resource_scheduler_.get(),
-      url_request_context_->network_quality_estimator());
+  scoped_refptr<ResourceSchedulerClient> resource_scheduler_client =
+      base::MakeRefCounted<ResourceSchedulerClient>(
+          params->process_id, ++current_resource_scheduler_client_id_,
+          resource_scheduler_.get(),
+          url_request_context_->network_quality_estimator());
   CreateURLLoaderFactory(std::move(receiver), std::move(params),
                          std::move(resource_scheduler_client));
 }

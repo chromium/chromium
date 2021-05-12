@@ -777,9 +777,8 @@ TEST(X509CertificateTest, IntermediateCertificates) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates2;
   intermediates2.push_back(bssl::UpRef(webkit_cert->cert_buffer()));
   intermediates2.push_back(bssl::UpRef(thawte_cert->cert_buffer()));
-  scoped_refptr<X509Certificate> cert2;
-  cert2 = X509Certificate::CreateFromBuffer(std::move(google_handle),
-                                            std::move(intermediates2));
+  scoped_refptr<X509Certificate> cert2 = X509Certificate::CreateFromBuffer(
+      std::move(google_handle), std::move(intermediates2));
   ASSERT_TRUE(cert2);
 
   // Verify it has all the intermediates:

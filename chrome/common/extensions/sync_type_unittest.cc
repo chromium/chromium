@@ -151,12 +151,11 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.SetString(keys::kApp, "true");
   manifest.SetString(keys::kPlatformAppBackgroundPage, std::string());
 
-  std::string error;
-  scoped_refptr<Extension> app;
-
   // Default to true.
-  app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
-                          manifest, 0, &error);
+  std::string error;
+  scoped_refptr<Extension> app =
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                        manifest, 0, &error);
   EXPECT_EQ(error, std::string());
   EXPECT_TRUE(app->ShouldDisplayInAppLauncher());
   EXPECT_TRUE(app->ShouldDisplayInNewTabPage());

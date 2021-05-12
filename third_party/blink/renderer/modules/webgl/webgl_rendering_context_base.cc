@@ -1019,8 +1019,8 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                                              max_viewport_dims_);
   InitializeWebGLContextLimits(context_provider.get());
 
-  scoped_refptr<DrawingBuffer> buffer;
-  buffer = CreateDrawingBuffer(std::move(context_provider), graphics_info);
+  scoped_refptr<DrawingBuffer> buffer =
+      CreateDrawingBuffer(std::move(context_provider), graphics_info);
   if (!buffer) {
     context_lost_mode_ = kSyntheticLostContext;
     return;

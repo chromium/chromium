@@ -162,10 +162,10 @@ void CheckRestrictedUrls(const Extension* extension,
 // extension manifest keys (like "content_scripts") that do not exist yet in the
 // src/extensions module.
 TEST(PermissionsDataTest, EffectiveHostPermissions) {
-  scoped_refptr<Extension> extension;
   URLPatternSet hosts;
 
-  extension = LoadManifest("effective_host_permissions", "empty.json");
+  scoped_refptr<Extension> extension =
+      LoadManifest("effective_host_permissions", "empty.json");
   EXPECT_EQ(0u, extension->permissions_data()
                     ->GetEffectiveHostPermissions()
                     .patterns()
@@ -258,10 +258,10 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
 }
 
 TEST(PermissionsDataTest, SocketPermissions) {
-  scoped_refptr<Extension> extension;
   std::string error;
 
-  extension = LoadManifest("socket_permissions", "empty.json");
+  scoped_refptr<Extension> extension =
+      LoadManifest("socket_permissions", "empty.json");
   EXPECT_FALSE(CheckSocketPermission(
       extension, SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
 
@@ -314,8 +314,8 @@ TEST(PermissionsDataTest, IsRestrictedUrl) {
 }
 
 TEST(PermissionsDataTest, GetPermissionMessages_ManyAPIPermissions) {
-  scoped_refptr<Extension> extension;
-  extension = LoadManifest("permissions", "many-apis.json");
+  scoped_refptr<Extension> extension =
+      LoadManifest("permissions", "many-apis.json");
   // Warning for "tabs" is suppressed by "history" permission.
   std::vector<std::string> expected_messages;
   expected_messages.push_back("Read and change your data on api.flickr.com");
@@ -328,8 +328,8 @@ TEST(PermissionsDataTest, GetPermissionMessages_ManyAPIPermissions) {
 }
 
 TEST(PermissionsDataTest, GetPermissionMessages_ManyHostsPermissions) {
-  scoped_refptr<Extension> extension;
-  extension = LoadManifest("permissions", "more-than-3-hosts.json");
+  scoped_refptr<Extension> extension =
+      LoadManifest("permissions", "more-than-3-hosts.json");
   std::vector<std::string> submessages;
   submessages.push_back("www.a.com");
   submessages.push_back("www.b.com");
@@ -342,8 +342,8 @@ TEST(PermissionsDataTest, GetPermissionMessages_ManyHostsPermissions) {
 }
 
 TEST(PermissionsDataTest, GetPermissionMessages_ManyHosts) {
-  scoped_refptr<Extension> extension;
-  extension = LoadManifest("permissions", "many-hosts.json");
+  scoped_refptr<Extension> extension =
+      LoadManifest("permissions", "many-hosts.json");
   EXPECT_TRUE(VerifyOnePermissionMessage(
       extension->permissions_data(),
       "Read and change your data on encrypted.google.com and www.google.com"));
@@ -352,12 +352,11 @@ TEST(PermissionsDataTest, GetPermissionMessages_ManyHosts) {
 TEST(PermissionsDataTest, ExtensionScheme) {
   GURL external_file(
       "chrome-extension://abcdefghijklmnopabcdefghijklmnop/index.html");
-  scoped_refptr<const Extension> extension;
 
   // A regular extension shouldn't get access to chrome-extension: scheme URLs
   // even with <all_urls> specified.
-  extension = GetExtensionWithHostPermission("regular_extension", "<all_urls>",
-                                             ManifestLocation::kUnpacked);
+  scoped_refptr<const Extension> extension = GetExtensionWithHostPermission(
+      "regular_extension", "<all_urls>", ManifestLocation::kUnpacked);
   ASSERT_FALSE(extension->permissions_data()->HasHostPermission(external_file));
 
   // Component extensions should get access to chrome-extension: scheme URLs
@@ -609,10 +608,8 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
 
-  scoped_refptr<Extension> extension;
-
   // Test <all_urls> for regular extensions.
-  extension =
+  scoped_refptr<Extension> extension =
       LoadManifestStrict("script_and_capture", "extension_regular_all.json");
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
             GetExtensionAccess(extension.get(), http_url));

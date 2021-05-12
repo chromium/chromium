@@ -86,8 +86,8 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPage) {
 }
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundAllowNoJsAccess) {
-  scoped_refptr<Extension> extension;
-  extension = LoadAndExpectSuccess("background_allow_no_js_access.json");
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("background_allow_no_js_access.json");
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(BackgroundInfo::AllowJSAccess(extension.get()));
 
