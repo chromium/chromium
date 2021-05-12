@@ -41,6 +41,7 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/debug/debugger.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -834,7 +835,11 @@ size_t CollectStackTrace(void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
-#if !defined(__UCLIBC__) && !defined(_AIX)
+#if defined(NO_UNWIND_TABLES) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  // If we do not have unwind tables, then try tracing using frame pointers.
+  return base::debug::TraceStackFramePointers(const_cast<const void**>(trace),
+                                              count, 0);
+#elif !defined(__UCLIBC__) && !defined(_AIX)
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
   return base::saturated_cast<size_t>(backtrace(trace, count));
