@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_TEMPLATE_CONSTANTS_H_
+#define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_TEMPLATE_CONSTANTS_H_
+
+#include "components/content_creation/notes/core/templates/note_template.h"
+
+namespace content_creation {
+
+// TODO(crbug.com/1194168): Add missing templates: Friendly, Lovely, Groovy and
+// Dreamy.
+
+// Returns a NoteTemplate with the Classic style.
+NoteTemplate GetClassicTemplate();
+
+// Returns a NoteTemplate with the Fresh style.
+NoteTemplate GetFreshTemplate();
+
+// Returns a NoteTemplate with the Powerful style.
+NoteTemplate GetPowerfulTemplate();
+
+// Returns a NoteTemplate with the Impactful style.
+NoteTemplate GetImpactfulTemplate();
+
+// Returns a NoteTemplate with the Monochrome style.
+NoteTemplate GetMonochromeTemplate();
+
+// Returns a NoteTemplate with the Bold style.
+NoteTemplate GetBoldTemplate();
+
+}  // namespace content_creation
+
+#endif  // COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_TEMPLATE_CONSTANTS_H_

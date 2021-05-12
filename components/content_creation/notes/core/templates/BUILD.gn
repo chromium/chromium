@@ -6,11 +6,17 @@ static_library("templates") {
   sources = [
     "note_template.cc",
     "note_template.h",
+    "template_constants.cc",
+    "template_constants.h",
     "template_store.cc",
     "template_store.h",
     "template_types.cc",
     "template_types.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
 }

@@ -39,13 +39,13 @@ public class NoteTemplateConversionBridge {
 
     @CalledByNative
     private static TextStyle createTextStyle(
-            String fontName, @ColorInt int fontColor, boolean allCaps) {
-        return new TextStyle(fontName, fontColor, allCaps);
+            String fontName, @ColorInt int fontColor, int weight, boolean allCaps) {
+        return new TextStyle(fontName, fontColor, weight, allCaps);
     }
 
     @CalledByNative
-    private static FooterStyle createFooterStyle(@ColorInt int color) {
-        return new FooterStyle(color);
+    private static FooterStyle createFooterStyle(@ColorInt int textColor, @ColorInt int logoColor) {
+        return new FooterStyle(textColor, logoColor);
     }
 
     /**

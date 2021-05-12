@@ -44,21 +44,32 @@ class TextStyle {
  public:
   explicit TextStyle(const std::string& font_name,
                      ARGBColor font_color,
+                     uint16_t weight,
                      bool all_caps);
 
   const std::string font_name() const { return font_name_; }
   ARGBColor font_color() const { return font_color_; }
+  uint16_t weight() const { return weight_; }
   bool all_caps() const { return all_caps_; }
 
  private:
   std::string font_name_;
   ARGBColor font_color_;
+  uint16_t weight_;
   bool all_caps_;
 };
 
 // Parameters to control the appearance of the elements in a note's footer.
-struct FooterStyle {
-  ARGBColor color;
+class FooterStyle {
+ public:
+  explicit FooterStyle(ARGBColor text_color, ARGBColor logo_color);
+
+  ARGBColor text_color() const { return text_color_; }
+  ARGBColor logo_color() const { return logo_color_; }
+
+ private:
+  ARGBColor text_color_;
+  ARGBColor logo_color_;
 };
 
 }  // namespace content_creation

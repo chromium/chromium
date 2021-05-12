@@ -49,7 +49,7 @@ TEST_F(TemplateStoreTest, GetTemplatesSuccess) {
 
   template_store_->GetTemplates(base::BindLambdaForTesting(
       [&run_loop, this](std::vector<NoteTemplate> templates) {
-        EXPECT_EQ(1U, templates.size());
+        EXPECT_EQ(6U, templates.size());
 
         ValidateTemplates(templates);
 

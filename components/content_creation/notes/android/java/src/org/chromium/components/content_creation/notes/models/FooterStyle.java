@@ -10,10 +10,12 @@ import androidx.annotation.ColorInt;
  * Model class for a template's text style.
  */
 public class FooterStyle {
-    public final @ColorInt int color;
+    public final @ColorInt int textColor;
+    public final @ColorInt int logoColor;
 
     /** Constructor. */
-    public FooterStyle(@ColorInt int color) {
-        this.color = color;
+    public FooterStyle(@ColorInt int textColor, @ColorInt int logoColor) {
+        this.textColor = textColor;
+        this.logoColor = logoColor;
     }
 }

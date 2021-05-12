@@ -12,12 +12,14 @@ import androidx.annotation.ColorInt;
 public class TextStyle {
     public final String fontName;
     public final @ColorInt int fontColor;
+    public final int weight;
     public final boolean allCaps;
 
     /** Constructor. */
-    public TextStyle(String fontName, @ColorInt int fontColor, boolean allCaps) {
+    public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps) {
         this.fontName = fontName;
         this.fontColor = fontColor;
+        this.weight = weight;
         this.allCaps = allCaps;
     }
 }

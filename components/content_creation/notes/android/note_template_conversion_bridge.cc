@@ -25,14 +25,14 @@ ScopedJavaLocalRef<jobject> CreateJavaTextStyle(JNIEnv* env,
                                                 const TextStyle& text_style) {
   return Java_NoteTemplateConversionBridge_createTextStyle(
       env, ConvertUTF8ToJavaString(env, text_style.font_name()),
-      text_style.font_color(), text_style.all_caps());
+      text_style.font_color(), text_style.weight(), text_style.all_caps());
 }
 
 ScopedJavaLocalRef<jobject> CreateJavaFooterStyle(
     JNIEnv* env,
     const FooterStyle& footer_style) {
   return Java_NoteTemplateConversionBridge_createFooterStyle(
-      env, footer_style.color);
+      env, footer_style.text_color(), footer_style.logo_color());
 }
 
 ScopedJavaLocalRef<jobject> CreateJavaTemplateAndMaybeAddToList(
