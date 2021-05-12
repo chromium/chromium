@@ -48,17 +48,7 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
 
   SkYUVAPixmaps VideoFrameToSkiaPixmaps(const VideoFrame* video_frame);
 
-  SkYUVAInfo::PlaneConfig plane_config() const {
-    return yuva_info_.planeConfig();
-  }
-
-  SkYUVAInfo::Subsampling subsampling() const {
-    return yuva_info_.subsampling();
-  }
-
-  // Utility to convert a gfx::ColorSpace to a SkYUVColorSpace.
-  static SkYUVColorSpace ColorSpaceToSkYUVColorSpace(
-      const gfx::ColorSpace& color_space);
+  const SkYUVAInfo& yuva_info() const { return yuva_info_; }
 
   // Utility to convert a media pixel format to SkYUVAInfo.
   static std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>

@@ -109,53 +109,53 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       ri->WaitSyncTokenCHROMIUM(holders_[plane].sync_token.GetConstData());
       mailboxes[plane] = holders_[plane].mailbox;
     }
-  } else {
-    if (!created_shared_images_) {
-      auto* sii = provider_->SharedImageInterface();
-      DCHECK(sii);
-      uint32_t mailbox_usage;
-      if (provider_->ContextCapabilities().supports_oop_raster) {
-        mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                        gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-      } else {
-        mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
-      }
-      for (size_t plane = 0; plane < num_planes_; ++plane) {
-        gfx::Size tex_size = {plane_sizes_[plane].width(),
-                              plane_sizes_[plane].height()};
-        int num_channels = yuva_info_.numChannelsInPlane(plane);
-        viz::ResourceFormat format = PlaneResourceFormat(num_channels, false);
-        holders_[plane].mailbox = sii->CreateSharedImage(
-            format, tex_size, video_frame->ColorSpace(),
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, mailbox_usage,
-            gpu::kNullSurfaceHandle);
-        holders_[plane].texture_target = GL_TEXTURE_2D;
-      }
+    return;
+  }
 
-      // Split up shared image creation from upload so we only have to wait on
-      // one sync token.
-      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-
-      cached_video_size_ = video_frame->coded_size();
-      cached_video_color_space_ = video_frame->ColorSpace();
-      created_shared_images_ = true;
+  // Create a shared image to upload the data to, if one doesn't exist already.
+  if (!created_shared_images_) {
+    auto* sii = provider_->SharedImageInterface();
+    DCHECK(sii);
+    uint32_t mailbox_usage;
+    if (provider_->ContextCapabilities().supports_oop_raster) {
+      mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    } else {
+      mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
     }
-
-    // If we have cached shared images that have been imported release them to
-    // prevent writing to a shared image for which we're holding read access.
-    ReleaseTextures();
-
     for (size_t plane = 0; plane < num_planes_; ++plane) {
+      gfx::Size tex_size = {plane_sizes_[plane].width(),
+                            plane_sizes_[plane].height()};
       int num_channels = yuva_info_.numChannelsInPlane(plane);
-      SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
-          SkYUVAPixmaps::DataType::kUnorm8, num_channels);
-      SkImageInfo info = SkImageInfo::Make(plane_sizes_[plane], color_type,
-                                           kUnknown_SkAlphaType);
-      ri->WritePixels(holders_[plane].mailbox, 0, 0, GL_TEXTURE_2D,
-                      video_frame->stride(plane), info,
-                      video_frame->data(plane));
-      mailboxes[plane] = holders_[plane].mailbox;
+      viz::ResourceFormat format = PlaneResourceFormat(num_channels, false);
+      holders_[plane].mailbox = sii->CreateSharedImage(
+          format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, mailbox_usage, gpu::kNullSurfaceHandle);
+      holders_[plane].texture_target = GL_TEXTURE_2D;
     }
+
+    // Split up shared image creation from upload so we only have to wait on
+    // one sync token.
+    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+    cached_video_size_ = video_frame->coded_size();
+    cached_video_color_space_ = video_frame->ColorSpace();
+    created_shared_images_ = true;
+  }
+
+  // If we have cached shared images that have been imported release them to
+  // prevent writing to a shared image for which we're holding read access.
+  ReleaseTextures();
+
+  for (size_t plane = 0; plane < num_planes_; ++plane) {
+    int num_channels = yuva_info_.numChannelsInPlane(plane);
+    SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
+        SkYUVAPixmaps::DataType::kUnorm8, num_channels);
+    SkImageInfo info = SkImageInfo::Make(plane_sizes_[plane], color_type,
+                                         kUnknown_SkAlphaType);
+    ri->WritePixels(holders_[plane].mailbox, 0, 0, GL_TEXTURE_2D,
+                    video_frame->stride(plane), info, video_frame->data(plane));
+    mailboxes[plane] = holders_[plane].mailbox;
   }
 }
 
@@ -182,8 +182,8 @@ sk_sp<SkImage> VideoFrameYUVMailboxesHolder::VideoFrameToSkImage(
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
 
-  GrYUVABackendTextures yuva_backend_textures =
-      VideoFrameToSkiaTextures(video_frame, raster_context_provider, false);
+  GrYUVABackendTextures yuva_backend_textures = VideoFrameToSkiaTextures(
+      video_frame, raster_context_provider, /*for_surface=*/false);
 
   DCHECK(yuva_backend_textures.isValid());
   auto result = SkImage::MakeFromYUVATextures(gr_context, yuva_backend_textures,
@@ -210,8 +210,8 @@ bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
 
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
-  GrYUVABackendTextures yuva_backend_textures =
-      VideoFrameToSkiaTextures(video_frame, raster_context_provider, true);
+  GrYUVABackendTextures yuva_backend_textures = VideoFrameToSkiaTextures(
+      video_frame, raster_context_provider, /*for_surface=*/true);
 
   bool result = true;
   for (size_t plane = 0; plane < num_planes_; ++plane) {
@@ -222,10 +222,9 @@ bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
     if (color_type == kGray_8_SkColorType)
       color_type = kAlpha_8_SkColorType;
 
-    const int sample_count = 1;
     auto surface = SkSurface::MakeFromBackendTexture(
         gr_context, yuva_backend_textures.texture(plane),
-        kTopLeft_GrSurfaceOrigin, sample_count, color_type,
+        kTopLeft_GrSurfaceOrigin, /*sampleCnt=*/1, color_type,
         SkColorSpace::MakeSRGB(), nullptr);
     if (!surface) {
       DLOG(ERROR)
@@ -310,15 +309,6 @@ void VideoFrameYUVMailboxesHolder::ReleaseTextures() {
 }
 
 // static
-SkYUVColorSpace VideoFrameYUVMailboxesHolder::ColorSpaceToSkYUVColorSpace(
-    const gfx::ColorSpace& color_space) {
-  // TODO(crbug.com/828599): This should really default to rec709.
-  SkYUVColorSpace sk_color_space = kRec601_SkYUVColorSpace;
-  color_space.ToSkYUVColorSpace(&sk_color_space);
-  return sk_color_space;
-}
-
-// static
 std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
     VideoPixelFormat video_format) {
@@ -342,12 +332,14 @@ SkYUVAInfo VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
     const VideoFrame* video_frame) {
   SkISize video_size{video_frame->coded_size().width(),
                      video_frame->coded_size().height()};
-  SkYUVAInfo::PlaneConfig plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
-  SkYUVAInfo::Subsampling subsampling = SkYUVAInfo::Subsampling::kUnknown;
+  auto plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
+  auto subsampling = SkYUVAInfo::Subsampling::kUnknown;
   std::tie(plane_config, subsampling) =
       VideoPixelFormatToSkiaValues(video_frame->format());
-  SkYUVColorSpace color_space =
-      ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace());
+
+  // TODO(crbug.com/828599): This should really default to rec709.
+  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
+  video_frame->ColorSpace().ToSkYUVColorSpace(&color_space);
   return SkYUVAInfo(video_size, plane_config, subsampling, color_space);
 }
 
