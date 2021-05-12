@@ -103,7 +103,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   ConfigurationPolicyProvider* command_line_provider_ = nullptr;
 
 #if defined(OS_ANDROID)
-  std::unique_ptr<android::PolicyCacheUpdater> pollicy_cache_updater_;
+  std::unique_ptr<android::PolicyCacheUpdater> policy_cache_updater_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserPolicyConnector);

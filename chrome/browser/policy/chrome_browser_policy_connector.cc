@@ -112,7 +112,7 @@ void ChromeBrowserPolicyConnector::Init(
       kServiceInitializationStartupDelay);
 
 #if defined(OS_ANDROID)
-  pollicy_cache_updater_ = std::make_unique<android::PolicyCacheUpdater>(
+  policy_cache_updater_ = std::make_unique<android::PolicyCacheUpdater>(
       GetPolicyService(), GetHandlerList());
 #endif
 
