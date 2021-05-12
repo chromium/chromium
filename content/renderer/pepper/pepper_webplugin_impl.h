@@ -65,7 +65,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   bool HasEditableText() const override;
   bool CanUndo() const override;
   bool CanRedo() const override;
-  bool ExecuteEditCommand(const blink::WebString& name) override;
   bool ExecuteEditCommand(const blink::WebString& name,
                           const blink::WebString& value) override;
   blink::WebURL LinkAtPosition(const gfx::Point& position) const override;

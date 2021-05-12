@@ -168,9 +168,6 @@ class TestPluginWithEditableText : public FakeWebPlugin {
 
   bool HasSelection() const override { return true; }
   bool CanEditText() const override { return true; }
-  bool ExecuteEditCommand(const WebString& name) override {
-    return ExecuteEditCommand(name, WebString());
-  }
   bool ExecuteEditCommand(const WebString& name,
                           const WebString& value) override {
     if (name == "Cut") {

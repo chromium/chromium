@@ -335,12 +335,6 @@ bool PepperWebPluginImpl::CanRedo() const {
   return instance_ && instance_->CanRedo();
 }
 
-bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name) {
-  DCHECK(name != "Paste");
-  DCHECK(name != "PasteAndMatchStyle");
-  return ExecuteEditCommand(name, WebString());
-}
-
 bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
                                              const blink::WebString& value) {
   if (!instance_)
