@@ -7375,9 +7375,13 @@ if (!is_fuchsia) {
       ":test_support",
       "//base",
       "//build:chromeos_buildflags",
+      "//components/bookmarks/browser",
       "//components/bookmarks/browser:test_support",
+      "//components/bookmarks/managed",
+      "//components/favicon/core",
       "//components/invalidation/impl",
       "//components/invalidation/impl:test_support",
+      "//components/os_crypt:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync",
       "//components/sync:test_support_model",
@@ -7414,12 +7418,19 @@ if (!is_fuchsia) {
       ]
       deps += [
         "//ash/app_list:test_support",
+        "//chromeos",
         "//components/arc:arc_test_support",
         "//components/user_manager:test_support",
       ]
     }
     if (is_android) {
       deps += [ ":sync_integration_test_support_jni_headers" ]
+    } else {
+      deps += [
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//components/send_tab_to_self",
+        "//components/webapps/browser",
+      ]
     }
   }
 }
@@ -7454,9 +7465,25 @@ if (!is_fuchsia && !is_android) {
       "//chrome:strings",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
       "//chrome/renderer",
+      "//components/bookmarks/browser",
+      "//components/browser_sync",
+      "//components/consent_auditor",
+      "//components/favicon/core",
+      "//components/history/core/common",
+      "//components/reading_list/features:flags",
+      "//components/send_tab_to_self",
+      "//components/spellcheck/common",
       "//components/sync",
+      "//components/sync:test_support_nigori",
+      "//components/sync/test/fake_server",
+      "//components/sync/trusted_vault:test_support",
+      "//components/sync_bookmarks",
+      "//components/undo",
+      "//components/webapps/browser",
       "//crypto:platform",
       "//testing/gmock",
       "//testing/gtest",
@@ -7505,6 +7532,7 @@ if (!is_fuchsia && !is_android) {
         "../browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
       ]
+      deps += [ "//chromeos" ]
     }
 
     if (toolkit_views) {
@@ -7533,9 +7561,15 @@ if (!is_fuchsia && !is_android) {
 
     deps = [
       ":sync_integration_test_support",
+      ":test_support",
       ":test_support_ui",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/ui",
+      "//components/autofill/core/browser:test_support",
+      "//components/bookmarks/browser",
+      "//components/password_manager/core/browser",
+      "//components/spellcheck/common",
       "//components/sync",
       "//crypto:platform",
       "//testing/gmock",
