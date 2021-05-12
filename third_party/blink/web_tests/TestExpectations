@@ -5855,7 +5855,7 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/w
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/hover-during-scroll.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-height-chaining.html [ Failure ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-height-chaining.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/no-hover-during-smooth-keyboard-scroll.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
@@ -6438,6 +6438,7 @@ crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-d
 crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 
 crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Timeout ]
+crbug.com/1168785 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Pass Timeout ]
 
 # Sheriff 2021-01-29
 crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
