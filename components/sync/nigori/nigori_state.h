@@ -92,6 +92,9 @@ struct NigoriState {
   // The name of the latest available trusted vault key that was used as the
   // default encryption key.
   base::Optional<std::string> last_default_trusted_vault_key_name;
+
+  // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
+  sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 };
 
 }  // namespace syncer

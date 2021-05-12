@@ -67,6 +67,7 @@ struct SyncStatus {
   int num_server_overwrites_total;
 
   // Encryption related.
+  // TODO(crbug.com/1081643): Add fields related to TRUSTED_VAULT_PASSPHRASE.
   ModelTypeSet encrypted_types;
   bool cryptographer_can_encrypt;
   bool crypto_has_pending_keys;

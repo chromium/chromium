@@ -72,6 +72,9 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
     cryptographer->SelectDefaultEncryptionKey(key_name);
   }
 
+  specifics.mutable_trusted_vault_debug_info()->set_migration_time(1U);
+  specifics.mutable_trusted_vault_debug_info()->set_key_version(2);
+
   EXPECT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
                                      specifics.mutable_encryption_keybag()));
   return specifics;

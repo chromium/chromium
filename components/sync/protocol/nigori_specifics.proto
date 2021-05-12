@@ -129,13 +129,13 @@ message NigoriSpecifics {
   // Only set if passphrase_state == KEYSTORE_PASSPHRASE.
   optional EncryptedData keystore_decryptor_token = 31;
 
-  // The time (in epoch milliseconds) at which the keystore migration was
-  // performed.
+  // The time (in milliseconds since Unix epoch) at which the keystore migration
+  // was performed.
   optional int64 keystore_migration_time = 32;
 
-  // The time (in epoch milliseconds) at which a custom passphrase was set.
-  // Note: this field may not be set if the custom passphrase was applied before
-  // this field was introduced.
+  // The time (in milliseconds since Unix epoch) at which a custom passphrase
+  // was set. Note: this field may not be set if the custom passphrase was
+  // applied before this field was introduced.
   optional int64 custom_passphrase_time = 33;
 
   // Boolean corresponding to whether custom spelling dictionary should be
@@ -206,4 +206,16 @@ message NigoriSpecifics {
 
   // Boolean corresponding to whether OS preferences should be encrypted.
   optional bool encrypt_os_preferences = 49;
+
+  // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
+  message TrustedVaultDebugInfo {
+    // The time (in milliseconds since Unix epoch) at which the trusted vault
+    // migration was performed.
+    optional int64 migration_time = 1;
+
+    // The version (aka key epoch) corresponding to the Nigori keybag.
+    optional int32 key_version = 2;
+  }
+
+  optional TrustedVaultDebugInfo trusted_vault_debug_info = 50;
 }

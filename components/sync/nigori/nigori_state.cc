@@ -157,6 +157,8 @@ NigoriState NigoriState::CreateFromLocalProto(
         proto.last_default_trusted_vault_key_name();
   }
 
+  state.trusted_vault_debug_info = proto.trusted_vault_debug_info();
+
   return state;
 }
 
@@ -219,6 +221,7 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
     proto.set_last_default_trusted_vault_key_name(
         *last_default_trusted_vault_key_name);
   }
+  *proto.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
   return proto;
 }
 
@@ -271,6 +274,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
     specifics.set_custom_passphrase_time(
         TimeToProtoTime(custom_passphrase_time));
   }
+  *specifics.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
   return specifics;
 }
 
@@ -288,6 +292,7 @@ NigoriState NigoriState::Clone() const {
   result.pending_keystore_decryptor_token = pending_keystore_decryptor_token;
   result.last_default_trusted_vault_key_name =
       last_default_trusted_vault_key_name;
+  result.trusted_vault_debug_info = trusted_vault_debug_info;
   return result;
 }
 

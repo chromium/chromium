@@ -607,6 +607,7 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriModel& proto) {
   VISIT_REP(keystore_key);
   VISIT(pending_keystore_decryptor_token);
   VISIT(last_default_trusted_vault_key_name);
+  VISIT(trusted_vault_debug_info);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriLocalData& proto) {
@@ -643,6 +644,13 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriSpecifics& proto) {
   VISIT(custom_passphrase_time);
   VISIT(custom_passphrase_key_derivation_method);
   VISIT(custom_passphrase_key_derivation_salt);
+  VISIT(trusted_vault_debug_info);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo& proto) {
+  VISIT(migration_time);
+  VISIT(key_version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::OsPreferenceSpecifics& proto) {
