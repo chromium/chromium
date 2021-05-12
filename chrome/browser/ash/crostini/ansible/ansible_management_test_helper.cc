@@ -15,7 +15,8 @@ namespace crostini {
 
 AnsibleManagementTestHelper::AnsibleManagementTestHelper(Profile* profile)
     : profile_(profile) {
-  fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+  fake_cicerone_client_ = static_cast<chromeos::FakeCiceroneClient*>(
+      chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 }
 
 void AnsibleManagementTestHelper::SetUpAnsiblePlaybookPreference() {

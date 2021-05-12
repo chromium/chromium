@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
@@ -34,15 +33,15 @@ class FileManagerFileWatcherTest : public testing::Test {
   FileManagerFileWatcherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
   }
 
   ~FileManagerFileWatcherTest() override {
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -188,7 +187,8 @@ TEST_F(FileManagerFileWatcherTest, WatchLocalFile) {
 
 TEST_F(FileManagerFileWatcherTest, WatchCrostiniFile) {
   chromeos::FakeCiceroneClient* fake_cicerone_client =
-      chromeos::FakeCiceroneClient::Get();
+      static_cast<chromeos::FakeCiceroneClient*>(
+          chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 
   const base::FilePath kVirtualPath("foo/bar.txt");
   const char kExtensionId[] = "extension-id";

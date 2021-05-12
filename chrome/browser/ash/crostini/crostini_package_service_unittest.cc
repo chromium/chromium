@@ -22,7 +22,6 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
@@ -176,10 +175,12 @@ class CrostiniPackageServiceTest : public testing::Test {
   void SetUp() override {
     DBusThreadManager::Initialize();
 
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+    fake_cicerone_client_ = static_cast<chromeos::FakeCiceroneClient*>(
+        chromeos::DBusThreadManager::Get()->GetCiceroneClient());
     ASSERT_TRUE(fake_cicerone_client_);
     fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
@@ -235,7 +236,6 @@ class CrostiniPackageServiceTest : public testing::Test {
     task_environment_.reset();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

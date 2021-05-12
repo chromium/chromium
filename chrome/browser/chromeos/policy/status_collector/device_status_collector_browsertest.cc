@@ -57,7 +57,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
@@ -861,8 +860,9 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
 
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
   }
 
@@ -871,7 +871,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
     testing_profile_.reset();
     chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
     chromeos::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::AttestationClient::Shutdown();

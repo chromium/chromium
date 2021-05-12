@@ -24,6 +24,7 @@ class ArcMidisClient;
 class ArcObbMounterClient;
 class CecServiceClient;
 class ChunneldClient;
+class CiceroneClient;
 class CrosDisksClient;
 class DebugDaemonClient;
 class EasyUnlockClient;
@@ -61,6 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<ArcObbMounterClient> arc_obb_mounter_client_;
   std::unique_ptr<CecServiceClient> cec_service_client_;
   std::unique_ptr<ChunneldClient> chunneld_client_;
+  std::unique_ptr<CiceroneClient> cicerone_client_;
   std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;

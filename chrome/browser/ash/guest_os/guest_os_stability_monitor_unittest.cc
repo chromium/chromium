@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -31,8 +30,9 @@ class GuestOsStabilityMonitorTest : public testing::Test {
  public:
   GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
 
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
@@ -57,7 +57,6 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     profile_.reset();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -102,7 +101,8 @@ TEST_F(GuestOsStabilityMonitorTest, ConciergeFailure) {
 }
 
 TEST_F(GuestOsStabilityMonitorTest, CiceroneFailure) {
-  auto* cicerone_client = chromeos::FakeCiceroneClient::Get();
+  auto* cicerone_client = static_cast<chromeos::FakeCiceroneClient*>(
+      chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 
   cicerone_client->NotifyCiceroneStopped();
   histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,

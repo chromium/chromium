@@ -21,7 +21,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 chromeos::FakeCiceroneClient* GetFakeCiceroneClient() {
-  return chromeos::FakeCiceroneClient::Get();
+  return static_cast<chromeos::FakeCiceroneClient*>(
+      chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 }
 
 class CrostiniUpdateFilesystemViewBrowserTest
