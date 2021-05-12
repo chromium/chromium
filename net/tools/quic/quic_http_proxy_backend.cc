@@ -54,7 +54,7 @@ bool QuicHttpProxyBackend::InitializeBackend(const std::string& backend_url) {
     proxy_thread_ = std::make_unique<base::Thread>("quic proxy thread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    bool result = proxy_thread_->StartWithOptions(options);
+    bool result = proxy_thread_->StartWithOptions(std::move(options));
     proxy_task_runner_ = proxy_thread_->task_runner();
     CHECK(result);
   }
