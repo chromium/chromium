@@ -184,6 +184,11 @@ void FakeCrasAudioClient::SetInputMute(bool mute_on) {
 void FakeCrasAudioClient::SetNoiseCancellationEnabled(
     bool noise_cancellation_on) {}
 
+void FakeCrasAudioClient::GetNoiseCancellationSupported(
+    DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(false);
+}
+
 void FakeCrasAudioClient::SetActiveOutputNode(uint64_t node_id) {
   if (active_output_node_id_ == node_id)
     return;

@@ -272,6 +272,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void GetNoiseCancellationSupported(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kIsNoiseCancellationSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetNoiseCancellationSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetActiveOutputNode(uint64_t node_id) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetActiveOutputNode);
@@ -844,6 +854,25 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
 
     std::move(callback).Run(true);
+  }
+
+  void OnGetNoiseCancellationSupported(DBusMethodCallback<bool> callback,
+                                       dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << "GetNoiseCancellationSupported";
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+    bool is_noise_cancellation_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&is_noise_cancellation_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_noise_cancellation_supported);
   }
 
   bool GetAudioNode(dbus::Response* response,

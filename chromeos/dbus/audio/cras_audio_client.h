@@ -136,6 +136,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets input noise cancellation state to |noise_cancellation_on| value.
   virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
 
+  // Gets if Noise Cancellation is supported.
+  virtual void GetNoiseCancellationSupported(
+      DBusMethodCallback<bool> callback) = 0;
+
   // Sets the active output node to |node_id|.
   virtual void SetActiveOutputNode(uint64_t node_id) = 0;
 
