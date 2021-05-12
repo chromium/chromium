@@ -97,7 +97,9 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
   SetBorder(CreateBorderWithVerticalSpacing(vert_spacing));
 
   ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
+  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop(),
+                                               /*highlight_on_hover=*/false,
+                                               /*highlight_on_focus=*/true);
   ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) { return GetInkDropColor(host); }, this));
 
