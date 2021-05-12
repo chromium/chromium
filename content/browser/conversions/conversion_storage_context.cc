@@ -4,7 +4,6 @@
 
 #include "content/browser/conversions/conversion_storage_context.h"
 
-#include "base/callback_helpers.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "content/browser/conversions/conversion_storage_sql.h"
 
@@ -30,76 +29,12 @@ ConversionStorageContext::ConversionStorageContext(
     const base::FilePath& user_data_directory,
     std::unique_ptr<ConversionStorageDelegateImpl> delegate,
     const base::Clock* clock)
-    : storage_task_runner_(g_storage_task_runner.Get()),
-      storage_(new ConversionStorageSql(user_data_directory,
-                                        std::move(delegate),
-                                        clock),
-               base::OnTaskRunnerDeleter(storage_task_runner_)) {}
+    : storage_(
+          base::SequenceBound<ConversionStorageSql>(g_storage_task_runner.Get(),
+                                                    user_data_directory,
+                                                    std::move(delegate),
+                                                    clock)) {}
 
 ConversionStorageContext::~ConversionStorageContext() = default;
-
-void ConversionStorageContext::StoreImpression(
-    const StorableImpression& impression) {
-  // Unretained is safe when posting to |storage_task_runner_| because any task
-  // to delete |storage_| will be posted after this one.
-  storage_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ConversionStorage::StoreImpression,
-                                base::Unretained(storage_.get()), impression));
-}
-
-void ConversionStorageContext::MaybeCreateAndStoreConversionReports(
-    const StorableConversion& conversion,
-    base::OnceCallback<void(int)> callback) {
-  storage_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(
-              &ConversionStorage::MaybeCreateAndStoreConversionReports),
-          base::Unretained(storage_.get()), conversion));
-}
-
-void ConversionStorageContext::GetConversionsToReport(
-    base::Time max_report_time,
-    int limit,
-    base::OnceCallback<void(std::vector<ConversionReport>)> callback) {
-  storage_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ConversionStorage::GetConversionsToReport,
-                     base::Unretained(storage_.get()), max_report_time, limit),
-      std::move(callback));
-}
-
-void ConversionStorageContext::GetActiveImpressions(
-    int limit,
-    base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
-  storage_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ConversionStorage::GetActiveImpressions,
-                     base::Unretained(storage_.get()), limit),
-      std::move(callback));
-}
-
-void ConversionStorageContext::DeleteConversion(
-    int64_t conversion_id,
-    base::OnceCallback<void(bool)> callback) {
-  storage_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ConversionStorage::DeleteConversion,
-                     base::Unretained(storage_.get()), conversion_id),
-      std::move(callback));
-}
-
-void ConversionStorageContext::ClearData(
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter,
-    base::OnceClosure callback) {
-  storage_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&ConversionStorage::ClearData,
-                     base::Unretained(storage_.get()), delete_begin, delete_end,
-                     std::move(filter)),
-      std::move(callback));
-}
 
 }  // namespace content

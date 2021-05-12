@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
 #include "content/browser/conversions/conversion_reporter_impl.h"
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
@@ -129,23 +130,28 @@ ConversionManagerImpl::~ConversionManagerImpl() {
   base::RepeatingCallback<bool(const url::Origin&)>
       session_only_origin_predicate = base::BindRepeating(
           &IsOriginSessionOnly, std::move(special_storage_policy_));
-  conversion_storage_context_->ClearData(base::Time::Min(), base::Time::Max(),
-                                         session_only_origin_predicate,
-                                         base::DoNothing());
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::ClearData)
+      .WithArgs(base::Time::Min(), base::Time::Max(),
+                session_only_origin_predicate);
 }
 
 void ConversionManagerImpl::HandleImpression(
     const StorableImpression& impression) {
   // Add the impression to storage.
-  conversion_storage_context_->StoreImpression(impression);
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::StoreImpression)
+      .WithArgs(impression);
 }
 
 void ConversionManagerImpl::HandleConversion(
     const StorableConversion& conversion) {
   // TODO(https://crbug.com/1043345): Add UMA for the number of conversions we
   // are logging to storage, and the number of new reports logged to storage.
-  conversion_storage_context_->MaybeCreateAndStoreConversionReports(
-      conversion, base::DoNothing::Once<int>());
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReports)
+      .WithArgs(conversion)
+      .Then(base::DoNothing::Once<int>());
 
   // If we are running in debug mode, we should also schedule a task to
   // gather and send any new reports.
@@ -156,8 +162,10 @@ void ConversionManagerImpl::HandleConversion(
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
   const int kMaxImpressions = 1000;
-  conversion_storage_context_->GetActiveImpressions(kMaxImpressions,
-                                                    std::move(callback));
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::GetActiveImpressions)
+      .WithArgs(kMaxImpressions)
+      .Then(std::move(callback));
 }
 
 void ConversionManagerImpl::GetReportsForWebUI(
@@ -183,16 +191,20 @@ void ConversionManagerImpl::ClearData(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
-  conversion_storage_context_->ClearData(delete_begin, delete_end,
-                                         std::move(filter), std::move(done));
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::ClearData)
+      .WithArgs(delete_begin, delete_end, std::move(filter))
+      .Then(std::move(done));
 }
 
 void ConversionManagerImpl::GetAndHandleReports(
     ReportsHandlerFunc handler_function,
     base::Time max_report_time,
     int limit) {
-  conversion_storage_context_->GetConversionsToReport(
-      max_report_time, limit, std::move(handler_function));
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::GetConversionsToReport)
+      .WithArgs(max_report_time, limit)
+      .Then(std::move(handler_function));
 }
 
 void ConversionManagerImpl::GetAndQueueReportsForNextInterval() {
@@ -261,8 +273,10 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
 }
 
 void ConversionManagerImpl::OnReportSent(int64_t conversion_id) {
-  conversion_storage_context_->DeleteConversion(conversion_id,
-                                                base::DoNothing::Once<bool>());
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::DeleteConversion)
+      .WithArgs(conversion_id)
+      .Then(base::DoNothing::Once<bool>());
 }
 
 void ConversionManagerImpl::OnReportSentFromWebUI(
@@ -270,11 +284,12 @@ void ConversionManagerImpl::OnReportSentFromWebUI(
     int64_t conversion_id) {
   // |reports_sent_barrier| is a OnceClosure view of a RepeatingClosure obtained
   // by base::BarrierClosure().
-  conversion_storage_context_->DeleteConversion(
-      conversion_id,
-      base::BindOnce([](base::OnceClosure callback,
-                        bool result) { std::move(callback).Run(); },
-                     std::move(reports_sent_barrier)));
+  conversion_storage_context_->storage()
+      .AsyncCall(&ConversionStorage::DeleteConversion)
+      .WithArgs(conversion_id)
+      .Then(base::BindOnce([](base::OnceClosure callback,
+                              bool result) { std::move(callback).Run(); },
+                           std::move(reports_sent_barrier)));
 }
 
 }  // namespace content
