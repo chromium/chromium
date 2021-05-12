@@ -2,10 +2,23 @@
 
 This is an experimental prototype of the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium, implemented as a JavaScript layer translating between BiDi and CDP run in Chrome Tab.
 
-## Starting the Server
+## Setup
+
+This is a Node.js project, so install dependencies as usual:
 
     npm install
-    CHROME_PATH="${CHROME_PATH}" npm run bidi-server
+
+Then set the `CHROME_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
+
+    export CHROME_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium" 
+    export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+    export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+
+If it's a newly downloaded binary, first run it manually once to ensure the operating system trusts it.
+
+## Starting the Server
+
+    npm run bidi-server
 
 This will run the server on port 8080. Use the `PORT` environment variable to
 run it on another port:
@@ -14,9 +27,11 @@ run it on another port:
 
 Use the `DEBUG` environment variable to see debug info:
 
-    DEBUG=* CHROME_PATH="${CHROME_PATH}" npm run bidi-server
+    DEBUG=* npm run bidi-server
 
 ## Running the Tests
+
+**Note**: Most of the tests currently fail, but this is how to run them.
 
 The tests are written using Python, in order to learn how to eventually do this
 in web-platform-tests. Python 3.6+ and some dependencies are required:
