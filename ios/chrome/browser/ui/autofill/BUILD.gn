@@ -5,8 +5,6 @@
 source_set("autofill") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "autofill_ui_type_util.h",
-    "autofill_ui_type_util.mm",
     "chrome_autofill_client_ios.h",
     "chrome_autofill_client_ios.mm",
   ]
@@ -101,7 +99,6 @@ source_set("bridges") {
 source_set("autofill_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "autofill_ui_type.h",
     "expiration_date_picker.h",
     "expiration_date_picker.mm",
     "save_card_infobar_controller.h",
@@ -133,6 +130,20 @@ source_set("autofill_ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("autofill_ui_type") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "autofill_ui_type.h",
+    "autofill_ui_type_util.h",
+    "autofill_ui_type_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings:ios_strings",
+  ]
 }
 
 source_set("autofill_message") {

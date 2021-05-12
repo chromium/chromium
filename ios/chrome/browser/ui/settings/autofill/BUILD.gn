@@ -40,7 +40,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/autofill",
-    "//ios/chrome/browser/ui/autofill:autofill_ui",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory_ui",
     "//ios/chrome/browser/ui/commands",
