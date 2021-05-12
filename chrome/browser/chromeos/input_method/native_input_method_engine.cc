@@ -64,7 +64,7 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 
-std::string NormalizeEngineId(const std::string engine_id) {
+std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
   // For legacy reasons, |engine_id| starts with "vkd_" in the input method
   // manifest, but the InputEngineManager expects the prefix "m17n:".
   // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.
@@ -252,8 +252,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     return;
   }
 
-  if (ShouldRouteToRuleBasedEngine(engine_id) ||
-      ShouldRouteToFstMojoEngine(engine_id)) {
+  if (ShouldRouteToRuleBasedEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
       auto* ime_manager = input_method::InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
@@ -263,7 +262,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       LogEvent(ImeServiceEvent::kInitSuccess);
     }
 
-    const auto new_engine_id = NormalizeEngineId(engine_id);
+    const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
 
     // Deactivate any existing engine.
     remote_to_engine_.reset();
@@ -275,11 +274,31 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), new_engine_id));
 
-    remote_to_engine_->OnInputMethodChanged(new_engine_id);
-
-    if (ShouldRouteToRuleBasedEngine(engine_id)) {
-      ime_base_observer_->OnActivate(engine_id);
+    // Notify the virtual keyboard extension that the IME has changed.
+    ime_base_observer_->OnActivate(engine_id);
+  } else if (ShouldRouteToFstMojoEngine(engine_id)) {
+    if (!remote_manager_.is_bound()) {
+      auto* ime_manager = input_method::InputMethodManager::Get();
+      ime_manager->ConnectInputEngineManager(
+          remote_manager_.BindNewPipeAndPassReceiver());
+      remote_manager_.set_disconnect_handler(base::BindOnce(
+          &ImeObserver::OnError, base::Unretained(this), base::Time::Now()));
+      LogEvent(ImeServiceEvent::kInitSuccess);
     }
+
+    // Deactivate any existing engine.
+    remote_to_engine_.reset();
+    receiver_from_engine_.reset();
+
+    remote_manager_->ConnectToImeEngine(
+        engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
+        receiver_from_engine_.BindNewPipeAndPassRemote(), {},
+        base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
+                       base::Time::Now(), engine_id));
+
+    // `ConnectToImeEngine` doesn't actually activate the IME in the IME
+    // service. We must call `OnInputMethodChanged` as well.
+    remote_to_engine_->OnInputMethodChanged(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
