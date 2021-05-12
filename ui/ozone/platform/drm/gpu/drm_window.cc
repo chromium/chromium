@@ -131,10 +131,6 @@ OverlayStatusList DrmWindow::TestPageFlip(
                                           last_submitted_planes_);
 }
 
-const DrmOverlayPlane* DrmWindow::GetLastModesetBuffer() const {
-  return DrmOverlayPlane::GetPrimaryPlane(last_submitted_planes_);
-}
-
 void DrmWindow::UpdateCursorImage() {
   if (!controller_)
     return;

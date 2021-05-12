@@ -1467,8 +1467,6 @@ TEST_F(ScreenManagerTest, DrmFramebufferSequenceIdIncrementingAtModeset) {
   CHECK_EQ(pre_modeset_buffer->modeset_sequence_id_at_allocation(), 0);
 }
 
-// TODO(markyacoub): Create another one testing cloning overlays for modeset
-// when supported.
 TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
 
@@ -1497,6 +1495,53 @@ TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
                                  .modeset_framebuffers,
                              buffer));
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
+TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
+  std::vector<CrtcState> crtc_states = {{
+      /* .planes = */
+      {
+          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
+          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
+      },
+  }};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+
+  std::unique_ptr<ui::DrmWindow> window(
+      new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
+  window->Initialize();
+  window->SetBounds(GetPrimaryBounds());
+  scoped_refptr<DrmFramebuffer> primary =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  scoped_refptr<DrmFramebuffer> overlay =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  ui::DrmOverlayPlaneList planes;
+  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  window->SchedulePageFlip(std::move(planes), base::DoNothing(),
+                           base::DoNothing());
+  screen_manager_->AddWindow(1, std::move(window));
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  ASSERT_TRUE(
+      screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
+
+  EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 .modeset_framebuffers,
+                             primary));
+  EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 .modeset_framebuffers,
+                             overlay));
 
   window = screen_manager_->RemoveWindow(1);
   window->Shutdown();
@@ -1551,13 +1596,13 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
   window->Initialize();
   window->SetBounds(GetPrimaryBounds());
-  scoped_refptr<DrmFramebuffer> buffer1 =
+  scoped_refptr<DrmFramebuffer> primary =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
-  scoped_refptr<DrmFramebuffer> buffer2 =
+  scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(buffer1, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(buffer2, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1571,17 +1616,17 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
   ASSERT_TRUE(
       screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
 
-  // TODO(markyacoub): Add another one to check if buffer2 is contained in
-  // modeset_framebuffers.
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
                                  .modeset_framebuffers,
-                             buffer1));
+                             primary));
+  EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 .modeset_framebuffers,
+                             overlay));
 
-  // TODO(markyacoub): Increment both counts to 2 once we clone overlays as
-  // well for modeset.
-  EXPECT_EQ(drm_->get_test_modeset_count(), 1);
-  EXPECT_EQ(drm_->last_planes_committed_count(), 1);
+  EXPECT_EQ(drm_->get_test_modeset_count(), 2);
+  EXPECT_EQ(drm_->last_planes_committed_count(), 2);
 
   window = screen_manager_->RemoveWindow(1);
   window->Shutdown();
@@ -1601,13 +1646,13 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
   window->Initialize();
   window->SetBounds(GetPrimaryBounds());
-  scoped_refptr<DrmFramebuffer> primary_buffer =
+  scoped_refptr<DrmFramebuffer> primary =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
-  scoped_refptr<DrmFramebuffer> overlay_buffer =
+  scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1619,20 +1664,70 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
       kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
 
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
                                  .modeset_framebuffers,
-                             primary_buffer));
+                             primary));
   EXPECT_FALSE(base::Contains(drm_->plane_manager()
                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
                                   .modeset_framebuffers,
-                              overlay_buffer));
+                              overlay));
 
-  // TODO(markyacoub): Increment get_test_modeset_count once we clone overlays
-  // for modesetting test.
+  EXPECT_EQ(drm_->get_test_modeset_count(), 2);
+  EXPECT_EQ(drm_->last_planes_committed_count(), 1);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
+TEST_F(ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
+  std::vector<CrtcState> crtc_states = {{
+      /* .planes = */
+      {
+          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
+          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
+      },
+  }};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true,
+                     /*use_modifiers_list=*/true);
+  std::unique_ptr<ui::DrmWindow> window(
+      new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
+  window->Initialize();
+  window->SetBounds(GetPrimaryBounds());
+
+  scoped_refptr<DrmFramebuffer> primary =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  scoped_refptr<DrmFramebuffer> overlay =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  ui::DrmOverlayPlaneList planes;
+  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
+  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  window->SchedulePageFlip(std::move(planes), base::DoNothing(),
+                           base::DoNothing());
+  screen_manager_->AddWindow(1, std::move(window));
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  ASSERT_TRUE(
+      screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
+
+  EXPECT_FALSE(base::Contains(drm_->plane_manager()
+                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                  .modeset_framebuffers,
+                              primary));
+  EXPECT_FALSE(base::Contains(drm_->plane_manager()
+                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                  .modeset_framebuffers,
+                              overlay));
+
+  // Testing test modifiers only, no linear or overlays test.
   EXPECT_EQ(drm_->get_test_modeset_count(), 1);
   EXPECT_EQ(drm_->last_planes_committed_count(), 1);
 

@@ -84,8 +84,9 @@ class DrmWindow {
   OverlayStatusList TestPageFlip(
       const OverlaySurfaceCandidateList& overlay_params);
 
-  // Returns the last buffer associated with this window.
-  const DrmOverlayPlane* GetLastModesetBuffer() const;
+  const DrmOverlayPlaneList& last_submitted_planes() const {
+    return last_submitted_planes_;
+  }
 
  private:
   // Draw next frame in an animated cursor.

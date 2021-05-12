@@ -405,10 +405,10 @@ bool ScreenManager::TestModesetWithOverlays(
       controller->GetDisableProps(&commit_request);
     }
   }
-  // If we have no overlays, there is nothing new to test after the previous
-  // modifiers tests and Modeset can take all available planes.
+  // If we have no overlays, report not modesetting with overlays as we haven't
+  // tested with overlays.
   if (!does_an_overlay_exist)
-    return true;
+    return false;
 
   return drm->plane_manager()->Commit(
       std::move(commit_request),
@@ -707,18 +707,23 @@ DrmOverlayPlaneList ScreenManager::GetModesetPlanes(
   }
 
   // If the current primary plane matches what we need for the next page flip,
-  // we can clone it.
+  // clone all last_submitted_planes (matching primary + overlays).
   DrmWindow* window = FindWindowAt(bounds);
   if (window) {
-    const DrmOverlayPlane* primary = window->GetLastModesetBuffer();
+    const DrmOverlayPlaneList& last_submitted_planes =
+        window->last_submitted_planes();
+    const DrmOverlayPlane* primary =
+        DrmOverlayPlane::GetPrimaryPlane(last_submitted_planes);
     if (primary && primary->buffer->size() == bounds.size() &&
         primary->buffer->drm_device() == controller->GetDrmDevice().get() &&
         primary->buffer->format_modifier() == buffer->GetFormatModifier()) {
-      // TODO(markyacoub): use |include_overlays| to return all planes not just
-      // Primary.
-      DrmOverlayPlaneList modeset_planes;
-      modeset_planes.push_back(primary->Clone());
-      return modeset_planes;
+      if (include_overlays) {
+        return DrmOverlayPlane::Clone(last_submitted_planes);
+      } else {
+        DrmOverlayPlaneList modeset_plane;
+        modeset_plane.push_back(primary->Clone());
+        return modeset_plane;
+      }
     }
   }
 
