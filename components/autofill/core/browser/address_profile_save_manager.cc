@@ -20,7 +20,8 @@ AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 
 void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    const GURL& url) {
   // Without a personal data manager, profile storage is not possible.
   if (!personal_data_manager_)
     return;
@@ -47,7 +48,8 @@ void AddressProfileSaveManager::ImportProfileFromForm(
   // Create a new pending import process. If there was already an import
   // process, it is only overwritten if the UI request was not initialized yet.
   pending_import_ = ProfileImportProcess(
-      observed_profile, personal_data_manager_->GetProfiles(), app_locale);
+      observed_profile, personal_data_manager_->GetProfiles(), app_locale, url,
+      personal_data_manager_->IsNewProfileImportBlockedForDomain(url));
 
   MaybeOfferSavePrompt();
 }
@@ -56,10 +58,12 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt() {
   DCHECK(pending_import_.has_value());
 
   switch (pending_import_->import_type()) {
-    // If the import was duplicate or only results in silent updates, finish the
-    // process without initiating a user prompt.
+    // If the import was a duplicate, only results in silent updates or if the
+    // import of a new profile is blocked on the used domain, finish the process
+    // without initiating a user prompt
     case AutofillProfileImportType::kDuplicateImport:
     case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
       pending_import_->AcceptWithoutPrompt();
       FinalizeProfileImport();
       break;
@@ -120,6 +124,21 @@ void AddressProfileSaveManager::FinalizeProfileImport() {
     std::vector<AutofillProfile> resulting_profiles =
         pending_import_->GetResultingProfiles();
     personal_data_manager_->SetProfiles(&resulting_profiles);
+  }
+
+  // If the import of a new profile was declined, add a strike for this source
+  // url. If it was accepted, reset the potentially existing strikes.
+  if (pending_import_->import_type() ==
+      AutofillProfileImportType::kNewProfile) {
+    if (pending_import_->user_decision() ==
+        AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined) {
+      personal_data_manager_->AddStrikeToBlockNewProfileImportForDomain(
+          pending_import()->form_source_url());
+    } else if (pending_import_->user_decision() ==
+               AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
+      personal_data_manager_->RemoveStrikesToBlockNewProfileImportForDomain(
+          pending_import()->form_source_url());
+    }
   }
 
   pending_import_->CollectMetrics();

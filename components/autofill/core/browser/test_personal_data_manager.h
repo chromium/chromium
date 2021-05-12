@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
@@ -25,6 +26,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   TestPersonalDataManager();
   ~TestPersonalDataManager() override;
 
+  using PersonalDataManager::GetProfileSaveStrikeDatabase;
   using PersonalDataManager::SetPrefService;
 
   // PersonalDataManager overrides.  These functions are overridden as needed
@@ -64,6 +66,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
+  const AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase()
+      const override;
 
   // Unique to TestPersonalDataManager:
 
@@ -161,6 +165,10 @@ class TestPersonalDataManager : public PersonalDataManager {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   bool sync_service_initialized_ = false;
   CoreAccountInfo account_info_;
+
+  TestInMemoryStrikeDatabase inmemory_strike_database_;
+  AutofillProfileSaveStrikeDatabase in_memory_profile_save_strike_database_{
+      &inmemory_strike_database_};
 
   DISALLOW_COPY_AND_ASSIGN(TestPersonalDataManager);
 };

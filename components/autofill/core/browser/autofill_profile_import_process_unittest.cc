@@ -24,8 +24,12 @@ namespace {
 // Test that two subsequently created `ProfileImportProcess`s have distinct ids.
 TEST(AutofillProfileImportProcess, DistinctIds) {
   AutofillProfile empty_profile;
-  ProfileImportProcess import_data1(empty_profile, {}, "en_US");
-  ProfileImportProcess import_data2(empty_profile, {}, "en_US");
+  ProfileImportProcess import_data1(empty_profile, {}, "en_US",
+                                    GURL("https://www.import.me/now.html"),
+                                    false);
+  ProfileImportProcess import_data2(empty_profile, {}, "en_US",
+                                    GURL("https://www.import.me/now.html"),
+                                    false);
 
   // The import ids should be distinct.
   EXPECT_NE(import_data1.import_id(), import_data2.import_id());
@@ -43,7 +47,9 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAccepts) {
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
-  ProfileImportProcess import_data(observed_profile, {}, "en_US");
+  ProfileImportProcess import_data(observed_profile, {}, "en_US",
+                                   GURL("https://www.import.me/now.html"),
+                                   false);
 
   // Simulate the acceptance of the save prompt.
   import_data.AcceptWithoutEdits();
@@ -62,6 +68,33 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAccepts) {
   EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
 }
 
+// Tests the import process for the scenario, that the import of a new profile
+// is blocked.
+TEST(AutofillProfileImportProcess, ImportFirstProfile_ImportIsBlocked) {
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  // Create the import process for the scenario that there aren't any other
+  // stored profiles yet.
+  ProfileImportProcess import_data(observed_profile, {}, "en_US",
+                                   GURL("https://www.import.me/now.html"),
+                                   true);
+
+  // The user is not asked.
+  import_data.AcceptWithoutPrompt();
+
+  // This operation should not result in a profile change.
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_FALSE(import_data.ImportIsNewProfile());
+  EXPECT_FALSE(import_data.ImportIsMerge());
+  EXPECT_FALSE(import_data.ImportIsSilentUpdate());
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSuppressedNewProfile);
+
+  // Test that no profile was imported.
+  std::vector<AutofillProfile> expected_resulting_profiles = {};
+  EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
+}
+
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile but with additional edits..
 TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAcceptsWithEdits) {
@@ -69,7 +102,9 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAcceptsWithEdits) {
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
-  ProfileImportProcess import_data(observed_profile, {}, "en_US");
+  ProfileImportProcess import_data(observed_profile, {}, "en_US",
+                                   GURL("https://www.import.me/now.html"),
+                                   false);
 
   // Simulate that the user accepts the save prompt but only after editing the
   // profile. Note, that the `guid` of the edited profile must match the `guid`
@@ -99,7 +134,9 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserRejects) {
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
-  ProfileImportProcess import_data(observed_profile, {}, "en_US");
+  ProfileImportProcess import_data(observed_profile, {}, "en_US",
+                                   GURL("https://www.import.me/now.html"),
+                                   false);
 
   // Simulate the decline of the user.
   import_data.Declined();
@@ -126,8 +163,9 @@ TEST(AutofillProfileImportProcess, ImportDuplicateProfile) {
 
   // Create the import process for the scenario that the observed profile is an
   // exact copy of an already existing one.
-  ProfileImportProcess import_data(observed_profile, {&existing_profile},
-                                   "en_US");
+  ProfileImportProcess import_data(
+      observed_profile, {&existing_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the import of a duplicate is determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -163,7 +201,8 @@ TEST(AutofillProfileImportProcess,
   // Create the import process for the two already existing profiles.
   ProfileImportProcess import_data(
       observed_profile,
-      {&duplicate_existing_profile, &distinct_existing_profile}, "en_US");
+      {&duplicate_existing_profile, &distinct_existing_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -193,8 +232,9 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Accepted) {
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
-  ProfileImportProcess import_data(observed_profile, {&mergeable_profile},
-                                   "en_US");
+  ProfileImportProcess import_data(
+      observed_profile, {&mergeable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -233,8 +273,9 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_AcceptWithEdits) {
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
-  ProfileImportProcess import_data(observed_profile, {&mergeable_profile},
-                                   "en_US");
+  ProfileImportProcess import_data(
+      observed_profile, {&mergeable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -275,7 +316,8 @@ TEST(AutofillProfileImportProcess,
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
   ProfileImportProcess import_data(
-      observed_profile, {&mergeable_profile, &distinct_profile}, "en_US");
+      observed_profile, {&mergeable_profile, &distinct_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -312,8 +354,9 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Rejected) {
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
-  ProfileImportProcess import_data(observed_profile, {&mergeable_profile},
-                                   "en_US");
+  ProfileImportProcess import_data(
+      observed_profile, {&mergeable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -355,8 +398,9 @@ TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
-  ProfileImportProcess import_data(observed_profile, {&updateable_profile},
-                                   "en_US");
+  ProfileImportProcess import_data(
+      observed_profile, {&updateable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -399,7 +443,8 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(
-      observed_profile, {&updateable_profile, &mergeable_profile}, "en_US");
+      observed_profile, {&updateable_profile, &mergeable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());
@@ -445,7 +490,8 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Rejected) {
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(
-      observed_profile, {&updateable_profile, &mergeable_profile}, "en_US");
+      observed_profile, {&updateable_profile, &mergeable_profile}, "en_US",
+      GURL("https://www.import.me/now.html"), false);
 
   // Test that the type of import was determined correctly.
   EXPECT_FALSE(import_data.ImportIsNewProfile());

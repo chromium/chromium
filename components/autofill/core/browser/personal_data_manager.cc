@@ -1623,26 +1623,37 @@ void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
 
 bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
     const GURL& url) const {
-  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return false;
   }
-  return profile_save_strike_database_->IsMaxStrikesLimitReached(url.host());
+  return GetProfileSaveStrikeDatabase()->IsMaxStrikesLimitReached(url.host());
 }
 
 void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
     const GURL& url) {
-  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return;
   }
-  profile_save_strike_database_->AddStrike(url.host());
+  GetProfileSaveStrikeDatabase()->AddStrike(url.host());
 }
 
 void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
     const GURL& url) {
-  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return;
   }
-  profile_save_strike_database_->ClearStrikes(url.host());
+  GetProfileSaveStrikeDatabase()->ClearStrikes(url.host());
+}
+
+AutofillProfileSaveStrikeDatabase*
+PersonalDataManager::GetProfileSaveStrikeDatabase() {
+  return const_cast<AutofillProfileSaveStrikeDatabase*>(
+      base::as_const(*this).GetProfileSaveStrikeDatabase());
+}
+
+const AutofillProfileSaveStrikeDatabase*
+PersonalDataManager::GetProfileSaveStrikeDatabase() const {
+  return profile_save_strike_database_.get();
 }
 
 void PersonalDataManager::SetCreditCards(

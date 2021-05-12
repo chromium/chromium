@@ -731,8 +731,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // incognito mode but the import is not triggered if the browser is in the
   // incognito mode.
   DCHECK(!personal_data_manager_->IsOffTheRecord());
-  address_profile_save_manager_->ImportProfileFromForm(candidate_profile,
-                                                       app_locale_);
+  address_profile_save_manager_->ImportProfileFromForm(
+      candidate_profile, app_locale_, form.source_url());
 
   return true;
 }

@@ -12,7 +12,7 @@ namespace autofill {
 TestPersonalDataManager::TestPersonalDataManager()
     : PersonalDataManager("en-US", "US") {}
 
-TestPersonalDataManager::~TestPersonalDataManager() {}
+TestPersonalDataManager::~TestPersonalDataManager() = default;
 
 void TestPersonalDataManager::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
@@ -289,6 +289,11 @@ bool TestPersonalDataManager::IsSyncFeatureEnabled() const {
 CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
     const {
   return account_info_;
+}
+
+const AutofillProfileSaveStrikeDatabase*
+TestPersonalDataManager::GetProfileSaveStrikeDatabase() const {
+  return &in_memory_profile_save_strike_database_;
 }
 
 void TestPersonalDataManager::ClearProfiles() {

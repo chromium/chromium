@@ -32,7 +32,11 @@ enum class AutofillProfileImportType {
   // The imported profile changes settings-visible values which is only imported
   // after explicit user confirmation.
   kConfirmableMerge,
-  kMaxValue = kConfirmableMerge
+  // The observed profile corresponds to a new profile because there are no
+  // mergeable or updateable profiles but imports are suppressed for this
+  // domain.
+  kSuppressedNewProfile,
+  kMaxValue = kSuppressedNewProfile
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -55,7 +59,9 @@ class ProfileImportProcess {
  public:
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::vector<AutofillProfile*>& existing_profiles,
-                       const std::string& app_locale);
+                       const std::string& app_locale,
+                       const GURL& form_source_url,
+                       bool new_profiles_suppressed_for_domain);
 
   ProfileImportProcess(const ProfileImportProcess&);
   ProfileImportProcess& operator=(const ProfileImportProcess& other);
@@ -98,6 +104,8 @@ class ProfileImportProcess {
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
     return user_decision_;
   }
+
+  const GURL& form_source_url() const { return form_source_url_; }
 
   // Returns a vector containing all unchanged, updated, merged and new
   // profiles.
@@ -186,6 +194,13 @@ class ProfileImportProcess {
 
   // The appplication locale used for this import process.
   std::string app_locale_;
+
+  // The url of the form.
+  GURL form_source_url_;
+
+  // Indicates if saving a new profile is blocked for the domain the profile
+  // was observed on.
+  bool new_profiles_suppressed_for_domain_;
 };
 
 }  // namespace autofill

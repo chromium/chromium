@@ -25,10 +25,14 @@ AutofillProfileImportId GetImportId() {
 ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::vector<AutofillProfile*>& existing_profiles,
-    const std::string& app_locale)
+    const std::string& app_locale,
+    const GURL& form_source_url,
+    bool new_profiles_suppressed_for_domain)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
-      app_locale_(app_locale) {
+      app_locale_(app_locale),
+      form_source_url_(form_source_url),
+      new_profiles_suppressed_for_domain_(new_profiles_suppressed_for_domain) {
   DetermineProfileImportType(existing_profiles, app_locale);
 }
 
@@ -114,8 +118,12 @@ void ProfileImportProcess::DetermineProfileImportType(
   if (!is_mergeable_with_existing_profile) {
     // There should be no import candidate yet.
     DCHECK(!import_candidate_.has_value());
-    import_type_ = AutofillProfileImportType::kNewProfile;
-    import_candidate_ = observed_profile();
+    if (new_profiles_suppressed_for_domain_) {
+      import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+    } else {
+      import_type_ = AutofillProfileImportType::kNewProfile;
+      import_candidate_ = observed_profile();
+    }
   } else if (!merge_candidate_.has_value()) {
     // When the observed profile is mergeable with an existing profile but there
     // is no merge candidate this means that either the import was a duplicate

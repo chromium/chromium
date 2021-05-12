@@ -558,6 +558,12 @@ class PersonalDataManager : public KeyedService,
   friend void SetTestProfiles(Profile* base_profile,
                               std::vector<AutofillProfile>* profiles);
 
+  // Used to get a pointer to the strike database. Note, the result can be a
+  // nullptr.
+  AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase();
+  virtual const AutofillProfileSaveStrikeDatabase*
+  GetProfileSaveStrikeDatabase() const;
+
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);

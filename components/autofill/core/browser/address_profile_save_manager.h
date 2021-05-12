@@ -30,13 +30,15 @@ class AddressProfileSaveManager {
   virtual ~AddressProfileSaveManager();
 
   // This method initiates the import process that is started when an importable
-  // `profile` is observed in a form submission. Depending on the scenario, the
-  // method will have no effect if `profile` resembles an already existing
-  // profile. If the import corresponds to a new profile, or to a change of an
-  // existing profile that must be confirmed by the user, a UI prompt will be
-  // initiated. At the end of the process, metrics will be recorded.
+  // `profile` is observed in a form submission on `url`. Depending on the
+  // scenario, the method will have no effect if `profile` resembles an already
+  // existing profile. If the import corresponds to a new profile, or to a
+  // change of an existing profile that must be confirmed by the user, a UI
+  // prompt will be initiated. At the end of the process, metrics will be
+  // recorded.
   void ImportProfileFromForm(const AutofillProfile& profile,
-                             const std::string& app_locale);
+                             const std::string& app_locale,
+                             const GURL& url);
 
  protected:
   // Initiates showing the prompt to the user.
