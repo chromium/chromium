@@ -240,36 +240,33 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
 
   const Value* actual;
   EXPECT_TRUE(pref_store->GetValue(kHomePage, &actual));
-  std::string string_value;
-  EXPECT_TRUE(actual->GetAsString(&string_value));
-  EXPECT_EQ(cnn, string_value);
+  EXPECT_TRUE(actual->is_string());
+  EXPECT_EQ(cnn, actual->GetString());
 
   const char kSomeDirectory[] = "some_directory";
 
   EXPECT_TRUE(pref_store->GetValue(kSomeDirectory, &actual));
-  std::string path;
-  EXPECT_TRUE(actual->GetAsString(&path));
-  EXPECT_EQ("/usr/local/", path);
+  EXPECT_TRUE(actual->is_string());
+  EXPECT_EQ("/usr/local/", actual->GetString());
   base::FilePath some_path(FILE_PATH_LITERAL("/usr/sbin/"));
 
   pref_store->SetValue(kSomeDirectory,
                        std::make_unique<Value>(some_path.AsUTF8Unsafe()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kSomeDirectory, &actual));
-  EXPECT_TRUE(actual->GetAsString(&path));
-  EXPECT_EQ(some_path.AsUTF8Unsafe(), path);
+  EXPECT_TRUE(actual->is_string());
+  EXPECT_EQ(some_path.AsUTF8Unsafe(), actual->GetString());
 
   // Test reading some other data types from sub-dictionaries.
   EXPECT_TRUE(pref_store->GetValue(kNewWindowsInTabs, &actual));
-  bool boolean = false;
-  EXPECT_TRUE(actual->GetAsBoolean(&boolean));
-  EXPECT_TRUE(boolean);
+  EXPECT_TRUE(actual->is_bool());
+  EXPECT_TRUE(actual->GetBool());
 
   pref_store->SetValue(kNewWindowsInTabs, std::make_unique<Value>(false),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kNewWindowsInTabs, &actual));
-  EXPECT_TRUE(actual->GetAsBoolean(&boolean));
-  EXPECT_FALSE(boolean);
+  EXPECT_TRUE(actual->is_bool());
+  EXPECT_FALSE(actual->GetBool());
 
   EXPECT_TRUE(pref_store->GetValue(kMaxTabs, &actual));
   ASSERT_TRUE(actual->is_int());
@@ -285,9 +282,9 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
       std::make_unique<Value>(base::NumberToString(214748364842LL)),
       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kLongIntPref, &actual));
-  EXPECT_TRUE(actual->GetAsString(&string_value));
+  EXPECT_TRUE(actual->is_string());
   int64_t value;
-  base::StringToInt64(string_value, &value);
+  base::StringToInt64(actual->GetString(), &value);
   EXPECT_EQ(214748364842LL, value);
 
   // Serialize and compare to expected output.
