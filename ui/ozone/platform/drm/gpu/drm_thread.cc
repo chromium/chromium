@@ -91,7 +91,7 @@ void DrmThread::Start(base::OnceClosure receiver_completer,
   thread_options.message_pump_type = base::MessagePumpType::IO;
   thread_options.priority = base::ThreadPriority::DISPLAY;
 
-  if (!StartWithOptions(thread_options))
+  if (!StartWithOptions(std::move(thread_options)))
     LOG(FATAL) << "Failed to create DRM thread";
 }
 
