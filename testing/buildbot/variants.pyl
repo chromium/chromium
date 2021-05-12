@@ -346,7 +346,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=91',
     ],
-    'identifier': 'Implementation Library Skew Tests For 91.0.4472.60',
+    'identifier': 'with_impl_from_91',
     'swarming': {
       'cipd_packages': [
         {
@@ -370,7 +370,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=90',
     ],
-    'identifier': 'Implementation Library Skew Tests For 90.0.4430.214',
+    'identifier': 'with_impl_from_90',
     'swarming': {
       'cipd_packages': [
         {
@@ -394,7 +394,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=89',
     ],
-    'identifier': 'Implementation Library Skew Tests For 89.0.4389.129',
+    'identifier': 'with_impl_from_89',
     'swarming': {
       'cipd_packages': [
         {
@@ -418,7 +418,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=91',
     ],
-    'identifier': 'Implementation Library Skew Tests For 91.0.4472.60',
+    'identifier': 'with_impl_from_91',
     'swarming': {
       'cipd_packages': [
         {
@@ -442,7 +442,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=90',
     ],
-    'identifier': 'Implementation Library Skew Tests For 90.0.4430.214',
+    'identifier': 'with_impl_from_90',
     'swarming': {
       'cipd_packages': [
         {
@@ -466,7 +466,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=89',
     ],
-    'identifier': 'Implementation Library Skew Tests For 89.0.4389.129',
+    'identifier': 'with_impl_from_89',
     'swarming': {
       'cipd_packages': [
         {
@@ -490,7 +490,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=91',
     ],
-    'identifier': 'Client Library Skew Tests For 91.0.4472.60',
+    'identifier': 'with_client_from_91',
     'swarming': {
       'cipd_packages': [
         {
@@ -514,7 +514,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=90',
     ],
-    'identifier': 'Client Library Skew Tests For 90.0.4430.214',
+    'identifier': 'with_client_from_90',
     'swarming': {
       'cipd_packages': [
         {
@@ -538,7 +538,7 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=89',
     ],
-    'identifier': 'Client Library Skew Tests For 89.0.4389.129',
+    'identifier': 'with_client_from_89',
     'swarming': {
       'cipd_packages': [
         {

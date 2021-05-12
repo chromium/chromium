@@ -4596,11 +4596,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.129"
+            "weblayer_skew_tests_with_client_from_89"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.129",
+        "name": "weblayer_skew_tests_with_client_from_89",
         "resultdb": {
           "enable": true
         },
@@ -4651,8 +4651,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       },
       {
         "args": [
@@ -4675,11 +4675,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.214"
+            "weblayer_skew_tests_with_client_from_90"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.214",
+        "name": "weblayer_skew_tests_with_client_from_90",
         "resultdb": {
           "enable": true
         },
@@ -4730,8 +4730,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       },
       {
         "args": [
@@ -4754,11 +4754,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 91.0.4472.60"
+            "weblayer_skew_tests_with_client_from_91"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 91.0.4472.60",
+        "name": "weblayer_skew_tests_with_client_from_91",
         "resultdb": {
           "enable": true
         },
@@ -4809,8 +4809,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       },
       {
         "args": [
@@ -4833,11 +4833,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.129"
+            "weblayer_skew_tests_with_impl_from_89"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.129",
+        "name": "weblayer_skew_tests_with_impl_from_89",
         "resultdb": {
           "enable": true
         },
@@ -4888,8 +4888,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       },
       {
         "args": [
@@ -4912,11 +4912,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.214"
+            "weblayer_skew_tests_with_impl_from_90"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.214",
+        "name": "weblayer_skew_tests_with_impl_from_90",
         "resultdb": {
           "enable": true
         },
@@ -4967,8 +4967,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       },
       {
         "args": [
@@ -4991,11 +4991,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 91.0.4472.60"
+            "weblayer_skew_tests_with_impl_from_91"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 91.0.4472.60",
+        "name": "weblayer_skew_tests_with_impl_from_91",
         "resultdb": {
           "enable": true
         },
@@ -5046,8 +5046,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "weblayer_instrumentation_test_versions_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
+        "test": "weblayer_skew_tests",
+        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/"
       }
     ]
   },

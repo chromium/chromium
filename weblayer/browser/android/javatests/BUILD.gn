@@ -252,17 +252,17 @@ weblayer_instrumentation("weblayer_private_instrumentation_test_apk") {
 #       --test-runner-outdir out/Release
 #       --client-outdir /tmp/M80/out/Release
 #       --implementation-outdir out/Release
-copy("weblayer_instrumentation_test_versions_apk") {
+copy("weblayer_skew_tests") {
   testonly = true
 
   sources = [ "weblayer_instrumentation_test_versions.py" ]
 
   outputs =
-      [ "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_apk" ]
+      [ "$root_build_dir/bin/run_weblayer_skew_tests" ]
 
   # Also explicitly list the output as data so it gets isolated on bots.
   data = [
-    "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_apk",
+    "$root_build_dir/bin/run_weblayer_skew_tests",
     "//third_party/catapult/third_party/typ/",
     "//weblayer/browser/android/javatests/skew/expectations.txt",
   ]
@@ -276,17 +276,17 @@ copy("weblayer_instrumentation_test_versions_apk") {
 # client and implementation libraries. This target also compiles
 # Chrome for devices that do not come with Chrome installed. For usage
 # please see the comment above.
-copy("weblayer_instrumentation_test_versions_with_chrome_apk") {
+copy("weblayer_skew_tests_with_chrome") {
   testonly = true
 
   sources = [ "weblayer_instrumentation_test_versions.py" ]
 
   outputs =
-      [ "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_with_chrome_apk" ]
+      [ "$root_build_dir/bin/run_weblayer_skew_tests_with_chrome" ]
 
   # Also explicitly list the output as data so it gets isolated on bots.
   data = [
-    "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_with_chrome_apk",
+    "$root_build_dir/bin/run_weblayer_skew_tests_with_chrome",
     "//third_party/catapult/third_party/typ/",
     "//weblayer/browser/android/javatests/skew/expectations.txt",
   ]

@@ -5180,25 +5180,6 @@
       }
     },
 
-    'weblayer_instrumentation_version_tests': {
-      'weblayer_instrumentation_test_versions_apk': {
-        'swarming': {
-          'shards': 2,
-        }
-      },
-    },
-
-    'weblayer_instrumentation_version_tests_with_chrome': {
-      'weblayer_instrumentation_test_versions_with_chrome_apk': {
-        'swarming': {
-          'shards': 2,
-        },
-        'args': [
-          '--additional-apk=apks/ChromePublic.apk'
-        ],
-      },
-    },
-
     'weblayer_shell_wpt': {
       'weblayer_shell_wpt': {
         'swarming': {
@@ -5213,6 +5194,25 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'results_handler': 'layout tests',
+      },
+    },
+
+    'weblayer_skew_tests': {
+      'weblayer_skew_tests': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+    },
+
+    'weblayer_skew_tests_with_chrome': {
+      'weblayer_skew_tests_with_chrome': {
+        'swarming': {
+          'shards': 2,
+        },
+        'args': [
+          '--additional-apk=apks/ChromePublic.apk'
+        ],
       },
     },
 
@@ -6869,7 +6869,7 @@
           {'identifier': 'ToT_Tests'}
         ]
       },
-      'weblayer_instrumentation_version_tests': {
+      'weblayer_skew_tests': {
         'variants': [
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
@@ -6882,7 +6882,7 @@
     },
 
     'android_weblayer_x86_marshmallow_gtests': {
-      'weblayer_instrumentation_version_tests_with_chrome': {
+      'weblayer_skew_tests_with_chrome': {
         'variants': [
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',
@@ -6900,7 +6900,7 @@
           {'identifier': 'ToT_Tests'}
         ]
       },
-      'weblayer_instrumentation_version_tests': {
+      'weblayer_skew_tests': {
         'variants': [
           'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE',
           'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE',

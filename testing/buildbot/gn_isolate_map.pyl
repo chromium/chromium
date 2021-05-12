@@ -1971,20 +1971,20 @@
     "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
     "type": "console_test_launcher",
   },
-  "weblayer_instrumentation_test_versions_apk": {
+  "weblayer_skew_tests": {
     "args":  [
       "--replace-system-package",
       "org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
     ],
-    "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk",
+    "label": "//weblayer/browser/android/javatests:weblayer_skew_tests",
     "type": "console_test_launcher",
   },
-  "weblayer_instrumentation_test_versions_with_chrome_apk": {
+  "weblayer_skew_tests_with_chrome": {
     "args":  [
       "--replace-system-package",
       "org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
     ],
-    "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_with_chrome_apk",
+    "label": "//weblayer/browser/android/javatests:weblayer_skew_tests_with_chrome",
     "type": "console_test_launcher",
   },
   "weblayer_junit_tests": {
