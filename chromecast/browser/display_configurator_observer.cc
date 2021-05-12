@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "display_configurator_observer.h"
+#include "chromecast/browser/display_configurator_observer.h"
 
+#include "chromecast/graphics/cast_window_manager_aura.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 
 namespace chromecast {

@@ -773,7 +773,7 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   rounded_window_corners_manager_.reset();
   // Reset display change observer here to ensure it is deleted before
   // display_configurator since display_configurator is deleted when
-  // cast_browser_process is reset below.
+  // `cast_browser_process_` is reset below.
   display_change_observer_.reset();
 #endif
 

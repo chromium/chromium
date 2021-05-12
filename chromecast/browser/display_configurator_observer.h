@@ -6,9 +6,10 @@
 #define CHROMECAST_BROWSER_DISPLAY_CONFIGURATOR_OBSERVER_H_
 
 #include "chromecast/browser/cast_display_configurator.h"
-#include "chromecast/graphics/cast_window_manager_aura.h"
 
 namespace chromecast {
+
+class CastWindowManagerAura;
 
 // Observer class that can respond to Display Configurator state changes.
 // Forces a repaint to ensure content is refreshed post display configuration
