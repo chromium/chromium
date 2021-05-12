@@ -34,26 +34,21 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // DlpRulesManager:
   Level IsRestricted(const GURL& source,
                      Restriction restriction) const override;
-  Level IsRestrictedDestination(const GURL& source,
-                                const GURL& destination,
-                                Restriction restriction) const override;
+  Level IsRestrictedDestination(
+      const GURL& source,
+      const GURL& destination,
+      Restriction restriction,
+      std::string* out_source_pattern,
+      std::string* out_destination_pattern) const override;
   Level IsRestrictedComponent(const GURL& source,
                               const Component& destination,
-                              Restriction restriction) const override;
+                              Restriction restriction,
+                              std::string* out_source_pattern) const override;
   bool IsReportingEnabled() const override;
   DlpReportingManager* GetReportingManager() const override;
   std::string GetSourceUrlPattern(const GURL& source_url,
                                   Restriction restriction,
                                   Level level) const override;
-  std::string GetSourceUrlPattern(const GURL& source_url,
-                                  const Component& destination,
-                                  Restriction restriction,
-                                  Level level) const override;
-  std::pair<std::string, std::string> GetSrcAndDstUrlPatterns(
-      const GURL& source_url,
-      const GURL& destination_url,
-      Restriction restriction,
-      Level level) const override;
 
  protected:
   friend class DlpRulesManagerFactory;
@@ -62,19 +57,6 @@ class DlpRulesManagerImpl : public DlpRulesManager {
 
  private:
   void OnPolicyUpdate();
-
-  // Returns the maximum level of the rules of given `restriction` joined with
-  // the `selected_rules`.
-  Level GetMaxJoinRestrictionLevel(
-      const Restriction restriction,
-      const std::set<RuleId>& selected_rules) const;
-
-  // Returns the maximum level of the rules of given `restriction` joined with
-  // the `source_rules` and `destination_rules`.
-  Level GetMaxJoinRestrictionLevel(
-      const Restriction restriction,
-      const std::set<RuleId>& source_rules,
-      const std::set<RuleId>& destination_rules) const;
 
   // Used to track kDlpRulesList local state pref.
   PrefChangeRegistrar pref_change_registrar_;

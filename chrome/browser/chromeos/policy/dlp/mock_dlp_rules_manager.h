@@ -19,20 +19,18 @@ class MockDlpRulesManager : public DlpRulesManager {
   MOCK_CONST_METHOD2(IsRestricted,
                      Level(const GURL& source, Restriction restriction));
 
-  MOCK_CONST_METHOD3(IsRestrictedDestination,
+  MOCK_CONST_METHOD5(IsRestrictedDestination,
                      Level(const GURL& source,
                            const GURL& destination,
-                           Restriction restriction));
+                           Restriction restriction,
+                           std::string* out_source_pattern,
+                           std::string* out_destination_pattern));
 
-  MOCK_CONST_METHOD3(IsRestrictedComponent,
+  MOCK_CONST_METHOD4(IsRestrictedComponent,
                      Level(const GURL& source,
                            const Component& destination,
-                           Restriction restriction));
-
-  MOCK_CONST_METHOD3(IsRestrictedAnyOfComponents,
-                     Level(const GURL& source,
-                           const std::vector<Component>& destinations,
-                           Restriction restriction));
+                           Restriction restriction,
+                           std::string* out_source_pattern));
 
   MOCK_CONST_METHOD0(IsReportingEnabled, bool());
 
@@ -42,19 +40,6 @@ class MockDlpRulesManager : public DlpRulesManager {
                      std::string(const GURL& source_url,
                                  Restriction restriction,
                                  Level level));
-
-  MOCK_CONST_METHOD4(GetSourceUrlPattern,
-                     std::string(const GURL& source_url,
-                                 const Component& destination,
-                                 Restriction restriction,
-                                 Level level));
-
-  MOCK_CONST_METHOD4(
-      GetSrcAndDstUrlPatterns,
-      std::pair<std::string, std::string>(const GURL& source_url,
-                                          const GURL& destination_url,
-                                          Restriction restriction,
-                                          Level level));
 };
 
 }  // namespace policy

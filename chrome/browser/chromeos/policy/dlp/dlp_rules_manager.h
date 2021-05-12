@@ -66,27 +66,37 @@ class DlpRulesManager : public KeyedService {
   ~DlpRulesManager() override = default;
 
   // Returns the enforcement level for `restriction` given that data comes
-  // from `source`. ALLOW is returned if no restrictions should be applied.
-  // Requires `restriction` to be one of the following: screenshot, printing,
+  // from `source`. ALLOW is returned if there is no matching rule. Requires
+  // `restriction` to be one of the following: screenshot, printing,
   // privacy screen, screenshare.
   virtual Level IsRestricted(const GURL& source,
                              Restriction restriction) const = 0;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
-  // returned if no restrictions should be applied. Requires `restriction` to be
+  // returned if there is no matching rule. Requires `restriction` to be
   // clipboard or files.
-  virtual Level IsRestrictedDestination(const GURL& source,
-                                        const GURL& destination,
-                                        Restriction restriction) const = 0;
+  // If there's a rule matching, `out_source_pattern` and
+  // `out_destination_pattern` will be changed to the original rule URL
+  // patterns.
+  virtual Level IsRestrictedDestination(
+      const GURL& source,
+      const GURL& destination,
+      Restriction restriction,
+      std::string* out_source_pattern,
+      std::string* out_destination_pattern) const = 0;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
-  // returned if no restrictions should be applied. Requires `restriction` to be
+  // returned if there is no matching rule. Requires `restriction` to be
   // clipboard.
-  virtual Level IsRestrictedComponent(const GURL& source,
-                                      const Component& destination,
-                                      Restriction restriction) const = 0;
+  // If there's a rule matching, `out_source_pattern` will be changed to the
+  // original rule URL patterns.
+  virtual Level IsRestrictedComponent(
+      const GURL& source,
+      const Component& destination,
+      Restriction restriction,
+      std::string* out_source_pattern) const = 0;
 
   // Returns true if the general dlp reporting policy is enabled otherwise
   // false.
@@ -103,25 +113,6 @@ class DlpRulesManager : public KeyedService {
   virtual std::string GetSourceUrlPattern(const GURL& source_url,
                                           Restriction restriction,
                                           Level level) const = 0;
-
-  // Returns the URL pattern that `source_url` is matched against. The returned
-  // URL pattern should be configured in a policy rule against `destination`
-  // with the same `restriction` and `level`.
-  virtual std::string GetSourceUrlPattern(const GURL& source_url,
-                                          const Component& destination,
-                                          Restriction restriction,
-                                          Level level) const = 0;
-
-  // Returns the URL patterns that `source_url` and `destination_url` are
-  // matched against. The returned URL pattern should be configured in a policy
-  // rule with the same `restriction` and `level`.
-  // The first string in the returned pair is the source url pattern, and the
-  // second is the destination url pattern.
-  virtual std::pair<std::string, std::string> GetSrcAndDstUrlPatterns(
-      const GURL& source_url,
-      const GURL& destination_url,
-      Restriction restriction,
-      Level level) const = 0;
 };
 
 }  // namespace policy

@@ -32,6 +32,7 @@ constexpr char kExampleUrl[] = "https://wwww.example.com";
 constexpr char kGoogleUrl[] = "https://wwww.google.com";
 constexpr char kWildCardMatching[] = "*";
 constexpr char kGmailUrl[] = "https://www.gmail.com";
+constexpr char kCompanyUrl[] = "https://company.com";
 
 constexpr char kHttpsPrefix[] = "https://www.";
 
@@ -39,27 +40,9 @@ constexpr char kChatPattern[] = "chat.google.com";
 constexpr char kSalesforcePattern[] = "salesforce.com";
 constexpr char kDocsPattern[] = "docs.google.com";
 constexpr char kDrivePattern[] = "drive.google.com";
-constexpr char kCompanyPattern[] = "*.company.com";
+constexpr char kCompanyPattern[] = ".company.com";
 constexpr char kGooglePatten[] = "google.com";
 constexpr char kMailPattern[] = "mail.google.com";
-
-base::Value GenerateClipboardCopyDisallowedRule() {
-  base::Value rules(base::Value::Type::LIST);
-  base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kExampleUrl);
-  base::Value dst_urls(base::Value::Type::LIST);
-  dst_urls.Append(kWildCardMatching);
-  base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions)));
-  return rules;
-}
 
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
@@ -92,10 +75,13 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kPrinting));
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGoogleUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, false, 1);
 }
@@ -139,15 +125,25 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
       std::move(restrictions_2)));
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGoogleUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+  EXPECT_EQ(dst_pattern, kGoogleUrl);
 
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGmailUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
@@ -164,16 +160,28 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
   // Clear pref
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));
 
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGoogleUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
+  EXPECT_EQ(dst_pattern, std::string(""));
 
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGmailUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
+  EXPECT_EQ(dst_pattern, std::string(""));
 
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
@@ -245,29 +253,62 @@ TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
       std::move(dst_components), std::move(restrictions)));
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedComponent(
                 GURL(kExampleUrl), DlpRulesManager::Component::kArc,
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+
+  src_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedComponent(
                 GURL(kExampleUrl), DlpRulesManager::Component::kCrostini,
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
 }
 
 TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
-  base::Value rules = GenerateClipboardCopyDisallowedRule();
+  base::Value rules(base::Value::Type::LIST);
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kWildCardMatching);
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
 
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kExampleUrl),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
+  EXPECT_EQ(dst_pattern, std::string(""));
 }
 
 TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
-  base::Value rules = GenerateClipboardCopyDisallowedRule();
+  base::Value rules(base::Value::Type::LIST);
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kWildCardMatching);
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
 
   // Second Rule
   base::Value src_urls_2(base::Value::Type::LIST);
@@ -287,14 +328,25 @@ TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
 
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(
       DlpRulesManager::Level::kBlock,
       dlp_rules_manager_.IsRestrictedDestination(
-          GURL(kExampleUrl), GURL(), DlpRulesManager::Restriction::kClipboard));
+          GURL(kExampleUrl), GURL(), DlpRulesManager::Restriction::kClipboard,
+          &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(
       DlpRulesManager::Level::kAllow,
       dlp_rules_manager_.IsRestrictedDestination(
-          GURL(kGmailUrl), GURL(), DlpRulesManager::Restriction::kClipboard));
+          GURL(kGmailUrl), GURL(), DlpRulesManager::Restriction::kClipboard,
+          &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
+  EXPECT_EQ(dst_pattern, std::string(""));
 }
 
 TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
@@ -336,54 +388,119 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
 
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
                 GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
-                DlpRulesManager::Restriction::kClipboard));
-  EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
-                GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
-                DlpRulesManager::Restriction::kClipboard));
-  EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kCompanyPattern})),
-                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
-                DlpRulesManager::Restriction::kClipboard));
-  EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestrictedDestination(
-                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
-                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kChatPattern);
+  EXPECT_EQ(dst_pattern, kSalesforcePattern);
 
+  src_pattern.clear();
+  dst_pattern.clear();
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kDocsPattern);
+  EXPECT_EQ(dst_pattern, kDrivePattern);
+
+  src_pattern.clear();
+  dst_pattern.clear();
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(kCompanyUrl),
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kCompanyPattern);
+  EXPECT_EQ(dst_pattern, kSalesforcePattern);
+
+  src_pattern.clear();
+  dst_pattern.clear();
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_.IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
+                GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kSalesforcePattern);
+  EXPECT_EQ(dst_pattern, kDocsPattern);
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
-                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard));
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard,
+                &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kChatPattern);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard,
+                &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kSalesforcePattern);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
-                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard));
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kClipboard,
+                &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kDocsPattern);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard,
+                &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kDrivePattern);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
 }
 
 TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
-  base::Value rules = GenerateClipboardCopyDisallowedRule();
+  base::Value rules_1(base::Value::Type::LIST);
+  base::Value src_urls_1(base::Value::Type::LIST);
+  src_urls_1.Append(kExampleUrl);
+  base::Value dst_urls_1(base::Value::Type::LIST);
+  dst_urls_1.Append(kWildCardMatching);
+  base::Value restrictions_1(base::Value::Type::LIST);
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  rules_1.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls_1), std::move(dst_urls_1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
 
-  UpdatePolicyPref(std::move(rules));
+  UpdatePolicyPref(std::move(rules_1));
 
+  std::string src_pattern;
+  std::string dst_pattern;
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kWildCardMatching),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
+
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
@@ -392,15 +509,31 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kDataLeakPreventionPolicy);
-  UpdatePolicyPref(std::move(rules));
 
+  base::Value rules_2(base::Value::Type::LIST);
+  base::Value src_urls_2(base::Value::Type::LIST);
+  src_urls_2.Append(kExampleUrl);
+  base::Value dst_urls_2(base::Value::Type::LIST);
+  dst_urls_2.Append(kWildCardMatching);
+  base::Value restrictions_2(base::Value::Type::LIST);
+  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  rules_2.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls_2), std::move(dst_urls_2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
+
+  UpdatePolicyPref(std::move(rules_2));
+
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kWildCardMatching),
-                DlpRulesManager::Restriction::kClipboard));
-  EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestricted(
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, std::string(""));
+  EXPECT_EQ(dst_pattern, std::string(""));
 }
 
 TEST_F(DlpRulesManagerImplTest, WarnPriority) {
@@ -458,25 +591,41 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
 
   UpdatePolicyPref(std::move(rules));
 
+  std::string src_pattern;
+  std::string dst_pattern;
+
   // Copy/paste from chat.google to example.com should be warned.
   EXPECT_EQ(DlpRulesManager::Level::kWarn,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard));
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard,
+                &src_pattern, &dst_pattern));
+  EXPECT_EQ(src_pattern, kGooglePatten);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
 
   // Copy/paste from docs to salesforce should be blocked.
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
                 GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kDocsPattern);
+  EXPECT_EQ(dst_pattern, kWildCardMatching);
 
   // Copy/paste from docs to gmail should be allowed.
+  src_pattern.clear();
+  dst_pattern.clear();
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
                 GURL(base::StrCat({kHttpsPrefix, kMailPattern})),
-                DlpRulesManager::Restriction::kClipboard));
+                DlpRulesManager::Restriction::kClipboard, &src_pattern,
+                &dst_pattern));
+  EXPECT_EQ(src_pattern, kDocsPattern);
+  EXPECT_EQ(dst_pattern, kMailPattern);
 }
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
