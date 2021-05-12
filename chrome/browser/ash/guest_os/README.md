@@ -6,5 +6,5 @@ This directory includes code which is common to all VM types such as file
 sharing.
 
 Code for specific VM types can be found in:
-* Crostini [`chrome/browser/chromeos/crostini`](/chrome/browser/chromeos/crostini/)
+* Crostini [`chrome/browser/ash/crostini`](/chrome/browser/ash/crostini/)
 * PluginVm [`chrome/browser/ash/plugin_vm`](/chrome/browser/ash/plugin_vm/)

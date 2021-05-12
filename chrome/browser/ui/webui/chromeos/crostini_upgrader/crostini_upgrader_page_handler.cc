@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "content/public/browser/web_contents.h"
 

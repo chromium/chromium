@@ -18,8 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
-#include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_types.mojom.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace chromeos {

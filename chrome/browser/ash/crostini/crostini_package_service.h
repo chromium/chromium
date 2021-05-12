@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_package_notification.h"
 #include "chrome/browser/ash/crostini/crostini_package_operation_status.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/disks/disk_mount_manager.h"

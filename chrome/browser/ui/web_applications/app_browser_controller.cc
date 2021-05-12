@@ -57,7 +57,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
-#include "chrome/browser/chromeos/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #endif
 
 namespace {

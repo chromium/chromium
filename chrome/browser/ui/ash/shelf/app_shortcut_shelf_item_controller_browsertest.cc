@@ -7,7 +7,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
