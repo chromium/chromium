@@ -360,6 +360,18 @@ void CookieStoreIOS::DeleteSessionCookiesAsync(DeleteCallback callback) {
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
 }
 
+void CookieStoreIOS::DeleteMatchingCookiesAsync(DeletePredicate predicate,
+                                                DeleteCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // If cookies are not allowed, a CookieStoreIOS subclass should be used
+  // instead.
+  DCHECK(SystemCookiesAllowed());
+
+  DeleteCookiesMatchingPredicateAsync(std::move(predicate),
+                                      std::move(callback));
+}
+
 void CookieStoreIOS::FlushStore(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

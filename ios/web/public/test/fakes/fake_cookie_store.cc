@@ -57,7 +57,12 @@ void FakeCookieStore::DeleteAllMatchingInfoAsync(
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 
-void FakeCookieStore::DeleteSessionCookiesAsync(DeleteCallback) {
+void FakeCookieStore::DeleteSessionCookiesAsync(DeleteCallback callback) {
+  NOTIMPLEMENTED() << "Implement this if necessary.";
+}
+
+void FakeCookieStore::DeleteMatchingCookiesAsync(DeletePredicate predicate,
+                                                 DeleteCallback callback) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 

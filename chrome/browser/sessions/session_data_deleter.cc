@@ -62,14 +62,8 @@ class SessionDataDeleterInternal
   // These functions are used to hold a reference to this object until the
   // cookie and storage deletions are done. This way the keep alives ensure that
   // the profile does not shut down during the deletion.
-  void OnCookieDeletionDone(bool success) {}
+  void OnCookieDeletionDone(uint32_t count) {}
   void OnStorageDeletionDone() {}
-
-  // Takes the result of a CookieManager::GetAllCookies() method, and
-  // initiates deletion of all cookies that are session only by the
-  // storage policy of the constructor.
-  void DeleteSessionOnlyOriginCookies(
-      const std::vector<net::CanonicalCookie>& cookies);
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -138,29 +132,12 @@ void SessionDataDeleterInternal::Run(
   if (!storage_policy_.get() || !storage_policy_->HasSessionOnlyOrigins())
     return;
 
-  cookie_manager_->GetAllCookies(base::BindOnce(
-      &SessionDataDeleterInternal::DeleteSessionOnlyOriginCookies, this));
+  cookie_manager_->DeleteSessionOnlyCookies(
+      base::BindOnce(&SessionDataDeleterInternal::OnCookieDeletionDone, this));
   // Note that from this point on |*this| is kept alive by scoped_refptr<>
   // references automatically taken by |Bind()|, so when the last callback
   // created by Bind() is released (after execution of that function), the
   // object will be deleted.
-}
-
-void SessionDataDeleterInternal::DeleteSessionOnlyOriginCookies(
-    const std::vector<net::CanonicalCookie>& cookies) {
-  auto delete_cookie_predicate =
-      storage_policy_->CreateDeleteCookieOnExitPredicate();
-  DCHECK(delete_cookie_predicate);
-
-  for (const auto& cookie : cookies) {
-    if (!delete_cookie_predicate.Run(cookie.Domain(), cookie.IsSecure())) {
-      continue;
-    }
-    // Keep this object alive until all deletions are done.
-    cookie_manager_->DeleteCanonicalCookie(
-        cookie, base::BindOnce(
-                    &SessionDataDeleterInternal::OnCookieDeletionDone, this));
-  }
 }
 
 SessionDataDeleterInternal::~SessionDataDeleterInternal() {

@@ -76,6 +76,8 @@ class DelayedCookieMonster : public CookieStore {
 
   void DeleteSessionCookiesAsync(DeleteCallback) override;
 
+  void DeleteMatchingCookiesAsync(DeletePredicate, DeleteCallback) override;
+
   void FlushStore(base::OnceClosure callback) override;
 
   CookieChangeDispatcher& GetChangeDispatcher() override;

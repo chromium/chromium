@@ -461,22 +461,42 @@ void CookieMonster::DeleteAllCreatedInTimeRangeAsync(
 
 void CookieMonster::DeleteAllMatchingInfoAsync(CookieDeletionInfo delete_info,
                                                DeleteCallback callback) {
+  auto cookie_matcher =
+      base::BindRepeating(&CookieMonster::MatchCookieDeletionInfo,
+                          base::Unretained(this), std::move(delete_info));
+
   DoCookieCallback(base::BindOnce(
       // base::Unretained is safe as DoCookieCallback stores
       // the callback on |*this|, so the callback will not outlive
       // the object.
-      &CookieMonster::DeleteAllMatchingInfo, base::Unretained(this),
-      std::move(delete_info), std::move(callback)));
+      &CookieMonster::DeleteMatchingCookies, base::Unretained(this),
+      std::move(cookie_matcher), DELETE_COOKIE_EXPLICIT, std::move(callback)));
 }
 
 void CookieMonster::DeleteSessionCookiesAsync(
+    CookieStore::DeleteCallback callback) {
+  auto session_cookie_matcher =
+      base::BindRepeating([](const net::CanonicalCookie& cookie) {
+        return !cookie.IsPersistent();
+      });
+  DoCookieCallback(base::BindOnce(
+      // base::Unretained is safe as DoCookieCallback stores
+      // the callback on |*this|, so the callback will not outlive
+      // the object.
+      &CookieMonster::DeleteMatchingCookies, base::Unretained(this),
+      std::move(session_cookie_matcher), DELETE_COOKIE_EXPIRED,
+      std::move(callback)));
+}
+
+void CookieMonster::DeleteMatchingCookiesAsync(
+    CookieStore::DeletePredicate predicate,
     CookieStore::DeleteCallback callback) {
   DoCookieCallback(base::BindOnce(
       // base::Unretained is safe as DoCookieCallback stores
       // the callback on |*this|, so the callback will not outlive
       // the object.
-      &CookieMonster::DeleteSessionCookies, base::Unretained(this),
-      std::move(callback)));
+      &CookieMonster::DeleteMatchingCookies, base::Unretained(this),
+      std::move(predicate), DELETE_COOKIE_EXPLICIT, std::move(callback)));
 }
 
 void CookieMonster::SetCookieableSchemes(
@@ -631,39 +651,24 @@ void CookieMonster::DeleteAllCreatedInTimeRange(const TimeRange& creation_range,
                               : base::OnceClosure()));
 }
 
-void CookieMonster::DeleteAllMatchingInfo(CookieDeletionInfo delete_info,
-                                          DeleteCallback callback) {
-  uint32_t num_deleted = 0;
-  for (auto it = cookies_.begin(); it != cookies_.end();) {
-    auto curit = it;
-    CanonicalCookie* cc = curit->second.get();
-    ++it;
-
-    bool delegate_treats_url_as_trustworthy = false;  // irrelevant if no URL.
-    if (delete_info.url.has_value()) {
-      delegate_treats_url_as_trustworthy =
-          cookie_access_delegate() &&
-          cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(
-              delete_info.url.value());
-    }
-
-    // Deletion uses all inclusive options, so it's ok to get the
-    // `CookieSamePartyStatus` wrong here.
-    if (delete_info.Matches(
-            *cc, CookieAccessParams{
-                     GetAccessSemanticsForCookie(*cc),
-                     delegate_treats_url_as_trustworthy,
-                     CookieSamePartyStatus::kNoSamePartyEnforcement})) {
-      InternalDeleteCookie(curit, true, /*sync_to_store*/
-                           DELETE_COOKIE_EXPLICIT);
-      ++num_deleted;
-    }
+bool CookieMonster::MatchCookieDeletionInfo(
+    const CookieDeletionInfo& delete_info,
+    const net::CanonicalCookie& cookie) {
+  bool delegate_treats_url_as_trustworthy = false;  // irrelevant if no URL.
+  if (delete_info.url.has_value()) {
+    delegate_treats_url_as_trustworthy =
+        cookie_access_delegate() &&
+        cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(
+            delete_info.url.value());
   }
 
-  FlushStore(
-      base::BindOnce(&MaybeRunDeleteCallback, weak_ptr_factory_.GetWeakPtr(),
-                     callback ? base::BindOnce(std::move(callback), num_deleted)
-                              : base::OnceClosure()));
+  // Deletion uses all inclusive options, so it's ok to get the
+  // `CookieSamePartyStatus` wrong here.
+  return delete_info.Matches(
+      cookie,
+      CookieAccessParams{GetAccessSemanticsForCookie(cookie),
+                         delegate_treats_url_as_trustworthy,
+                         CookieSamePartyStatus::kNoSamePartyEnforcement});
 }
 
 void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
@@ -691,18 +696,19 @@ void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
                               : base::OnceClosure()));
 }
 
-void CookieMonster::DeleteSessionCookies(DeleteCallback callback) {
+void CookieMonster::DeleteMatchingCookies(DeletePredicate predicate,
+                                          DeletionCause cause,
+                                          DeleteCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(predicate);
 
   uint32_t num_deleted = 0;
   for (auto it = cookies_.begin(); it != cookies_.end();) {
     auto curit = it;
     CanonicalCookie* cc = curit->second.get();
     ++it;
-
-    if (!cc->IsPersistent()) {
-      InternalDeleteCookie(curit, true, /*sync_to_store*/
-                           DELETE_COOKIE_EXPIRED);
+    if (predicate.Run(*cc)) {
+      InternalDeleteCookie(curit, true /*sync_to_store*/, cause);
       ++num_deleted;
     }
   }

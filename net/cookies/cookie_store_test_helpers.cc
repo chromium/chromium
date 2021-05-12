@@ -158,6 +158,11 @@ void DelayedCookieMonster::DeleteAllMatchingInfoAsync(
   ADD_FAILURE();
 }
 
+void DelayedCookieMonster::DeleteMatchingCookiesAsync(DeletePredicate,
+                                                      DeleteCallback) {
+  ADD_FAILURE();
+}
+
 void DelayedCookieMonster::DeleteSessionCookiesAsync(DeleteCallback) {
   ADD_FAILURE();
 }

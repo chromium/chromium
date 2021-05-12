@@ -57,6 +57,8 @@ class NET_EXPORT CookieStore {
   using SetCookiesCallback =
       base::OnceCallback<void(CookieAccessResult access_result)>;
   using DeleteCallback = base::OnceCallback<void(uint32_t num_deleted)>;
+  using DeletePredicate =
+      base::RepeatingCallback<bool(const CanonicalCookie& cookie)>;
   using SetCookieableSchemesCallback = base::OnceCallback<void(bool success)>;
 
   CookieStore();
@@ -121,7 +123,13 @@ class NET_EXPORT CookieStore {
   virtual void DeleteAllMatchingInfoAsync(CookieDeletionInfo delete_info,
                                           DeleteCallback callback) = 0;
 
-  virtual void DeleteSessionCookiesAsync(DeleteCallback) = 0;
+  // Deletes all cookies without expiration data.
+  virtual void DeleteSessionCookiesAsync(DeleteCallback callback) = 0;
+
+  // Deletes all cookies where |predicate| returns true.
+  // Calls |callback| with the number of cookies deleted.
+  virtual void DeleteMatchingCookiesAsync(DeletePredicate predicate,
+                                          DeleteCallback callback) = 0;
 
   // Deletes all cookies in the store.
   void DeleteAllAsync(DeleteCallback callback);

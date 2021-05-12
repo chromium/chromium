@@ -263,6 +263,20 @@ class SynchronousCookieManager {
     return result_out;
   }
 
+  uint32_t DeleteSessionOnlyCookies() {
+    base::RunLoop run_loop;
+    uint32_t result_out = 0u;
+
+    cookie_service_->DeleteSessionOnlyCookies(
+        base::BindLambdaForTesting([&run_loop, &result_out](uint32_t result) {
+          result_out = result;
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+    return result_out;
+  }
+
   void FlushCookieStore() {
     base::RunLoop run_loop;
     cookie_service_->FlushCookieStore(base::BindLambdaForTesting([&]() {
@@ -2672,7 +2686,7 @@ TEST_F(SessionCleanupCookieManagerTest, PersistSessionCookies) {
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 }
 
-TEST_F(SessionCleanupCookieManagerTest, DeleteSessionCookies) {
+TEST_F(SessionCleanupCookieManagerTest, DeleteSessionCookiesOnShutdown) {
   EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
@@ -2687,7 +2701,7 @@ TEST_F(SessionCleanupCookieManagerTest, DeleteSessionCookies) {
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
 }
 
-TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
+TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomainOnShutdown) {
   EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
@@ -2700,6 +2714,39 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
   InitializeCookieService(store, store);
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
+}
+
+TEST_F(SessionCleanupCookieManagerTest, DeleteSessionOnlyCookies) {
+  EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
+
+  EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
+
+  cookie_service_client()->SetContentSettings(
+      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
+  EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
+}
+
+TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
+  EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
+
+  EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
+
+  cookie_service_client()->SetContentSettings(
+      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, "http://other.com")});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, service_wrapper()->DeleteSessionOnlyCookies());
+  EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
+
+  cookie_service_client()->SetContentSettings(
+      {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
+  EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
 }
 
 TEST_F(SessionCleanupCookieManagerTest, FirstSettingTakesPrecedence) {
