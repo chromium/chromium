@@ -16,6 +16,12 @@
        <include layout="@layout/compositor_view_holder"/>
 
        <FrameLayout
+            android:id="@+id/ar_view_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+       <FrameLayout
             android:id="@+id/overview_list_layout_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

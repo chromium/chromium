@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.vr;
 
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -34,5 +38,17 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     @Override
     public void dispatchTouchEvent(MotionEvent ev) {
         mCompositorViewHolder.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    @NonNull
+    public ViewGroup getArSurfaceParent() {
+        // the ar_view_holder is a FrameLayout, up-cast to a ViewGroup.
+        return (ViewGroup) mActivity.findViewById(R.id.ar_view_holder);
+    }
+
+    @Override
+    public boolean shouldToggleArSurfaceParentVisibility() {
+        return true;
     }
 }

@@ -24,7 +24,6 @@ import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.util.HashMap;
@@ -119,8 +118,7 @@ public class ArImmersiveOverlay
                 mDestructionFromVisibilityChanged = false;
 
                 if (DEFER_SURFACE_VIEW_DESTRUCTION && mSurfaceViewNeedsDestruction) {
-                    UiUtils.removeViewFromParent(mSurfaceView);
-                    mSurfaceView = null;
+                    removeAndDestroySurfaceView();
                     mSurfaceViewNeedsDestruction = false;
                 }
             }
@@ -155,9 +153,14 @@ public class ArImmersiveOverlay
             // the compositor view via forwardMotionEvent.
             mSurfaceView.setOnTouchListener(ArImmersiveOverlay.this);
 
-            View content = mActivity.getWindow().findViewById(android.R.id.content);
-            ViewGroup group = (ViewGroup) content.getParent();
-            group.addView(mSurfaceView);
+            ViewGroup parent = mArCompositorDelegate.getArSurfaceParent();
+
+            // If we need to toggle the parent's visibility, do it before we add the surfaceView.
+            if (mArCompositorDelegate.shouldToggleArSurfaceParentVisibility()) {
+                parent.setVisibility(View.VISIBLE);
+            }
+
+            parent.addView(mSurfaceView);
 
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
@@ -183,13 +186,29 @@ public class ArImmersiveOverlay
             mWebContents.removeObserver(mWebContentsObserver);
 
             if (!(DEFER_SURFACE_VIEW_DESTRUCTION && mDestructionFromVisibilityChanged)) {
-                UiUtils.removeViewFromParent(mSurfaceView);
-                mSurfaceView = null;
+                removeAndDestroySurfaceView();
             } else {
                 mSurfaceViewNeedsDestruction = true;
             }
 
             mArCompositorDelegate.setOverlayImmersiveArMode(false, mDomSurfaceNeedsConfiguring);
+        }
+
+        private void removeAndDestroySurfaceView() {
+            if (mSurfaceView == null) return;
+            ViewGroup parent = (ViewGroup) mSurfaceView.getParent();
+
+            if (parent != null) {
+                // Remove the surfaceView before changing the parent's visibility, so that we
+                // don't trigger any duplicate destruction events.
+                parent.removeView(mSurfaceView);
+
+                if (mArCompositorDelegate.shouldToggleArSurfaceParentVisibility()) {
+                    parent.setVisibility(View.GONE);
+                }
+            }
+
+            mSurfaceView = null;
         }
     }
 
