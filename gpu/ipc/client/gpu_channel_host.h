@@ -37,7 +37,6 @@ namespace IPC {
 struct PendingSyncMsg;
 class ChannelMojo;
 }
-struct GpuDeferredMessage;
 
 namespace gpu {
 class ClientSharedImageInterface;
@@ -102,7 +101,7 @@ class GPU_EXPORT GpuChannelHost
   // being released, but is handled in-order relative to other such IPCs and/or
   // OrderingBarriers. Returns a deferred message id just like OrderingBarrier.
   uint32_t EnqueueDeferredMessage(
-      const IPC::Message& message,
+      mojom::DeferredRequestParamsPtr params,
       std::vector<SyncToken> sync_token_fences = {});
 
   // Ensure that the all deferred messages prior upto |deferred_message_id| have
@@ -273,7 +272,7 @@ class GPU_EXPORT GpuChannelHost
   // Protects |deferred_messages_|, |pending_ordering_barrier_| and
   // |*_deferred_message_id_|.
   mutable base::Lock context_lock_;
-  std::vector<GpuDeferredMessage> deferred_messages_;
+  std::vector<mojom::DeferredRequestPtr> deferred_messages_;
   base::Optional<OrderingBarrierInfo> pending_ordering_barrier_;
   uint32_t next_deferred_message_id_ = 1;
   // Highest deferred message id in |deferred_messages_|.

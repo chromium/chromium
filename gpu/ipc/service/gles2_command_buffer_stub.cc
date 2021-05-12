@@ -442,9 +442,6 @@ void GLES2CommandBufferStub::OnGpuSwitched(
 bool GLES2CommandBufferStub::HandleMessage(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(GLES2CommandBufferStub, message)
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_TakeFrontBuffer, OnTakeFrontBuffer);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_ReturnFrontBuffer,
-                        OnReturnFrontBuffer);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateImage, OnCreateImage);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyImage, OnDestroyImage);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateGpuFenceFromHandle,

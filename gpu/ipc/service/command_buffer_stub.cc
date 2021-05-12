@@ -123,6 +123,60 @@ CommandBufferStub::~CommandBufferStub() {
   Destroy();
 }
 
+void CommandBufferStub::ExecuteDeferredRequest(
+    mojom::DeferredCommandBufferRequestParams& params) {
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
+               "data", DevToolsChannelData::CreateForChannel(channel()));
+  UpdateActiveUrl();
+  // TODO(sunnyps): Should this use ScopedCrashKey instead?
+  crash_keys::gpu_gl_context_is_virtual.Set(use_virtualized_gl_context_ ? "1"
+                                                                        : "0");
+
+  // Ensure the appropriate GL context is current before handling any IPC
+  // messages directed at the command buffer. This ensures that the message
+  // handler can assume that the context is current (not necessary for
+  // RetireSyncPoint or WaitSyncPoint).
+  bool have_context = false;
+  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  if (!params.is_destroy_transfer_buffer()) {
+    if (!MakeCurrent())
+      return;
+    cache_use.emplace(CreateCacheUse());
+    have_context = true;
+  }
+
+  switch (params.which()) {
+    case mojom::DeferredCommandBufferRequestParams::Tag::kAsyncFlush: {
+      auto& flush = *params.get_async_flush();
+      OnAsyncFlush(flush.put_offset, flush.flush_id, flush.sync_token_fences);
+      break;
+    }
+
+    case mojom::DeferredCommandBufferRequestParams::Tag::kDestroyTransferBuffer:
+      OnDestroyTransferBuffer(params.get_destroy_transfer_buffer());
+      break;
+
+    case mojom::DeferredCommandBufferRequestParams::Tag::kTakeFrontBuffer:
+      OnTakeFrontBuffer(params.get_take_front_buffer());
+      break;
+
+    case mojom::DeferredCommandBufferRequestParams::Tag::kReturnFrontBuffer: {
+      OnReturnFrontBuffer(params.get_return_front_buffer()->mailbox,
+                          params.get_return_front_buffer()->is_lost);
+      break;
+    }
+  }
+
+  CheckCompleteWaits();
+
+  if (have_context) {
+    if (decoder_context_)
+      decoder_context_->ProcessPendingQueries(false);
+    ScheduleDelayedWork(
+        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
+  }
+}
+
 bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
                "data", DevToolsChannelData::CreateForChannel(channel()));
@@ -141,7 +195,6 @@ bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
       message.type() != GpuCommandBufferMsg_WaitForTokenInRange::ID &&
       message.type() != GpuCommandBufferMsg_WaitForGetOffsetInRange::ID &&
       message.type() != GpuCommandBufferMsg_RegisterTransferBuffer::ID &&
-      message.type() != GpuCommandBufferMsg_DestroyTransferBuffer::ID &&
       message.type() != GpuCommandBufferMsg_SignalSyncToken::ID &&
       message.type() != GpuCommandBufferMsg_SignalQuery::ID) {
     if (!MakeCurrent())
@@ -163,11 +216,8 @@ bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
       IPC_MESSAGE_HANDLER_DELAY_REPLY(
           GpuCommandBufferMsg_WaitForGetOffsetInRange,
           OnWaitForGetOffsetInRange);
-      IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_AsyncFlush, OnAsyncFlush);
       IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_RegisterTransferBuffer,
                           OnRegisterTransferBuffer);
-      IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyTransferBuffer,
-                          OnDestroyTransferBuffer);
       IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SignalSyncToken,
                           OnSignalSyncToken)
       IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_SignalQuery, OnSignalQuery)

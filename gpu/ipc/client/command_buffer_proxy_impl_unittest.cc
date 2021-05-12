@@ -9,15 +9,20 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/mock_gpu_channel.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ipc/ipc_test_sink.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
 namespace gpu {
@@ -91,14 +96,19 @@ class CommandBufferProxyImplTest : public testing::Test {
     return proxy;
   }
 
-  void ExpectOrderingBarrier(const GpuDeferredMessage& params,
+  void ExpectOrderingBarrier(const mojom::DeferredRequest& request,
                              int32_t route_id,
                              int32_t put_offset) {
-    EXPECT_EQ(params.message.routing_id(), route_id);
-    GpuCommandBufferMsg_AsyncFlush::Param async_flush;
-    ASSERT_TRUE(
-        GpuCommandBufferMsg_AsyncFlush::Read(&params.message, &async_flush));
-    EXPECT_EQ(std::get<0>(async_flush), put_offset);
+    ASSERT_TRUE(request.params->is_command_buffer_request());
+
+    const auto& command_buffer_request =
+        *request.params->get_command_buffer_request();
+    ASSERT_TRUE(command_buffer_request.params->is_async_flush());
+    EXPECT_EQ(command_buffer_request.routing_id, route_id);
+
+    const auto& flush_request =
+        *command_buffer_request.params->get_async_flush();
+    EXPECT_EQ(flush_request.put_offset, put_offset);
   }
 
  protected:
@@ -112,73 +122,68 @@ TEST_F(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+      .Times(1)
+      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
+        EXPECT_EQ(3u, requests.size());
+        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+        ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+        ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 50);
+      }));
+
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
   proxy1->OrderingBarrier(30);
   proxy1->OrderingBarrier(40);
   proxy1->Flush(50);
 
-  EXPECT_EQ(1u, sink_.message_count());
-  const IPC::Message* msg =
-      sink_.GetFirstMessageMatching(GpuChannelMsg_FlushDeferredMessages::ID);
-  ASSERT_TRUE(msg);
-  GpuChannelMsg_FlushDeferredMessages::Param params;
-  ASSERT_TRUE(GpuChannelMsg_FlushDeferredMessages::Read(msg, &params));
-  std::vector<GpuDeferredMessage> deferred_messages =
-      std::get<0>(std::move(params));
-  EXPECT_EQ(3u, deferred_messages.size());
-  ExpectOrderingBarrier(deferred_messages[0], proxy1->route_id(), 10);
-  ExpectOrderingBarrier(deferred_messages[1], proxy2->route_id(), 20);
-  ExpectOrderingBarrier(deferred_messages[2], proxy1->route_id(), 50);
-
   // Each proxy sends a sync GpuChannel flush on disconnect.
   EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  EXPECT_EQ(0u, sink_.message_count());
 }
 
 TEST_F(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+      .Times(1)
+      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
+        EXPECT_EQ(3u, requests.size());
+        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+        ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+        ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
+      }));
+
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
   proxy1->OrderingBarrier(30);
   proxy2->FlushPendingWork();
 
-  EXPECT_EQ(1u, sink_.message_count());
-  const IPC::Message* msg =
-      sink_.GetFirstMessageMatching(GpuChannelMsg_FlushDeferredMessages::ID);
-  ASSERT_TRUE(msg);
-  GpuChannelMsg_FlushDeferredMessages::Param params;
-  ASSERT_TRUE(GpuChannelMsg_FlushDeferredMessages::Read(msg, &params));
-  std::vector<GpuDeferredMessage> deferred_messages =
-      std::get<0>(std::move(params));
-  EXPECT_EQ(3u, deferred_messages.size());
-  ExpectOrderingBarrier(deferred_messages[0], proxy1->route_id(), 10);
-  ExpectOrderingBarrier(deferred_messages[1], proxy2->route_id(), 20);
-  ExpectOrderingBarrier(deferred_messages[2], proxy1->route_id(), 30);
-
   // Each proxy sends a sync GpuChannel flush on disconnect.
   EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  EXPECT_EQ(0u, sink_.message_count());
 }
 
 TEST_F(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
-  GpuChannelMsg_FlushDeferredMessages::Param params;
-  EXPECT_CALL(mock_gpu_channel_, Flush())
+  // Ordering of the flush operations must be preserved.
+  ::testing::InSequence in_sequence;
+
+  // First we expect to see a FlushDeferredRequests call.
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
       .Times(1)
-      .WillOnce(::testing::InvokeWithoutArgs([&]() -> bool {
-        // FlushDeferredMessages should have already been sent first.
-        EXPECT_EQ(1u, sink_.message_count());
-        const IPC::Message* msg = sink_.GetMessageAt(0);
-        CHECK(msg);
-        EXPECT_EQ(
-            static_cast<uint32_t>(GpuChannelMsg_FlushDeferredMessages::ID),
-            msg->type());
-        CHECK(GpuChannelMsg_FlushDeferredMessages::Read(msg, &params));
-        return true;
+      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
+        EXPECT_EQ(3u, requests.size());
+        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+        ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+        ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
       }));
+
+  // Next we expect a full `Flush()`.
+  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(1);
 
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
@@ -186,15 +191,9 @@ TEST_F(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
 
   proxy2->EnsureWorkVisible();
 
-  std::vector<GpuDeferredMessage> deferred_messages =
-      std::get<0>(std::move(params));
-  EXPECT_EQ(3u, deferred_messages.size());
-  ExpectOrderingBarrier(deferred_messages[0], proxy1->route_id(), 10);
-  ExpectOrderingBarrier(deferred_messages[1], proxy2->route_id(), 20);
-  ExpectOrderingBarrier(deferred_messages[2], proxy1->route_id(), 30);
-
   // Each proxy sends a sync GpuChannel flush on disconnect.
   EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  EXPECT_EQ(0u, sink_.message_count());
 }
 
 TEST_F(CommandBufferProxyImplTest,
@@ -204,25 +203,33 @@ TEST_F(CommandBufferProxyImplTest,
   proxy1->OrderingBarrier(10);
   proxy1->OrderingBarrier(20);
   channel_->EnqueueDeferredMessage(
-      GpuCommandBufferMsg_DestroyTransferBuffer(proxy1->route_id(), 3));
-  EXPECT_EQ(0u, sink_.message_count());
-  proxy1->FlushPendingWork();
+      mojom::DeferredRequestParams::NewCommandBufferRequest(
+          mojom::DeferredCommandBufferRequest::New(
+              proxy1->route_id(), mojom::DeferredCommandBufferRequestParams::
+                                      NewDestroyTransferBuffer(3))));
 
-  EXPECT_EQ(1u, sink_.message_count());
-  const IPC::Message* msg =
-      sink_.GetFirstMessageMatching(GpuChannelMsg_FlushDeferredMessages::ID);
-  ASSERT_TRUE(msg);
-  GpuChannelMsg_FlushDeferredMessages::Param params;
-  ASSERT_TRUE(GpuChannelMsg_FlushDeferredMessages::Read(msg, &params));
-  std::vector<GpuDeferredMessage> deferred_messages =
-      std::get<0>(std::move(params));
-  EXPECT_EQ(2u, deferred_messages.size());
-  ExpectOrderingBarrier(deferred_messages[0], proxy1->route_id(), 20);
-  EXPECT_EQ(deferred_messages[1].message.type(),
-            GpuCommandBufferMsg_DestroyTransferBuffer::ID);
+  // Make sure the above requests don't hit our mock yet.
+  base::RunLoop().RunUntilIdle();
+
+  // Now we can expect a FlushDeferredRequests to be elicited by the
+  // FlushPendingWork call below.
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+      .Times(1)
+      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
+        EXPECT_EQ(2u, requests.size());
+        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 20);
+        ASSERT_TRUE(requests[1]->params->is_command_buffer_request());
+
+        auto& request = *requests[1]->params->get_command_buffer_request();
+        ASSERT_TRUE(request.params->is_destroy_transfer_buffer());
+        EXPECT_EQ(3, request.params->get_destroy_transfer_buffer());
+      }));
+
+  proxy1->FlushPendingWork();
 
   // The proxy sends a sync GpuChannel flush on disconnect.
   EXPECT_CALL(mock_gpu_channel_, Flush()).Times(1).WillRepeatedly(Return(true));
+  EXPECT_EQ(0u, sink_.message_count());
 }
 
 TEST_F(CommandBufferProxyImplTest, CreateTransferBufferOOM) {

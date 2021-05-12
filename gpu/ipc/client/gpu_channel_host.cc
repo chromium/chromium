@@ -151,16 +151,14 @@ uint32_t GpuChannelHost::OrderingBarrier(
 }
 
 uint32_t GpuChannelHost::EnqueueDeferredMessage(
-    const IPC::Message& message,
+    mojom::DeferredRequestParamsPtr params,
     std::vector<SyncToken> sync_token_fences) {
   AutoLock lock(context_lock_);
 
   EnqueuePendingOrderingBarrier();
   enqueued_deferred_message_id_ = next_deferred_message_id_++;
-  GpuDeferredMessage deferred_message;
-  deferred_message.message = message;
-  deferred_message.sync_token_fences = std::move(sync_token_fences);
-  deferred_messages_.push_back(std::move(deferred_message));
+  deferred_messages_.push_back(mojom::DeferredRequest::New(
+      std::move(params), std::move(sync_token_fences)));
   return enqueued_deferred_message_id_;
 }
 
@@ -189,15 +187,17 @@ void GpuChannelHost::EnqueuePendingOrderingBarrier() {
             pending_ordering_barrier_->deferred_message_id);
   enqueued_deferred_message_id_ =
       pending_ordering_barrier_->deferred_message_id;
-  GpuDeferredMessage deferred_message;
-  deferred_message.message = GpuCommandBufferMsg_AsyncFlush(
-      pending_ordering_barrier_->route_id,
+  auto params = mojom::AsyncFlushParams::New(
       pending_ordering_barrier_->put_offset,
       pending_ordering_barrier_->deferred_message_id,
       pending_ordering_barrier_->sync_token_fences);
-  deferred_message.sync_token_fences =
-      std::move(pending_ordering_barrier_->sync_token_fences);
-  deferred_messages_.push_back(std::move(deferred_message));
+  deferred_messages_.push_back(mojom::DeferredRequest::New(
+      mojom::DeferredRequestParams::NewCommandBufferRequest(
+          mojom::DeferredCommandBufferRequest::New(
+              pending_ordering_barrier_->route_id,
+              mojom::DeferredCommandBufferRequestParams::NewAsyncFlush(
+                  std::move(params)))),
+      std::move(pending_ordering_barrier_->sync_token_fences)));
   pending_ordering_barrier_.reset();
 }
 
@@ -209,9 +209,7 @@ void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
       deferred_message_id > flushed_deferred_message_id_) {
     DCHECK_EQ(enqueued_deferred_message_id_, next_deferred_message_id_ - 1);
 
-    Send(
-        new GpuChannelMsg_FlushDeferredMessages(std::move(deferred_messages_)));
-
+    GetGpuChannel().FlushDeferredRequests(std::move(deferred_messages_));
     deferred_messages_.clear();
     flushed_deferred_message_id_ = next_deferred_message_id_ - 1;
   }

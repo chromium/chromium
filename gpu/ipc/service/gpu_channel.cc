@@ -127,8 +127,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
   SequenceId GetSequenceId(int32_t route_id) const;
 
-  bool HandleFlushMessage(const IPC::Message& message);
-
   bool MessageErrorHandler(const IPC::Message& message, const char* error_msg);
 
   // mojom::GpuChannel:
@@ -137,15 +135,21 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void Flush(FlushCallback callback) override;
   void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
                            uint64_t decode_release_count) override;
+  void FlushDeferredRequests(
+      std::vector<mojom::DeferredRequestPtr> requests) override;
 
   IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
   std::vector<scoped_refptr<IPC::MessageFilter>> channel_filters_;
 
-  gpu::GpuChannel* gpu_channel_ = nullptr;
   // Map of route id to scheduler sequence id.
   base::flat_map<int32_t, SequenceId> route_sequences_;
   mutable base::Lock gpu_channel_lock_;
+
+  // Note that this field may be reset at any time by the owning GpuChannel's
+  // thread, so it must be accessed under lock and must be tested for null
+  // before dereferencing.
+  gpu::GpuChannel* gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
 
   Scheduler* scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
@@ -266,24 +270,6 @@ bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
   if (message.should_unblock() || message.is_reply())
     return MessageErrorHandler(message, "Unexpected message type");
 
-  switch (message.type()) {
-    case GpuCommandBufferMsg_AsyncFlush::ID:
-    case GpuCommandBufferMsg_DestroyTransferBuffer::ID:
-    case GpuCommandBufferMsg_ReturnFrontBuffer::ID:
-    case GpuCommandBufferMsg_TakeFrontBuffer::ID:
-    case GpuChannelMsg_CreateSharedImage::ID:
-    case GpuChannelMsg_DestroySharedImage::ID:
-      return MessageErrorHandler(message, "Invalid message");
-    default:
-      break;
-  }
-
-  if (message.type() == GpuChannelMsg_Nop::ID) {
-    IPC::Message* reply = IPC::SyncMessage::GenerateReply(&message);
-    ipc_channel_->Send(reply);
-    return true;
-  }
-
   for (scoped_refptr<IPC::MessageFilter>& filter : channel_filters_) {
     if (filter->OnMessageReceived(message))
       return true;
@@ -292,10 +278,6 @@ bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_)
     return MessageErrorHandler(message, "Channel destroyed");
-
-  // Handle flush first so that it doesn't get handled out of order.
-  if (message.type() == GpuChannelMsg_FlushDeferredMessages::ID)
-    return HandleFlushMessage(message);
 
   bool handle_out_of_order =
       message.routing_id() == MSG_ROUTING_CONTROL ||
@@ -332,33 +314,45 @@ SequenceId GpuChannelMessageFilter::GetSequenceId(int32_t route_id) const {
   return it->second;
 }
 
-bool GpuChannelMessageFilter::HandleFlushMessage(const IPC::Message& message) {
-  DCHECK_EQ(message.type(), GpuChannelMsg_FlushDeferredMessages::ID);
-  gpu_channel_lock_.AssertAcquired();
-
-  GpuChannelMsg_FlushDeferredMessages::Param params;
-  if (!GpuChannelMsg_FlushDeferredMessages::Read(&message, &params))
-    return MessageErrorHandler(message, "Invalid flush message");
-
-  std::vector<GpuDeferredMessage> deferred_messages =
-      std::get<0>(std::move(params));
+void GpuChannelMessageFilter::FlushDeferredRequests(
+    std::vector<mojom::DeferredRequestPtr> requests) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_)
+    return;
 
   std::vector<Scheduler::Task> tasks;
-  tasks.reserve(deferred_messages.size());
-  for (auto& deferred_message : deferred_messages) {
-    auto it = route_sequences_.find(deferred_message.message.routing_id());
+  tasks.reserve(requests.size());
+  for (auto& request : requests) {
+    int32_t routing_id;
+    switch (request->params->which()) {
+#if defined(OS_ANDROID)
+      case mojom::DeferredRequestParams::Tag::kDestroyStreamTexture:
+        routing_id = request->params->get_destroy_stream_texture();
+        break;
+#endif  // defined(OS_ANDROID)
+
+      case mojom::DeferredRequestParams::Tag::kCommandBufferRequest:
+        routing_id = request->params->get_command_buffer_request()->routing_id;
+        break;
+
+      case mojom::DeferredRequestParams::Tag::kSharedImageRequest:
+        routing_id = static_cast<int32_t>(
+            GpuChannelReservedRoutes::kSharedImageInterface);
+        break;
+    }
+
+    auto it = route_sequences_.find(routing_id);
     if (it == route_sequences_.end()) {
       DLOG(ERROR) << "Invalid route id in flush list";
       continue;
     }
-    tasks.emplace_back(it->second /* sequence_id */,
-                       base::BindOnce(&gpu::GpuChannel::HandleMessage,
-                                      gpu_channel_->AsWeakPtr(),
-                                      std::move(deferred_message.message)),
-                       std::move(deferred_message.sync_token_fences));
+    tasks.emplace_back(
+        it->second /* sequence_id */,
+        base::BindOnce(&gpu::GpuChannel::ExecuteDeferredRequest,
+                       gpu_channel_->AsWeakPtr(), std::move(request->params)),
+        std::move(request->sync_token_fences));
   }
   scheduler_->ScheduleTasks(std::move(tasks));
-  return true;
 }
 
 bool GpuChannelMessageFilter::MessageErrorHandler(const IPC::Message& message,
@@ -608,13 +602,44 @@ void GpuChannel::HandleMessage(const IPC::Message& msg) {
            << " with type " << msg.type();
 
   HandleMessageHelper(msg);
+}
 
-  // If we get descheduled or yield while processing a message.
-  if (stub && (stub->HasUnprocessedCommands() || !stub->IsScheduled())) {
-    DCHECK_EQ(GpuCommandBufferMsg_AsyncFlush::ID, msg.type());
-    scheduler_->ContinueTask(
-        stub->sequence_id(),
-        base::BindOnce(&GpuChannel::HandleMessage, AsWeakPtr(), msg));
+void GpuChannel::ExecuteDeferredRequest(
+    mojom::DeferredRequestParamsPtr params) {
+  switch (params->which()) {
+#if defined(OS_ANDROID)
+    case mojom::DeferredRequestParams::Tag::kDestroyStreamTexture:
+      DestroyStreamTexture(params->get_destroy_stream_texture());
+      break;
+#endif  // defined(OS_ANDROID)
+
+    case mojom::DeferredRequestParams::Tag::kCommandBufferRequest: {
+      mojom::DeferredCommandBufferRequest& request =
+          *params->get_command_buffer_request();
+      CommandBufferStub* stub = LookupCommandBuffer(request.routing_id);
+      if (!stub || !stub->IsScheduled()) {
+        DLOG(ERROR) << "Invalid routing ID in deferred request";
+        return;
+      }
+
+      stub->ExecuteDeferredRequest(*request.params);
+
+      // If we get descheduled or yield while processing a message.
+      if (stub->HasUnprocessedCommands() || !stub->IsScheduled()) {
+        DCHECK_EQ(mojom::DeferredCommandBufferRequestParams::Tag::kAsyncFlush,
+                  request.params->which());
+        scheduler_->ContinueTask(
+            stub->sequence_id(),
+            base::BindOnce(&GpuChannel::ExecuteDeferredRequest, AsWeakPtr(),
+                           std::move(params)));
+      }
+      break;
+    }
+
+    case mojom::DeferredRequestParams::Tag::kSharedImageRequest:
+      shared_image_stub_->ExecuteDeferredRequest(
+          std::move(params->get_shared_image_request()));
+      break;
   }
 }
 

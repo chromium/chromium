@@ -306,7 +306,6 @@ bool StreamTexture::OnMessageReceived(const IPC::Message& message) {
                         OnForwardForSurfaceRequest)
     IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
                         OnUpdateRotatedVisibleSize)
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_Destroy, OnDestroy)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -378,14 +377,6 @@ void StreamTexture::OnUpdateRotatedVisibleSize(
   // first so now it's time to send it.
   if (was_empty && has_pending_frame_)
     OnFrameAvailable();
-}
-
-void StreamTexture::OnDestroy() {
-  DCHECK(channel_);
-
-  // The following call may delete the StreamTexture, so we must ensure that no
-  // access to |this| occurs after the call.
-  channel_->DestroyStreamTexture(route_id_);
 }
 
 StreamTexture::BindOrCopy StreamTexture::ShouldBindOrCopy() {

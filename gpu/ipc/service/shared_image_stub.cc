@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -69,26 +70,62 @@ std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
   return stub;
 }
 
+void SharedImageStub::ExecuteDeferredRequest(
+    mojom::DeferredSharedImageRequestPtr request) {
+  switch (request->which()) {
+    case mojom::DeferredSharedImageRequest::Tag::kNop:
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImage:
+      OnCreateSharedImage(std::move(request->get_create_shared_image()));
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithData:
+      OnCreateSharedImageWithData(
+          std::move(request->get_create_shared_image_with_data()));
+      break;
+
+#if defined(OS_ANDROID)
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithAhb: {
+      auto& create_request = *request->get_create_shared_image_with_ahb();
+      OnCreateSharedImageWithAHB(
+          create_request.out_mailbox, create_request.in_mailbox,
+          create_request.usage, create_request.release_id);
+      break;
+    }
+#endif  // defined(OS_ANDROID)
+
+    case mojom::DeferredSharedImageRequest::Tag::kUpdateSharedImage: {
+      auto& update = *request->get_update_shared_image();
+      OnUpdateSharedImage(update.mailbox, update.release_id,
+                          std::move(update.in_fence_handle));
+      break;
+    }
+
+    case mojom::DeferredSharedImageRequest::Tag::kDestroySharedImage:
+      OnDestroySharedImage(request->get_destroy_shared_image());
+      break;
+
+#if defined(OS_WIN)
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
+      OnCreateSwapChain(std::move(request->get_create_swap_chain()));
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::kPresentSwapChain:
+      OnPresentSwapChain(request->get_present_swap_chain()->mailbox,
+                         request->get_present_swap_chain()->release_id);
+      break;
+#endif  // defined(OS_WIN)
+  }
+}
+
 bool SharedImageStub::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(SharedImageStub, msg)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateSharedImage, OnCreateSharedImage)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateSharedImageWithData,
-                        OnCreateSharedImageWithData)
     IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateGMBSharedImage,
                         OnCreateGMBSharedImage)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_UpdateSharedImage, OnUpdateSharedImage)
-#if defined(OS_ANDROID)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateSharedImageWithAHB,
-                        OnCreateSharedImageWithAHB)
-#endif
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_DestroySharedImage, OnDestroySharedImage)
     IPC_MESSAGE_HANDLER(GpuChannelMsg_RegisterSharedImageUploadBuffer,
                         OnRegisterSharedImageUploadBuffer)
-#if defined(OS_WIN)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateSwapChain, OnCreateSwapChain)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_PresentSwapChain, OnPresentSwapChain)
-#endif  // OS_WIN
 #if defined(OS_FUCHSIA)
     IPC_MESSAGE_HANDLER(GpuChannelMsg_RegisterSysmemBufferCollection,
                         OnRegisterSysmemBufferCollection)
@@ -181,10 +218,10 @@ bool SharedImageStub::CreateSharedImageWithAHB(const Mailbox& out_mailbox,
 #endif
 
 void SharedImageStub::OnCreateSharedImage(
-    const GpuChannelMsg_CreateSharedImage_Params& params) {
+    mojom::CreateSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
-               params.size.width(), "height", params.size.height());
-  if (!params.mailbox.IsSharedImage()) {
+               params->size.width(), "height", params->size.height());
+  if (!params->mailbox.IsSharedImage()) {
     LOG(ERROR) << "SharedImageStub: Trying to create a SharedImage with a "
                   "non-SharedImage mailbox.";
     OnError();
@@ -196,10 +233,10 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  if (!factory_->CreateSharedImage(params.mailbox, params.format, params.size,
-                                   params.color_space, params.surface_origin,
-                                   params.alpha_type, gpu::kNullSurfaceHandle,
-                                   params.usage)) {
+  if (!factory_->CreateSharedImage(params->mailbox, params->format,
+                                   params->size, params->color_space,
+                                   params->surface_origin, params->alpha_type,
+                                   gpu::kNullSurfaceHandle, params->usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
@@ -207,15 +244,15 @@ void SharedImageStub::OnCreateSharedImage(
 
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
-                       params.release_id);
-  sync_point_client_state_->ReleaseFenceSync(params.release_id);
+                       params->release_id);
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
 void SharedImageStub::OnCreateSharedImageWithData(
-    const GpuChannelMsg_CreateSharedImageWithData_Params& params) {
+    mojom::CreateSharedImageWithDataParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithData", "width",
-               params.size.width(), "height", params.size.height());
-  if (!params.mailbox.IsSharedImage()) {
+               params->size.width(), "height", params->size.height());
+  if (!params->mailbox.IsSharedImage()) {
     LOG(ERROR) << "SharedImageStub: Trying to create a SharedImage with a "
                   "non-SharedImage mailbox.";
     OnError();
@@ -228,8 +265,8 @@ void SharedImageStub::OnCreateSharedImageWithData(
   }
 
   base::CheckedNumeric<size_t> safe_required_span_size =
-      params.pixel_data_offset;
-  safe_required_span_size += params.pixel_data_size;
+      params->pixel_data_offset;
+  safe_required_span_size += params->pixel_data_size;
   size_t required_span_size;
   if (!safe_required_span_size.AssignIfValid(&required_span_size)) {
     LOG(ERROR) << "SharedImageStub: upload data size and offset is invalid";
@@ -246,26 +283,26 @@ void SharedImageStub::OnCreateSharedImageWithData(
   }
 
   auto subspan =
-      memory.subspan(params.pixel_data_offset, params.pixel_data_size);
+      memory.subspan(params->pixel_data_offset, params->pixel_data_size);
 
-  if (!factory_->CreateSharedImage(params.mailbox, params.format, params.size,
-                                   params.color_space, params.surface_origin,
-                                   params.alpha_type, params.usage, subspan)) {
+  if (!factory_->CreateSharedImage(
+          params->mailbox, params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, params->usage, subspan)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return;
   }
 
   // If this is the last upload using a given buffer, release it.
-  if (params.done_with_shm) {
+  if (params->done_with_shm) {
     upload_memory_mapping_ = base::ReadOnlySharedMemoryMapping();
     upload_memory_ = base::ReadOnlySharedMemoryRegion();
   }
 
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
-                       params.release_id);
-  sync_point_client_state_->ReleaseFenceSync(params.release_id);
+                       params->release_id);
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
 void SharedImageStub::OnCreateGMBSharedImage(
@@ -342,11 +379,11 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 
 #if defined(OS_WIN)
 void SharedImageStub::OnCreateSwapChain(
-    const GpuChannelMsg_CreateSwapChain_Params& params) {
+    mojom::CreateSwapChainParamsPtr params) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
 
-  if (!params.front_buffer_mailbox.IsSharedImage() ||
-      !params.back_buffer_mailbox.IsSharedImage()) {
+  if (!params->front_buffer_mailbox.IsSharedImage() ||
+      !params->back_buffer_mailbox.IsSharedImage()) {
     DLOG(ERROR) << "SharedImageStub: Trying to access SharedImage with a "
                    "non-SharedImage mailbox.";
     OnError();
@@ -359,15 +396,15 @@ void SharedImageStub::OnCreateSwapChain(
   }
 
   if (!factory_->CreateSwapChain(
-          params.front_buffer_mailbox, params.back_buffer_mailbox,
-          params.format, params.size, params.color_space, params.surface_origin,
-          params.alpha_type, params.usage)) {
+          params->front_buffer_mailbox, params->back_buffer_mailbox,
+          params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, params->usage)) {
     DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
     OnError();
     return;
   }
 
-  sync_point_client_state_->ReleaseFenceSync(params.release_id);
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
 void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,

@@ -115,7 +115,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   void OnStartListening();
   void OnForwardForSurfaceRequest(const base::UnguessableToken& request_token);
   void OnUpdateRotatedVisibleSize(const gfx::Size& natural_size);
-  void OnDestroy();
 
   // The TextureOwner which receives frames.
   scoped_refptr<TextureOwner> texture_owner_;

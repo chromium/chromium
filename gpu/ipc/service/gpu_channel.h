@@ -155,6 +155,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   void HandleMessage(const IPC::Message& msg);
 
+  // Executes a DeferredRequest that was previously received and has now been
+  // scheduled by the scheduler.
+  void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
+
   // Some messages such as WaitForGetOffsetInRange and WaitForTokenInRange are
   // processed as soon as possible because the client is blocked until they
   // are completed.

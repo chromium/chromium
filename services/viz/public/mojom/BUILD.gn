@@ -47,6 +47,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    ":resource_format",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
@@ -554,6 +555,28 @@ mojom("mojom") {
         "//ui/gfx/mojom",
         "//ui/latency/mojom",
       ]
+    },
+  ]
+}
+
+mojom("resource_format") {
+  generate_java = true
+  sources = [ "compositing/resource_format.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "viz.mojom.ResourceFormat"
+          cpp = "::viz::ResourceFormat"
+        },
+      ]
+      traits_headers = [
+        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//components/viz/common:resource_format" ]
     },
   ]
 }
