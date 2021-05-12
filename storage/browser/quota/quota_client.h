@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"

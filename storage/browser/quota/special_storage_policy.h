@@ -5,8 +5,6 @@
 #ifndef STORAGE_BROWSER_QUOTA_SPECIAL_STORAGE_POLICY_H_
 #define STORAGE_BROWSER_QUOTA_SPECIAL_STORAGE_POLICY_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"

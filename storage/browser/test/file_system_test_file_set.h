@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <set>
-
 #include "base/files/file_path.h"
 
 // Common test data structures and test cases.

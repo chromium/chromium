@@ -6,7 +6,6 @@
 #define STORAGE_BROWSER_QUOTA_QUOTA_SETTINGS_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "base/callback.h"
 #include "base/component_export.h"

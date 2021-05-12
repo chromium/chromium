@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/process/process.h"

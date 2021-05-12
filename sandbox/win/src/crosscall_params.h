@@ -16,8 +16,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/macros.h"
 #include "sandbox/win/src/internal_types.h"
 #if !defined(SANDBOX_FUZZ_TARGET)

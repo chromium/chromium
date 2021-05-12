@@ -5,8 +5,6 @@
 #ifndef SANDBOX_LINUX_BPF_DSL_BPF_DSL_IMPL_H_
 #define SANDBOX_LINUX_BPF_DSL_BPF_DSL_IMPL_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/sandbox_export.h"
