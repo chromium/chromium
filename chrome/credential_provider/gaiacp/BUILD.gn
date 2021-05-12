@@ -26,8 +26,6 @@ source_set("common") {
     "gcp_crash_reporting_utils.h",
     "gem_device_details_manager.cc",
     "gem_device_details_manager.h",
-    "os_user_manager.cc",
-    "os_user_manager.h",
   ]
   public_configs = [ ":common_config" ]
   public_deps = [ "//chrome/credential_provider/common:common_constants" ]
@@ -71,6 +69,8 @@ source_set("util") {
     "gcpw_strings.h",
     "logging.cc",
     "logging.h",
+    "os_user_manager.cc",
+    "os_user_manager.h",
     "reg_utils.cc",
     "reg_utils.h",
     "scoped_handle.h",
