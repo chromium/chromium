@@ -24,7 +24,7 @@ extern "C" {
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/win/scoped_handle.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/hid/hid_service.h"
@@ -156,7 +156,8 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_;
+  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
+      device_observation_{this};
   base::WeakPtrFactory<HidServiceWin> weak_factory_{this};
 };
 

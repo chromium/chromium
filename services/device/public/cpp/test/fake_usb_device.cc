@@ -33,7 +33,7 @@ void FakeUsbDevice::Create(
 
 FakeUsbDevice::~FakeUsbDevice() {
   CloseHandle();
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 FakeUsbDevice::FakeUsbDevice(
@@ -43,10 +43,9 @@ FakeUsbDevice::FakeUsbDevice(
     : device_(device),
       blocked_interface_classes_(blocked_interface_classes.begin(),
                                  blocked_interface_classes.end()),
-      observer_(this),
       client_(std::move(client)) {
   DCHECK(device_);
-  observer_.Add(device_.get());
+  observation_.Observe(device_.get());
 
   if (client_) {
     client_.set_disconnect_handler(base::BindOnce(

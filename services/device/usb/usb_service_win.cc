@@ -587,11 +587,10 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
 UsbServiceWin::UsbServiceWin()
     : UsbService(),
       blocking_task_runner_(CreateBlockingTaskRunner()),
-      helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      device_observer_(this) {
+      helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)) {
   DeviceMonitorWin* device_monitor = DeviceMonitorWin::GetForAllInterfaces();
   if (device_monitor)
-    device_observer_.Add(device_monitor);
+    device_observation_.Observe(device_monitor);
 
   helper_.reset(new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
   blocking_task_runner_->PostTask(

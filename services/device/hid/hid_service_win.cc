@@ -467,12 +467,11 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
 HidServiceWin::HidServiceWin()
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
       blocking_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits)),
-      device_observer_(this) {
+          base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits)) {
   DeviceMonitorWin* device_monitor =
       DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_HID);
   if (device_monitor)
-    device_observer_.Add(device_monitor);
+    device_observation_.Observe(device_monitor);
 
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&HidServiceWin::EnumerateBlocking,

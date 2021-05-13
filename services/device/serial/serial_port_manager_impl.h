@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -61,7 +61,8 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
 
   std::unique_ptr<SerialDeviceEnumerator> enumerator_;
   std::unique_ptr<BluetoothSerialDeviceEnumerator> bluetooth_enumerator_;
-  ScopedObserver<SerialDeviceEnumerator, SerialDeviceEnumerator::Observer>
+  base::ScopedMultiSourceObservation<SerialDeviceEnumerator,
+                                     SerialDeviceEnumerator::Observer>
       observed_enumerator_{this};
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

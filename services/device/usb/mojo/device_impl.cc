@@ -127,13 +127,12 @@ DeviceImpl::DeviceImpl(scoped_refptr<device::UsbDevice> device,
                        base::span<const uint8_t> blocked_interface_classes,
                        bool allow_security_key_requests)
     : device_(std::move(device)),
-      observer_(this),
       blocked_interface_classes_(blocked_interface_classes.begin(),
                                  blocked_interface_classes.end()),
       allow_security_key_requests_(allow_security_key_requests),
       client_(std::move(client)) {
   DCHECK(device_);
-  observer_.Add(device_.get());
+  observation_.Observe(device_.get());
 
   if (client_) {
     client_.set_disconnect_handler(base::BindOnce(

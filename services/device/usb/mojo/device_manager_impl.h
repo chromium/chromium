@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -112,7 +112,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       bool allow_security_key_requests);
 
   std::unique_ptr<UsbService> usb_service_;
-  ScopedObserver<UsbService, UsbService::Observer> observer_;
+  base::ScopedObservation<UsbService, UsbService::Observer> observation_{this};
 
   mojo::ReceiverSet<mojom::UsbDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;

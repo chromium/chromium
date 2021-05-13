@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -110,7 +110,8 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   void OnClientConnectionError();
 
   const scoped_refptr<device::UsbDevice> device_;
-  ScopedObserver<device::UsbDevice, device::UsbDevice::Observer> observer_;
+  base::ScopedObservation<device::UsbDevice, device::UsbDevice::Observer>
+      observation_{this};
 
   // The device handle. Will be null before the device is opened and after it
   // has been closed. |opening_| is set to true while the asynchronous open is

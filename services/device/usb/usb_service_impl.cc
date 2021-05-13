@@ -313,7 +313,7 @@ void UsbServiceImpl::OnUsbContext(scoped_refptr<UsbContext> context) {
 #if defined(OS_WIN)
   DeviceMonitorWin* device_monitor = DeviceMonitorWin::GetForAllInterfaces();
   if (device_monitor)
-    device_observer_.Add(device_monitor);
+    device_observation_.Observe(device_monitor);
 #endif  // OS_WIN
 }
 

@@ -37,9 +37,9 @@ DeviceManagerImpl::DeviceManagerImpl()
     : DeviceManagerImpl(UsbService::Create()) {}
 
 DeviceManagerImpl::DeviceManagerImpl(std::unique_ptr<UsbService> usb_service)
-    : usb_service_(std::move(usb_service)), observer_(this) {
+    : usb_service_(std::move(usb_service)) {
   if (usb_service_)
-    observer_.Add(usb_service_.get());
+    observation_.Observe(usb_service_.get());
 }
 
 DeviceManagerImpl::~DeviceManagerImpl() = default;
@@ -212,7 +212,7 @@ void DeviceManagerImpl::OnDeviceRemoved(scoped_refptr<UsbDevice> device) {
 }
 
 void DeviceManagerImpl::WillDestroyUsbService() {
-  observer_.RemoveAll();
+  observation_.Reset();
   usb_service_ = nullptr;
 
   // Close all the connections.

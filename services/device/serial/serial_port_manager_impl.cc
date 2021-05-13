@@ -48,7 +48,7 @@ void SerialPortManagerImpl::SetSerialEnumeratorForTesting(
     std::unique_ptr<SerialDeviceEnumerator> fake_enumerator) {
   DCHECK(fake_enumerator);
   enumerator_ = std::move(fake_enumerator);
-  observed_enumerator_.Add(enumerator_.get());
+  observed_enumerator_.AddObservation(enumerator_.get());
 }
 
 void SerialPortManagerImpl::SetBluetoothSerialEnumeratorForTesting(
@@ -56,7 +56,7 @@ void SerialPortManagerImpl::SetBluetoothSerialEnumeratorForTesting(
         fake_bluetooth_enumerator) {
   DCHECK(fake_bluetooth_enumerator);
   bluetooth_enumerator_ = std::move(fake_bluetooth_enumerator);
-  observed_enumerator_.Add(bluetooth_enumerator_.get());
+  observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
 }
 
 void SerialPortManagerImpl::SetClient(
@@ -67,7 +67,7 @@ void SerialPortManagerImpl::SetClient(
 void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
   if (!enumerator_) {
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
-    observed_enumerator_.Add(enumerator_.get());
+    observed_enumerator_.AddObservation(enumerator_.get());
   }
   auto devices = enumerator_->GetDevices();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -75,7 +75,7 @@ void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
           std::make_unique<BluetoothSerialDeviceEnumerator>();
-      observed_enumerator_.Add(bluetooth_enumerator_.get());
+      observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
     }
     auto bluetooth_devices = bluetooth_enumerator_->GetDevices();
     devices.insert(devices.end(),
@@ -95,7 +95,7 @@ void SerialPortManagerImpl::OpenPort(
     OpenPortCallback callback) {
   if (!enumerator_) {
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
-    observed_enumerator_.Add(enumerator_.get());
+    observed_enumerator_.AddObservation(enumerator_.get());
   }
   base::Optional<base::FilePath> path =
       enumerator_->GetPathFromToken(token, use_alternate_path);
@@ -114,7 +114,7 @@ void SerialPortManagerImpl::OpenPort(
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
           std::make_unique<BluetoothSerialDeviceEnumerator>();
-      observed_enumerator_.Add(bluetooth_enumerator_.get());
+      observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
     }
     base::Optional<std::string> address =
         bluetooth_enumerator_->GetAddressFromToken(token);

@@ -25,7 +25,7 @@
 #include "third_party/libusb/src/libusb/libusb.h"
 
 #if defined(OS_WIN)
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "device/base/device_monitor_win.h"
 #endif  // OS_WIN
 
@@ -120,8 +120,8 @@ class UsbServiceImpl final :
   std::set<libusb_device*> devices_being_enumerated_;
 
 #if defined(OS_WIN)
-  ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_{
-      this};
+  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
+      device_observation_{this};
 #endif  // OS_WIN
 
   // This WeakPtr is used to safely post hotplug events back to the thread this

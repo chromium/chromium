@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/scoped_generic.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -154,7 +155,7 @@ class SerialDeviceEnumeratorWin::UiThreadHelper
     // GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR for enumeration because it
     // doesn't seem to make a difference and ports which aren't enumerable by
     // device interface don't generate WM_DEVICECHANGE events.
-    device_observer_.Add(
+    device_observation_.Observe(
         DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_COMPORT));
   }
 
@@ -182,8 +183,8 @@ class SerialDeviceEnumeratorWin::UiThreadHelper
   base::WeakPtr<SerialDeviceEnumeratorWin> enumerator_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_{
-      this};
+  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
+      device_observation_{this};
 };
 
 SerialDeviceEnumeratorWin::SerialDeviceEnumeratorWin(
