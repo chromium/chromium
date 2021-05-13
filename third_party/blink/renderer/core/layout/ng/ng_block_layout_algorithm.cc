@@ -2830,7 +2830,7 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
     list_marker = container_builder_.UnpositionedListMarker();
     if (!list_marker)
       return true;
-    container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker());
+    container_builder_.ClearUnpositionedListMarker();
   }
 
   const NGConstraintSpace& space = ConstraintSpace();
@@ -2899,7 +2899,7 @@ bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   list_marker.AddToBoxWithoutLineBoxes(
       space, baseline_type, *marker_layout_result, &container_builder_,
       &intrinsic_block_size_);
-  container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker());
+  container_builder_.ClearUnpositionedListMarker();
 
   return true;
 }

@@ -915,7 +915,7 @@ void NGColumnLayoutAlgorithm::AttemptToPositionListMarker(
                   BorderScrollbarPadding(), *layout_result, *baseline,
                   &block_offset, &container_builder_);
 
-  container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker());
+  container_builder_.ClearUnpositionedListMarker();
 }
 
 void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
@@ -934,7 +934,7 @@ void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
   marker.AddToBoxWithoutLineBoxes(ConstraintSpace(), baseline_type,
                                   *layout_result, &container_builder_,
                                   &intrinsic_block_size_);
-  container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker());
+  container_builder_.ClearUnpositionedListMarker();
 }
 
 void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(

@@ -90,6 +90,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     DCHECK(!unpositioned_list_marker_ || !marker);
     unpositioned_list_marker_ = marker;
   }
+  void ClearUnpositionedListMarker() {
+    unpositioned_list_marker_ = NGUnpositionedListMarker();
+  }
 
   void ReplaceChild(wtf_size_t index,
                     const NGPhysicalFragment& new_child,
