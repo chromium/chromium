@@ -49,6 +49,9 @@ const DlpContentRestrictionSet kNonEmptyRestrictionSet = kScreenshotRestricted;
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
     DlpContentRestriction::kPrivacyScreen,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrivacyScreenReported(
+    DlpContentRestriction::kPrivacyScreen,
+    DlpRulesManager::Level::kReport);
 const DlpContentRestrictionSet kPrintingRestricted(
     DlpContentRestriction::kPrint,
     DlpRulesManager::Level::kBlock);
@@ -266,6 +269,13 @@ TEST_F(DlpContentManagerTest,
 }
 
 TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
+  LoginFakeUser();
+  SetReportQueueForReportingManager();
+  SetupDlpRulesManager();
+  const std::string src_pattern("example.com");
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
+      .WillRepeatedly(::testing::Return(src_pattern));
+
   MockPrivacyScreenHelper mock_privacy_screen_helper;
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(testing::_)).Times(0);
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
@@ -277,6 +287,11 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 0);
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
+                  DlpRulesManager::Level::kBlock)));
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(false)).Times(1);
@@ -287,6 +302,7 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 1);
+  EXPECT_EQ(events_.size(), 1u);
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(true)).Times(1);
@@ -296,6 +312,11 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 2);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 1);
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
+                  DlpRulesManager::Level::kBlock)));
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(false)).Times(1);
@@ -305,6 +326,49 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 2);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 2);
+  EXPECT_EQ(events_.size(), 2u);
+}
+
+TEST_F(DlpContentManagerTest, PrivacyScreenReported) {
+  LoginFakeUser();
+  SetReportQueueForReportingManager();
+  SetupDlpRulesManager();
+  const std::string src_pattern("example.com");
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
+      .WillRepeatedly(::testing::Return(src_pattern));
+
+  // Privacy screen should never be enforced.
+  MockPrivacyScreenHelper mock_privacy_screen_helper;
+  EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(testing::_)).Times(0);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  helper_.ChangeConfidentiality(web_contents.get(), kPrivacyScreenReported);
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
+                  DlpRulesManager::Level::kReport)));
+
+  web_contents->WasHidden();
+  helper_.ChangeVisibility(web_contents.get());
+  task_environment_.FastForwardBy(helper_.GetPrivacyScreenOffDelay());
+  EXPECT_EQ(events_.size(), 1u);
+
+  web_contents->WasShown();
+  helper_.ChangeVisibility(web_contents.get());
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrivacyScreen,
+                  DlpRulesManager::Level::kReport)));
+
+  helper_.DestroyWebContents(web_contents.get());
+  task_environment_.FastForwardBy(helper_.GetPrivacyScreenOffDelay());
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 0);
+  EXPECT_EQ(events_.size(), 2u);
 }
 
 TEST_F(DlpContentManagerTest, PrintingRestricted) {
@@ -351,4 +415,5 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
 }
+
 }  // namespace policy
