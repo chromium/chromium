@@ -14,15 +14,12 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/root_window_controller.h"
 #include "ash/shelf/back_button.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -208,35 +205,13 @@ AppListPresenterDelegateImpl::EventFilter::~EventFilter() {
 
 void AppListPresenterDelegateImpl::EventFilter::ProcessLocatedEvent(
     ui::LocatedEvent* event) {
-  // Users in a capture session may be trying to capture the app list.
-  if (features::IsCaptureModeEnabled() &&
-      CaptureModeController::Get()->IsActive()) {
+  // Check the general rules for closing bubbles.
+  if (!bubble_utils::ShouldCloseBubbleForEvent(*event))
     return;
-  }
 
   aura::Window* target = static_cast<aura::Window*>(event->target());
   if (!target)
     return;
-
-  // If the event happened on a menu, then the event should not close the app
-  // list.
-  RootWindowController* root_controller =
-      RootWindowController::ForWindow(target);
-  if (root_controller) {
-    aura::Window* menu_container =
-        root_controller->GetContainer(kShellWindowId_MenuContainer);
-    if (menu_container->Contains(target))
-      return;
-    aura::Window* keyboard_container =
-        root_controller->GetContainer(kShellWindowId_VirtualKeyboardContainer);
-    if (keyboard_container->Contains(target))
-      return;
-
-    aura::Window* settings_bubble_container =
-        root_controller->GetContainer(kShellWindowId_SettingBubbleContainer);
-    if (settings_bubble_container->Contains(target))
-      return;
-  }
 
   // If the event happened on the home button's widget, it'll get handled by the
   // button.
@@ -264,6 +239,7 @@ void AppListPresenterDelegateImpl::EventFilter::ProcessLocatedEvent(
   aura::Window* window = view_->GetWidget()->GetNativeView()->parent();
   if (window->Contains(target))
     return;
+
   // Try to close an open folder window: return if an open folder view was
   // closed successfully.
   if (presenter_->HandleCloseOpenFolder())
@@ -318,6 +294,8 @@ void AppListPresenterDelegateImpl::EventFilter::OnGestureEvent(
     ui::GestureEvent* event) {
   controller_->SetKeyboardTraversalMode(false);
 
+  // Checks tap types instead of ui::ET_TOUCH_PRESSED so that swipes on the
+  // shelf do not close the launcher. https://crbug.com/750274
   if (event->type() == ui::ET_GESTURE_TAP ||
       event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
       event->type() == ui::ET_GESTURE_LONG_PRESS) {

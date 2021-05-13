@@ -4,6 +4,7 @@
 
 #include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -41,10 +42,9 @@ void AppListBubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
 
 void AppListBubbleEventFilter::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  // TODO(https://crbug.com/1204554): Exclude events during capture mode.
-  // TODO(https://crbug.com/1204554): Exclude accessibility autoclick bubble.
-  // TODO(https://crbug.com/1204554): Exclude events that shouldn't close the
-  // bubble, like tap-typing on virtual keyboard.
+  // Check the general rules for closing bubbles.
+  if (!bubble_utils::ShouldCloseBubbleForEvent(event))
+    return;
 
   gfx::Point event_location = event.target()
                                   ? event.target()->GetScreenLocation(event)
