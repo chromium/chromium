@@ -2785,23 +2785,42 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, GranularPermissionsResponse) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
+class GetAuthTokenFunctionDeviceLocalAccountTest
+    : public GetAuthTokenFunctionTest {
  public:
-  GetAuthTokenFunctionPublicSessionTest()
+  GetAuthTokenFunctionDeviceLocalAccountTest()
       : user_manager_(new ash::MockUserManager) {}
 
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
+  void SetUpOnMainThread() override {
+    GetAuthTokenFunctionTest::SetUpOnMainThread();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(user_manager_));
+  }
 
-    // Set up the user manager to fake a public session.
-    EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
-        .WillRepeatedly(Return(false));
-    EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
-        .WillRepeatedly(Return(true));
-    EXPECT_CALL(*user_manager_, GetLoggedInUsers())
-        .WillRepeatedly(
-            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+  void TearDownOnMainThread() override {
+    GetAuthTokenFunctionTest::TearDownOnMainThread();
+    scoped_user_manager_.reset();
+  }
+
+ protected:
+  void RunExtensionAndVerifyNoError(bool is_extension_allowlisted) {
+    scoped_refptr<FakeGetAuthTokenFunction> func(
+        new FakeGetAuthTokenFunction());
+    std::string extension_id = is_extension_allowlisted
+                                   ? "ljacajndfccfgnfohlgkdphmbnpkjflk"
+                                   : "test-id";
+    func->set_extension(CreateTestExtension(extension_id));
+    func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+    std::string access_token;
+    std::set<std::string> granted_scopes;
+    RunGetAuthTokenFunction(func.get(), "[{}]", browser(), &access_token,
+                            &granted_scopes);
+    EXPECT_EQ(std::string(kAccessToken), access_token);
+    EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+    histogram_tester()->ExpectUniqueSample(
+        kGetAuthTokenResultHistogramName,
+        IdentityGetAuthTokenError::State::kNone, 1);
   }
 
   scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
@@ -2823,13 +2842,31 @@ class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
 
   // Owned by |user_manager_enabler|.
   ash::MockUserManager* user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+};
+
+class GetAuthTokenFunctionPublicSessionTest
+    : public GetAuthTokenFunctionDeviceLocalAccountTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
+
+    // Set up the user manager to fake a public session.
+    EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*user_manager_, GetLoggedInUsers())
+        .WillRepeatedly(
+            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {
   // GetAuthToken() should return UserNotSignedIn in public sessions for
   // non-allowlisted extensions.
-  user_manager::ScopedUserManager user_manager_enabler(
-      base::WrapUnique(user_manager_));
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
   func->set_extension(CreateTestExtension("test-id"));
   std::string error =
@@ -2844,21 +2881,69 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, Allowlisted) {
   // GetAuthToken() should return a token for allowlisted extensions.
-  user_manager::ScopedUserManager user_manager_enabler(
-      base::WrapUnique(user_manager_));
-  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
-  func->set_extension(CreateTestExtension("ljacajndfccfgnfohlgkdphmbnpkjflk"));
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
+}
 
-  std::string access_token;
-  std::set<std::string> granted_scopes;
-  RunGetAuthTokenFunction(func.get(), "[{}]", browser(), &access_token,
-                          &granted_scopes);
-  EXPECT_EQ(std::string(kAccessToken), access_token);
-  EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
+class GetAuthTokenFunctionChromeKioskTest
+    : public GetAuthTokenFunctionDeviceLocalAccountTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
+
+    // Set up the user manager to fake a Chrome Kiosk session.
+    EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, GetLoggedInUsers())
+        .WillRepeatedly(
+            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionChromeKioskTest, NonAllowlisted) {
+  // GetAuthToken() should return a token for non-allowlisted extensions in the
+  // Chrome Kiosk session.
+  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionChromeKioskTest, Allowlisted) {
+  // GetAuthToken() should return a token for allowlisted extensions in the
+  // Chrome Kiosk session.
+  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
+}
+
+class GetAuthTokenFunctionWebKioskTest
+    : public GetAuthTokenFunctionDeviceLocalAccountTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
+
+    // Set up the user manager to fake a web Kiosk session.
+    EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*user_manager_, GetLoggedInUsers())
+        .WillRepeatedly(
+            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionWebKioskTest, NonAllowlisted) {
+  // GetAuthToken() should return a token for non-allowlisted extensions in the
+  // web Kiosk session.
+  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionWebKioskTest, Allowlisted) {
+  // GetAuthToken() should return a token for allowlisted extensions in the
+  // web Kiosk session.
+  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
 }
 
 #endif

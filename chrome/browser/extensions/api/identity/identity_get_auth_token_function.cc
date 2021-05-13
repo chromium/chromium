@@ -249,7 +249,8 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
+                  user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
   bool is_public_session =
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
 
@@ -489,6 +490,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         }
 
         if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
+            user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
             user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
           policy::BrowserPolicyConnectorChromeOS* connector =
