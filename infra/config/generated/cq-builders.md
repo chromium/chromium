@@ -457,9 +457,6 @@ as required builders.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
-* [linux-rel-dual-coverage](https://ci.chromium.org/p/chromium/builders/try/linux-rel-dual-coverage) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-dual-coverage)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-dual-coverage))
-  * Experiment percentage: 3.0
-
 * [linux-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/linux-rel-reclient) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-reclient)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-reclient))
   * Experiment percentage: 10.0
 
