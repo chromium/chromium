@@ -198,6 +198,7 @@ AutomationPredicate = class {
         node.role === Role.PORTAL || node.role === Role.RADIO_BUTTON ||
         node.role === Role.SLIDER || node.role === Role.SWITCH ||
         node.role === Role.TEXT_FIELD ||
+        node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
         (node.role === Role.MENU_ITEM && !hasActionableDescendant(node));
   }
 

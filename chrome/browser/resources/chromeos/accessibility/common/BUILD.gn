@@ -151,6 +151,7 @@ js2gtest("accessibility_tests") {
   test_type = "extension"
   sources = [
     "array_util_test.js",
+    "automation_predicate_test.js",
     "automation_util_test.js",
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
@@ -164,6 +165,7 @@ js2gtest("accessibility_tests") {
     "../chromevox/testing/chromevox_next_e2e_test_base.js",
     "../chromevox/testing/mock_feedback.js",
     "array_util.js",
+    "automation_predicate.js",
     "testing/assert_additions.js",
     "testing/callback_helper.js",
     "testing/doc_utils.js",
