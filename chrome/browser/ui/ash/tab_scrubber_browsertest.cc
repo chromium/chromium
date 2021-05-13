@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/display/event_transformation_handler.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -89,13 +88,6 @@ class TabScrubberTest : public InProcessBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(chromeos::switches::kNaturalScrollDefault);
-  }
-
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kInteractiveWindowCycleList);
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -320,8 +312,6 @@ class TabScrubberTest : public InProcessBrowserTest,
     aura::Window* root = window->GetRootWindow();
     return std::make_unique<ui::test::EventGenerator>(root, window);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TabScrubberTest);
 };

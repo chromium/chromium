@@ -223,6 +223,18 @@ class WindowCycleControllerTest : public AshTestBase {
       waiter.Wait();
   }
 
+  void Scroll(float x_offset, float y_offset, int fingers) {
+    GetEventGenerator()->ScrollSequence(
+        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
+        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
+  }
+
+  void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
+    auto* generator = GetEventGenerator();
+    for (int i = 0; i < num_of_times; i++)
+      generator->MoveMouseWheel(delta_x, delta_y);
+  }
+
  private:
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
@@ -712,56 +724,6 @@ TEST_F(WindowCycleControllerTest, TabKeyNotLeaked) {
   EXPECT_EQ(0, event_count.GetKeyEventCountAndReset());
 }
 
-// While the UI is active, mouse events are captured.
-TEST_F(WindowCycleControllerTest, MouseEventsCaptured) {
-  if (features::IsInteractiveWindowCycleListEnabled())
-    return;
-
-  // Set up a second root window
-  UpdateDisplay("1000x600,600x400");
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(2U, root_windows.size());
-
-  // This delegate allows the window to receive mouse events.
-  aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
-  EventCounter event_count;
-  w0->AddPreTargetHandler(&event_count);
-  w1->SetTargetHandler(&event_count);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  wm::ActivateWindow(w0.get());
-
-  // Events get through while not cycling.
-  generator->MoveMouseToCenterOf(w0.get());
-  generator->ClickLeftButton();
-  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
-
-  // Start cycling.
-  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-  controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-
-  // Mouse events not over the cycle view don't get through.
-  generator->PressLeftButton();
-  EXPECT_EQ(0, event_count.GetMouseEventCountAndReset());
-
-  // Although releases do, regardless of mouse position.
-  generator->ReleaseLeftButton();
-  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
-
-  // Stop cycling: once again, events get through.
-  CompleteCycling(controller);
-  generator->ClickLeftButton();
-  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
-
-  // Click somewhere on the second root window.
-  generator->MoveMouseToCenterOf(root_windows[1]);
-  generator->ClickLeftButton();
-  EXPECT_EQ(0, event_count.GetMouseEventCountAndReset());
-}
-
 // Tests that we can cycle past fullscreen windows: https://crbug.com/622396.
 // Fullscreen windows are special in that they are allowed to handle alt+tab
 // keypresses, which means the window cycle event filter should not handle
@@ -1068,44 +1030,9 @@ TEST_F(WindowCycleControllerTest, WindowDestruction) {
   EXPECT_EQ(2u, GetWindows(controller).size());
 }
 
-class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {
- public:
-  InteractiveWindowCycleControllerTest() = default;
-  InteractiveWindowCycleControllerTest(
-      const InteractiveWindowCycleControllerTest&) = delete;
-  InteractiveWindowCycleControllerTest& operator=(
-      const InteractiveWindowCycleControllerTest&) = delete;
-  ~InteractiveWindowCycleControllerTest() override = default;
-
-  // WindowCycleControllerTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kInteractiveWindowCycleList);
-    WindowCycleControllerTest::SetUp();
-  }
-
-  void Scroll(float x_offset, float y_offset, int fingers) {
-    GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::TimeDelta::FromMilliseconds(5),
-        GetOffsetX(x_offset), GetOffsetY(y_offset), /*steps=*/100, fingers);
-  }
-
-  void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
-    auto* generator = GetEventGenerator();
-    for (int i = 0; i < num_of_times; i++)
-      generator->MoveMouseWheel(delta_x, delta_y);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that when the cycle view is not open, the event filter does not check
 // whether events occur within the cycle view.
-// TODO(chinsenj): Add this to WindowCycleControllerTest.MouseEventsCaptured
-// after feature launch.
-TEST_F(InteractiveWindowCycleControllerTest,
-       MouseEventWhenCycleViewDoesNotExist) {
+TEST_F(WindowCycleControllerTest, MouseEventWhenCycleViewDoesNotExist) {
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<Window> w0(CreateTestWindowInShellWithDelegate(
       &delegate, 0, gfx::Rect(0, 0, 100, 100)));
@@ -1131,7 +1058,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 // The items in the list should not move, only the focus ring.
 // If a user clicks on an item, it should complete cycling and activate
 // the hovered item.
-TEST_F(InteractiveWindowCycleControllerTest, MouseHoverAndSelect) {
+TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1184,7 +1111,7 @@ TEST_F(InteractiveWindowCycleControllerTest, MouseHoverAndSelect) {
 
 // Tests that the left and right keys cycle after the cycle list has been
 // initialized.
-TEST_F(InteractiveWindowCycleControllerTest, LeftRightCycle) {
+TEST_F(WindowCycleControllerTest, LeftRightCycle) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1221,7 +1148,7 @@ TEST_F(InteractiveWindowCycleControllerTest, LeftRightCycle) {
 
 // Tests that pressing the space key, pressing the enter key, or releasing the
 // alt key during window cycle confirms a selection.
-TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
+TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1259,7 +1186,7 @@ TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
 
 // Tests that pressing the enter key or space key really quickly doesn't crash.
 // See crbug.com/1187242.
-TEST_F(InteractiveWindowCycleControllerTest, RapidConfirmSelection) {
+TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1303,7 +1230,7 @@ TEST_F(InteractiveWindowCycleControllerTest, RapidConfirmSelection) {
 // Tests that mouse events are filtered until the mouse is actually used,
 // preventing the mouse from unexpectedly triggering events.
 // See crbug.com/1143275.
-TEST_F(InteractiveWindowCycleControllerTest, FilterMouseEventsUntilUsed) {
+TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1351,8 +1278,7 @@ TEST_F(InteractiveWindowCycleControllerTest, FilterMouseEventsUntilUsed) {
 
 // When a user has the window cycle list open and clicks outside of it, it
 // should cancel cycling.
-TEST_F(InteractiveWindowCycleControllerTest,
-       MousePressOutsideOfListCancelsCycling) {
+TEST_F(WindowCycleControllerTest, MousePressOutsideOfListCancelsCycling) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1374,8 +1300,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 
 // When the user has one window open, the window cycle view isn't shown. In this
 // case we should not eat mouse events.
-TEST_F(InteractiveWindowCycleControllerTest,
-       MouseEventsNotEatenWhenCycleViewNotVisible) {
+TEST_F(WindowCycleControllerTest, MouseEventsNotEatenWhenCycleViewNotVisible) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   EventCounter event_count;
   w0->AddPreTargetHandler(&event_count);
@@ -1395,7 +1320,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 }
 
 // Tests three finger horizontal scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleControllerTest,
+TEST_F(WindowCycleControllerTest,
        ThreeFingerHorizontalScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
@@ -1453,8 +1378,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 }
 
 // Tests two finger horizontal scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleControllerTest,
-       TwoFingerHorizontalScrollInWindowCycleList) {
+TEST_F(WindowCycleControllerTest, TwoFingerHorizontalScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
@@ -1493,8 +1417,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 }
 
 // Tests mouse wheel scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleControllerTest,
-       MouseWheelScrollInWindowCycleList) {
+TEST_F(WindowCycleControllerTest, MouseWheelScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
@@ -1532,7 +1455,7 @@ TEST_F(InteractiveWindowCycleControllerTest,
 
 // Tests that swiping up closes window cycle if it's open and starts overview
 // mode.
-TEST_F(InteractiveWindowCycleControllerTest, VerticalScroll) {
+TEST_F(WindowCycleControllerTest, VerticalScroll) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
   const float vertical_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
@@ -1567,7 +1490,7 @@ TEST_F(InteractiveWindowCycleControllerTest, VerticalScroll) {
 }
 
 // Tests that touch continuous scrolls for the window cycle list.
-TEST_F(InteractiveWindowCycleControllerTest, TouchScroll) {
+TEST_F(WindowCycleControllerTest, TouchScroll) {
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
@@ -1659,7 +1582,7 @@ TEST_F(InteractiveWindowCycleControllerTest, TouchScroll) {
 
 // When a user taps on an item, it should set the focus ring to that item. After
 // they release their finger it should confirm the selection.
-TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
+TEST_F(WindowCycleControllerTest, TapSelect) {
   std::unique_ptr<aura::Window> w0 = CreateTestWindow();
   std::unique_ptr<aura::Window> w1 = CreateTestWindow();
   std::unique_ptr<aura::Window> w2 = CreateTestWindow();
@@ -1728,7 +1651,7 @@ TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
 }
 
 class ReverseGestureWindowCycleControllerTest
-    : public InteractiveWindowCycleControllerTest {
+    : public WindowCycleControllerTest {
  public:
   ReverseGestureWindowCycleControllerTest() = default;
   ReverseGestureWindowCycleControllerTest(

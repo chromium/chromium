@@ -234,11 +234,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ash-enable-interactive-window-cycle-list",
-    "owners": [ "chinsenj", "tclaiborne" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "ash-enable-pip-rounded-corners",
     "owners": [ "edcourtney" ],
     "expiry_milestone": 90
