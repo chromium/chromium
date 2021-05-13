@@ -21,7 +21,7 @@
    */
   constructor() {
     /**
-     * @type {Array<EventTracker.Entry>}
+     * @type {Array<EventTrackerEntry>}
      * @private
      */
     this.listeners_ = [];
@@ -72,7 +72,7 @@
   /**
    * Remove a single event listener given it's tracking entry. It's up to the
    * caller to ensure the entry is removed from listeners_.
-   * @param {EventTracker.Entry} entry The entry describing the listener to
+   * @param {EventTrackerEntry} entry The entry describing the listener to
    * remove.
    */
   static removeEventListener(entry) {
@@ -88,6 +88,7 @@
  *            listener: (EventListener|Function),
  *            capture: boolean}}
  */
-EventTracker.Entry;
+// eslint-disable-next-line no-var
+var EventTrackerEntry;
 
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

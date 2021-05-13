@@ -143,10 +143,12 @@ ts_library("library") {
   ]
   definitions = [
     # Checked-in .d.ts files.
+    "cr_elements/cr_action_menu/cr_action_menu.m.d.ts",
     "cr_elements/cr_button/cr_button.m.d.ts",
     "cr_elements/cr_container_shadow_behavior.m.d.ts",
     "cr_elements/cr_dialog/cr_dialog.m.d.ts",
     "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
+    "cr_elements/cr_input/cr_input.m.d.ts",
     "cr_elements/cr_toast/cr_toast.m.d.ts",
     "cr_elements/cr_view_manager/cr_view_manager.d.ts",
     "js/i18n_behavior.m.d.ts",
@@ -154,19 +156,29 @@ ts_library("library") {
 
     # Auto-generated .d.ts files.
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
+    "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
     "$root_dir/cr_elements/cr_splitter/cr_splitter.d.ts",
     "$root_dir/cr_elements/hidden_style_css.m.d.ts",
     "$root_dir/cr_elements/icons.m.d.ts",
     "$root_dir/cr_elements/md_select_css.m.d.ts",
+    "$root_dir/cr_elements/shared_style_css.m.d.ts",
     "$root_dir/cr_elements/shared_vars_css.m.d.ts",
     "$root_dir/js/assert.m.d.ts",
+    "$root_dir/js/cr/event_target.m.d.ts",
     "$root_dir/js/cr.m.d.ts",
     "$root_dir/js/cr/ui/focus_outline_manager.m.d.ts",
+    "$root_dir/js/cr/ui/focus_row.m.d.ts",
+    "$root_dir/js/event_tracker.m.d.ts",
     "$root_dir/js/load_time_data.m.d.ts",
     "$root_dir/js/parse_html_subset.m.d.ts",
     "$root_dir/js/promise_resolver.m.d.ts",
     "$root_dir/js/util.m.d.ts",
   ]
+
+  if (!is_android) {
+    definitions += [ "$root_dir/js/cr/ui/focus_without_ink.m.d.ts" ]
+  }
+
   deps = [ "//third_party/polymer/v3_0:library" ]
   extra_deps = [
     ":generate_definitions",
@@ -179,18 +191,28 @@ ts_definitions("generate_definitions") {
   out_dir = preprocessed_folder
   js_files = [
     "cr_elements/cr_grid/cr_grid.js",
+    "cr_elements/cr_input/cr_input_style_css.m.js",
     "cr_elements/cr_splitter/cr_splitter.js",
     "cr_elements/hidden_style_css.m.js",
     "cr_elements/icons.m.js",
     "cr_elements/md_select_css.m.js",
+    "cr_elements/shared_style_css.m.js",
     "cr_elements/shared_vars_css.m.js",
     "js/assert.m.js",
     "js/cr.m.js",
+    "js/cr/event_target.m.js",
     "js/cr/ui/focus_outline_manager.m.js",
+    "js/cr/ui/focus_row.m.js",
+    "js/event_tracker.m.js",
     "js/load_time_data.m.js",
     "js/parse_html_subset.m.js",
     "js/promise_resolver.m.js",
     "js/util.m.js",
   ]
+
+  if (!is_android) {
+    js_files += [ "js/cr/ui/focus_without_ink.m.js" ]
+  }
+
   extra_deps = [ ":preprocess" ]
 }
