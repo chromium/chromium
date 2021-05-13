@@ -189,7 +189,7 @@ int32_t FullRestoreReadHandler::GetArcRestoreWindowId(int32_t task_id) {
   return arc_read_handler_->GetArcRestoreWindowId(task_id);
 }
 
-bool FullRestoreReadHandler::ModifyWidgetParams(
+void FullRestoreReadHandler::ModifyWidgetParams(
     int32_t restore_window_id,
     views::Widget::InitParams* out_params) {
   DCHECK(out_params);
@@ -206,7 +206,7 @@ bool FullRestoreReadHandler::ModifyWidgetParams(
     window_info = GetWindowInfo(restore_window_id);
   }
   if (!window_info)
-    return false;
+    return;
 
   if (window_info->activation_index) {
     const int32_t index = *window_info->activation_index;
@@ -244,8 +244,6 @@ bool FullRestoreReadHandler::ModifyWidgetParams(
         base::BindOnce(&FullRestoreReadHandler::OnWidgetInitialized,
                        weak_factory_.GetWeakPtr(), delegate));
   }
-
-  return true;
 }
 
 int32_t FullRestoreReadHandler::GetArcSessionId() {
