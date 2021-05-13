@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,10 +26,10 @@ const FeedbackType = {
 };
 
 /**
- * Keep in sync with UMA MediaRouterCastFeedbackEvent enum.
+ * Keep in sync with MediaRouterCastFeedbackEvent in enums.xml.
  * @enum {number}
  */
-const FeedbackEvent = {
+export const FeedbackEvent = {
   OPENED: 0,
   SENDING: 1,
   RESENDING: 2,
@@ -37,21 +38,74 @@ const FeedbackEvent = {
   MAX_VALUE: 4,
 };
 
-const MAX_SEND_ATTEMPTS = 4;
-const RESEND_DELAY_MS = 10000;
+/**
+ * See
+ * https://docs.google.com/document/d/1c20VYdwpUPyBRQeAS0CMr6ahwWnb0s26gByomOwqDjk
+ * @interface
+ */
+export class FeedbackUiBrowserProxy {
+  /**
+   * Records an event using Chrome Metrics.
+   * @param {FeedbackEvent} event
+   */
+  recordEvent(event) {}
+
+  /**
+   * Proxy for chrome.feedbackPrivate.sendFeedback().
+   * @param {chrome.feedbackPrivate.FeedbackInfo} info
+   * @return {!Promise<chrome.feedbackPrivate.Status>}
+   */
+  sendFeedback(info) {}
+}
+
+/** @implements {FeedbackUiBrowserProxy} */
+export class FeedbackUiBrowserProxyImpl {
+  /** @override */
+  recordEvent(event) {
+    chrome.send(
+        'metricsHandler:recordInHistogram',
+        ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
+  }
+
+  /** @override */
+  sendFeedback(info) {
+    return new Promise(
+        resolve => chrome.feedbackPrivate.sendFeedback(info, resolve));
+  }
+}
+
+addSingletonGetter(FeedbackUiBrowserProxyImpl);
 
 export class FeedbackUiElement extends PolymerElement {
   constructor() {
     super();
 
-    /** @private {boolean} */
-    this.feedbackSent_ = false;
+    /** @private {FeedbackUiBrowserProxy} */
+    this.browserProxy_ = FeedbackUiBrowserProxyImpl.getInstance();
+
+    /**
+     * Public/mutable for testing.
+     * @type {number}
+     */
+    this.resendDelayMs = 10000;
+
+    /**
+     * Public/mutable for testing.
+     * @type {number}
+     */
+    this.maxResendAttempts = 4;
+
+    /**
+     * Public for testing.
+     * @type {boolean}
+     */
+    this.feedbackSent = false;
 
     chrome.feedbackPrivate.getUserEmail(email => {
       this.userEmail_ = email;
     });
 
-    this.recordEvent_(FeedbackEvent.OPENED);
+    this.browserProxy_.recordEvent(FeedbackEvent.OPENED);
   }
 
   static get is() {
@@ -193,7 +247,6 @@ export class FeedbackUiElement extends PolymerElement {
     return this.feedbackType_ === FeedbackType.DISCOVERY;
   }
 
-  /** @private */
   onSubmit_() {
     const parts = [`Type: ${this.feedbackType_}`, ''];
     const append = (label, value) => {
@@ -251,35 +304,21 @@ export class FeedbackUiElement extends PolymerElement {
   trySendFeedback_(feedback, failureCount, delayMs) {
     setTimeout(() => {
       const sendStartTime = Date.now();
-      chrome.feedbackPrivate.sendFeedback(
-          feedback, (status, landingPageType) => {
-            if (status == chrome.feedbackPrivate.Status.SUCCESS) {
-              this.feedbackSent_ = true;
-              this.updateSendDialog_(
-                  FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
-            } else if (failureCount < MAX_SEND_ATTEMPTS) {
-              this.updateSendDialog_(
-                  FeedbackEvent.RESENDING, 'resending', false);
-              const sendDuration = Date.now() - sendStartTime;
-              this.trySendFeedback_(
-                  feedback, failureCount + 1,
-                  Math.max(0, RESEND_DELAY_MS - sendDuration));
-            } else {
-              this.updateSendDialog_(FeedbackEvent.FAILED, 'sendFail', true);
-            }
-          });
+      this.browserProxy_.sendFeedback(feedback).then(status => {
+        if (status == chrome.feedbackPrivate.Status.SUCCESS) {
+          this.feedbackSent = true;
+          this.updateSendDialog_(FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
+        } else if (failureCount < this.maxResendAttempts) {
+          this.updateSendDialog_(FeedbackEvent.RESENDING, 'resending', false);
+          const sendDuration = Date.now() - sendStartTime;
+          this.trySendFeedback_(
+              feedback, failureCount + 1,
+              Math.max(0, this.resendDelayMs - sendDuration));
+        } else {
+          this.updateSendDialog_(FeedbackEvent.FAILED, 'sendFail', true);
+        }
+      });
     }, delayMs);
-  }
-
-  /**
-   * Records an event using UMA.
-   * @param {FeedbackEvent} event
-   * @private
-   */
-  recordEvent_(event) {
-    chrome.send(
-        'metricsHandler:recordInHistogram',
-        ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
   }
 
   /**
@@ -290,14 +329,14 @@ export class FeedbackUiElement extends PolymerElement {
    * @private
    */
   updateSendDialog_(event, stringKey, isInteractive) {
-    this.recordEvent_(event);
+    this.browserProxy_.recordEvent(event);
     this.sendDialogText_ = loadTimeData.getString(stringKey);
     this.sendDialogIsInteractive_ = isInteractive;
   }
 
   /** @private */
   onSendDialogOk_() {
-    if (this.feedbackSent_) {
+    if (this.feedbackSent) {
       chrome.send('close');
     } else {
       this.$.sendDialog.close();

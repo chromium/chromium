@@ -46,7 +46,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       {"audioPoor", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_POOR},
       {"audioQuality", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_QUALITY},
       {"audioUnintelligible", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_UNINTELLIGIBLE},
-      {"cancelButton", IDS_CANCEL},
+      {"cancel", IDS_CANCEL},
       {"contentQuestion", IDS_MEDIA_ROUTER_FEEDBACK_CONTENT_QUESTION},
       {"didNotTry", IDS_MEDIA_ROUTER_FEEDBACK_DID_NOT_TRY},
       {"discardConfirmation", IDS_MEDIA_ROUTER_FEEDBACK_DISCARD_CONFIRMATION},

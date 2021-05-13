@@ -46,18 +46,18 @@ preprocess_if_expr("preprocess_web_components") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
-  in_files = [ "feedback_ui.js" ]
+  in_files = [ "cast_feedback_ui.js" ]
 }
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
-    ":feedback_ui",
+    ":cast_feedback_ui",
     ":media_router_internals",
   ]
 }
 
-js_library("feedback_ui") {
+js_library("cast_feedback_ui") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -66,9 +66,13 @@ js_library("feedback_ui") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "$externs_path/feedback_private.js" ]
+  externs_list = [
+    "$externs_path/feedback_private.js",
+    "$externs_path/chrome_send.js",
+  ]
 }
 
 js_library("media_router_internals") {
@@ -81,5 +85,5 @@ js_library("media_router_internals") {
 # Expand {__html_template__} in .js files using content from the
 # corresponding .html files.
 html_to_js("web_components") {
-  js_files = [ "feedback_ui.js" ]
+  js_files = [ "cast_feedback_ui.js" ]
 }
