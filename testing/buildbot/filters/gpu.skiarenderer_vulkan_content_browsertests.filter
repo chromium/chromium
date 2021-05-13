@@ -11,3 +11,8 @@
 -SRC_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
 -MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_AV1_10bit/0
 -MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1_10bit/0
+
+# Consistent failures. https://crbug.com/1208515
+-FormControlsBrowserTest.Textarea
+-FormControlsBrowserTest.Select
+-FormControlsBrowserTest.Input
