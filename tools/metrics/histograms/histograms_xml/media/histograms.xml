@@ -413,13 +413,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>media-dev@chromium.org</owner>
   <summary>
     Availability of volume range information on the audio capture stream on
-    Windows. Only uploaded when analog AGC is enabled - i.e., for WebRTC-based
-    audio input streams.
+    Windows. Logged every time that an audio capture stream is stopped only when
+    analog AGC is enabled.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.VolumeRangeMax" units="dB"
     expires_after="2021-09-30">
+  <obsolete>
+    Removed as of 2021-05-07.
+  </obsolete>
   <owner>alessiob@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -429,8 +432,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.VolumeRangeMax2" units="dB"
+    expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Volume range maximum for the audio capture stream on Windows. Logged every
+    time that an audio capture stream is stopped only when analog AGC is enabled
+    and if the volume range information is available. The values in UMA have an
+    offset equal to 60 since a volume range may include negative values.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.VolumeRangeMin" units="dB"
     expires_after="2021-09-30">
+  <obsolete>
+    Removed as of 2021-05-07.
+  </obsolete>
   <owner>alessiob@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -440,14 +458,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.VolumeRangeMin2" units="dB"
+    expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Volume range minimum for the audio capture stream on Windows. Logged every
+    time that an audio capture stream is stopped only when analog AGC is enabled
+    and if the volume range information is available. The values in UMA have an
+    offset equal to 60 since a volume range may include negative values.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.VolumeRangeNumSteps" units="units"
     expires_after="2021-09-30">
   <owner>alessiob@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Number of volume range steps for the audio capture stream on Windows. Only
-    uploaded when volume range information is available and when analog AGC is
-    enabled - i.e., for WebRTC-based audio input streams.
+    Number of volume range steps for the audio capture stream on Windows. Logged
+    every time that an audio capture stream is stopped only when analog AGC is
+    enabled and if the volume range information is available.
   </summary>
 </histogram>
 

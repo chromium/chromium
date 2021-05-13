@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +30,7 @@
 #include "media/audio/audio_features.h"
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/audio/win/volume_range_util.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -246,54 +246,6 @@ bool InitializeUWPSupport() {
   }();
 
   return initialization_result;
-}
-
-// Microphone volume range in decibels.
-struct VolumeRange {
-  float min_volume_db;  // Range minimum.
-  float max_volume_db;  // Range maximum.
-  // The range above is divided into N uniform intervals of size
-  // `volume_step_db`.
-  float volume_step_db;
-};
-
-constexpr int CountVolumeRangeIntervals(VolumeRange range) {
-  DCHECK_LT(range.min_volume_db, range.max_volume_db);
-  DCHECK_GT(range.volume_step_db, 0.0f);
-  return (range.max_volume_db - range.min_volume_db) / range.volume_step_db;
-}
-
-void LogVolumeRangeUmaHistograms(base::Optional<VolumeRange> range) {
-  base::UmaHistogramBoolean("Media.Audio.Capture.Win.VolumeRangeAvailable",
-                            range.has_value());
-  if (!range.has_value()) {
-    return;
-  }
-
-  // Example of volume range returned by the API.
-  constexpr VolumeRange kSampleRange{.min_volume_db = -17.0f,
-                                     .max_volume_db = 30.0f,
-                                     .volume_step_db = 0.03125f};
-  // Log range.
-  constexpr int kMinDb = -60;
-  constexpr int kMaxDb = 60;
-  static_assert(kMinDb < kMaxDb, "");
-  static_assert(kSampleRange.min_volume_db >= kMinDb, "Decrease `kMinDb`.");
-  static_assert(kSampleRange.max_volume_db <= kMaxDb, "Increase `kMaxDb`.");
-  constexpr int kNumBuckets = kMaxDb - kMinDb + 1;
-  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeMin",
-                                 std::floor(range->min_volume_db), kMinDb,
-                                 kMaxDb, kNumBuckets);
-  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeMax",
-                                 std::ceil(range->max_volume_db), kMinDb,
-                                 kMaxDb, kNumBuckets);
-  // Log number of intervals in the volume range.
-  constexpr int kMaxVolumeSteps = 2000;
-  static_assert(kMaxVolumeSteps > CountVolumeRangeIntervals(kSampleRange),
-                "Increase `kMaxVolumeSteps`.");
-  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeNumSteps",
-                                 CountVolumeRangeIntervals(*range), 0,
-                                 kMaxVolumeSteps, kMaxVolumeSteps + 1);
 }
 
 }  // namespace
@@ -1073,15 +1025,15 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
     return hr;
   }
 
-  // If loopback device with muted system audio is requested, get the volume
-  // interface for the endpoint.
-  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId) {
-    hr = endpoint_device_->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
-                                    nullptr, &system_audio_volume_);
-    if (FAILED(hr)) {
-      open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
-      return hr;
-    }
+  // Get the volume interface for the endpoint. Used in `Stop()` to query the
+  // volume range of the selected input device or to get/set mute state in
+  // `Start()` and `Stop()` if a loopback device with muted system audio is
+  // requested.
+  hr = endpoint_device_->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
+                                  nullptr, &system_audio_volume_);
+  if (FAILED(hr)) {
+    open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
+    return hr;
   }
 
   // Verify that the audio endpoint device is active, i.e., the audio
