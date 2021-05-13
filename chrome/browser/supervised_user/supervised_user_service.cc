@@ -311,7 +311,7 @@ SupervisedUserService::SupervisedUserService(Profile* profile)
       denylist_state_(DenylistLoadState::NOT_LOADED) {
   url_filter_.AddObserver(this);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry_observer_.Add(extensions::ExtensionRegistry::Get(profile));
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile));
 #endif
 }
 

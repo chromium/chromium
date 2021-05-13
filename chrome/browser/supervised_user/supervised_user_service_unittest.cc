@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -91,11 +92,11 @@ class SupervisedUserURLFilterObserver
     : public AsyncTestHelper,
       public SupervisedUserURLFilter::Observer {
  public:
-  SupervisedUserURLFilterObserver() : scoped_observer_(this) {}
+  SupervisedUserURLFilterObserver() {}
   ~SupervisedUserURLFilterObserver() {}
 
   void Init(SupervisedUserURLFilter* url_filter) {
-    scoped_observer_.Add(url_filter);
+    scoped_observation_.Observe(url_filter);
   }
 
   // SupervisedUserURLFilter::Observer
@@ -104,8 +105,9 @@ class SupervisedUserURLFilterObserver
   }
 
  private:
-  ScopedObserver<SupervisedUserURLFilter, SupervisedUserURLFilter::Observer>
-      scoped_observer_;
+  base::ScopedObservation<SupervisedUserURLFilter,
+                          SupervisedUserURLFilter::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserURLFilterObserver);
 };
