@@ -475,12 +475,15 @@ class VideoCaptureDeviceTest
 
 // Cause hangs on Windows Debug. http://crbug.com/417824
 #if (defined(OS_WIN) && !defined(NDEBUG))
-#define MAYBE_OpenInvalidDevice DISABLED_OpenInvalidDevice
+#define MAYBE_UsingRealWebcam_OpenInvalidDevice \
+  DISABLED_UsingRealWebcam_OpenInvalidDevice
 #else
-#define MAYBE_OpenInvalidDevice OpenInvalidDevice
+#define MAYBE_UsingRealWebcam_OpenInvalidDevice \
+  UsingRealWebcam_OpenInvalidDevice
 #endif
 // Tries to allocate an invalid device and verifies it doesn't work.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_OpenInvalidDevice) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest,
+               MAYBE_UsingRealWebcam_OpenInvalidDevice) {
   RunTestCase(
       base::BindOnce(&VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase,
                      base::Unretained(this)));
@@ -702,8 +705,10 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
   device->StopAndDeAllocate();
 }
 
-#define MAYBE_NoCameraSupportsPixelFormatMax NoCameraSupportsPixelFormatMax
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_NoCameraSupportsPixelFormatMax) {
+#define MAYBE_UsingRealWebcam_NoCameraSupportsPixelFormatMax \
+  UsingRealWebcam_NoCameraSupportsPixelFormatMax
+WRAPPED_TEST_P(VideoCaptureDeviceTest,
+               MAYBE_UsingRealWebcam_NoCameraSupportsPixelFormatMax) {
   RunTestCase(base::BindOnce(
       &VideoCaptureDeviceTest::RunNoCameraSupportsPixelFormatMaxTestCase,
       base::Unretained(this)));
