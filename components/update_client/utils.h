@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UTILS_H_
 #define COMPONENTS_UPDATE_CLIENT_UTILS_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,8 +17,8 @@
 class GURL;
 
 namespace base {
+class DictionaryValue;
 class FilePath;
-class Value;
 }
 
 namespace update_client {
@@ -71,9 +72,8 @@ CrxInstaller::Result InstallFunctionWrapper(
     base::OnceCallback<bool()> callback);
 
 // Deserializes the CRX manifest. The top level must be a dictionary.
-// Returns a base::Value object of type dictionary on success, or another type
-// on failure.
-base::Value ReadManifest(const base::FilePath& unpack_path);
+std::unique_ptr<base::DictionaryValue> ReadManifest(
+    const base::FilePath& unpack_path);
 
 // Converts a custom, specific installer error (and optionally extended error)
 // to an installer result.

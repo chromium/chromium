@@ -9,8 +9,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <memory>
-#include <utility>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -156,17 +154,21 @@ CrxInstaller::Result InstallFunctionWrapper(
 // TODO(cpu): add a specific attribute check to a component json that the
 // extension unpacker will reject, so that a component cannot be installed
 // as an extension.
-base::Value ReadManifest(const base::FilePath& unpack_path) {
+std::unique_ptr<base::DictionaryValue> ReadManifest(
+    const base::FilePath& unpack_path) {
   base::FilePath manifest =
       unpack_path.Append(FILE_PATH_LITERAL("manifest.json"));
   if (!base::PathExists(manifest))
-    return base::Value();
+    return nullptr;
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root)
-    return base::Value();
-  return base::Value::FromUniquePtrValue(std::move(root));
+    return nullptr;
+  if (!root->is_dict())
+    return nullptr;
+  return std::unique_ptr<base::DictionaryValue>(
+      static_cast<base::DictionaryValue*>(root.release()));
 }
 
 }  // namespace update_client
