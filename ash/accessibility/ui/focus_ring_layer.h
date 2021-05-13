@@ -8,7 +8,6 @@
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"

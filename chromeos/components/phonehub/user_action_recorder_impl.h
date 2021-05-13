@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "chromeos/components/phonehub/user_action_recorder.h"
 
 namespace chromeos {

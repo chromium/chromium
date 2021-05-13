@@ -7,7 +7,6 @@
 
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"

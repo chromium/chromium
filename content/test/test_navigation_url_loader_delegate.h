@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"

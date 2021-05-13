@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_demuxer.h"
 

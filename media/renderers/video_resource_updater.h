@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/resources/release_callback.h"

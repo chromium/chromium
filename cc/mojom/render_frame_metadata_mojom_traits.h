@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "net/cert/x509_certificate.h"
 #include "url/gurl.h"

@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_OZONE_GAMEPAD_GAMEPAD_OBSERVER_H_
 #define UI_EVENTS_OZONE_GAMEPAD_GAMEPAD_OBSERVER_H_
 
-#include "base/time/time.h"
 #include "ui/events/ozone/gamepad/gamepad_event.h"
 
 namespace ui {

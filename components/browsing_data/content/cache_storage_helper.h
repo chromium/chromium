@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "url/origin.h"
 
 namespace content {

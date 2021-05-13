@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_METRICS_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_METRICS_H_
 
-#include "base/time/time.h"
+#include <string>
 
 namespace proximity_auth {
 namespace metrics {

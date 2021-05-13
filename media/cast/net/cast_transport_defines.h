@@ -15,7 +15,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "media/cast/common/frame_id.h"
 
 namespace media {

@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

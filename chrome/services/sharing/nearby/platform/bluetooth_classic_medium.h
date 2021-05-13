@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"

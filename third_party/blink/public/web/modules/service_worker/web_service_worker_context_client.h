@@ -34,7 +34,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"

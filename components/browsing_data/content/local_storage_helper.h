@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "url/origin.h"

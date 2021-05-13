@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {

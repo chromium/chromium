@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_OBSERVER_H_
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {

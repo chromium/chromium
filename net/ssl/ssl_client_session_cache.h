@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"

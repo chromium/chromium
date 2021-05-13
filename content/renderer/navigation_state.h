@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params.mojom.h"

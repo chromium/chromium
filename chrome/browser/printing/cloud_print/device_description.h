@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 
 namespace local_discovery {

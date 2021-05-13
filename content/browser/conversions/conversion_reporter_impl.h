@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"

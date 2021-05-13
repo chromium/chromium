@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VIDEO_TUTORIALS_PREFS_H_
 
 #include "base/optional.h"
-#include "base/time/time.h"
 
 class PrefRegistrySimple;
 

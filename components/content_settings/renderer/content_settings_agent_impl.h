@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"

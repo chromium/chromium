@@ -6,6 +6,9 @@
 #define CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_H_
 
 #include <stddef.h>
+
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -13,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"

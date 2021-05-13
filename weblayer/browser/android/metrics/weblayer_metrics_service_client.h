@@ -12,7 +12,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"

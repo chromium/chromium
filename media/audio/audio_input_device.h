@@ -54,7 +54,6 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "media/audio/alive_checker.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/audio/audio_input_ipc.h"

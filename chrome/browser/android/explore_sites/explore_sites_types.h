@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 

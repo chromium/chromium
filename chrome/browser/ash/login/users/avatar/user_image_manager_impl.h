@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"

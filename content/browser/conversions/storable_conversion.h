@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"

@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 // TODO(https://crbug.com/1164001): move KioskAppId to forward declaration

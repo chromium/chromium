@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 
 #include "base/callback.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/begin_main_frame_metrics.h"

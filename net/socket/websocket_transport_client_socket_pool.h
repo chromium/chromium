@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"

@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/gl/dual_gpu_state.h"
 #include "ui/gl/gl_bindings.h"

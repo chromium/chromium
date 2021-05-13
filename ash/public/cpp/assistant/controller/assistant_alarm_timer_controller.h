@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 
 namespace chromeos {
 namespace assistant {

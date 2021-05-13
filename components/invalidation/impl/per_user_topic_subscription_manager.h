@@ -10,7 +10,6 @@
 
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/per_user_topic_subscription_request.h"

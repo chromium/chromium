@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/time/time.h"
 #include "ipc/ipc_message_macros.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"

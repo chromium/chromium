@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/time/time.h"
 
 namespace ui {
 class LayerAnimator;

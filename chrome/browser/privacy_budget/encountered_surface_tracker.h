@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/containers/flat_set.h"
-#include "base/time/time.h"
 
 class EncounteredSurfaceTracker {
  public:

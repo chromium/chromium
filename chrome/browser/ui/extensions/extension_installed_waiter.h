@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/extensions/extension_removal_watcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

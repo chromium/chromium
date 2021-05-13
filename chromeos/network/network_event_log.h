@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {

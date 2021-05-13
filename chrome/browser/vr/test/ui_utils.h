@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chrome/browser/vr/ui_test_input.h"
 
 namespace vr {

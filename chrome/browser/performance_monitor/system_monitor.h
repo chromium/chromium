@@ -17,7 +17,6 @@
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace performance_monitor {

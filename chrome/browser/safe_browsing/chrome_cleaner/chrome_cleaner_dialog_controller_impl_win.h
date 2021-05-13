@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_win.h"
 #include "chrome/browser/ui/browser_list_observer.h"

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "third_party/skia/include/core/SkColor.h"

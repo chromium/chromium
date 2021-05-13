@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_SCHEDULER_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/time/time.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"

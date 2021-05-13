@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/process/kill.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"

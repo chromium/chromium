@@ -5,6 +5,7 @@
 #ifndef REMOTING_SIGNALING_MOCK_SIGNALING_TRACKER_H_
 #define REMOTING_SIGNALING_MOCK_SIGNALING_TRACKER_H_
 
+#include "base/time/time.h"
 #include "remoting/signaling/signaling_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

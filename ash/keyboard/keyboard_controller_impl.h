@@ -17,7 +17,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;

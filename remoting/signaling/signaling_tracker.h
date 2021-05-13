@@ -6,7 +6,6 @@
 #define REMOTING_SIGNALING_SIGNALING_TRACKER_H_
 
 #include "base/macros.h"
-#include "base/time/time.h"
 
 namespace remoting {
 

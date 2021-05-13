@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/time/time.h"
 #include "media/base/media_export.h"
 
 namespace media {

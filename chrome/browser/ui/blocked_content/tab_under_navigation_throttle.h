@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

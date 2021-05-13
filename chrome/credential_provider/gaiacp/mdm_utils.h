@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/windows_types.h"
 #include "url/gurl.h"

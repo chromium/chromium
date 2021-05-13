@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "components/invalidation/impl/status.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "net/http/http_request_headers.h"

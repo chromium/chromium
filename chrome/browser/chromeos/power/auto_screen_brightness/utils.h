@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/ring_buffer.h"
-#include "base/time/time.h"
 
 namespace chromeos {
 namespace power {

@@ -10,7 +10,6 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"

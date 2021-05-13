@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 

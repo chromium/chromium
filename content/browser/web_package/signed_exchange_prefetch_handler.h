@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

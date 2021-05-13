@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"

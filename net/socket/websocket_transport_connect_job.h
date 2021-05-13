@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/dns/host_resolver.h"

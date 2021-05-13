@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/window/client_view.h"

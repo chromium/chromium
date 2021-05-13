@@ -13,7 +13,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
-#include "base/time/time.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/properties.h"
 #include "components/performance_manager/public/graph/system_node.h"

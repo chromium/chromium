@@ -18,7 +18,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
-#include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"

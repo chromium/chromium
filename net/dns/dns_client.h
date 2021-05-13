@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 #include "net/dns/dns_config.h"

@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_interrupt_reasons.h"

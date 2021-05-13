@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cookies/canonical_cookie.h"

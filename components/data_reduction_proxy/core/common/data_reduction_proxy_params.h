@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace data_reduction_proxy {

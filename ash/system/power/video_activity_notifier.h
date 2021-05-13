@@ -10,7 +10,6 @@
 #include "ash/wm/video_detector.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

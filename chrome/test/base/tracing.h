@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/time/time.h"
 
 namespace base {
 namespace trace_event {

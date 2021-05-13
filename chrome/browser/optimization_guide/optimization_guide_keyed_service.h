@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"

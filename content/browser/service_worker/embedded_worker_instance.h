@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/threading/sequence_bound.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_metrics.h"

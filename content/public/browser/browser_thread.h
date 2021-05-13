@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {

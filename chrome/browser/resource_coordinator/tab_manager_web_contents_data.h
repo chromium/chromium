@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_WEB_CONTENTS_DATA_H_
 
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "content/public/browser/navigation_handle.h"

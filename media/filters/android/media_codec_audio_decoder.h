@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_loop.h"
 #include "media/base/android/media_crypto_context.h"

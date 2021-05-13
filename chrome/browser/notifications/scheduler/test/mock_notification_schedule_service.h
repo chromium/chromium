@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

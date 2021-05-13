@@ -11,7 +11,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"

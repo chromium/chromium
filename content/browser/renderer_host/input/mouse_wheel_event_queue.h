@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"

@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"

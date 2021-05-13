@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 
 class PrefService;
 class PrefRegistrySimple;

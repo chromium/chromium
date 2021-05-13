@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
-#include "base/time/time.h"
 
 namespace base {
 namespace internal {

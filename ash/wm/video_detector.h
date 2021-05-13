@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"

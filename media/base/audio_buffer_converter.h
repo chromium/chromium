@@ -9,7 +9,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"

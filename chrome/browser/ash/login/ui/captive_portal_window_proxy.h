@@ -9,7 +9,6 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "ui/views/widget/widget_observer.h"
 

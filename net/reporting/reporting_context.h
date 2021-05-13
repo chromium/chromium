@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"

@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/data_use_measurement/core/data_use_tracker_prefs.h"
 #include "components/data_use_measurement/core/data_use_user_data.h"

@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/containers/ring_buffer.h"
-#include "base/time/time.h"
 
 namespace cc {
 

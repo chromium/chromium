@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"

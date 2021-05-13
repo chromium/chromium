@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_PARAMS_H_
 #define COMPONENTS_METRICS_CALL_STACK_PROFILE_PARAMS_H_
 
-#include "base/time/time.h"
 
 namespace metrics {
 

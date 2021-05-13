@@ -6,7 +6,6 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRROR_SETTINGS_H_
 
 #include "base/component_export.h"
-#include "base/time/time.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/cast_config.h"
 

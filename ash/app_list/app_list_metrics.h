@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/time/time.h"
 #include "ui/events/event.h"
 
 namespace ash {

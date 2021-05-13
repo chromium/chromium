@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MOJO_MEDIA_ROUTER_MOJO_METRICS_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/route_request_result.h"

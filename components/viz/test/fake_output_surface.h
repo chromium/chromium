@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

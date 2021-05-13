@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"

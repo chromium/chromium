@@ -12,7 +12,6 @@
 #include "ash/system/network/tray_network_state_observer.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
 namespace ash {

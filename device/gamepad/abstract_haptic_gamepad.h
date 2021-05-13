@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 

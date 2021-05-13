@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

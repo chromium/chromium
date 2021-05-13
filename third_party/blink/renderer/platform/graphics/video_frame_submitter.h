@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"

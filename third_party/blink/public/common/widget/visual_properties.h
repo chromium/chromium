@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_VISUAL_PROPERTIES_H_
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "cc/trees/browser_controls_params.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/common_export.h"

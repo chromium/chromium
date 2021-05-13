@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/supports_user_data.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/web/web_document_loader.h"

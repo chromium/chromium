@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"

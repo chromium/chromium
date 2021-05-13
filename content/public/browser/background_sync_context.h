@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "url/origin.h"

@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_GESTURE_TOUCH_UMA_HISTOGRAM_H_
 #define UI_EVENTS_GESTURE_DETECTION_GESTURE_TOUCH_UMA_HISTOGRAM_H_
 
-#include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 #include "ui/events/gesture_detection/motion_event.h"

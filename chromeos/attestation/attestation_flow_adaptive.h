@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/attestation/attestation_flow_factory.h"
 #include "chromeos/attestation/attestation_flow_status_reporter.h"

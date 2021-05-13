@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"

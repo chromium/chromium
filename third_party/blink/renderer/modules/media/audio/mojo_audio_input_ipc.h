@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/audio/audio_source_parameters.h"
 #include "media/mojo/mojom/audio_input_stream.mojom-blink.h"

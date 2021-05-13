@@ -10,7 +10,6 @@
 
 #include "ash/login/ui/animation_frame.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"

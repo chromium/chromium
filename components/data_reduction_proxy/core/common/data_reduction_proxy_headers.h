@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "base/time/time.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"

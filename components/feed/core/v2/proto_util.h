@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"

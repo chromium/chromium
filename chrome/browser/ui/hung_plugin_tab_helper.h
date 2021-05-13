@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/web_contents_observer.h"

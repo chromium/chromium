@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"

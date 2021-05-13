@@ -13,7 +13,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/time/time.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/browser/service_worker/service_worker_registration.h"

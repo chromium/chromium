@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_BANDWIDTH_ESTIMATOR_H_
 #define REMOTING_PROTOCOL_BANDWIDTH_ESTIMATOR_H_
 
-#include "base/time/time.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 
 namespace remoting {

@@ -10,7 +10,6 @@
 
 #include "base/observer_list.h"
 #include "base/time/clock.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"

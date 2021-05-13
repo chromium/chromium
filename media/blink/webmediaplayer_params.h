@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "cc/layers/surface_layer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/media_log.h"

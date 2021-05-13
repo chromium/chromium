@@ -18,7 +18,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"

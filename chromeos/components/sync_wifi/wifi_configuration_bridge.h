@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/network/network_configuration_observer.h"

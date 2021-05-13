@@ -18,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"

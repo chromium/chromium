@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "url/gurl.h"

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"

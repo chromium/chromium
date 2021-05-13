@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_PERF_PERFORMANCE_TEST_H_
 #define CHROME_TEST_BASE_PERF_PERFORMANCE_TEST_H_
 
-#include "base/time/time.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 // PerformanceTest is an interactive-ui-test that can be used to collect traces.

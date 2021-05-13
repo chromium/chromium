@@ -11,7 +11,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/simple_thread.h"
-#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
