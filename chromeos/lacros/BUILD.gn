@@ -61,7 +61,10 @@ if (is_chromeos_device) {
     tast_tests = [
       # TODO(crbug.com/1202407): Enable this test again.
       #"lacros.AudioPlay",
-      "lacros.AppLauncherLaunch",
+
+      # TODO(crbug.com/1208845): Enable this test again.
+      #"lacros.AppLauncherLaunch",
+
       "lacros.Basic",
 
       # TODO(crbug.com/1205526): Enable this test again.
