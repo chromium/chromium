@@ -118,7 +118,7 @@ cr.define('settings_about_page', function() {
 
       fireStatusChanged(UpdateStatus.FAILED);
       assertEquals(null, icon.src);
-      assertEquals('cr:error', icon.icon);
+      assertEquals('cr:error-outline', icon.icon);
       assertEquals(0, statusMessageEl.textContent.trim().length);
 
       fireStatusChanged(UpdateStatus.DISABLED);

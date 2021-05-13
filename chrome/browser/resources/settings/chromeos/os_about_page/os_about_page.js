@@ -472,7 +472,7 @@ Polymer({
       case UpdateStatus.FAILED_DOWNLOAD:
       case UpdateStatus.FAILED_HTTP:
       case UpdateStatus.FAILED:
-        return 'cr:error';
+        return 'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
         // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
