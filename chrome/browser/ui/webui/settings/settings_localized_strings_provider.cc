@@ -1622,14 +1622,14 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_REMOVE_FROM_LIST},
       {"searchEnginesManageExtension",
        IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION},
-      {"searchEnginesTriggerOptions",
-       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_OPTIONS},
-      {"searchEnginesTriggerDescription",
-       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_DESCRIPTION},
-      {"searchEnginesTriggerSpaceEnabled",
-       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_ENABLED},
-      {"searchEnginesTriggerSpaceDisabled",
-       IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_DISABLED},
+      {"searchEnginesKeyboardShortcutsTitle",
+       IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TITLE},
+      {"searchEnginesKeyboardShortcutsDescription",
+       IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION},
+      {"searchEnginesKeyboardShortcutsSpaceOrTab",
+       IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB},
+      {"searchEnginesKeyboardShortcutsTab",
+       IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

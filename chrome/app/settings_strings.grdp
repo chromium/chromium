@@ -1767,16 +1767,16 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
     Manage
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_OPTIONS" desc="Label for scoped search mode trigger options section">
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TITLE" desc="Label for scoped search mode trigger options section">
     Keyboard shortcuts for search keywords
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_DESCRIPTION" desc="Text explaining how to use keyword mode">
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION" desc="Text explaining how to use keyword mode">
     In the address bar, enter the keyword for the website you want to search. Then, use a keyboard shortcut to continue.
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_ENABLED" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Space or Tab
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_TRIGGER_SPACE_DISABLED" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Tab
   </message>
 

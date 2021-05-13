@@ -4,10 +4,11 @@
       }
     </style>
     <div class="cr-row first" hidden="[[!showKeywordTriggerSetting_]]">
-      <div class="flex cr-padded-text"
-          hidden="[[!showKeywordTriggerSetting_]]">
-        <h2>$i18n{searchEnginesTriggerOptions}</h2>
-        $i18n{searchEnginesTriggerDescription}
+      <div class="flex cr-padded-text">
+        $i18n{searchEnginesKeyboardShortcutsTitle}
+        <div class="secondary">
+          $i18n{searchEnginesKeyboardShortcutsDescription}
+        </div>
       </div>
     </div>
     <div class="list-frame" hidden="[[!showKeywordTriggerSetting_]]">
@@ -15,12 +16,12 @@
           pref="{{prefs.omnibox.keyword_space_triggering_enabled}}">
         <controlled-radio-button class="list-item" name="true"
             pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
-            label="$i18n{searchEnginesTriggerSpaceEnabled}"
+            label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
             no-extension-indicator>
         </controlled-radio-button>
         <controlled-radio-button class="list-item" name="false"
             pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
-            label="$i18n{searchEnginesTriggerSpaceDisabled}"
+            label="$i18n{searchEnginesKeyboardShortcutsTab}"
             no-extension-indicator>
         </controlled-radio-button>
       </settings-radio-group>
