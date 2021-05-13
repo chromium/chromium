@@ -136,6 +136,10 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   // Returns SharingMessageSender for testing.
   SharingMessageSender* GetMessageSenderForTesting() const;
 
+  // Returns the message handler registered for |payload_case| for testing.
+  SharingMessageHandler* GetSharingHandlerForTesting(
+      chrome_browser_sharing::SharingMessage::PayloadCase payload_case) const;
+
  private:
   // Overrides for syncer::SyncServiceObserver.
   void OnSyncShutdown(syncer::SyncService* sync) override;

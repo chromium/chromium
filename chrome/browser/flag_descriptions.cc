@@ -4971,36 +4971,6 @@ const char kEnableOopPrintDriversDescription[] =
     "Enables printing interactions with the operating system to be performed "
     "out-of-process.";
 
-const char kRemoteCopyReceiverName[] =
-    "Enables the remote copy feature to receive messages";
-const char kRemoteCopyReceiverDescription[] =
-    "Enables the remote copy feature to handle messages by writing content to "
-    "the clipboard and showing a notification to the user.";
-
-const char kRemoteCopyImageNotificationName[] =
-    "Enables image notifications for the remote copy feature";
-const char kRemoteCopyImageNotificationDescription[] =
-    "Enables image notifications to be shown for the remote copy feature "
-    "when receiving a message.";
-
-const char kRemoteCopyPersistentNotificationName[] =
-    "Enables persistent notifications for the remote copy feature";
-const char kRemoteCopyPersistentNotificationDescription[] =
-    "Enables persistent notifications to be shown for the remote copy feature "
-    "when receiving a message.";
-
-const char kRemoteCopyProgressNotificationName[] =
-    "Enables progress notifications for the remote copy feature";
-const char kRemoteCopyProgressNotificationDescription[] =
-    "Enables progress notifications to be shown for the remote copy feature "
-    "when receiving a message.";
-
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
-
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-
 const char kDirectManipulationStylusName[] = "Direct Manipulation Stylus";
 const char kDirectManipulationStylusDescription[] =
     "If enabled, Chrome will scroll web pages on stylus drag.";

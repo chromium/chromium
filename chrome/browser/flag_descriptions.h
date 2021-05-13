@@ -2907,18 +2907,6 @@ extern const char kTextfieldFocusOnTapUpDescription[];
 extern const char kEnableOopPrintDriversName[];
 extern const char kEnableOopPrintDriversDescription[];
 
-extern const char kRemoteCopyReceiverName[];
-extern const char kRemoteCopyReceiverDescription[];
-
-extern const char kRemoteCopyImageNotificationName[];
-extern const char kRemoteCopyImageNotificationDescription[];
-
-extern const char kRemoteCopyPersistentNotificationName[];
-extern const char kRemoteCopyPersistentNotificationDescription[];
-
-extern const char kRemoteCopyProgressNotificationName[];
-extern const char kRemoteCopyProgressNotificationDescription[];
-
 extern const char kDirectManipulationStylusName[];
 extern const char kDirectManipulationStylusDescription[];
 

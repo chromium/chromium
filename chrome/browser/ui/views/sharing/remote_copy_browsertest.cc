@@ -15,8 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
+#include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
 #include "chrome/browser/sharing/sharing_service.h"
@@ -49,7 +49,6 @@ const char kImageSizeAfterDecodeHistogram[] =
 const char kStatusCodeHistogram[] = "Sharing.RemoteCopyLoadImageStatusCode";
 const char kLoadTimeHistogram[] = "Sharing.RemoteCopyLoadImageTime";
 const char kDecodeTimeHistogram[] = "Sharing.RemoteCopyDecodeImageTime";
-const char kResizeTimeHistogram[] = "Sharing.RemoteCopyResizeImageTime";
 
 class ClipboardObserver : public ui::ClipboardObserver {
  public:
@@ -67,10 +66,16 @@ class ClipboardObserver : public ui::ClipboardObserver {
 }  // namespace
 
 // Browser tests for the Remote Copy feature.
-class RemoteCopyBrowserTestBase : public InProcessBrowserTest {
+class RemoteCopyBrowserTest : public InProcessBrowserTest {
  public:
-  RemoteCopyBrowserTestBase() = default;
-  ~RemoteCopyBrowserTestBase() override = default;
+  RemoteCopyBrowserTest() {
+    server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTP);
+    server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    EXPECT_TRUE(server_->Start());
+  }
+
+  ~RemoteCopyBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ui::TestClipboard::CreateForCurrentThread();
@@ -78,6 +83,11 @@ class RemoteCopyBrowserTestBase : public InProcessBrowserTest {
         browser()->profile());
     sharing_service_ =
         SharingServiceFactory::GetForBrowserContext(browser()->profile());
+    auto* remote_copy_handler = static_cast<RemoteCopyMessageHandler*>(
+        sharing_service_->GetSharingHandlerForTesting(
+            chrome_browser_sharing::SharingMessage::kRemoteCopyMessage));
+    ASSERT_TRUE(remote_copy_handler);
+    remote_copy_handler->set_allowed_origin_for_testing(server_->base_url());
   }
 
   void TearDownOnMainThread() override {
@@ -150,51 +160,10 @@ class RemoteCopyBrowserTestBase : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histograms_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   SharingService* sharing_service_;
   std::unique_ptr<net::EmbeddedTestServer> server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteCopyBrowserTestBase);
-};
-
-class RemoteCopyDisabledBrowserTest : public RemoteCopyBrowserTestBase {
- public:
-  RemoteCopyDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(kRemoteCopyReceiver);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(RemoteCopyDisabledBrowserTest, FeatureDisabled) {
-  // The clipboard is empty.
-  ASSERT_TRUE(GetAvailableClipboardTypes().empty());
-
-  // Send a message with text.
-  SendTextMessage(kDeviceName, kText);
-
-  // The clipboard is still empty because the feature is disabled and the
-  // handler is not installed.
-  ASSERT_TRUE(GetAvailableClipboardTypes().empty());
-  histograms_.ExpectTotalCount(kResultHistogram, 0);
-}
-
-class RemoteCopyBrowserTest : public RemoteCopyBrowserTestBase {
- public:
-  RemoteCopyBrowserTest() {
-    server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    EXPECT_TRUE(server_->Start());
-
-    url::Origin allowlist_origin = url::Origin::Create(server_->base_url());
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kRemoteCopyReceiver,
-          {{kRemoteCopyAllowedOrigins.name, allowlist_origin.Serialize()}}},
-         {kRemoteCopyImageNotification, {}}},
-        {});
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
@@ -250,21 +219,12 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, ImageUrl) {
                 IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_IMAGE_CONTENT,
                 kDeviceName16),
             notification.title());
-  ASSERT_EQ(message_center::NOTIFICATION_TYPE_IMAGE, notification.type());
-#if defined(OS_MAC)
-  // We show the image in the notification icon on macOS.
-  ASSERT_EQ(640, notification.icon().Width());
-  ASSERT_EQ(480, notification.icon().Height());
-#else
-  ASSERT_EQ(640, notification.rich_notification_data().image.Width());
-  ASSERT_EQ(480, notification.rich_notification_data().image.Height());
-#endif  // defined(OS_MAC)
+  ASSERT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   histograms_.ExpectUniqueSample(kStatusCodeHistogram, net::HTTP_OK, 1);
   histograms_.ExpectTotalCount(kLoadTimeHistogram, 1);
   histograms_.ExpectUniqueSample(kImageSizeBeforeDecodeHistogram, 810490, 1);
   histograms_.ExpectTotalCount(kDecodeTimeHistogram, 1);
   histograms_.ExpectUniqueSample(kImageSizeAfterDecodeHistogram, 19660800, 1);
-  histograms_.ExpectTotalCount(kResizeTimeHistogram, 1);
   histograms_.ExpectUniqueSample(
       kResultHistogram, RemoteCopyHandleMessageResult::kSuccessHandledImage, 1);
 }

@@ -133,6 +133,11 @@ SharingMessageSender* SharingService::GetMessageSenderForTesting() const {
   return message_sender_.get();
 }
 
+SharingMessageHandler* SharingService::GetSharingHandlerForTesting(
+    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) const {
+  return handler_registry_->GetSharingHandler(payload_case);
+}
+
 void SharingService::OnSyncShutdown(syncer::SyncService* sync) {
   if (sync_service_ && sync_service_->HasObserver(this))
     sync_service_->RemoveObserver(this);

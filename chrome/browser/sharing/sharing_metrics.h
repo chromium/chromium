@@ -150,9 +150,6 @@ void LogRemoteCopyLoadImageTime(base::TimeDelta time);
 // Logs to UMA the time to decode an image for Remote Copy.
 void LogRemoteCopyDecodeImageTime(base::TimeDelta time);
 
-// Logs to UMA the time to resize an image for Remote Copy.
-void LogRemoteCopyResizeImageTime(base::TimeDelta time);
-
 // Logs to UMA the duration of a clipboard write for Remote Copy.
 void LogRemoteCopyWriteTime(base::TimeDelta time, bool is_image);
 

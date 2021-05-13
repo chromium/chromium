@@ -5214,26 +5214,6 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::assistant::features::kAssistantBetterOnboarding)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-    {"remote-copy-receiver", flag_descriptions::kRemoteCopyReceiverName,
-     flag_descriptions::kRemoteCopyReceiverDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(kRemoteCopyReceiver)},
-    {"remote-copy-image-notification",
-     flag_descriptions::kRemoteCopyImageNotificationName,
-     flag_descriptions::kRemoteCopyImageNotificationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(kRemoteCopyImageNotification)},
-    {"remote-copy-persistent-notification",
-     flag_descriptions::kRemoteCopyPersistentNotificationName,
-     flag_descriptions::kRemoteCopyPersistentNotificationDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(kRemoteCopyPersistentNotification)},
-    {"remote-copy-progress-notification",
-     flag_descriptions::kRemoteCopyProgressNotificationName,
-     flag_descriptions::kRemoteCopyProgressNotificationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(kRemoteCopyProgressNotification)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
-
     {"restrict-gamepad-access", flag_descriptions::kRestrictGamepadAccessName,
      flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},

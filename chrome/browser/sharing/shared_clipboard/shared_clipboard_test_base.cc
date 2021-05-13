@@ -52,24 +52,6 @@ SkBitmap SharedClipboardTestBase::GetClipboardImage() {
       ui::Clipboard::GetForCurrentThread());
 }
 
-bool SharedClipboardTestBase::HasImageNotification() {
-  auto notifications = notification_tester_->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::SHARING);
-  if (notifications.size() != 1u)
-    return false;
-
-  return notifications[0].type() == message_center::NOTIFICATION_TYPE_IMAGE;
-}
-
-bool SharedClipboardTestBase::HasProgressNotification() {
-  auto notifications = notification_tester_->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::SHARING);
-  if (notifications.size() != 1u)
-    return false;
-
-  return notifications[0].type() == message_center::NOTIFICATION_TYPE_PROGRESS;
-}
-
 message_center::Notification SharedClipboardTestBase::GetNotification() {
   auto notifications = notification_tester_->GetDisplayedNotificationsForType(
       NotificationHandler::Type::SHARING);
@@ -77,29 +59,6 @@ message_center::Notification SharedClipboardTestBase::GetNotification() {
 
   const message_center::Notification& notification = notifications[0];
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-
-  return notification;
-}
-
-message_center::Notification
-SharedClipboardTestBase::GetProgressNotification() {
-  auto notifications = notification_tester_->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::SHARING);
-  EXPECT_EQ(notifications.size(), 1u);
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_PROGRESS, notification.type());
-
-  return notification;
-}
-
-message_center::Notification SharedClipboardTestBase::GetImageNotification() {
-  auto notifications = notification_tester_->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::SHARING);
-  EXPECT_EQ(notifications.size(), 1u);
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_IMAGE, notification.type());
 
   return notification;
 }

@@ -339,6 +339,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.RemoteCopyResizeImageTime" units="ms"
     expires_after="M90">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>The time to resize an image for Remote Copy. Desktop only.</summary>
