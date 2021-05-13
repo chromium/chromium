@@ -182,7 +182,8 @@ def MergeFiles(filenames=[], files=[], should_expand_owners=False):
   Returns:
     A merged DOM tree.
   """
-  all_files = files + [open(f) for f in filenames]
+  # minidom.parse() takes both files and filenames:
+  all_files = files + filenames
   trees = [xml.dom.minidom.parse(f) for f in all_files]
   return MergeTrees(trees, should_expand_owners)
 
@@ -196,7 +197,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--output', required=True)
   args = parser.parse_args()
-  with open(args.output, 'w') as f:
+  with open(args.output, 'w', encoding='utf-8', newline='\n') as f:
     # This is run by
     # https://source.chromium.org/chromium/chromium/src/+/master:tools/metrics/BUILD.gn;drc=573e48309695102dec2da1e8f806c18c3200d414;l=5
     # to send the merged histograms.xml to the server side. Providing |UKM_XML|
