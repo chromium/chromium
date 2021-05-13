@@ -48,9 +48,6 @@
 
 namespace net {
 
-const base::Feature kEnforceCTForNewCerts{"EnforceCTForNewCerts",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 namespace {
 
 #include "net/http/transport_security_state_ct_policies.inc"
@@ -74,11 +71,6 @@ const size_t kReportCacheKeyLength = 16;
 //   false: Use the default implementation (e.g. production)
 //   true: Unless a delegate says otherwise, require CT.
 bool g_ct_required_for_testing = false;
-
-// The date (as the number of seconds since the Unix Epoch) to enforce CT for
-// new certificates.
-constexpr base::FeatureParam<int> kEnforceCTForNewCertsDate{
-    &kEnforceCTForNewCerts, "date", 0};
 
 bool IsDynamicExpectCTEnabled() {
   return base::FeatureList::IsEnabled(
@@ -543,22 +535,6 @@ TransportSecurityState::CheckCTRequirements(
         return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
       }
       break;
-  }
-
-  // This is provided as a means for CAs to test their own issuance practices
-  // prior to Certificate Transparency becoming mandatory. A parameterized
-  // Feature/FieldTrial is provided, with a single parameter, "date", that
-  // allows a CA to simulate an enforcement date. The expected use case is
-  // that a CA will simulate a date of today/yesterday to see if their newly
-  // issued certificates comply.
-  if (base::FeatureList::IsEnabled(kEnforceCTForNewCerts)) {
-    base::Time enforcement_date =
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromSeconds(kEnforceCTForNewCertsDate.Get());
-    if (enforcement_date > base::Time::UnixEpoch() &&
-        validated_certificate_chain->valid_start() > enforcement_date) {
-      return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
-    }
   }
 
   const base::Time epoch = base::Time::UnixEpoch();
