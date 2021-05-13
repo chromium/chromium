@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/stale_revalidation_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle_list.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
@@ -935,25 +936,26 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   return base::nullopt;
 }
 
-bool ResourceFetcher::ShouldBeLoadedFromWebBundle(const KURL& url) const {
-  for (auto& bundle : subresource_web_bundles_) {
-    if (bundle->CanHandleRequest(url))
-      return true;
-  }
-  return false;
-}
-
 void ResourceFetcher::AttachWebBundleTokenIfNeeded(
     ResourceRequest& resource_request) const {
-  for (auto& bundle : subresource_web_bundles_) {
-    if (!bundle->CanHandleRequest(resource_request.Url()))
-      continue;
-    resource_request.SetWebBundleTokenParams(
-        ResourceRequestHead::WebBundleTokenParams(bundle->GetBundleUrl(),
-                                                  bundle->WebBundleToken(),
-                                                  mojo::NullRemote()));
+  if (!subresource_web_bundles_)
     return;
-  }
+  SubresourceWebBundle* bundle =
+      subresource_web_bundles_->GetMatchingBundle(resource_request.Url());
+  if (!bundle)
+    return;
+  resource_request.SetWebBundleTokenParams(
+      ResourceRequestHead::WebBundleTokenParams(bundle->GetBundleUrl(),
+                                                bundle->WebBundleToken(),
+                                                mojo::NullRemote()));
+}
+
+SubresourceWebBundleList*
+ResourceFetcher::GetOrCreateSubresourceWebBundleList() {
+  if (subresource_web_bundles_)
+    return subresource_web_bundles_;
+  subresource_web_bundles_ = MakeGarbageCollected<SubresourceWebBundleList>();
+  return subresource_web_bundles_;
 }
 
 Resource* ResourceFetcher::RequestResource(FetchParameters& params,
@@ -2118,8 +2120,11 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url) const {
   // but should use a bundle/mhtml-specific cache.
   if (archive_)
     return archive_->GetCacheIdentifier();
-  for (auto& bundle : subresource_web_bundles_) {
-    if (bundle->CanHandleRequest(url))
+
+  if (subresource_web_bundles_) {
+    SubresourceWebBundle* bundle =
+        subresource_web_bundles_->GetMatchingBundle(url);
+    if (bundle)
       return bundle->GetCacheIdentifier();
   }
 
@@ -2251,16 +2256,6 @@ mojom::blink::BlobRegistry* ResourceFetcher::GetBlobRegistry() {
 
 FrameOrWorkerScheduler* ResourceFetcher::GetFrameOrWorkerScheduler() {
   return frame_or_worker_scheduler_.get();
-}
-
-void ResourceFetcher::AddSubresourceWebBundle(
-    SubresourceWebBundle& subresource_web_bundle) {
-  subresource_web_bundles_.insert(&subresource_web_bundle);
-}
-
-void ResourceFetcher::RemoveSubresourceWebBundle(
-    SubresourceWebBundle& subresource_web_bundle) {
-  subresource_web_bundles_.erase(&subresource_web_bundle);
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

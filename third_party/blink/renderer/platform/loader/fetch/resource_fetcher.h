@@ -65,7 +65,7 @@ class Resource;
 class ResourceError;
 class ResourceLoadObserver;
 class ResourceTimingInfo;
-class SubresourceWebBundle;
+class SubresourceWebBundleList;
 class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
 struct ResourceFetcherInit;
@@ -307,10 +307,8 @@ class PLATFORM_EXPORT ResourceFetcher
     scheduler_->SetOptimizationGuideHints(std::move(optimization_hints));
   }
 
-  void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
-  void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
-  bool ShouldBeLoadedFromWebBundle(const KURL&) const;
+  SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
     return back_forward_cache_loader_helper_;
@@ -473,7 +471,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
-  HeapHashSet<Member<SubresourceWebBundle>> subresource_web_bundles_;
+  // Lazily initialized when the first <link rel=webbundle> is inserted.
+  Member<SubresourceWebBundleList> subresource_web_bundles_;
 
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;

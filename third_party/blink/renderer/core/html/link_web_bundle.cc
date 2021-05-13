@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle_list.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -190,13 +192,15 @@ void LinkWebBundle::Process() {
   ResourceFetcher* resource_fetcher = owner_->GetDocument().Fetcher();
   if (!resource_fetcher)
     return;
+  SubresourceWebBundleList* active_bundles =
+      resource_fetcher->GetOrCreateSubresourceWebBundleList();
 
   // We don't support crossorigin= attribute's dynamic change. It seems
   // other types of link elements doesn't support that too. See
   // HTMLlinkElement::ParseAttribute, which doesn't call Process() for
   // crossorigin= attribute change.
   if (!bundle_loader_ || bundle_loader_->url() != owner_->Href()) {
-    if (resource_fetcher->ShouldBeLoadedFromWebBundle(owner_->Href())) {
+    if (active_bundles->GetMatchingBundle(owner_->Href())) {
       // This can happen when a requested bundle is a nested bundle.
       //
       // clang-format off
@@ -205,7 +209,7 @@ void LinkWebBundle::Process() {
       // <link rel="webbundle" href=".../nested-sub.wbn" resources="...">
       // clang-format on
       if (bundle_loader_) {
-        resource_fetcher->RemoveSubresourceWebBundle(*this);
+        active_bundles->Remove(*this);
         bundle_loader_ = nullptr;
       }
       NotifyLoaded();
@@ -219,7 +223,7 @@ void LinkWebBundle::Process() {
             owner_->FastGetAttribute(html_names::kCrossoriginAttr)));
   }
 
-  resource_fetcher->AddSubresourceWebBundle(*this);
+  active_bundles->Add(*this);
 }
 
 LinkResource::LinkResourceType LinkWebBundle::GetType() const {
@@ -236,7 +240,9 @@ void LinkWebBundle::OwnerRemoved() {
   ResourceFetcher* resource_fetcher = owner_->GetDocument().Fetcher();
   if (!resource_fetcher)
     return;
-  resource_fetcher->RemoveSubresourceWebBundle(*this);
+  SubresourceWebBundleList* active_bundles =
+      resource_fetcher->GetOrCreateSubresourceWebBundleList();
+  active_bundles->Remove(*this);
   bundle_loader_ = nullptr;
 }
 
