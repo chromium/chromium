@@ -127,7 +127,7 @@ ProfilerGroup::ProfilerGroup(v8::Isolate* isolate)
 
 void DiscardedSamplesDelegate::Notify() {
   if (profiler_group_) {
-    profiler_group_->DispatchSampleBufferFullEvent();
+    profiler_group_->DispatchSampleBufferFullEvent(profiler_id_);
   }
 }
 
@@ -144,10 +144,13 @@ void ProfilerGroup::OnProfilingContextAdded(ExecutionContext* context) {
   }
 }
 
-void ProfilerGroup::DispatchSampleBufferFullEvent() {
+void ProfilerGroup::DispatchSampleBufferFullEvent(String profiler_id) {
   for (const auto& profiler : profilers_) {
-    profiler->DispatchEvent(
-        *Event::Create(event_type_names::kSamplebufferfull));
+    if (profiler->ProfilerId() == profiler_id) {
+      profiler->DispatchEvent(
+          *Event::Create(event_type_names::kSamplebufferfull));
+      break;
+    }
   }
 }
 
@@ -186,7 +189,7 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
 
   v8::CpuProfilingStatus status = cpu_profiler_->StartProfiling(
       V8String(isolate_, profiler_id), options,
-      std::make_unique<DiscardedSamplesDelegate>(this));
+      std::make_unique<DiscardedSamplesDelegate>(this, profiler_id));
 
   switch (status) {
     case v8::CpuProfilingStatus::kErrorTooManyProfilers: {
@@ -223,7 +226,6 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       auto* profiler = MakeGarbageCollected<Profiler>(
           this, script_state, profiler_id, effective_sample_interval_ms,
           source_origin, time_origin);
-
       profilers_.insert(profiler);
       num_active_profilers_++;
       return profiler;

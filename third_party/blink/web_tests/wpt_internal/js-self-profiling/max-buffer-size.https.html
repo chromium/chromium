@@ -24,12 +24,20 @@
     }, 'max buffer size is not exceeded');
 
     promise_test(async t => {
-      const profiler = await performance.profile({
-        sampleInterval: 10,
-        maxBufferSize: 1,
-      });
+      const pf = [];
+      pf[0] = await performance.profile({ sampleInterval: 10 });
+      pf[1] = await performance.profile({ sampleInterval: 10,  maxBufferSize: 1 });
 
-      const watcher = new EventWatcher(t, profiler, ['samplebufferfull']);
+      const watcher = new EventWatcher(t, pf[1], ['samplebufferfull']);
+      pf[0].addEventListener("samplebufferfull", ()=>{
+        assert_unreached("samplebufferfull invoked on wrong profiler");
+      });
+      pf[1].addEventListener("samplebufferfull", async ()=>{
+        console.log("samplebufferfull");
+        pf[0].stop();
+        pf[1].stop();
+        assertTrue(true);
+      });
 
       for (let i = 0; i < 10; i++) {
         ProfileUtils.forceSample();

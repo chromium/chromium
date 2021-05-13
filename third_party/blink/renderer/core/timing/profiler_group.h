@@ -58,7 +58,7 @@ class CORE_EXPORT ProfilerGroup
   // profiler is ready during its lifetime.
   void OnProfilingContextAdded(ExecutionContext* context);
 
-  void DispatchSampleBufferFullEvent();
+  void DispatchSampleBufferFullEvent(String profiler_id);
   void WillBeDestroyed() override;
   void Trace(Visitor*) const override;
 
@@ -99,14 +99,16 @@ class CORE_EXPORT ProfilerGroup
 
 class DiscardedSamplesDelegate : public v8::DiscardedSamplesDelegate {
  public:
-  explicit DiscardedSamplesDelegate(ProfilerGroup* profiler_group)
-      : profiler_group_(profiler_group) {}
+  explicit DiscardedSamplesDelegate(ProfilerGroup* profiler_group,
+                                    String profiler_id)
+      : profiler_group_(profiler_group), profiler_id_(profiler_id) {}
   void Notify() override;
 
  private:
   // It is important to keep a weak reference to the profiler group
   // because Notify may be invoked after profiling stops and ProfilerGroup dies.
   WeakPersistent<ProfilerGroup> profiler_group_;
+  const String profiler_id_;
 };
 }  // namespace blink
 
