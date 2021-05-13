@@ -15,7 +15,6 @@
 
 [
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_ranges_with_compressed_texture_formats:format="bc1-rgba-unorm";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format,*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:format="bc1-rgba-unorm";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc1-rgba-unorm";*',
@@ -36,8 +35,6 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="private";containerType="_undef_";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";*',
-
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,default_value_and_smallest_size,*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";*',
 

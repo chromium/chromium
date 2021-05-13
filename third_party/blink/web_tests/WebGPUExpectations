@@ -19,7 +19,8 @@
 # external/wpt/webgpu/cts.html, as the latter is not run.
 # ****************************************************************************
 
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format,* [ Slow ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format:* [ Slow ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,compute,basic:large_dispatch:* [ Slow ]
 
 ###
 ### Untriaged failures
@@ -30,6 +31,12 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureTo
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:* [ Failure Crash ]
 crbug.com/dawn/759 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Failure ]
 crbug.com/1203413 [ Mac ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validation,buffer,mapping:* [ Crash ]
+
+# Test completes and passes, but then somehow times out consistently.
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:* [ Timeout ]
+
+# Apparent browser hang?
+[ Win ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,compute,basic:* [ Timeout ]
 
 # Fails or crashes on numerous combinations of backends, hardware, and validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Skip ]
@@ -162,8 +169,16 @@ crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBi
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=1024;size="_undef_" [ Failure ]
 
 crbug.com/dawn/608 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
+crbug.com/dawn/608 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
 
 crbug.com/dawn/609 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
+
+crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
+
+crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
+crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="1d";* [ Failure ]
+crbug.com/dawn/547 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="3d";* [ Failure ]
+crbug.com/dawn/547 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="3d";* [ Failure ]
 
 # Dawn is missing several validation rules about depthReadOnly/stencilReadOnly.
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]

@@ -34,7 +34,6 @@ src/common/tools/checklist.ts
 src/common/tools/crawl.ts
 src/common/tools/dev_server.ts
 src/common/tools/gen_listings.ts
-src/webgpu/listing.ts
 src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/version.ts
 src/unittests/unit_test.ts
@@ -71,6 +70,7 @@ src/webgpu/util/conversion.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/gpu_test.ts
 src/webgpu/examples.spec.ts
+src/webgpu/listing.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
@@ -117,6 +117,7 @@ src/webgpu/api/operation/resource_init/texture_zero.spec.ts
 src/webgpu/api/operation/sampling/anisotropy.spec.ts
 src/webgpu/api/operation/sampling/filter_mode.spec.ts
 src/webgpu/api/operation/sampling/lod_clamp.spec.ts
+src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/texture_view/read.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/basic.spec.ts
