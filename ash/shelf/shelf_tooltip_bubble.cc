@@ -40,10 +40,10 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   SetLayoutManager(std::make_unique<views::FillLayout>());
   views::Label* label = new views::Label(text);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO (https://crbug.com/1146125) Enable inverted tooltip colors.
-  const SkColor tooltip_background = AshColorProvider::Get()->GetBaseLayerColor(
+  const auto* color_provider = AshColorProvider::Get();
+  const SkColor tooltip_background = color_provider->GetInvertedBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80);
-  const SkColor tooltip_text = AshColorProvider::Get()->GetContentLayerColor(
+  const SkColor tooltip_text = color_provider->GetInvertedContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
 
   set_color(tooltip_background);

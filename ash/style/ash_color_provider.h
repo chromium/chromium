@@ -70,10 +70,21 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   void RemoveObserver(ColorModeObserver* observer) override;
   bool IsDarkModeEnabled() const override;
 
+  // Gets the color of |type| of the corresponding layer based on the current
+  // inverted color mode. For views that need LIGHT colors while DARK mode is
+  // active, and vice versa.
+  SkColor GetInvertedShieldLayerColor(ShieldLayerType type) const;
+  SkColor GetInvertedBaseLayerColor(BaseLayerType type) const;
+  SkColor GetInvertedControlsLayerColor(ControlsLayerType type) const;
+  SkColor GetInvertedContentLayerColor(ContentLayerType type) const;
+
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see
   // |is_themed_|).
   SkColor GetBackgroundColor() const;
+  // Same as above, but returns the color based on the current inverted color
+  // mode and color theme.
+  SkColor GetInvertedBackgroundColor() const;
 
   // Helpers to style different types of buttons. Depending on the type may
   // style text, icon and background colors for both enabled and disabled
@@ -103,14 +114,33 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
  private:
   friend class ScopedLightModeAsDefault;
 
-  // Gets the background default color.
-  SkColor GetBackgroundDefaultColor() const;
+  // Gets the color of |type| of the corresponding layer. Returns color based on
+  // the current inverted color mode if |inverted| is true.
+  SkColor GetShieldLayerColorImpl(ShieldLayerType type, bool inverted) const;
+  SkColor GetBaseLayerColorImpl(BaseLayerType type, bool inverted) const;
+  // Gets the color of |type| of the corresponding layer. Returns the color on
+  // dark mode if |use_dark_color| is true.
+  SkColor GetControlsLayerColorImpl(ControlsLayerType type,
+                                    bool use_dark_color) const;
+  SkColor GetContentLayerColorImpl(ContentLayerType type,
+                                   bool use_dark_color) const;
 
+  // Gets the background default color based on the current color mode.
+  SkColor GetBackgroundDefaultColor() const;
+  // Gets the background default color based on the current inverted color mode.
+  SkColor GetInvertedBackgroundDefaultColor() const;
+
+  // Gets the background themed color based on the current color mode.
+  SkColor GetBackgroundThemedColor() const;
+  // Gets the background themed color based on the current inverted color mode.
+  SkColor GetInvertedBackgroundThemedColor() const;
   // Gets the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
   // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
-  // muted wallpaper prominent color + SK_ColorWHITE 75%.
-  SkColor GetBackgroundThemedColor() const;
+  // muted wallpaper prominent color + SK_ColorWHITE 75%. Extracts the color on
+  // dark mode if |use_dark_color| is true.
+  SkColor GetBackgroundThemedColorImpl(SkColor default_color,
+                                       bool use_dark_color) const;
 
   // Notifies all the observers on |kDarkModeEnabled|'s change.
   void NotifyDarkModeEnabledPrefChange();
