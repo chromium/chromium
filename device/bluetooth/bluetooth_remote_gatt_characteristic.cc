@@ -125,17 +125,17 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
     const base::Optional<NotificationType>& notification_type,
     NotifySessionCallback callback,
     ErrorCallback error_callback) {
-  auto repeating_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   NotifySessionCommand* command = new NotifySessionCommand(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession,
           GetWeakPtr(), notification_type, std::move(callback),
-          repeating_error_callback),
+          std::move(split_error_callback.first)),
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::CancelStartNotifySession,
           GetWeakPtr(),
-          base::BindOnce(repeating_error_callback,
+          base::BindOnce(std::move(split_error_callback.second),
                          BluetoothGattService::GATT_ERROR_FAILED)));
 
   pending_notify_commands_.push(base::WrapUnique(command));
@@ -277,15 +277,14 @@ void BluetoothRemoteGattCharacteristic::OnStartNotifySessionError(
 void BluetoothRemoteGattCharacteristic::StopNotifySession(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback) {
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   NotifySessionCommand* command = new NotifySessionCommand(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession,
-          GetWeakPtr(), session, repeating_callback),
+          GetWeakPtr(), session, std::move(split_callback.first)),
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::CancelStopNotifySession,
-          GetWeakPtr(), repeating_callback));
+          GetWeakPtr(), std::move(split_callback.second)));
 
   pending_notify_commands_.push(std::unique_ptr<NotifySessionCommand>(command));
   if (pending_notify_commands_.size() == 1) {

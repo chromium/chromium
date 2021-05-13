@@ -372,12 +372,10 @@ void FidoCableDiscovery::StartCableDiscovery() {
   adapter()->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           BluetoothTransport::BLUETOOTH_TRANSPORT_LE),
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySession,
-                         weak_factory_.GetWeakPtr())),
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySessionError,
-                         weak_factory_.GetWeakPtr())));
+      base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySession,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySessionError,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FidoCableDiscovery::OnStartDiscoverySession(
@@ -419,10 +417,9 @@ void FidoCableDiscovery::StartAdvertisement() {
     }
     adapter()->RegisterAdvertisement(
         ConstructAdvertisementData(data.v1->client_eid),
-        base::AdaptCallbackForRepeating(
-            base::BindOnce(&FidoCableDiscovery::OnAdvertisementRegistered,
-                           weak_factory_.GetWeakPtr(), data.v1->client_eid)),
-        base::BindRepeating([](BluetoothAdvertisement::ErrorCode error_code) {
+        base::BindOnce(&FidoCableDiscovery::OnAdvertisementRegistered,
+                       weak_factory_.GetWeakPtr(), data.v1->client_eid),
+        base::BindOnce([](BluetoothAdvertisement::ErrorCode error_code) {
           FIDO_LOG(ERROR) << "Failed to register advertisement: " << error_code;
         }));
   }
@@ -497,7 +494,7 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
   // Speed up GATT service discovery on ChromeOS/BlueZ.
   // SetConnectionLatency() is NOTIMPLEMENTED() on other platforms.
   device->SetConnectionLatency(BluetoothDevice::CONNECTION_LATENCY_LOW,
-                               base::DoNothing(), base::BindRepeating([]() {
+                               base::DoNothing(), base::BindOnce([]() {
                                  FIDO_LOG(ERROR)
                                      << "SetConnectionLatency() failed";
                                }));

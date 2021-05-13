@@ -222,11 +222,11 @@ void OpenPathWithPermissionBroker(
     scoped_refptr<base::SequencedTaskRunner> polling_runner) {
   auto* client = chromeos::PermissionBrokerClient::Get();
   DCHECK(client) << "Could not get permission broker client.";
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  auto success_callback =
-      base::BindOnce(&OnOpenPathSuccess, copyable_callback, polling_runner);
-  auto error_callback =
-      base::BindOnce(&OnOpenPathError, copyable_callback, polling_runner);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  auto success_callback = base::BindOnce(
+      &OnOpenPathSuccess, std::move(split_callback.first), polling_runner);
+  auto error_callback = base::BindOnce(
+      &OnOpenPathError, std::move(split_callback.second), polling_runner);
   client->OpenPath(path, std::move(success_callback),
                    std::move(error_callback));
 }

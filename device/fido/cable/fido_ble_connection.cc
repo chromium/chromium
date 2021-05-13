@@ -259,11 +259,13 @@ void FidoBleConnection::WriteControlPoint(const std::vector<uint8_t>& data,
           : BluetoothRemoteGattCharacteristic::WriteType::kWithResponse;
 
   FIDO_LOG(DEBUG) << "Wrote Control Point.";
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   control_point->WriteRemoteCharacteristic(
       data, write_type,
-      base::BindOnce(OnWriteRemoteCharacteristic, copyable_callback),
-      base::BindOnce(OnWriteRemoteCharacteristicError, copyable_callback));
+      base::BindOnce(OnWriteRemoteCharacteristic,
+                     std::move(split_callback.first)),
+      base::BindOnce(OnWriteRemoteCharacteristicError,
+                     std::move(split_callback.second)));
 }
 
 void FidoBleConnection::OnCreateGattConnection(
@@ -406,14 +408,16 @@ void FidoBleConnection::WriteServiceRevision(ServiceRevision service_revision) {
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   DCHECK(service_revision_bitfield_id_);
   fido_service->GetCharacteristic(*service_revision_bitfield_id_)
       ->WriteRemoteCharacteristic(
           {static_cast<uint8_t>(service_revision)},
           BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
-          base::BindOnce(OnWriteRemoteCharacteristic, copyable_callback),
-          base::BindOnce(OnWriteRemoteCharacteristicError, copyable_callback));
+          base::BindOnce(OnWriteRemoteCharacteristic,
+                         std::move(split_callback.first)),
+          base::BindOnce(OnWriteRemoteCharacteristicError,
+                         std::move(split_callback.second)));
 }
 
 void FidoBleConnection::OnServiceRevisionWritten(bool success) {
