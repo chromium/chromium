@@ -275,6 +275,9 @@ const SPEED_INSTANT = 400000;
 // Constant wheel delta value when percent based scrolling is enabled
 const WHEEL_DELTA = 100;
 
+// kMinFractionToStepWhenPaging constant from cc/input/scroll_utils.h
+const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
+
 // This will be replaced by smoothScrollWithXY.
 function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
                       direction, speed_in_pixels_s, precise_scrolling_deltas,

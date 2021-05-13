@@ -473,7 +473,13 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
   // mousewheel events are built in the Windows web input event builder.
   // Percent based scrolling is not supported on Mac because the current
   // roadmap for scroll personality work is reserved for Windows and Linux.
-  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
+  // Page based scrolling isn't specified in terms of pixels so we don't convert
+  // deltas to a percentage here - it's resolved into percent, then pixels,
+  // in the renderer.
+  // TODO(yshalivskyy) Currently, for page based scrolling we always scroll
+  // by one page dismissing delta_y/delta_x values. https://crbug.com/1196092
+  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling) &&
+      webkit_event.delta_units != ui::ScrollGranularity::kScrollByPage) {
     webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
     webkit_event.delta_y *=
         (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);

@@ -11,13 +11,6 @@ crbug.com/1204176 external/wpt/css/css-overscroll-behavior/overscroll-behavior.h
 crbug.com/1204176 fast/compositor-wheel-scroll-latching/non-animated-scroll/subpixel-accumulation.html [ Failure ]
 crbug.com/1204176 fast/compositor-wheel-scroll-latching/animated-scroll/touchpad-scroll-impl-to-main.html [ Failure ]
 
-# fast/events
-crbug.com/1204176 fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure ]
-crbug.com/1204176 fast/events/platform-wheelevent-paging-xy-in-scrolling-page.html [ Failure ]
-
-# fast/events/touch/gesture
-crbug.com/1204176 fast/events/touch/gesture/gesture-scroll-by-page.html [ Failure ]
-
 # fast/events/wheel
 crbug.com/1204176 fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 fast/events/wheel/wheelevent-ctrl.html [ Failure ]
