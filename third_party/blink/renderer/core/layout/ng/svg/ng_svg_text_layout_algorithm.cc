@@ -612,14 +612,6 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
       // flag is true, and the y coordinate otherwise.
       float shift = horizontal_ ? *result_[i].x : *result_[i].y;
 
-      if (in_text_path) {
-        const NGSVGCharacterData& resolve =
-            ResolvedIterator(inline_node_.SVGCharacterDataList()).AdvanceTo(i);
-        if (!((horizontal_ && resolve.HasX()) ||
-              (!horizontal_ && resolve.HasY())))
-          shift = 0.0f;
-      }
-
       // 1.3.2. Adjust shift based on the value of text-anchor and direction
       // of the element the character at index i is in:
       //  -> (start, ltr) or (end, rtl)
