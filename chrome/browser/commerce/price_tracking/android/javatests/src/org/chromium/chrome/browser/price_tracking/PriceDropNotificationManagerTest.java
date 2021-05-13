@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.price_tracking;
 
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 
 import static org.hamcrest.Matchers.allOf;
@@ -187,7 +188,8 @@ public class PriceDropNotificationManagerTest {
     public void testOnNotificationClicked() {
         Intents.init();
         mPriceDropNotificationManager.onNotificationClicked(TEST_URL);
-        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(TEST_URL)));
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(TEST_URL),
+                hasComponent(ChromeLauncherActivity.class.getName())));
         Intents.release();
     }
 
@@ -197,7 +199,8 @@ public class PriceDropNotificationManagerTest {
         Intents.init();
         mPriceDropNotificationManager.onNotificationActionClicked(
                 ACTION_ID_VISIT_SITE, TEST_URL, null);
-        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(TEST_URL)));
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(TEST_URL),
+                hasComponent(ChromeLauncherActivity.class.getName())));
         Intents.release();
     }
 }
