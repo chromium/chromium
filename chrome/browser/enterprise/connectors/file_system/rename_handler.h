@@ -41,6 +41,11 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   ~FileSystemRenameHandler() override;
 
  protected:
+  // download::DownloadItemRenameHandler interface.
+  void Start(Callback callback) override;
+  void OpenDownload() override;
+  void ShowDownloadInContext() override;
+
   // These methods are declared protected to override in tests so that calls to
   // other components can be isolated.
   virtual void TryUploaderTask(content::BrowserContext* context,
@@ -68,14 +73,12 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
       download::DownloadItem* download_item,
       FileSystemSettings settings);
 
-  // download::DownloadItemRenameHandler interface.
-  void Start(Callback callback) override;
-  void OpenDownload() override;
-  void ShowDownloadInContext() override;
-
   void StartInternal();
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* context);
+
+  // Helper method used in OpenDownload() and ShowDownloadInContext().
+  void AddTabToShowDownload(GURL url);
 
   // Called when failure status is returned via callbacks but is not
   // GoogleServiceAuthError::State::REQUEST_CANCELED.
@@ -85,7 +88,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   void OnSignInCancellation();
   // Callback for uploader_ upon API requests returning authentication error.
   void OnApiAuthenticationError();
-  // Callback for uploader_ as well as upon failure.
+  // Notify upload success or failure back to the download thread.
   void NotifyResultToDownloadThread(bool success);
 
   PrefService* GetPrefs();

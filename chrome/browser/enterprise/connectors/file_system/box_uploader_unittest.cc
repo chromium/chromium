@@ -344,7 +344,9 @@ class BoxUploaderForFileDeleteTest : public BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
     return std::make_unique<MockApiCallFlow>();
   }
-  void StartCurrentApiCall() override { OnApiCallFlowDone(true); }
+  void StartCurrentApiCall() override {
+    OnApiCallFlowDone(true, GURL(kFileSystemBoxUploadResponseFileUrl));
+  }
 };
 
 class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
@@ -364,6 +366,7 @@ class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
   void TearDown() override {
     EXPECT_EQ(authentication_retry_, 0);
     EXPECT_TRUE(download_thread_cb_called_);
+    EXPECT_FALSE(test_item_.GetFileExternallyRemoved());
   }
 
   std::unique_ptr<BoxUploaderForFileDeleteTest> uploader_;
@@ -383,7 +386,7 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
   // Make sure file doesn't exist.
   ASSERT_FALSE(base::PathExists(GetFilePath()));
 
-  uploader_->OnApiCallFlowDone(true);
+  uploader_->OnApiCallFlowDone(true, GURL(kFileSystemBoxUploadResponseFileUrl));
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath())) << "No file should be created.";
@@ -393,7 +396,7 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
 TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
   CreateTemporaryFile();
 
-  uploader_->OnApiCallFlowDone(false);
+  uploader_->OnApiCallFlowDone(false, GURL());
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
@@ -432,7 +435,8 @@ class BoxDirectUploaderTest : public BoxUploaderTestBase {
 };
 
 TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
-  AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_CREATED);
+  AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_CREATED,
+                 kFileSystemBoxUploadResponseBody);
 
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
@@ -440,6 +444,10 @@ TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_TRUE(download_thread_cb_called_);
   EXPECT_TRUE(upload_success_);
+  EXPECT_EQ(uploader_->GetUploadedFileUrl(),
+            kFileSystemBoxUploadResponseFileUrl);
+  EXPECT_EQ(uploader_->GetDestinationFolderUrl(),
+            kFileSystemBoxUploadResponseFolderUrl);
 }
 
 TEST_F(BoxDirectUploaderTest, UnexpectedFailure) {

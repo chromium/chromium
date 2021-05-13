@@ -92,126 +92,99 @@ TEST_F(BoxFindUpstreamFolderApiCallFlowTest, ProcessApiCallFailure) {
   ASSERT_EQ(processed_folder_id_, "");
 }
 
-class BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess
-    : public BoxFindUpstreamFolderApiCallFlowTest {
- protected:
-  void SetUp() override {
-    BoxFindUpstreamFolderApiCallFlowTest::SetUp();
-    head_ = network::CreateURLResponseHead(net::HTTP_OK);
-  }
-  data_decoder::test::InProcessDataDecoder decoder_;
-  network::mojom::URLResponseHeadPtr head_;
+struct FindUpstreamFolderSuccessResponses {
+  base::StringPiece body;
+  bool expected_success;
+  std::string expected_folder_id;
 };
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, EmptyBody) {
-  flow_->ProcessApiCallSuccess(head_.get(), std::make_unique<std::string>());
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(processed_success_);
-  ASSERT_EQ(processed_folder_id_, "");
-}
+class BoxFindUpstreamFolder_ProcessApiCallSuccessTest
+    : public BoxFindUpstreamFolderApiCallFlowTest,
+      public testing::WithParamInterface<FindUpstreamFolderSuccessResponses> {
+ protected:
+  void ProcessApiCallSuccess(base::StringPiece body) {
+    network::mojom::URLResponseHeadPtr head =
+        network::CreateURLResponseHead(net::HTTP_OK);
+    flow_->ProcessApiCallSuccess(
+        head.get(), std::make_unique<std::string>(body.data(), body.size()));
+    base::RunLoop().RunUntilIdle();
+  }
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       InvalidBody) {
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>("adgafdga"));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(processed_success_);
-  ASSERT_EQ(processed_folder_id_, "");
-}
+ private:
+  data_decoder::test::InProcessDataDecoder decoder_;
+};
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       EmptyEntries) {
-  flow_->ProcessApiCallSuccess(
-      head_.get(), std::make_unique<std::string>(
-                       kFileSystemBoxFindFolderResponseEmptyEntriesList));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(processed_success_);
+TEST_P(BoxFindUpstreamFolder_ProcessApiCallSuccessTest, ExtractFolderId) {
+  const auto& body = GetParam().body;
+  ProcessApiCallSuccess(body);
   ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "");
+  ASSERT_EQ(processed_success_, GetParam().expected_success) << body;
+  ASSERT_EQ(processed_folder_id_, GetParam().expected_folder_id) << body;
 }
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, NoFolderId) {
-  std::string body(R"({
-    "entries": [
-      {
-        "etag": 1,
-        "type": "folder",
-        "sequence_id": 3,
-        "name": "ChromeDownloads"
-      }
-    ]
-  })");
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(processed_success_);
-  ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "");
-}
+const char kFileSystemBoxFindFolderResponseNoFolderId[] = R"({
+  "entries": [
+    {
+      "etag": 1,
+      "type": "folder",
+      "sequence_id": 3,
+      "name": "ChromeDownloads"
+    }
+  ]
+})";
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       EmptyFolderId) {
-  std::string body(R"({
-    "entries": [
-      {
-        "id": ,
-        "etag": 1,
-        "type": "folder",
-        "sequence_id": 3,
-        "name": "ChromeDownloads"
-      }
-    ]
-  })");
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(processed_success_);
-  ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "");
-}
+const char kFileSystemBoxFindFolderResponseEmptyFolderId[] = R"({
+  "entries": [
+    {
+      "id": ,
+      "etag": 1,
+      "type": "folder",
+      "sequence_id": 3,
+      "name": "ChromeDownloads"
+    }
+  ]
+})";
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       IntegerFolderId) {
-  flow_->ProcessApiCallSuccess(
-      head_.get(),
-      std::make_unique<std::string>(kFileSystemBoxFindFolderResponseBody));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(processed_success_);
-  ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, kFileSystemBoxFindFolderResponseFolderId);
-}
+const char kFileSystemBoxFindFolderResponseBodyWithStringFolderId[] = R"({
+  "entries": [
+    {
+      "id": "12345",
+      "etag": 1,
+      "type": "folder",
+      "sequence_id": 3,
+      "name": "ChromeDownloads"
+    }
+  ]
+})";
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       StringFolderId) {
-  flow_->ProcessApiCallSuccess(
-      head_.get(),
-      std::make_unique<std::string>(kFileSystemBoxFindFolderResponseBody));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(processed_success_);
-  ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, kFileSystemBoxFindFolderResponseFolderId);
-}
+const char kFileSystemBoxFindFolderResponseBodyWithFloatFolderId[] = R"({
+  "entries": [
+    {
+      "id": 123.5,
+      "etag": 1,
+      "type": "folder",
+      "sequence_id": 3,
+      "name": "ChromeDownloads"
+    }
+  ]
+})";
 
-TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
-       FloatFolderId) {
-  std::string body(R"({
-    "entries": [
-      {
-        "id": 123.5,
-        "etag": 1,
-        "type": "folder",
-        "sequence_id": 3,
-        "name": "ChromeDownloads"
-      }
-    ]
-  })");
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(processed_success_);
-  ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "");
-}
+std::vector<FindUpstreamFolderSuccessResponses> kTestSuccessResponses = {
+    {{}, false, ""},  // No body.
+    {kEmptyResponseBody, false, ""},
+    {"adgafdga", false, ""},  // Invalid body.
+    {kFileSystemBoxFindFolderResponseEmptyEntriesList, true, ""},
+    {kFileSystemBoxFindFolderResponseNoFolderId, false, ""},
+    {kFileSystemBoxFindFolderResponseEmptyFolderId, false, ""},
+    {kFileSystemBoxFindFolderResponseBody, true,
+     kFileSystemBoxFindFolderResponseFolderId},
+    {kFileSystemBoxFindFolderResponseBodyWithStringFolderId, true,
+     kFileSystemBoxFindFolderResponseFolderId},
+    {kFileSystemBoxFindFolderResponseBodyWithFloatFolderId, false, ""}};
+
+INSTANTIATE_TEST_SUITE_P(BoxFindUpstreamFolderApiCallFlowTest,
+                         BoxFindUpstreamFolder_ProcessApiCallSuccessTest,
+                         testing::ValuesIn(kTestSuccessResponses));
 
 ////////////////////////////////////////////////////////////////////////////////
 // CreateUpstreamFolder
@@ -380,9 +353,10 @@ class BoxWholeFileUploadApiCallFlowTest
         folder_id_, file_name_, file_path_);
   }
 
-  void OnResponse(bool success, int response_code) {
+  void OnResponse(bool success, int response_code, GURL file_url) {
     processed_success_ = success;
     response_code_ = response_code;
+    file_url_ = file_url;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
@@ -392,8 +366,11 @@ class BoxWholeFileUploadApiCallFlowTest
       FILE_PATH_LITERAL("box_whole_file_upload_test.txt")};
   base::FilePath file_path_;
 
+  GURL file_url_;
+
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder decoder_;
   base::OnceClosure quit_closure_;
   base::WeakPtrFactory<BoxWholeFileUploadApiCallFlowTest> factory_{this};
 };
@@ -444,7 +421,7 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, IsExpectedSuccessCode) {
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
 }
 
-TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
+TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess_EmptyBody) {
   // Create a temporary file to be deleted in ProcessApiCallSuccess().
   ASSERT_TRUE(base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowTest"))
       << file_path_;
@@ -458,11 +435,38 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
 
   flow_->ProcessApiCallSuccess(http_head.get(),
                                std::make_unique<std::string>());
-  // Empty placeholder body since we don't read from body for now.
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
+  ASSERT_FALSE(file_url_.is_valid()) << file_url_;
+  ASSERT_TRUE(base::PathExists(file_path_))
+      << "File " << file_path_
+      << " must still exist / not have been deleted by another thread so that "
+         "BoxUploader can delete it.";
+}
+
+TEST_F(BoxWholeFileUploadApiCallFlowTest, ProcessApiCallSuccess_ValidUrl) {
+  // Create a temporary file to be deleted in ProcessApiCallSuccess().
+  ASSERT_TRUE(base::WriteFile(file_path_, "BoxWholeFileUploadApiCallFlowTest"))
+      << file_path_;
+
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
+  std::string body(kFileSystemBoxUploadResponseBody);
+
+  // Because we post tasks to base::ThreadPool, cannot use
+  // base::RunLoop().RunUntilIdle().
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+
+  flow_->ProcessApiCallSuccess(http_head.get(),
+                               std::make_unique<std::string>(body));
+  run_loop.Run();
+
+  ASSERT_EQ(response_code_, net::HTTP_CREATED);
+  ASSERT_TRUE(processed_success_) << "Failed with file " << file_path_;
+  ASSERT_TRUE(file_url_.is_valid()) << file_url_;
+  ASSERT_EQ(file_url_, GURL(kFileSystemBoxUploadResponseFileUrl));
   ASSERT_TRUE(base::PathExists(file_path_))
       << "File " << file_path_
       << " must still exist / not have been deleted by another thread so that "
@@ -971,10 +975,12 @@ class BoxCommitUploadSessionApiCallFlowTest
 
   void OnResponse(bool success,
                   int response_code,
-                  base::TimeDelta retry_after) {
+                  base::TimeDelta retry_after,
+                  GURL file_url) {
     processed_success_ = success;
     response_code_ = response_code;
     retry_after_ = retry_after;
+    file_url_ = file_url;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
@@ -982,6 +988,7 @@ class BoxCommitUploadSessionApiCallFlowTest
   base::Value upload_session_parts_;
   std::string expected_body_;
   base::TimeDelta retry_after_;
+  GURL file_url_;
 
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
@@ -1034,12 +1041,21 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Retry) {
 }
 
 TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
+  data_decoder::test::InProcessDataDecoder decoder;  // For file url extraction.
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
-  flow_->ProcessApiCallSuccess(http_head.get(), {});
-  base::RunLoop().RunUntilIdle();
+  std::string body(kFileSystemBoxUploadResponseBody);
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  flow_->ProcessApiCallSuccess(http_head.get(),
+                               std::make_unique<std::string>(body));
+  run_loop.Run();
+
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
   ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(0));
+  ASSERT_TRUE(file_url_.is_valid()) << file_url_;
+  ASSERT_EQ(file_url_, GURL(kFileSystemBoxUploadResponseFileUrl));
 }
 
 }  // namespace enterprise_connectors

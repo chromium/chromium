@@ -52,7 +52,7 @@ class BoxUploaderTestBase : public testing::Test {
   void InitUploader(BoxUploader* uploader);
 
   void AuthenticationRetry();
-  void UploaderFinished(bool success);
+  void OnUploaderFinished(bool success);
 
   // Add a mock response to http requests made to the url. Only the last
   // response added is used.

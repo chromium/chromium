@@ -78,7 +78,7 @@ void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
   ASSERT_TRUE(uploader);
   uploader->Init(base::BindRepeating(&BoxUploaderTestBase::AuthenticationRetry,
                                      base::Unretained(this)),
-                 base::BindOnce(&BoxUploaderTestBase::UploaderFinished,
+                 base::BindOnce(&BoxUploaderTestBase::OnUploaderFinished,
                                 base::Unretained(this)),
                  prefs_);
 }
@@ -128,7 +128,7 @@ void BoxUploaderTestBase::AuthenticationRetry() {
   Quit();
 }
 
-void BoxUploaderTestBase::UploaderFinished(bool success) {
+void BoxUploaderTestBase::OnUploaderFinished(bool success) {
   download_thread_cb_called_ = true;
   upload_success_ = success;
   Quit();

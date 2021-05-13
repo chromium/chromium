@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/os_crypt/os_crypt_mocker.h"
@@ -181,7 +182,9 @@ constexpr char RTokenForFetcher[] = "RTokenForFetcher";
 class RenameHandlerForTest : public FileSystemRenameHandler {
  public:
   using FileSystemRenameHandler::FileSystemRenameHandler;
+  using FileSystemRenameHandler::OpenDownload;
   using FileSystemRenameHandler::SetUploaderForTesting;
+  using FileSystemRenameHandler::ShowDownloadInContext;
 
   MOCK_METHOD(void,
               PromptUserSignInForAuthorization,
@@ -226,10 +229,17 @@ class RenameHandlerForTest : public FileSystemRenameHandler {
   }
 };
 
+const char kUploadedFileUrl[] = "https://example.com/file/314159";
+const char kDestinationFolderUrl[] = "https://example.com/folder/1337";
+
 class MockUploader : public BoxUploader {
  public:
   explicit MockUploader(download::DownloadItem* download_item)
       : BoxUploader(download_item) {}
+  GURL GetUploadedFileUrl() const override { return GURL(kUploadedFileUrl); }
+  GURL GetDestinationFolderUrl() const override {
+    return GURL(kDestinationFolderUrl);
+  }
 
   MOCK_METHOD(
       void,
@@ -596,6 +606,43 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), "box", &atoken, &rtoken));
   ASSERT_TRUE(atoken.empty());
   ASSERT_EQ(rtoken, RTokenForFetcher);
+}
+
+class RenameHandlerOpenDownloadTest : public BrowserWithTestWindowTest,
+                                      public RenameHandlerTestBase {
+ protected:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    RenameHandlerTestBase::SetUp(profile());
+    EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
+    EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
+    EXPECT_CALL(*uploader(), TryTask(_, _)).Times(0);
+  }
+
+  void TearDown() override {
+    RenameHandlerTestBase::TearDown();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  const GURL GetVisibleURL() {
+    TabStripModel* tab_strip = browser()->tab_strip_model();
+    CHECK(tab_strip);
+    content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+    CHECK(active_contents);
+    return active_contents->GetVisibleURL();
+  }
+};
+
+TEST_F(RenameHandlerOpenDownloadTest, OpenDownloadItem) {
+  handler()->OpenDownload();
+  // Verify that the active tab has the correct uploaded file URL.
+  EXPECT_EQ(GetVisibleURL(), kUploadedFileUrl);
+}
+
+TEST_F(RenameHandlerOpenDownloadTest, ShowDownloadInContext) {
+  handler()->ShowDownloadInContext();
+  // Verify that the active tab has the correct destination folder URL.
+  EXPECT_EQ(GetVisibleURL(), kDestinationFolderUrl);
 }
 
 }  // namespace enterprise_connectors

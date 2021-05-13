@@ -32,11 +32,15 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
       override;
 
   static std::string FormatSHA1Digest(const std::string& sha_digest);
+  static GURL MakeUrlToShowFile(const std::string& file_id);
+  static GURL MakeUrlToShowFolder(const std::string& folder_id);
 
   // Used by BoxApiCallFlow inherited classes and BoxUploader
   // to determine whether to use WholeFileUpload or ChunkedFileUpload
   static const size_t kChunkFileUploadMinSize;
   static const size_t kWholeFileUploadMaxSize;
+
+  using ParseResult = data_decoder::DataDecoder::ValueOrError;
 };
 
 // Helper for finding the downloads folder in Box.
@@ -59,7 +63,7 @@ class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 
  private:
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(ParseResult result);
 
   // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
@@ -88,7 +92,7 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 
  private:
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(ParseResult result);
 
   // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
@@ -128,6 +132,8 @@ class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
 // downloads folder in box.
 class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
  public:
+  // Additional args are: url to show the uploaded item on Box.
+  using TaskCallback = base::OnceCallback<void(bool, int, GURL)>;
   BoxWholeFileUploadApiCallFlow(TaskCallback callback,
                                 const std::string& folder_id,
                                 const base::FilePath& target_file_name,
@@ -208,7 +214,7 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
                              std::unique_ptr<std::string> body) override;
 
  private:
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(ParseResult result);
 
   TaskCallback callback_;
   const std::string folder_id_;
@@ -267,7 +273,7 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
                              std::unique_ptr<std::string> body) override;
 
  private:
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(ParseResult result);
   TaskCallback callback_;
   const std::string& part_content_;
   const std::string content_range_;
@@ -302,7 +308,10 @@ class BoxAbortUploadSessionApiCallFlow
 class BoxCommitUploadSessionApiCallFlow
     : public BoxChunkedUploadBaseApiCallFlow {
  public:
-  using TaskCallback = base::OnceCallback<void(bool, int, base::TimeDelta)>;
+  // Additional args are: Retry-After header duration, and url to show the
+  // uploaded item on Box.
+  using TaskCallback =
+      base::OnceCallback<void(bool, int, base::TimeDelta, GURL)>;
   BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& session_endpoint,
                                     const base::Value& parts,

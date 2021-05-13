@@ -14,6 +14,7 @@
 #include "net/http/http_status_code.h"
 
 namespace {
+
 bool DeleteIfExists(base::FilePath file_path) {
   if (!base::PathExists(file_path)) {
     // If the file is deleted by some other thread, how can we be sure what we
@@ -25,6 +26,7 @@ bool DeleteIfExists(base::FilePath file_path) {
   }
   return base::DeleteFile(file_path);
 }
+
 }  // namespace
 
 namespace enterprise_connectors {
@@ -51,11 +53,11 @@ BoxUploader::BoxUploader(download::DownloadItem* download_item)
 BoxUploader::~BoxUploader() = default;
 
 void BoxUploader::Init(
-    base::RepeatingCallback<void(void)> authentication_retry_callback,
-    base::OnceCallback<void(bool)> download_callback,
+    base::RepeatingCallback<void(void)> authen_retry_callback,
+    RenameHandlerCallback download_callback,
     PrefService* prefs) {
   prefs_ = prefs;
-  authentication_retry_callback_ = authentication_retry_callback;
+  authentication_retry_callback_ = authen_retry_callback;
   download_callback_ = std::move(download_callback);
   SetCurrentApiCall(GetFolderId().empty() ? MakeFindUpstreamFolderApiCall()
                                           : MakePreflightCheckApiCall());
@@ -101,20 +103,26 @@ void BoxUploader::StartCurrentApiCall() {
 }
 
 void BoxUploader::OnApiCallFlowFailure() {
-  OnApiCallFlowDone(false);
+  OnApiCallFlowDone(false, GURL());
 }
 
-void BoxUploader::OnApiCallFlowDone(bool upload_success) {
+void BoxUploader::OnApiCallFlowDone(bool upload_success, GURL file_url) {
   if (!upload_success) {
     DLOG(ERROR) << "Upload failed";
     // TODO(https://crbug.com/1165972): on upload failure, decide whether to
     // queue up the file to retry later, or also delete as usual. At this stage,
     // for trusted testers (TT), deleting as usual for now. Need to determine
     // how to communicate the failure/error to user.
+  } else {
+    file_url_ = file_url;
   }
 
   PostDeleteFileTask(base::BindOnce(
       &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_success));
+}
+
+void BoxUploader::NotifyResult(bool success) {
+  std::move(download_callback_).Run(success);
 }
 
 void BoxUploader::OnFindUpstreamFolderResponse(bool success,
@@ -186,7 +194,7 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakePreflightCheckApiCall() {
   return std::make_unique<BoxPreflightCheckApiCallFlow>(
       base::BindOnce(&BoxUploader::OnPreflightCheckResponse,
                      weak_factory_.GetWeakPtr()),
-      target_file_name_, folder_id_);
+      GetTargetFileName(), folder_id_);
 }
 
 std::unique_ptr<OAuth2ApiCallFlow>
@@ -204,6 +212,14 @@ BoxUploader::MakeCreateUpstreamFolderApiCall() {
 
 // Getters & Setters ///////////////////////////////////////////////////////////
 
+GURL BoxUploader::GetUploadedFileUrl() const {
+  return file_url_;
+}
+
+GURL BoxUploader::GetDestinationFolderUrl() const {
+  return BoxApiCallFlow::MakeUrlToShowFolder(GetFolderId());
+}
+
 const base::FilePath BoxUploader::GetLocalFilePath() const {
   return local_file_path_;
 }
@@ -217,6 +233,10 @@ const std::string BoxUploader::GetFolderId() {
     DCHECK(prefs_);
     folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
   }
+  return folder_id_;
+}
+
+const std::string BoxUploader::GetFolderId() const {
   return folder_id_;
 }
 
@@ -234,7 +254,7 @@ void BoxUploader::SetCurrentApiCall(
 
 void BoxUploader::PostDeleteFileTask(
     base::OnceCallback<void(bool)> delete_file_reply) {
-  auto delete_file_task = base::BindOnce(&DeleteIfExists, local_file_path_);
+  auto delete_file_task = base::BindOnce(&DeleteIfExists, GetLocalFilePath());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       std::move(delete_file_task), std::move(delete_file_reply));
@@ -242,9 +262,9 @@ void BoxUploader::PostDeleteFileTask(
 
 void BoxUploader::OnFileDeleted(bool upload_success, bool delete_success) {
   if (!delete_success) {
-    DLOG(ERROR) << "Failed to delete local temp file " << local_file_path_;
+    DLOG(ERROR) << "Failed to delete local temp file " << GetLocalFilePath();
   }
-  std::move(download_callback_).Run(upload_success && delete_success);
+  NotifyResult(upload_success && delete_success);
 }
 
 // Helper methods for tests ////////////////////////////////////////////////////
@@ -258,7 +278,7 @@ void BoxUploader::NotifyOAuth2ErrorForTesting() {
 }
 
 void BoxUploader::NotifyResultForTesting(bool success) {
-  std::move(download_callback_).Run(success);
+  NotifyResult(success);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -278,14 +298,15 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxDirectUploader::MakeFileUploadApiCall() {
 }
 
 void BoxDirectUploader::OnWholeFileUploadResponse(bool success,
-                                                  int response_code) {
+                                                  int response_code,
+                                                  GURL uploaded_file_url) {
   if (!EnsureSuccessResponse(success, response_code)) {
     SetCurrentApiCall(MakeFileUploadApiCall());
     return;
   }
 
   // Report upload success back to the download thread.
-  OnApiCallFlowDone(success);
+  OnApiCallFlowDone(success, uploaded_file_url);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -404,7 +425,8 @@ void BoxChunkedUploader::OnFileCompletelyUploaded(
 void BoxChunkedUploader::OnCommitUploadSsessionResponse(
     bool success,
     int response_code,
-    base::TimeDelta retry_after) {
+    base::TimeDelta retry_after,
+    GURL file_url) {
   if (!EnsureSuccessResponse(success, response_code)) {
     if (response_code == net::HTTP_UNAUTHORIZED) {
       SetCurrentApiCall(MakeCommitUploadSessionApiCall());
@@ -419,7 +441,7 @@ void BoxChunkedUploader::OnCommitUploadSsessionResponse(
                        weak_factory_.GetWeakPtr(), sha1_digest_),
         retry_after);
   } else {
-    OnApiCallFlowDone(success);
+    OnApiCallFlowDone(success, file_url);
   }
 }
 

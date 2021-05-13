@@ -12,6 +12,8 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -146,9 +148,22 @@ void FileSystemRenameHandler::SetUploaderForTesting(
   uploader_ = std::move(fake_uploader);
 }
 
-void FileSystemRenameHandler::OpenDownload() {}
+void FileSystemRenameHandler::OpenDownload() {
+  AddTabToShowDownload(uploader_->GetUploadedFileUrl());
+}
 
-void FileSystemRenameHandler::ShowDownloadInContext() {}
+void FileSystemRenameHandler::ShowDownloadInContext() {
+  AddTabToShowDownload(uploader_->GetDestinationFolderUrl());
+}
+
+void FileSystemRenameHandler::AddTabToShowDownload(GURL url) {
+  content::BrowserContext* context =
+      content::DownloadItemUtils::GetBrowserContext(download_item());
+  Profile* profile = Profile::FromBrowserContext(context);
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  Browser* browser = displayer.browser();
+  chrome::AddTabAt(browser, url, /*index =*/-1, /*foreground =*/true);
+}
 
 void FileSystemRenameHandler::StartInternal() {
   PrefService* prefs;
@@ -249,9 +264,12 @@ void FileSystemRenameHandler::OnAuthenticationError(
   PrefService* prefs = GetPrefs();
   if (prefs && ClearFileSystemAccessToken(prefs, settings_.service_provider)) {
     // Case 2b, but also Case 1c and 3b so that now both tokens are cleared.
+    VLOG(20) << "Re-authenticating...";
     StartInternal();
   } else {
+    DLOG(ERROR) << "Failed to clear OAuth2 tokens. Notifying failure back.";
     NotifyResultToDownloadThread(false);
+    // TODO(https://crbug.com/1184351): Handle local temporary file.
   }
 }
 
@@ -266,7 +284,7 @@ void FileSystemRenameHandler::OnSignInCancellation() {
 }
 
 void FileSystemRenameHandler::OnApiAuthenticationError() {
-  DLOG(ERROR) << "Authentication failed in service provider API calls.";
+  VLOG(20) << "Authentication failed in service provider API calls.";
   return OnAuthenticationError(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
@@ -279,6 +297,11 @@ void FileSystemRenameHandler::NotifyResultToDownloadThread(bool success) {
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
   // Make sure target_path_ has been initialized.
   DCHECK(!target_path_.empty());
+  // TODO(https://crbug.com/1206299): Returns the uploaded file URL here using
+  // uploader_->GetUploadedFileUrl() instead, but make sure the download UI
+  // displays the uploaded status properly. Currently, upon opening the
+  // item/folder for the first time, DownloadItem detects that the file is
+  // deleted and turns the menu bar grey.
   std::move(download_callback_).Run(reason, target_path_);
 }
 
