@@ -16,6 +16,8 @@ bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
       return css_properties_.test(feature.value());
     case FeatureType::kAnimatedCssProperty:
       return animated_css_properties_.test(feature.value());
+    case FeatureType::kPermissionsPolicyViolationEnforce:
+      return violated_permissions_policy_features_.test(feature.value());
   }
 }
 
@@ -62,6 +64,9 @@ void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,
       break;
     case FeatureType::kAnimatedCssProperty:
       animated_css_properties_[feature.value()] = value;
+      break;
+    case FeatureType::kPermissionsPolicyViolationEnforce:
+      violated_permissions_policy_features_[feature.value()] = value;
       break;
   }
 }

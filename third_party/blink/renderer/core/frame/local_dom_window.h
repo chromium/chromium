@@ -458,6 +458,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Return the viewport size including scrollbars.
   IntSize GetViewportSize() const;
 
+  // Count feature disabled by Permissions Policy through use counter.
+  // The method is marked const as its caller |ReportPermissionsPolicyViolation|
+  // is marked const.
+  void CountPermissionsPolicyViolation(
+      mojom::blink::PermissionsPolicyFeature feature) const;
+
   Member<ScriptController> script_controller_;
 
   Member<Document> document_;

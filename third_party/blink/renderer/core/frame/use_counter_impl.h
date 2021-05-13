@@ -29,6 +29,7 @@
 #include <bitset>
 #include "base/macros.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -105,6 +106,8 @@ class CORE_EXPORT UseCounterImpl final {
   // Repeated calls are ignored.
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
   void Count(WebFeature, const LocalFrame*);
+  void CountPermissionsPolicyViolation(mojom::blink::PermissionsPolicyFeature,
+                                       const LocalFrame&);
 
   // Return whether the feature has been seen since the last page load
   // (except when muted).  Does include features seen in documents which have

@@ -2883,6 +2883,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
+<histogram name="Blink.UseCounter.PermissionsPolicy.Violation.Enforce"
+    enum="FeaturePolicyFeature" expires_after="2021-10-31">
+  <owner>iclelland@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
+  <summary>
+    Counts the actual enforced permissions policy violation. The metrics is
+    triggered when ExecutionContext::IsFeatureEnabled with
+    ReportOptions::ReportOnFailure as param returns false, at most once per page
+    visit.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2021-11-07">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

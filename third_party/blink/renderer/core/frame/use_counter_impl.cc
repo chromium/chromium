@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -191,6 +192,16 @@ void UseCounterImpl::Count(WebFeature web_feature,
         source_frame);
 }
 
+void UseCounterImpl::CountPermissionsPolicyViolation(
+    mojom::blink::PermissionsPolicyFeature feature,
+    const LocalFrame& source_frame) {
+  DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
+  Count(
+      {mojom::blink::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
+       static_cast<uint32_t>(feature)},
+      &source_frame);
+}
+
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
   DCHECK(!mute_count_);
   DCHECK_NE(kDisabledContext, context_);
@@ -248,6 +259,9 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
       if (context_ == kExtensionContext)
         return false;
       break;
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyViolationEnforce:
+      break;
   }
 
   client->DidObserveNewFeatureUsage(feature);
@@ -268,7 +282,13 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
     case mojom::blink::UseCounterFeatureType::kCssProperty:
       trace_name = "CSSFirstUsed";
       break;
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyViolationEnforce:
+      // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
+      // gathering.
+      return;
   }
+  DCHECK(trace_name);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"), trace_name,
                "feature", feature.value());
 }

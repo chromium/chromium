@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -21,6 +22,8 @@ const char kFeaturesHistogramMainFrameName[] =
 const char kCssPropertiesHistogramName[] = "Blink.UseCounter.CSSProperties";
 const char kAnimatedCssPropertiesHistogramName[] =
     "Blink.UseCounter.AnimatedCSSProperties";
+const char kPermissionsPolicyViolationHistogramName[] =
+    "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
 
 }  // namespace internal
 
@@ -79,6 +82,10 @@ class UseCounterPageLoadMetricsObserver
       animated_css_properties_recorded_;
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
       ukm_features_recorded_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      violated_permissions_policy_features_recorded_;
   DISALLOW_COPY_AND_ASSIGN(UseCounterPageLoadMetricsObserver);
 };
 

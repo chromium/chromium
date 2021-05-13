@@ -31,6 +31,8 @@ const char* GetUseCounterHistogramName(
       return internal::kCssPropertiesHistogramName;
     case FeatureType::kAnimatedCssProperty:
       return internal::kAnimatedCssPropertiesHistogramName;
+    case FeatureType::kPermissionsPolicyViolationEnforce:
+      return internal::kPermissionsPolicyViolationHistogramName;
   }
 }
 
@@ -109,6 +111,9 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
+          {blink::mojom::UseCounterFeatureType::
+               kPermissionsPolicyViolationEnforce,
+           3},
       });
 }
 
@@ -121,11 +126,17 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
+          {blink::mojom::UseCounterFeatureType::
+               kPermissionsPolicyViolationEnforce,
+           3},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 3},
       },
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
+          {blink::mojom::UseCounterFeatureType::
+               kPermissionsPolicyViolationEnforce,
+           3},
       });
 }
