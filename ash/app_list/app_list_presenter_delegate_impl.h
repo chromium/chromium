@@ -21,6 +21,7 @@
 
 namespace ash {
 class AppListControllerImpl;
+class AppListPresenterEventFilter;
 class AppListPresenterImpl;
 class AppListView;
 enum class AppListViewState;
@@ -70,7 +71,7 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
   AppListControllerImpl* const controller_ = nullptr;
 
   // Closes the app list when the user clicks outside its bounds.
-  std::unique_ptr<EventFilter> event_filter_;
+  std::unique_ptr<AppListPresenterEventFilter> event_filter_;
 
   // An observer that notifies AppListView when the display has changed.
   base::ScopedObservation<display::Screen, display::DisplayObserver>

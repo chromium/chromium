@@ -5,37 +5,18 @@
 #include "ash/app_list/app_list_presenter_delegate_impl.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_event_filter.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/app_list_util.h"
-#include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/search_box_view.h"
-#include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_switches.h"
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/shelf/back_button.h"
-#include "ash/shelf/home_button.h"
-#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
-#include "ash/shelf/shelf_navigation_widget.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/system/status_area_widget.h"
-#include "base/command_line.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/events/event.h"
-#include "ui/events/event_handler.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -126,7 +107,8 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
 
   SnapAppListBoundsToDisplayEdge();
 
-  event_filter_ = std::make_unique<EventFilter>(controller_, presenter_, view_);
+  event_filter_ = std::make_unique<AppListPresenterEventFilter>(
+      controller_, presenter_, view_);
   controller_->ViewShown(display_id);
 }
 
@@ -159,178 +141,6 @@ void AppListPresenterDelegateImpl::OnBackgroundTypeChanged(
     AnimationChangeType change_type) {
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(background_type));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AppListPresenterDelegateImpl::EventFilter:
-
-// Listens to shell events and touches/mouse clicks outside the app list to auto
-// dismiss the UI when necessary.
-class AppListPresenterDelegateImpl::EventFilter : public ui::EventHandler {
- public:
-  EventFilter(AppListControllerImpl* controller,
-              AppListPresenterImpl* presenter,
-              AppListView* view);
-  EventFilter(const EventFilter&) = delete;
-  EventFilter& operator=(const EventFilter&) = delete;
-  ~EventFilter() override;
-
- private:
-  void ProcessLocatedEvent(ui::LocatedEvent* event);
-
-  // ui::EventHandler overrides:
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnKeyEvent(ui::KeyEvent* event) override;
-
-  AppListControllerImpl* const controller_;
-  AppListPresenterImpl* const presenter_;
-  AppListView* const view_;
-};
-
-AppListPresenterDelegateImpl::EventFilter::EventFilter(
-    AppListControllerImpl* controller,
-    AppListPresenterImpl* presenter,
-    AppListView* view)
-    : controller_(controller), presenter_(presenter), view_(view) {
-  DCHECK(controller_);
-  DCHECK(presenter_);
-  DCHECK(view_);
-  Shell::Get()->AddPreTargetHandler(this);
-}
-
-AppListPresenterDelegateImpl::EventFilter::~EventFilter() {
-  Shell::Get()->RemovePreTargetHandler(this);
-}
-
-void AppListPresenterDelegateImpl::EventFilter::ProcessLocatedEvent(
-    ui::LocatedEvent* event) {
-  // Check the general rules for closing bubbles.
-  if (!bubble_utils::ShouldCloseBubbleForEvent(*event))
-    return;
-
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-  if (!target)
-    return;
-
-  // If the event happened on the home button's widget, it'll get handled by the
-  // button.
-  Shelf* shelf = Shelf::ForWindow(target);
-  HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
-  if (home_button && home_button->GetWidget() &&
-      target == home_button->GetWidget()->GetNativeWindow()) {
-    gfx::Point location_in_home_button = event->location();
-    views::View::ConvertPointFromWidget(home_button, &location_in_home_button);
-    if (home_button->HitTestPoint(location_in_home_button))
-      return;
-  }
-
-  // If the event happened on the back button, it'll get handled by the
-  // button.
-  BackButton* back_button = shelf->navigation_widget()->GetBackButton();
-  if (back_button && back_button->GetWidget() &&
-      target == back_button->GetWidget()->GetNativeWindow()) {
-    gfx::Point location_in_back_button = event->location();
-    views::View::ConvertPointFromWidget(back_button, &location_in_back_button);
-    if (back_button->HitTestPoint(location_in_back_button))
-      return;
-  }
-
-  aura::Window* window = view_->GetWidget()->GetNativeView()->parent();
-  if (window->Contains(target))
-    return;
-
-  // Try to close an open folder window: return if an open folder view was
-  // closed successfully.
-  if (presenter_->HandleCloseOpenFolder())
-    return;
-
-  if (!Shell::Get()->IsInTabletMode()) {
-    // Do not dismiss the app list if the event is targeting shelf area
-    // containing app icons.
-    if (target == shelf->hotseat_widget()->GetNativeWindow() &&
-        shelf->hotseat_widget()->EventTargetsShelfView(*event)) {
-      return;
-    }
-
-    // Don't dismiss the auto-hide shelf if event happened in status area. Then
-    // the event can still be propagated.
-    const aura::Window* status_window =
-        shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
-    if (status_window && status_window->Contains(target)) {
-      auto shelf_visibility_lock =
-          std::make_unique<ShelfLayoutManager::ScopedVisibilityLock>(
-              shelf->shelf_layout_manager());
-
-      // Use a task runner to delete the |shelf_visibility_lock| and update the
-      // shelf visibility after the current event has been handled by the shelf.
-      // This is important for the case where dismissing the app list might hide
-      // the shelf, which would stop the shelf from handling the event.
-      // TODO(crbug.com/1186479): Investigate whether there is a better way to
-      // do this, instead of using a task runner here.
-      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
-          FROM_HERE, std::move(shelf_visibility_lock));
-    }
-
-    // Record the current AppListViewState to be used later for metrics. The
-    // AppListViewState will change on app launch, so this will record the
-    // AppListViewState before the app was launched.
-    controller_->RecordAppListState();
-    presenter_->Dismiss(event->time_stamp());
-  }
-}
-
-void AppListPresenterDelegateImpl::EventFilter::OnMouseEvent(
-    ui::MouseEvent* event) {
-  // Moving the mouse shouldn't hide focus rings.
-  if (event->IsAnyButton())
-    controller_->SetKeyboardTraversalMode(false);
-
-  if (event->type() == ui::ET_MOUSE_PRESSED)
-    ProcessLocatedEvent(event);
-}
-
-void AppListPresenterDelegateImpl::EventFilter::OnGestureEvent(
-    ui::GestureEvent* event) {
-  controller_->SetKeyboardTraversalMode(false);
-
-  // Checks tap types instead of ui::ET_TOUCH_PRESSED so that swipes on the
-  // shelf do not close the launcher. https://crbug.com/750274
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS) {
-    ProcessLocatedEvent(event);
-  }
-}
-
-void AppListPresenterDelegateImpl::EventFilter::OnKeyEvent(
-    ui::KeyEvent* event) {
-  // If keyboard traversal is already engaged, no-op.
-  if (controller_->KeyboardTraversalEngaged())
-    return;
-
-  // If the home launcher is not shown in tablet mode, ignore events.
-  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible(base::nullopt))
-    return;
-
-  // Don't absorb the first event for the search box while it is open
-  if (view_->search_box_view()->is_search_box_active())
-    return;
-
-  // Don't absorb the first event when showing Assistant.
-  if (view_->IsShowingEmbeddedAssistantUI())
-    return;
-
-  // Don't absorb the first event when renaming folder.
-  if (view_->IsFolderBeingRenamed())
-    return;
-
-  // Arrow keys or Tab will engage the traversal mode.
-  if ((IsUnhandledArrowKeyEvent(*event) || event->key_code() == ui::VKEY_TAB)) {
-    // Handle the first arrow key event to just show the focus rings.
-    event->SetHandled();
-    controller_->SetKeyboardTraversalMode(true);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

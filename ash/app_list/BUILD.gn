@@ -18,6 +18,8 @@ source_set("app_list") {
     "app_list_presenter_delegate.h",
     "app_list_presenter_delegate_impl.cc",
     "app_list_presenter_delegate_impl.h",
+    "app_list_presenter_event_filter.cc",
+    "app_list_presenter_event_filter.h",
     "app_list_presenter_impl.cc",
     "app_list_presenter_impl.h",
     "app_list_util.cc",
