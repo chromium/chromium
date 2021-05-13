@@ -1440,7 +1440,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                        params->widget_params->routing_id),
       is_for_nested_main_frame,
-      /*hidden=*/true, render_view->widgets_never_composited());
+      /*hidden=*/true);
   web_frame_widget->InitializeCompositing(
       agent_scheduling_group.agent_group_scheduler(),
       params->widget_params->visual_properties.screen_infos,
@@ -1629,7 +1629,7 @@ void RenderFrameImpl::CreateFrame(
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
-        /*hidden=*/true, render_view->widgets_never_composited());
+        /*hidden=*/true);
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
         widget_params->visual_properties.screen_infos,
@@ -1671,7 +1671,7 @@ void RenderFrameImpl::CreateFrame(
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
-        /*hidden=*/true, render_view->widgets_never_composited());
+        /*hidden=*/true);
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
         widget_params->visual_properties.screen_infos,

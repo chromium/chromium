@@ -116,6 +116,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageVisibilityState visibility,
       bool is_inside_portal,
       bool compositing_enabled,
+      bool widgets_never_composited,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
@@ -319,6 +320,16 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   DevToolsEmulator* GetDevToolsEmulator() const {
     return dev_tools_emulator_.Get();
   }
+
+  // When true, a hint to all WebWidgets that they will never be
+  // user-visible and thus never need to produce pixels for display. This is
+  // separate from page visibility, as background pages can be marked visible in
+  // blink even though they are not user-visible. Page visibility controls blink
+  // behaviour for javascript, timers, and such to inform blink it is in the
+  // foreground or background. Whereas this bit refers to user-visibility and
+  // whether the tab needs to produce pixels to put on the screen at some point
+  // or not.
+  bool widgets_never_composited() const { return widgets_never_composited_; }
 
   // Returns the main frame associated with this view. This will be null when
   // the main frame is remote.
@@ -616,6 +627,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageVisibilityState visibility,
       bool is_inside_portal,
       bool does_composite,
+      bool widgets_never_composite,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
@@ -671,6 +683,16 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Callback when this widget window has been displayed by the browser.
   // Corresponds to a Show method call.
   void DidShowCreatedWindow();
+
+  // A value provided by the browser to state that all Widgets in this
+  // WebView's frame tree will never be user-visible and thus never need to
+  // produce pixels for display. This is separate from Page visibility, as
+  // non-user-visible pages can still be marked visible for blink. Page
+  // visibility controls blink behaviour for javascript, timers, and such to
+  // inform blink it is in the foreground or background. Whereas this bit refers
+  // to user-visibility and whether the tab needs to produce pixels to put on
+  // the screen at some point or not.
+  const bool widgets_never_composited_;
 
   // Can be null (e.g. unittests, shared workers, etc).
   WebViewClient* web_view_client_;

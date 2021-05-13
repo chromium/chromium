@@ -606,13 +606,11 @@ WebFrameWidget* WebLocalFrame::InitializeFrameWidget(
         mojo_widget,
     const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
-    bool hidden,
-    bool never_composited) {
+    bool hidden) {
   CreateFrameWidgetInternal(
       base::PassKey<WebLocalFrame>(), std::move(mojo_frame_widget_host),
       std::move(mojo_frame_widget), std::move(mojo_widget_host),
-      std::move(mojo_widget), frame_sink_id, is_for_nested_main_frame, hidden,
-      never_composited);
+      std::move(mojo_widget), frame_sink_id, is_for_nested_main_frame, hidden);
   return FrameWidget();
 }
 
@@ -2486,8 +2484,7 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
         mojo_widget,
     const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
-    bool hidden,
-    bool never_composited) {
+    bool hidden) {
   DCHECK(!frame_widget_);
   DCHECK(frame_->IsLocalRoot());
   bool is_for_child_local_root = Parent();
@@ -2495,6 +2492,8 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
   // Check that if this is for a child local root |is_for_nested_main_frame|
   // is false.
   DCHECK(!is_for_child_local_root || !is_for_nested_main_frame);
+
+  bool never_composited = ViewImpl()->widgets_never_composited();
 
   if (g_create_web_frame_widget) {
     // It is safe to cast to WebFrameWidgetImpl because the only concrete

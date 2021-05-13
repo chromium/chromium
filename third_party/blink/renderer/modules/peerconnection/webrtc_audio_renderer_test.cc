@@ -144,6 +144,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
             /*is_hidden=*/false,
             /*is_inside_portal=*/false,
             /*compositing_enabled=*/false,
+            /*widgets_never_composited=*/false,
             /*opener=*/nullptr,
             mojo::NullAssociatedReceiver(),
             *agent_group_scheduler_,

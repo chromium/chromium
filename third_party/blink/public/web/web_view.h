@@ -105,12 +105,21 @@ class WebView {
   // their output.
   // |page_handle| is only set for views that are part of a WebContents' frame
   // tree.
+  // |widgets_never_composited| is an indication that all WebWidgets associated
+  // with this WebView will never be user-visible and thus never need to produce
+  // pixels for display. This is separate from page visibility, as background
+  // pages can be marked visible in blink even though they are not user-visible.
+  // Page visibility controls blink behaviour for javascript, timers, and such
+  // to inform blink it is in the foreground or background. Whereas this bit
+  // refers to user-visibility and whether the tab needs to produce pixels to
+  // put on the screen at some point or not.
   // TODO(yuzus): Remove |is_hidden| and start using |PageVisibilityState|.
   BLINK_EXPORT static WebView* Create(
       WebViewClient*,
       bool is_hidden,
       bool is_inside_portal,
       bool compositing_enabled,
+      bool widgets_never_composited,
       WebView* opener,
       CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
           page_handle,

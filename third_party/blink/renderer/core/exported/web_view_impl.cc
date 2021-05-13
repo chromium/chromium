@@ -458,6 +458,7 @@ WebView* WebView::Create(
     bool is_hidden,
     bool is_inside_portal,
     bool compositing_enabled,
+    bool widgets_never_composited,
     WebView* opener,
     CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
         page_handle,
@@ -467,9 +468,9 @@ WebView* WebView::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
-      is_inside_portal, compositing_enabled, static_cast<WebViewImpl*>(opener),
-      std::move(page_handle), agent_group_scheduler,
-      session_storage_namespace_id);
+      is_inside_portal, compositing_enabled, widgets_never_composited,
+      static_cast<WebViewImpl*>(opener), std::move(page_handle),
+      agent_group_scheduler, session_storage_namespace_id);
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -477,6 +478,7 @@ WebViewImpl* WebViewImpl::Create(
     mojom::blink::PageVisibilityState visibility,
     bool is_inside_portal,
     bool compositing_enabled,
+    bool widgets_never_composited,
     WebViewImpl* opener,
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
@@ -485,8 +487,8 @@ WebViewImpl* WebViewImpl::Create(
   // then return a raw pointer to the caller.
   auto web_view = base::AdoptRef(
       new WebViewImpl(client, visibility, is_inside_portal, compositing_enabled,
-                      opener, std::move(page_handle), agent_group_scheduler,
-                      session_storage_namespace_id));
+                      widgets_never_composited, opener, std::move(page_handle),
+                      agent_group_scheduler, session_storage_namespace_id));
   web_view->AddRef();
   return web_view.get();
 }
@@ -542,11 +544,13 @@ WebViewImpl::WebViewImpl(
     mojom::blink::PageVisibilityState visibility,
     bool is_inside_portal,
     bool does_composite,
+    bool widgets_never_composited,
     WebViewImpl* opener,
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id)
-    : web_view_client_(client),
+    : widgets_never_composited_(widgets_never_composited),
+      web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
       minimum_zoom_level_(PageZoomFactorToZoomLevel(kMinimumPageZoomFactor)),
       maximum_zoom_level_(PageZoomFactorToZoomLevel(kMaximumPageZoomFactor)),

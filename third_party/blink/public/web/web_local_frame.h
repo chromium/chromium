@@ -230,8 +230,7 @@ class WebLocalFrame : public WebFrame {
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame = false,
-      bool hidden = false,
-      bool never_composited = false);
+      bool hidden = false);
 
   // Returns the frame identified by the given name.  This method supports
   // pseudo-names like _self, _top, and _blank and otherwise performs the same
@@ -869,9 +868,8 @@ class WebLocalFrame : public WebFrame {
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       const viz::FrameSinkId& frame_sink_id,
-      bool is_for_nested_main_frame = false,
-      bool hidden = false,
-      bool never_composited = false) = 0;
+      bool is_for_nested_main_frame,
+      bool hidden) = 0;
 };
 
 }  // namespace blink

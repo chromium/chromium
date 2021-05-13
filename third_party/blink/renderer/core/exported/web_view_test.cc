@@ -490,6 +490,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
                       /*is_hidden=*/false,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/true,
+                      /*widgets_never_composited=*/false,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
                       web_view_helper_.GetAgentGroupScheduler(),
                       /*session_storage_namespace_id=*/base::EmptyString()));
@@ -2734,8 +2735,10 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
   // internal WebViewClient on demand if the supplied WebViewClient is null.
   WebViewImpl* web_view = static_cast<WebViewImpl*>(WebView::Create(
       /*client=*/nullptr, /*is_hidden=*/false, /*is_inside_portal=*/false,
-      /*compositing_enabled=*/false, /*opener=*/nullptr,
-      mojo::NullAssociatedReceiver(), web_view_helper_.GetAgentGroupScheduler(),
+      /*compositing_enabled=*/false,
+      /*widgets_never_composited=*/false,
+      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+      web_view_helper_.GetAgentGroupScheduler(),
       /*session_storage_namespace_id=*/base::EmptyString()));
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(

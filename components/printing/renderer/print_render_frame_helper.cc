@@ -669,8 +669,9 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   blink::WebView* web_view = blink::WebView::Create(
       /*client=*/nullptr,
       /*is_hidden=*/false, /*is_inside_portal=*/false,
-      /*compositing_enabled=*/false, /*opener=*/nullptr,
-      mojo::NullAssociatedReceiver(), *source_frame.GetAgentGroupScheduler(),
+      /*compositing_enabled=*/false, /*widgets_never_composited=*/false,
+      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+      *source_frame.GetAgentGroupScheduler(),
       /*session_storage_namespace_id=*/base::EmptyString());
   web_view->GetSettings()->SetJavaScriptEnabled(true);
 
@@ -947,6 +948,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_hidden=*/false,
       /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
+      /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       agent_group_scheduler_,
       /*session_storage_namespace_id=*/base::EmptyString());

@@ -110,7 +110,6 @@ RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
     : routing_id_(params.view_id),
       renderer_wide_named_frame_lookup_(
           params.renderer_wide_named_frame_lookup),
-      widgets_never_composited_(params.never_composited),
       agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
@@ -129,7 +128,7 @@ void RenderViewImpl::Initialize(
   webview_ = WebView::Create(
       this, params->hidden,
       params->type == mojom::ViewWidgetType::kPortal ? true : false,
-      /*compositing_enabled=*/true,
+      /*compositing_enabled=*/true, params->never_composited,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast),
       agent_scheduling_group_.agent_group_scheduler(),

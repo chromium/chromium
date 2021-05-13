@@ -615,6 +615,7 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                       /*is_hidden=*/false,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/true,
+                      /*widgets_never_composited=*/false,
                       /*opener=*/opener, mojo::NullAssociatedReceiver(),
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/base::EmptyString()));
