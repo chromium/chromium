@@ -20,6 +20,7 @@
       android:layout_height="@dimen/feed_management_header_height"
       tools:ignore="UseCompoundDrawables" >
       <ImageView
+          android:id="@+id/feed_management_back_arrow"
           android:layout_width="@dimen/follow_arrow_size"
           android:layout_height="@dimen/follow_arrow_size"
           android:layout_margin="@dimen/follow_margin"

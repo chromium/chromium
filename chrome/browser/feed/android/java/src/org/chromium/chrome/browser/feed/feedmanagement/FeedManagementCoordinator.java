@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.feed.feedmanagement;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.chrome.browser.feed.webfeed.R;
@@ -41,8 +41,8 @@ public class FeedManagementCoordinator {
         listView.setAdapter(adapter);
 
         // Set up a handler for the header to act as a back button.
-        TextView headerView = (TextView) mView.findViewById(R.id.feed_management_page_title);
-        headerView.setOnClickListener(this::handleHeaderClick);
+        ImageView backArrowView = (ImageView) mView.findViewById(R.id.feed_management_back_arrow);
+        backArrowView.setOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FeedManagementMediator(mActivity, listItems, followManagementLauncher);
     }
@@ -51,7 +51,7 @@ public class FeedManagementCoordinator {
         return mView;
     }
 
-    private void handleHeaderClick(View view) {
+    private void handleBackArrowClick(View view) {
         // Navigate back.
         mActivity.finish();
     }

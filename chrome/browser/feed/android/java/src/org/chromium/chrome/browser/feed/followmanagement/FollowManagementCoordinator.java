@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.feed.followmanagement;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,8 +45,8 @@ public class FollowManagementCoordinator {
         recyclerView.setAdapter(adapter);
 
         // Set up a handler for the header to act as a back button.
-        TextView headerView = (TextView) mView.findViewById(R.id.follow_management_page_title);
-        headerView.setOnClickListener(this::handleHeaderClick);
+        ImageView backArrowView = (ImageView) mView.findViewById(R.id.follow_management_back_arrow);
+        backArrowView.setOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FollowManagementMediator(activity, listItems, adapter,
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()));
@@ -56,7 +56,7 @@ public class FollowManagementCoordinator {
         return mView;
     }
 
-    private void handleHeaderClick(View view) {
+    private void handleBackArrowClick(View view) {
         // Navigate back.
         mActivity.finish();
     }
