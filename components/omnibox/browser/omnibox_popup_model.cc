@@ -72,66 +72,6 @@ OmniboxPopupModel::OmniboxPopupModel(OmniboxPopupView* popup_view,
 
 OmniboxPopupModel::~OmniboxPopupModel() = default;
 
-// static
-void OmniboxPopupModel::ComputeMatchMaxWidths(int contents_width,
-                                              int separator_width,
-                                              int description_width,
-                                              int available_width,
-                                              bool description_on_separate_line,
-                                              bool allow_shrinking_contents,
-                                              int* contents_max_width,
-                                              int* description_max_width) {
-  available_width = std::max(available_width, 0);
-  *contents_max_width = std::min(contents_width, available_width);
-  *description_max_width = std::min(description_width, available_width);
-
-  // If the description is empty, or the contents and description are on
-  // separate lines, each can get the full available width.
-  if (!description_width || description_on_separate_line)
-    return;
-
-  // If we want to display the description, we need to reserve enough space for
-  // the separator.
-  available_width -= separator_width;
-  if (available_width < 0) {
-    *description_max_width = 0;
-    return;
-  }
-
-  if (contents_width + description_width > available_width) {
-    if (allow_shrinking_contents) {
-      // Try to split the available space fairly between contents and
-      // description (if one wants less than half, give it all it wants and
-      // give the other the remaining space; otherwise, give each half).
-      // However, if this makes the contents too narrow to show a significant
-      // amount of information, give the contents more space.
-      *contents_max_width = std::max(
-          (available_width + 1) / 2, available_width - description_width);
-
-      const int kMinimumContentsWidth = 300;
-      *contents_max_width = std::min(
-          std::min(std::max(*contents_max_width, kMinimumContentsWidth),
-                   contents_width),
-          available_width);
-    }
-
-    // Give the description the remaining space, unless this makes it too small
-    // to display anything meaningful, in which case just hide the description
-    // and let the contents take up the whole width.
-    *description_max_width =
-        std::min(description_width, available_width - *contents_max_width);
-    const int kMinimumDescriptionWidth = 75;
-    if (*description_max_width <
-        std::min(description_width, kMinimumDescriptionWidth)) {
-      *description_max_width = 0;
-      // Since we're not going to display the description, the contents can have
-      // the space we reserved for the separator.
-      available_width += separator_width;
-      *contents_max_width = std::min(contents_width, available_width);
-    }
-  }
-}
-
 bool OmniboxPopupModel::IsOpen() const {
   return view_->IsOpen();
 }
