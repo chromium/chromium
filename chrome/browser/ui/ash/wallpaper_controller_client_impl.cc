@@ -11,8 +11,11 @@
 #include "base/bind.h"
 #include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -35,6 +38,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
@@ -124,6 +128,40 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
       return users[i];
   }
   return nullptr;
+}
+
+// Extract daily refresh collection id from |value_store|. If unable to fetch
+// the daily refresh collection id, or the user does not have daily refresh
+// configured, returns empty string. This must be run on the same sequence
+// that |value_store| came from.
+std::string GetDailyRefreshCollectionId(ValueStore* value_store) {
+  if (!value_store)
+    return std::string();
+
+  auto read_result = value_store->Get(kChromeAppDailyRefreshInfoPref);
+
+  if (!read_result.status().ok())
+    return std::string();
+
+  const auto* daily_refresh_info_string =
+      read_result.settings().FindStringKey(kChromeAppDailyRefreshInfoPref);
+
+  if (!daily_refresh_info_string)
+    return std::string();
+
+  const base::Optional<base::Value> daily_refresh_info =
+      base::JSONReader::Read(*daily_refresh_info_string);
+
+  if (!daily_refresh_info)
+    return std::string();
+
+  const auto* collection_id =
+      daily_refresh_info->FindStringKey(kChromeAppCollectionId);
+
+  if (!collection_id)
+    return std::string();
+
+  return *collection_id;
 }
 
 }  // namespace
@@ -439,8 +477,8 @@ bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(
-    ValueStore* storage) {
-  MigrateCollectionIdFromValueStore(storage);
+    ValueStore* value_store) {
+  SetDailyRefreshCollectionId(GetDailyRefreshCollectionId(value_store));
 }
 
 void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
@@ -551,16 +589,21 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp() {
   // Although not now, there will be a day where this application no longer
   // exists.
   if (!extension) {
-    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    SetDailyRefreshCollectionId(std::string());
     return;
   }
 
+  // Get a ptr to current sequence.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunnerHandle::Get();
+
   auto* storage_frontend = extensions::StorageFrontend::Get(profile);
+  // Callback runs on a backend sequence.
   storage_frontend->RunWithStorage(
       extension, extensions::settings_namespace::LOCAL,
       base::BindOnce(
-          &WallpaperControllerClientImpl::MigrateCollectionIdFromValueStore,
-          weak_factory_.GetWeakPtr()));
+          &WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore,
+          storage_weak_factory_.GetWeakPtr(), task_runner));
 }
 
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
@@ -576,40 +619,20 @@ WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
       local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
 }
 
-void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStore(
-    ValueStore* storage) {
-  using ReadResult = ValueStore::ReadResult;
+void WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore(
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+    ValueStore* value_store) {
+  DCHECK(extensions::IsOnBackendSequence());
+  std::string collection_id = GetDailyRefreshCollectionId(value_store);
+  // Jump back to original task runner.
+  main_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WallpaperControllerClientImpl::SetDailyRefreshCollectionId,
+          weak_factory_.GetWeakPtr(), collection_id));
+}
 
-  if (!storage) {
-    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
-    return;
-  }
-
-  const std::string chrome_app_daily_refresh_info_pref(
-      kChromeAppDailyRefreshInfoPref);
-
-  ReadResult result = storage->Get(chrome_app_daily_refresh_info_pref);
-  if (!result.status().ok()) {
-    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
-    return;
-  }
-
-  const std::string* daily_refresh_info_string =
-      result.settings().FindStringKey(chrome_app_daily_refresh_info_pref);
-  if (!daily_refresh_info_string) {
-    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
-    return;
-  }
-
-  const base::Optional<base::Value> daily_refresh_info =
-      base::JSONReader::Read(*daily_refresh_info_string);
-  if (!daily_refresh_info) {
-    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
-    return;
-  }
-
-  const std::string* collection_id =
-      daily_refresh_info->FindStringKey(kChromeAppCollectionId);
-  wallpaper_controller_->SetDailyRefreshCollectionId(
-      collection_id ? *collection_id : std::string());
+void WallpaperControllerClientImpl::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  wallpaper_controller_->SetDailyRefreshCollectionId(collection_id);
 }

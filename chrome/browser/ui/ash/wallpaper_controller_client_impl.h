@@ -17,6 +17,10 @@
 class AccountId;
 class ValueStore;
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
  public:
@@ -117,12 +121,15 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
 
   base::FilePath GetDeviceWallpaperImageFilePath();
 
-  // Retrieves the collection id from the value store that backs chrome.storage
-  // for the old chrome app and passes it to wallpaper controller to store.
-  // This differs from |MigrateCollectionIdFromChromeApp|, which gets the value
-  // store associated with the current user to pass into this function, and is
-  // exposed to the wallpaper controller.
-  void MigrateCollectionIdFromValueStore(ValueStore* storage);
+  // Used as callback to |MigrateCollectionIdFromChromeApp|. Called on backend
+  // task runner. Extracts the daily refresh collection id and calls
+  // |SetDailyRefreshCollectionId| on main task runner.
+  void OnGetWallpaperChromeAppValueStore(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      ValueStore* value_store);
+
+  // Passes |collection_id| to wallpaper controller on main task runner.
+  void SetDailyRefreshCollectionId(const std::string& collection_id);
 
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;
@@ -138,6 +145,8 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
   base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
+  base::WeakPtrFactory<WallpaperControllerClientImpl> storage_weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientImpl);
 };
