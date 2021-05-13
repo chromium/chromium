@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("libassistant_client") {
+  sources = [
+    "grpc_libassistant_client.cc",
+    "grpc_libassistant_client.h",
+  ]
+
+  public_deps = [ "//third_party/grpc:grpc++" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("grpc_util") {
+  sources = [
+    "grpc_util.cc",
+    "grpc_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+source_set("assistant_client") {
+  sources = [
+    "assistant_client.h",
+    "assistant_client_impl.cc",
+    "assistant_client_impl.h",
+  ]
+
+  deps = [
+    ":libassistant_client",
+    "//base",
+    "//chromeos/services/libassistant/grpc/external_services:grpc_services_initializer",
+  ]
+}
