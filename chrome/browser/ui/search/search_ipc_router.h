@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
-#include "chrome/common/search/omnibox.mojom.h"
 #include "chrome/common/search/search.mojom.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/omnibox/common/omnibox_focus_state.h"

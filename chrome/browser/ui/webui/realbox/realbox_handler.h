@@ -23,16 +23,22 @@ class Profile;
 
 namespace content {
 class WebContents;
+class WebUIDataSource;
 }  // namespace content
 
 namespace gfx {
 class Image;
+struct VectorIcon;
 }  // namespace gfx
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
 class RealboxHandler : public realbox::mojom::PageHandler,
                        public AutocompleteController::Observer {
  public:
+  static void SetupWebUIDataSource(content::WebUIDataSource* source);
+  static std::string AutocompleteMatchVectorIconToResourceName(
+      const gfx::VectorIcon& icon);
+
   RealboxHandler(
       mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,

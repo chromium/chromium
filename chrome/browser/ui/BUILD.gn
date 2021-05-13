@@ -1143,8 +1143,6 @@ static_library("ui") {
       "search/ntp_user_data_logger.cc",
       "search/ntp_user_data_logger.h",
       "search/ntp_user_data_types.h",
-      "search/omnibox_mojo_utils.cc",
-      "search/omnibox_mojo_utils.h",
       "search/omnibox_utils.cc",
       "search/omnibox_utils.h",
       "search/search_ipc_router.cc",

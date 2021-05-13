@@ -88,11 +88,6 @@
         <include name="IDR_VIDEO_PLAYER_JS" file="resources\video_tutorials\video_player.js" type="BINDATA" />
       </if>
 
-      <if expr="not is_android">
-        <!-- New Tab Page -->
-        <part file="resources/local_ntp/icons.grdp" />
-      </if>
-
       <if expr="enable_supervised_users">
         <part file="resources/supervised_user_error_page_resources.grdp" />
       </if>
