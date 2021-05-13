@@ -8,6 +8,7 @@
 #include <lib/zx/object.h>
 #include <zircon/types.h>
 
+#include "base/base_export.h"
 #include "base/optional.h"
 
 namespace base {

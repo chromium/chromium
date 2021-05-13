@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

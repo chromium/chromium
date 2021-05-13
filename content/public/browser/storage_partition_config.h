@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"

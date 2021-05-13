@@ -70,7 +70,7 @@ class BrowserAssociatedInterface : public Interface {
   class InternalState : public base::RefCountedThreadSafe<InternalState> {
    public:
     explicit InternalState(Interface* impl)
-        : impl_(impl), receivers_(base::in_place) {}
+        : impl_(impl), receivers_(absl::in_place) {}
 
     void ClearReceivers() {
       if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {

@@ -411,7 +411,7 @@ TEST_F(ConnectTest, Instances) {
 
 TEST_F(ConnectTest, ConnectWithGloballyUniqueId) {
   base::Optional<TestTargetService> target(
-      base::in_place, RegisterServiceInstance(kTestAppAName));
+      absl::in_place, RegisterServiceInstance(kTestAppAName));
   target->WaitForStart();
 
   Identity specific_identity = target->identity();

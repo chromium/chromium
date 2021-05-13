@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/optional.h"
 #include "base/win/windows_types.h"
 

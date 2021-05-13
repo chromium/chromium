@@ -264,7 +264,7 @@ TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
   base::Optional<std::vector<std::string>> removed_headers(base::nullopt);
-  base::Optional<HttpRequestHeaders> modified_headers(base::in_place);
+  base::Optional<HttpRequestHeaders> modified_headers(absl::in_place);
   bool should_clear_upload(false);  // unused.
 
   RedirectUtil::UpdateHttpRequest(GURL(),         // original_url
@@ -283,7 +283,7 @@ TEST(RedirectUtilTest, ModifyHeadersNullopt) {
   HttpRequestHeaders initial_headers, final_headers;
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
-  base::Optional<std::vector<std::string>> removed_headers(base::in_place);
+  base::Optional<std::vector<std::string>> removed_headers(absl::in_place);
   base::Optional<HttpRequestHeaders> modified_headers(base::nullopt);
   bool should_clear_upload(false);  // unused.
 

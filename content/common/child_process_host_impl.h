@@ -105,7 +105,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
 
   // The outgoing Mojo invitation which must be consumed to bootstrap Mojo IPC
   // to the child process.
-  base::Optional<mojo::OutgoingInvitation> mojo_invitation_{base::in_place};
+  base::Optional<mojo::OutgoingInvitation> mojo_invitation_{absl::in_place};
 
   const IpcMode ipc_mode_;
   ChildProcessHostDelegate* delegate_;

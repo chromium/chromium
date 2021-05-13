@@ -7090,7 +7090,7 @@ TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {
         3, BuildTestAddressRecord("duplicate", IPAddress::IPv4Localhost()));
     std::string dns_name;
     CHECK(DNSDomainFromDot("duplicate", &dns_name));
-    base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
+    base::Optional<DnsQuery> query(absl::in_place, 0, dns_name,
                                    dns_protocol::kTypeA);
 
     rules.emplace_back(
@@ -7107,7 +7107,7 @@ TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {
         3, BuildTestAddressRecord("duplicate", IPAddress::IPv6Localhost()));
     std::string dns_name;
     CHECK(DNSDomainFromDot("duplicate", &dns_name));
-    base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
+    base::Optional<DnsQuery> query(absl::in_place, 0, dns_name,
                                    dns_protocol::kTypeAAAA);
 
     rules.emplace_back(

@@ -331,7 +331,7 @@ void MockChromeCleanerProcess::Options::SetReportedResults(
       // Defined as an optional object in which an empty registry keys vector is
       // present.
       registry_keys_ =
-          base::Optional<std::vector<std::wstring>>(base::in_place);
+          base::Optional<std::vector<std::wstring>>(absl::in_place);
       break;
 
     case ItemsReporting::kReported:

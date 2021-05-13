@@ -30,7 +30,7 @@ struct Serializer;
 template <typename T>
 struct IsOptionalWrapper {
   static const bool value = IsSpecializationOf<
-      base::Optional,
+      absl::optional,
       typename std::remove_const<
           typename std::remove_reference<T>::type>::type>::value;
 };

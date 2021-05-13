@@ -207,7 +207,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
       destination_ids.emplace_back(display.id());
   }
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, source.id(), destination_ids);
+      absl::in_place, source.id(), destination_ids);
   const display::MixedMirrorModeParamsErrors error_type =
       display::ValidateParamsForMixedMirrorMode(
           display_manager->GetCurrentDisplayIdList(), *mixed_params);

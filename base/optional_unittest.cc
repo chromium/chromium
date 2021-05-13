@@ -212,10 +212,6 @@ static_assert(
     !std::is_trivially_destructible<Optional<NonTriviallyDestructible>>::value,
     "OptionalIsTriviallyDestructible");
 
-static_assert(sizeof(Optional<int>) == sizeof(internal::OptionalBase<int>),
-              "internal::{Copy,Move}{Constructible,Assignable} structs "
-              "should be 0-sized");
-
 TEST(OptionalTest, DefaultConstructor) {
   {
     constexpr Optional<float> o;
@@ -334,7 +330,7 @@ TEST(OptionalTest, MoveConstructor) {
   // Even if copy constructor is deleted, move constructor needs to work.
   // Note that it couldn't be constexpr.
   {
-    Optional<DeletedCopy> first(in_place, 42);
+    Optional<DeletedCopy> first(absl::in_place, 42);
     Optional<DeletedCopy> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
@@ -344,7 +340,7 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    Optional<DeletedMove> first(in_place, 42);
+    Optional<DeletedMove> first(absl::in_place, 42);
     Optional<DeletedMove> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
@@ -354,8 +350,8 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    Optional<NonTriviallyDestructibleDeletedCopyConstructor> first(in_place,
-                                                                   42);
+    Optional<NonTriviallyDestructibleDeletedCopyConstructor> first(
+        absl::in_place, 42);
     Optional<NonTriviallyDestructibleDeletedCopyConstructor> second(
         std::move(first));
 
@@ -453,7 +449,7 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
       double bar_;
     };
 
-    Optional<Test1> first(in_place, 42);
+    Optional<Test1> first(absl::in_place, 42);
     Optional<Test2> second(std::move(first));
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(42.0, second->bar());
@@ -462,25 +458,25 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
 
 TEST(OptionalTest, ConstructorForwardArguments) {
   {
-    constexpr Optional<float> a(base::in_place, 0.1f);
+    constexpr Optional<float> a(absl::in_place, 0.1f);
     EXPECT_TRUE(a);
     EXPECT_EQ(0.1f, a.value());
   }
 
   {
-    Optional<float> a(base::in_place, 0.1f);
+    Optional<float> a(absl::in_place, 0.1f);
     EXPECT_TRUE(a);
     EXPECT_EQ(0.1f, a.value());
   }
 
   {
-    Optional<std::string> a(base::in_place, "foo");
+    Optional<std::string> a(absl::in_place, "foo");
     EXPECT_TRUE(a);
     EXPECT_EQ("foo", a.value());
   }
 
   {
-    Optional<TestObject> a(base::in_place, 0, 0.1);
+    Optional<TestObject> a(absl::in_place, 0, 0.1);
     EXPECT_TRUE(!!a);
     EXPECT_TRUE(TestObject(0, 0.1) == a.value());
   }
@@ -488,14 +484,15 @@ TEST(OptionalTest, ConstructorForwardArguments) {
 
 TEST(OptionalTest, ConstructorForwardInitListAndArguments) {
   {
-    Optional<std::vector<int>> opt(in_place, {3, 1});
+    Optional<std::vector<int>> opt(absl::in_place, {3, 1});
     EXPECT_TRUE(opt);
     EXPECT_THAT(*opt, ElementsAre(3, 1));
     EXPECT_EQ(2u, opt->size());
   }
 
   {
-    Optional<std::vector<int>> opt(in_place, {3, 1}, std::allocator<int>());
+    Optional<std::vector<int>> opt(absl::in_place, {3, 1},
+                                   std::allocator<int>());
     EXPECT_TRUE(opt);
     EXPECT_THAT(*opt, ElementsAre(3, 1));
     EXPECT_EQ(2u, opt->size());
@@ -550,20 +547,20 @@ TEST(OptionalTest, ForwardConstructor) {
 
     // Overload resolution with copy-conversion constructor.
     {
-      const Optional<int> arg(in_place, 1);
+      const Optional<int> arg(absl::in_place, 1);
       Optional<Test> testee(arg);
       EXPECT_EQ(ParamType::OPTIONAL_INT, testee->param_type);
     }
 
     // Overload resolution with move conversion constructor.
     {
-      Optional<Test> testee(Optional<int>(in_place, 1));
+      Optional<Test> testee(Optional<int>(absl::in_place, 1));
       EXPECT_EQ(ParamType::OPTIONAL_INT, testee->param_type);
     }
 
     // Default constructor should be used.
     {
-      Optional<Test> testee(in_place);
+      Optional<Test> testee(absl::in_place);
       EXPECT_EQ(ParamType::DEFAULT_CONSTRUCTED, testee->param_type);
     }
   }
@@ -668,7 +665,7 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    Optional<DeletedMove> a(in_place, 42);
+    Optional<DeletedMove> a(absl::in_place, 42);
     Optional<DeletedMove> b;
     b = a;
 
@@ -678,8 +675,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    Optional<DeletedMove> a(in_place, 42);
-    Optional<DeletedMove> b(in_place, 1);
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b(absl::in_place, 1);
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -689,7 +686,7 @@ TEST(OptionalTest, AssignObject) {
 
   // Converting assignment.
   {
-    Optional<int> a(in_place, 1);
+    Optional<int> a(absl::in_place, 1);
     Optional<double> b;
     b = a;
 
@@ -700,8 +697,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    Optional<int> a(in_place, 42);
-    Optional<double> b(in_place, 1);
+    Optional<int> a(absl::in_place, 42);
+    Optional<double> b(absl::in_place, 1);
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -712,7 +709,7 @@ TEST(OptionalTest, AssignObject) {
 
   {
     Optional<int> a;
-    Optional<double> b(in_place, 1);
+    Optional<double> b(absl::in_place, 1);
     b = a;
     EXPECT_FALSE(!!a);
     EXPECT_FALSE(!!b);
@@ -767,7 +764,7 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    Optional<DeletedMove> a(in_place, 42);
+    Optional<DeletedMove> a(absl::in_place, 42);
     Optional<DeletedMove> b;
     b = std::move(a);
 
@@ -777,8 +774,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    Optional<DeletedMove> a(in_place, 42);
-    Optional<DeletedMove> b(in_place, 1);
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -788,7 +785,7 @@ TEST(OptionalTest, AssignObject_rvalue) {
 
   // Converting assignment.
   {
-    Optional<int> a(in_place, 1);
+    Optional<int> a(absl::in_place, 1);
     Optional<double> b;
     b = std::move(a);
 
@@ -798,8 +795,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    Optional<int> a(in_place, 42);
-    Optional<double> b(in_place, 1);
+    Optional<int> a(absl::in_place, 42);
+    Optional<double> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -809,7 +806,7 @@ TEST(OptionalTest, AssignObject_rvalue) {
 
   {
     Optional<int> a;
-    Optional<double> b(in_place, 1);
+    Optional<double> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_FALSE(!!a);
@@ -883,7 +880,7 @@ TEST(OptionalTest, AssignOverload) {
   };
 
   {
-    Optional<Test1> a(in_place);
+    Optional<Test1> a(absl::in_place);
     Optional<Test2> b;
 
     b = a;
@@ -894,8 +891,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
-    Optional<Test2> b(in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b(absl::in_place);
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -905,7 +902,7 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
+    Optional<Test1> a(absl::in_place);
     Optional<Test2> b;
 
     b = std::move(a);
@@ -916,8 +913,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
-    Optional<Test2> b(in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b(absl::in_place);
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -983,7 +980,7 @@ TEST(OptionalTest, AssignOverload) {
   };
 
   {
-    Optional<Test1> a(in_place);
+    Optional<Test1> a(absl::in_place);
     Optional<Test3> b;
 
     b = a;
@@ -994,8 +991,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
-    Optional<Test3> b(in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b(absl::in_place);
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -1005,7 +1002,7 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
+    Optional<Test1> a(absl::in_place);
     Optional<Test3> b;
 
     b = std::move(a);
@@ -1016,8 +1013,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    Optional<Test1> a(in_place);
-    Optional<Test3> b(in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b(absl::in_place);
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -1076,7 +1073,7 @@ TEST(OptionalTest, ValueOr) {
 
   // value_or() can be constexpr.
   {
-    constexpr Optional<int> a(in_place, 1);
+    constexpr Optional<int> a(absl::in_place, 1);
     constexpr int value = a.value_or(10);
     EXPECT_EQ(1, value);
   }
@@ -2002,7 +1999,7 @@ TEST(OptionalTest, MakeOptional) {
 
 TEST(OptionalTest, NonMemberSwap_bothNoValue) {
   Optional<TestObject> a, b;
-  base::swap(a, b);
+  absl::swap(a, b);
 
   EXPECT_FALSE(!!a);
   EXPECT_FALSE(!!b);
@@ -2013,7 +2010,7 @@ TEST(OptionalTest, NonMemberSwap_bothNoValue) {
 TEST(OptionalTest, NonMemberSwap_inHasValue) {
   Optional<TestObject> a(TestObject(1, 0.3));
   Optional<TestObject> b;
-  base::swap(a, b);
+  absl::swap(a, b);
 
   EXPECT_FALSE(!!a);
   EXPECT_TRUE(!!b);
@@ -2024,7 +2021,7 @@ TEST(OptionalTest, NonMemberSwap_inHasValue) {
 TEST(OptionalTest, NonMemberSwap_outHasValue) {
   Optional<TestObject> a;
   Optional<TestObject> b(TestObject(1, 0.3));
-  base::swap(a, b);
+  absl::swap(a, b);
 
   EXPECT_TRUE(!!a);
   EXPECT_FALSE(!!b);
@@ -2035,7 +2032,7 @@ TEST(OptionalTest, NonMemberSwap_outHasValue) {
 TEST(OptionalTest, NonMemberSwap_bothValue) {
   Optional<TestObject> a(TestObject(0, 0.1));
   Optional<TestObject> b(TestObject(1, 0.3));
-  base::swap(a, b);
+  absl::swap(a, b);
 
   EXPECT_TRUE(!!a);
   EXPECT_TRUE(!!b);
@@ -2160,18 +2157,18 @@ TEST(OptionalTest, DereferencingNoValueCrashes) {
 
   {
     const Optional<C> const_optional;
-    EXPECT_CHECK_DEATH(const_optional.value());
-    EXPECT_CHECK_DEATH(const_optional->Method());
-    EXPECT_CHECK_DEATH(*const_optional);
-    EXPECT_CHECK_DEATH(*std::move(const_optional));
+    EXPECT_DEATH_IF_SUPPORTED(const_optional.value(), "");
+    EXPECT_DEATH_IF_SUPPORTED(const_optional->Method(), "");
+    EXPECT_DEATH_IF_SUPPORTED(*const_optional, "");
+    EXPECT_DEATH_IF_SUPPORTED(*std::move(const_optional), "");
   }
 
   {
     Optional<C> non_const_optional;
-    EXPECT_CHECK_DEATH(non_const_optional.value());
-    EXPECT_CHECK_DEATH(non_const_optional->Method());
-    EXPECT_CHECK_DEATH(*non_const_optional);
-    EXPECT_CHECK_DEATH(*std::move(non_const_optional));
+    EXPECT_DEATH_IF_SUPPORTED(non_const_optional.value(), "");
+    EXPECT_DEATH_IF_SUPPORTED(non_const_optional->Method(), "");
+    EXPECT_DEATH_IF_SUPPORTED(*non_const_optional, "");
+    EXPECT_DEATH_IF_SUPPORTED(*std::move(non_const_optional), "");
   }
 }
 

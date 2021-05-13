@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverFactoryBrowserTest,
   mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory> resolver_factory(
       ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver());
 
-  base::Optional<ProxyResolverProcessObserver> observer{base::in_place};
+  base::Optional<ProxyResolverProcessObserver> observer{absl::in_place};
 
   // Create a resolver, this should create and start the service.
   std::unique_ptr<DumbProxyResolverFactoryRequestClient> resolver_client =

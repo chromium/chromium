@@ -168,7 +168,7 @@ TEST_F(ServiceFactoryTest, DestroyInstanceOnServiceDisconnect) {
 }
 
 TEST_F(ServiceFactoryTest, DestroyInstancesOnFactoryDestruction) {
-  base::Optional<ServiceFactory> factory{base::in_place};
+  base::Optional<ServiceFactory> factory{absl::in_place};
   factory->Add(RunTestService1);
 
   Remote<mojom::TestService1> remote1;

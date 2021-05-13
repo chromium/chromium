@@ -1508,7 +1508,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, internal_display_id, dst_ids);
+      absl::in_place, internal_display_id, dst_ids);
   display_prefs()->StoreDisplayMixedMirrorModeParamsForTest(mixed_params);
   LoadDisplayPreferences();
 
@@ -1538,7 +1538,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   dst_ids.clear();
   dst_ids.emplace_back(second_display_id);
   base::Optional<display::MixedMirrorModeParams> new_mixed_params(
-      base::in_place, first_display_id, dst_ids);
+      absl::in_place, first_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed,
                                    new_mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());

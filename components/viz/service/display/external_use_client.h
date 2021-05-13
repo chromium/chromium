@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/viz/common/resources/resource_format.h"

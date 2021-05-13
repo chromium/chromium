@@ -1603,7 +1603,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 
               BrowserThread::GetTaskRunnerForThread(
                   ServiceWorkerContext::GetCoreThreadId()))),
-      instance_weak_factory_(base::in_place, this),
+      instance_weak_factory_(absl::in_place, this),
       shutdown_exit_code_(-1) {
   CHECK(!browser_context->ShutdownStarted());
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl", "render_process_host", this,

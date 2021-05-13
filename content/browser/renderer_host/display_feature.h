@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DISPLAY_FEATURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DISPLAY_FEATURE_H_
 
+#include <vector>
+
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"

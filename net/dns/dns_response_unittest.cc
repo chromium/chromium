@@ -1629,7 +1629,7 @@ TEST(DnsResponseWriteTest, AAAAQuestionAndCnameAnswer) {
   answer.SetOwnedRdata(dns_name);
   std::vector<DnsResourceRecord> answers(1, answer);
 
-  base::Optional<DnsQuery> query(base::in_place, 114 /* id */, dns_name,
+  base::Optional<DnsQuery> query(absl::in_place, 114 /* id */, dns_name,
                                  dns_protocol::kTypeAAAA);
 
   DnsResponse response(114 /* response_id */, true /* is_authoritative*/,

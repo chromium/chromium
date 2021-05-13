@@ -32,11 +32,9 @@ constexpr size_t PushBufferQueue::kBufferSizeBytes;
 PushBufferQueue::PushBufferQueue()
     : producer_handler_(this),
       consumer_handler_(this),
-      consumer_stream_(base::in_place_t(), &consumer_handler_),
-      protobuf_consumer_stream_(base::in_place_t(),
-                                &consumer_stream_.value(),
-                                1),
-      producer_stream_(base::in_place_t(), &producer_handler_) {
+      consumer_stream_(absl::in_place, &consumer_handler_),
+      protobuf_consumer_stream_(absl::in_place, &consumer_stream_.value(), 1),
+      producer_stream_(absl::in_place, &producer_handler_) {
   DETACH_FROM_SEQUENCE(producer_sequence_checker_);
   DETACH_FROM_SEQUENCE(consumer_sequence_checker_);
 }
