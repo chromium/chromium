@@ -54,7 +54,7 @@ std::string PlatformWindow::GetWindowUniqueId() const {
   return std::string();
 }
 
-bool PlatformWindow::ShouldUseLayerForShapedWindow() const {
+bool PlatformWindow::ShouldUpdateWindowShape() const {
   return false;
 }
 

@@ -180,24 +180,25 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(host_platform);
-  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
+  if (!host_platform->platform_window()->ShouldUpdateWindowShape())
     return;
 
   auto* content_window =
       DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(content_window);
-  // alpha_shape for the layer of content window is updated from the
-  // |NonClientView::GetWindowMask|.
   EXPECT_FALSE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
-  EXPECT_TRUE(content_window->layer()->alpha_shape());
+  // SetClipPath for the layer of the content window is updated from it.
+  EXPECT_TRUE(host_platform->ShouldWindowContentsBeTransparent());
+  EXPECT_FALSE(widget->GetLayer()->FillsBoundsCompletely());
 
-  // When fullscreen mode, alpha_shape is set to empty since there is no
+  // When fullscreen mode, clip_path_ is set to empty since there is no
   // |NonClientView::GetWindowMask|.
   host_platform->SetFullscreen(true);
   widget->SetBounds(gfx::Rect(800, 800));
   EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
-  EXPECT_FALSE(content_window->layer()->alpha_shape());
+  EXPECT_FALSE(host_platform->ShouldWindowContentsBeTransparent());
+  EXPECT_TRUE(widget->GetLayer()->FillsBoundsCompletely());
 }
 
 // A Widget that allows setting the min/max size for the widget.
@@ -285,64 +286,6 @@ TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithUnchangedSize) {
   dwth_platform->SetBoundsInPixels(gfx::Rect(2, 2, 100, 100));
   EXPECT_EQ(1, observer.bounds_change_count());
   EXPECT_EQ(0, observer.resize_count());
-}
-
-class DesktopWindowTreeHostPlatformHighDPITest
-    : public DesktopWindowTreeHostPlatformTest {
- public:
-  DesktopWindowTreeHostPlatformHighDPITest() = default;
-  ~DesktopWindowTreeHostPlatformHighDPITest() override = default;
-
- private:
-  void SetUp() override {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
-
-    DesktopWindowTreeHostPlatformTest::SetUp();
-  }
-};
-
-// Tests that the window shape is updated properly from the
-// |NonClientView::GetWindowMask| in HighDPI.
-TEST_F(DesktopWindowTreeHostPlatformHighDPITest, VerifyWindowShapeInHighDPI) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
-  widget->Show();
-
-  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
-      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(host_platform);
-  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
-    return;
-
-  auto* content_window =
-      DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
-          widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(content_window);
-  // Check device scale factor.
-  EXPECT_EQ(host_platform->device_scale_factor(), 2.0);
-
-  // alpha_shape for the layer of content window is updated from the
-  // |NonClientView::GetWindowMask|.
-  SkPath path_in_pixels = host_platform->GetWindowMaskForWindowShapeInPixels();
-  EXPECT_FALSE(path_in_pixels.isEmpty());
-
-  // Converts path to DIPs and calculates expected region from it.
-  SkPath path_in_dips;
-  path_in_pixels.transform(
-      SkMatrix(host_platform->GetInverseRootTransform().matrix()),
-      &path_in_dips);
-  SkRegion region;
-  region.setRect(path_in_dips.getBounds().round());
-  SkRegion expected_region;
-  expected_region.setPath(path_in_dips, region);
-
-  SkRegion shape_region;
-  for (auto& bound : *(content_window->layer()->alpha_shape()))
-    shape_region.op(gfx::RectToSkIRect(bound), SkRegion::Op::kUnion_Op);
-
-  // Test that region from alpha_shape is same as the expected region from path
-  // in DIPs.
-  EXPECT_EQ(shape_region, expected_region);
 }
 
 }  // namespace views

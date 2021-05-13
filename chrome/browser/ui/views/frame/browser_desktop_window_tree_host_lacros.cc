@@ -28,10 +28,10 @@ BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
 // BrowserDesktopWindowTreeHostLacros,
 //     DesktopWindowTreeHostPlatform implementation:
 
-bool BrowserDesktopWindowTreeHostLacros::ShouldUseLayerForShapedWindow() const {
-  // Lacros doesn't need to use layer for shaped window since it is already
-  // done in views.
-  return false;
+SkPath BrowserDesktopWindowTreeHostLacros::GetWindowMaskForClipping() const {
+  // Lacros doesn't need to request clipping since it is already
+  // done in views, so returns empty window mask.
+  return SkPath();
 }
 
 void BrowserDesktopWindowTreeHostLacros::OnSurfaceFrameLockingChanged(

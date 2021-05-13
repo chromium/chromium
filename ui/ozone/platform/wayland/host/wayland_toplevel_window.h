@@ -57,6 +57,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // xdg-decoration mode for a window.
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
+  bool ShouldUpdateWindowShape() const override;
 
   // WaylandWindow overrides:
   base::Optional<std::vector<gfx::Rect>> GetWindowShape() const override;

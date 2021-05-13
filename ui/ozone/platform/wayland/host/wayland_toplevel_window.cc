@@ -241,6 +241,10 @@ bool WaylandToplevelWindow::ShouldUseNativeFrame() const {
                                   ->xdg_decoration_manager_v1();
 }
 
+bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
+  return true;
+}
+
 base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
     const {
   return window_shape_in_dips_;

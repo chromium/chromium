@@ -359,8 +359,8 @@ void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
 
 void WaylandWindow::SizeConstraintsChanged() {}
 
-bool WaylandWindow::ShouldUseLayerForShapedWindow() const {
-  return true;
+bool WaylandWindow::ShouldUpdateWindowShape() const {
+  return false;
 }
 
 bool WaylandWindow::CanDispatchEvent(const PlatformEvent& event) {

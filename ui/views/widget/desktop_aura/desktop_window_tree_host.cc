@@ -18,6 +18,9 @@ void DesktopWindowTreeHost::SetBoundsInDIP(const gfx::Rect& bounds) {
   AsWindowTreeHost()->SetBoundsInPixels(bounds_in_pixels);
 }
 
+void DesktopWindowTreeHost::UpdateWindowShapeIfNeeded(
+    const ui::PaintContext& context) {}
+
 std::unique_ptr<aura::client::ScreenPositionClient>
 DesktopWindowTreeHost::CreateScreenPositionClient() {
   return std::make_unique<DesktopScreenPositionClient>(

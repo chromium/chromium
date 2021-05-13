@@ -27,7 +27,7 @@ class BrowserDesktopWindowTreeHostLacros
 
  private:
   // views::DesktopWindowTreeHostPlatform:
-  bool ShouldUseLayerForShapedWindow() const override;
+  SkPath GetWindowMaskForClipping() const override;
   void OnSurfaceFrameLockingChanged(bool lock) override;
 
   views::DesktopNativeWidgetAura* desktop_native_widget_aura_ = nullptr;

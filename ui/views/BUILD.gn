@@ -841,8 +841,6 @@ component("views") {
           "widget/desktop_aura/desktop_drag_drop_client_ozone.h",
           "widget/desktop_aura/desktop_window_tree_host_platform.cc",
           "widget/desktop_aura/window_move_client_platform.cc",
-          "widget/desktop_aura/window_shape_updater.cc",
-          "widget/desktop_aura/window_shape_updater.h",
         ]
         public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
       }

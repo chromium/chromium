@@ -18,6 +18,10 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/widget/desktop_aura/window_move_client_platform.h"
 
+namespace ui {
+class PaintContext;
+}  // namespace ui
+
 namespace views {
 
 class VIEWS_EXPORT DesktopWindowTreeHostPlatform
@@ -41,8 +45,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Accessor for DesktopNativeWidgetAura::content_window().
   aura::Window* GetContentWindow();
   const aura::Window* GetContentWindow() const;
-
-  bool is_shape_explicitly_set() const { return is_shape_explicitly_set_; }
 
   // DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
@@ -108,6 +110,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUpdateWindowTransparency() const override;
   bool ShouldUseDesktopNativeCursorManager() const override;
   bool ShouldCreateVisibilityController() const override;
+  void UpdateWindowShapeIfNeeded(const ui::PaintContext& context) override;
 
   // WindowTreeHost:
   gfx::Transform GetRootTransform() const override;
@@ -158,9 +161,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties);
 
-  // Returns true if WindowShapeUpdater should update the window shape by
-  // window mask, otherwise false when window shape is already updated in views.
-  virtual bool ShouldUseLayerForShapedWindow() const;
+  // Returns window mask to clip canvas to update window shape of
+  // the content window.
+  virtual SkPath GetWindowMaskForClipping() const;
 
   // Helper method that returns the display for the |window()|.
   display::Display GetDisplayNearestRootWindow() const;
@@ -185,8 +188,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Used for tab dragging in move loop requests.
   WindowMoveClientPlatform window_move_client_;
 
-  // ui::Layer::SetAlphaShape can be set from either SetShape or default window
-  // mask. When explicitly setting from SetShape, |explicitly_set_shape_:true|.
+  // The content window shape can be set from either SetShape or default window
+  // mask. When explicitly setting from SetShape, |explicitly_set_shape_:true|
+  // to prevent clipping the canvas before painting for default window mask.
   bool is_shape_explicitly_set_ = false;
 
   base::WeakPtrFactory<DesktopWindowTreeHostPlatform> close_widget_factory_{

@@ -1103,6 +1103,7 @@ void DesktopNativeWidgetAura::OnCaptureLost() {
 }
 
 void DesktopNativeWidgetAura::OnPaint(const ui::PaintContext& context) {
+  desktop_window_tree_host_->UpdateWindowShapeIfNeeded(context);
   native_widget_delegate_->OnNativeWidgetPaint(context);
 }
 
