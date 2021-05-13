@@ -74,7 +74,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   void DidGetOriginsForGlobalUsage(GlobalUsageCallback callback,
                                    const std::vector<url::Origin>& origins);
   void AccumulateHostUsage(AccumulateInfo* info,
-                           GlobalUsageCallback callback,
+                           GlobalUsageCallback* callback,
                            int64_t limited_usage,
                            int64_t unlimited_usage);
 

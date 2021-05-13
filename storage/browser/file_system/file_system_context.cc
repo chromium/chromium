@@ -393,16 +393,19 @@ void FileSystemContext::AttemptAutoMountForURLRequest(
     const FileSystemRequestInfo& request_info,
     StatusCallback callback) {
   const FileSystemURL filesystem_url(request_info.url);
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   if (filesystem_url.type() == kFileSystemTypeExternal) {
-    for (size_t i = 0; i < auto_mount_handlers_.size(); i++) {
-      if (auto_mount_handlers_[i].Run(request_info, filesystem_url,
-                                      copyable_callback)) {
+    for (auto& handler : auto_mount_handlers_) {
+      auto split_callback = base::SplitOnceCallback(std::move(callback));
+      callback = std::move(split_callback.first);
+      if (handler.Run(request_info, filesystem_url,
+                      std::move(split_callback.second))) {
+        // The `callback` will be run if true was returned.
         return;
       }
     }
   }
-  copyable_callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+  // If every handler returned false, then `callback` was not run yet.
+  std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
 }
 
 void FileSystemContext::DeleteFileSystem(const url::Origin& origin,
