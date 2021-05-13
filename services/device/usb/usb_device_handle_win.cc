@@ -638,17 +638,7 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device,
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       blocking_task_runner_(UsbService::CreateBlockingTaskRunner()) {}
 
-UsbDeviceHandleWin::~UsbDeviceHandleWin() {
-#if DCHECK_IS_ON()
-  DCHECK(!hub_handle_.IsValid());
-  for (auto& map_entry : interfaces_) {
-    const Interface& interface = map_entry.second;
-    DCHECK_EQ(interface.reference_count, 0);
-    DCHECK(!interface.handle.IsValid());
-    DCHECK(!interface.function_handle.IsValid());
-  }
-#endif
-}
+UsbDeviceHandleWin::~UsbDeviceHandleWin() = default;
 
 void UsbDeviceHandleWin::UpdateFunction(int interface_number,
                                         const std::wstring& function_driver,
