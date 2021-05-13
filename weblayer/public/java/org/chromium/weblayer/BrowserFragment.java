@@ -128,11 +128,17 @@ public final class BrowserFragment extends RemoteFragment {
     }
 
     @Override
+    @SuppressWarnings("ReferenceEquality")
     public void onDestroy() {
         ThreadCheck.ensureOnUiThread();
         // If a ViewModel is used, then the Browser is destroyed from the ViewModel, not here
         // (RemoteFragment won't call destroy on Browser either in this case).
         if (mUseViewModel) {
+            if (mBrowser.getFragment() == this) {
+                // The browser is no long associated with this fragment. Null out the reference to
+                // ensure BrowserFragment can be gc'd.
+                mBrowser.setFragment(null);
+            }
             super.onDestroy();
         } else {
             mBrowser.prepareForDestroy();
