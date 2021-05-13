@@ -14,32 +14,33 @@ without error.
 
 # Don't make a habit of this - it isn't public API
 load("@stdlib//internal/luci/proto.star", "scheduler_pb")
+load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
-_NON_BRANCHED_TESTERS = (
+_NON_BRANCHED_TESTERS = {
     # This tester is triggered by 'Mac Builder', but it is an FYI builder and
     # not mirrored by any branched try builders, so we do not need to run it on
     # the branches
-    "mac-osxbeta-rel",
+    "mac-osxbeta-rel": branches.STANDARD_MILESTONE,
 
     # This tester is also triggered by 'Mac Builder', but we don't have enough
     # capacity on Mac 11 to run this on the branches yet.
     # TODO(crbug.com/1206401): Restore this when we do have capacity.
-    "Mac11 Tests",
+    "Mac11 Tests": branches.STANDARD_MILESTONE,
 
     # This tester is triggered by 'mac-arm64-rel', but it is an FYI builder and
     # not mirrored by any branched try builders and we have limited test
     # capacity, so we do not need to run it on the branches
-    "mac-arm64-rel-tests",
+    "mac-arm64-rel-tests": branches.STANDARD_MILESTONE,
 
     # These Android testers are triggered by 'Android arm Builder (dbg)', but we
     # don't have sufficient capacity of devices with older Android versions, so
     # we do not run them on the branches
-    "Android WebView L (dbg)",
-    "Lollipop Phone Tester",
-    "Lollipop Tablet Tester",
-    "Marshmallow Tablet Tester",
-)
+    "Android WebView L (dbg)": branches.STANDARD_MILESTONE,
+    "Lollipop Phone Tester": branches.STANDARD_MILESTONE,
+    "Lollipop Tablet Tester": branches.STANDARD_MILESTONE,
+    "Marshmallow Tablet Tester": branches.STANDARD_MILESTONE,
+}
 
 _TESTER_NOOP_JOBS = [scheduler_pb.Job(
     id = builder,
@@ -50,7 +51,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
         granted_to = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     )],
     noop = scheduler_pb.NoopTask(),
-) for builder in _NON_BRANCHED_TESTERS]
+) for builder, selector in _NON_BRANCHED_TESTERS.items() if branches.matches(selector)]
 
 def _add_noop_jobs(ctx):
     if settings.is_main:
