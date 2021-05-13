@@ -708,6 +708,12 @@ const char kEnableDataReductionProxyServerExperimentDescription[] =
     "Enable a different approach to saving data by configuring the back end "
     "server";
 
+const char kDesktopPWAsPrefixAppNameInWindowTitleName[] =
+    "Desktop PWAs prefix window title with app name.";
+const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =
+    "Prefix the window title of installed PWAs with the name of the PWA. On "
+    "ChromeOS this is visible only in the window/activity switcher.";
+
 const char kDesktopPWAsAppIconShortcutsMenuName[] =
     "Desktop PWAs app icon shortcuts menu";
 const char kDesktopPWAsAppIconShortcutsMenuDescription[] =

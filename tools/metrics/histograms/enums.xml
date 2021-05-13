@@ -46990,6 +46990,7 @@ from previous Chrome versions.
   <int value="75237697" label="ash-enable-new-overview-ui"/>
   <int value="75747474" label="disable-webview-signin-flow"/>
   <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
+  <int value="77946316" label="PrefixWebAppWindowsWithAppName:disabled"/>
   <int value="78998551" label="disable-hosted-app-shim-creation"/>
   <int value="79094339" label="VrLaunchIntents:enabled"/>
   <int value="79503461" label="disable-account-consistency"/>
@@ -48929,6 +48930,7 @@ from previous Chrome versions.
   <int value="1786386775" label="TranslateCompactUI:disabled"/>
   <int value="1786692012"
       label="AssistantEnableMediaSessionIntegration:disabled"/>
+  <int value="1787572807" label="PrefixWebAppWindowsWithAppName:enabled"/>
   <int value="1789517771" label="MacV2Sandbox:enabled"/>
   <int value="1789793147" label="HTTPSServerPreviewsUsingURLLoader:disabled"/>
   <int value="1789795039"

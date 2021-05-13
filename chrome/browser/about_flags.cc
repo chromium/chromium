@@ -3459,6 +3459,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDesktopPWAsAttentionBadgingCrOSVariations,
                                     "DesktopPWAsAttentionBadgingCrOS")},
 #endif
+    {"enable-desktop-pwas-prefix-app-name-in-window-title",
+     flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleName,
+     flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(features::kPrefixWebAppWindowsWithAppName)},
     {"enable-desktop-pwas-remove-status-bar",
      flag_descriptions::kDesktopPWAsRemoveStatusBarName,
      flag_descriptions::kDesktopPWAsRemoveStatusBarDescription, kOsDesktop,

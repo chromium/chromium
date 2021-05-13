@@ -450,6 +450,9 @@ extern const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[];
 extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[];
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[];
 
+extern const char kDesktopPWAsPrefixAppNameInWindowTitleName[];
+extern const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[];
+
 extern const char kDesktopPWAsRemoveStatusBarName[];
 extern const char kDesktopPWAsRemoveStatusBarDescription[];
 
