@@ -2351,7 +2351,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3575121482199441727">Consenti per questo sito</translation>
 <translation id="3576324189521867626">Installata</translation>
 <translation id="3578594933904494462">I contenuti di questa scheda vengono condivisi.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vuole condividere una stampante &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; con un gruppo gestito da te: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Se accetti, tutti i membri del gruppo potranno utilizzare la stampante.</translation>
 <translation id="3581605050355435601">Configura automaticamente indirizzo IP</translation>
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
@@ -2842,7 +2841,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Controllo totale dei dispositivi MIDI negato</translation>
-<translation id="4088095054444612037">Accetta per gruppo</translation>
 <translation id="4089235344645910861">Impostazioni salvate. Sincronizzazione avviata.</translation>
 <translation id="4090103403438682346">Attiva Accesso verificato</translation>
 <translation id="4090811767089219951">Il tuo Assistente Google funziona anche qui</translation>
@@ -6965,7 +6963,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="878069093594050299">Questo certificato è stato verificato per i seguenti utilizzi:</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
 <translation id="8782565991310229362">Avvio dell'applicazione kiosk annullato.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vuole condividere una stampante &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; con te.</translation>
 <translation id="8783834180813871000">Digita il codice di accoppiamento Bluetooth e premi Invio</translation>
 <translation id="8784626084144195648">Media raccolta</translation>
 <translation id="8785622406424941542">Stilo</translation>

@@ -2351,7 +2351,6 @@
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
 <translation id="3576324189521867626">সফলভাবে ইনস্টল হয়েছে</translation>
 <translation id="3578594933904494462">এই ট্যাবের কন্টেন্ট শেয়ার করা হচ্ছে৷</translation>
-<translation id="357886715122934472">&lt;Strong&gt; এ <ph name="SENDER" /> &lt;/ Strong&gt; একটি মুদ্রক শেয়ার করতে চায় এবং &lt;strong&gt; <ph name="PRINTER_NAME" /> &lt;/ Strong&gt; একটি দলের সঙ্গে আপনার নিজস্ব: &lt;strong&gt; এ <ph name="GROUP_NAME" /> করুন &lt;/ strong&gt;। যদি আপনি স্বীকার করেন গোষ্ঠীর সকল সদস্যরা মুদ্রকে মুদ্রণ করতে সক্ষম হবে।</translation>
 <translation id="3581605050355435601">IP অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
 <translation id="3582057310199111521">এই পাসওয়ার্ড কোনও প্রতারণামূলক সাইটে ব্যবহার করা হয়েছিল এবং হ্যাক হওয়া ডেটাবেসেও এটা পাওয়া গেছে</translation>
 <translation id="3584169441612580296">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্য মিডিয়া পডুন এবং পরিবর্তন করুন</translation>
@@ -2841,7 +2840,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ডিভাইসগুলির সম্পূর্ণ নিয়ন্ত্রণ দেওয়া হয়নি</translation>
-<translation id="4088095054444612037">গোষ্ঠীর জন্য স্বীকার করুন</translation>
 <translation id="4089235344645910861">সেটিংস সেভ করা হয়েছে। সিঙ্ক শুরু করা হয়েছে।</translation>
 <translation id="4090103403438682346">যাচাইকৃত অ্যাক্সেস সক্ষম করুন</translation>
 <translation id="4090811767089219951">আপনার Google Assistant এখানেও কাজ করে</translation>
@@ -6965,7 +6963,6 @@
 <translation id="878069093594050299">এই সার্টিফিকেটটি নিম্নলিখিত ব্যবহারগুলির জন্য যাচাইকৃত:</translation>
 <translation id="8781834595282316166">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="8782565991310229362">Kiosk অ্যাপ্লিকেশন লঞ্চ বাতিল হয়েছে৷</translation>
-<translation id="8783093612333542422">আপনার সাথে &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; একটি প্রিন্টার শেয়ার করতে চান &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;৷</translation>
 <translation id="8783834180813871000">ব্লুটুথ পেয়ার করার কোড টাইপ করুন, তারপরে 'ফিরে আসুন' বা 'এন্টার করুন' বোতামে প্রেস করুন।</translation>
 <translation id="8784626084144195648">হাজার প্রতি গড়</translation>
 <translation id="8785622406424941542">স্টাইলাস</translation>

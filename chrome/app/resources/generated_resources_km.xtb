@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">អនុញ្ញាត​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="3576324189521867626">បានដំឡើងដោយជោគជ័យ</translation>
 <translation id="3578594933904494462">មាតិការបស់ផ្ទាំងនេះកំពុងត្រូវបានចែករំលែក។</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ចង់ចែករំលែកម៉ាស៊ីនបោះពុម្ព &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ជាមួយក្រុមដែលអ្នកគ្រប់គ្រង៖ &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;។ ប្រសិនបើអ្នកយល់ព្រម សមាជិកក្រុមទាំងអស់នឹងអាចបោះពុម្ពទៅម៉ាស៊ីនបោះពុម្ពនេះ។</translation>
 <translation id="3581605050355435601">កំណត់រចនាសម្ព័ន្ធ​អាសយដ្ឋាន IP ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="3582057310199111521">បានបញ្ចូលនៅលើគេហទំព័របញ្ឆោត និងបានរកឃើញនៅក្នុងការបែកធ្លាយ​ទិន្នន័យ</translation>
 <translation id="3584169441612580296">អាន និងប្តូររូបថត តន្ត្រី និងកំសាន្តផ្សេងទៀតពីកុំព្យូទ័ររបស់អ្នក</translation>
@@ -2843,7 +2842,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">បានបដិសេធសិទ្ធិគ្រប់គ្រងពេញលេញលើឧបករណ៍ MIDI</translation>
-<translation id="4088095054444612037">យល់ព្រមសម្រាប់ក្រុម</translation>
 <translation id="4089235344645910861">បានរក្សាទុក​ការកំណត់។ ​បានចាប់ផ្ដើមសមកាលកម្ម។</translation>
 <translation id="4090103403438682346">បើកដំណើរការចូលប្រើដែលបានផ្ទៀងផ្ទាត់</translation>
 <translation id="4090811767089219951">Google ជំនួយការរបស់អ្នកក៏ដំណើរការនៅទីនេះដែរ</translation>
@@ -6967,7 +6965,6 @@
 <translation id="878069093594050299">វិញ្ញាបនប័ត្រនេះត្រូវបានផ្ទៀងផ្ទាត់សម្រាប់ការប្រើប្រាស់ខាងក្រោម៖</translation>
 <translation id="8781834595282316166">ផ្ទាំងថ្មី​នៅក្នុងក្រុម</translation>
 <translation id="8782565991310229362">ការបើកដំណើរការកម្មវិធីបញ្ជរត្រូវបានបដិសេធ។</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ចង់ចែករំលែកម៉ាស៊ីនបោះពុម្ព &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ជាមួយអ្នក។</translation>
 <translation id="8783834180813871000">វាយបញ្ចូល​កូដ​ផ្គូផ្គងប៊្លូធូស បន្ទាប់​មក​ចុច Return ឬ Enter។</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">ប៊ិច</translation>

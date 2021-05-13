@@ -2353,7 +2353,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3575121482199441727">Tillad for dette website</translation>
 <translation id="3576324189521867626">Appen blev installeret</translation>
 <translation id="3578594933904494462">Indholdet på denne fane deles.</translation>
-<translation id="357886715122934472">&lt;Strong&gt;<ph name="SENDER" />&lt;/ Strong&gt; vil gerne dele printeren &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/ Strong&gt; med en gruppe, som du ejer: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/ Strong&gt;. Hvis du accepterer, kan alle gruppens medlemmer udskrive til printeren.</translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
 <translation id="3582057310199111521">Adgangskoden blev angivet på et vildledende website og blev fundet i et brud på datasikkerheden</translation>
 <translation id="3584169441612580296">Læs og rediger billeder, musik og andre medier på din computer</translation>
@@ -2844,7 +2843,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Fuld kontrol over MIDI-enheder blev afvist</translation>
-<translation id="4088095054444612037">Acceptér for gruppe</translation>
 <translation id="4089235344645910861">Indstillingerne blev gemt, og synkroniseringen er nu startet.</translation>
 <translation id="4090103403438682346">Aktivér Bekræftet adgang</translation>
 <translation id="4090811767089219951">Du kan også bruge Google Assistent her</translation>
@@ -3718,7 +3716,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5133483819862530305">Fra solnedgang til solopgang</translation>
 <translation id="5135085122826131075">Få adgang til din Google-assistent, når du siger "Hey Google".</translation>
 <translation id="5135533361271311778">Bogmærkeelementet blev ikke oprettet.</translation>
-<translation id="5136343472380336530">Sørg for, at begge enheder er låst op, er i nærheden af hinanden, og at både Bluetooth er aktiveret. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="5136343472380336530">Sørg for, at begge enheder er låst op, er i nærheden af hinanden og har Bluetooth aktiveret. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Slet dette element</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Søgning</translation>
 <translation id="5139823398361067371">Angiv pinkoden til din sikkerhedsnøgle. Hvis du ikke kender pinkoden, skal du nulstille sikkerhedsnøglen.</translation>
@@ -6969,7 +6967,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="878069093594050299">Dette certifikat er blevet bekræftet til følgende brug:</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>
 <translation id="8782565991310229362">Start af kioskapplikationen blev annulleret.</translation>
-<translation id="8783093612333542422">&lt;Strong&gt;<ph name="SENDER" />&lt;/ Strong&gt; vil dele en printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/ Strong&gt; med dig.</translation>
 <translation id="8783834180813871000">Angiv Bluetooth-parringskoden, og tryk derefter på Enter.</translation>
 <translation id="8784626084144195648">Kasseret gennemsnit</translation>
 <translation id="8785622406424941542">Styluspen</translation>

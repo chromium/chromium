@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3576324189521867626">सफलतापूर्वक इंस्टॉल हो गया है</translation>
 <translation id="3578594933904494462">इस टैब की सामग्री को शेयर किया जा रहा है.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; आपके स्‍वामित्‍व वाले समूह: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt; से &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; प्रिंटर शेयर करना चाहता है. अगर आप स्‍वीकार करते हैं, तो समूह के सभी सदस्‍य प्रिंटर से प्रिंट कर पाएंगे.</translation>
 <translation id="3581605050355435601">आईपी पता अपने-आप कॉन्फ़िगर होने की सुविधा/विकल्प</translation>
 <translation id="3582057310199111521">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था और यह हैक हो चुका है</translation>
 <translation id="3584169441612580296">अपने कंप्यूटर से फ़ोटो, संगीत और अन्य मीडिया ऐक्सेस करें और उन्हें बदलें</translation>
@@ -2842,7 +2841,6 @@
 
 <ph name="EXTENSION_FILE" />￼</translation>
 <translation id="408721682677442104">इस साइट को, MIDI डिवाइस का पूरा कंट्रोल नहीं दिया गया है</translation>
-<translation id="4088095054444612037">समूह के लिए स्वीकार करें</translation>
 <translation id="4089235344645910861">सेटिंग सेव की गई. सिंक शुरू हो गया.</translation>
 <translation id="4090103403438682346">पुष्टि हो चुके एक्सेस चालू करें</translation>
 <translation id="4090811767089219951">Google Assistant से आप किसी भी सवाल का जवाब पा सकते हैं</translation>
@@ -6966,7 +6964,6 @@
 <translation id="878069093594050299">इस प्रमाणपत्र को निम्न उपयोगों के लिए सत्यापित किया गया है:</translation>
 <translation id="8781834595282316166">ग्रुप में नया टैब जोड़ें</translation>
 <translation id="8782565991310229362">कियोस्क ऐप्स  लॉन्च रद्द किया गया.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; आपके साथ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; प्रिंटर शेयर करना चाहता है.</translation>
 <translation id="8783834180813871000">ब्लूटूथ इस्तेमाल करके दूसरे डिवाइस से जोड़ने का कोड लिखें. इसके बाद, Return या Enter दबाएं.</translation>
 <translation id="8784626084144195648">बिन औसत</translation>
 <translation id="8785622406424941542">स्टाइलस</translation>

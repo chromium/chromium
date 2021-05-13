@@ -2350,7 +2350,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3576324189521867626">A instalación realizouse correctamente</translation>
 <translation id="3578594933904494462">Estase compartindo o contido desta pestana.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quere compartir unha impresora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; cun grupo da túa propiedade: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Se aceptas, todos os membros do grupo poderán imprimir na impresora.</translation>
 <translation id="3581605050355435601">Configurar enderezo IP de forma automática</translation>
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
@@ -2841,7 +2840,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Denegouse o control total dos dispositivos MIDI</translation>
-<translation id="4088095054444612037">Aceptar invitación para o grupo</translation>
 <translation id="4089235344645910861">Gardouse a configuración e iniciouse a sincronización.</translation>
 <translation id="4090103403438682346">Activar acceso verificado</translation>
 <translation id="4090811767089219951">O teu Asistente de Google tamén funciona aquí</translation>
@@ -6964,7 +6962,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="878069093594050299">Verificouse este certificado para os seguintes usos:</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
 <translation id="8782565991310229362">Cancelouse o inicio da aplicación de quiosco.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quere compartir unha impresora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; contigo.</translation>
 <translation id="8783834180813871000">Escribe o código de sincronización por Bluetooth e, a continuación, preme Intro.</translation>
 <translation id="8784626084144195648">Media agrupada</translation>
 <translation id="8785622406424941542">Lapis óptico</translation>

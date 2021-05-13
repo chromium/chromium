@@ -2351,7 +2351,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3576324189521867626">Başarıyla yüklendi</translation>
 <translation id="3578594933904494462">Bu sekmenin içeriği paylaşılıyor.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;, bir yazıcıyı (&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) sahibi olduğunuz bir grupla paylaşmak istiyor: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Kabul ederseniz tüm grup üyeleri yazdırma işlemlerini o yazıcıdan yaptırabilecek.</translation>
 <translation id="3581605050355435601">IP adresini otomatik olarak yapılandır</translation>
 <translation id="3582057310199111521">Yanıltıcı bir sitede girildi ve veri ihlali kapsamında bulundu</translation>
 <translation id="3584169441612580296">Bilgisayarınızdaki fotoğrafları, müzikleri ve diğer medyaları okuma ve değiştirme</translation>
@@ -2842,7 +2841,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI cihazlarının tam denetimi reddedildi</translation>
-<translation id="4088095054444612037">Grup için kabul et</translation>
 <translation id="4089235344645910861">Ayarlar kaydedildi. Senkronizasyon başladı.</translation>
 <translation id="4090103403438682346">Doğrulanmış Erişimi Etkinleştir</translation>
 <translation id="4090811767089219951">Google Asistanınız burada da çalışır</translation>
@@ -6966,7 +6964,6 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="878069093594050299">Bu sertifika, aşağıdaki kullanımlar için doğrulanmıştır:</translation>
 <translation id="8781834595282316166">Grupta Yeni Sekme</translation>
 <translation id="8782565991310229362">Kiosk uygulaması başlatma iptal edildi.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; sizinle bir yazıcı (&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) paylaşmak istiyor.</translation>
 <translation id="8783834180813871000">Bluetoth eşleme kodunu yazıp Return veya Enter tuşuna basın.</translation>
 <translation id="8784626084144195648">Gruplu Ortalama</translation>
 <translation id="8785622406424941542">Ekran kalemi</translation>

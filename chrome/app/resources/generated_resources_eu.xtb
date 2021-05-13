@@ -2351,7 +2351,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3575121482199441727">Eman webgune honen jakinarazpenak ikusteko baimena</translation>
 <translation id="3576324189521867626">Instalatu da</translation>
 <translation id="3578594933904494462">Fitxa honetako edukia partekatzen ari zara.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; erabiltzaileak &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; inprimagailua partekatu nahi du zure talde batekin: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Onartzen baduzu, taldeko kide guztiek erabili ahal izango dituzte inprimagailu horiek dokumentuak inprimatzeko.</translation>
 <translation id="3581605050355435601">Konfiguratu automatikoki IP helbidea</translation>
 <translation id="3582057310199111521">Webgune engainagarri batean idatzi duzu eta datuen isilpekotasunaren urratze batean aurkitu da</translation>
 <translation id="3584169441612580296">Irakurri eta aldatu ordenagailuko argazkiak, musika eta bestelako multimedia-edukia</translation>
@@ -2842,7 +2841,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Ukatu da MIDI gailuak erabat kontrolatzeko aukera</translation>
-<translation id="4088095054444612037">Onartu talderako</translation>
 <translation id="4089235344645910861">Gorde dira ezarpenak. Hasi da sinkronizazioa.</translation>
 <translation id="4090103403438682346">Gaitu egiaztatutako sarbidea</translation>
 <translation id="4090811767089219951">Google-ren Laguntzailea hemen ere erabil dezakezu</translation>
@@ -6965,7 +6963,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="878069093594050299">Ziurtagiria erabilera hauetarako egiaztatu da:</translation>
 <translation id="8781834595282316166">Gehitu fitxa bat taldean</translation>
 <translation id="8782565991310229362">Aplikazio espezializatua abiarazteari utzi zaio.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; erabiltzaileak &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; inprimagailua partekatu nahi du zurekin.</translation>
 <translation id="8783834180813871000">Idatzi Bluetooth bidezko konexioaren parekatze-kodea eta sakatu Itzuli edo Sartu.</translation>
 <translation id="8784626084144195648">Denbora-tartetan adierazitako batezbestekoa</translation>
 <translation id="8785622406424941542">Arkatza</translation>

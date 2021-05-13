@@ -2352,7 +2352,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3575121482199441727">Tillåt för den här webbplatsen</translation>
 <translation id="3576324189521867626">Appen har installerats</translation>
 <translation id="3578594933904494462">Flikens innehåll delas.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vill dela skrivaren &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; med en grupp som du äger: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Om du accepterar kan alla medlemmar i gruppen skriva ut till skrivaren.</translation>
 <translation id="3581605050355435601">Konfigurera IP-adress automatiskt</translation>
 <translation id="3582057310199111521">Har angetts på en bedräglig webbplats och upptäckts i ett dataintrång</translation>
 <translation id="3584169441612580296">Läsa och ändra foton, musik och andra media från datorn</translation>
@@ -2843,7 +2842,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Fullständig kontroll över MIDI-enheter har nekats</translation>
-<translation id="4088095054444612037">Acceptera för grupp</translation>
 <translation id="4089235344645910861">Inställningarna har sparats och synkroniseringen startats.</translation>
 <translation id="4090103403438682346">Aktivera verifierad åtkomst</translation>
 <translation id="4090811767089219951">Du kan använda Google-assistenten här också</translation>
@@ -6967,7 +6965,6 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="878069093594050299">Certifikatet har verifierats för följande användningsområden:</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vill dela skrivaren &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; med dig.</translation>
 <translation id="8783834180813871000">Ange kopplingskoden för Bluetooth och tryck på Retur.</translation>
 <translation id="8784626084144195648">Fackmedelvärde</translation>
 <translation id="8785622406424941542">E-penna</translation>

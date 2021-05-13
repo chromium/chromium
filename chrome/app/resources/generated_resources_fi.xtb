@@ -2352,7 +2352,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3576324189521867626">Asennus onnistui.</translation>
 <translation id="3578594933904494462">Tämän välilehden sisältöä jaetaan.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; haluaa jakaa tulostimen &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; omistamasi ryhmän kanssa: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Jos hyväksyt, kaikki ryhmän jäsenet voivat tulostaa tulostimeen.</translation>
 <translation id="3581605050355435601">Määritä IP-osoite automaattisesti</translation>
 <translation id="3582057310199111521">Käytetty petollisella sivustolla ja kuului tietosuojaloukkaukseen</translation>
 <translation id="3584169441612580296">Käyttää ja muokata kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
@@ -2840,7 +2839,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI-laitteiden täysi käyttöoikeus estetty</translation>
-<translation id="4088095054444612037">Hyväksy ryhmän puolesta</translation>
 <translation id="4089235344645910861">Asetukset tallennettiin. Synkronointi aloitettiin.</translation>
 <translation id="4090103403438682346">Ota käyttöön vahvistettu käyttö</translation>
 <translation id="4090811767089219951">Google Assistant voi auttaa myös tässä</translation>
@@ -6963,7 +6961,6 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="878069093594050299">Tämä varmenne on vahvistettu seuraaville käyttötarkoituksille:</translation>
 <translation id="8781834595282316166">Uusi välilehti ryhmässä</translation>
 <translation id="8782565991310229362">Kioskisovelluksen käynnistäminen peruutettiin.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; haluaa jakaa tulostimen &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; kanssasi.</translation>
 <translation id="8783834180813871000">Kirjoita Bluetooth-yhdistämiskoodi ja paina sitten Return tai Enter.</translation>
 <translation id="8784626084144195648">Rajoitetun joukon keskiarvo</translation>
 <translation id="8785622406424941542">Näyttökynä</translation>

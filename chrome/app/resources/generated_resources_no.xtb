@@ -2349,7 +2349,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3576324189521867626">Installert</translation>
 <translation id="3578594933904494462">Innholdet i denne fanen blir delt.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vil dele skriveren &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; med en gruppe du eier: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Hvis du godtar, kan alle gruppemedlemmene skrive ut til skriveren.</translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
 <translation id="3582057310199111521">Skrevet inn på villedende nettsted og funnet i databrudd</translation>
 <translation id="3584169441612580296">lese og endre bilder, musikk og andre medier fra datamaskinen din</translation>
@@ -2838,7 +2837,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Full kontroll over MIDI-enheter er nektet</translation>
-<translation id="4088095054444612037">Godta for gruppen</translation>
 <translation id="4089235344645910861">Innstillingene er lagret. Synkronisering er startet.</translation>
 <translation id="4090103403438682346">Slå på Bekreftet tilgang</translation>
 <translation id="4090811767089219951">Google-assistenten virker her også</translation>
@@ -6962,7 +6960,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="878069093594050299">Dette sertifikatet er verifisert for følgende bruksområder:</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>
 <translation id="8782565991310229362">Oppstart av kiosk-appen er avbrutt.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vil dele skriveren &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; med deg.</translation>
 <translation id="8783834180813871000">Skriv inn Bluetooth-sammenkoblingskoden, og trykk på Retur eller Enter.</translation>
 <translation id="8784626084144195648">Gjennomsnitt av grupperte data</translation>
 <translation id="8785622406424941542">Pekepenn</translation>

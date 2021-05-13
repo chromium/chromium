@@ -2352,7 +2352,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3576324189521867626">Suksesvol geïnstalleer</translation>
 <translation id="3578594933904494462">Hierdie oortjie se inhoud word tans gedeel.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; wil 'n drukker deel &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; met 'n groep wat jy besit: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. As jy aanvaar, sal alle groeplede na daardie drukker kan uitdruk.</translation>
 <translation id="3581605050355435601">Stel IP-adres outomaties op</translation>
 <translation id="3582057310199111521">Op 'n misleidende werf ingevoer en in dataskending gevind</translation>
 <translation id="3584169441612580296">Lees en verander foto's, musiek en ander media van jou rekenaar af</translation>
@@ -2843,7 +2842,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Volle beheer oor MIDI-toestelle is geweier</translation>
-<translation id="4088095054444612037">Aanvaar vir groep</translation>
 <translation id="4089235344645910861">Instellings is gestoor. Sinkronisering het begin.</translation>
 <translation id="4090103403438682346">Aktiveer geverifieerde toegang</translation>
 <translation id="4090811767089219951">Jou Google Assistent werk hier ook</translation>
@@ -6967,7 +6965,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="878069093594050299">Hierdie sertifikaat is vir die volgende gebruike geverifieer:</translation>
 <translation id="8781834595282316166">Nuwe oortjie in groep</translation>
 <translation id="8782565991310229362">Kioskprogram se begin is gekanselleer.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; wil 'n drukker &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; met jou deel.</translation>
 <translation id="8783834180813871000">Voer die saambindkode in en druk dan Return of Enter.</translation>
 <translation id="8784626084144195648">Geklasseerde gemiddeld</translation>
 <translation id="8785622406424941542">Stilus</translation>

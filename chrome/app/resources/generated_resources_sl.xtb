@@ -2355,7 +2355,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3575121482199441727">Dovoli za to spletno mesto</translation>
 <translation id="3576324189521867626">Uspešno nameščeno</translation>
 <translation id="3578594933904494462">Vsebina tega zavihka je v skupni rabi.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; želi souporabljati tiskalnik &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; s skupino v vaši lasti: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Če sprejmete, bodo lahko tiskalnik uporabljali vsi člani skupine.</translation>
 <translation id="3581605050355435601">Samodejno konfiguriranje naslova IP</translation>
 <translation id="3582057310199111521">Vneseno na zavajajočem spletnem mestu in odkrito v podatkovni kršitvi</translation>
 <translation id="3584169441612580296">Branje in spreminjanje fotografij, glasbe in drugih predstavnosti v računalniku</translation>
@@ -2846,7 +2845,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Popoln nadzor nad napravami MIDI je bil zavrnjen</translation>
-<translation id="4088095054444612037">Sprejmi za skupino</translation>
 <translation id="4089235344645910861">Nastavitve so bile shranjene. Sinhronizacija se je začela.</translation>
 <translation id="4090103403438682346">Omogočanje preverjenega dostopa</translation>
 <translation id="4090811767089219951">Pomočnik Google deluje tudi tu</translation>
@@ -6975,7 +6973,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="878069093594050299">Potrdilo je bilo preverjeno za te uporabe:</translation>
 <translation id="8781834595282316166">Novi zavihek v skupini</translation>
 <translation id="8782565991310229362">Zagon aplikacije Kiosk je preklican.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; želi z vami souporabljati tiskalnik &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Vnesite kodo za seznanjanje za Bluetooth in nato pritisnite Return ali Enter.</translation>
 <translation id="8784626084144195648">Kvantizacijsko povprečje</translation>
 <translation id="8785622406424941542">Pisalo</translation>

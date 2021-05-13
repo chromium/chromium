@@ -2351,7 +2351,6 @@
 <translation id="3575121482199441727">დაშვება ამ საიტისთვის</translation>
 <translation id="3576324189521867626">წარმატებით დაინსტალირდა</translation>
 <translation id="3578594933904494462">ამ ჩანართის შიგთავსი გაზიარებულია.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;-ს სურს გაუზიაროს პრინტერი &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ჯგუფს, რომელსაც ფლობთ: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. თუ დათანხმდებით, ჯგუფის ყველა წევრი შეძლებს პრინტერიდან ამობეჭდვას.</translation>
 <translation id="3581605050355435601">IP მისამართის ავტომატური კონფიგურაცია</translation>
 <translation id="3582057310199111521">შეყვანილია შეცდომაში შემყვან საიტზე და დაფიქსირდა პერსონალურ მონაცემთა გაჟონვისას</translation>
 <translation id="3584169441612580296">ფოტოების, მუსიკის და სხვა მედიის თქვენი კომპიუტერიდან წაკითხვა და შეცვლა</translation>
@@ -2842,7 +2841,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI მოწყობილობების სრული კონტროლი უარყოფილია</translation>
-<translation id="4088095054444612037">ჯგუფისთვის მიღება</translation>
 <translation id="4089235344645910861">პარამეტრები შენახულია. სინქრონიზაცია დაიწყო.</translation>
 <translation id="4090103403438682346">ჩართეთ შემოწმებული წვდომა</translation>
 <translation id="4090811767089219951">თქვენი Google ასისტენტი აქაც მუშაობს</translation>
@@ -6964,7 +6962,6 @@
 <translation id="878069093594050299">ეს სერთიფიკატი უკვე შემოწმებულია შემდეგი მოხმარებისთვის:</translation>
 <translation id="8781834595282316166">ახალი ჩანართი ჯგუფში</translation>
 <translation id="8782565991310229362">კიოსკის განაცხადის გაშვება გაუქმდა.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;-ს სურს გაგიზიაროთ პრინტერი &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">აკრიფეთ Bluetooth-დაწყვილების კოდი და დააჭირეთ Return-ს ან Enter-ს.</translation>
 <translation id="8784626084144195648">დაჯგუფებული საშუალო</translation>
 <translation id="8785622406424941542">სტილუსი</translation>

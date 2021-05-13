@@ -2351,7 +2351,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3576324189521867626">Installatie geslaagd</translation>
 <translation id="3578594933904494462">De content van dit tabblad wordt gedeeld.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; wil een printer delen &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; met een van je groepen: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Als je akkoord gaat, kunnen alle groepsleden de printer gebruiken voor afdrukken.</translation>
 <translation id="3581605050355435601">IP-adres automatisch configureren</translation>
 <translation id="3582057310199111521">Ingevoerd op misleidende site en gevonden in gegevenslek</translation>
 <translation id="3584169441612580296">Foto's, muziek en andere media van je computer lezen en wijzigen</translation>
@@ -2842,7 +2841,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Volledig beheer van MIDI-apparaten geweigerd</translation>
-<translation id="4088095054444612037">Accepteren voor groep</translation>
 <translation id="4089235344645910861">Instellingen opgeslagen. Synchronisatie gestart.</translation>
 <translation id="4090103403438682346">Verified Access aanzetten</translation>
 <translation id="4090811767089219951">De Google Assistent werkt hier ook</translation>
@@ -6966,7 +6964,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="878069093594050299">Dit certificaat is geverifieerd voor de volgende certificaatdoeleinden:</translation>
 <translation id="8781834595282316166">Nieuw tabblad in groep</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; wil een printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; met je delen.</translation>
 <translation id="8783834180813871000">Typ de bluetooth-koppelingscode en druk op Return of Enter.</translation>
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
 <translation id="8785622406424941542">Stylus</translation>

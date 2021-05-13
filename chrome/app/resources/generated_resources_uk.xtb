@@ -2355,7 +2355,6 @@
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3576324189521867626">Установлено</translation>
 <translation id="3578594933904494462">До вмісту цієї вкладки надано доступ.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; хоче надати групі &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;, якою ви керуєте, доступ до принтера &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;. Якщо ви приймете це запрошення, усі учасники групи зможуть користуватися цим принтером.</translation>
 <translation id="3581605050355435601">Автоматичне налаштування ІР-адреси</translation>
 <translation id="3582057310199111521">Введено на оманливому сайті та виявлено порушення безпеки даних</translation>
 <translation id="3584169441612580296">Читати й змінювати фотографії, музику та інші медіафайли на комп’ютері</translation>
@@ -2846,7 +2845,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Доступ до повного контролю над пристроями MIDI заблоковано</translation>
-<translation id="4088095054444612037">Прийняти для групи</translation>
 <translation id="4089235344645910861">Налаштування збережено. Почато синхронізацію.</translation>
 <translation id="4090103403438682346">Увімкнути перевірений доступ</translation>
 <translation id="4090811767089219951">Google Асистент працює й тут</translation>
@@ -6973,7 +6971,6 @@
 <translation id="878069093594050299">Цей сертифікат підтверджено для використання таким чином:</translation>
 <translation id="8781834595282316166">Нова вкладка в групі</translation>
 <translation id="8782565991310229362">Скасовано запуск програми для терміналів.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; хоче надати вам доступ до принтера &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Введіть код підключення через Bluetooth і натисніть Return або Enter.</translation>
 <translation id="8784626084144195648">Сукупне середнє значення</translation>
 <translation id="8785622406424941542">Стилус</translation>

@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3576324189521867626">설치되었습니다.</translation>
 <translation id="3578594933904494462">이 탭의 콘텐츠를 공유 중입니다.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;님이 내가 소유한 그룹(&lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;)과의 프린터(&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) 공유를 요청했습니다. 동의하면 모든 그룹 회원이 해당 프린터로 인쇄할 수 있게 됩니다.</translation>
 <translation id="3581605050355435601">IP 주소 자동 구성</translation>
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
@@ -2841,7 +2840,6 @@
 <translation id="4085298594534903246">이 페이지에서 자바스크립트가 차단되었습니다.</translation>
 <translation id="4087089424473531098">확장 프로그램(파일: <ph name="EXTENSION_FILE" />)을 만들었습니다.</translation>
 <translation id="408721682677442104">MIDI 기기 전체 제어 거부됨</translation>
-<translation id="4088095054444612037">그룹 공유 승인</translation>
 <translation id="4089235344645910861">설정이 저장되었으며, 동기화가 시작되었습니다.</translation>
 <translation id="4090103403438682346">인증 액세스 서비스 사용</translation>
 <translation id="4090811767089219951">여기에서도 Google 어시스턴트를 사용할 수 있습니다</translation>
@@ -6965,7 +6963,6 @@
 <translation id="878069093594050299">이 인증서는 다음 용도로 확인되었습니다.</translation>
 <translation id="8781834595282316166">그룹에 새 탭 추가</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;님이 프린터(&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) 공유를 요청했습니다.</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
 <translation id="8785622406424941542">스타일러스</translation>

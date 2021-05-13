@@ -2352,7 +2352,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3575121482199441727">Luba selle saidi puhul</translation>
 <translation id="3576324189521867626">Installimine õnnestus</translation>
 <translation id="3578594933904494462">Selle vahekaardi sisu jagatakse.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; soovib jagada printerit &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; teie rühmaga &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Kui nõustute, saavad printerit kasutada ka kõik rühmaliikmed.</translation>
 <translation id="3581605050355435601">IP-aadressi automaatne seadistamine</translation>
 <translation id="3582057310199111521">Sisestati petturlikul saidil ja ilmnes andmetega seotud rikkumises</translation>
 <translation id="3584169441612580296">Arvutis olevate fotode, muusika ja muu meedia lugemine ja muutmine</translation>
@@ -2843,7 +2842,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI-seadmete täielikku juhtimisõigust ei antud</translation>
-<translation id="4088095054444612037">Anna nõusolek rühma jaoks</translation>
 <translation id="4089235344645910861">Seaded on salvestatud. Sünkroonimine algas.</translation>
 <translation id="4090103403438682346">Luba kinnitatud juurdepääs</translation>
 <translation id="4090811767089219951">Teie Google'i assistent töötab ka siin</translation>
@@ -6967,7 +6965,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="878069093594050299">Sellel sertifikaadil on järgmised kinnitatud kasutusalad:</translation>
 <translation id="8781834595282316166">Uus vaheleht grupis</translation>
 <translation id="8782565991310229362">Kioski rakenduse käivitamine tühistati.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; soovib jagada teiega printerit &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Sisestage Bluetoothi sidumiskood ja vajutage seejärel sisestusklahvi.</translation>
 <translation id="8784626084144195648">Rühmitatud keskmine</translation>
 <translation id="8785622406424941542">Elektronpliiats</translation>

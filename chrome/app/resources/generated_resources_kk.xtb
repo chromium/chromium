@@ -2348,7 +2348,6 @@
 <translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
 <translation id="3576324189521867626">Сәтті орнатылды</translation>
 <translation id="3578594933904494462">Бұл қойынды мазмұны бөлісілуде.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; иелігіңіздегі топпен &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; принтерін бөліскісі келеді: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Қабылдасаңыз, принтерді барлық топ мүшелері қолданатын болады.</translation>
 <translation id="3581605050355435601">IP мекенжайын автоматты конфигурациялау</translation>
 <translation id="3582057310199111521">Жалған сайтқа кірген және деректер қауіпсіздігінің бұзылуы анықталды</translation>
 <translation id="3584169441612580296">Компьютеріңізден фотосуреттерді, музыканы және басқа медиа файлдарын оқу және өзгерту</translation>
@@ -2839,7 +2838,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI құрылғыларын толықтай басқаруға тыйым салынды</translation>
-<translation id="4088095054444612037">Топ үшін қабылдау</translation>
 <translation id="4089235344645910861">Параметрлер сақталды. Синхрондау басталды.</translation>
 <translation id="4090103403438682346">Расталған кіру құқығын қосу</translation>
 <translation id="4090811767089219951">Google Assistant мұнда да жұмыс істейді</translation>
@@ -6962,7 +6960,6 @@
 <translation id="878069093594050299">Бұл сертификат келесі пайдалану мақсаттары үшін расталған:</translation>
 <translation id="8781834595282316166">Топқа жаңа қойынды енгізу</translation>
 <translation id="8782565991310229362">Киоск қолданбасын іске қосудан бас тартылды.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; принтерін сізбен бөліскісі келеді.</translation>
 <translation id="8783834180813871000">Bluetooth жұптау кодын теріңіз, содан кейін "Return" немесе "Enter" пернесін басыңыз.</translation>
 <translation id="8784626084144195648">Топтастырылған орташа мән</translation>
 <translation id="8785622406424941542">Стилус</translation>

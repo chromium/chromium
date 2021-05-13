@@ -2353,7 +2353,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3575121482199441727">Povoliť pre tento web</translation>
 <translation id="3576324189521867626">Úspešne nainštalovaná</translation>
 <translation id="3578594933904494462">Obsah tejto karty sa zdieľa.</translation>
-<translation id="357886715122934472">Používateľ &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; chce zdieľať tlačiareň &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; so skupinou, ktorú vlastníte: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Ak žiadosť prijmete, tlačiareň budú môcť využívať všetci členovia skupiny.</translation>
 <translation id="3581605050355435601">Automaticky konfigurovať adresu IP</translation>
 <translation id="3582057310199111521">Zadané na podvodnom webe a nájdené v rámci porušenia ochrany údajov</translation>
 <translation id="3584169441612580296">Čítať a meniť fotky, hudbu a ďalšie médiá z tohto počítača</translation>
@@ -2844,7 +2843,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Úplné ovládanie zariadení MIDI bolo odmietnuté</translation>
-<translation id="4088095054444612037">Prijať pozvanie pre skupinu</translation>
 <translation id="4089235344645910861">Nastavenia boli uložené. Synchronizácia sa začala.</translation>
 <translation id="4090103403438682346">Povolí overený prístup</translation>
 <translation id="4090811767089219951">Váš Asistent Google funguje aj tu</translation>
@@ -6969,7 +6967,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="878069093594050299">Tento certifikát bol overený pre nasledujúce typy použitia:</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>
 <translation id="8782565991310229362">Spustenie aplikácie pre režim kiosku sa zrušilo.</translation>
-<translation id="8783093612333542422">Používateľ &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; chce s vami zdieľať tlačiareň &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Zadajte párovací kód Bluetooth a potom stlačte Return alebo Enter.</translation>
 <translation id="8784626084144195648">Vyhladený priemer</translation>
 <translation id="8785622406424941542">Dotykové pero</translation>

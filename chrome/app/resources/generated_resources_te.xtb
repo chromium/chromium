@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించు</translation>
 <translation id="3576324189521867626">విజయవంతంగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3578594933904494462">ఈ ట్యాబ్ యొక్క కంటెంట్ భాగస్వామ్యం చేయబడుతోంది.</translation>
-<translation id="357886715122934472">మీరు యజమానిగా ఉన్న గ్రూప్ &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;తో, &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ఒక ప్రింటర్ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;ను షేర్ చేయాలనుకుంటున్నారు.మీరు ఆమోదిస్తే, గ్రూప్ మెంబర్‌లందరూ ప్రింటర్‌కు ముద్రించగలరు.</translation>
 <translation id="3581605050355435601">ఆటో కాన్ఫిగర్ IP చిరునామా</translation>
 <translation id="3582057310199111521">మోసపూరిత సైట్‌లో ఎంటర్ చేయబడింది, డేటా ఉల్లంఘనలో కనుగొనబడింది</translation>
 <translation id="3584169441612580296">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాను చదవడం మరియు మార్చడం</translation>
@@ -2843,7 +2842,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI డివైజ్‌ల పూర్తి కంట్రోల్ తిరస్కరించబడింది</translation>
-<translation id="4088095054444612037">సమూహానికి ఆమోదించు</translation>
 <translation id="4089235344645910861">సెట్టింగ్ సేవ్ చేయబడింది. సమకాలీకరణ ప్రారంభించబడింది.</translation>
 <translation id="4090103403438682346">ధృవీకృత యాక్సెస్‌ను ప్రారంభించండి</translation>
 <translation id="4090811767089219951">మీ Google Assistant ఇక్కడ కూడా పని చేస్తుంది</translation>
@@ -6963,7 +6961,6 @@
 <translation id="878069093594050299">ఈ సర్టిఫికెట్ క్రింది ఉపయోగాలకు ధృవీకరించబడింది:</translation>
 <translation id="8781834595282316166">సమూహంలో కొత్త ట్యాబ్</translation>
 <translation id="8782565991310229362">కియోస్క్ యాప్ అమలు రద్దు చేయబడింది.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; మీతో &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ప్రింటర్‌ని భాగస్వామ్యం చేయాలనుకుంటున్నారు.</translation>
 <translation id="8783834180813871000">బ్లూటూత్ పెయిరింగ్ కోడ్‌ను టైప్ చేసి, ఆపై Return లేదా Enter నొక్కండి.</translation>
 <translation id="8784626084144195648">బిన్ చేయబడిన సగటు</translation>
 <translation id="8785622406424941542">స్టైలస్</translation>

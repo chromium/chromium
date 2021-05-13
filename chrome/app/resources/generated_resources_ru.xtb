@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3576324189521867626">Установлено</translation>
 <translation id="3578594933904494462">К контенту на этой вкладке открыт общий доступ</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; хочет открыть доступ к принтеру &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; для вашей группы &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Если вы примете приглашение, то все участники группы смогут пользоваться этим принтером.</translation>
 <translation id="3581605050355435601">Настраивать IP-адрес автоматически</translation>
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
@@ -2843,7 +2842,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Запрещен полный контроль над устройствами MIDI</translation>
-<translation id="4088095054444612037">Принять</translation>
 <translation id="4089235344645910861">Настройки сохранены. Синхронизация началась.</translation>
 <translation id="4090103403438682346">Включить службу проверенного доступа</translation>
 <translation id="4090811767089219951">Здесь тоже работает Google Ассистент</translation>
@@ -6969,7 +6967,6 @@
 <translation id="878069093594050299">Этот сертификат был проверен на возможность использования в следующих целях:</translation>
 <translation id="8781834595282316166">Добавить новую вкладку в группу</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; хочет открыть вам доступ к принтеру &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Введите код Bluetooth-подключения и нажмите Ввод.</translation>
 <translation id="8784626084144195648">Среднее по группам</translation>
 <translation id="8785622406424941542">Стилус</translation>

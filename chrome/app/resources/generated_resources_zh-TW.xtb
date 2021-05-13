@@ -2351,7 +2351,6 @@
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3576324189521867626">已成功安裝</translation>
 <translation id="3578594933904494462">正在分享這個分頁的內容。</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; 想要與你的群組 (<ph name="GROUP_NAME" />) 共用印表機 &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;。你接受之後，所有群組成員即可使用這台印表機進行列印工作。</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
@@ -2841,7 +2840,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">已拒絕提供 MIDI 裝置的完整控制權限</translation>
-<translation id="4088095054444612037">接受群組邀請</translation>
 <translation id="4089235344645910861">設定儲存完畢，已開始同步處理。</translation>
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
 <translation id="4090811767089219951">Google 助理也可以回答這類問題</translation>
@@ -6964,7 +6962,6 @@
 <translation id="878069093594050299">此憑證已驗證可用於下列用途：</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; 想要與你共用印表機 &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;。</translation>
 <translation id="8783834180813871000">輸入藍牙配對碼，然後按下返回鍵或 Enter 鍵。</translation>
 <translation id="8784626084144195648">二進位化平均</translation>
 <translation id="8785622406424941542">觸控筆</translation>

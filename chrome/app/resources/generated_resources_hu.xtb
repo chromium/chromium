@@ -2351,7 +2351,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3575121482199441727">Engedélyezés ezen a webhelyen</translation>
 <translation id="3576324189521867626">Sikeresen telepítve</translation>
 <translation id="3578594933904494462">A lap tartalma meg lesz osztva.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; szeretné megosztani a(z) &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; nyomtatót az Ön &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt; nevű csoportjával. Ha elfogadja, a csoport minden tagja tud majd nyomtatni a nyomtatóval.</translation>
 <translation id="3581605050355435601">IP-cím automatikus konfigurálása</translation>
 <translation id="3582057310199111521">Csaló webhelyen lett megadva, és nyilvánosságra került egy adatvédelmi incidens során</translation>
 <translation id="3584169441612580296">Fotók, zeneszámok és egyéb médiatartalmak olvasása és módosítása a számítógépről</translation>
@@ -2841,7 +2840,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">A MIDI-eszközökhöz való teljes hozzáférés elutasítva</translation>
-<translation id="4088095054444612037">Elfogadás a csoportra vonatkozóan</translation>
 <translation id="4089235344645910861">Beállítások mentve, a szinkronizálás megkezdődött.</translation>
 <translation id="4090103403438682346">Ellenőrzött hozzáférés engedélyezése</translation>
 <translation id="4090811767089219951">Google Segédje itt is működik</translation>
@@ -6967,7 +6965,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="878069093594050299">Ezt a tanúsítványt a következő célokra lehet felhasználni:</translation>
 <translation id="8781834595282316166">Új lap a csoportban</translation>
 <translation id="8782565991310229362">Kiosk-alkalmazás indítása visszavonva.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; szeretné megosztani Önnel a(z) &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; nyomtatót.</translation>
 <translation id="8783834180813871000">Írja be a párosítókódot, majd nyomja meg az Enter vagy a Return billentyűt</translation>
 <translation id="8784626084144195648">Kidobottak átlaga</translation>
 <translation id="8785622406424941542">Érintőceruza</translation>

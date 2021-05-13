@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="3576324189521867626">ติดตั้งเรียบร้อยแล้ว</translation>
 <translation id="3578594933904494462">เนื้อหาของแท็บนี้กำลังถูกแชร์</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ต้องการแชร์เครื่องพิมพ์ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; กับกลุ่มที่คุณเป็นเจ้าของ: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt; หากคุณยอมรับ สมาชิกในกลุ่มทั้งหมดจะสามารถสั่งพิมพ์ไปยังเครื่องพิมพ์ดังกล่าวได้</translation>
 <translation id="3581605050355435601">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
 <translation id="3582057310199111521">มีการป้อนรหัสผ่านนี้ในเว็บไซต์ที่หลอกลวง และพบในการละเมิดข้อมูล</translation>
 <translation id="3584169441612580296">อ่านและเปลี่ยนแปลงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
@@ -2843,7 +2842,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">ปฏิเสธไม่ให้ควบคุมอุปกรณ์ MIDI โดยสมบูรณ์</translation>
-<translation id="4088095054444612037">ยอมรับสำหรับกลุ่ม</translation>
 <translation id="4089235344645910861">บันทึกการตั้งค่าและเริ่มซิงค์แล้ว</translation>
 <translation id="4090103403438682346">เปิดใช้การเข้าถึงที่ได้รับการยืนยัน</translation>
 <translation id="4090811767089219951">Google Assistant ใช้งานที่นี่ได้ด้วย</translation>
@@ -6967,7 +6965,6 @@
 <translation id="878069093594050299">ใบรับรองนี้ได้รับการตรวจสอบเพื่อการใช้งานดังต่อไปนี้:</translation>
 <translation id="8781834595282316166">แท็บใหม่ในกลุ่ม</translation>
 <translation id="8782565991310229362">การเรียกใช้แอปพลิเคชันคีออสก์ถูกยกเลิก</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ต้องการแชร์เครื่องพิมพ์ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; กับคุณ</translation>
 <translation id="8783834180813871000">พิมพ์รหัสการจับคู่บลูทูธแล้วกด Return หรือ Enter</translation>
 <translation id="8784626084144195648">เฉลี่ยรวม</translation>
 <translation id="8785622406424941542">สไตลัส</translation>

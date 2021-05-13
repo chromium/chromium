@@ -2351,7 +2351,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3575121482199441727">Permitir para este sitio web</translation>
 <translation id="3576324189521867626">Se ha instalado correctamente</translation>
 <translation id="3578594933904494462">Se está compartiendo el contenido de esta pestaña.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quiere compartir una impresora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; con un grupo que te pertenece: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Si aceptas, todos los miembros del grupo podrán utilizar esa impresora para imprimir.</translation>
 <translation id="3581605050355435601">Configurar automáticamente la dirección IP</translation>
 <translation id="3582057310199111521">Introducida en un sitio web engañoso y encontrada en una quiebra de seguridad de datos</translation>
 <translation id="3584169441612580296">Leer y modificar fotos, música y otros archivos multimedia de tu ordenador</translation>
@@ -2841,7 +2840,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Control total de los dispositivos MIDI rechazado</translation>
-<translation id="4088095054444612037">Aceptar la invitación para el grupo</translation>
 <translation id="4089235344645910861">Se ha guardado la configuración y se ha iniciado la sincronización.</translation>
 <translation id="4090103403438682346">Habilitar acceso verificado</translation>
 <translation id="4090811767089219951">Tu Asistente de Google también funciona aquí</translation>
@@ -6965,7 +6963,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="878069093594050299">Este certificado se ha verificado para los siguientes usos:</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
 <translation id="8782565991310229362">Se ha cancelado el inicio de la aplicación del kiosco.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quiere compartir una impresora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; contigo.</translation>
 <translation id="8783834180813871000">Escribe el código de sincronización por Bluetooth y, a continuación, pulsa Intro.</translation>
 <translation id="8784626084144195648">Media de datos agrupados</translation>
 <translation id="8785622406424941542">Lápiz óptico</translation>

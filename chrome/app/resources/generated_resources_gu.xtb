@@ -2349,7 +2349,6 @@
 <translation id="3575121482199441727">આ સાઇટ માટે મંજૂરી આપો</translation>
 <translation id="3576324189521867626">સફળતાપૂર્વક ઇન્સ્ટૉલ કરી</translation>
 <translation id="3578594933904494462">આ ટેબનું કન્ટેન્ટ શેર થઈ રહ્યું છે.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;, તમે માલિકી ધરાવો છો તે જૂથ સાથે &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; પ્રિન્ટર શેર કરવા માગે છે: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. જો તમે સ્વીકારો છો, તો બધા જૂથ સભ્યો પ્રિન્ટર પર છાપવામાં સમર્થ હશે.</translation>
 <translation id="3581605050355435601">IP ઍડ્રેસની ઑટોમૅટિક રીતે ગોઠવણી કરો</translation>
 <translation id="3582057310199111521">છેતરામણી સાઇટ પર પાસવર્ડ દાખલ કરવામાં આવ્યો અને ડેટા ઉલ્લંઘન જોવા મળ્યું</translation>
 <translation id="3584169441612580296">વાંચો અને તમારા કમ્પ્યુટરમાંથી ફોટો, સંગીત અને અન્ય મીડિયા બદલો</translation>
@@ -2840,7 +2839,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ડિવાઇસનું સંપૂર્ણ નિયંત્રણ નકારવામાં આવ્યું</translation>
-<translation id="4088095054444612037">જૂથ માટે સ્વીકારો</translation>
 <translation id="4089235344645910861">સેટિંગ સાચવી. સિંક શરૂ થયું.</translation>
 <translation id="4090103403438682346">ચકાસાયેલો ઍક્સેસ ચાલુ કરો</translation>
 <translation id="4090811767089219951">તમારું Google Assistant અહીં પણ કામ કરે છે</translation>
@@ -6961,7 +6959,6 @@ USB ડિવાઇસ</translation>
 <translation id="878069093594050299">આ પ્રમાણપત્ર નીચેના ઉપયોગો માટે ચકાસવામાં આવ્યું છે:</translation>
 <translation id="8781834595282316166">ગ્રૂપમાં નવું ટૅબ</translation>
 <translation id="8782565991310229362">કિઓસ્ક ઍપ્લિકેશન લોન્ચ રદ કર્યું.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;, તમારી સાથે એક &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; પ્રિન્ટર શેર કરવા માગે છે.</translation>
 <translation id="8783834180813871000">બ્લૂટૂથ જોડાણ કરવાનો કોડ ટાઇપ કરો, પછી Return અથવા Enter કી દબાવો.</translation>
 <translation id="8784626084144195648">બિન કરેલ સરેરાશ</translation>
 <translation id="8785622406424941542">સ્ટાઇલસ</translation>

@@ -2349,7 +2349,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3575121482199441727">Ruhusu kutoka tovuti hii</translation>
 <translation id="3576324189521867626">Imesakinishwa</translation>
 <translation id="3578594933904494462">Maudhui ya kichupo hiki yanashirikiwa</translation>
-<translation id="357886715122934472">&lt;Strong&gt; <ph name="SENDER" /> &lt;/Strong&gt; anataka kushiriki printa &lt;strong&gt; <ph name="PRINTER_NAME" /> &lt;/Strong&gt; na kundi unalomiliki: &lt;strong&gt; <ph name="GROUP_NAME" /> &lt;/Strong&gt;. Ukikubali, wanachama wote wa kundi wataweza kuchapisha kwenye printa.</translation>
 <translation id="3581605050355435601">Weka mipangilio ya Anwani ya IP kiotomatiki</translation>
 <translation id="3582057310199111521">Liliwekwa kwenye tovuti ya kulaghai na lilipatikana kwenye tukio la ufichuzi haramu wa data</translation>
 <translation id="3584169441612580296">Kusoma na kubadilisha picha, muziki na maudhui mengine kwenye kompyuta yako</translation>
@@ -2838,7 +2837,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4085298594534903246">JavaScript ilizuiwa kwenye ukurasa huu.</translation>
 <translation id="4087089424473531098">Imeunda kiendelezi: <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Haijaruhusiwa kutumia udhibiti kamili wa vifaa vya MIDI</translation>
-<translation id="4088095054444612037">Kubali ombi la kundi</translation>
 <translation id="4089235344645910861">Mipangilio imehifadhiwa. Imeanza kusawazisha.</translation>
 <translation id="4090103403438682346">Washa Ufikiaji Uliothibitishwa</translation>
 <translation id="4090811767089219951">Programu yako ya Mratibu wa Google inafanya kazi hapa pia</translation>
@@ -6964,7 +6962,6 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="878069093594050299">Cheti hiki kimethibitishwa kwa matumizi yafuatayo:</translation>
 <translation id="8781834595282316166">Kichupo Kipya katika Kikundi</translation>
 <translation id="8782565991310229362">Uzinduzi wa programu ya kioski umeghairiwa.</translation>
-<translation id="8783093612333542422">&lt;Strong&gt; <ph name="SENDER" /> &lt;/ Strong&gt; anataka kushiriki printa &lt;strong&gt; <ph name="PRINTER_NAME" /> &lt;/ Strong&gt; na wewe.</translation>
 <translation id="8783834180813871000">Andika msimbo wa kuoanisha Bluetooth kisha ubonyeze Return au Enter.</translation>
 <translation id="8784626084144195648">Wastani wa Uwekaji Pamoja</translation>
 <translation id="8785622406424941542">Stylus</translation>

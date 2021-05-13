@@ -2358,7 +2358,6 @@
 <translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
 <translation id="3576324189521867626">تم التثبيت بنجاح</translation>
 <translation id="3578594933904494462">تجري مشاركة محتوى علامة التبويب هذه.</translation>
-<translation id="357886715122934472">‏يريد &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; مشاركة طابعة &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; مع مجموعة تمتلكها: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. في حال موافقتك، سيتمكن جميع أعضاء المجموعة من الطباعة بهذه الطابعة.</translation>
 <translation id="3581605050355435601">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="3582057310199111521">تم إدخال كلمة المرور على موقع إلكتروني مريب وتبيّن أنها مستخدَمة في عملية اختراق البيانات.</translation>
 <translation id="3584169441612580296">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها</translation>
@@ -2846,7 +2845,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">‏تم رفض التحكُّم الكامل لأجهزة MIDI</translation>
-<translation id="4088095054444612037">الموافقة للمجموعة</translation>
 <translation id="4089235344645910861">تم حفظ الإعدادات، وبدأت عملية المزامنة.</translation>
 <translation id="4090103403438682346">تفعيل الدخول الذي تم التحقق منه</translation>
 <translation id="4090811767089219951">‏يمكنك استخدام "مساعد Google" هنا أيضًا</translation>
@@ -6974,7 +6972,6 @@
 <translation id="878069093594050299">تم التحقق من هذه الشهادة للاستخدامات التالية:</translation>
 <translation id="8781834595282316166">علامة تبويب جديدة في مجموعة</translation>
 <translation id="8782565991310229362">‏تم إلغاء تشغيل تطبيق Kiosk.</translation>
-<translation id="8783093612333542422">‏يرغب &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; بمشاركة طابعة &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; معك.</translation>
 <translation id="8783834180813871000">اكتب رمز إقران البلوتوث، ثم اضغط على "رجوع" أو "إدخال".</translation>
 <translation id="8784626084144195648">تم تثبيت المعدل</translation>
 <translation id="8785622406424941542">قلم الشاشة</translation>

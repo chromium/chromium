@@ -2352,7 +2352,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3576324189521867626">Berhasil dipasang</translation>
 <translation id="3578594933904494462">Konten tab ini sedang dibagikan.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ingin membagikan printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; dengan grup yang Anda miliki: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Jika Anda menerima, semua anggota grup akan dapat mencetak pada printer tersebut.</translation>
 <translation id="3581605050355435601">Konfigurasi otomatis alamat IP</translation>
 <translation id="3582057310199111521">Dimasukkan pada situs penipuan dan ditemukan dalam pelanggaran data</translation>
 <translation id="3584169441612580296">Membaca dan mengubah foto, musik, serta media lain dari komputer Anda</translation>
@@ -2843,7 +2842,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Kontrol penuh perangkat MIDI ditolak</translation>
-<translation id="4088095054444612037">Terima untuk grup</translation>
 <translation id="4089235344645910861">Setelan disimpan. Sinkronisasi dimulai.</translation>
 <translation id="4090103403438682346">Mengaktifkan Akses Terverifikasi</translation>
 <translation id="4090811767089219951">Asisten Google juga berfungsi di perangkat ini</translation>
@@ -6967,7 +6965,6 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="878069093594050299">Sertifikat ini telah diverifikasikan untuk penggunaan berikut:</translation>
 <translation id="8781834595282316166">Tab Baru di Grup</translation>
 <translation id="8782565991310229362">Peluncuran aplikasi kios dibatalkan.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ingin berbagi printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; dengan Anda.</translation>
 <translation id="8783834180813871000">Ketik kode penyambungan Bluetooth lalu tekan tombol Kembali atau Enter.</translation>
 <translation id="8784626084144195648">Rata-rata dalam Sampah</translation>
 <translation id="8785622406424941542">Stilus</translation>

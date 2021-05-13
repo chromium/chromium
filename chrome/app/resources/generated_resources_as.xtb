@@ -2349,7 +2349,6 @@
 <translation id="3575121482199441727">এই ছাইটটোৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="3576324189521867626">সফলতাৰে ইনষ্টল কৰা হ’ল</translation>
 <translation id="3578594933904494462">এই টেবটোৰ সমল শ্বেয়াৰ কৰি থকা হৈছে।</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;এ আপোনাৰ মালিকীস্বত্ব থকা কোনো গোটৰ সৈতে এটা প্ৰিণ্টাৰ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; শ্বেয়াৰ কৰিব খুজিছে: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;। যদি আপুনি গ্ৰহণ কৰে, তেন্তে গোটৰ সকলো সদস্যয়ে এই প্ৰিণ্টাৰটো ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="3581605050355435601">আইপি ঠিকনা স্বয়ংক্ৰিয়ভাৱে কনফিগাৰ কৰক</translation>
 <translation id="3582057310199111521">প্ৰৱঞ্চনামূলক ছাইটত দিয়া হৈছিল আৰু ডেটা উলংঘনত পোৱা গৈছিল</translation>
 <translation id="3584169441612580296">আপোনাৰ কম্পিউটাৰৰ ফট’, সংগীত আৰু অন্য মিডিয়া পঢ়ক তথা সলনি কৰক</translation>
@@ -2837,7 +2836,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ডিভাইচসমূহৰ সম্পূৰ্ণ নিয়ন্ত্ৰণ অস্বীকাৰ কৰা হৈছে</translation>
-<translation id="4088095054444612037">গোটৰ বাবে গ্ৰহণ কৰক</translation>
 <translation id="4089235344645910861">ছেটিংসমূহ ছেভ কৰা হ’ল। ছিংক কৰা আৰম্ভ হ’ল।</translation>
 <translation id="4090103403438682346">প্ৰমাণিত এক্সেছ সক্ষম কৰক</translation>
 <translation id="4090811767089219951">আপোনাৰ Google Assistantএ ইয়াতো কাম কৰে</translation>
@@ -6951,7 +6949,6 @@
 <translation id="878069093594050299">এই প্ৰমাণপত্ৰখন তলত উল্লেখ কৰা ব্যৱহাৰবোৰৰ বাবে সত্যাপন কৰা হৈছে:</translation>
 <translation id="8781834595282316166">গোটটোত নতুন টেব</translation>
 <translation id="8782565991310229362">কিয়’স্ক এপ্লিকেশ্বনৰ লঞ্চ বাতিল কৰা হৈছে।</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;এ আপোনাৰ সৈতে &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; নামৰ এটা প্ৰিণ্টাৰ শ্বেয়াৰ কৰিব বিচাৰিছে।</translation>
 <translation id="8783834180813871000">ব্লুটুথ পেয়াৰিং ক’ডটো টাইপ কৰক আৰু তাৰ পাছত ৰিটাৰ্ন অথবা এণ্টাৰ হেঁচক।</translation>
 <translation id="8784626084144195648">বিন কৰা গড়</translation>
 <translation id="8785622406424941542">ষ্টাইলাছ</translation>

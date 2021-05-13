@@ -2353,7 +2353,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3576324189521867626">Matagumpay na na-install</translation>
 <translation id="3578594933904494462">Ibinabahagi ang nilalaman ng tab na ito.</translation>
-<translation id="357886715122934472">Gustong magbahagi ng &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ng printer na &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; sa isang pangkat na pagmamay-ari mo: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Kung tatanggapin mo, makakapag-print ang lahat ng miyembro ng pangkat sa printer.</translation>
 <translation id="3581605050355435601">Awtomatikong i-configure ang IP address</translation>
 <translation id="3582057310199111521">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3584169441612580296">Basahin at baguhin ang mga larawan, musika at iba pang media sa iyong computer</translation>
@@ -2844,7 +2843,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Tinanggihan ang ganap na kontrol sa mga MIDI device</translation>
-<translation id="4088095054444612037">Tanggapin para sa pangkat</translation>
 <translation id="4089235344645910861">Na-save ang mga setting. Nasimulan ang pag-sync.</translation>
 <translation id="4090103403438682346">I-enable ang Bine-verify na Access</translation>
 <translation id="4090811767089219951">Gumagana rin ang iyong Google Assistant para dito</translation>
@@ -6970,7 +6968,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="878069093594050299">Ang certificate na ito ay na-verify para sa sumusunod na mga paggamit:</translation>
 <translation id="8781834595282316166">Bagong Tab sa Grupo</translation>
 <translation id="8782565991310229362">Kinansela ang paglulunsad sa kiosk application.</translation>
-<translation id="8783093612333542422">Gustong magbahagi ng &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ng printer na &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; sa iyo.</translation>
 <translation id="8783834180813871000">I-type ang code ng pagpapares ng bluetooth pagkatapos ay pindutin ang Return o Enter.</translation>
 <translation id="8784626084144195648">Binned na Average</translation>
 <translation id="8785622406424941542">Stylus</translation>

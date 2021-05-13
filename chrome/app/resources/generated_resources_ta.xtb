@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">இந்தத் தளத்திற்கு அனுமதி</translation>
 <translation id="3576324189521867626">நிறுவப்பட்டது</translation>
 <translation id="3578594933904494462">இந்தத் தாவலில் உள்ள உள்ளடக்கமானது பகிரப்படுகிறது.</translation>
-<translation id="357886715122934472">நீங்கள் உரிமையாளராக உள்ள குழுவில் &lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;, &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; பிரிண்டரைப் பகிர விரும்புகிறார்: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. நீங்கள் ஏற்றுக்கொண்டால், எல்லா குழு உறுப்பினர்களாலும் பிரிண்டர் மூலம் அச்சிட முடியும்.</translation>
 <translation id="3581605050355435601">IP முகவரியைத் தானாக உள்ளமை</translation>
 <translation id="3582057310199111521">மோசடிசெய்யும் தளத்தில் உள்ளிடப்பட்டதால் தரவு மீறலுக்கு உள்ளானது</translation>
 <translation id="3584169441612580296">உங்கள் கம்ப்யூட்டரிலிருந்து படங்கள், இசை மற்றும் பிற மீடியாவைப் படிக்கலாம், மாற்றலாம்</translation>
@@ -2843,7 +2842,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI சாதனங்களுக்கான முழுக் கட்டுப்பாட்டையும் பெறுவது மறுக்கப்பட்டது</translation>
-<translation id="4088095054444612037">குழுவிற்கு ஏற்றுக்கொள்</translation>
 <translation id="4089235344645910861">அமைப்புகள் சேமிக்கப்பட்டன. ஒத்திசைவு தொடங்கியது.</translation>
 <translation id="4090103403438682346">சரிபார்க்கப்பட்ட அணுகலை இயக்கு</translation>
 <translation id="4090811767089219951">இங்கும் Google Assistant செயல்படும்</translation>
@@ -6968,7 +6966,6 @@
 <translation id="878069093594050299">பின்வரும் பயன்பாடுகளுக்காக, இந்த சான்றிதழானது சரிபார்க்கப்பட்டது:</translation>
 <translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
 <translation id="8782565991310229362">Kiosk ஆப்ஸின் துவக்கம் ரத்தானது.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; உங்களுடன் &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; பிரிண்டரைப் பகிர விரும்புகிறார்.</translation>
 <translation id="8783834180813871000">புளூடூத் இணைத்தல் குறியீட்டை உள்ளிட்டு Return அல்லது Enterரை அழுத்தவும்.</translation>
 <translation id="8784626084144195648">குப்பைக்கு நகர்த்தப்பட்டதன் சராசரி</translation>
 <translation id="8785622406424941542">ஸ்டைலஸ்</translation>

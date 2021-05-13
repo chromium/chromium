@@ -2349,7 +2349,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3576324189521867626">Se instaló correctamente</translation>
 <translation id="3578594933904494462">Se está compartiendo el contenido de esta pestaña.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quiere compartir una impresora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; con un grupo del cual eres propietario: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Si aceptas, todos los miembros del grupo podrán usar esa impresora para imprimir.</translation>
 <translation id="3581605050355435601">Configurar la dirección IP de forma automática</translation>
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
@@ -2840,7 +2839,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Se denegó el control total de los dispositivos MIDI</translation>
-<translation id="4088095054444612037">Aceptar la invitación realizada al grupo</translation>
 <translation id="4089235344645910861">Se guardó la configuración y comenzó la sincronización.</translation>
 <translation id="4090103403438682346">Habilitar el acceso verificado</translation>
 <translation id="4090811767089219951">También puedes usar Asistente de Google de esta manera</translation>
@@ -6964,7 +6962,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="878069093594050299">Este certificado se verificó para los siguientes usos:</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
 <translation id="8782565991310229362">Se canceló el inicio de la aplicación del kiosco.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; quiere compartir una impresora (&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) contigo.</translation>
 <translation id="8783834180813871000">Ingresa el código de vinculación por Bluetooth y, luego, presiona Intro o la tecla de retorno.</translation>
 <translation id="8784626084144195648">Promedio de datos agrupados</translation>
 <translation id="8785622406424941542">Pluma stylus</translation>

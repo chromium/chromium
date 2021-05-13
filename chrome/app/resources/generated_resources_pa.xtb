@@ -2351,7 +2351,6 @@
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3576324189521867626">ਸਫਲਤਾਪੂਰਵਕ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="3578594933904494462">ਇਸ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਸ਼ੇਅਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ਤੁਹਾਡੇ ਹੀ ਕਿਸੇ ਗਰੁੱਪ ਨਾਲ ਇੱਕ ਪ੍ਰਿੰਟਰ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹਨ: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. ਜੇਕਰ ਤੁਸੀਂ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਗਰੁੱਪ ਦੇ ਸਾਰੇ ਮੈਂਬਰ ਪ੍ਰਿੰਟਰ 'ਤੇ ਪ੍ਰਿੰਟ ਦੇ ਸਕਣਗੇ।</translation>
 <translation id="3581605050355435601">IP ਪਤੇ ਦਾ ਸਵੈ-ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="3582057310199111521">ਧੋਖੇਬਾਜ਼ ਸਾਈਟ 'ਤੇ ਦਾਖਲ ਕੀਤਾ ਗਿਆ ਅਤੇ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਲੱਭਿਆ</translation>
 <translation id="3584169441612580296">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
@@ -2842,7 +2841,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ਡੀਵਾਈਸਾਂ ਦੇ ਪੂਰੇ ਕੰਟਰੋਲ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="4088095054444612037">ਸਮੂਹ ਲਈ ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="4089235344645910861">ਸੈਟਿੰਗਾਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ। ਸਮਕਾਲੀਕਰਨ ਸ਼ੁਰੂ ਹੋਇਆ।</translation>
 <translation id="4090103403438682346">ਤਸਦੀਕਸ਼ੁਦਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4090811767089219951">ਤੁਹਾਡੀ Google Assistant ਇੱਥੇ ਵੀ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
@@ -6964,7 +6962,6 @@
 <translation id="878069093594050299">ਇਹ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਹੇਠ ਲਿਖੀਆਂ ਵਰਤੋਂ ਲਈ ਤਸਦੀਕ ਕੀਤਾ ਗਿਆ ਹੈ:</translation>
 <translation id="8781834595282316166">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ</translation>
 <translation id="8782565991310229362">ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨ ਲਾਂਚ ਰੱਦ ਕੀਤਾ।</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ਤੁਹਾਡੇ ਨਾਲ ਇੱਕ ਪ੍ਰਿੰਟਰ ਸੇਅਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;।</translation>
 <translation id="8783834180813871000">ਬਲੂਟੁੱਥ ਦਾ ਜੋੜਾਬੱਧਕਰਨ ਕੋਡ ਟਾਈਪ ਕਰੋ ਫਿਰ 'ਵਾਪਸ ਜਾਓ' ਜਾਂ 'ਦਾਖਲ ਕਰੋ' ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">ਸਟਾਈਲਸ</translation>

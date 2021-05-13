@@ -2350,7 +2350,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3575121482199441727">Bu saytda chiqaversin</translation>
 <translation id="3576324189521867626">O‘rnatildi</translation>
 <translation id="3578594933904494462">Bu ichki oynadagi kontentga umumiy ruxsat ochilgan.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; printerini &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt; guruhingiz bilan ulashmoqchi. Agar taklifni qabul qilsangiz, guruhingizdagi barcha qatnashchilar bu printerdan foydalanishi mumkin.</translation>
 <translation id="3581605050355435601">IP manzilni avtomatik sozlash</translation>
 <translation id="3582057310199111521">Qalbaki va axborotlari oshkor qilingan saytga kirdingiz.</translation>
 <translation id="3584169441612580296">Kompyuteringizdagi rasmlar, musiqa va boshqa mediafayllarni ko‘rish va o‘zgartirishga ruxsat</translation>
@@ -2841,7 +2840,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI qurilmalarini toʻliq boshqarish ruxsati rad etildi</translation>
-<translation id="4088095054444612037">Qabul qilish</translation>
 <translation id="4089235344645910861">Sozlamalar saqlandi. Sinxronizatsiya boshlandi.</translation>
 <translation id="4090103403438682346">Tekshirilgan ruxsat xizmatini yoqish</translation>
 <translation id="4090811767089219951">Google Assistent bu yerda ham ishlaydi</translation>
@@ -6963,7 +6961,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="878069093594050299">Bu sertifikat quyidagi maqsadlarda foydalanilishi uchun tekshirildi:</translation>
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; sizga &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; printeridan foydalanish ruxsatini ulashmoqchi.</translation>
 <translation id="8783834180813871000">Bluetooth ulanish kodini kiriting va keyin Return yoki Enter tugmasini bosing.</translation>
 <translation id="8784626084144195648">Guruhlar bo‘yicha o‘rtachasi</translation>
 <translation id="8785622406424941542">Stilus</translation>

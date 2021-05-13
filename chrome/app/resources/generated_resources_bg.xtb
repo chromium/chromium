@@ -2349,7 +2349,6 @@
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3576324189521867626">Инсталирането бе успешно</translation>
 <translation id="3578594933904494462">Съдържанието на този раздел се споделя.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; иска да сподели принтера &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; с притежавана от вас група: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Ако приемете, всичките й членове ще могат да отпечатват с него.</translation>
 <translation id="3581605050355435601">Автоматично конфигуриране на IP адреса</translation>
 <translation id="3582057310199111521">Въведена в измамнически сайт и разкрита при нарушение на сигурността на данните</translation>
 <translation id="3584169441612580296">Четене и промяна на снимки, музика и друга мултимедия от компютъра ви</translation>
@@ -2841,7 +2840,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Пълният контрол над MIDI устройствата е отказан</translation>
-<translation id="4088095054444612037">Приемам за групата</translation>
 <translation id="4089235344645910861">Настройките бяха запазени. Синхронизирането започна.</translation>
 <translation id="4090103403438682346">Активиране на удостоверения достъп</translation>
 <translation id="4090811767089219951">Google Асистент работи и тук</translation>
@@ -6966,7 +6964,6 @@
 <translation id="878069093594050299">Този сертификат бе удостоверен за следните употреби:</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
 <translation id="8782565991310229362">Стартирането на павилионното приложение е анулирано.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; иска да сподели принтера &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; с вас.</translation>
 <translation id="8783834180813871000">Въведете кода за сдвояване през Bluetooth, след което натиснете Return или Enter.</translation>
 <translation id="8784626084144195648">Средна стойност при групирани данни</translation>
 <translation id="8785622406424941542">Писалка</translation>

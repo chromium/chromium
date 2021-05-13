@@ -2353,7 +2353,6 @@
 <translation id="3575121482199441727">Թույլատրել այս կայքի համար</translation>
 <translation id="3576324189521867626">Հաջողությամբ տեղադրվեց</translation>
 <translation id="3578594933904494462">Այս ներդիրի բովանդակությունը համօգտագործվում է:</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;-ն ուզում է համօգտագործել &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; տպիչը ձեր խմբի հետ՝ &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;: Համաձայնելու դեպքում խմբի բոլոր անդամները կկարողանան տպել այդ տպիչի օգնությամբ:</translation>
 <translation id="3581605050355435601">IP հասցեի ավտոմատ կարգավորում</translation>
 <translation id="3582057310199111521">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
 <translation id="3584169441612580296">Կարդալ և փոխել լուսանկարները, երաժշտությունը և ձեր համակարգչում պահվող այլ մեդիա ֆայլերը</translation>
@@ -2844,7 +2843,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI սարքերի նկատմամբ ամբողջական վերահսկողությունն արգելվել է</translation>
-<translation id="4088095054444612037">Ընդունել խմբի համար</translation>
 <translation id="4089235344645910861">Կարգավորումները պահվեցին: Համաժամացումը սկսվեց:</translation>
 <translation id="4090103403438682346">Միացնել ստուգված մուտքի ծառայությունը</translation>
 <translation id="4090811767089219951">Ձեր Google Օգնականն այստեղ էլ է աշխատում</translation>
@@ -6970,7 +6968,6 @@
 <translation id="878069093594050299">Այս վկայագիրը հաստատվել է հետևյալ կիրառումների համար՝</translation>
 <translation id="8781834595282316166">Նոր ներդիր խմբում</translation>
 <translation id="8782565991310229362">Kiosk հավելվածի գործարկումը չեղարկվեց:</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;-ն ուզում է ձեզ հետ համօգտագործել &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; տպիչը:</translation>
 <translation id="8783834180813871000">Մուտքագրեք Bluetooth-ով զուգակցման կոդը, ապա սեղմեք RETURN կամ ENTER։</translation>
 <translation id="8784626084144195648">Միջինն ըստ խմբերի</translation>
 <translation id="8785622406424941542">Ստիլուս</translation>

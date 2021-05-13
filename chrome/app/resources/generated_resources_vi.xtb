@@ -1987,7 +1987,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3150927491400159470">Tải lại cứng</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3151539355209957474">Thời gian khởi động</translation>
-<translation id="3151562827395986343">Xóa lịch sử, cookie, bộ nhớ đệm, v.v.</translation>
+<translation id="3151562827395986343">Xóa dữ liệu duyệt web, cookie, bộ nhớ đệm, v.v.</translation>
 <translation id="3151786313568798007">Hướng</translation>
 <translation id="3154351730702813399">Quản trị viên thiết bị có thể theo dõi hoạt động duyệt web của bạn.</translation>
 <translation id="3154429428035006212">Ngoại tuyến hơn một tháng</translation>
@@ -2352,7 +2352,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3575121482199441727">Cho phép đối với trang web này</translation>
 <translation id="3576324189521867626">Đã cài đặt thành công</translation>
 <translation id="3578594933904494462">Nội dung của thẻ này đang được chia sẻ.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; muốn chia sẻ máy in &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; với một nhóm bạn sở hữu: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Nếu bạn chấp nhận, tất cả thành viên của nhóm sẽ có thể in tới máy in.</translation>
 <translation id="3581605050355435601">Tự động định cấu hình địa chỉ IP</translation>
 <translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này được phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
@@ -2843,7 +2842,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Đã từ chối cấp toàn quyền kiểm soát các thiết bị MIDI</translation>
-<translation id="4088095054444612037">Chấp nhận cho nhóm</translation>
 <translation id="4089235344645910861">Đã lưu chế độ cài đặt. Đã bắt đầu đồng bộ hóa.</translation>
 <translation id="4090103403438682346">Bật quyền truy cập đã xác minh</translation>
 <translation id="4090811767089219951">Trợ lý Google cũng giúp trả lời cả những câu hỏi như thế này</translation>
@@ -6967,7 +6965,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="878069093594050299">Chứng chỉ này đã được xác minh cho các mục đích sử dụng sau:</translation>
 <translation id="8781834595282316166">Thẻ mới trong nhóm</translation>
 <translation id="8782565991310229362">Đã hủy chạy ứng dụng kiosk.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; muốn chia sẻ máy in &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; với bạn.</translation>
 <translation id="8783834180813871000">Nhập mã ghép nối Bluetooth, sau đó nhấn phím Return hoặc Enter.</translation>
 <translation id="8784626084144195648">Trung bình phân tổ</translation>
 <translation id="8785622406424941542">Bút cảm ứng</translation>

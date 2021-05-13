@@ -2352,7 +2352,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3575121482199441727">Ушул сайт үчүн уруксат берүү</translation>
 <translation id="3576324189521867626">Ийгиликтүү орнотулду</translation>
 <translation id="3578594933904494462">Бул өтмөктүн мазмуну жалпы колдонулууда.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; сизге таандык топ менен принтер &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; бөлүшкүсү келет: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Эгер кабыл алсаңыз, топтун бардык мүчөлөрү принтер аркылуу басып чыгаруу мүмкүнчүлүгүнө ээ болушат.</translation>
 <translation id="3581605050355435601">IP дарегин автоматтык түрдө конфигурациялоо</translation>
 <translation id="3582057310199111521">Жалган сайтка киргизилип, сырсөз уурдалды</translation>
 <translation id="3584169441612580296">Компьютериңизден сүрөттөр, музыка жана башка медиа файлдарын окуп жана өзгөртүңүз</translation>
@@ -2843,7 +2842,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI түзмөктөрүн толугу менен көзөмөлдөө четке кагылды</translation>
-<translation id="4088095054444612037">Топтун атынан кабыл алуу</translation>
 <translation id="4089235344645910861">Жөндөөлөр сакталды. Шайкештирүү башталды.</translation>
 <translation id="4090103403438682346">Текшерилген кирүү мүмкүнчүлүгүн иштетүү</translation>
 <translation id="4090811767089219951">Google Жардамчыңыз бул жерде да иштейт</translation>
@@ -6966,7 +6964,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="878069093594050299">Бул тастыктама төмөнкүдөй колдонуулар үчүн ырасталган:</translation>
 <translation id="8781834595282316166">Топтогу жаңы өтмөк</translation>
 <translation id="8782565991310229362">Киоск колдонмосун ишке киргизүү аракети жокко чыгарылды.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; сиз менен принтер &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; бөлүшкүсү келет.</translation>
 <translation id="8783834180813871000">Bluetooth'дун жупташтыруу кодун терип, андан соң "Артка" же "Киргизүү" баскычын басыңыз.</translation>
 <translation id="8784626084144195648">Топтолгон ортоломо</translation>
 <translation id="8785622406424941542">Стилус</translation>

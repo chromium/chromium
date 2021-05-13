@@ -2350,7 +2350,6 @@
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3576324189521867626">نصب موفقیت‌آمیز بود</translation>
 <translation id="3578594933904494462">محتوای این برگه اشتراک‌گذاری می‌شود.</translation>
-<translation id="357886715122934472">‏&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; می‌خواهد چاپگر &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; را با گروهی که شما مالک آن هستید، به اشتراک بگذارد: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. اگر بپذیرید، تمام اعضای گروه می‌توانند با چاپگر چاپ کنند.</translation>
 <translation id="3581605050355435601">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="3582057310199111521">در سایت فریب‌دهنده وارد و در نقض داده پیدا شد</translation>
 <translation id="3584169441612580296">خواندن و تغییر عکس‌ها، موسیقی، و رسانه‌های دیگر از رایانه‌تان</translation>
@@ -2841,7 +2840,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">‏کنترل کامل روی دستگاه‌های MIDI رد شد</translation>
-<translation id="4088095054444612037">پذیرش برای گروه</translation>
 <translation id="4089235344645910861">تنظیمات ذخیره شد. همگام‌سازی شروع شد.</translation>
 <translation id="4090103403438682346">فعال کردن دسترسی تأییدشده</translation>
 <translation id="4090811767089219951">‏«دستیار Google» شما در اینجا هم کار می‌کند</translation>
@@ -6966,7 +6964,6 @@
 <translation id="878069093594050299">این گواهی برای استفاده‌های زیر تأیید شده است:</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
 <translation id="8782565991310229362">راه‌اندازی برنامه کاربردی کیوسک لغو شد.</translation>
-<translation id="8783093612333542422">‏&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; می‌خواهد چاپگر &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; را با شما به اشتراک بگذارد.</translation>
 <translation id="8783834180813871000">کد مرتبط‌سازی بلوتوث را تایپ کنید، سپس کلید «بازگشت» یا «ورود» را فشار دهید.</translation>
 <translation id="8784626084144195648">میانگین حذف‌شده‌ها</translation>
 <translation id="8785622406424941542">قلم</translation>

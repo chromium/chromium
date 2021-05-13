@@ -2350,7 +2350,6 @@
 <translation id="3575121482199441727">ອະນຸຍາດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3576324189521867626">ຕິດຕັ້ງສຳເລັດແລ້ວ</translation>
 <translation id="3578594933904494462">ແຊຣ໌ເນື້ອໃນຂອງແຖບນີ້ຢູ່.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ຕ້ອງການແຊຣ໌ເຄື່ອງພິມ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ກັບກຸ່ມທີ່ທ່ານເປັນເຈົ້າຂອງ: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. ຖ້າທ່ານຍອມຮັບ ສາມາຊິກກຸ່ມທັງໝົດຈະສາມາດພິມໃສ່ເຄື່ອງພິມໄດ້.</translation>
 <translation id="3581605050355435601">ຕັ້ງຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3582057310199111521">ປ້ອນໃສ່ເວັບໄຊຫຼອກລວງ ແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3584169441612580296">ອ່ານ ແລະປ່ຽນແປງຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
@@ -2841,7 +2840,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">ປະຕິເສດການຄວບຄຸມອຸປະກອນ MIDI ແບບເຕັມແລ້ວ</translation>
-<translation id="4088095054444612037">ຍອມ​ຮັບ​ສໍາ​ລັບ​ກຸ່ມ</translation>
 <translation id="4089235344645910861">ບັນທຶກການຕັ້ງຄ່າໄວ້ແລ້ວ. ເລີ່ມການຊິ້ງຂໍ້ມູນແລ້ວ.</translation>
 <translation id="4090103403438682346">ເປີດໃຊ້ງານການ​ເຂົ້າ​ຫາທີ່ກວດສອບແລ້ວ</translation>
 <translation id="4090811767089219951">ຜູ້ຊ່ວຍ Google ຂອງທ່ານໃຊ້ໄດ້ຢູ່ບ່ອນນີ້ເຊັ່ນກັນ</translation>
@@ -6963,7 +6961,6 @@
 <translation id="878069093594050299">ໃບ​ຢັ້ງ​ຢືນນີ້ໄດ້ຮັບການກວດສອບສໍາລັບການໃຊ້ຕໍ່ໄປນີ້ແລ້ວ:</translation>
 <translation id="8781834595282316166">ແຖບໃໝ່ໃນກຸ່ມ</translation>
 <translation id="8782565991310229362">ຍົກເລີກການເປີດແອັບພລິເຄຊັນ Kiosk ແລ້ວ.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ຕ້ອງການແຊຣ໌ເຄື່ອງພິມ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ກັບທ່ານ.</translation>
 <translation id="8783834180813871000">ພິມລະຫັດການຈັບຄູ່ Bluetooth ຈາກນັ້ນກົດ Return ຫຼື Enter</translation>
 <translation id="8784626084144195648">ສະ​ເລ່ຍລົງຖັງແລ້ວ</translation>
 <translation id="8785622406424941542">ປາຍປາກກາ</translation>

@@ -2352,7 +2352,6 @@
 <translation id="3575121482199441727">ለዚህ ጣቢያ ፍቀድ</translation>
 <translation id="3576324189521867626">በተሳካ ሁኔታ ተጭኗል</translation>
 <translation id="3578594933904494462">የዚህ ትር ይዘት በመጋራት ላይ ነው።</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; የ&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; አታሚ እርስዎ ባለቤት ለሆኑበት ቡድን ማጋራት ይፈልጋሉ፦ &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;። ከተቀበሉ ሁሉም የቡድን አባላት ወደ አታሚው ማተም ይችላሉ።</translation>
 <translation id="3581605050355435601">የአይፒ አድራሻን በራስ-ሰር አዋቅር</translation>
 <translation id="3582057310199111521">በአታላይ ጣቢያ ላይ ገብቶ በውሂብ ጥሰት ላይ ተገኝቷል</translation>
 <translation id="3584169441612580296">በኮምፒውተርዎ ላይ ያሉ ፎቶዎችን፣ ሙዚቃን እና ሌላ ማህደረመረጃ ያነብባል እና ይቀይራል</translation>
@@ -2841,7 +2840,6 @@
 <translation id="4085298594534903246">በዚህ ገጽ ላይ ጃቫስክሪፕት ታግዷል።</translation>
 <translation id="4087089424473531098">ቅጥያውን ፈጥሯል፦ <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">የMIDI መሣሪያዎች ሙሉ ቁጥጥር ተከልክሏል</translation>
-<translation id="4088095054444612037">ለቡድኑ ተቀበል</translation>
 <translation id="4089235344645910861">ቅንብሮች ተቀምጠዋል። ስምረት ጀምሯል።</translation>
 <translation id="4090103403438682346">የተረጋገጠ መዳረሻ ያንቁ</translation>
 <translation id="4090811767089219951">የእርስዎ የGoogle ረዳት እዚህም ይሠራል</translation>
@@ -6970,7 +6968,6 @@ nil</translation>
 <translation id="878069093594050299">ይህ ሰርቲፊኬት ለሚከተሉት አገልግሎቶች ተረጋግጧል፦</translation>
 <translation id="8781834595282316166">በቡድን ውስጥ አዲስ ትር</translation>
 <translation id="8782565991310229362">የኪዮስክ መተግበሪያ ማስጀመር ተሰርዟል።</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; አንድ የ&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; አታሚ ለእርስዎ ማጋራት ይፈልጋሉ።</translation>
 <translation id="8783834180813871000">የብሉቱዝ ማጣመሪያ ኮድ ይተይቡና ከዚያም Return ወይም Enter የሚለውን ይጫኑ።</translation>
 <translation id="8784626084144195648">የቢን አማካኝ</translation>
 <translation id="8785622406424941542">ስቲለስ</translation>

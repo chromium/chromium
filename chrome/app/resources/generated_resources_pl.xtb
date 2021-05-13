@@ -2349,7 +2349,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3575121482199441727">Zezwalaj tej stronie</translation>
 <translation id="3576324189521867626">Zainstalowano</translation>
 <translation id="3578594933904494462">Treść tej karty jest udostępniana.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; chce udostępnić drukarkę &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; należącej do Ciebie grupie: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Jeśli się na to zgodzisz, wszyscy członkowie grupy będą mogli na niej drukować.</translation>
 <translation id="3581605050355435601">Automatycznie skonfiguruj adres IP</translation>
 <translation id="3582057310199111521">Wpisano na stronie wprowadzającej w błąd i doszło do naruszenia bezpieczeństwa danych</translation>
 <translation id="3584169441612580296">Odczyt i zmiana zdjęć, muzyki oraz innych multimediów na komputerze</translation>
@@ -2840,7 +2839,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Zabroniono pełnej kontroli nad urządzeniami MIDI</translation>
-<translation id="4088095054444612037">Zaakceptuj dla grupy</translation>
 <translation id="4089235344645910861">Ustawienia zapisane. Synchronizacja rozpoczęta.</translation>
 <translation id="4090103403438682346">Włącz weryfikację dostępu</translation>
 <translation id="4090811767089219951">Asystent Google działa również tutaj</translation>
@@ -6966,7 +6964,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="878069093594050299">Ten certyfikat został zweryfikowany na potrzeby następujących zastosowań:</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>
 <translation id="8782565991310229362">Uruchamianie aplikacji kiosku zostało anulowane.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; chce udostępnić Ci drukarkę &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Wpisz kod parowania Bluetooth i naciśnij Return lub Enter.</translation>
 <translation id="8784626084144195648">Średnia w przedziale</translation>
 <translation id="8785622406424941542">Rysik</translation>

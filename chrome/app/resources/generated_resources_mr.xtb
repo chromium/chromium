@@ -2351,7 +2351,6 @@
 <translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
 <translation id="3576324189521867626">यशस्वीरित्या इंस्टॉल केला</translation>
 <translation id="3578594933904494462">या टॅबचा आशय शेअर केली जात आहे.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; आपल्‍या मालकीच्या गटासह &lt;strong&gt;<ph name="PRINTER_NAME" /> &lt;/strong&gt; प्रिंटर शेअर करू इच्‍छितो: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. तुम्ही स्‍वीकार केल्यास, सर्व गट सदस्य प्रिंटरवर प्रिंट करण्‍यास सक्षम असतील.</translation>
 <translation id="3581605050355435601">आयपी अ‍ॅड्रेस ऑटो कॉंफिगर करा</translation>
 <translation id="3582057310199111521">फसव्या साइटवर एंटर केला आणि डेटा भंग करत असल्याचे आढळले</translation>
 <translation id="3584169441612580296">तुमच्या कॉंप्युटरवरील फोटो, संगीत आणि अन्य मीडिया वाचा आणि बदला</translation>
@@ -2840,7 +2839,6 @@
 <translation id="4085298594534903246">या पेजवर JavaScript  अवरोधित केलेले होते.</translation>
 <translation id="4087089424473531098">एक्स्टेंशन तयार केले: <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI डिव्हाइसचे पूर्ण नियंत्रण नाकारले</translation>
-<translation id="4088095054444612037">गटासाठी स्वीकारा</translation>
 <translation id="4089235344645910861">सेटिंग्ज सेव्ह केल्या. सिंक सुरू केले.</translation>
 <translation id="4090103403438682346">पडताळणीने दिलेला ॲक्सेस सक्षम करा</translation>
 <translation id="4090811767089219951">Google Assistant येथेदेखील काम करते</translation>
@@ -6963,7 +6961,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="878069093594050299">हे सर्टिफिकेट खालील वापरासाठी पडताळणी केलेले आहे:</translation>
 <translation id="8781834595282316166">गटामधील नवीन टॅब</translation>
 <translation id="8782565991310229362">कियोस्क ॲप्लिकेशन लाँच रद्द झाले.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; आपल्याशी एक &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; प्रिंटर शेअर करू इच्छितात.</translation>
 <translation id="8783834180813871000">ब्लूटूथ पेअरिंग कोड टाइप करा, नंतर Return किंवा Enter दाबा.</translation>
 <translation id="8784626084144195648">बिन केलेली सरासरी</translation>
 <translation id="8785622406424941542">स्टायलस</translation>

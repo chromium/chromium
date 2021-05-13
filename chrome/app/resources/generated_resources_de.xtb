@@ -2348,7 +2348,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3575121482199441727">Für diese Website zulassen</translation>
 <translation id="3576324189521867626">Installation war erfolgreich</translation>
 <translation id="3578594933904494462">Der Inhalt dieses Tabs wird geteilt.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; möchte den Drucker &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; für eine Gruppe freigeben, deren Inhaber Sie sind: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Falls Sie zustimmen, können alle Gruppenmitglieder diesen Drucker nutzen.</translation>
 <translation id="3581605050355435601">IP-Adresse automatisch konfigurieren</translation>
 <translation id="3582057310199111521">Auf einer betrügerischen Website eingegeben und durch eine Datenpanne preisgegeben</translation>
 <translation id="3584169441612580296">Fotos, Musik und andere Medien auf Ihrem Computer lesen und ändern</translation>
@@ -2839,7 +2838,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Volle Kontrolle über MIDI-Geräte verweigert</translation>
-<translation id="4088095054444612037">Für Gruppe akzeptieren</translation>
 <translation id="4089235344645910861">Einstellungen gespeichert. Synchronisation gestartet.</translation>
 <translation id="4090103403438682346">Bestätigten Zugriff aktivieren</translation>
 <translation id="4090811767089219951">Google Assistant funktioniert hier auch</translation>
@@ -6962,7 +6960,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="878069093594050299">Dieses Zertifikat wurde für folgende Verwendungszwecke verifiziert:</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; möchte den Drucker &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; für Sie freigeben.</translation>
 <translation id="8783834180813871000">Geben Sie den Kopplungscode ein und tippen Sie dann auf die Eingabetaste.</translation>
 <translation id="8784626084144195648">Gruppendurchschnitt</translation>
 <translation id="8785622406424941542">Eingabestift</translation>

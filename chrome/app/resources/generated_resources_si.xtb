@@ -2349,7 +2349,6 @@
 <translation id="3575121482199441727">මෙම වෙබ් අඩවිය සඳහා අවසර දෙන්න</translation>
 <translation id="3576324189521867626">සාර්ථකව ස්ථාපිත කෙරිණි</translation>
 <translation id="3578594933904494462">මෙම ටැබයේ අන්තර්ගතය බෙදාගනිමින් පවතී.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; හට ඔබට අයත් සමූහයක් සමඟ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; මුද්‍රකය බෙදාගැනීමට අවශ්‍යයි: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. ඔබ පිළිගනී නම්, සියළු සමූහ සාමාජිකයන්ට මුද්‍රකය භාවිත කළ හැක.</translation>
 <translation id="3581605050355435601">IP ලිපිනය ස්වයංක්‍රීයව වින්‍යාස කරන්න</translation>
 <translation id="3582057310199111521">වංචනික වෙබ් අඩවියකට ඇතුළත් වූ අතර දත්ත කඩ කිරීම සොයා ගත්තා</translation>
 <translation id="3584169441612580296">ඔබගේ පරිගණකයෙන් ඡායාරූප, සංගීතය, සහ වෙනත් මාධ්‍යය කියවා වෙනස් කරන්න</translation>
@@ -2841,7 +2840,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI උපාංගවල පූර්ණ පාලනය ප්‍රතික්ෂේප කරන ලදි</translation>
-<translation id="4088095054444612037">කණ්ඩායම සඳහා පිළිගන්න</translation>
 <translation id="4089235344645910861">සැකසීම් සුරකින ලදී. සමමුහුර්ත කිරීම ආරම්භ විය.</translation>
 <translation id="4090103403438682346">තහවුරුකළ පිවිසුම සක්‍රීය කරන්න</translation>
 <translation id="4090811767089219951">ඔබගේ Google සහායක මෙහිද වැඩ කරයි</translation>
@@ -6963,7 +6961,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="878069093594050299">මෙම සහතිකය පහත භාවිතයන් සඳහා සත්‍යපනය කර ඇත:</translation>
 <translation id="8781834595282316166">කණ්ඩායම තුළ නව පටිත්ත</translation>
 <translation id="8782565991310229362">Kiosk යෙදුම දියත් කිරීම අවලංගු කරන ලදි.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; හට &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; මුද්‍රකය ඔබ සමඟ බෙදාගැනීමට අවශ්‍යයි.</translation>
 <translation id="8783834180813871000">බ්ලූටූත් යුගල කිරීමේ කේතය ටයිප් කරන්න සහ ඉන් පසු ආපසු එම හෝ ඇතුළු කිරීම ඔබන්න</translation>
 <translation id="8784626084144195648">ඉවතලූ සාමාන්‍යය</translation>
 <translation id="8785622406424941542">පන්හිඳ</translation>

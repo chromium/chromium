@@ -2351,7 +2351,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3575121482199441727">Permet per a aquest lloc web</translation>
 <translation id="3576324189521867626">S'ha instal·lat correctament</translation>
 <translation id="3578594933904494462">El contingut d'aquesta pestanya es comparteix.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vol compartir una impressora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; amb un dels vostres grups: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Si accepteu, tots els membres del grup la podran fer servir.</translation>
 <translation id="3581605050355435601">Configura automàticament l'adreça IP</translation>
 <translation id="3582057310199111521">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de les dades</translation>
 <translation id="3584169441612580296">Accedeix a fotos, a música i a altres fitxers multimèdia de l'ordinador i modifica'ls</translation>
@@ -2841,7 +2840,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">S'ha denegat el control total dels dispositius MIDI</translation>
-<translation id="4088095054444612037">Accepta per al grup</translation>
 <translation id="4089235344645910861">La configuració s'ha desat i ha començat la sincronització.</translation>
 <translation id="4090103403438682346">Activa l'accés verificat</translation>
 <translation id="4090811767089219951">El teu Assistent de Google també funciona aquí</translation>
@@ -6967,7 +6965,6 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="878069093594050299">Aquest certificat s'ha verificat per als usos següents:</translation>
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
 <translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; vol compartir una impressora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; amb l'usuari.</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>
 <translation id="8784626084144195648">Mitjana descartada</translation>
 <translation id="8785622406424941542">Llapis òptic</translation>

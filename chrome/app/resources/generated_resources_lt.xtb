@@ -2355,7 +2355,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3575121482199441727">Leisti šioje svetainėje</translation>
 <translation id="3576324189521867626">Sėkmingai įdiegta</translation>
 <translation id="3578594933904494462">Šio skirtuko lapo turinys bendrinamas.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; nori bendrinti spausdintuvą &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; su jums priklausančia grupe &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Jei sutiksite, visi grupės nariai galės spausdinti naudodami šį spausdintuvą.</translation>
 <translation id="3581605050355435601">Automatiškai konfigūruoti IP adresą</translation>
 <translation id="3582057310199111521">Įvesta apgaulingoje svetainėje ir aptiktas duomenų saugos pažeidimas</translation>
 <translation id="3584169441612580296">Skaityti ir keisti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
@@ -2846,7 +2845,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Visiškas MIDI įrenginių valdymas atmestas</translation>
-<translation id="4088095054444612037">Priimti grupės kvietimą</translation>
 <translation id="4089235344645910861">Nustatymai išsaugoti. Pradėta sinchronizuoti.</translation>
 <translation id="4090103403438682346">Įgalinti patvirtintą prieigą</translation>
 <translation id="4090811767089219951">Jūsų „Google“ padėjėjas veikia ir čia</translation>
@@ -6974,7 +6972,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="878069093594050299">Šis sertifikatas patvirtintas šiems naudojimo būdams:</translation>
 <translation id="8781834595282316166">Naujas skirtukas grupėje</translation>
 <translation id="8782565991310229362">Atšauktas viešojo terminalo programos paleidimas.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; nori su jumis bendrinti spausdintuvą &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Įveskite „Bluetooth“ susiejimo kodą ir paspauskite „Return“ arba „Enter“.</translation>
 <translation id="8784626084144195648">Intervalo vidurkis</translation>
 <translation id="8785622406424941542">Rašiklis</translation>

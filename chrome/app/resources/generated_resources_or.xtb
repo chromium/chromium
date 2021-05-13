@@ -2345,7 +2345,6 @@
 <translation id="3575121482199441727">ଏହି ସାଇଟ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3576324189521867626">ସଫଳତାପୂର୍ବକ ଇନ୍‌ଷ୍ଟଲ୍‌ କରାଗଲା</translation>
 <translation id="3578594933904494462">ଏହି ଟାବ୍‍ର ବିଷୟବସ୍ତୁ ସେୟାର୍ କରାଯାଉଛି।</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ଏକ ପ୍ରିଣ୍ଟର୍ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;କୁ ଆପଣଙ୍କର ମାଲିକାନାରେ ଥିବା ଏକ ଗୋଷ୍ଠୀ: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt; ସହିତ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। ଯଦି ଆପଣ ସ୍ୱୀକାର କରନ୍ତି ତେବେ, ଗୋଷ୍ଠୀର ସମସ୍ତ ସଦସ୍ୟ ପ୍ରିଣ୍ଟର୍‌ରେ ପ୍ରିଣ୍ଟ କରିବାକୁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="3581605050355435601">IP ଠିକଣା ସ୍ୱଚାଳିତ ଭାବେ କନଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="3582057310199111521">ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଲେଖାଯାଇଛି ଏବଂ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି</translation>
 <translation id="3584169441612580296">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -2835,7 +2834,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ଡିଭାଇସଗୁଡ଼ିକର ସମ୍ପୂର୍ଣ୍ଣ ନିୟନ୍ତ୍ରଣ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି</translation>
-<translation id="4088095054444612037">ଗୋଷ୍ଠୀ ପାଇଁ ସ୍ୱୀକାର କରନ୍ତୁ</translation>
 <translation id="4089235344645910861">ସେଟିଂସ୍‌ ସେଭ୍‌ ହୋଇଛି। ସିଙ୍କ୍‌ ଆରମ୍ଭ ହୋଇଛି।</translation>
 <translation id="4090103403438682346">ଯାଞ୍ଚ ହୋଇଥିବା ଆକ୍ସେସ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4090811767089219951">ଆପଣଙ୍କ Google Assistant ମଧ୍ୟ ଏଠାରେ କାମ କରେ</translation>
@@ -6958,7 +6956,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="878069093594050299">ନିମ୍ନୋକ୍ତ ବ୍ୟବହାର ପାଇଁ ଏହି ସାର୍ଟିଫିକେଟ୍‌ ଯାଞ୍ଚ କରାଯାଇଛି:</translation>
 <translation id="8781834595282316166">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍</translation>
 <translation id="8782565991310229362">କିଓସ୍କ ଆପ୍ଲିକେସନ୍ ଲଞ୍ଚକୁ ବାତିଲ୍ କରାଯାଇଛି।</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; ଆପଣଙ୍କ ସହ ଏକ &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; ପ୍ରିଣ୍ଟର୍ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି।</translation>
 <translation id="8783834180813871000">ବ୍ଲୁଟୁଥ୍ ପେୟାରିଂ କୋଡ୍ ଟାଇପ୍ କରିବା ପରେ ରିଟର୍ନ କିମ୍ୱା ଏଣ୍ଟର୍ ଦାବନ୍ତୁ।</translation>
 <translation id="8784626084144195648">ବିନ୍ କରାଯାଇଥିବା ହାର</translation>
 <translation id="8785622406424941542">ଷ୍ଟାଇଲସ୍</translation>

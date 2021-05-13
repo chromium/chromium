@@ -2353,7 +2353,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3575121482199441727">Omogući za ovu web lokaciju</translation>
 <translation id="3576324189521867626">Uspješno instalirano</translation>
 <translation id="3578594933904494462">Sadržaj ove kartice se dijeli.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; želi dijeliti štampač &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; s grupom koju posjedujete: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Ako prihvatite, svi članovi grupe će moći da štampaju na štampač.</translation>
 <translation id="3581605050355435601">Automatski konfiguriraj IP adresu</translation>
 <translation id="3582057310199111521">Uneseno na obmanjujućoj web lokaciji i pronađeno u narušavanju podataka</translation>
 <translation id="3584169441612580296">Čitanje i promjena fotografija, muzike i drugih medijskih fajlova na vašem računaru</translation>
@@ -2844,7 +2843,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Puna kontrola nad MIDI uređajima je odbijena</translation>
-<translation id="4088095054444612037">Prihvati za grupu</translation>
 <translation id="4089235344645910861">Postavke su sačuvane. Sinhronizacija je započela.</translation>
 <translation id="4090103403438682346">Omogućava potvrđeni pristup</translation>
 <translation id="4090811767089219951">Vaš Google Asistent funkcionira i ovdje</translation>
@@ -6970,7 +6968,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="878069093594050299">Potvrda je potvrđena za sljedeću upotrebu:</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; želi s vama dijeliti štampač &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;.</translation>
 <translation id="8783834180813871000">Upišite kôd za uparivanje putem Bluetootha, a zatim pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Zbirni prosjek</translation>
 <translation id="8785622406424941542">Digitalna olovka</translation>

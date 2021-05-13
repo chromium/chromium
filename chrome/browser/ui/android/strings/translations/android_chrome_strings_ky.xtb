@@ -276,7 +276,7 @@
 <translation id="2827278682606527653">Түрмөктөгү меню экрандын жарымына чейин ачылды</translation>
 <translation id="2830783625999891985">Алмашуу буфериндеги мазмундар жашырылган</translation>
 <translation id="2839327205551510876">Төмөнкүгө көз салуу токтотулду: <ph name="SITE_NAME" /></translation>
-<translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 күн мурда текшерилди}other{# күн мурда текшерилди}}</translation>
+<translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 күн мурун текшерилди}other{# күн мурун текшерилди}}</translation>
 <translation id="2842985007712546952">Түпкү куржун</translation>
 <translation id="2856503607207334158">Кирүү ишке ашкан жок</translation>
 <translation id="2860954141821109167">Телефон колдонмосу бул түзмөктө иштетилгенин текшериңиз</translation>

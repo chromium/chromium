@@ -2347,7 +2347,6 @@
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3576324189521867626">已成功安装</translation>
 <translation id="3578594933904494462">此标签页的内容正在共享中。</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;希望与您拥有的以下群组共享打印机&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;：&lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;。如果您接受，该群组的所有成员都可以将内容发送到该打印机进行打印。</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
@@ -2837,7 +2836,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">已禁止全面控制 MIDI 设备</translation>
-<translation id="4088095054444612037">代表群组接受</translation>
 <translation id="4089235344645910861">设置已保存。已开始同步。</translation>
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
 <translation id="4090811767089219951">Google 助理也能解答这类问题</translation>
@@ -6960,7 +6958,6 @@
 <translation id="878069093594050299">此证书已通过验证，具有以下用法：</translation>
 <translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;希望与您共享打印机&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>
 <translation id="8784626084144195648">按区段计算的平均值</translation>
 <translation id="8785622406424941542">触控笔</translation>
