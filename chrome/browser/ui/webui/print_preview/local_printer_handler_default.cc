@@ -18,7 +18,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
+#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/mojom/print.mojom.h"
@@ -73,39 +75,37 @@ void OnDidGetDefaultPrinterName(
 void OnDidEnumeratePrinters(
     PrinterHandler::AddedPrintersCallback added_printers_callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
-    const base::Optional<PrinterList>& printer_list) {
-  const bool have_printers = printer_list.has_value();
-  if (!have_printers)
-    LOG(WARNING) << "Failure enumerating local printers.";
+    mojom::PrinterListResultPtr printer_list) {
+  if (printer_list->is_result_code()) {
+    LOG(WARNING) << "Failure enumerating local printers, result: "
+                 << printer_list->get_result_code();
+  }
 
   ConvertPrinterListForCallback(
       std::move(added_printers_callback), std::move(done_callback),
-      have_printers ? printer_list.value() : PrinterList());
+      printer_list->is_printer_list() ? printer_list->get_printer_list()
+                                      : PrinterList());
 }
 
 void OnDidFetchCapabilities(
     const std::string& device_name,
     bool has_secure_protocol,
     PrinterHandler::GetCapabilityCallback callback,
-    const base::Optional<PrinterBasicInfo>& printer_info,
-    const base::Optional<PrinterSemanticCapsAndDefaults::Papers>&
-        user_defined_papers,
-    const base::Optional<PrinterSemanticCapsAndDefaults>& caps_and_defaults) {
-  const bool has_values = printer_info.has_value() &&
-                          user_defined_papers.has_value() &&
-                          caps_and_defaults.has_value();
-  if (!has_values) {
-    LOG(WARNING) << "Failure fetching printer capabilities for  "
-                 << device_name;
+    mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
+  if (printer_caps_and_info->is_result_code()) {
+    LOG(WARNING) << "Failure fetching printer capabilities for " << device_name
+                 << " - error " << printer_caps_and_info->get_result_code();
     std::move(callback).Run(base::Value());
     return;
   }
 
   VLOG(1) << "Received printer info & capabilities for " << device_name;
-  PrinterSemanticCapsAndDefaults caps = caps_and_defaults.value();
+  const mojom::PrinterCapsAndInfoPtr& caps_and_info =
+      printer_caps_and_info->get_printer_caps_and_info();
   base::Value settings = AssemblePrinterSettings(
-      device_name, printer_info.value(), user_defined_papers.value(),
-      has_secure_protocol, &caps);
+      device_name, caps_and_info->printer_info,
+      caps_and_info->user_defined_papers, has_secure_protocol,
+      &caps_and_info->printer_caps);
   std::move(callback).Run(std::move(settings));
 }
 

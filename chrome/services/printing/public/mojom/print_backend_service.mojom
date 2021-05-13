@@ -5,6 +5,37 @@
 module printing.mojom;
 
 import "printing/backend/mojom/print_backend.mojom";
+import "printing/mojom/print.mojom";
+
+// The list of installed printers, or the `ResultCode` if there was an error
+// when trying to retrieve this data.
+union PrinterListResult {
+  array<PrinterBasicInfo> printer_list;
+  ResultCode result_code;
+};
+
+// The capabilities and defaults of a printer, or the `ResultCode` if there was
+// an error when trying to retrieve this data.
+union PrinterSemanticCapsAndDefaultsResult {
+  PrinterSemanticCapsAndDefaults printer_caps;
+  ResultCode result_code;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer.
+struct PrinterCapsAndInfo {
+  PrinterBasicInfo printer_info;
+  array<Paper> user_defined_papers;
+  PrinterSemanticCapsAndDefaults printer_caps;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer, or the `ResultCode` if there was an error when trying to retrieve
+// this data.
+union PrinterCapsAndInfoResult {
+  PrinterCapsAndInfo printer_caps_and_info;
+  ResultCode result_code;
+};
 
 // The main interface to Chrome's Print Backend Service, which performs
 // printer queries and commands to operating system printer drivers in an
@@ -15,9 +46,8 @@ interface PrintBackendService {
   Init(string locale);
 
   // Enumerates the list of installed local and network printers.
-  // No value provided for `printer_list` if there is a failure.
   EnumeratePrinters()
-    => (array<PrinterBasicInfo>? printer_list);
+    => (PrinterListResult printer_list);
 
   // Gets the default printer name from the data source.
   // No value for `printer_name` is provided if there is a failure.
@@ -25,16 +55,11 @@ interface PrintBackendService {
     => (string? printer_name);
 
   // Gets the semantic capabilities and defaults for a specific printer.
-  // No value provided for `printer_caps` if there is a failure.
   GetPrinterSemanticCapsAndDefaults(string printer_name)
-    => (PrinterSemanticCapsAndDefaults? printer_caps);
+    => (PrinterSemanticCapsAndDefaultsResult printer_caps);
 
   // Gets the basic info, paper sizes, and semantic capabilities and defaults
   // for a specific printer.
-  // No value for `printer_info`, `user_defined_papers`, and `printer_caps` if
-  // there is a failure.
   FetchCapabilities(string printer_name)
-    => (PrinterBasicInfo? printer_info,
-        array<Paper>? user_defined_papers,
-        PrinterSemanticCapsAndDefaults? printer_caps);
+    => (PrinterCapsAndInfoResult printer_caps_and_info);
 };

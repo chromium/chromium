@@ -100,7 +100,8 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
                   const std::string& description,
-                  bool is_default) {
+                  bool is_default,
+                  bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     caps->papers.emplace_back(
         PrinterSemanticCapsAndDefaults::Paper{"bar", "vendor", {600, 600}});
@@ -108,8 +109,12 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
         id, display_name, description,
         /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});
 
-    print_backend()->AddValidPrinter(id, std::move(caps),
-                                     std::move(basic_info));
+    if (requires_elevated_permissions) {
+      print_backend()->AddAccessDeniedPrinter(id);
+    } else {
+      print_backend()->AddValidPrinter(id, std::move(caps),
+                                       std::move(basic_info));
+    }
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -136,9 +141,12 @@ INSTANTIATE_TEST_SUITE_P(All, LocalPrinterHandlerDefaultTest, testing::Bool());
 
 // Tests that getting default printer is successful.
 TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinter) {
-  AddPrinter("printer1", "default1", "description1", true);
-  AddPrinter("printer2", "non-default2", "description2", false);
-  AddPrinter("printer3", "non-default3", "description3", false);
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  AddPrinter("printer2", "non-default2", "description2", /*is_default=*/false,
+             /*requires_elevated_permissions=*/false);
+  AddPrinter("printer3", "non-default3", "description3", /*is_default=*/false,
+             /*requires_elevated_permissions=*/false);
 
   std::string default_printer;
   local_printer_handler()->GetDefaultPrinter(
@@ -162,9 +170,12 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinterNoneInstalled) {
 }
 
 TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
-  AddPrinter("printer1", "default1", "description1", true);
-  AddPrinter("printer2", "non-default2", "description2", false);
-  AddPrinter("printer3", "non-default3", "description3", false);
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  AddPrinter("printer2", "non-default2", "description2", /*is_default=*/false,
+             /*requires_elevated_permissions=*/false);
+  AddPrinter("printer3", "non-default3", "description3", /*is_default=*/false,
+             /*requires_elevated_permissions=*/false);
 
   size_t call_count = 0;
   std::unique_ptr<base::ListValue> printers;
@@ -231,7 +242,8 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
-  AddPrinter("printer1", "default1", "description1", true);
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
 
   base::Value fetched_caps;
   local_printer_handler()->StartGetCapability(
@@ -250,6 +262,22 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityInvalidPrinter) {
   base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"invalid printer",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  EXPECT_TRUE(fetched_caps.is_none());
+}
+
+// Test that installed printers to which the user does not have permission to
+// access will fail to get any capabilities.
+TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityAccessDenied) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/true);
+
+  base::Value fetched_caps("dummy");
+  local_printer_handler()->StartGetCapability(
+      /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();

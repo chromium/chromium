@@ -163,14 +163,19 @@ class LocalPrinterHandlerChromeosTest : public testing::Test {
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
                   const std::string& description,
-                  bool is_default) {
+                  bool is_default,
+                  bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     caps->papers.push_back({"bar", "vendor", {600, 600}});
     auto basic_info = std::make_unique<PrinterBasicInfo>(
         id, display_name, description, /*printer_status=*/0, is_default,
         PrinterBasicInfoOptions{});
-    test_backend_->AddValidPrinter("printer1", std::move(caps),
-                                   std::move(basic_info));
+    if (requires_elevated_permissions) {
+      test_backend_->AddAccessDeniedPrinter(id);
+    } else {
+      test_backend_->AddValidPrinter(id, std::move(caps),
+                                     std::move(basic_info));
+    }
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -307,7 +312,8 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
   printers_manager().InstallPrinter("printer1");
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", true);
+  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
 
   base::Value fetched_caps;
   local_printer_handler()->StartGetCapability(
@@ -331,7 +337,8 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
   printers_manager().AddPrinter(discovered_printer, PrinterClass::kDiscovered);
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "discovered", "description1", true);
+  AddPrinter("printer1", "discovered", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
 
   base::Value fetched_caps;
   local_printer_handler()->StartGetCapability(
@@ -346,7 +353,8 @@ TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
 
 // In this test we expect the `StartGetCapability` to bail early because the
 // provided printer can't be found in the `CupsPrintersManager`.
-TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityInvalidPrinter) {
+TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
+       StartGetCapabilityInvalidPrinter) {
   base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
       "invalid printer",
@@ -355,6 +363,33 @@ TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityInvalidPrinter) {
   RunUntilIdle();
 
   EXPECT_TRUE(fetched_caps.is_none());
+}
+
+// Test that installed printers to which the user does not have permission to
+// access will receive a dictionary for the capabilities but will not have any
+// settings in that.
+TEST_P(LocalPrinterHandlerChromeosProcessScopeTest,
+       StartGetCapabilityAccessDenied) {
+  Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+  printers_manager().InstallPrinter("printer1");
+
+  // Add printer capabilities to `test_backend_`.
+  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/true);
+
+  base::Value fetched_caps;
+  local_printer_handler()->StartGetCapability(
+      "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  ASSERT_TRUE(fetched_caps.is_dict());
+  const base::Value* settings = fetched_caps.FindKey(kSettingCapabilities);
+  ASSERT_TRUE(settings);
+  ASSERT_TRUE(settings->is_dict());
+  EXPECT_TRUE(settings->DictEmpty());
 }
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetNativePrinterPolicies) {

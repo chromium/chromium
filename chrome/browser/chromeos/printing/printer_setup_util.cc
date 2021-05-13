@@ -26,6 +26,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 
 namespace printing {
@@ -86,38 +87,54 @@ void LogPrinterSetup(const chromeos::Printer& printer,
 
 // This runs on a ThreadPoolForegroundWorker and not the UI thread.
 base::Optional<PrinterSemanticCapsAndDefaults>
-FetchCapabilitiesOnBlockingTaskRunner(const std::string& device_name,
+FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
                                       const std::string& locale) {
   auto print_backend = PrintBackend::CreateInstance(locale);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  VLOG(1) << "Get printer capabilities start for " << device_name;
+  VLOG(1) << "Get printer capabilities start for " << printer_id;
   crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(device_name));
+      print_backend->GetPrinterDriverInfo(printer_id));
 
   auto caps = base::make_optional<PrinterSemanticCapsAndDefaults>();
-  if (print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps) !=
+  if (print_backend->GetPrinterSemanticCapsAndDefaults(printer_id, &*caps) !=
       mojom::ResultCode::kSuccess) {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
-    LOG(WARNING) << "Failed to get capabilities for " << device_name;
+    LOG(WARNING) << "Failed to get capabilities for " << printer_id;
     return base::nullopt;
   }
   return caps;
 }
 
-void FetchCapabilities(
+void CapabilitiesFetchedFromService(
     const std::string& printer_id,
-    base::OnceCallback<
-        void(const base::Optional<PrinterSemanticCapsAndDefaults>&)> cb) {
+    GetPrinterCapabilitiesCallback cb,
+    mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
+  if (printer_caps->is_result_code()) {
+    LOG(WARNING) << "Failure fetching printer capabilities from service for "
+                 << printer_id << " - error "
+                 << printer_caps->get_result_code();
+    std::move(cb).Run(base::nullopt);
+    return;
+  }
+  VLOG(1) << "Successfully received printer capabilities from service for "
+          << printer_id;
+  std::move(cb).Run(printer_caps->get_printer_caps());
+}
+
+void FetchCapabilities(const std::string& printer_id,
+                       GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Fetching printer capabilities via service";
     auto& service = PrintBackendServiceManager::GetInstance().GetService(
         g_browser_process->GetApplicationLocale(), printer_id);
-    service->GetPrinterSemanticCapsAndDefaults(printer_id, std::move(cb));
+    service->GetPrinterSemanticCapsAndDefaults(
+        printer_id, base::BindOnce(&CapabilitiesFetchedFromService, printer_id,
+                                   std::move(cb)));
   } else {
     VLOG(1) << "Fetching printer capabilities in-process";
     // USER_VISIBLE because the result is displayed in the print preview dialog.
@@ -149,12 +166,10 @@ void OnPrinterInstalled(
 
 }  // namespace
 
-void SetUpPrinter(
-    chromeos::CupsPrintersManager* printers_manager,
-    chromeos::PrinterConfigurer* printer_configurer,
-    const chromeos::Printer& printer,
-    base::OnceCallback<
-        void(const base::Optional<PrinterSemanticCapsAndDefaults>&)> cb) {
+void SetUpPrinter(chromeos::CupsPrintersManager* printers_manager,
+                  chromeos::PrinterConfigurer* printer_configurer,
+                  const chromeos::Printer& printer,
+                  GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Log printer configuration for selected printer.
