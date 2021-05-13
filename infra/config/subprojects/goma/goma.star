@@ -344,6 +344,7 @@ def goma_windows_builder(
         name,
         goma_enable_ats = True,
         **kwargs):
+    kwargs["execution_timeout"] = 4 * time.hour
     return goma_builder(
         name = name,
         goma_enable_ats = goma_enable_ats,
