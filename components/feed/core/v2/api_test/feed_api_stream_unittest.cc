@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -848,7 +849,7 @@ TEST_F(FeedApiTest, ReportOpenInNewTabAction) {
   base::UserActionTester user_actions;
 
   stream_->ReportOpenInNewTabAction(
-      surface.GetStreamType(),
+      GURL(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   EXPECT_EQ(1, user_actions.GetActionCount(
@@ -2173,6 +2174,34 @@ TEST_F(
   WaitForIdleTaskQueue();
   // Neither stream type should be refreshed.
   ASSERT_EQ(2, network_.send_query_call_count);
+}
+
+TEST_F(FeedApiTest, WasUrlRecentlyNavigatedFromFeed) {
+  const GURL url1("https://someurl1");
+  const GURL url2("https://someurl2");
+  EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(url1));
+  EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(url2));
+
+  stream_->ReportOpenAction(url1, kForYouStream, "slice");
+  stream_->ReportOpenInNewTabAction(url2, kForYouStream, "slice");
+
+  EXPECT_TRUE(stream_->WasUrlRecentlyNavigatedFromFeed(url1));
+  EXPECT_TRUE(stream_->WasUrlRecentlyNavigatedFromFeed(url2));
+}
+
+// After 10 URLs are navigated, they are forgotten in FIFO order.
+TEST_F(FeedApiTest, WasUrlRecentlyNavigatedFromFeedMaxHistory) {
+  std::vector<GURL> urls;
+  for (int i = 0; i < 11; ++i)
+    urls.emplace_back("https://someurl" + base::NumberToString(i));
+
+  for (const GURL& url : urls)
+    stream_->ReportOpenAction(url, kForYouStream, "slice");
+
+  EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(urls[0]));
+  for (size_t i = 1; i < urls.size(); ++i) {
+    EXPECT_TRUE(stream_->WasUrlRecentlyNavigatedFromFeed(urls[i]));
+  }
 }
 
 // Keep instantiations at the bottom.

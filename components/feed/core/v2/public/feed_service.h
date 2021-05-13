@@ -93,6 +93,7 @@ class FeedService : public KeyedService {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const std::string& api_key,
       const ChromeInfo& chrome_info);
+  static std::unique_ptr<FeedService> CreateForTesting(FeedApi* api);
   ~FeedService() override;
   FeedService(const FeedService&) = delete;
   FeedService& operator=(const FeedService&) = delete;
@@ -120,6 +121,8 @@ class FeedService : public KeyedService {
   class NetworkDelegateImpl;
   class HistoryObserverImpl;
   class IdentityManagerObserverImpl;
+
+  FeedService();
 #if defined(OS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
@@ -143,6 +146,7 @@ class FeedService : public KeyedService {
       application_status_listener_;
 #endif
   std::unique_ptr<FeedStream> stream_;
+  FeedApi* api_;  // Points to `stream_`, overridden for testing.
 };
 
 }  // namespace feed

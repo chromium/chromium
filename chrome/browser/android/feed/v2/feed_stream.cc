@@ -20,6 +20,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/variations/variations_ids_provider.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -183,21 +184,28 @@ base::android::ScopedJavaLocalRef<jstring> FeedStream::GetSessionId(
 
 void FeedStream::ReportOpenAction(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
+                                  const JavaParamRef<jobject>& j_url,
                                   const JavaParamRef<jstring>& slice_id) {
   if (!feed_stream_api_)
     return;
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_stream_api_->ReportOpenAction(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
+      url ? *url : GURL(), GetStreamType(),
+      base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStream::ReportOpenInNewTabAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_url,
     const JavaParamRef<jstring>& slice_id) {
   if (!feed_stream_api_)
     return;
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+
   feed_stream_api_->ReportOpenInNewTabAction(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
+      url ? *url : GURL(), GetStreamType(),
+      base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStream::ReportSliceViewed(JNIEnv* env,

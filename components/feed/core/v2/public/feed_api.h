@@ -125,8 +125,12 @@ class FeedApi {
   //|feedwire::FeedAction| message.
   virtual void ProcessViewAction(base::StringPiece data) = 0;
 
-  // User interaction reporting. These should have no side-effects other than
-  // reporting metrics.
+  // Returns whether `url` is a suggested Feed URLs, recently
+  // navigated to by the user.
+  virtual bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) = 0;
+
+  // User interaction reporting. Unless otherwise documented, these have no
+  // side-effects other than reporting metrics.
 
   // A slice was viewed (2/3rds of it is in the viewport). Should be called
   // once for each viewed slice in the stream.
@@ -139,14 +143,18 @@ class FeedApi {
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
   // The user triggered the default open action, usually by tapping the card.
-  virtual void ReportOpenAction(const StreamType& stream_type,
+  // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
+  virtual void ReportOpenAction(const GURL& url,
+                                const StreamType& stream_type,
                                 const std::string& slice_id) = 0;
   // The user triggered an open action, visited a web page, and then navigated
   // away or backgrouded the tab. |visit_time| is a measure of how long the
   // visited page was foregrounded.
   virtual void ReportOpenVisitComplete(base::TimeDelta visit_time) = 0;
   // The user triggered the 'open in new tab' action.
-  virtual void ReportOpenInNewTabAction(const StreamType& stream_type,
+  // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
+  virtual void ReportOpenInNewTabAction(const GURL& url,
+                                        const StreamType& stream_type,
                                         const std::string& slice_id) = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
   virtual void ReportStreamScrolled(const StreamType& stream_type,

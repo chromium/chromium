@@ -79,8 +79,7 @@ class FeedStream : public ::feed::FeedStreamSurface {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
-  // Event reporting functions. These have no side-effect beyond recording
-  // metrics. See |FeedApi| for definitions.
+  // Event reporting functions. See |FeedApi| for definitions.
   void ReportSliceViewed(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jstring>& slice_id);
@@ -88,10 +87,12 @@ class FeedStream : public ::feed::FeedStreamSurface {
                         const base::android::JavaParamRef<jobject>& obj);
   void ReportOpenAction(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
+                        const base::android::JavaParamRef<jobject>& j_url,
                         const base::android::JavaParamRef<jstring>& slice_id);
   void ReportOpenInNewTabAction(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& j_url,
       const base::android::JavaParamRef<jstring>& slice_id);
   void ReportOpenInNewIncognitoTabAction(
       JNIEnv* env,

@@ -47,7 +47,7 @@ TEST_F(FeedApiTest, LoadStreamSendsNoticeCardAcknowledgement) {
                              slice_id);
   stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
                              slice_id);
-  stream_->ReportOpenAction(surface.GetStreamType(), slice_id);
+  stream_->ReportOpenAction(GURL(), surface.GetStreamType(), slice_id);
 
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   stream_->UnloadModel(surface.GetStreamType());

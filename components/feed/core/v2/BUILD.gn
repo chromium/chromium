@@ -216,6 +216,17 @@ source_set("core_unit_tests") {
   ]
 }
 
+source_set("feed_core_stubs") {
+  testonly = true
+  sources = [
+    "public/test/stub_feed_api.cc",
+    "public/test/stub_feed_api.h",
+    "public/test/stub_web_feed_subscriptions.cc",
+    "public/test/stub_web_feed_subscriptions.h",
+  ]
+  deps = [ ":feed_core_v2" ]
+}
+
 # Tests for :feed_core_base that can be compiled in iOS.
 # This source set is added as a dep of :core_unit_tests.
 source_set("feed_core_base_unit_tests") {
