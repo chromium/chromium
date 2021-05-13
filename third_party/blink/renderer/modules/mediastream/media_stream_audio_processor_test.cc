@@ -197,7 +197,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, use_multichannel_processing, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
   audio_processor->OnCaptureFormatChanged(params_);
   VerifyDefaultComponents(audio_processor.get());
@@ -222,7 +222,7 @@ TEST_F(MediaStreamAudioProcessorTest, TurnOffDefaultConstraints) {
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           properties, /*use_multichannel_processing=*/true,
-          webrtc_audio_device.get()));
+          webrtc_audio_device));
   EXPECT_FALSE(audio_processor->has_audio_processing());
   audio_processor->OnCaptureFormatChanged(params_);
 
@@ -247,7 +247,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, use_multichannel_processing, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 
   static const int kSupportedSampleRates[] = {
@@ -302,7 +302,7 @@ TEST_F(MediaStreamAudioProcessorTest, StartStopAecDump) {
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new rtc::RefCountedObject<MediaStreamAudioProcessor>(
             properties, /*use_multichannel_processing=*/true,
-            webrtc_audio_device.get()));
+            webrtc_audio_device));
 
     // Start and stop recording.
     audio_processor->OnStartDump(base::File(
@@ -327,7 +327,6 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
   const bool use_multichannel_processing = GetParam();
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-
   const media::AudioParameters source_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::CHANNEL_LAYOUT_STEREO, 48000, 480);
@@ -364,8 +363,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
     properties.goog_audio_mirroring = true;
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-            properties, use_multichannel_processing,
-            webrtc_audio_device.get()));
+            properties, use_multichannel_processing, webrtc_audio_device));
     EXPECT_EQ(audio_processor->has_audio_processing(), use_apm);
     audio_processor->OnCaptureFormatChanged(source_params);
     // There's no sense in continuing if this fails.
@@ -422,7 +420,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel,
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, use_multichannel_processing, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -455,7 +453,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableDefaultAgc1) {
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           properties, /*use_multichannel_processing=*/true,
-          webrtc_audio_device.get()));
+          webrtc_audio_device));
 
   base::Optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
@@ -496,7 +494,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           properties, /*use_multichannel_processing=*/true,
-          webrtc_audio_device.get()));
+          webrtc_audio_device));
 
   base::Optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
@@ -548,7 +546,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           properties, /*use_multichannel_processing=*/true,
-          webrtc_audio_device.get()));
+          webrtc_audio_device));
 
   base::Optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
@@ -568,7 +566,7 @@ TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
           properties, /*use_multichannel_processing=*/true,
-          webrtc_audio_device.get()));
+          webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,

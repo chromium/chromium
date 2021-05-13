@@ -723,6 +723,9 @@ void RTCRtpSender::Trace(Visitor* visitor) const {
 
 RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
                                                   const String& kind) {
+  if (!state->ContextIsValid())
+    return nullptr;
+
   if (kind != "audio" && kind != "video")
     return nullptr;
 
@@ -732,8 +735,8 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
       HeapVector<Member<RTCRtpHeaderExtensionCapability>>());
 
   std::unique_ptr<webrtc::RtpCapabilities> rtc_capabilities =
-      PeerConnectionDependencyFactory::GetInstance()->GetSenderCapabilities(
-          kind);
+      PeerConnectionDependencyFactory::From(*ExecutionContext::From(state))
+          .GetSenderCapabilities(kind);
 
   HeapVector<Member<RTCRtpCodecCapability>> codecs;
   codecs.ReserveInitialCapacity(

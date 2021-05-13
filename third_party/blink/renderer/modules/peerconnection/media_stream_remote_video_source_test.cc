@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"
@@ -66,7 +67,8 @@ class MediaStreamRemoteVideoSourceUnderTest
 class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
  public:
   MediaStreamRemoteVideoSourceTest()
-      : mock_factory_(new blink::MockPeerConnectionDependencyFactory()),
+      : mock_factory_(
+            MakeGarbageCollected<MockPeerConnectionDependencyFactory>()),
         webrtc_video_source_(blink::MockWebRtcVideoTrackSource::Create(
             /*supports_encoded_output=*/true)),
         webrtc_video_track_(
@@ -166,7 +168,7 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory> mock_factory_;
+  Persistent<blink::MockPeerConnectionDependencyFactory> mock_factory_;
   scoped_refptr<webrtc::VideoTrackSourceInterface> webrtc_video_source_;
   scoped_refptr<webrtc::VideoTrackInterface> webrtc_video_track_;
   // |remote_source_| is owned by |source_|.

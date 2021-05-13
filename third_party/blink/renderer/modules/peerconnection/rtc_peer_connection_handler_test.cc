@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -282,18 +283,19 @@ class RTCPeerConnectionHandlerUnderTest : public RTCPeerConnectionHandler {
     return native_peer_connection()->observer();
   }
 
-  bool HasThermalUmaListner() const { return thermal_uma_listener(); }
+  bool HasThermalUmaListener() const { return thermal_uma_listener(); }
 };
 
-class RTCPeerConnectionHandlerTest : public ::testing::Test {
+class RTCPeerConnectionHandlerTest : public SimTest {
  public:
   RTCPeerConnectionHandlerTest() : mock_peer_connection_(nullptr) {}
 
   void SetUp() override {
+    SimTest::SetUp();
     mock_client_ =
         std::make_unique<NiceMock<MockRTCPeerConnectionHandlerClient>>();
     mock_dependency_factory_ =
-        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
 
     pc_handler_ = CreateRTCPeerConnectionHandlerUnderTest();
     mock_tracker_ = MakeGarbageCollected<NiceMock<MockPeerConnectionTracker>>();
@@ -309,6 +311,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    SimTest::TearDown();
     pc_handler_ = nullptr;
     mock_tracker_ = nullptr;
     mock_dependency_factory_ = nullptr;
@@ -319,7 +322,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
   std::unique_ptr<RTCPeerConnectionHandlerUnderTest>
   CreateRTCPeerConnectionHandlerUnderTest() {
     return std::make_unique<RTCPeerConnectionHandlerUnderTest>(
-        mock_client_.get(), mock_dependency_factory_.get());
+        mock_client_.get(), mock_dependency_factory_.Get());
   }
 
   // Creates a WebKit local MediaStream.
@@ -330,7 +333,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
         audio_track_label, MediaStreamSource::kTypeAudio,
         String::FromUTF8("audio_track"), false /* remote */);
     auto processed_audio_source = std::make_unique<ProcessedLocalAudioSource>(
-        nullptr /* consumer_web_frame is N/A for non-browser tests */,
+        *LocalFrameRoot().GetFrame(),
         MediaStreamDevice(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
                           "mock_device_id", "Mock device",
                           media::AudioParameters::kAudioCDSampleRate,
@@ -584,8 +587,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
   ScopedTestingPlatformSupport<AudioCapturerSourceTestingPlatformSupport>
       webrtc_audio_device_platform_support_;
   std::unique_ptr<MockRTCPeerConnectionHandlerClient> mock_client_;
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
-      mock_dependency_factory_;
+  Persistent<MockPeerConnectionDependencyFactory> mock_dependency_factory_;
   Persistent<NiceMock<MockPeerConnectionTracker>> mock_tracker_;
   std::unique_ptr<RTCPeerConnectionHandlerUnderTest> pc_handler_;
 
@@ -1281,7 +1283,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
   for (bool force_encoded_audio_insertable_streams : {true, false}) {
     for (bool force_encoded_video_insertable_streams : {true, false}) {
       auto handler = std::make_unique<RTCPeerConnectionHandlerUnderTest>(
-          mock_client_.get(), mock_dependency_factory_.get(),
+          mock_client_.get(), mock_dependency_factory_.Get(),
           force_encoded_audio_insertable_streams,
           force_encoded_video_insertable_streams);
       EXPECT_EQ(handler->force_encoded_audio_insertable_streams(),
@@ -1349,10 +1351,10 @@ TEST_F(RTCPeerConnectionHandlerTest,
 TEST_F(RTCPeerConnectionHandlerTest,
        ThermalStateUmaListenerCreatedWhenVideoStreamAdded) {
   base::HistogramTester histogram;
-  EXPECT_FALSE(pc_handler_->HasThermalUmaListner());
+  EXPECT_FALSE(pc_handler_->HasThermalUmaListener());
   MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
   EXPECT_TRUE(AddStream(local_stream));
-  EXPECT_TRUE(pc_handler_->HasThermalUmaListner());
+  EXPECT_TRUE(pc_handler_->HasThermalUmaListener());
 }
 
 }  // namespace blink

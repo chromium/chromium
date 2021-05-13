@@ -8,16 +8,27 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 #include "third_party/blink/renderer/platform/p2p/network_manager_uma.h"
 
 namespace blink {
 
-EmptyNetworkManager::EmptyNetworkManager(rtc::NetworkManager* network_manager)
-    : network_manager_(network_manager) {
+EmptyNetworkManager::EmptyNetworkManager(IpcNetworkManager* network_manager)
+    : EmptyNetworkManager(network_manager,
+                          network_manager->AsWeakPtrForSignalingThread()) {}
+
+// DO NOT dereference/check `network_manager_for_signaling_thread_` in the ctor!
+// Doing so would bind its WeakFactory to the constructing thread (main thread)
+// instead of the thread `this` lives in (signaling thread).
+EmptyNetworkManager::EmptyNetworkManager(
+    rtc::NetworkManager* network_manager,
+    base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread)
+    : network_manager_for_signaling_thread_(
+          network_manager_for_signaling_thread) {
   DCHECK(network_manager);
   DETACH_FROM_THREAD(thread_checker_);
   set_enumeration_permission(ENUMERATION_BLOCKED);
-  network_manager_->SignalNetworksChanged.connect(
+  network_manager->SignalNetworksChanged.connect(
       this, &EmptyNetworkManager::OnNetworksChanged);
 }
 
@@ -27,13 +38,17 @@ EmptyNetworkManager::~EmptyNetworkManager() {
 
 void EmptyNetworkManager::StartUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(network_manager_for_signaling_thread_);
   ++start_count_;
-  network_manager_->StartUpdating();
+  network_manager_for_signaling_thread_->StartUpdating();
 }
 
 void EmptyNetworkManager::StopUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  network_manager_->StopUpdating();
+
+  if (network_manager_for_signaling_thread_)
+    network_manager_for_signaling_thread_->StopUpdating();
+
   --start_count_;
   DCHECK_GE(start_count_, 0);
 }
@@ -46,7 +61,10 @@ void EmptyNetworkManager::GetNetworks(NetworkList* networks) const {
 bool EmptyNetworkManager::GetDefaultLocalAddress(
     int family,
     rtc::IPAddress* ipaddress) const {
-  return network_manager_->GetDefaultLocalAddress(family, ipaddress);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(network_manager_for_signaling_thread_);
+  return network_manager_for_signaling_thread_->GetDefaultLocalAddress(
+      family, ipaddress);
 }
 
 void EmptyNetworkManager::OnNetworksChanged() {

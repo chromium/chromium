@@ -44,11 +44,11 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
  public:
   void SetUp() override {
     dependency_factory_ =
-        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_task_runner_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_adapter_map_ =
         base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
-            dependency_factory_.get(), main_task_runner_);
+            dependency_factory_.Get(), main_task_runner_);
     surfacer_ = std::make_unique<TransceiverStateSurfacer>(
         main_task_runner_, signaling_task_runner());
     DummyExceptionStateForTesting exception_state;
@@ -276,7 +276,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
 
  protected:
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
+  CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;

@@ -129,7 +129,7 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateLocalTrackAdapter(
     // is blocked waiting for |lock_| we end up in a deadlock.
     base::AutoUnlock scoped_unlock(lock_);
     new_adapter = blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-        factory_, main_thread_, component);
+        factory_.Lock(), main_thread_, component);
   }
   DCHECK(new_adapter->is_initialized());
   local_track_adapters_.Insert(component->UniqueId(), new_adapter);
@@ -189,7 +189,7 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateRemoteTrackAdapter(
     base::AutoUnlock scoped_unlock(lock_);
     new_adapter =
         blink::WebRtcMediaStreamTrackAdapter::CreateRemoteTrackAdapter(
-            factory_, main_thread_, webrtc_track);
+            factory_.Lock(), main_thread_, webrtc_track);
   }
   remote_track_adapters_.Insert(webrtc_track.get(), new_adapter);
   // The new adapter is initialized in a post to the main thread. As soon as it

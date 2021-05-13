@@ -32,12 +32,12 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
  public:
   void SetUp() override {
     dependency_factory_ =
-        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_task_runner_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
-        dependency_factory_.get(), main_task_runner_);
+        dependency_factory_.Get(), main_task_runner_);
     peer_connection_ = new rtc::RefCountedObject<blink::MockPeerConnectionImpl>(
-        dependency_factory_.get(), nullptr);
+        dependency_factory_.Get(), nullptr);
   }
 
   void TearDown() override {
@@ -178,8 +178,7 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
  protected:
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
-      dependency_factory_;
+  Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
   rtc::scoped_refptr<blink::MockPeerConnectionImpl> peer_connection_;

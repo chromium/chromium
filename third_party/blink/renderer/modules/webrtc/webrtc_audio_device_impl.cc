@@ -51,7 +51,6 @@ WebRtcAudioDeviceImpl::WebRtcAudioDeviceImpl()
 WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl() {
   SendLogMessage(base::StringPrintf("%s() [id=%s]", __func__,
                                     GetAudioProcessingId().ToString().c_str()));
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(!initialized_) << "Terminate must have been called.";
 }
 

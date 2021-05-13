@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -38,7 +39,8 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
 
  protected:
   Persistent<MediaStreamComponent> component_;
-  blink::MockPeerConnectionDependencyFactory dependency_factory_;
+  Persistent<MockPeerConnectionDependencyFactory> dependency_factory_ =
+      MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
 
  private:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
@@ -49,7 +51,7 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
 TEST_F(MediaStreamVideoWebRtcSinkTest, NoiseReductionDefaultsToNotSet) {
   SetVideoTrack();
   blink::MediaStreamVideoWebRtcSink my_sink(
-      component_, &dependency_factory_,
+      component_, dependency_factory_.Get(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_TRUE(my_sink.webrtc_video_track());
   EXPECT_FALSE(my_sink.SourceNeedsDenoisingForTesting());

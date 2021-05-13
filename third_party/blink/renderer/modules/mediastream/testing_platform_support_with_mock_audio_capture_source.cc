@@ -10,7 +10,6 @@ scoped_refptr<media::AudioCapturerSource>
 AudioCapturerSourceTestingPlatformSupport::NewAudioCapturerSource(
     WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  EXPECT_EQ(nullptr, web_frame);
   return mock_audio_capturer_source_;
 }
 

@@ -87,6 +87,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_interface.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
@@ -532,6 +533,14 @@ void BindVibrationManager(
     GetDeviceService().BindVibrationManager(std::move(receiver));
 }
 
+void BindSocketManager(
+    RenderFrameHostImpl* frame,
+    mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
+  static_cast<RenderProcessHostImpl*>(frame->GetProcess())
+      ->BindP2PSocketManager(frame->GetNetworkIsolationKey(),
+                             std::move(receiver));
+}
+
 }  // namespace
 
 // Documents/frames
@@ -603,6 +612,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateNotificationService, base::Unretained(host)));
+
+  map->Add<network::mojom::P2PSocketManager>(
+      base::BindRepeating(&BindSocketManager, base::Unretained(host)));
 
   map->Add<blink::mojom::PeerConnectionTrackerHost>(
       base::BindRepeating(&RenderFrameHostImpl::BindPeerConnectionTrackerHost,

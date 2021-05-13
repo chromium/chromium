@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/sys_byteorder.h"
@@ -52,15 +53,28 @@ IpcNetworkManager::IpcNetworkManager(
     std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder)
     : network_list_manager_(network_list_manager),
       mdns_responder_(std::move(mdns_responder)) {
+  DETACH_FROM_THREAD(thread_checker_);
   network_list_manager->AddNetworkListObserver(this);
 }
 
 IpcNetworkManager::~IpcNetworkManager() {
-  DCHECK(!start_count_);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!network_list_manager_);
+}
+
+void IpcNetworkManager::ContextDestroyed() {
+  DCHECK(network_list_manager_);
   network_list_manager_->RemoveNetworkListObserver(this);
+  network_list_manager_ = nullptr;
+}
+
+base::WeakPtr<IpcNetworkManager>
+IpcNetworkManager::AsWeakPtrForSignalingThread() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void IpcNetworkManager::StartUpdating() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (network_list_received_) {
     // Post a task to avoid reentrancy.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -74,6 +88,7 @@ void IpcNetworkManager::StartUpdating() {
 }
 
 void IpcNetworkManager::StopUpdating() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(start_count_, 0);
   --start_count_;
 }
@@ -82,6 +97,7 @@ void IpcNetworkManager::OnNetworkListChanged(
     const net::NetworkInterfaceList& list,
     const net::IPAddress& default_ipv4_local_address,
     const net::IPAddress& default_ipv6_local_address) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Update flag if network list received for the first time.
   if (!network_list_received_) {
     VLOG(1) << "IpcNetworkManager received network list from browser process "
@@ -191,10 +207,12 @@ void IpcNetworkManager::OnNetworkListChanged(
 }
 
 webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return mdns_responder_.get();
 }
 
 void IpcNetworkManager::SendNetworksChangedSignal() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SignalNetworksChanged();
 }
 

@@ -70,6 +70,7 @@ WebRtcMediaStreamTrackAdapter::WebRtcMediaStreamTrackAdapter(
     blink::PeerConnectionDependencyFactory* factory,
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread)
     : factory_(factory),
+      webrtc_signaling_task_runner_(nullptr),
       main_thread_(main_thread),
       remote_track_can_complete_initialization_(
           base::WaitableEvent::ResetPolicy::MANUAL,
@@ -171,9 +172,16 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalAudioTrack(
   // the webrtc::AudioSourceInterface, and also do not need references to the
   // audio level calculator or audio processor passed to the sink.
   webrtc::AudioSourceInterface* source_interface = nullptr;
+
+  // Initialize `webrtc_signaling_task_runner_` here instead of the ctor since
+  // `GetWebRtcSignalingTaskRunner()` must be called on the main thread.
+  auto factory = factory_.Lock();
+  DCHECK(factory);
+  webrtc_signaling_task_runner_ = factory->GetWebRtcSignalingTaskRunner();
+
   local_track_audio_sink_ = std::make_unique<blink::WebRtcAudioSink>(
-      component_->Id().Utf8(), source_interface,
-      factory_->GetWebRtcSignalingTaskRunner(), main_thread_);
+      component_->Id().Utf8(), source_interface, webrtc_signaling_task_runner_,
+      main_thread_);
 
   if (auto* media_stream_source = blink::ProcessedLocalAudioSource::From(
           blink::MediaStreamAudioSource::From(component_->Source()))) {
@@ -199,10 +207,17 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalVideoTrack(
   DCHECK(component);
   DCHECK_EQ(component->Source()->GetType(), MediaStreamSource::kTypeVideo);
   component_ = component;
+  auto factory = factory_.Lock();
+  DCHECK(factory);
   local_track_video_sink_ = std::make_unique<blink::MediaStreamVideoWebRtcSink>(
-      component_, factory_, main_thread_);
+      component_, factory, main_thread_);
   webrtc_track_ = local_track_video_sink_->webrtc_video_track();
   DCHECK(webrtc_track_);
+
+  // Initialize `webrtc_signaling_task_runner_` here instead of the ctor since
+  // `GetWebRtcSignalingTaskRunner()` must be called on the main thread.
+  webrtc_signaling_task_runner_ = factory->GetWebRtcSignalingTaskRunner();
+
   is_initialized_ = true;
 }
 
@@ -265,6 +280,13 @@ void WebRtcMediaStreamTrackAdapter::
     remote_video_track_adapter_->Initialize();
     component_ = remote_video_track_adapter_->track();
   }
+
+  // Initialize `webrtc_signaling_task_runner_` here instead of the ctor since
+  // `GetWebRtcSignalingTaskRunner()` must be called on the main thread.
+  auto factory = factory_.Lock();
+  DCHECK(factory);
+  webrtc_signaling_task_runner_ = factory->GetWebRtcSignalingTaskRunner();
+
   is_initialized_ = true;
 }
 
@@ -304,8 +326,10 @@ void WebRtcMediaStreamTrackAdapter::DisposeRemoteAudioTrack() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(remote_audio_track_adapter_);
   DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeAudio);
+
+  DCHECK(webrtc_signaling_task_runner_);
   PostCrossThreadTask(
-      *factory_->GetWebRtcSignalingTaskRunner().get(), FROM_HERE,
+      *webrtc_signaling_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &WebRtcMediaStreamTrackAdapter::
               UnregisterRemoteAudioTrackAdapterOnSignalingThread,
