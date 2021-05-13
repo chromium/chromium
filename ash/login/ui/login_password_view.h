@@ -178,13 +178,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Increases/decreases the contrast of the capslock icon.
   void SetCapsLockHighlighted(bool highlight);
 
-  // Highlight or remove highlight from password row.
-  void SetPasswordRowHighlighted(bool highlight);
-
-  // Remove highlight from caps lock and password row, when textfield looses
-  // focus.
-  void RemoveHighlightFromCapsLockAndRow();
-
   // Needs to be true in order for SubmitPassword to be ran. Returns true if the
   // textfield is not empty or if |enabled_on_empty_password| is true.
   bool IsPasswordSubmittable();
