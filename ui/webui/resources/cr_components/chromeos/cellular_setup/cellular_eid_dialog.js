@@ -52,7 +52,7 @@ Polymer({
 
   /**@private */
   onDonePressed_() {
-    this.fire('close-eid-popup');
+    this.$.eidDialog.close();
   },
 
   /**

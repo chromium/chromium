@@ -189,10 +189,20 @@ suite('CellularNetworksList', function() {
     await flushAsync();
     let eidDialog = cellularNetworkList.$$('.eid-dialog');
     assertFalse(!!eidDialog);
-    const eidPopupBtn = cellularNetworkList.$$('#eidPopupButton');
-    assertTrue(!!eidPopupBtn);
 
-    eidPopupBtn.click();
+    const tripleDot = cellularNetworkList.$$('#moreESim');
+    assertTrue(!!tripleDot);
+    tripleDot.click();
+    await flushAsync();
+
+    const actionMenu =
+        cellularNetworkList.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
+    assertTrue(actionMenu.open);
+
+    const showEidBtn = actionMenu.querySelector('button');
+    assertTrue(!!showEidBtn);
+    showEidBtn.click();
     await flushAsync();
 
     eidDialog = cellularNetworkList.$$('.eid-dialog');

@@ -176,7 +176,6 @@ Polymer({
   },
 
   listeners: {
-    'close-eid-popup': 'toggleEidDialog_',
     'install-profile': 'installProfile_',
   },
 
@@ -401,15 +400,26 @@ Polymer({
         {pageName: cellularSetup.CellularSetupPageName.ESIM_FLOW_UI});
   },
 
-  /** @private */
-  toggleEidDialog_() {
-    this.shouldShowEidDialog_ = !this.shouldShowEidDialog_;
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onESimDotsClick_(e) {
+    const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
+    menu.showAt(/** @type {!Element} */ (e.target));
+  },
 
-    if (this.shouldShowEidDialog_) {
-      Polymer.RenderStatus.afterNextRender(this, () => {
-        this.$$('.eid-dialog').focus();
-      });
-    }
+  /** @private */
+  onShowEidDialogTap_() {
+    const actionMenu =
+        /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'));
+    actionMenu.close();
+    this.shouldShowEidDialog_ = true;
+  },
+
+  /** @private */
+  onCloseEidDialog_() {
+    this.shouldShowEidDialog_ = false;
   },
 
   /**

@@ -357,6 +357,9 @@
   <message name="IDS_CELLULAR_SETUP_ESTABLISH_NETWORK_CONNECTION" desc="Message, informing user that a network connection is being established during cellular setup">
     Establishing network connection ...
   </message>
+  <message name="IDS_CELLULAR_SETUP_EID_MENU_ITEM_TITLE" desc="Title for menu item in the eSIM list triple dot menu that shows the EID and QR code dialog when clicked.">
+    Show device EID
+  </message>
   <message name="IDS_CELLULAR_SETUP_EID_POPUP_TITLE" desc="Label shown when vewing EID and QR code popup describing device EID">
     Your device EID
   </message>

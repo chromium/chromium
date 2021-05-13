@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 
@@ -35,7 +36,7 @@
         margin-top: 15px;
       }
     </style>
-    <cr-dialog show-on-attach>
+    <cr-dialog id="eidDialog" show-on-attach>
       <div slot="title">[[i18n('eidPopupTitle')]]</div>
       <div slot="body" aria-label="[[getA11yLabel_(eid_)]]">
         <div id="eidDescription" aria-hidden="true">

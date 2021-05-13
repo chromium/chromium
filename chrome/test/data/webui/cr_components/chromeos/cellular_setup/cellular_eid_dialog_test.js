@@ -58,12 +58,11 @@ suite('CrComponentsCellularEidDialogTest', function() {
 
   test('should close EID when done is pressed', async function() {
     await init();
-    const closeEidPopupPromise =
-        test_util.eventToPromise('close-eid-popup', eidDialog);
-    // Wait for (addEventListeners_) events to register on the UI after
-    // next render.
-    await test_util.waitAfterNextRender(eidDialog);
+    assertTrue(eidDialog.$.eidDialog.open);
+
     eidDialog.$.done.click();
-    await closeEidPopupPromise;
+    Polymer.dom.flush();
+
+    assertFalse(eidDialog.$.eidDialog.open);
   });
 });

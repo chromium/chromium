@@ -93,6 +93,11 @@
         height: 20px;
         width: 20px;
       }
+
+      .separator {
+        margin-inline-end: 0;
+        margin-inline-start: 24px;
+      }
     </style>
     <template is="dom-if" if="[[shouldShowEsimSection_(euicc_,
         cellularDeviceState, cellularDeviceState.*)]]" restamp>
@@ -101,22 +106,7 @@
             flex settings-box-text">
           <div class="flex-column">
             <div class="flex header-row">
-              <div class="esim-list-title">
-                $i18n{cellularNetworkEsimLabel}
-              </div>
-              <div class="flex-column">
-                <cr-icon-button
-                    id="eidPopupButton"
-                    iron-icon="cr:info-outline"
-                    title="$i18n{showEidPopupButtonLabel}"
-                    aria-label="$i18n{showEidPopupButtonLabel}"
-                    on-click="toggleEidDialog_">
-                </cr-icon-button>
-                <template is="dom-if" if="[[shouldShowEidDialog_]]" restamp>
-                  <cellular-eid-dialog class="eid-dialog" euicc="[[euicc_]]">
-                  </cellular-eid-dialog>
-                </template>
-              </div>
+              $i18n{cellularNetworkEsimLabel}
             </div>
             <div id="inhibitedSubtext" class="header-row secondary-box-text"
                 hidden="[[!isDeviceInhibited_]]" aria-live="assertive">
@@ -134,6 +124,28 @@
                   disabled="[[isDeviceInhibited_]]"
                   on-click="onAddEsimButtonTap_">
               </cr-icon-button>
+              <div class="separator"></div>
+            </template>
+            <cr-icon-button id="moreESim" class="icon-more-vert"
+                title="$i18n{moreActions}"
+                on-click="onESimDotsClick_">
+            </cr-icon-button>
+            <cr-lazy-render id="menu">
+              <template>
+                <cr-action-menu>
+                  <button class="dropdown-item"
+                      on-click="onShowEidDialogTap_"
+                      role="menuitem">
+                    $i18n{eidPopupMenuItemTitle}
+                  </button>
+                </cr-action-menu>
+              </template>
+            </cr-lazy-render>
+            <template is="dom-if" if="[[shouldShowEidDialog_]]" restamp>
+              <cellular-eid-dialog class="eid-dialog"
+                  on-close="onCloseEidDialog_"
+                  euicc="[[euicc_]]">
+              </cellular-eid-dialog>
             </template>
           </div>
         </div>
