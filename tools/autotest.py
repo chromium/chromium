@@ -53,7 +53,8 @@ _OTHER_TEST_TARGETS = [
 ]
 
 _TEST_TARGET_REGEX = re.compile(
-    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests)$')
+    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests|' +
+    r'_wpr_tests)$')
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 
