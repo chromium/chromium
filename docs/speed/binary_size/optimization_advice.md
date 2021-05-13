@@ -1,7 +1,6 @@
-# Optimizing Chrome's Image Size
+# Optimizing Chrome's Binary Size
 
-The Chrome image size is important on all platforms as it affects download
-and update times.
+Read first: [binary_size_explainer.md](binary_size_explainer.md)
 
  >
  > This document primarily focuses on Android and Chrome OS where image size
@@ -113,25 +112,6 @@ There are two mechanisms for compressing Chrome l10n files.
 
 ## Android Focused Advice
 
-Googlers: See also [go/abp-performance/apk-size].
-
-[go/abp-performance/apk-size]: https://goto.google.com/abp-performance/apk-size
-
-### How To Tell if It's Worth Spending Time on Binary Size?
-
- * Binary size is a shared resource, and thus its growth is largely due to the
-   tragedy of the commons.
- * It typically takes about a week of engineering time to reduce Android's
-   binary size by 50kb.
- * As of 2019, Chrome for Android (arm32) grows by about 100kb per week.
- * To get a feeling for how large existing features are, refer to the
-   [milestone size breakdowns] and group by "Component" (Googlers only).
-   * For non-googlers, run `//tools/binary_size/supersize archive` on a release
-     build to create a `.size` file, and upload it to [the viewer]
-
-[milestone size breakdowns]: https://goto.google.com/chrome-supersize
-[the viewer]: https://chrome-supersize.firebaseapp.com/viewer.html
-
 ### Optimizing Translations (Strings)
 
  * Use [Android System strings](https://developer.android.com/reference/android/R.string.html) where appropriate
@@ -232,6 +212,12 @@ Practical advice:
          a single `base::StringPiece`.
 
 #### Optimizing Java Code
+ * If you're adding a new feature, see if it makes sense for it to be packaged
+   into its own [feature split]. E.g.:
+   * Has a non-trivial amount of Dex (>50kb)
+   * Not needed on startup
+   * Has a small integration surface (calls into it must be done with
+     reflection).
  * Prefer fewer large JNI calls over many small JNI calls.
  * Minimize the use of class initializers (`<clinit>()`).
    * If R8 cannot determine that they are "trivial", they will prevent
@@ -252,15 +238,14 @@ Practical advice:
  * Ensure unused code is optimized away by R8.
    * See [here][proguard-build-doc] for more info on how Chrome uses ProGuard.
    * Add `@CheckDiscard` to methods or classes that you expect R8 to inline.
-   * Add `@RemovableInRelease` to force a method to be a no-op when DCHECKs
-     are disabled.
+   * Guard code with `BuildConfig.ENABLE_ASSERTS` to strip it in release builds.
    * Use [//third_party/r8/playground][r8-playground] to figure out how various
      coding patterns are optimized by R8.
    * Build with `enable_proguard_obfuscation = false` and use
      `//third_party/android_sdk/public/build-tools/*/dexdump` to see how code was
      optimized directly in apk / bundle targets.
-     
 
+[feature split]: /docs/android_dynamic_feature_modules.md
 [proguard-build-doc]: /build/android/docs/java_optimization.md
 [size-trybot]: /tools/binary_size/README.md#Binary-Size-Trybot-android_binary_size
 [diagnose_bloat]: /tools/binary_size/README.md#diagnose_bloat_py

@@ -22,10 +22,16 @@ size.
     * Googlers, see also [go/chromeapksizes], and [go/chromemilestonesizes].
   * For other platforms: look for "sizes".
 * As of 2019, Chrome for Android (arm32) grows by about 100kb per week.
+* To get a feeling for how large individual features are, open a
+  [milestone size breakdown] and group by "Component" (Googlers only).
+  * For non-googlers, run `//tools/binary_size/supersize archive` on a release
+    build to create a `.size` file, and upload it to [the viewer].
 
 [go/chromeapksizes]: http://go/chromeapksizes
 [go/chromemilestonesizes]: http://go/chromemilestonesizes
- 
+[milestone size breakdown]: https://goto.google.com/chrome-supersize
+[the viewer]: https://chrome-supersize.firebaseapp.com/viewer.html
+
 ## Why care about binary size?
 
 * Takes disk space away from users.
@@ -67,7 +73,7 @@ reasonable diligence is taken to minimize growth.
 [binary-size@]: https://groups.google.com/a/chromium.org/g/binary-size/
 [size_trybot]: /docs/speed/binary_size/android_binary_size_trybot.md
 
-## Where Size Lives Matters
+## How Chrome is Packaged
 
 ### WebView vs Chrome
 
@@ -78,7 +84,6 @@ OS.  See
 for how packaging of Chrome / WebView changes by OS version.
 
 [android\_build\_instructions.md]: /docs/android_build_instructions.md#Multiple-Chrome-Targets
-
 
 ### APK Splits
 
@@ -92,13 +97,11 @@ Chrome ships as an [Android App Bundle], and consists of several APK splits.
 * Keeping its dex size minimal is crucial, since it has both RAM and start-up
   overhead _per-renderer_.
 
-
 #### In the "chrome" feature split
 
 * Loaded on start-up by the browser process.
 * Important to keep dex size small in order to have Chrome start-up quickly,
   and to minimize our baseline memory requirement.
-
 
 #### In another feature split
 

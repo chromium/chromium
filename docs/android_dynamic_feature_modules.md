@@ -33,6 +33,14 @@ out/Default/bin/${target_name} build-bundle-apks --output-apks foo.apks
 unzip -l foo.apks
 ```
 
+*** note
+Adding new features vis feature splits is highly encouraged when it makes sense
+to do so:
+ * Has a non-trivial amount of Dex (>50kb)
+ * Not needed on startup
+ * Has a small integration surface (calls into it must be done with reflection).
+***
+
 The remainder of this doc focuses on DFMs.
 
 [android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
