@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -27,9 +28,12 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
@@ -90,6 +94,16 @@ void InitScrollContentsAnimationSettings(
     ui::ScopedLayerAnimationSettings& settings) {
   settings.SetTransitionDuration(kBarScrollDuration);
   settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_60);
+}
+
+// Checks whether there are any external keyboards.
+bool HasExternalKeyboard() {
+  for (const ui::InputDevice& device :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (device.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -767,6 +781,13 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     auto* highlight_controller = GetHighlightController();
     if (highlight_controller->IsFocusHighlightVisible())
       highlight_controller->MoveHighlightToView(newly_added_name_view);
+
+    // If we're in tablet mode and there are no external keyboards, open up the
+    // virtual keyboard.
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+        !HasExternalKeyboard()) {
+      keyboard::KeyboardUIController::Get()->ShowKeyboard(/*lock=*/false);
+    }
 
     should_name_nudge_ = false;
   }

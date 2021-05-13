@@ -8,6 +8,8 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -84,6 +86,9 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
@@ -338,6 +343,11 @@ class DesksTest : public AshTestBase,
   explicit DesksTest(base::test::TaskEnvironment::TimeSource time)
       : AshTestBase(time) {}
   ~DesksTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    SetVirtualKeyboardEnabled(true);
+  }
 
   void SendKey(ui::KeyboardCode key_code, int flags = 0) {
     auto* generator = GetEventGenerator();
@@ -5499,6 +5509,64 @@ TEST_F(DesksTest, FastDeskSwitches) {
     EXPECT_FALSE(desk_containers[i]->IsVisible());
     EXPECT_EQ(1.f, desk_containers[i]->layer()->opacity());
   }
+}
+
+// Tests that when the user is in tablet mode, the virtual keyboard is opened
+// during name nudges.
+TEST_F(DesksTest, NameNudgesTabletMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  // Tablet mode requires at least two desks so create one.
+  NewDesk();
+  ASSERT_EQ(2u, DesksController::Get()->desks().size());
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Setup an internal keyboard and an external keyboard.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      std::vector<ui::InputDevice>{
+          {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"},
+          {2, ui::INPUT_DEVICE_USB, "external keyboard"}});
+  auto* device_data_manager = ui::DeviceDataManager::GetInstance();
+  auto keyboard_devices = device_data_manager->GetKeyboardDevices();
+  ASSERT_EQ(2u, keyboard_devices.size());
+
+  // Tap the new desk button. There should be a new DeskNameView that is created
+  // and the virtual keyboard should not be shown because there is at least one
+  // external keyboard attached.
+  auto* event_generator = GetEventGenerator();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  GestureTapOnView(desks_bar_view->expanded_state_new_desk_button(),
+                   event_generator);
+  EXPECT_FALSE(keyboard::KeyboardUIController::Get()->IsKeyboardVisible());
+  EXPECT_EQ(3u, desks_bar_view->mini_views().size());
+  auto* desk_name_view = desks_bar_view->mini_views()[2]->desk_name_view();
+  EXPECT_TRUE(desk_name_view->HasFocus());
+  EXPECT_EQ(std::u16string(), desk_name_view->GetText());
+
+  // Reset the devices and make it so there's only an internal keyboard.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      std::vector<ui::InputDevice>{
+          {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"},
+      });
+  keyboard_devices = device_data_manager->GetKeyboardDevices();
+  ASSERT_EQ(1u, keyboard_devices.size());
+
+  // Tap the new desk button again. There should be a new DeskNameView that is
+  // created and the virtual keyboard should be shown.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+  GestureTapOnView(desks_bar_view->expanded_state_new_desk_button(),
+                   event_generator);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+  EXPECT_TRUE(keyboard::KeyboardUIController::Get()->IsKeyboardVisible());
+  EXPECT_EQ(4u, desks_bar_view->mini_views().size());
+  desk_name_view = desks_bar_view->mini_views()[3]->desk_name_view();
+  EXPECT_TRUE(desk_name_view->HasFocus());
+  EXPECT_EQ(std::u16string(), desk_name_view->GetText());
 }
 
 // A test class that uses a mock time test environment.

@@ -33,11 +33,15 @@ namespace {
 void ResetVirtualKeyboard() {
   keyboard::SetKeyboardEnabledFromShelf(false);
 
-  // Reset the keyset after disabling the virtual keyboard to prevent the IME
-  // extension from accidentally loading the default keyset while it's shutting
-  // down. See https://crbug.com/875456.
-  Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
-      chromeos::input_method::ImeKeyset::kNone);
+  // This function can get called asynchronously after the shell has been
+  // destroyed, so check for an instance.
+  if (Shell::HasInstance()) {
+    // Reset the keyset after disabling the virtual keyboard to prevent the IME
+    // extension from accidentally loading the default keyset while it's
+    // shutting down. See https://crbug.com/875456.
+    Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
+        chromeos::input_method::ImeKeyset::kNone);
+  }
 }
 
 }  // namespace
