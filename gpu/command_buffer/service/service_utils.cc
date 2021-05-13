@@ -160,8 +160,17 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
       command_line->HasSwitch(switches::kEnableUnsafeWebGPUService);
-  gpu_preferences.enable_dawn_backend_validation =
-      command_line->HasSwitch(switches::kEnableDawnBackendValidation);
+  if (command_line->HasSwitch(switches::kEnableDawnBackendValidation)) {
+    auto value = command_line->GetSwitchValueASCII(
+        switches::kEnableDawnBackendValidation);
+    if (value.empty() || value == "full") {
+      gpu_preferences.enable_dawn_backend_validation =
+          DawnBackendValidationLevel::kFull;
+    } else if (value == "partial") {
+      gpu_preferences.enable_dawn_backend_validation =
+          DawnBackendValidationLevel::kPartial;
+    }
+  }
   if (command_line->HasSwitch(switches::kEnableDawnFeatures)) {
     gpu_preferences.enabled_dawn_features_list = base::SplitString(
         command_line->GetSwitchValueASCII(switches::kEnableDawnFeatures), ",",

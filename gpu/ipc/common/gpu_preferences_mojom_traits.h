@@ -96,6 +96,39 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
 };
 
 template <>
+struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
+                             gpu::DawnBackendValidationLevel> {
+  static gpu::mojom::DawnBackendValidationLevel ToMojom(
+      gpu::DawnBackendValidationLevel input) {
+    switch (input) {
+      case gpu::DawnBackendValidationLevel::kDisabled:
+        return gpu::mojom::DawnBackendValidationLevel::kDisabled;
+      case gpu::DawnBackendValidationLevel::kPartial:
+        return gpu::mojom::DawnBackendValidationLevel::kPartial;
+      case gpu::DawnBackendValidationLevel::kFull:
+        return gpu::mojom::DawnBackendValidationLevel::kFull;
+    }
+    NOTREACHED();
+    return gpu::mojom::DawnBackendValidationLevel::kDisabled;
+  }
+  static bool FromMojom(gpu::mojom::DawnBackendValidationLevel input,
+                        gpu::DawnBackendValidationLevel* out) {
+    switch (input) {
+      case gpu::mojom::DawnBackendValidationLevel::kDisabled:
+        *out = gpu::DawnBackendValidationLevel::kDisabled;
+        return true;
+      case gpu::mojom::DawnBackendValidationLevel::kPartial:
+        *out = gpu::DawnBackendValidationLevel::kPartial;
+        return true;
+      case gpu::mojom::DawnBackendValidationLevel::kFull:
+        *out = gpu::DawnBackendValidationLevel::kFull;
+        return true;
+    }
+    return false;
+  }
+};
+
+template <>
 struct GPU_EXPORT
     StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static bool Read(gpu::mojom::GpuPreferencesDataView prefs,
@@ -176,8 +209,9 @@ struct GPU_EXPORT
     out->enable_gpu_benchmarking_extension =
         prefs.enable_gpu_benchmarking_extension();
     out->enable_webgpu = prefs.enable_webgpu();
-    out->enable_dawn_backend_validation =
-        prefs.enable_dawn_backend_validation();
+    if (!prefs.ReadEnableDawnBackendValidation(
+            &out->enable_dawn_backend_validation))
+      return false;
     if (!prefs.ReadEnabledDawnFeaturesList(&out->enabled_dawn_features_list))
       return false;
     if (!prefs.ReadDisabledDawnFeaturesList(&out->disabled_dawn_features_list))
@@ -366,7 +400,8 @@ struct GPU_EXPORT
   static bool enable_webgpu(const gpu::GpuPreferences& prefs) {
     return prefs.enable_webgpu;
   }
-  static bool enable_dawn_backend_validation(const gpu::GpuPreferences& prefs) {
+  static gpu::DawnBackendValidationLevel enable_dawn_backend_validation(
+      const gpu::GpuPreferences& prefs) {
     return prefs.enable_dawn_backend_validation;
   }
   static const std::vector<std::string>& enabled_dawn_features_list(

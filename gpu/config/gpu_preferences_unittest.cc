@@ -181,7 +181,9 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(vulkan_sync_cpu_memory_limit, 1);
     GPU_PREFERENCES_FIELD(enable_gpu_benchmarking_extension, true)
     GPU_PREFERENCES_FIELD(enable_webgpu, true)
-    GPU_PREFERENCES_FIELD(enable_dawn_backend_validation, true)
+    GPU_PREFERENCES_FIELD_ENUM(enable_dawn_backend_validation,
+                               DawnBackendValidationLevel::kPartial,
+                               mojom::DawnBackendValidationLevel::kPartial)
     GPU_PREFERENCES_FIELD(enable_gpu_blocked_time_metric, true)
     GPU_PREFERENCES_FIELD(enable_perf_data_collection, true)
 #if defined(USE_OZONE)
@@ -277,7 +279,7 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_INT(vulkan_sync_cpu_memory_limit);
   PRINT_BOOL(enable_gpu_benchmarking_extension);
   PRINT_BOOL(enable_webgpu);
-  PRINT_BOOL(enable_dawn_backend_validation);
+  PRINT_INT(enable_dawn_backend_validation);
   PRINT_BOOL(enable_gpu_blocked_time_metric);
   PRINT_BOOL(enable_perf_data_collection);
 #if defined(USE_OZONE)

@@ -28,6 +28,13 @@ enum GrContextType {
   kLast = kDawn,
 };
 
+// Corresponds to gpu::DawnBackendValidationLevel
+enum DawnBackendValidationLevel {
+  kDisabled = 0,
+  kPartial = 1,
+  kFull = 2,
+};
+
 // gpu::GpuPreferences
 struct GpuPreferences {
   bool disable_accelerated_video_decode;
@@ -85,7 +92,7 @@ struct GpuPreferences {
   bool enable_metal;
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
-  bool enable_dawn_backend_validation;
+  DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;
   bool enable_gpu_blocked_time_metric;

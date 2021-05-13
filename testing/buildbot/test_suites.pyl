@@ -2709,12 +2709,13 @@
       },
     },
 
-    # GPU gtests that test only Dawn with backend validation layers
-    'gpu_dawn_gtests_with_validation': {
+    # For Windows. Use the D3D12 backend validation layers but without GPU-based
+    # validation and shader patching. This avoids hangs on less powerful systems.
+    'gpu_dawn_gtests_with_partial_validation': {
       'dawn_end2end_validation_layers_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
-          '--enable-backend-validation',
+          '--enable-backend-validation=partial',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2722,12 +2723,11 @@
     },
 
     # GPU gtests that test only Dawn with backend validation layers
-    # to accommodate less powerful Intel GPUs
-    'gpu_dawn_gtests_with_validation_win_intel': {
+    'gpu_dawn_gtests_with_validation': {
       'dawn_end2end_validation_layers_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
-          '--enable-backend-validation=partial',
+          '--enable-backend-validation',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -3971,7 +3971,7 @@
       },
     },
 
-    'gpu_webgpu_integration_extra_isolated_scripts': {
+    'gpu_webgpu_integration_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
@@ -4026,6 +4026,51 @@
           # TODO(crbug.com/953991): Solve this and remove the workaround.
           '--jobs=1',
           '--order=natural',
+          # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
+          '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
+          # We need this flag to initialize ANGLE so that we can explicitly tell
+          # Dawn which ANGLE adapter Chromium is using. This will help match the test
+          # usage to be the same as the browser.
+          '--additional-driver-flag=--use-gpu-in-tests',
+        ],
+        'win64_args': [ '--target=Release_x64' ],
+        'mac_args': [
+          # These tests run on 10.14, but web_tests [ Mac ] expectations don't
+          # work correctly yet under 10.14. Pretend it's 10.13.
+          '--platform=mac-mac10.13'
+        ],
+        'linux_args': [
+          '--no-xvfb',
+          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
+        ],
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'webgpu_blink_web_tests',
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
+    # For Windows. Use the D3D12 backend validation layers but without GPU-based
+    # validation and shader patching. This avoids hangs on less powerful systems.
+    'gpu_webgpu_integration_partial_backend_validation_isolated_scripts': {
+      'webgpu_blink_web_tests_with_backend_validation': {
+        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
+        'name': 'webgpu_blink_web_tests_with_backend_validation',
+        'args': [
+          '--driver-logging',
+          # Disable parallel jobs to work around consistent test timeout flakes.
+          # Also, the first test is always flaky due to startup time, so force
+          # the order so we can suppress it.
+          # TODO(crbug.com/953991): Solve this and remove the workaround.
+          '--jobs=1',
+          '--order=natural',
+          '--additional-driver-flag=--enable-dawn-backend-validation=partial',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
           # We need this flag to initialize ANGLE so that we can explicitly tell
@@ -6218,7 +6263,7 @@
     # These tests are run both on the CI and trybots which test DEPS Dawn.
     'gpu_dawn_integration_gtests_passthrough_win_intel': [
       'gpu_dawn_gtests',
-      'gpu_dawn_gtests_with_validation_win_intel',
+      'gpu_dawn_gtests_with_partial_validation',
       'gpu_common_gtests_passthrough',
     ],
 
@@ -6231,7 +6276,13 @@
     'gpu_dawn_isolated_scripts': [
       'gpu_dawn_perf_smoke_isolated_scripts',
       'gpu_webgpu_integration_isolated_scripts',
-      'gpu_webgpu_integration_extra_isolated_scripts',
+      'gpu_webgpu_integration_backend_validation_isolated_scripts',
+    ],
+
+    'gpu_dawn_isolated_scripts_win_intel': [
+      'gpu_dawn_perf_smoke_isolated_scripts',
+      'gpu_webgpu_integration_isolated_scripts',
+      'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
     ],
 
     'gpu_desktop_linux_gtests': [

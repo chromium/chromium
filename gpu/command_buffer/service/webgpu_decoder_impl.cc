@@ -489,8 +489,18 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       dawn_instance_(new dawn_native::Instance()),
       wire_serializer_(new WireServerCommandSerializer(client)) {
   dawn_instance_->SetPlatform(dawn_platform_.get());
-  dawn_instance_->EnableBackendValidation(
-      gpu_preferences.enable_dawn_backend_validation);
+  switch (gpu_preferences.enable_dawn_backend_validation) {
+    case DawnBackendValidationLevel::kDisabled:
+      break;
+    case DawnBackendValidationLevel::kPartial:
+      dawn_instance_->SetBackendValidationLevel(
+          dawn_native::BackendValidationLevel::Partial);
+      break;
+    case DawnBackendValidationLevel::kFull:
+      dawn_instance_->SetBackendValidationLevel(
+          dawn_native::BackendValidationLevel::Full);
+      break;
+  }
 
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
