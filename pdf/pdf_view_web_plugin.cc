@@ -342,6 +342,26 @@ bool PdfViewWebPlugin::CanRedo() const {
   return engine()->CanRedo();
 }
 
+bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
+                                          const blink::WebString& value) {
+  if (name == "SelectAll")
+    return SelectAll();
+
+  if (name == "Cut")
+    return Cut();
+
+  if (name == "Paste" || name == "PasteAndMatchStyle")
+    return Paste(value);
+
+  if (name == "Undo")
+    return Undo();
+
+  if (name == "Redo")
+    return Redo();
+
+  return false;
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }
@@ -572,6 +592,46 @@ void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
   container_wrapper_->Invalidate();
+}
+
+bool PdfViewWebPlugin::SelectAll() {
+  if (!CanEditText())
+    return false;
+
+  engine()->SelectAll();
+  return true;
+}
+
+bool PdfViewWebPlugin::Cut() {
+  if (!HasSelection() || !CanEditText())
+    return false;
+
+  engine()->ReplaceSelection("");
+  return true;
+}
+
+bool PdfViewWebPlugin::Paste(const blink::WebString& value) {
+  if (!CanEditText())
+    return false;
+
+  engine()->ReplaceSelection(value.Utf8());
+  return true;
+}
+
+bool PdfViewWebPlugin::Undo() {
+  if (!CanUndo())
+    return false;
+
+  engine()->Undo();
+  return true;
+}
+
+bool PdfViewWebPlugin::Redo() {
+  if (!CanRedo())
+    return false;
+
+  engine()->Redo();
+  return true;
 }
 
 }  // namespace chrome_pdf

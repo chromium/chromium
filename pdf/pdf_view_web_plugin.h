@@ -109,6 +109,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool HasEditableText() const override;
   bool CanUndo() const override;
   bool CanRedo() const override;
+  bool ExecuteEditCommand(const blink::WebString& name,
+                          const blink::WebString& value) override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
   // PdfViewPluginBase:
@@ -197,6 +199,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Invalidates the entire web plugin container and schedules a paint of the
   // page in it.
   void InvalidatePluginContainer();
+
+  // Text editing methods.
+  bool SelectAll();
+  bool Cut();
+  bool Paste(const blink::WebString& value);
+  bool Undo();
+  bool Redo();
 
   blink::WebString selected_text_;
 
