@@ -9,6 +9,7 @@ include_rules = [
   "+services/data_decoder/public",
   "+services/device/public",
   "+ui/base",
+  "+ui/events/ozone",
   "+ui/gfx",
   "+ui/resources",
   "+ui/shell_dialogs",

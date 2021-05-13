@@ -13,6 +13,7 @@ namespace diagnostics {
 class SessionLogHandler;
 class SystemDataProvider;
 class SystemRoutineController;
+class InputDataProvider;
 
 // DiagnosticsManager is responsible for managing the lifetime of the services
 // used by the Diagnostics SWA.
@@ -26,10 +27,12 @@ class DiagnosticsManager {
 
   SystemDataProvider* GetSystemDataProvider() const;
   SystemRoutineController* GetSystemRoutineController() const;
+  InputDataProvider* GetInputDataProvider() const;
 
  private:
   std::unique_ptr<SystemDataProvider> system_data_provider_;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
+  std::unique_ptr<InputDataProvider> input_data_provider_;
 };
 
 }  // namespace diagnostics

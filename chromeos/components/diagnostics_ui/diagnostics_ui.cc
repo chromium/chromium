@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
+#include "chromeos/components/diagnostics_ui/backend/input_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
@@ -191,6 +192,15 @@ void DiagnosticsDialogUI::BindInterface(
       diagnostics_manager_->GetSystemRoutineController();
   if (system_routine_controller) {
     system_routine_controller->BindInterface(std::move(receiver));
+  }
+}
+
+void DiagnosticsDialogUI::BindInterface(
+    mojo::PendingReceiver<diagnostics::mojom::InputDataProvider> receiver) {
+  diagnostics::InputDataProvider* input_data_provider =
+      diagnostics_manager_->GetInputDataProvider();
+  if (input_data_provider) {
+    input_data_provider->BindInterface(std::move(receiver));
   }
 }
 
