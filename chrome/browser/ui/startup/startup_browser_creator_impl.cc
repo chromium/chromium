@@ -106,12 +106,12 @@ namespace {
 bool ShouldRestoreApps(bool is_post_restart) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#elif defined(OS_MAC) || defined(OS_LINUX)
+#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_WIN)
   // TODO(stahon@microsoft.com)
   // Even when app restores are enabled on mac, don't actually restore apps
   // because they do not restore correctly. http://crbug.com/1194201
-  // On linux, apps can be restored without the proper app frame,
-  // disabling restorations on linux for now. http://crbug.com/1199109
+  // On windows and linux, apps can be restored without the proper app frame,
+  // disabling restorations for now. http://crbug.com/1199109
   return false;
 #else
   return is_post_restart;
