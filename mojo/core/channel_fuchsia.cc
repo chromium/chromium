@@ -12,6 +12,7 @@
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
@@ -245,8 +246,9 @@ class ChannelFuchsia : public Channel,
 
     base::CurrentThread::Get()->AddDestructionObserver(this);
 
-    read_watch_.reset(
-        new base::MessagePumpForIO::ZxHandleWatchController(FROM_HERE));
+    read_watch_ =
+        std::make_unique<base::MessagePumpForIO::ZxHandleWatchController>(
+            FROM_HERE);
     base::CurrentIOThread::Get()->WatchZxHandle(
         handle_.get(), true /* persistent */,
         ZX_CHANNEL_READABLE | ZX_CHANNEL_PEER_CLOSED, read_watch_.get(), this);

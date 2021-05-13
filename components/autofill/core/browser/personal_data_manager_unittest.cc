@@ -219,7 +219,7 @@ class PersonalDataManagerTestBase {
         base::ThreadTaskRunnerHandle::Get());
     account_database_service_->Init(base::NullCallback());
 
-    strike_database_.reset(new TestInMemoryStrikeDatabase());
+    strike_database_ = std::make_unique<TestInMemoryStrikeDatabase>();
 
     test::DisableSystemServices(prefs_.get());
   }
