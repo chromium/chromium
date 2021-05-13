@@ -194,6 +194,20 @@ TEST(CallbackHelpersTest, AdaptCallbackForRepeating) {
   EXPECT_EQ(1, count);
 }
 
+TEST(CallbackHelpersTest, SplitOnceCallback_EmptyCallback) {
+  base::OnceCallback<void(int*)> cb = base::NullCallback();
+  EXPECT_FALSE(cb);
+
+  auto split = base::SplitOnceCallback(std::move(cb));
+
+  static_assert(std::is_same<decltype(split),
+                             std::pair<base::OnceCallback<void(int*)>,
+                                       base::OnceCallback<void(int*)>>>::value,
+                "");
+  EXPECT_FALSE(split.first);
+  EXPECT_FALSE(split.second);
+}
+
 TEST(CallbackHelpersTest, SplitOnceCallback_FirstCallback) {
   int count = 0;
   base::OnceCallback<void(int*)> cb =

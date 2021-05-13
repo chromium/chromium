@@ -363,9 +363,7 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
   tracing_timer_.reset();
 
   // |callback| is only run once, but we need 2 callbacks pointing to it.
-  auto run_callback = callback
-                          ? base::AdaptCallbackForRepeating(std::move(callback))
-                          : base::NullCallback();
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   base::OnceClosure on_begin_finalization_success = base::BindOnce(
       [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this,
@@ -383,7 +381,7 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
               std::move(callback), /*is_allowed_finalization=*/true);
         }
       },
-      weak_ptr_factory_.GetWeakPtr(), run_callback);
+      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first));
 
   base::OnceClosure on_begin_finalization_failure = base::BindOnce(
       [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this,
@@ -400,7 +398,7 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
           std::move(callback).Run(false);
         }
       },
-      weak_ptr_factory_.GetWeakPtr(), run_callback);
+      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.second));
 
   tracing_session_->BeginFinalizing(std::move(on_begin_finalization_success),
                                     std::move(on_begin_finalization_failure),

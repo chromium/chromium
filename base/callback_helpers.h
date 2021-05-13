@@ -116,6 +116,11 @@ RepeatingCallback<void(Args...)> AdaptCallbackForRepeating(
 template <typename... Args>
 std::pair<OnceCallback<void(Args...)>, OnceCallback<void(Args...)>>
 SplitOnceCallback(OnceCallback<void(Args...)> callback) {
+  if (!callback) {
+    // Empty input begets two empty outputs.
+    return std::make_pair(OnceCallback<void(Args...)>(),
+                          OnceCallback<void(Args...)>());
+  }
   using Helper = internal::OnceCallbackHolder<Args...>;
   auto wrapped_once = base::BindRepeating(
       &Helper::Run, std::make_unique<Helper>(std::move(callback),

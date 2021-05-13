@@ -214,11 +214,10 @@ void OnTracingRequest(const std::string& path,
   // to take ownership of |callback| even though it won't call |callback|
   // sometimes, as it binds |callback| into other callbacks before it makes that
   // decision. So we must give it one copy and keep one ourselves.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  if (!OnBeginJSONRequest(path, repeating_callback)) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  if (!OnBeginJSONRequest(path, std::move(split_callback.first))) {
     std::string error("##ERROR##");
-    std::move(repeating_callback)
+    std::move(split_callback.second)
         .Run(base::RefCountedString::TakeString(&error));
   }
 }
