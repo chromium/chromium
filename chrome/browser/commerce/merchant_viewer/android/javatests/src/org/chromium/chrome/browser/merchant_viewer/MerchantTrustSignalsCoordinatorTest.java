@@ -24,23 +24,20 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -49,8 +46,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
@@ -70,19 +66,15 @@ import java.util.concurrent.TimeUnit;
  * {@link WindowAndroid} which has a dependency on android.View.Display.Mode which is not supported
  * on versions prior to Android M.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.COMMERCE_MERCHANT_VIEWER + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
 @DisableIf.Device(type = {UiDisableIf.TABLET})
-@DisabledTest(message = "crbug.com/1205485")
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
     private TabModelSelector mMockTabModelSelector;
@@ -155,7 +147,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                     .build();
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
         doReturn("Test").when(mMockResources).getString(anyInt());
         doReturn("Test").when(mMockResources).getString(anyInt(), anyObject());
@@ -171,7 +162,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getForLastUsedProfile();
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -205,7 +195,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForUrl(eq(mMockGurl), any(Callback.class));
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -234,7 +223,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                         any(Callback.class));
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -263,7 +251,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                         any(Callback.class));
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     @CommandLineFlags.
@@ -292,7 +279,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                         any(Callback.class));
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testMaybeDisplayMessageWithScheduledMessage() {
@@ -309,7 +295,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .expedite(mOnMessageEnqueuedCallbackCaptor.capture());
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testMaybeDisplayMessageWithScheduledMessageForDifferentHost() {
@@ -333,7 +318,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                         any(Callback.class));
     }
 
-    @UiThreadTest
     @SmallTest
     @Test
     public void testMaybeDisplayMessageWithInvalidStorage() {
