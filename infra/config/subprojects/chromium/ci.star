@@ -1003,7 +1003,7 @@ ci.android_fyi_builder(
     reclient_instance = "rbe-chromium-trusted",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
@@ -1020,7 +1020,7 @@ ci.android_fyi_builder(
     reclient_jobs = 150,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
