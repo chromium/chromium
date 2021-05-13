@@ -2349,7 +2349,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
   EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
 }
 
-TEST_P(AppsGridViewDragAndDropTestNoCardifiedState, MouseDragFlipToNextPage) {
+TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToNextPage) {
   // Create 3 full pages of apps.
   model_->PopulateApps(3 * GetTilesPerPage());
   gfx::Point item_center = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
@@ -2375,8 +2375,7 @@ TEST_P(AppsGridViewDragAndDropTestNoCardifiedState, MouseDragFlipToNextPage) {
   EndDrag(apps_grid_view_, /*cancel=*/true);
 }
 
-TEST_P(AppsGridViewDragAndDropTestNoCardifiedState,
-       MouseDragFlipToPreviousPage) {
+TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToPreviousPage) {
   // Create 3 full pages of apps.
   model_->PopulateApps(3 * GetTilesPerPage());
   // Select the last page.

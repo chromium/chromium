@@ -1122,7 +1122,11 @@ void AppsGridView::Layout() {
     if (view != drag_view_) {
       view->SetBoundsRect(view_model_.ideal_bounds(i));
     } else {
-      view->SetSize(GetTileViewSize(GetAppListConfig(), cardified_state_));
+      // If the drag view size changes, make sure it has the same center.
+      gfx::Rect bounds = view->bounds();
+      bounds.ClampToCenteredSize(
+          GetTileViewSize(GetAppListConfig(), cardified_state_));
+      view->SetBoundsRect(bounds);
     }
   }
   if (cardified_state_) {
