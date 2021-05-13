@@ -22,9 +22,9 @@ the category of the branch:
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
-* STANDARD_MILESTONES - The resource is defined for a branch as it moves through
+* STANDARD_MILESTONE - The resource is defined for a branch as it moves through
     the standad release channels: trunk -> beta -> stable.
-* LTS_MILESTONES - The resource is defined for a branch as it move through the
+* LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
 * ALL_BRANCHES - The resource is defined for all branches and main/master/trunk.
 * NOT_MAIN - The resource is defined for all branches, but not for
