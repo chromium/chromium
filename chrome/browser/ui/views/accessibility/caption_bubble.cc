@@ -61,7 +61,7 @@ static constexpr double kPreferredAnchorWidthPercentage = 0.8;
 static constexpr int kMaxWidthDip = 536;
 // Margin of the bubble with respect to the anchor window.
 static constexpr int kMinAnchorMarginDip = 20;
-static constexpr int kCaptionBubbleAlpha = 230;  // 90% opacity
+static constexpr uint16_t kCaptionBubbleAlpha = 230;  // 90% opacity
 static constexpr char kPrimaryFont[] = "Roboto";
 static constexpr char kSecondaryFont[] = "Arial";
 static constexpr char kTertiaryFont[] = "sans-serif";
@@ -135,9 +135,19 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
   bool match = RE2::FullMatch(
       rgba, "rgba\\((\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+\\.?\\d*)\\)", &r, &g,
       &b, &a);
-  match &= a != 0;
-  if (match)
-    *sk_color = SkColorSetARGB(a * 255, r, g, b);
+  // If the opacity is set to 0 (fully transparent), we ignore the user's
+  // preferred style and use our default color.
+  if (!match || a == 0)
+    return false;
+  uint16_t a_int = uint16_t{a * 255};
+#if defined(OS_MAC)
+  // On Mac, any opacity lower than 90% leaves rendering artifacts which make
+  // it appear like there is a layer of faint text beneath the actual text.
+  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // workaround.
+  a_int = std::max(kCaptionBubbleAlpha, a_int);
+#endif
+  *sk_color = SkColorSetARGB(a_int, r, g, b);
   return match;
 }
 

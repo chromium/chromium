@@ -773,10 +773,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
+  // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
+  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // workaround.
+  int a;
+#if defined(OS_MAC)
+  a = 230;
+#else
+  a = 127;
+#endif
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetLabel()->GetEnabledColor());
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetTitle()->GetEnabledColor());
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetErrorText()->GetEnabledColor());
 
   // Set the text color to a bad string.
   caption_style.text_color = "green";
@@ -811,9 +820,18 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";
+  // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
+  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // workaround.
+  int a;
+#if defined(OS_MAC)
+  a = 230;
+#else
+  a = 127;
+#endif
   caption_style.background_color = "";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(SkColorSetA(SK_ColorRED, 127), GetBubble()->color());
+  EXPECT_EQ(SkColorSetA(SK_ColorRED, a), GetBubble()->color());
 
   // Set the background color to blue. When no window color is supplied, the
   // background color is applied to the caption bubble color.
