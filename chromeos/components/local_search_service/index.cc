@@ -5,7 +5,6 @@
 #include "chromeos/components/local_search_service/index.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 
 namespace chromeos {
@@ -31,7 +30,8 @@ std::string IndexIdBasedHistogramPrefix(IndexId index_id) {
 }
 
 void OnSearchPerformedDone(const std::string& histogram_string) {
-  UMA_HISTOGRAM_BOOLEAN(histogram_string + ".NumberSearchPerformedDone", true);
+  base::UmaHistogramBoolean(histogram_string + ".NumberSearchPerformedDone",
+                            true);
 }
 
 }  // namespace

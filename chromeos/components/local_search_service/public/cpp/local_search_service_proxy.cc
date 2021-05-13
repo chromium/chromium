@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/components/local_search_service/local_search_service_provider_for_testing.h"
 #include "chromeos/components/local_search_service/oop_local_search_service_provider.h"
 #include "components/prefs/pref_service.h"
@@ -17,8 +17,8 @@ namespace local_search_service {
 namespace {
 
 void OnBindIndexDone(const base::Optional<std::string>& error) {
-  UMA_HISTOGRAM_BOOLEAN("LocalSearchService.BindIndexHasError",
-                        error.has_value());
+  base::UmaHistogramBoolean("LocalSearchService.BindIndexHasError",
+                            error.has_value());
   if (error)
     LOG(ERROR) << "BindIndex error: " << error.value();
 }
