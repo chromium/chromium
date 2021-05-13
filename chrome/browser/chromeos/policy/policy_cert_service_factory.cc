@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -87,8 +88,7 @@ bool PolicyCertServiceFactory::UsedPolicyCertificates(
     NOTREACHED();
     return false;
   }
-  // TODO(crbug.com/1187106): Use base::Contains once |list| is not a ListValue.
-  return std::find(list->begin(), list->end(), value) != list->end();
+  return base::Contains(list->GetList(), value);
 }
 
 // static
