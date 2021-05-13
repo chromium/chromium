@@ -99,10 +99,12 @@ void OverlayProcessorMac::ProcessForOverlays(
     *damage_rect = gfx::Rect();
   }
 
-  ca_layer_overlay_processor_->PutForcedOverlayContentIntoOverlays(
-      resource_provider, render_pass.get(),
-      gfx::RectF(render_pass->output_rect), &render_pass->quad_list,
-      render_pass_filters, render_pass_backdrop_filters, candidates);
+  // TODO(crbug.com/1204555): uncomment the following call once underlay
+  // mechanism is properly implemented on MacOS.
+  // ca_layer_overlay_processor_->PutForcedOverlayContentIntoOverlays(
+  //    resource_provider, render_pass.get(),
+  //    gfx::RectF(render_pass->output_rect), &render_pass->quad_list,
+  //    render_pass_filters, render_pass_backdrop_filters, candidates);
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
