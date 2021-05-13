@@ -13,11 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/optional.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace chromecast {
 namespace media {
@@ -51,8 +47,7 @@ class PostProcessingPipelineParser {
   explicit PostProcessingPipelineParser(const base::FilePath& path);
 
   // For testing only:
-  explicit PostProcessingPipelineParser(
-      std::unique_ptr<base::DictionaryValue> config_dict);
+  explicit PostProcessingPipelineParser(base::Value config_dict);
 
   ~PostProcessingPipelineParser();
 
@@ -70,8 +65,8 @@ class PostProcessingPipelineParser {
   StreamPipelineDescriptor GetPipelineByKey(const std::string& key);
 
   const base::FilePath file_path_;
-  std::unique_ptr<base::DictionaryValue> config_dict_;
-  const base::DictionaryValue* postprocessor_config_ = nullptr;
+  base::Value config_dict_;
+  const base::Value* postprocessor_config_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PostProcessingPipelineParser);
 };

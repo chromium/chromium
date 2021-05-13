@@ -22,7 +22,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "chromecast/base/init_command_line_shlib.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeControl_jni.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeMap_jni.h"

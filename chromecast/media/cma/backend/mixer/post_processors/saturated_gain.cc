@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/media/base/slew_volume.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 
@@ -31,12 +31,12 @@ SaturatedGain::SaturatedGain(const std::string& config, int channels)
   status_.output_channels = channels;
   status_.ringing_time_frames = 0;
   status_.rendering_delay_frames = 0;
-  auto config_dict = base::DictionaryValue::From(DeserializeFromJson(config));
+  auto config_dict = base::JSONReader::Read(config);
   CHECK(config_dict) << "SaturatedGain config is not valid json: " << config;
-  double gain_db;
-  CHECK(config_dict->GetDouble(kGainKey, &gain_db)) << config;
-  gain_ = DbFsToScale(gain_db);
-  LOG(INFO) << "Created a SaturatedGain: gain = " << gain_db << "db";
+  auto gain_db = config_dict->FindDoublePath(kGainKey);
+  CHECK(gain_db) << config;
+  gain_ = DbFsToScale(*gain_db);
+  LOG(INFO) << "Created a SaturatedGain: gain = " << *gain_db << "db";
 }
 
 SaturatedGain::~SaturatedGain() = default;

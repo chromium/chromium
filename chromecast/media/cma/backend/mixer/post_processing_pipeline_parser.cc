@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/values.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/media/base/audio_device_ids.h"
 #include "media/audio/audio_device_description.h"
 
@@ -49,11 +48,10 @@ StreamPipelineDescriptor::StreamPipelineDescriptor(
                                other.volume_limits) {}
 
 PostProcessingPipelineParser::PostProcessingPipelineParser(
-    std::unique_ptr<base::DictionaryValue> config_dict)
+    base::Value config_dict)
     : file_path_(""), config_dict_(std::move(config_dict)) {
-  CHECK(config_dict_) << "Invalid JSON";
-  if (!config_dict_->GetDictionary(kPostProcessorsKey,
-                                   &postprocessor_config_)) {
+  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+  if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
 }
@@ -66,12 +64,16 @@ PostProcessingPipelineParser::PostProcessingPipelineParser(
     return;
   }
 
-  config_dict_ =
-      base::DictionaryValue::From(DeserializeJsonFromFile(file_path_));
-  CHECK(config_dict_) << "Invalid JSON in " << file_path_;
+  JSONFileValueDeserializer deserializer(file_path_);
+  int error_code = -1;
+  std::string error_msg;
+  auto config_dict_ptr = deserializer.Deserialize(&error_code, &error_msg);
+  CHECK(config_dict_ptr) << "Invalid JSON in " << file_path_ << " error "
+                         << error_code << ":" << error_msg;
+  config_dict_ = base::Value(std::move(*config_dict_ptr));
 
-  if (!config_dict_->GetDictionary(kPostProcessorsKey,
-                                   &postprocessor_config_)) {
+  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+  if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
 }
@@ -127,9 +129,9 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetLinearizePipeline() {
 
 StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
     const std::string& key) {
-  const base::DictionaryValue* stream_dict;
-  if (!postprocessor_config_ ||
-      !postprocessor_config_->GetDictionary(key, &stream_dict)) {
+  const base::Value* stream_dict =
+      postprocessor_config_ ? postprocessor_config_->FindPath(key) : nullptr;
+  if (!postprocessor_config_ || !stream_dict) {
     LOG(WARNING) << "No post-processor description found for \"" << key
                  << "\" in " << file_path_ << ". Using passthrough.";
     return StreamPipelineDescriptor(nullptr, nullptr, base::nullopt, nullptr);

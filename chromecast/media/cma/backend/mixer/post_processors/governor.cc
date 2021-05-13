@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/numerics/ranges.h"
 #include "base/values.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/media/base/slew_volume.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 
@@ -35,10 +35,14 @@ Governor::Governor(const std::string& config, int input_channels)
   status_.output_channels = input_channels;
   status_.rendering_delay_frames = 0;
   status_.ringing_time_frames = 0;
-  auto config_dict = base::DictionaryValue::From(DeserializeFromJson(config));
+  auto config_dict = base::JSONReader::Read(config);
   CHECK(config_dict) << "Governor config is not valid json: " << config;
-  CHECK(config_dict->GetDouble(kOnsetVolumeKey, &onset_volume_));
-  CHECK(config_dict->GetDouble(kClampMultiplierKey, &clamp_multiplier_));
+  auto onset_volume = config_dict->FindDoublePath(kOnsetVolumeKey);
+  CHECK(onset_volume);
+  onset_volume_ = onset_volume.value();
+  auto clamp_multiplier = config_dict->FindDoublePath(kClampMultiplierKey);
+  CHECK(clamp_multiplier);
+  clamp_multiplier_ = clamp_multiplier.value();
   CHECK_LE(onset_volume_, clamp_multiplier_);
   CHECK_LE(onset_volume_, kMaxOnSetVolume);
   slew_volume_.SetVolume(1.0);

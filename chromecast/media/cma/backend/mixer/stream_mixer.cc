@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/numerics/ranges.h"
@@ -25,7 +26,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chromecast/base/chromecast_switches.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/base/thread_health_checker.h"
 #include "chromecast/media/audio/audio_io_thread.h"
 #include "chromecast/media/audio/audio_log.h"
@@ -366,8 +366,9 @@ void StreamMixer::CreatePostProcessors(CastMediaShlib::ResultCallback callback,
   mixer_pipeline_.reset();
 
   if (!override_config.empty()) {
-    PostProcessingPipelineParser parser(
-        base::DictionaryValue::From(DeserializeFromJson(override_config)));
+    auto value = base::JSONReader::Read(override_config);
+    CHECK(value) << "Invalid JSON";
+    PostProcessingPipelineParser parser(std::move(*value));
     mixer_pipeline_ = MixerPipeline::CreateMixerPipeline(
         &parser, post_processing_pipeline_factory_.get(),
         expected_input_channels);

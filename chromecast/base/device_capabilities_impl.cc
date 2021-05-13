@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromecast/base/serializers.h"
 
 namespace chromecast {
 
