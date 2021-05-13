@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontService;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordinator;
 import org.chromium.components.content_creation.notes.NoteService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -29,7 +30,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator {
 
         mListModel = new ModelList();
 
-        mMediator = new NoteCreationMediator(mListModel, noteService);
+        mMediator =
+                new NoteCreationMediator(mListModel, new GoogleFontService(mActivity), noteService);
 
         mDialog = new NoteCreationDialog();
         mDialog.initDialog(this::onViewCreated);

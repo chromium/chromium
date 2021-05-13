@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.content_creation.notes;
 
+import android.graphics.Typeface;
+
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -16,5 +18,8 @@ class NoteProperties {
     static final WritableObjectPropertyKey<NoteTemplate> TEMPLATE =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TEMPLATE};
+    /** The Typeface instance that has been loaded for the associated template. */
+    static final WritableObjectPropertyKey<Typeface> TYPEFACE = new WritableObjectPropertyKey<>();
+
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TEMPLATE, TYPEFACE};
 }
