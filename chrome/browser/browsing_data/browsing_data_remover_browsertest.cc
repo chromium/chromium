@@ -326,8 +326,7 @@ class BrowsingDataRemoverBrowserTest
                      base::Time delete_begin,
                      base::Time delete_end) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            GetBrowser()->profile());
+        GetBrowser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveAndReply(
         delete_begin, delete_end, remove_mask,
@@ -340,8 +339,7 @@ class BrowsingDataRemoverBrowserTest
       uint64_t remove_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            GetBrowser()->profile());
+        GetBrowser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), remove_mask,

@@ -55,7 +55,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
         all_data_(all_data),
         callback_(std::move(callback)),
         origin_runner_(base::ThreadTaskRunnerHandle::Get()),
-        remover_(content::BrowserContext::GetBrowsingDataRemover(profile)) {
+        remover_(profile->GetBrowsingDataRemover()) {
     remover_->AddObserver(this);
 
     if (all_data) {

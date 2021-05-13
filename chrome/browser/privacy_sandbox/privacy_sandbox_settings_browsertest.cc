@@ -81,7 +81,7 @@ class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
 
   void ClearAllCookies() {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+        browser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(),

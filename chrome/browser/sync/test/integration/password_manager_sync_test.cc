@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // Clear cookies and account passwords.
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(GetProfile(0));
+      GetProfile(0)->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

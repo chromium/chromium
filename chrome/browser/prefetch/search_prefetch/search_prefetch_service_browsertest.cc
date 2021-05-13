@@ -381,7 +381,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     if (url_origin)
       filter->AddOrigin(url::Origin::Create(url_origin.value()));
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+        browser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(),

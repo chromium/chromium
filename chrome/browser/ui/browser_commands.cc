@@ -1623,7 +1623,7 @@ void ToggleFullscreenMode(Browser* browser) {
 
 void ClearCache(Browser* browser) {
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(browser->profile());
+      browser->profile()->GetBrowsingDataRemover();
   remover->Remove(base::Time(), base::Time::Max(),
                   content::BrowsingDataRemover::DATA_TYPE_CACHE,
                   content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);

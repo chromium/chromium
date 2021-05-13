@@ -118,9 +118,8 @@ storage::ExternalMountPoints* BrowserContext::GetMountPoints(
 }
 
 // static
-BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover(
-    BrowserContext* self) {
-  return self->impl()->GetBrowsingDataRemover();
+BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover() {
+  return impl()->GetBrowsingDataRemover();
 }
 
 // static

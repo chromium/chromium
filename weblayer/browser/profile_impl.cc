@@ -144,8 +144,7 @@ class ProfileImpl::DataClearer : public content::BrowsingDataRemover::Observer {
  public:
   DataClearer(content::BrowserContext* browser_context,
               base::OnceCallback<void()> callback)
-      : remover_(
-            content::BrowserContext::GetBrowsingDataRemover(browser_context)),
+      : remover_(browser_context->GetBrowsingDataRemover()),
         callback_(std::move(callback)) {
     remover_->AddObserver(this);
   }

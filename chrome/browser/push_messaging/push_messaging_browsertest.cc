@@ -2704,7 +2704,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate a user clearing site data (including Service Workers, crucially).
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(GetBrowser()->profile());
+      GetBrowser()->profile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

@@ -91,7 +91,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
 
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   BrowsingDataRemover* browsing_data_remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+      profile->GetBrowsingDataRemover();
 
   std::vector<int> data_types_vector;
   base::android::JavaIntArrayToIntVector(env, data_types, &data_types_vector);

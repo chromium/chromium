@@ -1072,7 +1072,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
     profile_ = profile_builder.Build();
 
-    remover_ = content::BrowserContext::GetBrowsingDataRemover(profile_.get());
+    remover_ = profile_->GetBrowsingDataRemover();
 
     // Make sure the Network Service is started before making a NetworkContext.
     content::GetNetworkService();

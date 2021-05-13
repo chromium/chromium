@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
     observer.Wait();
   } else {
     content::BrowsingDataRemoverCompletionInhibitor inhibitor(
-        content::BrowserContext::GetBrowsingDataRemover(additional_profile));
+        additional_profile->GetBrowsingDataRemover());
     webui::DeleteProfileAtPath(additional_profile_dir,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
     inhibitor.BlockUntilNearCompletion();

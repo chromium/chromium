@@ -768,8 +768,7 @@ void AwContents::ClearCache(JNIEnv* env,
 
   if (include_disk_files) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            web_contents_->GetBrowserContext());
+        web_contents_->GetBrowserContext()->GetBrowsingDataRemover();
     remover->Remove(
         base::Time(), base::Time::Max(),
         content::BrowsingDataRemover::DATA_TYPE_CACHE,

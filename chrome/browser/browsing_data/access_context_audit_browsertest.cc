@@ -346,8 +346,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_RemoveRecords) {
 IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveRecords) {
   // Immediately remove all records and ensure no record remains.
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(
-          chrome_test_utils::GetProfile(this));
+      chrome_test_utils::GetProfile(this)->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(base::Time(), base::Time::Max(),
                           chrome_browsing_data_remover::ALL_DATA_TYPES,

@@ -34,7 +34,7 @@ class BrowsingDataRemoverDelegate;
 //  0. Instantiation.
 //
 //       content::BrowsingDataRemover* remover =
-//           content::BrowserContext::GetBrowsingDataRemover(browser_context);
+//           browser_context->GetBrowsingDataRemover();
 //
 //  1. No observer.
 //

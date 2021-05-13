@@ -240,8 +240,9 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
 void WebContentController::OnVisible(aura::Window* window) {
   // Acquire initial focus.
   auto* contents = GetWebContents();
-  if (contents) contents->SetInitialFocus();
-  else {
+  if (contents) {
+    contents->SetInitialFocus();
+  } else {
     LOG(WARNING)
         << "Webview unable to acquire initial focus due to missing webcontents";
   }
@@ -512,8 +513,7 @@ void WebContentController::HandleClearCache() {
 
   // Remove disk cache and local storage.
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(
-          GetWebContents()->GetBrowserContext());
+      GetWebContents()->GetBrowserContext()->GetBrowsingDataRemover();
   remover->Remove(base::Time(), base::Time::Max(),
                   content::BrowsingDataRemover::DATA_TYPE_CACHE |
                       content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
@@ -526,8 +526,7 @@ void WebContentController::HandleClearCookies(int64_t id) {
       std::make_unique<webview::WebviewResponse>();
 
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(
-          GetWebContents()->GetBrowserContext());
+      GetWebContents()->GetBrowserContext()->GetBrowsingDataRemover();
   remover->Remove(base::Time(), base::Time::Max(),
                   content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                   content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |

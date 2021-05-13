@@ -120,7 +120,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Returns a BrowsingDataRemover that can schedule data deletion tasks
   // for this |context|.
-  static BrowsingDataRemover* GetBrowsingDataRemover(BrowserContext* self);
+  BrowsingDataRemover* GetBrowsingDataRemover();
 
   // Returns the PermissionController associated with this context. There's
   // always a PermissionController instance for each BrowserContext.

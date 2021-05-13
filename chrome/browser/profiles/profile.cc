@@ -489,7 +489,7 @@ double Profile::GetDefaultZoomLevelForProfile() {
 #endif  // !defined(OS_ANDROID)
 
 void Profile::Wipe() {
-  content::BrowserContext::GetBrowsingDataRemover(this)->Remove(
+  GetBrowsingDataRemover()->Remove(
       base::Time(), base::Time::Max(),
       chrome_browsing_data_remover::WIPE_PROFILE,
       chrome_browsing_data_remover::ALL_ORIGIN_TYPES);

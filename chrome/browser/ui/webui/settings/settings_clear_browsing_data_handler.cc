@@ -357,8 +357,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       ProcessInstalledApps(installed_apps);
 
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile_);
+  content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
 
   base::OnceCallback<void(uint64_t)> callback =
       base::BindOnce(&ClearBrowsingDataHandler::OnClearingTaskFinished,

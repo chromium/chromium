@@ -37,8 +37,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
                                    base::Value(true));
 
   content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover =
-      content::BrowserContext::GetBrowsingDataRemover(testing_profile.get());
+  auto* remover = testing_profile->GetBrowsingDataRemover();
   remover->SetEmbedderDelegate(&delegate);
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
@@ -110,8 +109,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   auto testing_profile = builder.Build();
 
   content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover =
-      content::BrowserContext::GetBrowsingDataRemover(testing_profile.get());
+  auto* remover = testing_profile->GetBrowsingDataRemover();
   remover->SetEmbedderDelegate(&delegate);
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",

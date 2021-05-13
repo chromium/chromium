@@ -141,8 +141,7 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
     return;
   }
 
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+  content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
   remover->AddObserver(this);
 
   remover->RemoveAndReply(
@@ -155,8 +154,7 @@ void ClearBrowsingDataJob::OnBrowsingDataRemoverDone(
   Profile* profile = profile_manager_->GetProfileByPath(profile_path_);
   DCHECK(profile);
 
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+  content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
   remover->RemoveObserver(this);
 
   auto payload = std::make_unique<ResultPayload>(failed_data_types);

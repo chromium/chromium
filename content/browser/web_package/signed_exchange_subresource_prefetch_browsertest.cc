@@ -970,8 +970,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest, ClearAll) {
   EXPECT_EQ(IsSignedExchangePrefetchCacheEnabled() ? 1u : 0u,
             GetCachedExchanges(shell()).size());
 
-  BrowsingDataRemover* remover = BrowserContext::GetBrowsingDataRemover(
-      shell()->web_contents()->GetBrowserContext());
+  BrowsingDataRemover* remover =
+      shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
   BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(), BrowsingDataRemover::DATA_TYPE_CACHE,

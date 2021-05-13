@@ -570,7 +570,7 @@ void WebApkInstaller::OnGotSpaceStatus(
 
   if (space_status == SpaceStatus::ENOUGH_SPACE_AFTER_FREE_UP_CACHE) {
     CacheClearer::FreeCacheAsync(
-        content::BrowserContext::GetBrowsingDataRemover(browser_context_),
+        browser_context_->GetBrowsingDataRemover(),
         base::BindOnce(&WebApkInstaller::OnHaveSufficientSpaceForInstall,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {

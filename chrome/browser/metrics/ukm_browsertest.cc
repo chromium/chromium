@@ -90,8 +90,7 @@ typedef std::unique_ptr<TestTabModel> PlatformBrowser;
 
 // Clears the specified data using BrowsingDataRemover.
 void ClearBrowsingData(Profile* profile) {
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+  content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

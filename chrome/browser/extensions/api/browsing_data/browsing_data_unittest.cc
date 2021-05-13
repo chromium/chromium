@@ -60,7 +60,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     params.window = browser_window_.get();
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
-    remover_ = content::BrowserContext::GetBrowsingDataRemover(profile());
+    remover_ = profile()->GetBrowsingDataRemover();
     remover_->SetEmbedderDelegate(&delegate_);
 
     // TODO(crbug.com/1182630): This can be removed once crbug.com/1182630 is

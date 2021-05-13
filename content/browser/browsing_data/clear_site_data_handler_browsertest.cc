@@ -131,8 +131,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
-    BrowserContext::GetBrowsingDataRemover(browser_context())
-        ->SetEmbedderDelegate(&embedder_delegate_);
+    browser_context()->GetBrowsingDataRemover()->SetEmbedderDelegate(
+        &embedder_delegate_);
 
     // Set up HTTP and HTTPS test servers that handle all hosts.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                                       false);
 
   base::RunLoop loop;
-  auto* remover = BrowserContext::GetBrowsingDataRemover(browser_context());
+  auto* remover = browser_context()->GetBrowsingDataRemover();
   remover->SetWouldCompleteCallbackForTesting(
       base::BindLambdaForTesting([&](base::OnceClosure callback) {
         std::move(callback).Run();

@@ -361,8 +361,7 @@ bool BrowsingDataRemoverFunction::IsPauseSyncAllowed() {
 
 void BrowsingDataRemoverFunction::StartRemoving() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+  content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
 
   // Add a ref (Balanced in OnTaskFinished)
   AddRef();

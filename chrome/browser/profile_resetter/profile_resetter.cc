@@ -244,7 +244,7 @@ void ProfileResetter::ResetCookiesAndSiteData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cookies_remover_);
 
-  cookies_remover_ = content::BrowserContext::GetBrowsingDataRemover(profile_);
+  cookies_remover_ = profile_->GetBrowsingDataRemover();
   cookies_remover_->AddObserver(this);
   uint64_t remove_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                          content::BrowsingDataRemover::DATA_TYPE_CACHE;

@@ -301,7 +301,7 @@ ChromeBrowsingDataRemoverDelegate::~ChromeBrowsingDataRemoverDelegate() =
     default;
 
 void ChromeBrowsingDataRemoverDelegate::Shutdown() {
-  auto* remover = BrowserContext::GetBrowsingDataRemover(profile_);
+  auto* remover = profile_->GetBrowsingDataRemover();
   DCHECK(remover);
   remover->SetEmbedderDelegate(nullptr);
   profile_keep_alive_.reset();

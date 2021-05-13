@@ -87,8 +87,7 @@ class ChromeBrowsingDataLifetimeManagerTest
             GetBrowser()->profile());
     browsing_data_lifetime_manager->SetEndTimeForTesting(base::Time::Max());
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            GetBrowser()->profile());
+        GetBrowser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     browsing_data_lifetime_manager->SetBrowsingDataRemoverObserverForTesting(
         &completion_observer);

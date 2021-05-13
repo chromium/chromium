@@ -618,8 +618,7 @@ class RemoveBrowsingHistorySSLHostStateDelegateTest
     : public StatefulSSLHostStateDelegateTest {
  public:
   void RemoveAndWait(Profile* profile) {
-    content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(profile);
+    content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveAndReply(
         browsing_data::CalculateBeginDeleteTime(

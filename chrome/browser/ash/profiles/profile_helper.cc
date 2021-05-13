@@ -478,8 +478,7 @@ void ProfileHelperImpl::ClearSigninProfile(
       3, base::BindOnce(&ProfileHelperImpl::OnSigninProfileCleared,
                         weak_factory_.GetWeakPtr()));
   LOG_ASSERT(!browsing_data_remover_);
-  browsing_data_remover_ =
-      content::BrowserContext::GetBrowsingDataRemover(GetSigninProfile());
+  browsing_data_remover_ = GetSigninProfile()->GetBrowsingDataRemover();
   browsing_data_remover_->AddObserver(this);
   browsing_data_remover_->RemoveAndReply(
       base::Time(), base::Time::Max(),

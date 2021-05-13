@@ -281,7 +281,7 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
       !ProfileSyncServiceFactory::IsSyncAllowed(profile_)) {
     profile_->GetPrefs()->SetBoolean(
         browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending, true);
-    auto* remover = content::BrowserContext::GetBrowsingDataRemover(profile_);
+    auto* remover = profile_->GetBrowsingDataRemover();
     // Add a ScopedKeepAlive to hold the browser shutdown until the browsing
     // data is deleted and the profile is destroyed.
 #if DCHECK_IS_ON()
@@ -316,8 +316,7 @@ void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
 }
 
 void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile_);
+  content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
 
   for (auto& removal_settings : scheduled_removals_settings_) {
     if (removal_settings.time_to_live_in_hours <= 0)

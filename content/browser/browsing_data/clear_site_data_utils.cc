@@ -39,7 +39,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
         callback_(std::move(callback)),
         pending_task_count_(0),
         remover_(nullptr) {
-    remover_ = BrowserContext::GetBrowsingDataRemover(browser_context);
+    remover_ = browser_context->GetBrowsingDataRemover();
     DCHECK(remover_);
     scoped_observation_.Observe(remover_);
   }

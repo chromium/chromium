@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   // Clear cache.
   {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+        browser()->profile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(),

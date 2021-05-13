@@ -49,8 +49,7 @@ content::WebUIDataSource* CreateInternalsHTMLSource(
 
 AutofillCacheResetter::AutofillCacheResetter(
     content::BrowserContext* browser_context)
-    : remover_(
-          content::BrowserContext::GetBrowsingDataRemover(browser_context)) {
+    : remover_(browser_context->GetBrowsingDataRemover()) {
   remover_->AddObserver(this);
 }
 

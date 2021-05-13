@@ -99,8 +99,8 @@ class MultipleProfileDeletionObserver
                                 OnBrowsingDataRemoverWouldComplete,
                             base::Unretained(this));
     for (Profile* profile : profile_manager->GetLoadedProfiles()) {
-      content::BrowserContext::GetBrowsingDataRemover(profile)
-          ->SetWouldCompleteCallbackForTesting(would_complete_callback);
+      profile->GetBrowsingDataRemover()->SetWouldCompleteCallbackForTesting(
+          would_complete_callback);
     }
   }
 
