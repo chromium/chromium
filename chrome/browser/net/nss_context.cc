@@ -36,13 +36,12 @@ void GetCertDBOnIOThread(
 
   // Note that the callback will be used only if the cert database hasn't yet
   // been initialized.
-  auto completion_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &DidGetCertDBOnIOThread, response_task_runner, std::move(callback)));
   net::NSSCertDatabase* cert_db =
-      std::move(database_getter).Run(completion_callback);
-
+      std::move(database_getter).Run(std::move(split_callback.first));
   if (cert_db)
-    completion_callback.Run(cert_db);
+    std::move(split_callback.second).Run(cert_db);
 }
 
 }  // namespace

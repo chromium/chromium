@@ -362,8 +362,6 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
   base::EraseIf(vector, is_unknown);
 
   // Grab a memory dump for all processes.
-  // Using AdaptCallbackForRepeating allows for an easier transition to
-  // OnceCallbacks for https://crbug.com/714018.
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestPrivateMemoryFootprint(
           base::kNullProcessId,

@@ -130,9 +130,8 @@ void DeviceAccountInitializer::StoreToken() {
   handling_request_ = true;
   DeviceOAuth2TokenServiceFactory::Get()->SetAndSaveRefreshToken(
       robot_refresh_token_,
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &DeviceAccountInitializer::HandleStoreRobotAuthTokenResult,
-          weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&DeviceAccountInitializer::HandleStoreRobotAuthTokenResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DeviceAccountInitializer::HandleStoreRobotAuthTokenResult(bool result) {

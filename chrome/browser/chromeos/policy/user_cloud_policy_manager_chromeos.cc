@@ -827,9 +827,9 @@ void UserCloudPolicyManagerChromeOS::OnProfileAdded(Profile* profile) {
   shutdown_subscription_ =
       UserCloudPolicyManagerChromeOSNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(base::AdaptCallbackForRepeating(
-              base::BindOnce(&UserCloudPolicyManagerChromeOS::ProfileShutdown,
-                             base::Unretained(this))));
+          ->Subscribe(base::BindRepeating(
+              &UserCloudPolicyManagerChromeOS::ProfileShutdown,
+              base::Unretained(this)));
 }
 
 void UserCloudPolicyManagerChromeOS::ProfileShutdown() {

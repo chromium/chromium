@@ -34,8 +34,8 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
                                  public gaia::GaiaOAuthClient::Delegate,
                                  public DeviceOAuth2TokenStore::Observer {
  public:
-  typedef base::RepeatingCallback<void()> RefreshTokenAvailableCallback;
-  typedef base::RepeatingCallback<void(bool)> StatusCallback;
+  using RefreshTokenAvailableCallback = base::RepeatingClosure;
+  using StatusCallback = base::OnceCallback<void(bool)>;
 
   // Persist the given refresh token on the device. Overwrites any previous
   // value. Should only be called during initial device setup. Signals

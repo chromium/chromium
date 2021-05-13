@@ -877,8 +877,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     if (password_store) {
       password_store->DisableAutoSignInForOrigins(
-          filter, base::AdaptCallbackForRepeating(CreateTaskCompletionClosure(
-                      TracingDataType::kDisableAutoSignin)));
+          filter,
+          CreateTaskCompletionClosure(TracingDataType::kDisableAutoSignin));
     }
   }
 
@@ -891,8 +891,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (password_store) {
       password_store->RemoveStatisticsByOriginAndTime(
           nullable_filter, delete_begin_, delete_end_,
-          base::AdaptCallbackForRepeating(CreateTaskCompletionClosure(
-              TracingDataType::kPasswordsStatistics)));
+          CreateTaskCompletionClosure(TracingDataType::kPasswordsStatistics));
       password_store->RemoveFieldInfoByTime(
           delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kFieldInfo));
@@ -998,11 +997,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               profile_);
       if (offline_page_model)
         offline_page_model->DeleteCachedPagesByURLPredicate(
-            filter, base::AdaptCallbackForRepeating(
-                        IgnoreArgument<
-                            offline_pages::OfflinePageModel::DeletePageResult>(
-                            CreateTaskCompletionClosure(
-                                TracingDataType::kOfflinePages))));
+            filter,
+            IgnoreArgument<offline_pages::OfflinePageModel::DeletePageResult>(
+                CreateTaskCompletionClosure(TracingDataType::kOfflinePages)));
     }
 #endif
 

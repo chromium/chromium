@@ -717,14 +717,14 @@ void CertificateManagerModel::GetCertDBOnIOThread(
     CreationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  auto did_get_cert_db_callback = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&CertificateManagerModel::DidGetCertDBOnIOThread,
                      std::move(params), observer, std::move(callback)));
 
   net::NSSCertDatabase* cert_db =
-      std::move(database_getter).Run(did_get_cert_db_callback);
+      std::move(database_getter).Run(std::move(split_callback.first));
   // If the NSS database was already available, |cert_db| is non-null and
   // |did_get_cert_db_callback| has not been called. Call it explicitly.
   if (cert_db)
-    did_get_cert_db_callback.Run(cert_db);
+    std::move(split_callback.second).Run(cert_db);
 }

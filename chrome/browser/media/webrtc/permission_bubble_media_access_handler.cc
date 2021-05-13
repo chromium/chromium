@@ -46,10 +46,10 @@
 
 using content::BrowserThread;
 
-using RepeatingMediaResponseCallback =
-    base::RepeatingCallback<void(const blink::MediaStreamDevices& devices,
-                                 blink::mojom::MediaStreamRequestResult result,
-                                 std::unique_ptr<content::MediaStreamUI> ui)>;
+using MediaResponseCallback =
+    base::OnceCallback<void(const blink::MediaStreamDevices& devices,
+                            blink::mojom::MediaStreamRequestResult result,
+                            std::unique_ptr<content::MediaStreamUI> ui)>;
 
 #if defined(OS_MAC)
 using system_media_permissions::SystemPermission;
@@ -121,14 +121,13 @@ void UpdatePageSpecificContentSettings(
 
 struct PermissionBubbleMediaAccessHandler::PendingAccessRequest {
   PendingAccessRequest(const content::MediaStreamRequest& request,
-                       RepeatingMediaResponseCallback callback)
-      : request(request), callback(callback) {}
-  ~PendingAccessRequest() {}
+                       MediaResponseCallback callback)
+      : request(request), callback(std::move(callback)) {}
 
   // TODO(gbillock): make the MediaStreamDevicesController owned by
   // this object when we're using bubbles.
   content::MediaStreamRequest request;
-  RepeatingMediaResponseCallback callback;
+  MediaResponseCallback callback;
 };
 
 PermissionBubbleMediaAccessHandler::PermissionBubbleMediaAccessHandler()
@@ -200,10 +199,8 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
   web_contents_collection_.StartObserving(web_contents);
 
   RequestsMap& requests_map = pending_requests_[web_contents];
-  requests_map.emplace(
-      next_request_id_++,
-      PendingAccessRequest(
-          request, base::AdaptCallbackForRepeating(std::move(callback))));
+  requests_map.emplace(next_request_id_++,
+                       PendingAccessRequest(request, std::move(callback)));
 
   // If this is the only request then show the infobar.
   if (requests_map.size() == 1)
@@ -403,8 +400,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
   }
 #endif  // defined(OS_MAC)
 
-  RepeatingMediaResponseCallback callback =
-      std::move(request_it->second.callback);
+  MediaResponseCallback callback = std::move(request_it->second.callback);
   requests_map.erase(request_it);
 
   if (!requests_map.empty()) {
