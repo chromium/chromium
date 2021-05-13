@@ -365,7 +365,7 @@ const base::Feature kFilesZipUnpack{"FilesZipUnpack",
 // Enables or disables handle of `closeView` message from Gaia. The message is
 // supposed to end the flow.
 const base::Feature kGaiaCloseViewMessage{"GaiaCloseViewMessage",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Gaia reauth endpoint with deleted user customization page.
 const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
