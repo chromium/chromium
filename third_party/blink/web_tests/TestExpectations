@@ -4134,7 +4134,6 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algori
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-minimum-contribution-baseline-shim-vertical-rl.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-minimum-contribution-baseline-shim.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/percent-padding-margin-resolution-grid-item-update.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-content-sized-columns-resize.html [ Failure ]
 
 ### Tests *expected* to be failing with LayoutNGGrid enabled:
 crbug.com/1108097 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-004.html [ Failure ]
@@ -5305,7 +5304,6 @@ crbug.com/919789 fast/autoresize/basic.html [ Pass Timeout ]
 crbug.com/919789 fast/dom/viewport/resize-event-fired-window-resized.html [ Pass Timeout ]
 crbug.com/919789 fast/dom/Window/window-resize-contents.html [ Pass Timeout ]
 crbug.com/919789 fast/events/resize-events-count.html [ Pass Timeout ]
-crbug.com/919789 fast/css-grid-layout/flex-content-sized-columns-resize-expected.html [ Pass Timeout ]
 crbug.com/919789 virtual/text-antialias/line-break-between-text-nodes-with-inline-blocks.html [ Pass Timeout ]
 crbug.com/919789 media/controls/overflow-menu-hide-on-resize.html [ Pass Timeout ]
 crbug.com/919789 [ Linux ] paint/invalidation/resize-iframe-text.html [ Pass Timeout ]
