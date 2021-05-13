@@ -652,39 +652,35 @@ public class TopToolbarCoordinator implements Toolbar {
      * Update the start surface toolbar state.
      * @param newState New Start Surface State.
      * @param requestToShow Whether or not request showing the start surface toolbar.
+     * @param toolbarHeight The height of start surface toolbar.
      */
     public void updateStartSurfaceToolbarState(
-            @StartSurfaceState int newState, boolean requestToShow) {
+            @StartSurfaceState int newState, boolean requestToShow, int toolbarHeight) {
         if (mStartSurfaceToolbarCoordinator == null
                 || mToolbarLayout.getToolbarDataProvider() == null) {
             return;
         }
         mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(newState, requestToShow);
-        mToolbarLayout.onStartSurfaceStateChanged(newState == StartSurfaceState.SHOWN_HOMEPAGE);
-        updateToolbarLayoutVisibility();
+        updateToolbarLayoutVisibility(toolbarHeight);
     }
 
     /**
      * Triggered when the offset of start surface header view is changed.
      * @param verticalOffset The start surface header view's offset.
+     * @param toolbarHeight The height of start surface toolbar.
      */
-    public void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
+    public void onStartSurfaceHeaderOffsetChanged(int verticalOffset, int toolbarHeight) {
         if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
-            updateToolbarLayoutVisibility();
+            updateToolbarLayoutVisibility(toolbarHeight);
         }
     }
 
-    private void updateToolbarLayoutVisibility() {
+    private void updateToolbarLayoutVisibility(int toolbarHeight) {
         assert mStartSurfaceToolbarCoordinator != null;
-        boolean shouldHideToolbarLayout =
-                mStartSurfaceToolbarCoordinator.shouldHideToolbarLayout(getHeight());
-        mToolbarLayout.setVisibility(shouldHideToolbarLayout ? View.INVISIBLE : View.VISIBLE);
-        // When start surface toolbar is shown on the top of the screen, toolbar shadow is hidden.
-        // On start surface homepage, toolbar shadow should be shown only when start surface toolbar
-        // is scrolled out of screen. On tab switcher page, TabListRecyclerView handles another
-        // shadow.
-        mToolbarLayout.setForceHideShadow(mStartSurfaceToolbarCoordinator.isToolbarOnScreenTop());
+        mToolbarLayout.onStartSurfaceStateChanged(
+                mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox(toolbarHeight),
+                mStartSurfaceToolbarCoordinator.isOnHomepage());
     }
 
     @Override

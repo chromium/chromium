@@ -513,7 +513,6 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.search_box_text));
         TextView urlBar = cta.findViewById(R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
-        waitForStableView(urlBar);
         waitForStableView(cta.findViewById(R.id.search_box_text));
         onView(withId(R.id.search_box_text)).perform(click());
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));

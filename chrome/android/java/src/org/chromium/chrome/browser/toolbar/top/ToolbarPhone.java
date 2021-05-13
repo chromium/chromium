@@ -139,7 +139,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
-    private boolean mIsShowingStartSurface;
+    private boolean mForceExpansionOnStartSurface;
     private boolean mForceHideShadow;
 
     // This determines whether or not the toolbar draws as expected (false) or whether it always
@@ -1756,8 +1756,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void updateProgressBarVisibility() {
-        getProgressBar().setVisibility(
-                mIsShowingStartSurface || mTabSwitcherState != STATIC_TAB ? INVISIBLE : VISIBLE);
+        getProgressBar().setVisibility(mTabSwitcherState != STATIC_TAB ? INVISIBLE : VISIBLE);
+    }
+
+    private void forceHideProgressBar() {
+        getProgressBar().setVisibility(INVISIBLE);
     }
 
     @Override
@@ -1854,26 +1857,38 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    void onStartSurfaceStateChanged(boolean isShowingStartSurface) {
-        super.onStartSurfaceStateChanged(isShowingStartSurface);
-        mIsShowingStartSurface = isShowingStartSurface;
-        updateUrlExpansionState();
+    void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurface) {
+        super.onStartSurfaceStateChanged(shouldBeVisible, isShowingStartSurface);
+
+        // Update visibilities of toolbar layout, progress bar and shadow.
+        setVisibility(shouldBeVisible ? VISIBLE : GONE);
+        forceHideProgressBar();
+        setForceHideShadow(!shouldBeVisible);
+        // Url bar should be focusable. This will be set in UrlBar#onDraw but there's a delay which
+        // may cause focus to fail, so set here too.
+        mLocationBar.setUrlBarFocusable(true);
+
+        // Toolbar should be expanded when it's shown on the start surface homepage.
+        boolean shouldExpandToolbar = shouldBeVisible && isShowingStartSurface;
+        if (mForceExpansionOnStartSurface != shouldExpandToolbar) {
+            mForceExpansionOnStartSurface = shouldExpandToolbar;
+            updateUrlExpansionState();
+        }
     }
 
     /**
      * Update url expansion state when start surface state is changed. If start surface homepage is
-     * showing, |mIsShowingStartSurface| is set to true, and toolbar is always expanded. Otherwise
-     * expansion state is consistent with urlHasFocus().
+     * showing and start surface toolbar is scrolled off, |mForceExpansionOnStartSurface| is set to
+     * true, and toolbar is always expanded. Otherwise expansion state is consistent with
+     * urlHasFocus().
      */
     private void updateUrlExpansionState() {
         if (mToggleTabStackButton != null) {
-            boolean isGone = mIsShowingStartSurface;
+            boolean isGone = mForceExpansionOnStartSurface;
             mToggleTabStackButton.setVisibility(isGone ? GONE : VISIBLE);
         }
 
-        getMenuButtonCoordinator().setVisibility(!mIsShowingStartSurface);
-        updateProgressBarVisibility();
-
+        getMenuButtonCoordinator().setVisibility(!mForceExpansionOnStartSurface);
         // The URL focusing animator set shouldn't be populated before native initialization. It is
         // possible that this function is called before native initialization when Instant Start
         // is enabled.
@@ -2095,7 +2110,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         // On start surface omnibox should be always expanded without being focused, while whether
         // the keyboard should show up or not depends on whether url has focus.
-        if (mIsShowingStartSurface) {
+        if (mForceExpansionOnStartSurface) {
             showExpandedState = true;
         }
 
@@ -2114,6 +2129,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
         mUrlFocusLayoutAnimator = new AnimatorSet();
         mUrlFocusLayoutAnimator.playTogether(animators);
+
+        // If it's on start surface, the animation is processed by StartSurfaceToolbar and we only
+        // want expanded toolbar phone layout. This expansion animation will cause unnecessary
+        // flicker.
+        if (mForceExpansionOnStartSurface) mUrlFocusLayoutAnimator.setDuration(0);
 
         mUrlFocusChangeInProgress = true;
         // |showExpandedState| needs to be final when accessed within inner class.

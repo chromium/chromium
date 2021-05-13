@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -229,6 +230,14 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(false, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IN_START_SURFACE_MODE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
+
+        int toolbarHeight = 10;
+        assertEquals(0.0, mPropertyModel.get(TRANSLATION_Y), 0.0);
+        assertFalse(mMediator.shouldShowRealSearchBox(toolbarHeight));
+        assertTrue(mMediator.isOnHomepage());
+        mPropertyModel.set(TRANSLATION_Y, -toolbarHeight);
+        assertTrue(mMediator.shouldShowRealSearchBox(toolbarHeight));
+        assertTrue(mMediator.isOnHomepage());
     }
 
     @Test

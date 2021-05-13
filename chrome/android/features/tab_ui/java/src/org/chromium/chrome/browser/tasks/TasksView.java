@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -54,6 +55,7 @@ class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
+    private boolean mIsIncognito;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -166,6 +168,7 @@ class TasksView extends CoordinatorLayoutForPointer {
                 ? ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text)
                 : ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
         mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
+        mIsIncognito = isIncognito;
     }
 
     /**
@@ -348,12 +351,13 @@ class TasksView extends CoordinatorLayoutForPointer {
             int toolbarContainerTopMargin =
                     getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
             View fakeSearchBoxView = findViewById(R.id.search_box);
+            View searchTextView = findViewById(R.id.search_box_text);
             if (fakeSearchBoxView == null) return;
             // If fake search box view is not null when creating this animation, it will not change.
             // So checking it once above is enough.
             mFakeSearchBoxShrinkAnimation = (appbarLayout, headerVerticalOffset)
                     -> updateFakeSearchBoxShrinkAnimation(headerVerticalOffset, fakeSearchBoxHeight,
-                            toolbarContainerTopMargin, fakeSearchBoxView);
+                            toolbarContainerTopMargin, fakeSearchBoxView, searchTextView);
         }
         mHeaderView.addOnOffsetChangedListener(mFakeSearchBoxShrinkAnimation);
     }
@@ -379,9 +383,11 @@ class TasksView extends CoordinatorLayoutForPointer {
      * @param originalFakeSearchBoxHeight The height of fake search box.
      * @param toolbarContainerTopMargin The top margin of toolbar container view.
      * @param fakeSearchBox The fake search box in start surface homepage.
+     * @param searchTextView  The search text view in fake search box.
      */
     private void updateFakeSearchBoxShrinkAnimation(int headerOffset,
-            int originalFakeSearchBoxHeight, int toolbarContainerTopMargin, View fakeSearchBox) {
+            int originalFakeSearchBoxHeight, int toolbarContainerTopMargin, View fakeSearchBox,
+            View searchTextView) {
         // When the header is scrolled up by fake search box height or so, reduce the fake search
         // box height.
         int reduceHeight = MathUtils.clamp(
@@ -401,6 +407,20 @@ class TasksView extends CoordinatorLayoutForPointer {
                 marginLayoutParams.rightMargin, marginLayoutParams.bottomMargin);
 
         fakeSearchBox.setLayoutParams(layoutParams);
+
+        // Update the translation X of search text view to make space for the search logo.
+        SearchEngineLogoUtils searchEngineLogoUtils = SearchEngineLogoUtils.getInstance();
+        assert searchEngineLogoUtils != null;
+
+        if (!searchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
+            return;
+        }
+
+        int finalTranslationX =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
+        searchTextView.setTranslationX(
+                finalTranslationX * ((float) reduceHeight / toolbarContainerTopMargin));
     }
 
     /**

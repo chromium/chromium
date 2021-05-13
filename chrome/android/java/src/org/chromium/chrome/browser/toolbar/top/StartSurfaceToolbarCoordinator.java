@@ -228,14 +228,15 @@ public class StartSurfaceToolbarCoordinator {
 
     /**
      * @param toolbarHeight The height of start surface toolbar.
-     * @return Whether or not toolbar layout view should be hidden.
+     * @return Whether or not toolbar phone layout view should be shown.
      */
-    boolean shouldHideToolbarLayout(int toolbarHeight) {
-        return mToolbarMediator.shouldHideToolbarLayout(toolbarHeight);
+    boolean shouldShowRealSearchBox(int toolbarHeight) {
+        return mToolbarMediator.shouldShowRealSearchBox(toolbarHeight);
     }
 
-    boolean isToolbarOnScreenTop() {
-        return mToolbarMediator.isToolbarOnScreenTop();
+    /** Returns whether it's on the start surface homepage.*/
+    boolean isOnHomepage() {
+        return mToolbarMediator.isOnHomepage();
     }
 
     void onNativeLibraryReady() {

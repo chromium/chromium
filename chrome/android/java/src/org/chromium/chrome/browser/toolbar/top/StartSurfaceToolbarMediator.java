@@ -175,23 +175,54 @@ class StartSurfaceToolbarMediator {
         updateTranslationY(verticalOffset);
     }
 
-    boolean shouldHideToolbarLayout(int toolbarHeight) {
-        // If it's on the non-incognito homepage, start surface toolbar is visible (omnibox has no
-        // focus), and scrolling offset is smaller than toolbar's height, we need to hide toolbar
-        // layout until start surface toolbar is disappearing.
-        // When mPropertyModel.get(TRANSLATION_Y) is 0, we cannot hide toolbar layout, otherwise
-        // previous toolbar focus may be cleared.
-        return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
-                && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
-                && -mPropertyModel.get(TRANSLATION_Y) != 0
-                && -mPropertyModel.get(TRANSLATION_Y) < toolbarHeight;
+    /**
+     * The real omnibox should be shown in three cases:
+     * 1. It's on the homepage, the url is focused and start surface toolbar is not visible.
+     * 2. It's on the homepage and the start surface toolbar is scrolled off.
+     * 3. It's on a tab.
+     *
+     * In the other cases:
+     * 1. It's on the homepage and start surface toolbar is at least partially shown -- the user
+     *    sees the fake search box.
+     * 2. It's on the tab switcher surface, there is no search box (fake or real).
+     *
+     * @param toolbarHeight The height of start surface toolbar.
+     * @return Whether toolbar layout should be shown.
+     */
+    boolean shouldShowRealSearchBox(int toolbarHeight) {
+        return isRealSearchBoxFocused() || isStartSurfaceToolbarScrolledOff(toolbarHeight)
+                || isOnATab();
     }
 
-    boolean isToolbarOnScreenTop() {
-        return (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
-                       || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER)
-                && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
-                && mPropertyModel.get(TRANSLATION_Y) == 0;
+    /** Returns whether it's on the start surface homepage. */
+    boolean isOnHomepage() {
+        return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
+    }
+
+    /** Returns whether it's on a normal tab. */
+    private boolean isOnATab() {
+        return mOverviewModeState == StartSurfaceState.NOT_SHOWN;
+    }
+
+    /**
+     * When mPropertyModel.get(IS_VISIBLE) is false on the homepage, start surface toolbar and fake
+     * search box are not shown and the real search box is focused.
+     * @return Whether the real search box is focused.
+     */
+    private boolean isRealSearchBoxFocused() {
+        return isOnHomepage() && !mPropertyModel.get(IS_VISIBLE);
+    }
+
+    /**
+     * Start surface toolbar is only scrolled on the homepage. When scrolling offset is larger than
+     * toolbar height, start surface toolbar is scrolled out of the screen.
+     *
+     * @param toolbarHeight The height of start surface toolbar.
+     * @return Whether the start surface toolbar is scrolled out of the screen.
+     */
+    private boolean isStartSurfaceToolbarScrolledOff(int toolbarHeight) {
+        return mPropertyModel.get(IS_VISIBLE)
+                && -mPropertyModel.get(TRANSLATION_Y) >= toolbarHeight;
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {
