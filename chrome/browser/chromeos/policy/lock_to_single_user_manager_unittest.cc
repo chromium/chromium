@@ -37,10 +37,10 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   ~LockToSingleUserManagerTest() override = default;
 
   void SetUp() override {
-    // This setter will initialize DBusThreadManager.
-    // This is required before ArcSessionManager's constructor calls
-    // DBusThreadManager::Get().
-    chromeos::DBusThreadManager::GetSetterForTesting();
+    // This is required before Concierge tests start calling
+    // DBusThreadManager::Get() for GetAnomalyDetectorClient.
+    chromeos::DBusThreadManager::Initialize();
+
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
     chromeos::SeneschalClient::InitializeFake();

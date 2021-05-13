@@ -15,7 +15,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
@@ -59,7 +58,6 @@ void DeviceSettingsTestBase::SetUp() {
       base::WrapUnique(user_manager_));
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
-  dbus_setter_ = chromeos::DBusThreadManager::GetSetterForTesting();
   chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   chromeos::UserDataAuthClient::InitializeFake();
   chromeos::CryptohomeMiscClient::InitializeFake();
@@ -92,7 +90,6 @@ void DeviceSettingsTestBase::TearDown() {
   chromeos::CryptohomeMiscClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
   chromeos::ConciergeClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();
   profile_.reset();

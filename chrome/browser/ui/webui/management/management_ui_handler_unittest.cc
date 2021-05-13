@@ -406,6 +406,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
     crostini_features_ = std::make_unique<crostini::FakeCrostiniFeatures>();
     SetUpConnectManager();
+    // DBusThreadManager::Initialize() has to be called before creating
+    // NetworkHandlerTestHelper.
+    chromeos::DBusThreadManager::Initialize();
     network_handler_test_helper_ =
         std::make_unique<chromeos::NetworkHandlerTestHelper>();
     chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
@@ -417,6 +420,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   }
   void TearDown() override {
     network_handler_test_helper_.reset();
+    profile_.reset();
+    chromeos::DBusThreadManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     DeviceSettingsTestBase::TearDown();
   }

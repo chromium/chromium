@@ -23,10 +23,6 @@
 
 class TestingProfile;
 
-namespace chromeos {
-class DBusThreadManagerSetter;
-}  // namespace chromeos
-
 namespace ash {
 
 // Wraps the singleton device settings and initializes it to the point where it
@@ -80,8 +76,6 @@ class DeviceSettingsTestBase : public testing::Test {
   // Local DeviceSettingsService instance for tests. Avoid using in combination
   // with the global instance (DeviceSettingsService::Get()).
   std::unique_ptr<DeviceSettingsService> device_settings_service_;
-
-  std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter_;
 
   std::unique_ptr<TestingProfile> profile_;
 

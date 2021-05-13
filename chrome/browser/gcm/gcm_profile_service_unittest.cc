@@ -41,7 +41,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #endif
 
 namespace gcm {
@@ -163,9 +162,6 @@ FakeGCMClient* GCMProfileServiceTest::GetGCMClient() const {
 
 void GCMProfileServiceTest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Create a DBus thread manager setter for its side effect.
-  // Ignore the return value.
-  chromeos::DBusThreadManager::GetSetterForTesting();
   chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 #endif
   TestingProfile::Builder builder;

@@ -1076,7 +1076,7 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
     // timeout in WaitForAutoEnrollmentState on asan builds. TODO(stevenjb):
     // Determine which client(s) need to be created and extract and initialize
     // them. https://crbug.com/949063.
-    DBusThreadManager::GetSetterForTesting();
+    DBusThreadManager::Initialize();
   }
 
   void SetUpOnMainThread() override {
@@ -1085,7 +1085,7 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     // Initialize the FakeShillManagerClient. This does not happen
-    // automatically because of the `DBusThreadManager::GetSetterForTesting`
+    // automatically because of the `DBusThreadManager::Initialize`
     // call in `SetUpInProcessBrowserTestFixture`. See https://crbug.com/847422.
     // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
     // automatically (https://crbug.com/847422).

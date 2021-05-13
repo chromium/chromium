@@ -108,7 +108,7 @@ class CrostiniInstallerTest : public testing::Test {
     browser_part_.InitializeCrosComponentManager(component_manager_);
 
     chromeos::DlcserviceClient::InitializeFake();
-    chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
     waiting_fake_concierge_client_ =
         new WaitingFakeConciergeClient(chromeos::FakeCiceroneClient::Get());
