@@ -77,12 +77,9 @@ interface Renderer {
   // Notifies the renderer that the user scripts have been updated. It has one
   // ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
   // This memory region is valid in the context of the renderer.
-  // |owner| must not be empty, and all scripts from |owner| will be updated. If
-  // |allowlisted_only| is true, this process should only run allowlisted
-  // scripts and not all user scripts.
+  // |owner| must not be empty, and all scripts from |owner| will be updated.
   UpdateUserScripts(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                    HostID owner,
-                    bool allowlisted_only);
+                    HostID owner);
 
   // Tells the render view to clear tab-specific permissions for some
   // extensions.

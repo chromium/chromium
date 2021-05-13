@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -531,6 +532,8 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
       geolocation_overrider_ =
           std::make_unique<device::ScopedGeolocationOverrider>(10, 20);
     }
+
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -4711,6 +4714,34 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, OpenAndCloseDevTools) {
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       embedder, false /* is_docked */);
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+}
+
+// Tests that random extensions cannot inject content scripts into a platform
+// app's own webview, but the owner platform app can. Regression test for
+// crbug.com/1205675.
+IN_PROC_BROWSER_TEST_F(WebViewTest, NoExtensionScriptsInjectedInWebview) {
+  ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
+
+  // Load an extension which injects a content script at document_end. The
+  // script injects a new element into the DOM.
+  LoadExtension(
+      test_data_dir_.AppendASCII("api_test/content_scripts/inject_div"));
+
+  // Load a platform app which creates a webview and injects a content script
+  // into it at document_idle, after document_end. The script expects that the
+  // webview's DOM has not been modified (in this case, by the extension's
+  // content script).
+  ExtensionTestMessageListener app_content_script_listener(
+      "WebViewTest.NO_ELEMENT_INJECTED", false);
+  app_content_script_listener.set_failure_message(
+      "WebViewTest.UNKNOWN_ELEMENT_INJECTED");
+  LoadAppWithGuest("web_view/a_com_webview");
+
+  // The app's content script should have been injected, but the extension's
+  // content script should not have.
+  EXPECT_TRUE(app_content_script_listener.WaitUntilSatisfied())
+      << "'" << app_content_script_listener.message()
+      << "' message was not receieved";
 }
 
 // Regression test for https://crbug.com/1014385

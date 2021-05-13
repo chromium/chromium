@@ -18,11 +18,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/mojom/host_id.mojom.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/extension_injection_host.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/injection_host.h"
-#include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_injector.h"
@@ -53,17 +51,6 @@ GURL GetDocumentUrlForFrame(blink::WebLocalFrame* frame) {
   }
 
   return data_source_url;
-}
-
-bool CanExecuteScriptEverywhere(const mojom::HostID& host_id) {
-  if (host_id.type == mojom::HostID::HostType::kWebUi)
-    return true;
-
-  const Extension* extension =
-      RendererExtensionRegistry::Get()->GetByID(host_id.id);
-
-  return extension && PermissionsData::CanExecuteScriptEverywhere(
-                          extension->id(), extension->location());
 }
 
 }  // namespace
@@ -101,20 +88,7 @@ void UserScriptSet::GetInjections(
 }
 
 bool UserScriptSet::UpdateUserScripts(
-    base::ReadOnlySharedMemoryRegion shared_memory,
-    bool allowlisted_only) {
-  if (allowlisted_only && !CanExecuteScriptEverywhere(host_id_)) {
-    // Since scripts should not execute here, the memory mapping is no longer
-    // valid and should be reset.
-    // TODO(crbug.com/1054624): Change this to a DCHECK once the browser side
-    // has been updated to not send the IPC if scripts for the given HostID
-    // should not execute in this process.
-    shared_memory_mapping_ = base::ReadOnlySharedMemoryMapping();
-    for (auto& observer : observers_)
-      observer.OnUserScriptsUpdated();
-    return true;
-  }
-
+    base::ReadOnlySharedMemoryRegion shared_memory) {
   bool only_inject_incognito =
       ExtensionsRendererClient::Get()->IsIncognitoProcess();
 

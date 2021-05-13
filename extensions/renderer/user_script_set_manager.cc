@@ -76,8 +76,7 @@ UserScriptSet* UserScriptSetManager::GetScriptsByHostID(
 
 void UserScriptSetManager::OnUpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
-    const mojom::HostID& host_id,
-    bool allowlisted_only) {
+    const mojom::HostID& host_id) {
   if (!shared_memory.IsValid()) {
     NOTREACHED() << "Bad scripts handle";
     return;
@@ -93,7 +92,7 @@ void UserScriptSetManager::OnUpdateUserScripts(
   if (!scripts)
     scripts = std::make_unique<UserScriptSet>(host_id);
 
-  if (scripts->UpdateUserScripts(std::move(shared_memory), allowlisted_only)) {
+  if (scripts->UpdateUserScripts(std::move(shared_memory))) {
     for (auto& observer : observers_)
       observer.OnUserScriptsUpdated(host_id);
   }

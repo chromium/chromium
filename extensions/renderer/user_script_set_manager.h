@@ -75,8 +75,7 @@ class UserScriptSetManager {
 
   // Handle the UpdateUserScripts extension message.
   void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                           const mojom::HostID& host_id,
-                           bool allowlisted_only);
+                           const mojom::HostID& host_id);
 
   // Invalidates script injections for the UserScriptSet in `scripts_`
   // corresponding to `extension_id` and deletes the script set.

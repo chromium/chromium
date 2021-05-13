@@ -18,10 +18,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserThread;
 using content::BrowserContext;
@@ -68,6 +71,19 @@ bool GetDeclarationValue(const base::StringPiece& line,
 
   base::TrimWhitespaceASCII(temp, base::TRIM_ALL, value);
   return true;
+}
+
+bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
+                                const mojom::HostID& host_id) {
+  if (host_id.type == mojom::HostID::HostType::kWebUi)
+    return true;
+
+  const Extension* extension =
+      ExtensionRegistry::Get(browser_context)
+          ->GetExtensionById(host_id.id, ExtensionRegistry::ENABLED);
+
+  return extension && PermissionsData::CanExecuteScriptEverywhere(
+                          extension->id(), extension->location());
 }
 
 }  // namespace
@@ -418,14 +434,6 @@ void UserScriptLoader::OnScriptsLoaded(
 void UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  // Don't allow injection of non-allowlisted extensions' content scripts
-  // into <webview>.
-  // TODO(crbug.com/1054624): Some tests will fail if we set extension webview
-  // scripts to be allowlisted only. This will be corrected in a follow up.
-  // Since all scripts sent in the IPC now belong to the same extension, we
-  // should be able to move the logic from the renderer back here and not send
-  // the IPC in some cases.
-  bool allowlisted_only = process->IsForGuestsOnly() && host_id().id.empty();
 
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
@@ -443,12 +451,29 @@ void UserScriptLoader::SendUpdate(
   if (!region_for_process.IsValid())
     return;
 
+  // If the process only hosts guest frames, then those guest frames share the
+  // same embedder/owner. In this case, only scripts from allowlisted hosts or
+  // from the guest frames' owner should be injected.
+  // Concrete example: This prevents a scenario where manifest scripts from
+  // other extensions are injected into webviews.
+  if (process->IsForGuestsOnly() &&
+      !CanExecuteScriptEverywhere(browser_context_, host_id())) {
+    DCHECK(WebViewRendererState::GetInstance()->IsGuest(process->GetID()));
+
+    std::string owner_host;
+    bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
+        process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
+
+    DCHECK(found_owner);
+    if (owner_host != host_id().id)
+      return;
+  }
+
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())
           ->GetRenderer(process);
   renderer->UpdateUserScripts(std::move(region_for_process),
-                              mojom::HostID::New(host_id().type, host_id().id),
-                              allowlisted_only);
+                              mojom::HostID::New(host_id().type, host_id().id));
 }
 
 }  // namespace extensions

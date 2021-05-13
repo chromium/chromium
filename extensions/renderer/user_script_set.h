@@ -70,8 +70,7 @@ class UserScriptSet {
 
   // Updates scripts given the shared memory region containing user scripts.
   // Returns true if the scripts were successfully updated.
-  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                         bool allowlisted_only);
+  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory);
 
   bool HasScripts() const { return !scripts_.empty(); }
 
