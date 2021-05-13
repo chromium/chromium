@@ -18,6 +18,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMediator.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteProperties.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/GoogleFontService.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequest.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceResponse.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarView.java",
   ]
@@ -29,6 +32,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/notes/android:java",
+    "//content/public/android:content_java_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_java",
   ]
