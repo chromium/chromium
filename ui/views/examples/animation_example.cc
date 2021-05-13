@@ -11,7 +11,12 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -25,20 +30,63 @@ AnimationExample::AnimationExample() : ExampleBase("Animation") {}
 
 AnimationExample::~AnimationExample() = default;
 
+class SquareLayerPainter : public ui::LayerDelegate {
+ public:
+  SquareLayerPainter(View* container, int index);
+  ~SquareLayerPainter() override = default;
+
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+ private:
+  int index_;
+  View* container_;
+};
+
+SquareLayerPainter::SquareLayerPainter(View* container, int index)
+    : index_(index), container_(container) {}
+
+void SquareLayerPainter::OnPaintLayer(const ui::PaintContext& context) {
+  const SkColor color = SkColorSetRGB((5 - index_) * 51, 0, index_ * 51);
+  const SkColor colors[2] = {color,
+                             color_utils::HSLShift(color, {-1.0, -1.0, 0.75})};
+  cc::PaintFlags flags;
+  gfx::Rect local_bounds = gfx::Rect(container_->layer()->size());
+  ui::PaintRecorder recorder(context, local_bounds.size());
+  gfx::Canvas* canvas = recorder.canvas();
+  const float dsf = canvas->UndoDeviceScaleFactor();
+  gfx::RectF local_bounds_f = gfx::RectF(local_bounds);
+  local_bounds_f.Scale(dsf);
+  SkRect bounds = gfx::RectToSkRect(gfx::ToEnclosingRect(local_bounds_f));
+  flags.setAntiAlias(true);
+  flags.setShader(cc::PaintShader::MakeRadialGradient(
+      SkPoint::Make(bounds.centerX(), bounds.centerY()), bounds.width() / 2,
+      colors, nullptr, 2, SkTileMode::kClamp));
+  canvas->DrawRect(gfx::ToEnclosingRect(local_bounds_f), flags);
+}
+
 class AnimatingSquare : public View {
  public:
   explicit AnimatingSquare(size_t index);
   AnimatingSquare(const AnimatingSquare&) = delete;
   AnimatingSquare& operator=(const AnimatingSquare&) = delete;
   ~AnimatingSquare() override = default;
+
+ private:
+  SquareLayerPainter painter_;
 };
 
-AnimatingSquare::AnimatingSquare(size_t index) {
-  SetBackground(
-      CreateSolidBackground(SkColorSetRGB((5 - index) * 51, 0, index * 51)));
-
+AnimatingSquare::AnimatingSquare(size_t index) : painter_({this, index}) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsCompletely(false);
+  layer()->set_delegate(&painter_);
+  layer()->SetAnimator(new ui::LayerAnimator(base::TimeDelta::FromSeconds(1)));
+  layer()->GetAnimator()->set_tween_type(gfx::Tween::EASE_IN_OUT);
+  layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
   auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
   opacity_sequence->set_is_repeating(true);
@@ -102,10 +150,7 @@ void AnimationExample::CreateExampleView(View* container) {
   container->layer()->SetMasksToBounds(true);
   container->layer()->SetFillsBoundsOpaquely(true);
 
-  container->SetLayoutManager(std::make_unique<AnimatingLayoutManager>())
-      ->SetAnimationDuration(base::TimeDelta::FromSeconds(1))
-      .SetTweenType(gfx::Tween::EASE_IN_OUT)
-      .SetTargetLayoutManager(std::make_unique<SquaresLayoutManager>());
+  container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i)
     container->AddChildView(std::make_unique<AnimatingSquare>(i));
 }
