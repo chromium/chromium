@@ -60,7 +60,7 @@ void BluetoothSocketThread::EnsureStarted() {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   thread_ = std::make_unique<base::Thread>("BluetoothSocketThread");
-  thread_->StartWithOptions(thread_options);
+  thread_->StartWithOptions(std::move(thread_options));
   task_runner_ = thread_->task_runner();
 }
 
