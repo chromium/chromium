@@ -299,7 +299,7 @@ const base::Feature kOmniboxAssistantVoiceSearch{
 // When enabled, a setting is added to chrome://settings/searchEngines to
 // control whether <space> can be used to trigger keyword mode.
 const base::Feature kKeywordSpaceTriggeringSetting{
-    "OmniboxKeywordSpaceTriggeringSetting", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxKeywordSpaceTriggeringSetting", enabled_by_default_desktop_only};
 
 // Experiment to introduce new security indicators for HTTPS.
 const base::Feature kUpdatedConnectionSecurityIndicators{
