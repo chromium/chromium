@@ -8,7 +8,7 @@
 #include "content/public/test/browser_test_utils.h"
 
 #if defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCounts) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_EventCounts) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
   )HTML");
