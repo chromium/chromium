@@ -120,10 +120,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Assigns three browser windows to three different desks. Assign a fourth
-// browser window to all desks.
+// Assigns three browser windows to three different desks.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       DISABLED_PRE_RestoreBrowserWindowsToDesks) {
+                       PRE_RestoreBrowserWindowsToDesks) {
   // Create two more desks so we have three desks in total.
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
@@ -149,32 +148,15 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   Browser* browser_desk2 = CreateBrowserWithParams(browser_desk2_params);
   browser_desk2->SetWindowUserTitle("2");
 
-  // Create a fourth browser window and make it visible on all desks.
-  ash::AutotestDesksApi().ActivateDeskAtIndex(0, base::DoNothing());
-
-  Browser::CreateParams visible_on_all_desks_browser_params =
-      Browser::CreateParams(profile(), true);
-  visible_on_all_desks_browser_params.initial_visible_on_all_workspaces_state =
-      true;
-  Browser* visible_on_all_desks_browser =
-      CreateBrowserWithParams(visible_on_all_desks_browser_params);
-
-  auto* visible_on_all_desks_window =
-      visible_on_all_desks_browser->window()->GetNativeWindow();
-  ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
-      aura::client::kVisibleOnAllWorkspacesKey));
-  ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
-      visible_on_all_desks_window));
-
   TurnOnSessionRestore();
 }
 
 // Verifies that three windows restored to their right desk after restored. Also
 // verifies that the fourth window is visible on all desks after being restored.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       DISABLED_RestoreBrowserWindowsToDesks) {
+                       RestoreBrowserWindowsToDesks) {
   auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(4u, browser_list->size());
+  ASSERT_EQ(3u, browser_list->size());
 
   // The first, second and third browser should restore to the first, second
   // and third desk, consecutively.
@@ -195,9 +177,49 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
     ASSERT_EQ(desk_index,
               workspace == aura::client::kUnassignedWorkspace ? 0 : workspace);
   }
+}
 
-  // There should be a fourth browser that should be visible on all desks.
-  auto* visible_on_all_desks_browser = browser_list->get(3);
+// Assigns a browser window to all desks.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
+                       PRE_RestoreAllDesksBrowserWindow) {
+  // Create two desks so we have three in total.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
+  // Create a browser that is visible on all desks.
+  Browser::CreateParams visible_on_all_desks_browser_params =
+      Browser::CreateParams(profile(), true);
+  visible_on_all_desks_browser_params.initial_visible_on_all_workspaces_state =
+      true;
+  Browser* visible_on_all_desks_browser =
+      CreateBrowserWithParams(visible_on_all_desks_browser_params);
+
+  // Ensure the visible on all desks browser has the right properties.
+  auto* visible_on_all_desks_window =
+      visible_on_all_desks_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
+      aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
+      visible_on_all_desks_window));
+
+  // Check that there are two browsers, the default one and the visible on all
+  // desks browser.
+  auto* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(2u, browser_list->size());
+
+  TurnOnSessionRestore();
+}
+
+// Verifies that the visible on all desks browser window is restore properly.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
+                       RestoreAllDesksBrowserWindow) {
+  // There should be two browsers restored, the default browser and the all
+  // desks browser.
+  auto* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(2u, browser_list->size());
+
+  // Check that the visible on all desks browser is restored properly.
+  auto* visible_on_all_desks_browser = browser_list->get(1);
   auto* visible_on_all_desks_window =
       visible_on_all_desks_browser->window()->GetNativeWindow();
   ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
