@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_chooser.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

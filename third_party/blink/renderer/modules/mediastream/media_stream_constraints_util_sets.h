@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

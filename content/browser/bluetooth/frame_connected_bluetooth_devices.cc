@@ -4,6 +4,7 @@
 
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"

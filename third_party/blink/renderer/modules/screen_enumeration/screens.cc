@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

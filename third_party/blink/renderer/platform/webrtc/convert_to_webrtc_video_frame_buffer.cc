@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/base/video_util.h"

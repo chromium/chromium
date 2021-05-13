@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"

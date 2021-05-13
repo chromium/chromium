@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/public/cpp/storage_key.h"

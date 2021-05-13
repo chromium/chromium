@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 
 #include "base/auto_reset.h"

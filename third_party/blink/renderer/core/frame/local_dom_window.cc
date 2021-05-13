@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"

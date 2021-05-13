@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

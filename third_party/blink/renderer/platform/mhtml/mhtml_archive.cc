@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 
 #include <stddef.h>
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

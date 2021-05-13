@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"

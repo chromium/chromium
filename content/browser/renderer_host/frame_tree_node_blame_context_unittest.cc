@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/trace_event/traced_value.h"

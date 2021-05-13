@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;

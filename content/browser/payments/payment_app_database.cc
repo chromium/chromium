@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

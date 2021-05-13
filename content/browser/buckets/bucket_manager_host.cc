@@ -4,6 +4,7 @@
 
 #include "content/browser/buckets/bucket_manager_host.h"
 
+#include "base/containers/contains.h"
 #include "base/types/pass_key.h"
 #include "content/browser/buckets/bucket_manager.h"
 

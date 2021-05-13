@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 
 namespace blink {

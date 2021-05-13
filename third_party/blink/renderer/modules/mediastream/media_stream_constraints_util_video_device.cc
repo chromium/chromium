@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "media/base/limits.h"
 #include "media/mojo/mojom/display_media_information.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"

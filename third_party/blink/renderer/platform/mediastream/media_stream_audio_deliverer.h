@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
