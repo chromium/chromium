@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,11 +29,25 @@ namespace {
 constexpr base::FilePath::StringPieceType kExtractedBinFileName =
     FILE_PATH_LITERAL("extracted.bin");
 
+// https://tukaani.org/xz/xz-file-format-1.0.4.txt
+constexpr char kExpectedMagic[6] = {0xfd, '7', 'z', 'X', 'Z', 0x00};
+
 }  // namespace
 
 bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
-  // TODO(tetsui): Check the file header instead of the extension.
-  return image_path.Extension() == FILE_PATH_LITERAL(".tar.xz");
+  base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_SHARE_DELETE);
+  if (!infile.IsValid())
+    return false;
+
+  constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
+  char actual_magic[kExpectedSize] = {};
+  if (infile.ReadAtCurrentPos(actual_magic, kExpectedSize) != kExpectedSize)
+    return false;
+
+  return std::equal(kExpectedMagic, kExpectedMagic + kExpectedSize,
+                    actual_magic);
 }
 
 // static

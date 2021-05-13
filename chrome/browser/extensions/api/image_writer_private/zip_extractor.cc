@@ -15,10 +15,28 @@
 namespace extensions {
 namespace image_writer {
 
+namespace {
+
+// https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+constexpr char kExpectedMagic[4] = {'P', 'K', 0x03, 0x04};
+
+}  // namespace
+
 // static
 bool ZipExtractor::IsZipFile(const base::FilePath& image_path) {
-  // TODO(tetsui): Check the file header instead of the extension.
-  return image_path.Extension() == FILE_PATH_LITERAL(".zip");
+  base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_SHARE_DELETE);
+  if (!infile.IsValid())
+    return false;
+
+  constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
+  char actual_magic[kExpectedSize] = {};
+  if (infile.ReadAtCurrentPos(actual_magic, kExpectedSize) != kExpectedSize)
+    return false;
+
+  return std::equal(kExpectedMagic, kExpectedMagic + kExpectedSize,
+                    actual_magic);
 }
 
 // static
