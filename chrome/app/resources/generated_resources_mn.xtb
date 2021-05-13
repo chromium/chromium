@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1001033507375626788">Энэ сүлжээг тантай хуваалцсан байна</translation>
 <translation id="1001307489511021749">Таны аппууд, тохиргоо болон бусад тохируулгыг таны Google бүртгэлээрээ нэвтэрсэн Chrome үйлдлийн системтэй бүх төхөөрөмж дээр синк хийнэ.</translation>
 <translation id="1003088604756913841">Холбоосыг шинэ <ph name="APP" /> цонхонд нээх</translation>
 <translation id="100323615638474026">USB төхөөрөмж (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -358,7 +359,6 @@
 <translation id="138784436342154190">Өгөгдмөл эхлүүлэх хуудсыг сэргээх үү?</translation>
 <translation id="1388253969141979417">Таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1388728792929436380">Шинэчилж дуусахад <ph name="DEVICE_TYPE" /> дахин эхэлнэ.</translation>
-<translation id="138900021244932468">Ямар ч профайл олдсонгүй. Шинэ сүлжээ тохируулахын тулд төхөөрөмжийн камерыг ашиглан QR кодыг скан хийх эсвэл таны оператор компаниас өгсөн идэвхжүүлэх кодыг оруулна уу.</translation>
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390548061267426325">Энгийн цонх хэлбэрээр нээх</translation>
 <translation id="1393283411312835250">Нар, үүл</translation>
@@ -957,6 +957,7 @@
 <translation id="1992924914582925289">Төхөөрөмжөөс хасах</translation>
 <translation id="1994173015038366702">Сайтын URL</translation>
 <translation id="1995916364271252349">Ямар мэдээллийг сайтууд ашиглаж, харуулж (байршил, камер, үзэгдэх болон бусад зүйл) болохыг хянадаг</translation>
+<translation id="1997437640397887843">Төхөөрөмжийн камерыг асаалаа. Камерын урд eSIM-н QR кодоо байрлуулна уу.</translation>
 <translation id="1997616988432401742">Таны сертификат</translation>
 <translation id="1999115740519098545">Эхлүүлэх</translation>
 <translation id="2000419248597011803">Таны өгөгдмөл хайлтын системд хаяг оруулах хэсэг, хайх хэсгийн зарим күүки болон хайлтыг илгээдэг</translation>
@@ -1012,6 +1013,7 @@
 <translation id="2055585478631012616">Та эдгээр сайтаас гарах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="205560151218727633">Google туслахын лого</translation>
 <translation id="2058456167109518507">Төхөөрөмж илэрсэн</translation>
+<translation id="2058581283817163201">Энэ утсаар бататгана уу</translation>
 <translation id="2059913712424898428">Цагийн бүс</translation>
 <translation id="2060375639911876205">eSIM-н профайлыг хасах</translation>
 <translation id="2062354623176996748">Нууцлалтай цонхоор вебийг хөтчийн түүхээ хадгалалгүйгээр ашиглана уу</translation>
@@ -2611,6 +2613,7 @@
 <translation id="3785308913036335955">Аппликейшнуудын богино холболтыг харуулах</translation>
 <translation id="3785727820640310185">Энэ сайтад хадгалсан нууц үг</translation>
 <translation id="3788301286821743879">Киоск аппликэйшнийг эхлүүлж чадсангүй.</translation>
+<translation id="3788331399335602504">эдгээр файл</translation>
 <translation id="3788401245189148511">Энэ нь:</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="379082410132524484">Таны карт хүчингүй байна</translation>
@@ -3185,6 +3188,7 @@
 <translation id="4438043733494739848">Тунгалаг</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" />-г таны Google Бүртгэл болох <ph name="ACCOUNT" />-д хадгална</translation>
 <translation id="4439427728133035643">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд “<ph name="NOTIFICATIONTITLE" />” мэдэгдэл дээр товшиж, алхмуудыг дагана уу.</translation>
 <translation id="4441124369922430666">Машин асахад та энэ программыг автоматиар эхлүүлэхийг хүсэж байна уу?</translation>
 <translation id="4441147046941420429">Үргэлжлүүлэхийн тулд аюулгүй байдлын түлхүүрээ төхөөрөмжөөсөө устгаж, дараа нь дахин залгаад дээр нь хүрнэ үү</translation>
 <translation id="444134486829715816">Өргөтгө...</translation>
@@ -3487,6 +3491,7 @@
 <translation id="4773112038801431077">Linux-г сайжруулах</translation>
 <translation id="477647109558161443">Дэлгэц дээрх холбоос үүсгэх</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
+<translation id="4777458362738635055">Энэ төхөөрөмжийн бусад хэрэглэгч энэ сүлжээг ашиглах боломжтой</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Сүлжээний нэрийн серверийг тохируулах</translation>
 <translation id="4778644898150334464">Өөр нууц үг ашиглах</translation>
@@ -4323,6 +4328,7 @@
 <translation id="5712153969432126546">Сайтууд заримдаа документ, гэрээ болон маягт зэрэг PDF-г нийтэлдэг</translation>
 <translation id="5715711091495208045">Нэмэлт өргөтгөлийн зуучлагч: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Өгөгдмөл хайлтын систем</translation>
+<translation id="5719637365829998022">QR кодыг скан хийсэн.</translation>
 <translation id="5719854774000914513">Сайтууд HID төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="572155275267014074">Андройдын тохиргоо</translation>
 <translation id="5722086096420375088">Ногоон ба цагаан</translation>
@@ -4533,6 +4539,7 @@
 <translation id="5955721306465922729">Вебсайт энэ хэрэглээний программыг нээх хүсэлтэй байна.</translation>
 <translation id="5955809630138889698">Энэ төхөөрөмж зөвхөн онлайн демо горимд боломжтой байж болзошгүй. Дэлгэрэнгүй мэдээлэл авахын тулд дэмжлэгийн төлөөлөгчтэйгээ холбогдоно уу.</translation>
 <translation id="5956585768868398362">Энэ таны хайж байсан хайлтын хуудас мөн байна уу?</translation>
+<translation id="5957918771633727933">Боломжтой eSIM профайл байхгүй байна. Шинэ <ph name="BEGIN_LINK" />профайл<ph name="END_LINK" /> татна уу.</translation>
 <translation id="5957987129450536192">Профайл зургийнхаа ойролцоо байрлах Ярихын тулд сонгох дүрс тэмдгийг товшоод дараа нь сонсохыг хүссэн зүйлээ сонгоно уу.</translation>
 <translation id="5959471481388474538">Сүлжээг ажиллахгүй байна.</translation>
 <translation id="595959584676692139">Энэ өргөтгөлийг ашиглахын тулд хуудсыг дахин ачаалах</translation>
@@ -5923,6 +5930,7 @@
 <translation id="7506541170099744506">Таны <ph name="DEVICE_TYPE" />-г байгууллагын удирдлагад амжилттай бүртгэлээ.</translation>
 <translation id="7507207699631365376">Энэ хангагчийн <ph name="BEGIN_LINK" />нууцлалын бодлогыг<ph name="END_LINK" /> харах</translation>
 <translation id="7507930499305566459">Статусд хариулагч сертификат</translation>
+<translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7513029293694390567">Хадгалсан мандат үнэмлэхийг ашиглан веб хуудаст автоматаар нэвтэрнэ үү. Энэ онцлогийг идэвхжүүлээгүй тохиолдолд таныг веб хуудаст хандах бүрд баталгаажуулалт шаардана.</translation>
 <translation id="7514239104543605883">Төхөөрөмж рүүгээ хуулах</translation>
 <translation id="7514365320538308">Татаж авах</translation>
@@ -6037,6 +6045,7 @@
 <translation id="7638605456503525968">Цуваа порт</translation>
 <translation id="7639914187072011620">SAML-н дахин чиглүүлэхийг серверээс дуудаж чадсангүй</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> нь таны хадгалсан нууц үгээр хууль ёсны сайтад таныг автоматаар нэвтрүүлнэ.</translation>
+<translation id="7641513591566880111">Профайлын шинэ нэр</translation>
 <translation id="7642778300616172920">Эмзэг агуулгыг нуух</translation>
 <translation id="7643842463591647490">{0,plural, =1{Нээлттэй # цонх}other{Нээлттэй # цонх}}</translation>
 <translation id="7643932971554933646">Файл уншихыг сайтад зөвшөөрөх үү?</translation>
@@ -6196,6 +6205,7 @@
 <translation id="7800518121066352902">Цагийн зүүний эсрэг эргүүлэх</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804072833593604762">Таб хаагдсан</translation>
+<translation id="7805759469263222011">Төхөөрөмжийнхөө камерыг ашиглан QR кодыг скан хийх эсвэл оператор компаниасаа олгосон идэвхжүүлэх кодыг оруулна уу</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7807067443225230855">Хайлт болон Туслах</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
@@ -6452,7 +6462,6 @@
 <translation id="8061091456562007989">Үүнийг буцааж өөрчлөх</translation>
 <translation id="8061991877177392872">Та өөр төхөөрөмж дээр Voice Match-г аль хэдийн Туслахаараа тохируулсан бололтой. Эдгээр өмнөх бичлэгийг энэ төхөөрөмжид дуу хоолойн загвар үүсгэхэд ашигласан.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 хуудас цаас}other{{COUNT} хуудас цаас}}</translation>
-<translation id="8062879968880283306">Төхөөрөмжийн камерыг ашиглан QR кодыг скан хийж эсвэл оператор компаниасаа олгосон идэвхжүүлэх кодыг оруулна уу.</translation>
 <translation id="8063235345342641131">Өгөгдмөл ногоон аватар</translation>
 <translation id="8063535366119089408">Файлыг харах</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> бүлэг - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6673,6 +6682,7 @@
 <translation id="8300849813060516376">OTASP амжилтгүй болсон</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Хаяг}other{# хаяг}}</translation>
 <translation id="8304383784961451596">Та энэ төхөөрөмжийг ашиглах зөвшөөрөлгүй байна. Нэвтрэх зөвшөөрөл авахын тулд администратортай холбогдох буюу эсхүл Family Link-р хянадаг Google Бүртгэлээр нэвтэрнэ үү.</translation>
+<translation id="8308016398665340540">Та энэ сүлжээг энэ төхөөрөмжийн бусад хэрэглэгчтэй хуваалцаж байна</translation>
 <translation id="8308179586020895837">Хэрэв <ph name="HOST" /> камерт хандахыг хүсвэл асуух</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8309458809024885768">Энэ сертификат байна</translation>
@@ -6872,7 +6882,6 @@
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>
 <translation id="8553342806078037065">Бусад хүмүүсийг удирдах</translation>
 <translation id="8554899698005018844">Хэл байхгүй</translation>
-<translation id="8555195867496021627">Боломжтой eSIM профайл байхгүй байна. Шинэ профайлыг <ph name="BEGIN_LINK" />эндээс<ph name="END_LINK" /> татна уу.</translation>
 <translation id="8557022314818157177">Хурууны хээг автал аюулгүй байдлын түлхүүр дээрээ үргэлжлүүлэн хүрнэ үү</translation>
 <translation id="8557930019681227453">Тодорхойлогч файл</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Бүгдийг &amp;Шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;Шинэ цонхонд нээх}}</translation>
@@ -7052,7 +7061,6 @@
 <translation id="8743164338060742337">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, холбогдох</translation>
 <translation id="8746654918629346731">Та аль хэдийн "<ph name="EXTENSION_NAME" />" өргөтгөлийг суулгах хүсэлт тавьсан</translation>
 <translation id="874689135111202667">{0,plural, =1{Энэ сайтад нэг файл байршуулах уу?}other{Энэ сайтад # файл байршуулах уу?}}</translation>
-<translation id="8749556627204742888">Та энэ сүлжээг энэ төхөөрөмжийн бусад хэрэглэгчтэй хуваалцаж байна.</translation>
 <translation id="8749805710397399240">Таны дэлгэцийг дамжуулах боломжгүй байна. Системийн тохиргоон дээрээс Дэлгэцийн үйлдэл бичигчийн зөвшөөрлийг шалгана уу.</translation>
 <translation id="8749863574775030885">Үл таних vendor-н UBS төхөөрөмжинд хандах</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> цуваа портод холбогдох хүсэлтэй байна</translation>
@@ -7112,7 +7120,6 @@
 <translation id="8808744862003883508">Та энэ хуудсан дээр Chrome-д суулгасан бүх өргөтгөлийг харах боломжтой.</translation>
 <translation id="8809147117840417135">Цайвар номин ногоон</translation>
 <translation id="8811862054141704416">Crostini-н микрофоны хандалт</translation>
-<translation id="8812552797690463522">Энэ сүлжээг тантай хуваалцсан байна.</translation>
 <translation id="8812593354822910461">Мөн хайлтын өгөгдлийг (<ph name="URL" />) устгах. Ингэснээр та <ph name="DOMAIN" />-с гарах болно. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Надад дараа сануулах</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />-д нэвтрэх боломжгүй байна</translation>
@@ -7324,7 +7331,6 @@
 <translation id="9021662811137657072">Вирус илэрлээ</translation>
 <translation id="902236149563113779">Сайтууд ихэвчлэн тоглоом эсвэл чиглэлийн анхааруулга зэрэг AR онцлогуудад зориулж таны камерын байрлалыг хянадаг</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> энэ бүртгэлийг энэ компьютерт ашигласан байна.</translation>
-<translation id="9023009238991294202">Энэ төхөөрөмжийн бусад хэрэглэгч энэ сүлжээг ашиглаж болно.</translation>
 <translation id="9023015617655685412">Энэ табыг тэмдэглэх...</translation>
 <translation id="9023909777842748145">Энэ онцлогийг унтраах нь систем шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээллийг илгээх таны төхөөрөмжийн чадварт нөлөөлөхгүй.</translation>
 <translation id="9024127637873500333">Шинэ цонхонд нээх</translation>

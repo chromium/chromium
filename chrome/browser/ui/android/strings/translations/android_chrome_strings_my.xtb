@@ -41,7 +41,6 @@
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1258753120186372309">Google doodle- <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
-<translation id="1276279242344007853">သင်လိုက်ကြည့်နေသော ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
 <translation id="1285310382777185058">ဘာသာစကား ပြောင်းခြင်း</translation>
 <translation id="1291207594882862231">မှတ်တမ်း၊ ကွတ်ကီး၊ ဆိုက်ဒေတာ၊ ကက်ရှ်များကို ရှင်းလင်းပါ...</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">တဘ်အသစ်ဖွင့်သောအခါ <ph name="SITE_NAME" /> မှ သတင်းဆောင်းပါးများကို မကြာမီ ကြည့်နိုင်ပါမည်။ ‘လိုက်ကြည့်ထားသည်များကို စီမံခြင်း’ တွင် သင်လိုက်ကြည့်နေသော ဝဘ်ဆိုက်များကို ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4714588616299687897">သင့်ဒေတာ ၆၀% အထိ ချွေတာလိုက်ပါ</translation>
-<translation id="4716066120200945007">လိုက်ကြည့်နေသည်များ</translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="4720982865791209136">Chrome ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ။ <ph name="BEGIN_LINK" />စစ်တမ်းဖြေဆိုပါ<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="5942872142862698679">ရှာဖွေမှုအတွက် Google ကို အသုံးပြုသည်</translation>
 <translation id="5951119116059277034">တိုက်ရိုက်လွှင့်စာမျက်နှာကို ကြည့်ရှုနေသည်</translation>
-<translation id="5951615825629292797">ဘာသာစကား အသင့်ဖြစ်ပြီ၊ <ph name="APP_NAME" /> ပြန်စပါ</translation>
 <translation id="5952764234151283551">သင်ဖွင့်နေသည့် စာမျက်နှာ၏ URL ကို Google သို့ ပို့သည်</translation>
 <translation id="5956665950594638604">Chrome ကူညီရေးရာဌာနကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5957442310066583693">သင်၏ ထိပ်တန်းဝဘ်ဆိုက်များကိုကြည့်ရန် 'ပင်မခလုတ်' ကို တို့ပါ</translation>
@@ -1130,7 +1127,6 @@
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="8349013245300336738">အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီရန်</translation>
 <translation id="835847953965672673">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ပြန်ယူပြီးပြီ</translation>
-<translation id="8362134094656482681">သင်စိတ်ဝင်စားသော အကြောင်းအရာများကို စီမံနိုင်သည်</translation>
 <translation id="8364299278605033898">လူကြိုက်များသော ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>

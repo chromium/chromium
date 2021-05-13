@@ -361,7 +361,6 @@
 <translation id="138784436342154190">Відновити стартову сторінку за умовчанням?</translation>
 <translation id="1388253969141979417">Дозволено використовувати мікрофон</translation>
 <translation id="1388728792929436380">Пристрій <ph name="DEVICE_TYPE" /> перезапуститься після оновлення.</translation>
-<translation id="138900021244932468">Профілів не знайдено. Щоб налаштувати нову мережу, камерою пристрою зіскануйте QR-код або введіть код активації, який надав оператор.</translation>
 <translation id="139013308650923562">Дозволено використовувати шрифти, установлені на пристрої</translation>
 <translation id="1390548061267426325">Відкрити як звичайну вкладку</translation>
 <translation id="1393283411312835250">Сонце та хмари</translation>
@@ -519,6 +518,7 @@
 <translation id="1545775234664667895">Встановлено тему "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Це розширення змінило сторінку, яка відкривається під час натискання кнопки "Домашня сторінка".</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> хоче встановити розширення "<ph name="EXTENSION_TYPE" />", яке може:</translation>
+<translation id="1547808936554660006">Я розумію, що функція Powerwash не видаляє встановлені профілі eSIM-карти</translation>
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1549788673239553762">Додатку <ph name="APP_NAME" /> потрібен доступ до тому <ph name="VOLUME_NAME" />. Він може змінювати або видаляти ваші файли.</translation>
 <translation id="1552301827267621511">Розширення "<ph name="EXTENSION_NAME" />" змінило пошукову систему на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -555,6 +555,7 @@
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1588870296199743671">Відкрити посилання за допомогою...</translation>
+<translation id="1588919647604819635">Натисніть картку правою кнопкою миші</translation>
 <translation id="1589055389569595240">Показати опцію "Правопис і граматика"</translation>
 <translation id="1591679663873027990">Додатку Parallels Desktop можна дозволити доступ до пристроїв USB. Коли ви вилучите пристрій USB, дані про нього не зберігатимуться в Parallels Desktop.</translation>
 <translation id="1592074621872221573">Адміністратор домену <ph name="MANAGER" /> вимкнув налагодження ADB, тому всі налаштування пристрою <ph name="DEVICE_TYPE" /> буде скинуто. Створіть резервні копії файлів, перш ніж перезапустити пристрій.</translation>
@@ -999,6 +1000,7 @@
 
 Щоб керувати налаштуваннями облікового запису, можна встановити на пристрої додаток Family Link.  Ми надіслали вказівки в електронному листі.</translation>
 <translation id="2040460856718599782">На жаль, під час спроби автентифікації сталася помилка. Ретельно перевірте свої облікові дані для входу та повторіть спробу.</translation>
+<translation id="2042279886444479655">Активні профілі</translation>
 <translation id="2044014337866019681">Переконайтеся, що підтверджуєте обліковий запис <ph name="ACCOUNT" />, щоб розблокувати цей сеанс.</translation>
 <translation id="2044023416777079300">Модем не зареєстровано</translation>
 <translation id="204497730941176055">Ім'я шаблону сертифіката Microsoft</translation>
@@ -1340,6 +1342,7 @@
 <translation id="2395616325548404795">Ваш пристрій <ph name="DEVICE_TYPE" /> зареєстровано для корпоративного керування, однак ми не отримали інформацію про його об’єкти та місцезнаходження. Введіть ці дані вручну на Консолі адміністратора.</translation>
 <translation id="2396387085693598316">Ваш адміністратор заблокував розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Введіть 4-значний PIN-код (0000–9999)</translation>
+<translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Сповіщення ввімкнено</translation>
 <translation id="2399939490305346086">Дані для входу для ключа безпеки</translation>
 <translation id="2400664245143453337">Потрібно негайно встановити оновлення</translation>
@@ -1757,6 +1760,7 @@
 <translation id="2844809857160214557">Перегляд завдань друку й керування ними</translation>
 <translation id="2845382757467349449">Завжди показувати панель закладок</translation>
 <translation id="284805635805850872">Вилучити зловмисне програмне забезпечення?</translation>
+<translation id="2849035674501872372">Шукати</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Не вдалось очистити</translation>
 <translation id="2849936225196189499">Вирішальні</translation>
@@ -2068,6 +2072,7 @@
 <translation id="3189187154924005138">Великий курсор</translation>
 <translation id="3190558889382726167">Пароль збережено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
+<translation id="3197453258332670132">Коли ви натискаєте вибраний текст правою кнопкою миші або втримуєте його, відображається пов’язана з ним інформація</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3201422919974259695">Тут з’являться доступні пристрої USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
@@ -2089,6 +2094,7 @@
 <translation id="3223531857777746191">Кнопка "Скинути"</translation>
 <translation id="3225084153129302039">Стандартний фіолетовий аватар</translation>
 <translation id="3225319735946384299">Підписування коду</translation>
+<translation id="3226487301970807183">Показати чи сховати бічну панель зліва</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3233271424239923319">Створити резервну копію додатків і файлів Linux</translation>
 <translation id="3238192140106069382">Триває підключення та перевірка</translation>
@@ -2358,6 +2364,7 @@
 <translation id="3515983984924808886">Натисніть ключ безпеки знову, щоб підтвердити скидання. Усі дані, збережені на ньому (зокрема, PIN-код), буде видалено.</translation>
 <translation id="3518985090088779359">Продовжити</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
+<translation id="3519938335881974273">Зберегти сторінку як…</translation>
 <translation id="3521606918211282604">Змінити розмір диска</translation>
 <translation id="3522088408596898827">На диску дуже мало вільного місця. Звільніть місце та повторіть спробу.</translation>
 <translation id="3524965460886318643">Експортувати дії</translation>
@@ -2381,6 +2388,7 @@
 <translation id="3550593477037018652">Від'єднати мобільну мережу</translation>
 <translation id="3550915441744863158">Chrome оновлюється автоматично, тому ви завжди маєте найновішу версію</translation>
 <translation id="3551320343578183772">Закрити вкладку</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Очищено під час виходу</translation>
 <translation id="3554493885489666172">Вашим пристроєм керує <ph name="PROFILE_NAME" />. Адміністратори мають доступ до даних у всіх профілях на цьому пристрої.</translation>
 <translation id="3555812735919707620">Видалити розширення</translation>
@@ -2433,6 +2441,7 @@
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="3605780360466892872">Консерватор</translation>
 <translation id="3608576286259426129">Попередній перегляд зображення користувача</translation>
+<translation id="3609277884604412258">Швидкий пошук</translation>
 <translation id="3610369246614755442">Вентилятор док-станції несправний</translation>
 <translation id="361106536627977100">Дані флеш</translation>
 <translation id="3611655097742243705">Щоб знайти додатки, перейдіть у Google Play</translation>
@@ -3377,6 +3386,7 @@
 <translation id="4636682061478263818">Файли на Диску</translation>
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4637083375689622795">Інші дії, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Знову відкрити камеру</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текст}one{# текст}few{# тексти}many{# текстів}other{# тексту}}</translation>
 <translation id="4638930039313743000">Увімкнути налагодження ADB</translation>
 <translation id="4641539339823703554">Chrome не вдалося встановити час системи. Перевірте вказаний нижче час і за потреби виправте його.</translation>
@@ -4127,6 +4137,7 @@
 <translation id="5499313591153584299">Цей файл може зашкодити вашому комп’ютеру.</translation>
 <translation id="5499453227627332024">Доступне оновлення для Linux Container. Ви також можете оновити систему пізніше в додатку Налаштування.</translation>
 <translation id="5500709606820808700">Перевірку безпеки виконано сьогодні</translation>
+<translation id="5501322521654567960">Бічна панель зліва</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Імпортовано із Firefox</translation>
 <translation id="5502915260472117187">Дитина</translation>
@@ -5338,6 +5349,7 @@
 <translation id="6856348640027512653">Заборонено використовувати пристрої або дані віртуальної реальності</translation>
 <translation id="6856459657722366306">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="6856623341093082836">Налаштуйте й відкоригуйте точність сенсорного екрана</translation>
+<translation id="6857145580237920905">Перш ніж виконувати Powerwash, видаліть профілі eSIM-карти</translation>
 <translation id="6857699260879628349">Отримати інформацію про налаштування</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6860097299815761905">Налаштування проксі-сервера...</translation>
@@ -5919,6 +5931,7 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> зареєстровано для корпоративного керування.</translation>
 <translation id="7507207699631365376">Переглянути <ph name="BEGIN_LINK" />політику конфіденційності<ph name="END_LINK" /> цього постачальника</translation>
 <translation id="7507930499305566459">Сертифікат відповідача статусу</translation>
+<translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7513029293694390567">Автоматично входити в облікові записи на веб-сайтах за допомогою збережених облікових даних. Якщо цю функцію вимкнено, потрібно підтверджувати облікові дані під час кожного входу на веб-сайтах.</translation>
 <translation id="7514239104543605883">Скопіювати на пристрій</translation>
 <translation id="7514365320538308">Завантажити</translation>
@@ -6451,7 +6464,6 @@
 <translation id="8061091456562007989">Скасувати зміни</translation>
 <translation id="8061991877177392872">Схоже, ви вже налаштували Voice Match для Асистента на іншому пристрої. Зразок вашого голосу на цьому пристрої створено на основі попередніх записів.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперу}one{{COUNT} аркуш паперу}few{{COUNT} аркуші паперу}many{{COUNT} аркушів паперу}other{{COUNT} аркуша паперу}}</translation>
-<translation id="8062879968880283306">Відскануйте QR-код за допомогою камери пристрою або введіть код активації, який надає ваш оператор.</translation>
 <translation id="8063235345342641131">Стандартний зелений аватар</translation>
 <translation id="8063535366119089408">Переглянути файл</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6872,7 +6884,6 @@
 <translation id="8551588720239073785">Налаштування дати й часу</translation>
 <translation id="8553342806078037065">Керувати іншими користувачами</translation>
 <translation id="8554899698005018844">Мову не вибрано</translation>
-<translation id="8555195867496021627">Немає профілів eSIM. Завантажте новий профіль <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Торкайтеся ключа безпеки, поки відбиток пальця не відсканується</translation>
 <translation id="8557930019681227453">Маніфест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>
@@ -7052,7 +7063,6 @@
 <translation id="8743164338060742337">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, підключитися</translation>
 <translation id="8746654918629346731">Ви вже надіслали запит на розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Завантажити один файл на цей сайт?}one{Завантажити # файл на цей сайт?}few{Завантажити # файли на цей сайт?}many{Завантажити # файлів на цей сайт?}other{Завантажити # файлу на цей сайт?}}</translation>
-<translation id="8749556627204742888">До цієї мережі мають доступ інші користувачі пристрою.</translation>
 <translation id="8749805710397399240">Не вдається транслювати ваш екран. Перевірте дозволи на запис екрана в параметрах системи.</translation>
 <translation id="8749863574775030885">Отримувати доступ до пристроїв USB від невідомого постачальника</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> хоче під’єднатися до послідовного порту</translation>
@@ -7117,7 +7127,6 @@
 <translation id="8808744862003883508">На цій сторінці можна переглянути всі розширення, установлені в Chrome.</translation>
 <translation id="8809147117840417135">Світло-бірюзовий</translation>
 <translation id="8811862054141704416">Доступ до мікрофона Crostini</translation>
-<translation id="8812552797690463522">Ви маєте доступ до цієї мережі.</translation>
 <translation id="8812593354822910461">Також видалити дані веб-перегляду (<ph name="URL" />), що може призвести до виходу з облікового запису на сайті <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8813698869395535039">Не вдається ввійти в обліковий запис <ph name="USERNAME" /></translation>
@@ -7329,7 +7338,6 @@
 <translation id="9021662811137657072">Виявлено вірус</translation>
 <translation id="902236149563113779">Сайти зазвичай відстежують положення камери для функцій доповненої реальності, як-от ігри або попередження про напрямки</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> уже використовує цей обліковий запис на цьому комп’ютері.</translation>
-<translation id="9023009238991294202">Інші користувачі цього пристрою можуть мають доступ до цієї мережі.</translation>
 <translation id="9023015617655685412">Додати цю вкладку до закладок…</translation>
 <translation id="9023909777842748145">Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, як-от оновлень системи та засобів безпеки.</translation>
 <translation id="9024127637873500333">&amp;Відкрити в новій вкладці</translation>

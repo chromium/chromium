@@ -360,7 +360,6 @@
 <translation id="138784436342154190">هل تريد استعادة صفحة بدء التشغيل التلقائية؟</translation>
 <translation id="1388253969141979417">المواقع الإلكترونية التي يُسمح لها باستخدام الميكروفون</translation>
 <translation id="1388728792929436380">ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> عند اكتمال التحديثات.</translation>
-<translation id="138900021244932468">لم يتم العثور على أي ملفات تعريفية. لإعداد شبكة جديدة، عليك مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا الجهاز أو إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="139013308650923562">المواقع الإلكترونية التي يُسمح لها باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="1390548061267426325">فتح كعلامة تبويب عادية</translation>
 <translation id="1393283411312835250">الشمس والسحاب</translation>
@@ -5903,6 +5902,7 @@
 <translation id="7506541170099744506">لقد تم تسجيل جهاز <ph name="DEVICE_TYPE" /> بنجاح لإدارة المؤسسة.</translation>
 <translation id="7507207699631365376">الاطّلاع على <ph name="BEGIN_LINK" />سياسة خصوصية<ph name="END_LINK" /> مقدّم الخدمة</translation>
 <translation id="7507930499305566459">شهادة الاستجابة للحالة</translation>
+<translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7513029293694390567">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية باستخدام بيانات الاعتماد المخزّنة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني.</translation>
 <translation id="7514239104543605883">نسخ إلى جهازك</translation>
 <translation id="7514365320538308">تنزيل</translation>
@@ -6435,7 +6435,6 @@
 <translation id="8061091456562007989">العودة إلى الإعدادات السابقة</translation>
 <translation id="8061991877177392872">‏يبدو أنه سبق لك إعداد ميزة Voice Match في خدمة "مساعد Google" على جهاز آخر. أمّا بالنسبة إلى التسجيلات الصوتية السابقة، فقد تم استخدامها لإنشاء نموذج صوتي على هذا الجهاز.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{ورقة واحدة}zero{{COUNT} ورقة}two{ورقتان ({COUNT})}few{{COUNT} أوراق}many{{COUNT} ورقة}other{{COUNT} ورقة}}</translation>
-<translation id="8062879968880283306">يمكنك مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا الجهاز أو إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="8063235345342641131">الصورة الرمزية التلقائية الخضراء</translation>
 <translation id="8063535366119089408">قراءة الملف</translation>
 <translation id="8064279191081105977">مجموعة <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6856,7 +6855,6 @@
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>
 <translation id="8553342806078037065">إدارة الأشخاص الآخرين</translation>
 <translation id="8554899698005018844">بدون لغة</translation>
-<translation id="8555195867496021627">‏ما مِن ملفات شخصية متوفِّرة لشريحة eSIM. ويمكنك تنزيل ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">يُرجى الاستمرار في لمس مفتاح الأمان إلى أن يتم حِفظ بصمة الإصبع.</translation>
 <translation id="8557930019681227453">البيان</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
@@ -7036,7 +7034,6 @@
 <translation id="8743164338060742337">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يدير المشرف هذه الشبكة، الاتصال</translation>
 <translation id="8746654918629346731">لقد سبق أن طلبت "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{هل تريد تحميل ملف واحد إلى هذا الموقع؟}zero{هل تريد تحميل # ملف إلى هذا الموقع؟}two{هل تريد تحميل ملفين (#) إلى هذا الموقع؟}few{هل تريد تحميل # ملفات إلى هذا الموقع؟}many{هل تريد تحميل # ملفًا إلى هذا الموقع؟}other{هل تريد تحميل # ملف إلى هذا الموقع؟}}</translation>
-<translation id="8749556627204742888">تتم مشاركة هذه الشبكة مع مستخدمين آخرين لهذا الجهاز.</translation>
 <translation id="8749805710397399240">يتعذّر إرسال محتوى شاشتك. يُرجى التحقّق من إذن "تسجيل الشاشة" في قسم "الإعدادات المفضّلة للنظام".</translation>
 <translation id="8749863574775030885">‏الدخول إلى أجهزة USB من مورد غير معروف</translation>
 <translation id="8750155211039279868">يجب ربط <ph name="ORIGIN" /> بمنفذ تسلسلي</translation>
@@ -7102,7 +7099,6 @@
 <translation id="8808744862003883508">‏يمكنك الاطّلاع في هذه الصفحة على جميع الإضافات المثبّتة في Chrome.</translation>
 <translation id="8809147117840417135">أزرق مخضر فاتح</translation>
 <translation id="8811862054141704416">‏الوصول إلى ميكروفون نظام التشغيل Crostini</translation>
-<translation id="8812552797690463522">تتم مشاركة هذه الشبكة معك.</translation>
 <translation id="8812593354822910461">سيؤدي محو بيانات تصفّح (<ph name="URL" />) أيضًا إلى تسجيل خروجك من <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8813698869395535039">يتعذر تسجيل الدخول إلى <ph name="USERNAME" /></translation>
@@ -7314,7 +7310,6 @@
 <translation id="9021662811137657072">تم اكتشاف فيروس</translation>
 <translation id="902236149563113779">تتبّع المواقع الإلكترونية عادةً موضع الكاميرا لتتيح ميزات الواقع المعزّز، مثل اتجاهات الألعاب أو التنبيه.</translation>
 <translation id="9022847679183471841">يتم الآن استخدام هذا الحساب فعلاً على هذا الكمبيوتر من قبل <ph name="AVATAR_NAME" />.</translation>
-<translation id="9023009238991294202">يمكن للمستخدمين الآخرين لهذا الجهاز استخدام هذه الشبكة.</translation>
 <translation id="9023015617655685412">وضع إشارة مرجعية لعلامة التبويب هذه</translation>
 <translation id="9023909777842748145">لن يؤثر إيقاف هذه الميزة في قدرة جهازك على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
 <translation id="9024127637873500333">&amp;فتح في علامة تبويب جديدة</translation>

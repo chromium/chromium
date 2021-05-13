@@ -358,7 +358,6 @@
 <translation id="138784436342154190">ស្តារទំព័រចាប់ផ្តើមលំនាំដើម?</translation>
 <translation id="1388253969141979417">អនុញ្ញាតឱ្យប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ​នឹងចាប់ផ្ដើម​ឡើងវិញ នៅពេលបញ្ចប់​ការដំឡើងកំណែ​។</translation>
-<translation id="138900021244932468">រកមិនឃើញកម្រងព័ត៌មានទេ។ ដើម្បីរៀបចំ​បណ្ដាញថ្មី សូមស្កេនកូដ QR ដោយប្រើ​កាមេរ៉ារបស់ឧបករណ៍ ឬបញ្ចូលលេខកូដ​បើកដំណើរការ ដែលបានផ្ដល់​ដោយក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក។</translation>
 <translation id="139013308650923562">អនុញ្ញាតឱ្យប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="1390548061267426325">បើកជាផ្ទាំងធម្មតា</translation>
 <translation id="1393283411312835250">ព្រះអាទិត្យ និងពពក</translation>
@@ -516,6 +515,7 @@
 <translation id="1545775234664667895">បានដំឡើង​រចនាប័ទ្ម "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">កម្មវិធីបន្ថែមនេះបានប្តូរអ្វីដែលទំព័របានបង្ហាញនៅពេលអ្នកចុចប៊ូតុង ទំព័រដើម។</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ចង់ដំឡើង <ph name="EXTENSION_TYPE" /> ដែលអាច៖</translation>
+<translation id="1547808936554660006">ខ្ញុំយល់ហើយថា កម្រងព័ត៌មាន eSIM ដែលបានដំឡើង​នឹងមិនត្រូវបាន​ដកចេញដោយ Powerwash ទេ</translation>
 <translation id="1549275686094429035">បានបើក ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ចង់ចូលប្រើ <ph name="VOLUME_NAME" />។ វាអាចនឹងកែសម្រួល ឬលុបឯកសាររបស់អ្នក។</translation>
 <translation id="1552301827267621511">កម្មវិធីបន្ថែម "<ph name="EXTENSION_NAME" />" បានប្ដូរការស្វែងរកទៅប្រើ <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -552,6 +552,7 @@
 <translation id="1588438908519853928">ធម្មតា</translation>
 <translation id="158849752021629804">ត្រូវការបណ្តាញនៅតាមផ្ទះ</translation>
 <translation id="1588870296199743671">បើកដំណជាមួយ...</translation>
+<translation id="1588919647604819635">ចុចកណ្ដុរខាងស្ដាំលើកាត</translation>
 <translation id="1589055389569595240">បង្ហាញការប្រកប និងវេយ្យាករណ៍</translation>
 <translation id="1591679663873027990">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើឧបករណ៍ USB។ Parallels Desktop នឹងមិនចងចាំ​ឧបករណ៍ USB ទេ បន្ទាប់ពី​ដកឧបករណ៍ USB ចេញ។</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> បានបិទ​ការជួសជុល ADB។ ​ការបិទនេះ​នឹងកំណត់ <ph name="DEVICE_TYPE" /> របស់អ្នក​ឡើងវិញ​។ សូមបម្រុងទុកឯកសាររបស់អ្នក មុនពេលចាប់ផ្ដើមឡើងវិញ។</translation>
@@ -996,6 +997,7 @@
 
 អ្នក​អាច​គ្រប់គ្រង​ការកំណត់​របស់គណនី​នេះ​ដោយដំឡើង​កម្មវិធី Family Link នៅលើ​ឧបករណ៍របស់អ្នក។  យើង​បានផ្ញើ​ការណែនាំទៅអ្នក​តាមរយៈអ៊ីមែល។</translation>
 <translation id="2040460856718599782">អូ! មានបញ្ហាអ្វីមួយកើតឡើង នៅពេលកំពុងព្យាយាមសម្គាល់អត្តសញ្ញាណរបស់អ្នក។  សូមពិនិត្យភាពត្រឹមត្រូវនៃការចូលរបស់អ្នកដោយប្រុងប្រយ័ត្ន ហើយព្យាយាមម្តងទៀត។</translation>
+<translation id="2042279886444479655">បើកដំណើរការ​កម្រងព័ត៌មាន</translation>
 <translation id="2044014337866019681">សូមប្រាកដថា អ្នកកំពុងផ្ទៀងផ្ទាត់ <ph name="ACCOUNT" /> ដើម្បីដោះសោវគ្គនេះ។</translation>
 <translation id="2044023416777079300">មិនបានចុះឈ្មោះម៉ូដឹមទេ</translation>
 <translation id="204497730941176055">ឈ្មោះពុម្ពវិញ្ញាបនប័ត្រ Microsoft</translation>
@@ -1337,6 +1339,7 @@
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> របស់អ្នកបានចុះឈ្មោះដោយជោគជ័យសម្រាប់ការគ្រប់គ្រងសហគ្រាស ក៏ប៉ុន្តែបានបរាជ័យក្នុងការផ្ញើព័ត៌មានអំពីទ្រព្យសកម្ម និងទីតាំងរបស់វា។ សូមបញ្ចូលព័ត៌មាននេះដោយផ្ទាល់ចេញពីកុងសូលគ្រប់គ្រងសម្រាប់ឧបករណ៍នេះ។</translation>
 <translation id="2396387085693598316">អ្នកគ្រប់គ្រង​របស់អ្នក​បានទប់ស្កាត់ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">បញ្ចូល​កូដ pin 4 ខ្ទង់ (0000-9999)</translation>
+<translation id="2398546389094871088">ការធ្វើ Powerwash ឧបករណ៍របស់អ្នក​នឹងមិនដកកម្រងព័ត៌មាន eSIM របស់អ្នក​ចេញទេ។ សូមចូល​ទៅកាន់<ph name="LINK_BEGIN" />ការកំណត់​ឧបករណ៍ចល័ត<ph name="LINK_END" /> ដើម្បីដកកម្រង​ព័ត៌មានទាំងនេះ​ចេញដោយផ្ទាល់ដៃ។</translation>
 <translation id="2399699884460174994">បានបើកការជូនដំណឹង</translation>
 <translation id="2399939490305346086">ទិន្នន័យ​ចូលគណនីរបស់​សោសុវត្ថិភាព</translation>
 <translation id="2400664245143453337">តម្រូវឱ្យមាន​ការដំឡើង​កំណែភ្លាមៗ</translation>
@@ -1754,6 +1757,7 @@
 <translation id="2844809857160214557">មើល និង​គ្រប់គ្រង​ការងារ​បោះពុម្ព</translation>
 <translation id="2845382757467349449">បង្ហាញរបាចំណាំជានិច្ច</translation>
 <translation id="284805635805850872">លុប​កម្មវិធី​ដែលបង្កគ្រោះថ្នាក់?</translation>
+<translation id="2849035674501872372">រកមើល</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">មិន​អាច​សម្អាត​បានទេ</translation>
 <translation id="2849936225196189499">សំខាន់</translation>
@@ -2065,6 +2069,7 @@
 <translation id="3189187154924005138">ទស្សន៍ទ្រនិច​ធំ</translation>
 <translation id="3190558889382726167">បានរក្សាទុកពាក្យសម្ងាត់</translation>
 <translation id="3192947282887913208">ឯកសារសម្លេង</translation>
+<translation id="3197453258332670132">បង្ហាញព័ត៌មាន​ដែលពាក់ព័ន្ធ​សម្រាប់ការជ្រើសរើសអត្ថបទ​របស់អ្នក នៅពេលអ្នកចុច​កណ្ដុរខាងស្ដាំ ឬចុចឱ្យយូរ</translation>
 <translation id="3199127022143353223">ម៉ាស៊ីនមេ</translation>
 <translation id="3201422919974259695">ឧបករណ៍ USB ដែលអាចប្រើបាននឹងបង្ហាញនៅទីនេះ។</translation>
 <translation id="3202131003361292969">ផ្លូវ</translation>
@@ -2086,6 +2091,7 @@
 <translation id="3223531857777746191">ប៊ូតុង​កំណត់ឡើងវិញ</translation>
 <translation id="3225084153129302039">រូបតំណាងពណ៌ស្វាយលំនាំដើម</translation>
 <translation id="3225319735946384299">ការចុះហត្ថលេខាជាលេខកូដ</translation>
+<translation id="3226487301970807183">បិទ/បើកផ្ទាំងចំហៀង​ដែលតម្រឹមខាងឆ្វេង</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3233271424239923319">បម្រុងទុក​កម្មវិធី និង​ឯកសារ Linux</translation>
 <translation id="3238192140106069382">កំពុងភ្ជាប់ និងកំពុងផ្ទៀងផ្ទាត់</translation>
@@ -2355,6 +2361,7 @@
 <translation id="3515983984924808886">ចុច​សោសុវត្ថិភាព​របស់អ្នក​ម្ដងទៀត ដើម្បី​បញ្ជាក់​ការកំណត់​ឡើងវិញ។ នឹងលុបព័ត៌មាន​ទាំងអស់​ដែលរក្សាទុក​នៅក្នុង​សោសុវត្ថិភាព រួមទាំងកូដ PIN របស់វា​ផងដែរ។</translation>
 <translation id="3518985090088779359">ព្រមទទួល និងបន្ត</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
+<translation id="3519938335881974273">រក្សាទុកទំព័រជា...</translation>
 <translation id="3521606918211282604">ប្ដូរ​ទំហំ​ថាស</translation>
 <translation id="3522088408596898827">ទំហំផ្ទុកក្នុងថាស​នៅសល់តិចណាស់។ សូមបង្កើន​ទំហំផ្ទុកក្នុងថាស រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="3524965460886318643">នាំចេញ​សកម្មភាព</translation>
@@ -2378,6 +2385,7 @@
 <translation id="3550593477037018652">ផ្ដាច់​បណ្ដាញ​ចល័ត</translation>
 <translation id="3550915441744863158">Chrome ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិ ដូច្នេះអ្នកមានកំណែថ្មីបំផុតជានិច្ច</translation>
 <translation id="3551320343578183772">បិទផ្ទាំង</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">បានសម្អាតនៅពេល​ចាកចេញ</translation>
 <translation id="3554493885489666172">ឧបករណ៍​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="PROFILE_NAME" />។ អ្នកគ្រប់គ្រងអាចចូលប្រើទិន្នន័យនៅក្នុងកម្រងព័ត៌មានទាំងឡាយ ដែលមាននៅក្នុងឧបករណ៍នេះ។</translation>
 <translation id="3555812735919707620">ដកកម្មវិធីបន្ថែមចេញ</translation>
@@ -2430,6 +2438,7 @@
 <translation id="3604713164406837697">ប្ដូរផ្ទាំងរូបភាព</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3608576286259426129">ពិនិត្យមើលរូបភាពអ្នកប្រើ</translation>
+<translation id="3609277884604412258">ការស្វែងរករហ័ស</translation>
 <translation id="3610369246614755442">កង្ហារឧបករណ៍​ភ្ជាប់​តម្រូវឱ្យមានការ​ជួលជុល</translation>
 <translation id="361106536627977100">ទិន្នន័យ Flash</translation>
 <translation id="3611655097742243705">ចូល​ទៅកាន់ Play Store ដើម្បីស្វែងរក​កម្មវិធីច្រើនទៀត</translation>
@@ -3374,6 +3383,7 @@
 <translation id="4636682061478263818">ឯកសារ​ក្នុង​ថាស</translation>
 <translation id="4636930964841734540">ព័ត៌មាន</translation>
 <translation id="4637083375689622795">សកម្មភាព​ច្រើនទៀត <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">ប្រើកាមេរ៉ា​ម្ដងទៀត</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{អត្ថបទ}other{អត្ថបទ #}}</translation>
 <translation id="4638930039313743000">បើក​ការជួសជុល ADB</translation>
 <translation id="4641539339823703554">Chrome មិនអាចកំណត់ពេលវេលាប្រព័ន្ធ។ សូមពិនិត្យពេលវេលាខាងក្រោម ហើយកែតម្រូវវាបើចាំបាច់។</translation>
@@ -4124,6 +4134,7 @@
 <translation id="5499313591153584299">ឯកសារនេះអាចបង្កគ្រោះថ្នាក់ដល់កុំព្យូទ័ររបស់អ្នក។</translation>
 <translation id="5499453227627332024">មានកំណែថ្មីសម្រាប់ទម្រង់ផ្ទុក Linux របស់អ្នក។ អ្នកក៏អាចដំឡើងកំណែក្នុងកម្មវិធីការកំណត់នៅពេលក្រោយបានផងដែរ។</translation>
 <translation id="5500709606820808700">ការពិនិត្យ​សុវត្ថិភាព​បានដំណើរការនៅថ្ងៃនេះ</translation>
+<translation id="5501322521654567960">ផ្ទាំងចំហៀង​ដែលតម្រឹមខាងឆ្វេង</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{មិនអាចទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" /> បានទេ}other{មិនអាចទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" /> បានទេ}}</translation>
 <translation id="5502500733115278303">បាននាំចូលពី Firefox</translation>
 <translation id="5502915260472117187">កុមារ</translation>
@@ -5336,6 +5347,7 @@
 <translation id="6856348640027512653">មិនអនុញ្ញាត​ឱ្យប្រើទិន្នន័យ ឬ​ឧបករណ៍ VR ទេ</translation>
 <translation id="6856459657722366306">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="6856623341093082836">រៀបចំ និង​កែ​សម្រួល​កម្រិត​ពណ៌​ដែល​ត្រឹមត្រូវ​សម្រាប់​អេក្រង់​ចុច​របស់​អ្នក</translation>
+<translation id="6857145580237920905">ដកកម្រង​ព័ត៌មាន eSIM ចេញ មុននឹង Powerwash</translation>
 <translation id="6857699260879628349">ទទួលព័ត៌មាន​អំពី​ការកំណត់​រចនាសម្ព័ន្ធ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> វិនាទី</translation>
 <translation id="6860097299815761905">ការកំណត់ប្រូកស៊ី...</translation>
@@ -5917,6 +5929,7 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> របស់អ្នកបានចុះឈ្មោះដោយជោគជ័យសម្រាប់ការគ្រប់គ្រងសហគ្រាស។</translation>
 <translation id="7507207699631365376">មើល<ph name="BEGIN_LINK" />គោលការណ៍ឯកជនភាព<ph name="END_LINK" />របស់ក្រុមហ៊ុនផ្ដល់សេវានេះ</translation>
 <translation id="7507930499305566459">វិញ្ញាបនប័ត្រអ្នកឆ្លើយតបស្ថានភាព</translation>
+<translation id="7509246181739783082">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នក</translation>
 <translation id="7513029293694390567">ចូលគេហទំព័រដោយស្វ័យប្រវត្តិ ដោយប្រើព័ត៌មានសម្គាល់ខ្លួនដែលបានផ្ទុក។ ប្រសិនបើបិទ អ្នកនឹងត្រូវបានស្នើឲ្យធ្វើការបញ្ជាក់មុនពេលចូលគេហទំព័រម្តងៗ។</translation>
 <translation id="7514239104543605883">ចម្លង​ទៅ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7514365320538308">ទាញយក</translation>
@@ -6448,7 +6461,6 @@
 <translation id="8061091456562007989">ប្ដូរទៅ​ការកំណត់​ចាស់វិញ</translation>
 <translation id="8061991877177392872">អ្នកហាក់​ដូចជា​បានរៀបចំ​មុខងារ Voice Match ជាមួយជំនួយការ​របស់អ្នក​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​រួចហើយ។ ​សំឡេងថត​ពីមុនៗ​ទាំងនេះ​ត្រូវបានប្រើ ដើម្បី​បង្កើតគំរូ​សំឡេង​នៅលើ​ឧបករណ៍​នេះ។</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{ក្រដាស 1 សន្លឹក}other{ក្រដាស {COUNT} សន្លឹក}}</translation>
-<translation id="8062879968880283306">ស្កេនកូដ QR ដោយប្រើ​កាមេរ៉ារបស់ឧបករណ៍ ឬបញ្ចូលលេខកូដ​បើកដំណើរការ ដែលបានផ្ដល់​ដោយក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក។</translation>
 <translation id="8063235345342641131">រូបតំណាងពណ៌បៃតងលំនាំដើម</translation>
 <translation id="8063535366119089408">មើល​ឯកសារ</translation>
 <translation id="8064279191081105977">ក្រុម <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6869,7 +6881,6 @@
 <translation id="8551588720239073785">ការកំណត់​កាលបរិច្ឆេទ និងម៉ោង</translation>
 <translation id="8553342806078037065">គ្រប់គ្រងមនុស្សផ្សេងទៀត</translation>
 <translation id="8554899698005018844">គ្មាន​ភាសាទេ</translation>
-<translation id="8555195867496021627">មិនមាន​កម្រងព័ត៌មាន eSIM ទេ​។ សូម​ទាញយក​កម្រងព័ត៌មាន​ថ្មី<ph name="BEGIN_LINK" />នៅទីនេះ។<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">បន្ត​ចុច​សោសុវត្ថិភាព​ រហូតទាល់តែ​ថតបាន​ស្នាមម្រាមដៃ​របស់អ្នក</translation>
 <translation id="8557930019681227453">ជាក់លាក់</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{បើកទាំងអស់នៅក្នុង&amp;វិនដូថ្មី}=1{បើកនៅក្នុង&amp;វិនដូថ្មី}other{បើកទាំងអស់ ({COUNT}) នៅក្នុង&amp;វិនដូថ្មី}}</translation>
@@ -7049,7 +7060,6 @@
 <translation id="8743164338060742337">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រងរបស់អ្នក, ភ្ជាប់</translation>
 <translation id="8746654918629346731">អ្នកបានស្នើសុំ "<ph name="EXTENSION_NAME" />" រួចហើយ</translation>
 <translation id="874689135111202667">{0,plural, =1{បង្ហោះឯកសារ​មួយ​ទៅ​ទំព័រ​នេះ​?}other{បង្ហោះឯកសារ​ # ​ទៅ​ទំព័រ​នេះ​?}}</translation>
-<translation id="8749556627204742888">អ្នក​កំពុងចែករំលែក​បណ្ដាញនេះ​ជាមួយអ្នកប្រើប្រាស់​ផ្សេងទៀត​ដែលប្រើឧបករណ៍​នេះ។</translation>
 <translation id="8749805710397399240">មិនអាចភ្ជាប់អេក្រង់​របស់អ្នកបានទេ។ សូមពិនិត្យមើល​ការអនុញ្ញាតឱ្យថតអេក្រង់​នៅក្នុង​ចំណូលចិត្តប្រព័ន្ធ។</translation>
 <translation id="8749863574775030885">ចូលប្រើឧបករណ៍ USB ពីអ្នកលក់មិនស្គាល់</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ចង់ភ្ជាប់​ទៅរន្ធស៊េរី</translation>
@@ -7111,7 +7121,6 @@
 <translation id="8808744862003883508">នៅលើ​ទំព័រ​នេះ អ្នក​អាច​មើលឃើញ​កម្មវិធី​បន្ថែម​ទាំងអស់​ដែលដំឡើង​នៅក្នុង Chrome​។</translation>
 <translation id="8809147117840417135">បៃតង​ស្រាល</translation>
 <translation id="8811862054141704416">ការចូលប្រើមីក្រូហ្វូនសម្រាប់ Crostini</translation>
-<translation id="8812552797690463522">បណ្ដាញ​នេះ​ត្រូវបានចែករំលែក​ជាមួយ​អ្នក​។</translation>
 <translation id="8812593354822910461">ក៏សម្អាត​ទិន្នន័យ​រុករក (<ph name="URL" />) ដែលនឹង​នាំអ្នក​ចេញពី <ph name="DOMAIN" /> ផងដែរ។ <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
 <translation id="8813698869395535039">មិនអាចចូល <ph name="USERNAME" /> បានទេ</translation>
@@ -7323,7 +7332,6 @@
 <translation id="9021662811137657072">បានរកឃើញមេរោគ</translation>
 <translation id="902236149563113779">ជាធម្មតា ឧបករណ៍តាមដានទីតាំងកាមេរ៉ារបស់អ្នកសម្រាប់មុខងារ AR ដូចជាហ្គេម ឬទិសដៅប្រុងប្រយ័ត្នជាដើម</translation>
 <translation id="9022847679183471841">គណនីនេះកំពុងត្រូវបានប្រើដោយ <ph name="AVATAR_NAME" /> នៅលើកុំព្យូទ័រនេះរួចហើយ។</translation>
-<translation id="9023009238991294202">អ្នកផ្សេងទៀតដែលប្រើប្រាស់ឧបករណ៍នេះអាចប្រើបណ្តាញនេះបាន។</translation>
 <translation id="9023015617655685412">ចំណាំ​ផ្ទាំងនេះ...</translation>
 <translation id="9023909777842748145">ការ​បិទ​មុខងារ​នេះ​មិន​ប៉ះ​ពាល់​ដល់​សមត្ថភាព​​របស់ឧបករណ៍​​អ្នក​ក្នុង​ការបញ្ជូនព័ត៌មាន ដែល​ចាំបាច់​សម្រាប់​សេវាកម្ម​សំខាន់ៗដូចជា បច្ចុប្បន្នភាព​ប្រព័ន្ធ និង​សុវត្ថិភាពនោះទេ។</translation>
 <translation id="9024127637873500333">បើកនៅក្នុងផ្ទាំងថ្មី</translation>

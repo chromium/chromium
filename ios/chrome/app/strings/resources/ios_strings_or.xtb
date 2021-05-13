@@ -33,6 +33,7 @@
 <translation id="122699739164161391">ସମସ୍ତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1229222343402087523">Chromeରେ ${searchPhrase} ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="1231733316453485619">ସିଙ୍କ୍ ଚାଲୁ କରିବେ?</translation>
+<translation id="1242044645101871359">ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="1254117744268754948">ଫୋଲ୍ଡର୍‌ ବାଛନ୍ତୁ</translation>
 <translation id="1265739287306757398">କିପରି ହେବ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">ଏହାକୁ ପଠିତ ତାଲିକାରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="1870148520156231997">ପାସ୍‌ୱାର୍ଡ ପ୍ରକାଶ କରନ୍ତୁ</translation>
 <translation id="1872096359983322073">ଟର୍ଚ୍ଚ</translation>
+<translation id="1894205589103145703">ସାଇନ୍-ଇନ୍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
 <translation id="1911619930368729126">Google ଡ୍ରାଇଭ୍‌ରେ ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1923342640370224680">ଶେଷ ଘଣ୍ଟାକର</translation>
 <translation id="1941314575388338491">କପି କରିବାକୁ ଦୁଇଥର ଟାପ୍‌ କରନ୍ତୁ।</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />ସେଟିଂସ୍<ph name="END_LINK" />ରେ କ’ଣ ସିଙ୍କ୍ କରିବାକୁ ହେବ ତାହା ଆପଣ ସର୍ବଦା ବାଛି ପାରିବେ।</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
+<translation id="2086623437239112659">ଆପଣ ଷ୍ଟୋର୍ କରିଥିବା ସାଇନ୍-ଇନ୍ ସୂଚନା ପୁରୁଣା ହୋଇଥାଇପାରେ।</translation>
 <translation id="209018056901015185">ଡେସ୍କଟପ୍ ସାଇଟ୍ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="2103075008456228677">history.google.com ଖୋଲନ୍ତୁ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />ଟିି ଆଇଟମ୍ ସ୍ଥାନାନ୍ତରିତ ହୋଇଗଲା</translation>
@@ -185,6 +188,7 @@
 <translation id="2871695793448672541">ଲୁକ୍କାୟିତ, ପାସ୍‍ୱର୍ଡ</translation>
 <translation id="2876369937070532032">ଆପଣଙ୍କର ସୁରକ୍ଷା ବିପଦରେ ଥିବା ବେଳେ, Googleକୁ ଆପଣ ଯାଇଥିବା କିଛି ପୃଷ୍ଠାର URL ପଠାଏ</translation>
 <translation id="288655811176831528">ଟାବ୍‌ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2893180576842394309">Google ହୁଏତ ଆପଣ କରୁଥିବା ସନ୍ଧାନ ଏବଂ ଅନ୍ୟାନ୍ୟ Google ସେବାକୁ ବ୍ୟକ୍ତିଗତକରଣ କରିବା ପାଇଁ ଆପଣଙ୍କର ଇତିବୃତ୍ତିକୁ ବ୍ୟବହାର କରିପାରେ</translation>
 <translation id="2898963176829412617">ନୂତନ ଫୋଲ୍ଡର…</translation>
 <translation id="2916171785467530738">ସର୍ଚ୍ଚ ଓ URLଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବେ ସମ୍ପୂର୍ଣ୍ଣ ହେବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="291754862089661335">QR କୋଡ୍‌ କିମ୍ବା ବାର୍‌କୋଡ୍‌କୁ ଏହି ଫ୍ରେମ୍‌ରେ ଆଣନ୍ତୁ</translation>
@@ -397,6 +401,7 @@
 <translation id="5132942445612118989">ସମସ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡ, ଇତିବୃତ୍ତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
 <translation id="5140288047769711648">ଆପଣଙ୍କ ପାଇଁ ଏହି ପାସ୍‌ୱାର୍ଡକୁ Chrome ମନେରଖିବ। ଆପଣଙ୍କୁ ଏହା ମନେରଖିବା ପାଇଁ ଆବଶ୍ୟକ ପଡ଼ିବ ନାହିଁ।</translation>
 <translation id="5150492518600715772">ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ ପଠାନ୍ତୁ</translation>
+<translation id="5168414296986405587">iPadOS ପାଇଁ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="5181140330217080051">ଡାଉନ୍‍‍ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="5186185447130319458">ଗୋପନୀୟ</translation>
 <translation id="5188482106078495165">ଆପଣଙ୍କ କୁକୀ ସେଟିଂ ସମସ୍ତ ଟାବରେ ଲାଗୁ ହୋଇଥାଏ। ଏକ ଖୋଲା ଟାବରେ ଏକ ନୂଆ ସେଟିଂ ଲାଗୁ କରିବାକୁ, ଟାବକୁ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ।</translation>
@@ -426,6 +431,7 @@
 <translation id="5508435575041083207">ଏହି ଡିଭାଇସରୁ ସାଇନ୍ ଆଉଟ୍ କରି ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ଘଣ୍ଟା ପୂର୍ବେ</translation>
 <translation id="5525269841082836315">ପାସ୍‍‍ଫ୍ରେଜ୍ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="5532698011560297095">ସାଇନ୍ ଇନ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5548760955356983418">Handoff, ଆପଣଙ୍କୁ ଏହି ଡିଭାଇସ୍‍‍ରେ ଗୋଟିଏ ୱେବ୍‍ସାଇଟ୍‍ ବ୍ରାଉଜ୍ କରିବା ଆରମ୍ଭ କରିବାକୁ ଦେଇଥାଏ ଏବଂ ତା’ପରେ ଏହାକୁ ଆପଣ ସହଜରେ ଆପଣଙ୍କର Macରେ ଜାରି ରଖିପାରିବେ। ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା ୱେବ୍‍ସାଇଟ୍, ଆପଣଙ୍କ Macର Dockରେ ଦୃଶ୍ୟମାନ ହେବ।
 
 Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସାଧାରଣ ବିଭାଗରେ ମଧ୍ୟ ସକ୍ଷମ ହୋଇଥିବା ଆବଶ୍ୟକ ଏବଂ ଆପଣଙ୍କ ଡିଭାଇସ୍‍ଗୁଡ଼ିକ ନିଶ୍ଚିତ ରୂପେ ସମାନ iCloud ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରିବା ଉଚିତ।</translation>

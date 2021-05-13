@@ -424,17 +424,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Siehe https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Verwendung des monitorlosen Modus nicht erlauben</translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
-<translation id="1590071725627230651">Diese Einstellung bietet mehrere Verfügbarkeitsoptionen für den <ph name="LACROS_NAME" />-Browser.
-
-      Wenn diese Richtlinie auf „<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />“ gesetzt oder nicht konfiguriert ist, kann der Nutzer <ph name="LACROS_NAME" /> aktivieren und als primären Browser festlegen. <ph name="LACROS_NAME" /> kann weiterhin mit der Richtlinie <ph name="LACROS_ALLOWED_POLICY_NAME" /> deaktiviert werden.
-
-      Wenn die Richtlinie auf „<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />“ gesetzt ist, kann der Nutzer <ph name="LACROS_NAME" /> nicht verwenden. Die Richtlinie <ph name="LACROS_ALLOWED_POLICY_NAME" /> wird ignoriert.
-
-      Wenn die Richtlinie auf „<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />“ gesetzt ist, ist <ph name="LACROS_NAME" /> zwar aktiviert, er ist jedoch nicht der primäre Browser. Die Richtlinie <ph name="LACROS_ALLOWED_POLICY_NAME" /> wird ignoriert.
-
-      Wenn die Richtlinie auf „<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />“ gesetzt ist, ist <ph name="LACROS_NAME" /> aktiviert und als primärer Browser festgelegt. Die Richtlinie <ph name="LACROS_ALLOWED_POLICY_NAME" /> wird ignoriert.
-
-      Künftig können Sie <ph name="LACROS_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> mit dem Wert „<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />“ als einzigen verfügbaren Browser festlegen.</translation>
 <translation id="1599424828227887013">Website-Isolierung für angegebene Ursprünge auf Android-Geräten aktivieren</translation>
 <translation id="159946228300522107">Wenn für diese Richtlinie "True" festgelegt ist, maximiert Chrome beim ersten Start das erste angezeigte Fenster.
 

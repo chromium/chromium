@@ -437,17 +437,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Gebruik van de stand zonder interface niet toestaan</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
-<translation id="1590071725627230651">Deze instelling biedt verschillende beschikbaarheidsopties voor de <ph name="LACROS_NAME" />-browser.
-
-      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> of niet instelt, kan de gebruiker <ph name="LACROS_NAME" /> aanzetten en instellen als primaire browser. <ph name="LACROS_NAME" /> kan nog steeds niet toegestaan worden met het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, kan de gebruiker <ph name="LACROS_NAME" /> niet gebruiken. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
-
-      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, wordt <ph name="LACROS_NAME" /> aangezet maar niet ingesteld als primaire browser. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
-
-      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, wordt <ph name="LACROS_NAME" /> aangezet en ingesteld als primaire browser. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
-
-      In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Site-isolatie aanzetten voor opgegeven oorsprongen op Android-apparaten</translation>
 <translation id="159946228300522107">Als je het beleid instelt op True, maximaliseert Chrome het eerste venster tijdens de eerste uitvoering.
 

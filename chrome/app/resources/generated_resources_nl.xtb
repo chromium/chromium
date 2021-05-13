@@ -356,7 +356,6 @@
 <translation id="138784436342154190">Standaardstartpagina herstellen?</translation>
 <translation id="1388253969141979417">Toestemming om je microfoon te gebruiken</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> wordt opnieuw opgestart als de updates zijn voltooid.</translation>
-<translation id="138900021244932468">Er zijn geen profielen gevonden. Als je een nieuw netwerk wilt instellen, scan je de QR-code met de camera van je apparaat en geef je de activeringscode op die je van je provider hebt gekregen.</translation>
 <translation id="139013308650923562">Mogen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="1390548061267426325">Openen als normaal tabblad</translation>
 <translation id="1393283411312835250">Zon en wolken</translation>
@@ -5910,6 +5909,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7506541170099744506">Je <ph name="DEVICE_TYPE" /> is aangemeld voor bedrijfsbeheer.</translation>
 <translation id="7507207699631365376">Het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze provider bekijken</translation>
 <translation id="7507930499305566459">Certificaat voor statusbeantwoorder</translation>
+<translation id="7509246181739783082">Je identiteit verifiëren</translation>
 <translation id="7513029293694390567">Log automatisch in op websites met de opgeslagen gegevens. Als de functie uitstaat, moet je je identiteit bevestigen voordat je inlogt op een website.</translation>
 <translation id="7514239104543605883">Kopiëren naar je apparaat</translation>
 <translation id="7514365320538308">Downloaden</translation>
@@ -6441,7 +6441,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8061091456562007989">Wijziging ongedaan maken</translation>
 <translation id="8061991877177392872">Zoe te zien heb je Voice Match al ingesteld voor de Assistent op een ander apparaat. De eerdere opnamen daarvan zijn gebruikt om een spraakmodel op dit apparaat te maken.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vel papier}other{{COUNT} vellen papier}}</translation>
-<translation id="8062879968880283306">Scan de QR-code met de camera van je apparaat of geef de activeringscode op die je van je provider hebt gekregen.</translation>
 <translation id="8063235345342641131">Standaard groene avatar</translation>
 <translation id="8063535366119089408">Bestand bekijken</translation>
 <translation id="8064279191081105977">Groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6862,7 +6861,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8551588720239073785">Instellingen voor datum en tijd</translation>
 <translation id="8553342806078037065">Andere mensen beheren</translation>
 <translation id="8554899698005018844">Geen taal</translation>
-<translation id="8555195867496021627">Geen beschikbare e-simkaartprofielen. <ph name="BEGIN_LINK" />Hier<ph name="END_LINK" /> kun je een nieuw profiel downloaden.</translation>
 <translation id="8557022314818157177">Blijf je beveiligingssleutel aanraken totdat je vingerafdruk is geregistreerd</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Alles openen in &amp;nieuw venster}=1{Openen in &amp;nieuw venster}other{Alles ({COUNT}) openen in &amp;nieuw venster}}</translation>
@@ -7042,7 +7040,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8743164338060742337">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
 <translation id="8746654918629346731">Je hebt '<ph name="EXTENSION_NAME" />' al aangevraagd</translation>
 <translation id="874689135111202667">{0,plural, =1{Eén bestand naar deze site uploaden?}other{# bestanden naar deze site uploaden?}}</translation>
-<translation id="8749556627204742888">Je deelt dit netwerk met andere gebruikers van dit apparaat.</translation>
 <translation id="8749805710397399240">Kan je scherm niet casten. Check de rechten voor schermopname in de systeemvoorkeuren.</translation>
 <translation id="8749863574775030885">Toegang verkrijgen tot USB-apparaten van een onbekende leverancier</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> wil verbinden met een seriële poort</translation>
@@ -7105,7 +7102,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8808744862003883508">Op deze pagina kun je alle extensies zien die in Chrome zijn geïnstalleerd.</translation>
 <translation id="8809147117840417135">Lichtblauwgroen</translation>
 <translation id="8811862054141704416">Microfoontoegang voor Crostini</translation>
-<translation id="8812552797690463522">Dit netwerk is met jou gedeeld.</translation>
 <translation id="8812593354822910461">Ook browsegegevens wissen (<ph name="URL" />). Als je dit doet, word je uitgelogd bij <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8813698869395535039">Kan niet inloggen bij <ph name="USERNAME" /></translation>
@@ -7317,7 +7313,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9021662811137657072">Virus gedetecteerd</translation>
 <translation id="902236149563113779">Sites volgen je camerapositie meestal voor AR-functies, zoals games of visuele aanduidingen voor routebeschrijvingen</translation>
 <translation id="9022847679183471841">Dit account wordt al op deze computer gebruikt door <ph name="AVATAR_NAME" />.</translation>
-<translation id="9023009238991294202">Andere gebruikers van dit apparaat kunnen dit netwerk gebruiken.</translation>
 <translation id="9023015617655685412">Bookmark toevoegen voor dit tabblad…</translation>
 <translation id="9023909777842748145">Als je deze functie uitzet, heeft dit geen gevolgen voor de mogelijkheid van je apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.</translation>
 <translation id="9024127637873500333">&amp;Openen op nieuw tabblad</translation>

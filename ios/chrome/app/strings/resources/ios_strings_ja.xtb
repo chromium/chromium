@@ -188,6 +188,7 @@
 <translation id="2871695793448672541">非表示のパスワード</translation>
 <translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
 <translation id="288655811176831528">タブを閉じる</translation>
+<translation id="2893180576842394309">検索やその他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="2898963176829412617">新しいフォルダ...</translation>
 <translation id="2916171785467530738">検索語句や URL をオートコンプリートする</translation>
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
@@ -613,6 +614,7 @@
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>
+<translation id="708844789167408367">ログアウトして同期をオフにする...</translation>
 <translation id="7099761977003084116">最近使ったタブ</translation>
 <translation id="7102005569666697658">ダウンロードしています… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">非表示</translation>
@@ -627,6 +629,7 @@
 <translation id="7203585745079012652">回答を音声で聞く</translation>
 <translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、デフォルトのブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">無効なカード ニックネーム</translation>
+<translation id="722454870747268814">新しいシークレット タブ</translation>
 <translation id="7265758999917665941">このサイトでは保存しない</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="7291368939935408496">パスワードの準備中...</translation>

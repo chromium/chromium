@@ -41,7 +41,6 @@
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">Hantera webbplatser du följer</translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1285310382777185058">Ändra språk</translation>
 <translation id="1291207594882862231">Rensa historiken, cookies, webbplatsdata, cacheminnet …</translation>
@@ -550,7 +549,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4697543623252708062">Snart visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Nu kan du styra vilka webbplatser du följer i Hantera vad du följer.</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4714588616299687897">Spara upp till 60 % av din data</translation>
-<translation id="4716066120200945007">FÖLJER</translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
 <translation id="4720023427747327413">Öppna i <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Hjälp till att förbättra Chrome. <ph name="BEGIN_LINK" />Fyll i enkäten<ph name="END_LINK" />.</translation>
@@ -752,7 +750,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="5942872142862698679">Du söker med Google</translation>
 <translation id="5951119116059277034">Visar aktiv sida</translation>
-<translation id="5951615825629292797">Språket kan nu användas, starta om <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Skickar webbadressen till en sida som du försöker nå till Google</translation>
 <translation id="5956665950594638604">Öppna hjälpcentret för Chrome på en ny flik</translation>
 <translation id="5957442310066583693">Tryck på hemknappen om du vill se dina mest besökta webbplatser</translation>
@@ -1131,7 +1128,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
-<translation id="8362134094656482681">Hantera ämnen som du är intresserad av</translation>
 <translation id="8364299278605033898">Visa populära webbplatser</translation>
 <translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> är klart.</translation>

@@ -41,7 +41,6 @@
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">Управляйте сайтами, на которые подписаны</translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
 <translation id="1285310382777185058">Изменить язык</translation>
 <translation id="1291207594882862231">Удалить файлы cookie и данные сайтов, очистить историю и кеш</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="SITE_NAME" />". Вы можете настроить подписки по своему усмотрению в разделе "Управление подписками".</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4714588616299687897">Экономьте до 60% трафика</translation>
-<translation id="4716066120200945007">ВАШИ ПОДПИСКИ</translation>
 <translation id="4719927025381752090">Предлагать перевести</translation>
 <translation id="4720023427747327413">Открыть в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогите улучшить Chrome. <ph name="BEGIN_LINK" />Пройти опрос<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5942872142862698679">Google используется как поисковая система по умолчанию</translation>
 <translation id="5951119116059277034">Просмотр действующей страницы.</translation>
-<translation id="5951615825629292797">Языковой пакет скачан, перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="5952764234151283551">Отправлять в Google URL страниц, которые вы пытаетесь открыть</translation>
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="5957442310066583693">Нажмите эту кнопку, чтобы увидеть интересные вам сайты</translation>
@@ -1131,7 +1128,6 @@
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8349013245300336738">Сортировать по объему использованного трафика</translation>
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
-<translation id="8362134094656482681">Настройте темы, которые вас интересуют</translation>
 <translation id="8364299278605033898">Показать популярные сайты</translation>
 <translation id="8368027906805972958">Неизвестное или неподдерживаемое устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакет "<ph name="LANG" />" скачан.</translation>

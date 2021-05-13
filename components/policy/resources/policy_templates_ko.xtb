@@ -437,17 +437,6 @@
       https://www.chromestatus.com/feature/4664843055398912 페이지를 참고하세요.</translation>
 <translation id="1587585749332985896">헤드리스 모드 사용 허용 안 함</translation>
 <translation id="1588240398285670601">브라우저 설정</translation>
-<translation id="1590071725627230651">이 설정은 <ph name="LACROS_NAME" /> 브라우저의 사용 가능 여부 옵션을 다양하게 제공합니다.
-
-      정책을 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> 값으로 설정하거나 설정하지 않으면 사용자가 <ph name="LACROS_NAME" />를 사용 설정하고 기본 브라우저로 지정할 수 있습니다. 여전히 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 정책을 사용해 <ph name="LACROS_NAME" />를 사용 중지할 수도 있습니다.
-
-      정책을 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />으로 설정하면 사용자가 <ph name="LACROS_NAME" />를 사용할 수 없습니다. <ph name="LACROS_ALLOWED_POLICY_NAME" /> 정책은 무시됩니다.
-
-      정책을 <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> 값으로 설정하면 <ph name="LACROS_NAME" />가 사용 설정되지만 기본 브라우저로 지정되지는 않습니다. <ph name="LACROS_ALLOWED_POLICY_NAME" /> 정책은 무시됩니다.
-
-      정책을 <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> 값으로 설정하면 <ph name="LACROS_NAME" />가 사용 설정되며 기본 브라우저로 지정됩니다. <ph name="LACROS_ALLOWED_POLICY_NAME" /> 정책은 무시됩니다.
-
-      나중에 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 값을 사용해 <ph name="LACROS_NAME" />를 <ph name="PRODUCT_OS_NAME" />에서 사용 가능한 유일한 브라우저로 지정할 수 있습니다.</translation>
 <translation id="1599424828227887013">Android 기기에서 지정된 출처의 사이트 격리 사용 설정</translation>
 <translation id="159946228300522107">정책을 True로 설정하면 Chrome에서 최초 실행 시 표시되는 첫 번째 창을 최대화합니다.
 

@@ -430,17 +430,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Voir https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Ne pas autoriser le mode sans interface graphique</translation>
 <translation id="1588240398285670601">Paramètres du navigateur</translation>
-<translation id="1590071725627230651">Ce paramètre offre plusieurs options de disponibilité pour le navigateur <ph name="LACROS_NAME" />.
-
-      Si cette règle est définie sur "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />" ou qu'elle n'est pas configurée, l'utilisateur peut activer <ph name="LACROS_NAME" /> et en faire le navigateur principal. (<ph name="LACROS_NAME" /> peut quand même être non autorisé avec la règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />".)
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />", l'utilisateur ne peut pas se servir de <ph name="LACROS_NAME" />. (La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.)
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />", <ph name="LACROS_NAME" /> est activé, mais n'est pas le navigateur principal. (La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.)
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />", <ph name="LACROS_NAME" /> est activé et c'est le navigateur principal. (La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.)
-
-      À l'avenir, la valeur "<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />" permettra de faire de <ph name="LACROS_NAME" /> le seul navigateur disponible dans <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1599424828227887013">Activer l'isolation des sites pour des origines définies sur les appareils Android</translation>
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 

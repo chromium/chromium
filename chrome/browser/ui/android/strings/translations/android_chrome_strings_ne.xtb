@@ -41,7 +41,6 @@
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1258753120186372309">Google केरकार: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
-<translation id="1276279242344007853">तपाईंले फलो गर्ने साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1285310382777185058">भाषा परिवर्तन गर्नुहोस्</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट सम्बन्धी डेटा, क्यासलाई खाली गर्नुहोस्…</translation>
@@ -549,7 +548,6 @@
 <translation id="4697543623252708062">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="4699172675775169585">क्यास गरिएका छविहरू र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
-<translation id="4716066120200945007">फलो गरिरहेको</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />मा खोल्नुहोस्</translation>
 <translation id="4720982865791209136">Chrome लाई सुधार्न मद्दत गर्नुहोस्। <ph name="BEGIN_LINK" />सर्वेक्षणमा भाग लिनुहोस्।<ph name="END_LINK" /></translation>
@@ -751,7 +749,6 @@
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="5942872142862698679">खोजीका लागि Google प्रयोग गर्दै</translation>
 <translation id="5951119116059277034">लाइभ पेज हेरिँदै छ</translation>
-<translation id="5951615825629292797">भाषा प्याक तयार छ, <ph name="APP_NAME" /> रिस्टार्ट गर्नुहोस्</translation>
 <translation id="5952764234151283551">तपाईंले पहुँच राख्न खोजिरहनुभएको पृष्ठको URL Google मा पठाउँछ</translation>
 <translation id="5956665950594638604">Chrome को मद्दत केन्द्र एउटा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="5957442310066583693">तपाईंका लागि सिफारिस गरिएका शीर्ष साइटहरू हेर्न होम बटनमा ट्याप गर्नुहोस्</translation>
@@ -1130,10 +1127,10 @@
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगरियोस्</translation>
 <translation id="8349013245300336738">प्रयोग गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>
-<translation id="8362134094656482681">आफूलाई रुचि भएका विषयहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
 <translation id="8368027906805972958">अज्ञात वा प्रयोग गर्न नमिल्ने यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> भाषा प्याक तयार छ।</translation>
+<translation id="8387617938027387193">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8393700583063109961">सन्देश पठाउनुहोस्</translation>
 <translation id="8410695015584479363">मूल्यहरू ट्र्याक गर्नुहोस्</translation>
 <translation id="8413126021676339697">पूर्ण इतिहास देखाउनुहोस्</translation>

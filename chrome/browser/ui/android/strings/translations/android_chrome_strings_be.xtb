@@ -41,7 +41,6 @@
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">Кіруйце сайтамі, на якія вы падпісаліся</translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1285310382777185058">Змяніць мову</translation>
 <translation id="1291207594882862231">Ачысціць гісторыю, файлы cookie, даныя сайта, кэш…</translation>
@@ -550,7 +549,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4697543623252708062">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць артыкулы з сайта <ph name="SITE_NAME" />. Кіраваць падпіскамі на выбраныя вамі сайты можна ў раздзеле "Кіраванне падпіскамі".</translation>
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4714588616299687897">Эканомце да 60 % трафіка</translation>
-<translation id="4716066120200945007">ВЫ ПАДПІСАНЫ</translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
 <translation id="4720023427747327413">Адкрыць у <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Дапамажыце палепшыць Chrome. <ph name="BEGIN_LINK" />Прыміце ўдзел у апытанні<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5942872142862698679">Выкарыстоўваецца пошукавая сістэма Google</translation>
 <translation id="5951119116059277034">Праглядаецца апублікаваная версія старонкі</translation>
-<translation id="5951615825629292797">Мова гатовая да выкарыстання, перазапусціце <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Адпраўляе ў Google URL-адрас старонкі, якую вы спрабуеце адкрыць</translation>
 <translation id="5956665950594638604">Адкрыць Даведачны цэнтр Chrome у новай укладцы</translation>
 <translation id="5957442310066583693">Каб прагледзець папулярныя сайты, націсніце кнопку "Галоўная старонка"</translation>
@@ -1131,10 +1128,10 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>
 <translation id="835847953965672673">Спамповак адноўлена: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
-<translation id="8362134094656482681">Кіруйце цікавымі для вас тэмамі</translation>
 <translation id="8364299278605033898">Праглядайце папулярныя вэб-сайты</translation>
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Моўны пакет (<ph name="LANG" />) спампаваны.</translation>
+<translation id="8387617938027387193">Прайдзіце спраўджанне асобы</translation>
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8410695015584479363">Адсочваць цэны</translation>
 <translation id="8413126021676339697">Паказаць усю гісторыю</translation>

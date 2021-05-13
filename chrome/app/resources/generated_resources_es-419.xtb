@@ -356,7 +356,6 @@
 <translation id="138784436342154190">¿Deseas restaurar la página de inicio predeterminada?</translation>
 <translation id="1388253969141979417">Puede usar el micrófono</translation>
 <translation id="1388728792929436380">Cuando se completen las actualizaciones, se reiniciará el dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="138900021244932468">No se encontraron perfiles. Para configurar una red nueva, escanea el código QR con la cámara del dispositivo o ingresa el código de activación que te brinde tu proveedor.</translation>
 <translation id="139013308650923562">Pueden usar las fuentes instaladas en el dispositivo</translation>
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
@@ -5910,6 +5909,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7506541170099744506">Tu dispositivo <ph name="DEVICE_TYPE" /> se inscribió correctamente para la administración empresarial.</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de este proveedor</translation>
 <translation id="7507930499305566459">Certificado del respondedor de estado</translation>
+<translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7513029293694390567">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
 <translation id="7514239104543605883">Copiar a tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -6442,7 +6442,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8061091456562007989">Deshacer el cambio</translation>
 <translation id="8061991877177392872">Parece que ya configuraste Voice Match con tu Asistente en otro dispositivo. Se usaron las grabaciones anteriores para crear un modelo de voz en este dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 hoja de papel}other{{COUNT} hojas de papel}}</translation>
-<translation id="8062879968880283306">Escanea el código QR con la cámara del dispositivo o ingresa el código de activación que te brindó tu proveedor.</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
 <translation id="8063535366119089408">Ver el archivo</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6863,7 +6862,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
-<translation id="8555195867496021627">No hay perfiles de eSIM disponibles. Descarga uno nuevo <ph name="BEGIN_LINK" />aquí<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella dactilar</translation>
 <translation id="8557930019681227453">Manifiesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
@@ -7043,7 +7041,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8743164338060742337">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, conectar</translation>
 <translation id="8746654918629346731">Ya solicitaste "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{¿Deseas cargar un archivo a este sitio?}other{¿Deseas cargar # archivos a este sitio?}}</translation>
-<translation id="8749556627204742888">Compartes esta red con otros usuarios de este dispositivo.</translation>
 <translation id="8749805710397399240">No se puede transmitir tu pantalla. Revisa el permiso de grabación de pantallas en las preferencias del sistema.</translation>
 <translation id="8749863574775030885">Acceder a dispositivos USB de un proveedor desconocido</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quiere conectarse a un puerto en serie</translation>
@@ -7105,7 +7102,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8808744862003883508">En esta página, podrás ver todas las extensiones instaladas en Chrome.</translation>
 <translation id="8809147117840417135">Verde azulado claro</translation>
 <translation id="8811862054141704416">Acceso al micrófono en Crostini</translation>
-<translation id="8812552797690463522">Se comparte esta red contigo.</translation>
 <translation id="8812593354822910461">Borrar también los datos de navegación (<ph name="URL" />), lo que implicará salir de <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Recordarme más tarde</translation>
 <translation id="8813698869395535039">No se puede acceder a <ph name="USERNAME" /></translation>
@@ -7317,7 +7313,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9021662811137657072">Virus detectado</translation>
 <translation id="902236149563113779">Por lo general los sitios registran la posición de la cámara para habilitar funciones de RA, ya sea en juegos o para proporcionar instrucciones sobre cómo llegar.</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> ya está usando esta cuenta en esta computadora.</translation>
-<translation id="9023009238991294202">Otros usuarios de este dispositivo pueden usar esta red.</translation>
 <translation id="9023015617655685412">Agregar esta pestaña a favoritos…</translation>
 <translation id="9023909777842748145">Desactivar esta función no afectará la capacidad de tu dispositivo de enviar la información necesaria para servicios esenciales, como seguridad y actualizaciones del sistema.</translation>
 <translation id="9024127637873500333">&amp;Abrir en una nueva pestaña</translation>

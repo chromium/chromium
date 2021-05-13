@@ -359,7 +359,6 @@
 <translation id="138784436342154190">ডিফল্ট শুরুর পৃষ্ঠা পুনরুদ্ধার করবেন?</translation>
 <translation id="1388253969141979417">মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1388728792929436380">আপডেট সম্পূর্ণ হলে, <ph name="DEVICE_TYPE" /> রিস্টার্ট করা হবে।</translation>
-<translation id="138900021244932468">কোনও প্রোফাইল পাওয়া যায়নি। নতুন নেটওয়ার্ক সেট আপ করতে, ডিভাইস ক্যামেরা ব্যবহার করে QR কোড স্ক্যান করুন অথবা পরিষেবা প্রদানকারীর থেকে পাওয়া অ্যাক্টিভেশন কোড লিখুন।</translation>
 <translation id="139013308650923562">সাইটকে আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয়</translation>
 <translation id="1390548061267426325">নিয়মিত ট্যাব রূপে খুলুন</translation>
 <translation id="1393283411312835250">সূর্য ও ক্লাউড</translation>
@@ -517,6 +516,7 @@
 <translation id="1545775234664667895">ইনস্টল হওয়া থিম "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">আপনি হোম বোতাম ক্লিক করলে কোন পৃষ্ঠা দেখানো হবে তা এই এক্সটেনশনটি পরিবর্তন করেছে।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> একটি <ph name="EXTENSION_TYPE" /> ইনস্টল করতে চাইছে যা এগুলি করতে পারে:</translation>
+<translation id="1547808936554660006">আমি এটি বুঝেছি যে ইনস্টল করা ই-সিম প্রোফাইল পাওয়ারওয়াশের ফলে সরে যাবে না</translation>
 <translation id="1549275686094429035">ARC চালু করা হয়েছে</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> অ্যাক্সেস করতে চায়৷ এটি আপনার ফাইলগুলিকে মডিফাই করতে বা মুছে ফেলতে পারে৷</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
@@ -553,6 +553,7 @@
 <translation id="1588438908519853928">সাধারণ</translation>
 <translation id="158849752021629804">হোম নেটওয়ার্কের প্রয়োজন</translation>
 <translation id="1588870296199743671">এর সাথে লিঙ্ক খুলুন...</translation>
+<translation id="1588919647604819635">কার্ডের উপরে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="1589055389569595240">বানান এবং ব্যাকরণ দেখান</translation>
 <translation id="1591679663873027990">Parallels Desktop-কে ইউএসবি ডিভাইস অ্যাক্সেস করার অনুমতি দিন। সরিয়ে দেওয়ার পরে, Parallels Desktop-এর কাছে কোনও ইউএসবি ডিভাইসের তথ্য সেভ করা থাকবে না।</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB ডিবাগিং বন্ধ করে দিয়েছে, এর ফলে আপনার <ph name="DEVICE_TYPE" /> রিসেট হয়ে যাবে। রিস্টার্ট করার আগে আপনার ফাইলের ব্যাক-আপ নিন।</translation>
@@ -997,6 +998,7 @@
 
 আপনি ডিভাইসে Family Link অ্যাপ ইনস্টল করে এই অ্যাকাউন্টের সেটিংস ম্যানেজ করতে পারেন।  আপনার ইমেল আইডিতে আমরা নির্দেশাবলী পাঠিয়েছি।</translation>
 <translation id="2040460856718599782">ওহো! আপনার যাচাইকরণের সময় কিছু ত্রুটি হয়েছিল৷ অনুগ্রহ করে আপনার লগ-ইন ক্রেডেনশিয়াল পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
+<translation id="2042279886444479655">অ্যাক্টিভ প্রোফাইল</translation>
 <translation id="2044014337866019681">সেশন আনলক করতে, <ph name="ACCOUNT" /> যাচাই করছেন কিনা ভাল করে দেখে নিন।</translation>
 <translation id="2044023416777079300">মোডেম রেজিস্টার করা নেই</translation>
 <translation id="204497730941176055">Microsoft সার্টিফিকেট টেম্পলেট নাম</translation>
@@ -1338,6 +1340,7 @@
 <translation id="2395616325548404795">আপনার <ph name="DEVICE_TYPE" /> কে এন্টারপ্রাইজ পরিচালনার জন্য সফলভাবে নথিভুক্ত করা হয়েছে, কিন্তু এর সম্পদ এবং অবস্থানের তথ্য পাঠানো ব্যর্থ হয়েছে৷ অনুগ্রহ করে এই ডিভাইসের জন্য আপনার অ্যাডমিন কনসোল থেকে নিজে এই তথ্য লিখুন৷</translation>
 <translation id="2396387085693598316">আপনার অ্যাডমিন "<ph name="EXTENSION_NAME" />" ব্লক করে দিয়েছেন</translation>
 <translation id="2396783860772170191">৪ সংখ্যার পিন লিখুন (০০০০-৯৯৯৯)</translation>
+<translation id="2398546389094871088">ডিভাইস পাওয়ারওয়াশ করলে, আপনার ই-সিম প্রোফাইল সরে যাবে না। এই প্রোফাইলগুলি ম্যানুয়ালি সরিয়ে দিতে, <ph name="LINK_BEGIN" />মোবাইল সেটিংস<ph name="LINK_END" /> বিকল্পে যান।</translation>
 <translation id="2399699884460174994">বিজ্ঞপ্তি চালু করা হয়েছে</translation>
 <translation id="2399939490305346086">নিরাপত্তা কীয়ের সাইন-ইন ডেটা</translation>
 <translation id="2400664245143453337">খুব তাড়াতাড়ি আপডেট করা দরকার</translation>
@@ -1753,6 +1756,7 @@
 <translation id="2844809857160214557">প্রিন্ট করার কাজগুলি দেখুন ও ম্যানেজ করুন</translation>
 <translation id="2845382757467349449">সবসময় বুকমার্কস বার দেখান</translation>
 <translation id="284805635805850872">ক্ষতিকর সফ্টওয়্যার সরাবেন?</translation>
+<translation id="2849035674501872372">খুঁজে দেখা</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">মোছা যায়নি</translation>
 <translation id="2849936225196189499">জটিল</translation>
@@ -2064,6 +2068,7 @@
 <translation id="3189187154924005138">বড় কার্সর</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
+<translation id="3197453258332670132">ডানদিকের বোতামে ক্লিক করলে বা অনেকক্ষণ প্রেস করে ধরে রাখলে, আপনার বেছে নেওয়া টেক্সটের ব্যাপারে তথ্য দেখা যায়</translation>
 <translation id="3199127022143353223">সার্ভারসমূহ</translation>
 <translation id="3201422919974259695">উপলভ্য ইউএসবি ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="3202131003361292969">পাথ</translation>
@@ -2085,6 +2090,7 @@
 <translation id="3223531857777746191">রিসেট করার বোতাম</translation>
 <translation id="3225084153129302039">ডিফল্ট রক্তবর্ণ অবতার</translation>
 <translation id="3225319735946384299">Code Signing</translation>
+<translation id="3226487301970807183">বাঁদিক বরাবর অ্যালাইন থাকা সাইড প্যানেল টগল করুন</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3233271424239923319">Linux অ্যাপ ও ফাইল ব্যাক-আপ করুন</translation>
 <translation id="3238192140106069382">কানেক্ট এবং যাচাই করা হচ্ছে</translation>
@@ -2354,6 +2360,7 @@
 <translation id="3515983984924808886">রিসেট করা কনফার্ম করতে আপনার নিরাপত্তা কী আবার টাচ করুন। পিন সহ নিরাপত্তা কীয়ে সেভ করা সব তথ্য মুছে যাবে।</translation>
 <translation id="3518985090088779359">স্বীকার করুন ও অবিরত রাখুন</translation>
 <translation id="3519564332031442870">প্রিন্ট সম্পর্কিত ব্যাকএন্ড পরিষেবা</translation>
+<translation id="3519938335881974273">এই হিসেবে পৃষ্ঠা সেভ করুন...</translation>
 <translation id="3521606918211282604">ডিস্ক সাইজ পরিবর্তন করুন</translation>
 <translation id="3522088408596898827">ডিস্কে জায়গা খুবই কম আছে। ডিস্কে জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="3524965460886318643">এক্সপোর্ট অ্যাক্টিভিটি</translation>
@@ -2377,6 +2384,7 @@
 <translation id="3550593477037018652">মোবাইল নেটওয়ার্ক ডিসকানেক্ট করুন</translation>
 <translation id="3550915441744863158">Chrome অটোমেটিক আপডেট হয় তাই আপনি সবসময় নবীনতম ভার্সনটি পান</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">'বেরিয়ে আসুন' থেকে সাফ করা হয়েছে</translation>
 <translation id="3554493885489666172">আপনার ডিভাইস <ph name="PROFILE_NAME" /> ম্যানেজ করে। এই ডিভাইসের যেকোনও প্রোফাইলের ডেটা অ্যাডমিনিস্ট্রেটর অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="3555812735919707620">এক্সটেনশন সরান</translation>
@@ -2429,6 +2437,7 @@
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="3605780360466892872">বটনডাউন</translation>
 <translation id="3608576286259426129">ব্যবহারকারীর ছবির পূর্বদৃশ্য</translation>
+<translation id="3609277884604412258">কুইক সার্চ</translation>
 <translation id="3610369246614755442">ডকিং স্টেশনের ফ্যান সার্ভিসিং করতে হবে</translation>
 <translation id="361106536627977100">ফ্ল্যাশ ডেটা</translation>
 <translation id="3611655097742243705">অ্যাপ ডাউনলোড করতে Play Store দেখুন</translation>
@@ -3372,6 +3381,7 @@
 <translation id="4636682061478263818">Drive ফাইল</translation>
 <translation id="4636930964841734540">তথ্য</translation>
 <translation id="4637083375689622795">আরও বিকল্প, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">আবার ক্যামেরা ব্যবহার করুন</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{টেক্সট}one{#টি টেক্সট}other{#টি টেক্সট}}</translation>
 <translation id="4638930039313743000">ADB ডিবাগিং চালু করতে চান</translation>
 <translation id="4641539339823703554">Chrome সিস্টেমের সময় সেট করতে পারেনি। অনুগ্রহ করে নিচে সময় চেক করুন এবং প্রয়োজনে এটি সংশোধন করুন।</translation>
@@ -4122,6 +4132,7 @@
 <translation id="5499313591153584299">এই ফাইলটি আপনার কম্পিউটারের জন্য ক্ষতিকারক হতে পারে৷</translation>
 <translation id="5499453227627332024">Linux কন্টেনারের আপগ্রেড ভার্সন এখন উপলভ্য। 'সেটিংস' অ্যাপ থেকে পরে এটি আপগ্রেড করে নিতে পারবেন।</translation>
 <translation id="5500709606820808700">আজ নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে</translation>
+<translation id="5501322521654567960">বাঁদিক বরাবর অ্যালাইন করা সাইড প্যানেল</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}}</translation>
 <translation id="5502500733115278303">Firefox থেকে আমদানি করা</translation>
 <translation id="5502915260472117187">বাচ্চার জন্য ডিভাইস সেট আপ করুন</translation>
@@ -5334,6 +5345,7 @@
 <translation id="6856348640027512653">ভার্চুয়াল রিয়েলিটি ডিভাইস অথবা ডেটা ব্যবহার করার অনুমতি নেই</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="6856623341093082836">আপনার টাচস্ক্রীনের যথার্থতা সেট-আপ ও অ্যাডজাস্ট করুন</translation>
+<translation id="6857145580237920905">পাওয়ারওয়াশের আগে ই-সিম প্রোফাইল সরিয়ে দিন</translation>
 <translation id="6857699260879628349">কনফিগারেশনের তথ্য পান</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
 <translation id="6860097299815761905">প্রক্সি সেটিংস...</translation>
@@ -5915,6 +5927,7 @@
 <translation id="7506541170099744506">আপনার <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ পরিচালনার জন্য সফলভাবে নথিভুক্ত হয়েছে।</translation>
 <translation id="7507207699631365376">এই পরিষেবা প্রদানকারীর <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> দেখুন</translation>
 <translation id="7507930499305566459">স্থিতি প্রতিক্রিয়া সার্টিফিকেট</translation>
+<translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7513029293694390567">সঞ্চিত সার্টিফিকেট ব্যবহার করে ওয়েবসাইটে অটোমেটিক সাইন-ইন করুন। এটি বন্ধ থাকলে, প্রতিবারই একটি ওয়েবসাইটে সাইন-ইনের সময় আপনাকে যাচাইকরণের জন্য বলা হবে।</translation>
 <translation id="7514239104543605883">আপনার ডিভাইসে কপি করুন</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
@@ -6446,7 +6459,6 @@
 <translation id="8061091456562007989">এটিকে আগের অবস্থায় ফিরিয়ে নিয়ে যান</translation>
 <translation id="8061991877177392872">মনে হচ্ছে আপনি অন্য কোনও ডিভাইসে Assistant-এর সাথে আগেই Voice Match সেট আপ করে ফেলেছেন। আগের এই সব রেকর্ডিং এই ডিভাইসে ভয়েস মডেল তৈরি করার জন্য ব্যবহার করা হয়েছে।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{১ শিট কাগজ}one{{COUNT} শিট কাগজ}other{{COUNT} শিট কাগজ}}</translation>
-<translation id="8062879968880283306">আপনার ডিভাইসের ক্যামেরা ব্যবহার করে QR কোড স্ক্যান করুন অথবা আপনার পরিষেবা প্রদানকারীর কাছ থেকে পাওয়া অ্যাক্টিভেশন কোডটি লিখুন।</translation>
 <translation id="8063235345342641131">ডিফল্ট সবুজ অবতার</translation>
 <translation id="8063535366119089408">ফাইল দেখুন</translation>
 <translation id="8064279191081105977">গ্রুপ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6866,7 +6878,6 @@
 <translation id="8551588720239073785">তারিখ ও সময়ের সেটিংস</translation>
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
 <translation id="8554899698005018844">কোনও ভাষা নেই</translation>
-<translation id="8555195867496021627">কোনও ই-সিম (eSIM) প্রোফাইল উপলভ্য নেই। নতুন প্রোফাইল <ph name="BEGIN_LINK" />এখানে<ph name="END_LINK" /> ডাউনলোড করুন।</translation>
 <translation id="8557022314818157177">আপনার আঙ্গুলের ছাপ ক্যাপচার না করা পর্যন্ত 'নিরাপত্তা কী'-তে টাচ করতে থাকুন</translation>
 <translation id="8557930019681227453">ম্যানিফেস্ট</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সবকটি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
@@ -7046,7 +7057,6 @@
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, কানেক্ট করুন</translation>
 <translation id="8746654918629346731">আপনি "<ph name="EXTENSION_NAME" />"-এর জন্য ইতিমধ্যেই অনুরোধ করেছেন</translation>
 <translation id="874689135111202667">{0,plural, =1{এই সাইটে একটি ফাইল আপলোড করবেন?}one{এই সাইটে #টি ফাইল আপলোড করবেন?}other{এই সাইটে #টি ফাইল আপলোড করবেন?}}</translation>
-<translation id="8749556627204742888">আপনি নেটওয়ার্কটি এই ডিভাইসের অন্য ব্যবহাকারীদের সাথে শেয়ার করছেন।</translation>
 <translation id="8749805710397399240">আপনার স্ক্রিন কাস্ট করা যাচ্ছে না। 'সিস্টেম অভিরুচি' বিকল্পে 'স্ক্রিন রেকর্ডিং' অনুমতি চেক করুন।</translation>
 <translation id="8749863574775030885">একটি অজানা বিক্রেতা থেকে USB ডিভাইস অ্যাক্সেস করুন</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> সিরিয়াল পোর্টে কানেক্ট করতে চাইছে</translation>
@@ -7109,7 +7119,6 @@
 <translation id="8808744862003883508">Chrome-এ ইনস্টল করা সব এক্সটেনশন আপনি এই পৃষ্ঠাতে দেখতে পাবেন।</translation>
 <translation id="8809147117840417135">হালকা নীলাভ সবুজ</translation>
 <translation id="8811862054141704416">Crostini-তে মাইক্রোফোনের অ্যাক্সেস</translation>
-<translation id="8812552797690463522">নেটওয়ার্কটি আপনার সাথে শেয়ার করা হয়েছে।</translation>
 <translation id="8812593354822910461">এছাড়াও ব্রাউজিং ডেটা (<ph name="URL" />) মুছে দিলে আপনি <ph name="DOMAIN" /> থেকে সাইন-আউট হয়ে যাবেন। <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />এ সাইন-ইন করা যাচ্ছে না</translation>
@@ -7321,7 +7330,6 @@
 <translation id="9021662811137657072">ভাইরাস শনাক্ত হয়েছে</translation>
 <translation id="902236149563113779">'এ আর (AR)' ফিচারের জন্য সাইট সাধারণত আপনার ক্যামেরার পজিশন, যেমন গেমস অথবা হেড-আপ ডাইরেকশন ট্র্যাক করে</translation>
 <translation id="9022847679183471841">এই অ্যাকাউন্টটি ইতিমধ্যে এই কম্পিউটারে <ph name="AVATAR_NAME" /> দ্বারা ব্যবহৃত হচ্ছে।</translation>
-<translation id="9023009238991294202">এই ডিভাইসের অন্যান্য ব্যবহারকারীরা এই নেটওয়ার্ক ব্যবহার করতে পারেন।</translation>
 <translation id="9023015617655685412">এই ট্যাব বুকমার্ক করুন...</translation>
 <translation id="9023909777842748145">এই ফিচারটি বন্ধ করে দিলেও, সিস্টেম আপডেট এবং নিরাপত্তার মতো প্রয়োজনীয় পরিষেবার জন্য গুরুত্বপূ্র্ণ তথ্য পাঠানোর আপনার ডিভাইসের যে ক্ষমতা সেটি প্রভাবিত হয় না।</translation>
 <translation id="9024127637873500333">&amp;নতুন ট্যাবে খুলুন</translation>

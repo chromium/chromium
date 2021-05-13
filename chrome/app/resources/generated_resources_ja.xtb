@@ -356,7 +356,6 @@
 <translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
 <translation id="1388253969141979417">マイクの使用を許可するサイト</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
-<translation id="138900021244932468">プロファイルは検出されませんでした。ネットワークを設定するには、デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
 <translation id="1393283411312835250">太陽と雲</translation>
@@ -513,6 +512,7 @@
 <translation id="1545775234664667895">テーマ「<ph name="THEME_NAME" />」をインストールしました</translation>
 <translation id="1546280085599573572">この拡張機能により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> さんが次の処理を行う<ph name="EXTENSION_TYPE" />のインストールを求めています。</translation>
+<translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> へのアクセスを求めています。ファイルが変更または削除される可能性があります。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
@@ -549,6 +549,7 @@
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="158849752021629804">ホーム ネットワークが必要です</translation>
 <translation id="1588870296199743671">次のプログラムでリンクを開く...</translation>
+<translation id="1588919647604819635">カードを右クリック</translation>
 <translation id="1589055389569595240">スペルと文法を表示</translation>
 <translation id="1591679663873027990">Parallels Desktop に USB デバイスへのアクセスを許可します。USB デバイスを取り外した後、Parallels Desktop にデバイスのデータは残りません。</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> によって ADB デバッグが無効にされたため、<ph name="DEVICE_TYPE" /> はリセットされます。再起動する前にファイルをバックアップしてください。</translation>
@@ -984,6 +985,7 @@
 
 デバイスにファミリー リンク アプリをインストールすると、このアカウントの設定を管理できます。手順を記載したメールをお送りしましたので、ご確認ください。</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
+<translation id="2042279886444479655">有効なプロファイル</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
@@ -1322,6 +1324,7 @@
 <translation id="2395616325548404795">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されましたが、アセットと位置情報を送信できませんでした。このデバイスの管理コンソールで、この情報を手動で入力してください。</translation>
 <translation id="2396387085693598316">「<ph name="EXTENSION_NAME" />」は管理者によってブロックされています</translation>
 <translation id="2396783860772170191">4 桁の PIN（0000～9999）を入力してください</translation>
+<translation id="2398546389094871088">デバイスで Powerwash を実行しても eSIM プロファイルは削除されません。[<ph name="LINK_BEGIN" />モバイル設定<ph name="LINK_END" />] で次のプロファイルを手動で削除してください。</translation>
 <translation id="2399699884460174994">通知をオンにしました</translation>
 <translation id="2399939490305346086">セキュリティ キーのログインデータ</translation>
 <translation id="2400664245143453337">今すぐ更新が必要です</translation>
@@ -1739,6 +1742,7 @@
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="284805635805850872">有害なソフトウェアを削除しますか？</translation>
+<translation id="2849035674501872372">調べる</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />（<ph name="UNICODE_NAME" />）</translation>
 <translation id="284975061945174219">クリーンアップできませんでした</translation>
 <translation id="2849936225196189499">重要</translation>
@@ -2050,6 +2054,7 @@
 <translation id="3189187154924005138">大きいカーソル</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
+<translation id="3197453258332670132">右クリックするか長押しすると、選択したテキストに関連する情報が表示されます</translation>
 <translation id="3199127022143353223">サーバー</translation>
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202131003361292969">パス</translation>
@@ -2071,6 +2076,7 @@
 <translation id="3223531857777746191">リセットボタン</translation>
 <translation id="3225084153129302039">デフォルトの紫のアバター</translation>
 <translation id="3225319735946384299">コード署名</translation>
+<translation id="3226487301970807183">左揃えのサイドパネルを切り替えます</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3233271424239923319">Linux のアプリとファイルをバックアップします</translation>
 <translation id="3238192140106069382">接続と認証を行っています</translation>
@@ -2340,6 +2346,7 @@
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
 <translation id="3518985090088779359">同意して続行</translation>
 <translation id="3519564332031442870">バックエンドの印刷サービス</translation>
+<translation id="3519938335881974273">ページを別名で保存...</translation>
 <translation id="3521606918211282604">ディスクのサイズを変更</translation>
 <translation id="3522088408596898827">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてもう一度お試しください。</translation>
 <translation id="3524965460886318643">アクティビティをエクスポート</translation>
@@ -2363,6 +2370,7 @@
 <translation id="3550593477037018652">モバイル ネットワークとの接続を切断する</translation>
 <translation id="3550915441744863158">Chrome は自動更新されるため、常に最新版をご利用になれます</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">終了時に削除</translation>
 <translation id="3554493885489666172">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="3555812735919707620">拡張機能を削除</translation>
@@ -2415,6 +2423,7 @@
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
 <translation id="3608576286259426129">ユーザー画像のプレビュー</translation>
+<translation id="3609277884604412258">すばやく検索</translation>
 <translation id="3610369246614755442">ドックのファンに問題があります</translation>
 <translation id="361106536627977100">Flash データ</translation>
 <translation id="3611655097742243705">Play ストアでアプリを探しましょう</translation>
@@ -3358,6 +3367,7 @@
 <translation id="4636682061478263818">ドライブのファイル</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4637083375689622795">その他の操作（<ph name="EMAIL" />）</translation>
+<translation id="4637189644956543313">もう一度カメラを使用する</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{テキスト}other{# 件のテキスト}}</translation>
 <translation id="4638930039313743000">ADB デバッグを有効にする</translation>
 <translation id="4641539339823703554">Chrome はシステムの時刻を設定できませんでした。以下で時刻を確認し、必要に応じて修正してください。</translation>
@@ -4108,6 +4118,7 @@
 <translation id="5499313591153584299">このファイルはパソコンに危害を加える可能性があります。</translation>
 <translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
 <translation id="5500709606820808700">安全確認を今日実行しました</translation>
+<translation id="5501322521654567960">左揃えのサイドパネル</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}}</translation>
 <translation id="5502500733115278303">Firefox ブックマーク</translation>
 <translation id="5502915260472117187">お子様</translation>
@@ -5319,6 +5330,7 @@
 <translation id="6856348640027512653">バーチャル リアリティのデバイスやデータの使用を許可しないサイト</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="6856623341093082836">タッチスクリーンをを設定し、精度を調整します</translation>
+<translation id="6857145580237920905">Powerwash を実行する前に eSIM プロファイルを削除してください</translation>
 <translation id="6857699260879628349">設定情報を取得</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
@@ -5900,6 +5912,7 @@
 <translation id="7506541170099744506">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されました。</translation>
 <translation id="7507207699631365376">このプロバイダの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご覧ください</translation>
 <translation id="7507930499305566459">ステータス レスポンダ証明書</translation>
+<translation id="7509246181739783082">本人確認</translation>
 <translation id="7513029293694390567">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -6432,7 +6445,6 @@
 <translation id="8061091456562007989">元に戻す</translation>
 <translation id="8061991877177392872">アシスタントの Voice Match は、すでに別のデバイスで設定されたようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 枚}other{{COUNT} 枚}}</translation>
-<translation id="8062879968880283306">QR コードをデバイスのカメラでスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="8063235345342641131">デフォルトの緑のアバター</translation>
 <translation id="8063535366119089408">ファイルを表示</translation>
 <translation id="8064279191081105977">グループ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6853,7 +6865,6 @@
 <translation id="8551588720239073785">日時の設定</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
 <translation id="8554899698005018844">言語設定なし</translation>
-<translation id="8555195867496021627">eSIM プロファイルがありません。<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />から新しいプロファイルをダウンロードしてください。</translation>
 <translation id="8557022314818157177">指紋の登録が完了するまで、セキュリティ キーをタッチし続けてください</translation>
 <translation id="8557930019681227453">マニフェスト</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
@@ -7033,7 +7044,6 @@
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="8746654918629346731">「<ph name="EXTENSION_NAME" />」はリクエスト済みです</translation>
 <translation id="874689135111202667">{0,plural, =1{1 個のファイルをこのサイトにアップロードしますか？}other{# 個のファイルをこのサイトにアップロードしますか？}}</translation>
-<translation id="8749556627204742888">このデバイスの他のユーザーとネットワークを共有しています。</translation>
 <translation id="8749805710397399240">画面をキャストできません。[システム環境設定] で画面収録が許可されているか確認してください。</translation>
 <translation id="8749863574775030885">不明なベンダーの USB デバイスへのアクセス</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> がシリアルポートへの接続を要求しています</translation>
@@ -7095,7 +7105,6 @@
 <translation id="8808744862003883508">このページには、Chrome にインストールされているすべての拡張機能が表示されます。</translation>
 <translation id="8809147117840417135">明るい青緑</translation>
 <translation id="8811862054141704416">Crostini のマイクへのアクセス</translation>
-<translation id="8812552797690463522">このネットワークが共有されました。</translation>
 <translation id="8812593354822910461">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、<ph name="DOMAIN" /> からログアウトします。<ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> にログインできません</translation>
@@ -7307,7 +7316,6 @@
 <translation id="9021662811137657072">ウイルスを検出しました</translation>
 <translation id="902236149563113779">多くのサイトは、ゲームや HUD のナビ表示などで AR 機能を使用するためにカメラ位置を追跡します。</translation>
 <translation id="9022847679183471841">このアカウントは既にこのパソコンで <ph name="AVATAR_NAME" /> によって使用されています。</translation>
-<translation id="9023009238991294202">このデバイスの他のユーザーもこのネットワークを使用できます。</translation>
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>
 <translation id="9023909777842748145">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="9024127637873500333">新しいタブで開く(&amp;O)</translation>

@@ -356,7 +356,6 @@
 <translation id="138784436342154190">¿Restaurar la página de inicio predeterminada?</translation>
 <translation id="1388253969141979417">Puede usar tu micrófono</translation>
 <translation id="1388728792929436380">El <ph name="DEVICE_TYPE" /> se reiniciará cuando se hayan completado las actualizaciones.</translation>
-<translation id="138900021244932468">No se ha encontrado ningún perfil. Para configurar una nueva red, escanea el código QR con la cámara del dispositivo o introduce el código de activación proporcionado por tu operador.</translation>
 <translation id="139013308650923562">Permitir que se usen las fuentes instaladas en tu dispositivo</translation>
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
@@ -988,7 +987,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2040460856718599782">¡Vaya! Parece que algo ha fallado al intentar identificarte. Vuelve a comprobar tus credenciales de inicio de sesión e inténtalo de nuevo.</translation>
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Asegúrate de que estás verificando <ph name="ACCOUNT" /> para desbloquear la sesión.</translation>
-<translation id="2044023416777079300">Modem no registrado</translation>
+<translation id="2044023416777079300">Módem no registrado</translation>
 <translation id="204497730941176055">Nombre de plantilla de certificado de Microsoft</translation>
 <translation id="2045117674524495717">Asistente de combinaciones de teclas</translation>
 <translation id="2045969484888636535">Continuar bloqueando las cookies</translation>
@@ -5912,6 +5911,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7506541170099744506">El dispositivo <ph name="DEVICE_TYPE" /> se ha registrado correctamente para ser administrado por la empresa.</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este proveedor</translation>
 <translation id="7507930499305566459">Certificado de respuesta de estado</translation>
+<translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7513029293694390567">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está inhabilitada, se te solicitará la confirmación cada vez que intentes iniciar sesión en un sitio web.</translation>
 <translation id="7514239104543605883">Copiar en tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -5978,7 +5978,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7582582252461552277">Establecer esta red como preferida</translation>
 <translation id="7582844466922312471">redes móviles</translation>
 <translation id="7583948862126372804">Recuento</translation>
-<translation id="7586051298768394542">No se han podido descargar los archivos de voz. El dictado seguirá funcionando con el envío tu voz a Google.</translation>
+<translation id="7586051298768394542">No se han podido descargar los archivos de voz. El dictado seguirá funcionando con el envío de tu voz a Google.</translation>
 <translation id="7586498138629385861">Chrome seguirá ejecutándose mientras estén abiertas aplicaciones de Chrome.</translation>
 <translation id="7589461650300748890">¡Atención! Ten cuidado.</translation>
 <translation id="7593653750169415785">Se ha bloqueado automáticamente porque has rechazado las notificaciones varias veces</translation>
@@ -6444,7 +6444,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8061091456562007989">Deshacer cambio</translation>
 <translation id="8061991877177392872">Parece que ya has configurado Voice Match con el Asistente en otro dispositivo. Las grabaciones anteriores se han utilizado para crear un modelo de voz en este dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 hoja de papel}other{{COUNT} hojas de papel}}</translation>
-<translation id="8062879968880283306">Escanea el código QR con la cámara del dispositivo o escribe el código de activación proporcionado por tu operador.</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
 <translation id="8063535366119089408">Ver archivo</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6865,7 +6864,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Gestionar otros usuarios</translation>
 <translation id="8554899698005018844">Sin idioma</translation>
-<translation id="8555195867496021627">No hay ningún perfil de eSIM disponible. <ph name="BEGIN_LINK" />Descarga un perfil nuevo<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella dactilar quede registrada.</translation>
 <translation id="8557930019681227453">Archivo de manifiesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
@@ -7045,7 +7043,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8743164338060742337">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
 <translation id="8746654918629346731">Ya has solicitado "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{¿Quieres subir un archivo a este sitio web?}other{¿Quieres subir # archivos a este sitio web?}}</translation>
-<translation id="8749556627204742888">Estás compartiendo esta red con otros usuarios de este dispositivo.</translation>
 <translation id="8749805710397399240">No se puede enviar tu pantalla. Comprueba el permiso de grabación de pantalla en Preferencias del Sistema.</translation>
 <translation id="8749863574775030885">Acceder a dispositivos USB desde un proveedor desconocido</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> solicita conectarse a un puerto serie</translation>
@@ -7107,7 +7104,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8808744862003883508">En esta página aparecen todas las extensiones instaladas en Chrome.</translation>
 <translation id="8809147117840417135">Turquesa claro</translation>
 <translation id="8811862054141704416">Acceso a micrófono en Crostini</translation>
-<translation id="8812552797690463522">Esta red se comparte contigo.</translation>
 <translation id="8812593354822910461">Borrar también los datos de navegación (<ph name="URL" />), lo que cerrará tu sesión en <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
 <translation id="8813698869395535039">No se puede iniciar sesión como <ph name="USERNAME" /></translation>
@@ -7319,7 +7315,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9021662811137657072">Virus detectado</translation>
 <translation id="902236149563113779">Los sitios suelen monitorizar la posición de la cámara para utilizarla en funciones de realidad aumentada, como las de algunos juegos o ciertos tipos de indicaciones de navegación.</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> ya utiliza esta cuenta en este ordenador.</translation>
-<translation id="9023009238991294202">Otros usuarios de este dispositivo pueden usar esta red.</translation>
 <translation id="9023015617655685412">Añadir esta pestaña a marcadores...</translation>
 <translation id="9023909777842748145">Aunque esta opción esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados, por ejemplo, con la seguridad y las actualizaciones del sistema.</translation>
 <translation id="9024127637873500333">&amp;Abrir en una pestaña nueva</translation>

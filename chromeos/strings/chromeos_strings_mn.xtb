@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">Нэмэлт хост</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>

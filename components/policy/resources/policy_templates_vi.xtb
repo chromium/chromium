@@ -437,17 +437,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Vui lòng xem tại https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Không cho phép sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
-<translation id="1590071725627230651">Chế độ cài đặt này cung cấp một số tùy chọn về khả năng sử dụng đối với trình duyệt <ph name="LACROS_NAME" />.
-
-      Nếu bạn đặt thành <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> hoặc không đặt chính sách này, thì người dùng có thể bật <ph name="LACROS_NAME" /> và đặt trình duyệt này làm trình duyệt chính. Chính sách <ph name="LACROS_ALLOWED_POLICY_NAME" /> vẫn có thể không cho phép <ph name="LACROS_NAME" />.
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, thì người dùng không thể sử dụng <ph name="LACROS_NAME" />. Chính sách <ph name="LACROS_ALLOWED_POLICY_NAME" /> bị bỏ qua.
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, thì <ph name="LACROS_NAME" /> được bật nhưng không phải là trình duyệt chính. Chính sách <ph name="LACROS_ALLOWED_POLICY_NAME" /> bị bỏ qua.
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, thì <ph name="LACROS_NAME" /> được bật và sẽ là trình duyệt chính. Chính sách <ph name="LACROS_ALLOWED_POLICY_NAME" /> bị bỏ qua.
-
-      Trong tương lai, bạn có thể dùng giá trị <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> để đặt <ph name="LACROS_NAME" /> làm trình duyệt duy nhất sử dụng được trên <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1599424828227887013">Bật tính năng Cách ly trang web cho nguồn gốc đã chỉ định trên thiết bị Android</translation>
 <translation id="159946228300522107">Nếu bạn đặt chính sách này thành True, thì Chrome sẽ phóng to cửa sổ đầu tiên trong lần chạy đầu.
 

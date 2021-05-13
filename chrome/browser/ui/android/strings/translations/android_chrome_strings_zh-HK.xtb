@@ -41,7 +41,6 @@
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">管理您正在追蹤的網站</translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
 <translation id="1285310382777185058">變更語言</translation>
 <translation id="1291207594882862231">清除記錄、Cookie、網站資料、快取…</translation>
@@ -550,7 +549,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4697543623252708062">不久後，您將會在開啟新分頁時看到 <ph name="SITE_NAME" /> 的內容。您可在「管理追蹤」中管理目前追蹤的網站。</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4714588616299687897">節省高達 60% 數據用量</translation>
-<translation id="4716066120200945007">正在追蹤</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
 <translation id="4720982865791209136">協助改善 Chrome。<ph name="BEGIN_LINK" />請填寫我們的問卷調查<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5939518447894949180">重設</translation>
 <translation id="5942872142862698679">使用 Google 搜尋內容</translation>
 <translation id="5951119116059277034">正在查看實際網頁</translation>
-<translation id="5951615825629292797">語言已就緒，請重新啟動 <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
 <translation id="5956665950594638604">在新分頁中開啟 Chrome 說明中心</translation>
 <translation id="5957442310066583693">如要查看熱門網站，請輕按「主按鈕」</translation>
@@ -1131,7 +1128,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
-<translation id="8362134094656482681">管理您感興趣的主題</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />已準備就緒。</translation>

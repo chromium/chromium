@@ -437,17 +437,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Non è consentito l'uso della modalità headless</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
-<translation id="1590071725627230651">Questa impostazione offre diverse opzioni relative alla disponibilità del browser <ph name="LACROS_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> o se non viene configurato, l'utente può attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale. È comunque possibile non consentire <ph name="LACROS_NAME" /> con il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, l'utente non potrà usare <ph name="LACROS_NAME" />. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> viene attivato, ma non è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> viene attivato ed è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Attiva isolamento dei siti per origini specificate su dispositivi Android</translation>
 <translation id="159946228300522107">Se il criterio è impostato su True, Chrome ingrandisce la prima finestra mostrata alla prima esecuzione.
 

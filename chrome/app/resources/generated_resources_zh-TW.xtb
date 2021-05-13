@@ -356,7 +356,6 @@
 <translation id="138784436342154190">要還原預設起始網頁嗎？</translation>
 <translation id="1388253969141979417">可以使用麥克風</translation>
 <translation id="1388728792929436380">「<ph name="DEVICE_TYPE" />」會在更新完成時重新啟動。</translation>
-<translation id="138900021244932468">找不到任何設定檔。如要設定新網路，請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼。</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
@@ -513,6 +512,7 @@
 <translation id="1545775234664667895">已安裝「<ph name="THEME_NAME" />」主題</translation>
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> 要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
+<translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 卡設定檔</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -549,6 +549,7 @@
 <translation id="1588438908519853928">一般</translation>
 <translation id="158849752021629804">需要家用網路</translation>
 <translation id="1588870296199743671">使用其他程式開啟連結...</translation>
+<translation id="1588919647604819635">右鍵資訊卡</translation>
 <translation id="1589055389569595240">顯示拼字與文法</translation>
 <translation id="1591679663873027990">授權 Parallels Desktop 存取 USB 裝置。Parallels Desktop 不會記住已移除的 USB 裝置。</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統重設 <ph name="DEVICE_TYPE" />。請先備份檔案再重新啟動。</translation>
@@ -984,6 +985,7 @@
 
 你可以在裝置上安裝 Family Link 應用程式，以管理這個帳戶的設定。我們已透過電子郵件將相關操作說明傳送給你。</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
+<translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="2044023416777079300">數據機尚未註冊</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
@@ -1322,6 +1324,7 @@
 <translation id="2395616325548404795">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務，但無法傳送資產和位置資訊。請前往管理控制台，為這個裝置手動輸入這些資訊。</translation>
 <translation id="2396387085693598316">管理員已封鎖「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="2396783860772170191">輸入 4 位數 PIN 碼 (0000-9999)</translation>
+<translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />行動設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知功能</translation>
 <translation id="2399939490305346086">安全金鑰登入資料</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
@@ -1738,6 +1741,7 @@
 <translation id="2844809857160214557">查看及管理列印工作</translation>
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="284805635805850872">要移除有害軟體嗎？</translation>
+<translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">清理失敗</translation>
 <translation id="2849936225196189499">重要</translation>
@@ -2049,6 +2053,7 @@
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192947282887913208">音訊檔</translation>
+<translation id="3197453258332670132">按一下滑鼠右鍵或長按畫面，即可查看所選文字的相關資訊</translation>
 <translation id="3199127022143353223">伺服器</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
@@ -2070,6 +2075,7 @@
 <translation id="3223531857777746191">重設按鈕</translation>
 <translation id="3225084153129302039">預設的紫色顯示圖片</translation>
 <translation id="3225319735946384299">程式碼簽署</translation>
+<translation id="3226487301970807183">切換靠左對齊側邊面板</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
 <translation id="3238192140106069382">正在連線及驗證</translation>
@@ -2339,6 +2345,7 @@
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519564332031442870">列印後端服務</translation>
+<translation id="3519938335881974273">另存網頁…</translation>
 <translation id="3521606918211282604">變更磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足，請釋出磁碟空間，然後再試一次。</translation>
 <translation id="3524965460886318643">匯出活動</translation>
@@ -2362,6 +2369,7 @@
 <translation id="3550593477037018652">中斷與行動數據網路的連線</translation>
 <translation id="3550915441744863158">Chrome 會自動更新，隨時讓你使用最新版本</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">結束時將遭到清除</translation>
 <translation id="3554493885489666172">你的裝置是由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
@@ -2414,6 +2422,7 @@
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3608576286259426129">使用者圖片預覽</translation>
+<translation id="3609277884604412258">快速搜尋</translation>
 <translation id="3610369246614755442">座架風扇需要維修</translation>
 <translation id="361106536627977100">Flash 資料</translation>
 <translation id="3611655097742243705">請前往 Play 商店尋找更多應用程式</translation>
@@ -3356,6 +3365,7 @@
 <translation id="4636682061478263818">雲端硬碟檔案</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多動作 (<ph name="EMAIL" />)</translation>
+<translation id="4637189644956543313">再次使用相機</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="4638930039313743000">啟用 ADB 偵錯</translation>
 <translation id="4641539339823703554">Chrome 無法設定系統時間。請檢查下方的時間，並視需要予以修正。</translation>
@@ -4106,6 +4116,7 @@
 <translation id="5499313591153584299">這個檔案可能對你的電腦有害。</translation>
 <translation id="5499453227627332024">現在可以升級 Linux 容器。你也可以稍後再從「設定」應用程式中升級。</translation>
 <translation id="5500709606820808700">今天已執行安全檢查</translation>
+<translation id="5501322521654567960">靠左對齊側邊面板</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">從 Firefox 匯入的書籤</translation>
 <translation id="5502915260472117187">孩子</translation>
@@ -5317,6 +5328,7 @@
 <translation id="6856348640027512653">不得使用虛擬實境裝置或資料</translation>
 <translation id="6856459657722366306">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="6856623341093082836">設定及調整觸控螢幕精確度</translation>
+<translation id="6857145580237920905">在執行 Powerwash 前移除 eSIM 卡設定檔</translation>
 <translation id="6857699260879628349">取得設定資訊</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">Proxy 設定...</translation>
@@ -5898,6 +5910,7 @@
 <translation id="7506541170099744506">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務。</translation>
 <translation id="7507207699631365376">查看這個供應商的<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">狀態回應程式憑證</translation>
+<translation id="7509246181739783082">驗證身分</translation>
 <translation id="7513029293694390567">使用已儲存的憑證自動登入網站。如果停用這項功能，每當你登入網站時，都必須向系統確認你的登入憑證。</translation>
 <translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
@@ -6430,7 +6443,6 @@
 <translation id="8061091456562007989">還原設定</translation>
 <translation id="8061991877177392872">你似乎已在其他裝置上設定 Google 助理的 Voice Match 功能。系統已使用先前的錄音檔在這部裝置上建立語音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 張紙}other{{COUNT} 張紙}}</translation>
-<translation id="8062879968880283306">請使用裝置相機掃描 QR 圖碼，或輸入電信業者提供的啟用代碼。</translation>
 <translation id="8063235345342641131">預設的綠色顯示圖片</translation>
 <translation id="8063535366119089408">查看檔案</translation>
 <translation id="8064279191081105977">「<ph name="GROUP_NAME" />」群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6850,7 +6862,6 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
-<translation id="8555195867496021627">沒有可用的 eSIM 卡設定檔。請在<ph name="BEGIN_LINK" />這裡<ph name="END_LINK" />下載新的設定檔。</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557930019681227453">資訊清單</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
@@ -7030,7 +7041,6 @@
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，連線</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>
-<translation id="8749556627204742888">你正在與這部裝置的其他使用者共用這個網路。</translation>
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕畫面錄製」權限。</translation>
 <translation id="8749863574775030885">存取製造商不明的 USB 裝置</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列埠連線</translation>
@@ -7092,7 +7102,6 @@
 <translation id="8808744862003883508">這個頁面會顯示 Chrome 目前安裝的所有擴充功能。</translation>
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
-<translation id="8812552797690463522">已與你共用這個網路。</translation>
 <translation id="8812593354822910461">一併清除瀏覽資料 (<ph name="URL" />)。這項操作會將你登出 <ph name="DOMAIN" />。<ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
@@ -7304,7 +7313,6 @@
 <translation id="9021662811137657072">系統偵測到病毒</translation>
 <translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
-<translation id="9023009238991294202">這個裝置的其他使用者可以使用這個網路。</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>
 <translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
 <translation id="9024127637873500333">在新分頁中開啟(&amp;O)</translation>

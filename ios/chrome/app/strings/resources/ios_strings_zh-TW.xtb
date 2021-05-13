@@ -188,6 +188,7 @@
 <translation id="2871695793448672541">目前為隱藏狀態的密碼</translation>
 <translation id="2876369937070532032">當網站具有安全性風險時，Chrome 會將你造訪的部分網頁網址傳送給 Google</translation>
 <translation id="288655811176831528">關閉分頁</translation>
+<translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務</translation>
 <translation id="2898963176829412617">新資料夾…</translation>
 <translation id="2916171785467530738">自動完成搜尋字詞與網址</translation>
 <translation id="291754862089661335">將這個方框對準 QR 圖碼或條碼</translation>
@@ -613,6 +614,7 @@
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
+<translation id="708844789167408367">登出並關閉同步功能…</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隱藏</translation>
@@ -627,6 +629,7 @@
 <translation id="7203585745079012652">語音答覆</translation>
 <translation id="7207383424303353046">新功能：將 Chrome 設為預設的瀏覽器應用程式，即可自動在 Chrome 中開啟網站。<ph name="BEGIN_LINK" />開啟設定<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡片暱稱無效</translation>
+<translation id="722454870747268814">新無痕式分頁</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
 <translation id="7291368939935408496">正在準備匯出密碼...</translation>

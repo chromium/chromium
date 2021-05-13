@@ -33,6 +33,7 @@
 <translation id="122699739164161391">எல்லாத் தாவல்களையும் மூடு</translation>
 <translation id="1229222343402087523">Chromeமில் ${searchPhrase} ஐத் தேடு</translation>
 <translation id="1231733316453485619">ஒத்திசைவை இயக்கவா?</translation>
+<translation id="1242044645101871359">மீண்டும் உள்நுழைக</translation>
 <translation id="1254117744268754948">கோப்புறையைத் தேர்வுசெய்யவும்</translation>
 <translation id="1265739287306757398">எப்படி என அறிக</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">வாசிப்புப் பட்டியலில் சேர்க்கப்பட்டது</translation>
 <translation id="1870148520156231997">கடவுச்சொல்லைக் காட்டும்</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
+<translation id="1894205589103145703">உள்நுழையும்போது ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="1911619930368729126">Google இயக்ககத்தில் பதிவேற்றுக</translation>
 <translation id="1923342640370224680">கடந்த மணிநேரம்</translation>
 <translation id="1941314575388338491">நகலெடுக்க, இருமுறை தட்டவும்.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="2074131957428911366">எவற்றை ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம்.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
+<translation id="2086623437239112659">சேமிக்கப்பட்ட உங்களின் உள்நுழைவுத் தகவல் காலாவதி ஆகியிருக்கக்கூடும்.</translation>
 <translation id="209018056901015185">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
 <translation id="2103075008456228677">history.google.comஐத் திற</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நகர்த்தப்பட்டன</translation>
@@ -185,6 +188,7 @@
 <translation id="2871695793448672541">மறைக்கப்பட்டுள்ளது, கடவுச்சொல்</translation>
 <translation id="2876369937070532032">ஆபத்தான தளங்களைப் பார்ப்பதால் உங்கள் பாதுகாப்பிற்கு ஆபத்து ஏற்படும்போது நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
 <translation id="288655811176831528">தாவலை மூடு</translation>
+<translation id="2893180576842394309">‘தேடல்’ மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="2898963176829412617">புதிய கோப்புறை…</translation>
 <translation id="2916171785467530738">தேடல்கள் மற்றும் URLகளைத் தன்னிரப்புதல்</translation>
 <translation id="291754862089661335">இந்த ஃபிரேமில் QR அல்லது பார் குறியீடு தெரியும்படி வைக்கவும்</translation>
@@ -399,6 +403,7 @@
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், வரலாறு மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
 <translation id="5140288047769711648">உங்களுக்காக Chrome இந்தக் கடவுச்சொல்லை நினைவில் வைத்திருக்கும். நீங்கள் நினைவில் வைக்கவேண்டிய அவசியமில்லை.</translation>
 <translation id="5150492518600715772">வேறு சாதனத்திற்கு அனுப்பு</translation>
+<translation id="5168414296986405587">iPadOSஸுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="5181140330217080051">பதிவிறக்குகிறது</translation>
 <translation id="5186185447130319458">தனிப்பட்டது</translation>
 <translation id="5188482106078495165">குக்கீகளுக்கான உங்கள் அமைப்பு அனைத்துத் தாவல்களுக்கும் பொருந்தும். திறந்திருக்கும் தாவலை புதிய அமைப்புக்கு உட்படுத்த, அதை ரெஃப்ரெஷ் செய்யவும்.</translation>
@@ -623,6 +628,7 @@
 <translation id="7203585745079012652">பதில்களை மீண்டும் படி</translation>
 <translation id="7207383424303353046">புதிது: Chromeமை உங்கள் இயல்பு உலாவி ஆப்ஸாக அமைப்பதன் மூலம் தளங்கள் தானாகவே அதில் திறக்கப்படும். <ph name="BEGIN_LINK" />அமைப்புகளைத் திற<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">கார்டின் புனைப்பெயர் தவறானது</translation>
+<translation id="722454870747268814">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="7265758999917665941">இந்தத் தளத்திற்கு எப்போதும் வேண்டாம்</translation>
 <translation id="7272437679830969316">அடையாளத்தைச் சரிபார்க்க முடியவில்லை. கடவுச்சொல் நகலெடுக்கப்படவில்லை.</translation>
 <translation id="7291368939935408496">கடவுச்சொற்கள் தயாராகின்றன...</translation>

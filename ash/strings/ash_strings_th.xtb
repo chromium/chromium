@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
 <translation id="1165712434476988950">ต้องรีสตาร์ทอุปกรณ์เพื่อใช้การอัปเดต</translation>
+<translation id="1170240434488307589">ไมโครโฟนของอุปกรณ์ปิดเสียงอยู่</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1761222317188459878">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
 <translation id="1782199038061388045">การแปล</translation>
 <translation id="1787955149152357925">ปิด</translation>

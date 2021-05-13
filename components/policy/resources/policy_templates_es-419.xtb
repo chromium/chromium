@@ -437,17 +437,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">No permitir el uso del modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
-<translation id="1590071725627230651">Esta configuración brinda diferentes opciones de disponibilidad para el navegador <ph name="LACROS_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> o no la estableces, el usuario podrá habilitar <ph name="LACROS_NAME" /> y seleccionarlo como navegador principal. <ph name="LACROS_NAME" /> puede inhabilitarse mediante la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, el usuario no podrá usar <ph name="LACROS_NAME" />. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Posteriormente, se podrá seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible en <ph name="PRODUCT_OS_NAME" /> a través del valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Habilitar el aislamiento de sitios para orígenes específicos en dispositivos Android</translation>
 <translation id="159946228300522107">Si estableces la política como verdadera, Chrome maximizará la primera ventana que se muestre en la primera ejecución.
 

@@ -359,7 +359,6 @@
 <translation id="138784436342154190">Да се врати стандардната страница на стартување?</translation>
 <translation id="1388253969141979417">Дозволено им е да го користат микрофонот</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ќе се рестартира кога ќе завршат ажурирањата.</translation>
-<translation id="138900021244932468">Не се откриени профили. За да поставите нова мрежа, скенирајте го QR-кодот со камерата на уредот или внесете код за активација од операторот.</translation>
 <translation id="139013308650923562">Дозволено им е да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="1390548061267426325">Отвори како обична картичка</translation>
 <translation id="1393283411312835250">Сонце и облаци</translation>
@@ -5930,6 +5929,7 @@
 <translation id="7506541170099744506">Вашиот <ph name="DEVICE_TYPE" /> е успешно запишан за управување на компанијата.</translation>
 <translation id="7507207699631365376">Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на операторов</translation>
 <translation id="7507930499305566459">Сертификат за статус на одговарач</translation>
+<translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7513029293694390567">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Ако е оневозможено, ќе ви се бара потврда пред секое најавување на веб-сајт.</translation>
 <translation id="7514239104543605883">Копирај на уредот</translation>
 <translation id="7514365320538308">Преземи</translation>
@@ -6461,7 +6461,6 @@
 <translation id="8061091456562007989">Врати како што беше</translation>
 <translation id="8061991877177392872">Се чини дека веќе сте ја поставиле Voice Match за вашиот „Помошник на Google“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел за уредов.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартија}one{{COUNT} лист хартија}other{{COUNT} листови хартија}}</translation>
-<translation id="8062879968880283306">Скенирајте го QR-кодот со камерата на уредот или внесете код за активација од операторот.</translation>
 <translation id="8063235345342641131">Стандарден зелен аватар</translation>
 <translation id="8063535366119089408">Прикажи датотека</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6885,7 +6884,6 @@
 <translation id="8551588720239073785">Поставки за датум и време</translation>
 <translation id="8553342806078037065">Управувај со другите луѓе</translation>
 <translation id="8554899698005018844">Нема јазик</translation>
-<translation id="8555195867496021627">Нема достапни eSIM-профили. Преземете нов профил <ph name="BEGIN_LINK" />тука.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">Допирајте го безбедносниот клуч додека не се сними вашиот отпечаток</translation>
 <translation id="8557930019681227453">Манифест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
@@ -7065,7 +7063,6 @@
 <translation id="8743164338060742337">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, поврзи</translation>
 <translation id="8746654918629346731">Веќе побаравте „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="874689135111202667">{0,plural, =1{Дали да се прикачи една датотека на сајтов?}one{Дали да се прикачи # датотека на сајтов?}other{Дали да се прикачат # датотеки на сајтов?}}</translation>
-<translation id="8749556627204742888">Ја споделувате мрежава со други корисници на уредов.</translation>
 <translation id="8749805710397399240">Не може да се емитува екранот. Проверете ја дозволата за „Снимање на екранот“ во „Поставките за системот“.</translation>
 <translation id="8749863574775030885">Пристапувајте до USB-уреди од непознат продавач</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сака да се поврзе со сериска порта</translation>
@@ -7128,7 +7125,6 @@
 <translation id="8808744862003883508">На страницава, може да ги видите сите екстензии инсталирани во Chrome.</translation>
 <translation id="8809147117840417135">Светла синозелена</translation>
 <translation id="8811862054141704416">Пристап до микрофонот на Crostini</translation>
-<translation id="8812552797690463522">Мрежава се споделува со вас.</translation>
 <translation id="8812593354822910461">Избриши ги и податоците од прелистувањето (<ph name="URL" />). Тоа ќе ве одјави од <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Потсети ме подоцна</translation>
 <translation id="8813698869395535039">Не може да се најави на <ph name="USERNAME" /></translation>
@@ -7340,7 +7336,6 @@
 <translation id="9021662811137657072">Откриен е вирус</translation>
 <translation id="902236149563113779">Сајтовите обично ја следат позицијата на камерата за AR-функциите како што се игрите или упатствата за внимание</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> веќе ја користи сметкава на компјутеров.</translation>
-<translation id="9023009238991294202">Другите корисници на уредов може да ја користат мрежава.</translation>
 <translation id="9023015617655685412">Обележете ја картичкава…</translation>
 <translation id="9023909777842748145">Исклучувањето на функцијава нема да влијае врз способноста на уредот да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста.</translation>
 <translation id="9024127637873500333">&amp;Отвори во нова картичка</translation>

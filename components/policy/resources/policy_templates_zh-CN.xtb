@@ -427,17 +427,6 @@
       请参阅 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="1587585749332985896">不允许使用无头模式</translation>
 <translation id="1588240398285670601">浏览器设置</translation>
-<translation id="1590071725627230651">此设置旨在为 <ph name="LACROS_NAME" /> 浏览器提供多个可用性选项。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”或未设置此政策，则用户可以启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器。仍可使用 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁用 <ph name="LACROS_NAME" />。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，则用户无法使用 <ph name="LACROS_NAME" />。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />”，则会启用 <ph name="LACROS_NAME" />，但不会将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />”，则会启用 <ph name="LACROS_NAME" />，并将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
 <translation id="1599424828227887013">在 Android 设备上为指定的来源启用网站隔离功能</translation>
 <translation id="159946228300522107">如果此政策设为 True，Chrome 会在首次运行时将所显示的第一个窗口最大化。
 
@@ -3323,6 +3312,19 @@
 
       如果此政策未设置，用户可以控制卡片公开范围。默认情况下，卡片会处于可见状态。
       </translation>
+<translation id="5455888515928026628">在用户通过锁定屏幕登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
+
+      如果设为 -2，此政策会与登录屏幕离线登录时间限制（来自 <ph name="POLICY" />）的值相匹配。
+
+      如果未设置或值设为 -1，此政策不会强制在锁定屏幕上执行在线身份验证，而是会允许用户离线验证身份，除非有此政策之外的其他理由强制要求在线验证身份。
+
+      如果值设为 0，此政策将一律要求在线验证身份。
+
+      如果设为任何其他值，此政策即是指定了从上次在线验证身份到下次必须再次在锁定屏幕上通过在线验证身份进行登录的天数。
+
+      此政策仅会影响那些使用 SAML 验证身份的用户。
+
+      此政策的值应以天为单位。</translation>
 <translation id="5457065417344056871">在浏览器中启用访客模式</translation>
 <translation id="5457387982448145430">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入已保存的密码。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何已保存的密码。
 
@@ -5941,6 +5943,19 @@
 <translation id="8917070657147922192">允许用户管理已安装的 CA 证书。</translation>
 <translation id="8919100556245407184">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在自动更新到期日已过多少天后强制用户退出登录</translation>
 <translation id="8919369436496201075">允许设备接收 LTS 更新</translation>
+<translation id="8930064580550462145">在用户通过锁定屏幕登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
+
+      如果设为 -2，此政策会与登录屏幕离线登录时间限制（来自 <ph name="POLICY" />）的值相匹配。
+
+      如果未设置或值设为 -1，此政策不会强制在锁定屏幕上执行在线身份验证，而是会允许用户离线验证身份，除非有此政策之外的其他理由强制要求在线验证身份。
+
+      如果值设为 0，此政策将一律要求在线验证身份。
+
+      如果设为任何其他值，此政策即是指定了从上次在线验证身份到下次必须再次在锁定屏幕上通过在线验证身份进行登录的天数。
+
+      此政策会影响那些使用 GAIA（不使用 SAML）验证身份的用户。
+
+      此政策的值应以天为单位。</translation>
 <translation id="8931555638815157255">如果此政策已启用或未设置，已注册的设备将会定期报告其操作系统和固件版本。
 
       如果此政策已停用，已注册的设备将不会报告版本信息。</translation>

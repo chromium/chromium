@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">यो पृष्ठले यसो भन्छ</translation>
 <translation id="153384715582417236">अहिलेलाई यति मात्र!</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
+<translation id="1539840569003678498">रिपोर्ट पठाइएको मिति र समय:</translation>
 <translation id="154408704832528245">डेलिभरी गर्ने ठेगाना छनौट गर्नुहोस्</translation>
 <translation id="1549470594296187301">यो सुविधा प्रयोग गर्न JavaScript सक्रिय गर्नुपर्छ।</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
+<translation id="1696290444144917273">भर्चुअल कार्डका विवरण हेर्नुहोस्</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{ यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई भोलिबाट मानिन्छ। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईँको जडानमा अवरोध गरिरहेको कारणले यसो भएको हुन सक्छ।}other{ यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई # दिनबाट शुरू हुन्छ भनेर मानिन्छ। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईँको जडानमा अवरोध गरिरहेको कारणले यसो भएको हुन सक्छ।}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">मेलबक्स ३</translation>
 <translation id="1718029547804390981">कागजात एनोटेसन गर्नै नमिल्ने गरी ठुलो छ</translation>
 <translation id="1721424275792716183">* क्षेत्र आवश्यक छ</translation>
+<translation id="1727613060316725209">प्रमाणपत्र वैध छ</translation>
 <translation id="1727741090716970331">कार्डको मान्य नम्बर थप्नुहोस्</translation>
 <translation id="1728677426644403582">तपाईं एउटा वेब पृष्ठको स्रोत हेर्दै हुनुहुन्छ</translation>
 <translation id="173080396488393970">यस प्रकारको कार्डलाई समर्थन छैन</translation>
@@ -655,6 +658,7 @@
 <translation id="3428151540071562330">DnsOverHttpsTemplates सर्भरका टेम्प्लेटका एक वा सोभन्दा बढी URI हरू अमान्य भएकाले तिनको प्रयोग गरिने छैन।</translation>
 <translation id="3431636764301398940">यस कार्डलाई यस यन्त्रमा सेभ गर्नुहोस्</translation>
 <translation id="3432601291244612633">पृष्ठ बन्द गर्नुहोस्</translation>
+<translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3435896845095436175">सक्षम बनाउनुहोस्</translation>
 <translation id="3438829137925142401">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -698,6 +702,7 @@
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
 <translation id="3590643883886679995">तपाईं इन्कोग्निटो मोडबाट बाहिरिएपछि साइन इन गर्न चाहिने डेटा यो डिभाइसमा भण्डारण गरिने छ।</translation>
+<translation id="359126217934908072">महिना/साल:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">तपाईंका प्रशासकले रोक लगाउनुभएको एप</translation>
@@ -753,6 +758,7 @@
 <translation id="3781428340399460090">गाढा गुलाबी</translation>
 <translation id="3783418713923659662">मास्टरकार्ड</translation>
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
+<translation id="3787675388804467730">भर्चुअल कार्ड नम्बर</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> मा म्याद सकिन्छ</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
@@ -1418,6 +1424,7 @@
 <translation id="6289939620939689042">पृष्ठको रङ</translation>
 <translation id="6290238015253830360">तपाईंका सुझाव गरिएका लेखहरू यहाँ देखिन्छन्</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Chrome को Google सहायक रोकिँदै छ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>
 <translation id="6312113039770857350">वेबपृष्ठ उपलब्ध छैन</translation>
@@ -1550,6 +1557,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा असुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
 <translation id="6891596781022320156">नीति तह समर्थित छैन।</translation>
+<translation id="6895143722905299846">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
@@ -1588,6 +1596,7 @@
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
+<translation id="7030436163253143341">प्रमाणपत्र वैध छैन</translation>
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>
 <translation id="7050187094878475250">तपाईं <ph name="DOMAIN" /> मा पुग्न प्रयास गर्नुभयो, तर सर्भरले एउटा प्रमाणपत्र प्रस्तुत गर्दछ जसको वैधानिकता अवधि भरोसा योग्य हुन निकै लामो छ।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यो कार्ड अहिले सुरक्षित गर्न सकिँदैन}other{यी कार्डहरू अहिले सुरक्षित गर्न सकिँदैन}}</translation>

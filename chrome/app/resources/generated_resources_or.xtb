@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS ଅପଡେଟ୍ ଆବଶ୍ୟକ</translation>
 <translation id="1067048845568873861">ସୃଷ୍ଟିହେଲା:</translation>
 <translation id="1067922213147265141">ଅନ୍ୟାନ୍ୟ Google ସେବା</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> ନାମକ eSIM ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1070377999570795893">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରେ ଥିବା ପ୍ରୋଗ୍ରାମ୍ ଅନ୍ୟ ଏକ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିଥାଏ, ଯାହା Chromeର କାର୍ଯ୍ୟ କରିବା ମାର୍ଗକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -980,6 +981,7 @@
 ଆପଣ ଆପଣଙ୍କର ଡିଭାଇସ୍‌‌ରେ Family Link ଆପ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରି ଏହି ଆକାଉଣ୍ଟର ସେଟିଂସ୍ ପରିଚାଳନା କରିପାରିବେ।  ଆମେ ଏକ ଇମେଲ୍‌ରେ ଆପଣଙ୍କୁ ନିର୍ଦ୍ଦେଶାବଳୀ ପଠାଇଛୁ।</translation>
 <translation id="2040460856718599782">ଓହୋ!  ଆପଣଙ୍କୁ ପ୍ରମାଣିକୃତ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି।  ଦୟାକରି ଦୁଇଥର ଆପଣଙ୍କର ସାଇନ୍‌-ଇନ୍‌ ବିଶ୍ୱସନୀୟତା ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2044014337866019681">ଦୟାକରି ସେସନକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣ <ph name="ACCOUNT" />କୁ ଯାଞ୍ଚ କରୁଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
+<translation id="2044023416777079300">ମୋଡେମ୍ ପଞ୍ଜିକୃତ ହୋଇନାହିଁ</translation>
 <translation id="204497730941176055">Microsoft ସର୍ଟିଫିକେଟ୍‍ ଟେମ୍ପଲେଟ୍‍ର ନାମ</translation>
 <translation id="2045117674524495717">କୀବୋର୍ଡ ସର୍ଟକଟ ସାହାଯ୍ୟକାରୀ</translation>
 <translation id="2045969484888636535">କୁକୀଗୁଡ଼ିକୁ ଅବରୋଧ କରିବା ପ୍ରକ୍ରିୟା ଜାରି ରଖନ୍ତୁ</translation>
@@ -3093,6 +3095,7 @@
 <translation id="4364830672918311045">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="4366138410738374926">ପ୍ରିଣ୍ଟିଂ ଆରମ୍ଭ ହୋଇଛି</translation>
 <translation id="4370975561335139969">ଆପଣ ଲେଖିଥିବା ଇମେଲ୍ ଓ ପାସ୍‍ୱର୍ଡ ମେଳ ହେଉନାହିଁ</translation>
+<translation id="4373966964907728675">କାଷ୍ଟିଂ ଡେସ୍କଟପ୍</translation>
 <translation id="4374831787438678295">Linux ଇନ୍‍ଷ୍ଟଲର୍</translation>
 <translation id="4375035964737468845">ଡାଇନ୍‌ଲୋଡ୍‍ ହୋ‍ଇଥିବା ଫାଇଲ୍‍ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="4376226992615520204">ଲୋକେସନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -4079,6 +4082,7 @@
 <translation id="5486261815000869482">ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ <ph name="TAB_NAME" /> ସହ ସେୟାର୍ କରୁଛି।</translation>
 <translation id="5486561344817861625">ବ୍ରାଉଜର୍ ରିଷ୍ଟାର୍ଟ ଅନୁକରଣ କରନ୍ତୁ</translation>
+<translation id="5487460042548760727">ପ୍ରୋଫାଇଲର ନାମକୁ <ph name="PROFILE_NAME" />ରେ ବଦଳାନ୍ତୁ</translation>
 <translation id="5487521232677179737">ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="5488093641312826914"><ph name="COPIED_ITEM_NAME" /> / କପି ହୋ‍ଇଗଲା</translation>
 <translation id="5488508217173274228">ଏନକ୍ରିପ୍ସନ୍ ବିକଳ୍ପଗୁଡ଼ିକ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
@@ -4820,6 +4824,7 @@
 <translation id="6308937455967653460">ଲି&amp;ଙ୍କ ଏହିଭାବେ ସଞ୍ଚୟ କରନ୍ତୁ...</translation>
 <translation id="6309443618838462258">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ଇନପୁଟ୍ ପଦ୍ଧତିକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="6309510305002439352">ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="6310141306111263820">eSIM ପ୍ରୋଫାଇଲକୁ ଇନଷ୍ଟଲ୍ କରାଯାଇପାରିଲା ନାହିଁ। ସହାୟତା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6311220991371174222">Chrome ଆରମ୍ଭ କରିପାରିବେ ନାହିଁ କାରଣ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। Chrome ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6312403991423642364">ଅଜଣା ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ସୁରକ୍ଷା ଯାଞ୍ଚ 1 ଦିନ ପୂର୍ବେ ଚାଲିଥିଲା}other{ସୁରକ୍ଷା ଯାଞ୍ଚ {NUM_DAYS} ଦିନ ପୂର୍ବେ ଚାଲିଥିଲା}}</translation>
@@ -5892,6 +5897,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7506541170099744506">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସଫଳତାପୂର୍ବକ ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ପରିଚାଳନା ପାଇଁ ନାମାଙ୍କିତ କରାଯାଇଛି।</translation>
 <translation id="7507207699631365376">ଏହି ପ୍ରଦାନକାରୀଙ୍କର <ph name="BEGIN_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
 <translation id="7507930499305566459">ସ୍ଥିତି ପ୍ରତିକ୍ରିୟାଦାତା ସାର୍ଟିଫିକେଟ୍</translation>
+<translation id="7509246181739783082">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7513029293694390567">ଷ୍ଟୋର୍ ଥିବା ବିଶ୍ୱସନୀୟତା ବ୍ୟବହାର କରି ୱେବ୍‌ସାଇଟ୍‌ରେ ସ୍ୱଚାଳିତରୂପେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ। ଯଦି ଏହା ଅକ୍ଷମ କରାଯାଏ, ତେବେ ଏକ ୱେବ୍‌ସାଇଟ୍‌ରେ ସାଇନ୍ ଇନ୍ କରିବା ପୂର୍ବରୁ ପ୍ରତ୍ୟେକଥର ଆପଣଙ୍କୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ କୁହାଯିବ।</translation>
 <translation id="7514239104543605883">ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ କପି କରନ୍ତୁ</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
@@ -5958,6 +5964,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7582582252461552277">ଏହି ନେଟ୍‌ୱାର୍କକୁ ଅଗ୍ରାଧିକାର ଦିଅନ୍ତୁ</translation>
 <translation id="7582844466922312471">ମୋବାଇଲ ଡାଟା</translation>
 <translation id="7583948862126372804">ଗଣନା</translation>
+<translation id="7586051298768394542">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। Googleକୁ ଆପଣଙ୍କ ଭଏସ୍ ପଠାଇ ଡିକ୍ଟେସନ୍ କାମ କରିବା ଜାରି ରଖିବ।</translation>
 <translation id="7586498138629385861">Chrome ଆପ୍ସ ଖୋଲାଥିବା ସମୟରେ Chrome ଚାଲୁ ସ୍ଥିତିରେ ରହିବ।</translation>
 <translation id="7589461650300748890">ୱାହୋ, ସେଠାରେ ଅଛି। ସତର୍କ ରୁହନ୍ତୁ।</translation>
 <translation id="7593653750169415785">ଆପଣ କିଛି ଥର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅସ୍ୱୀକାର କରିଥିବା ଯୋଗୁଁ ସ୍ୱଚାଳିତ ଭାବରେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -6421,7 +6428,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8061091456562007989">ଏହାକୁ ପୂର୍ବ ଭଳି କରନ୍ତୁ</translation>
 <translation id="8061991877177392872">ଏପରି ଜଣାପଡ଼ୁଛି ଯେ ଆପଣ ପୂର୍ବରୁ ଅନ୍ୟ ଏକ ଡିଭାଇସରେ ଆପଣଙ୍କର Assistant ସାହାଯ୍ୟରେ Voice Match ସେଟ୍ ଅପ୍ କରିଛନ୍ତି। ଏହି ଡିଭାଇସରେ ଏକ ଭଏସ୍ ମଡେଲ୍ ତିଆରି କରିବାକୁ ଏହି ପୂର୍ବବର୍ତ୍ତୀ ରେକର୍ଡିଂଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇଛି।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{କାଗଜର 1ଟି ସିଟ୍}other{କାଗଜର {COUNT}ଟି ସିଟ୍}}</translation>
-<translation id="8062879968880283306">ଡିଭାଇସର କ୍ୟାମେରା ବ୍ୟବହାର କରି QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସକ୍ରିୟକରଣ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="8063235345342641131">ଡିଫଲ୍ଟ ସବୁଜ ଅବତାର</translation>
 <translation id="8063535366119089408">ଫାଇଲ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="8064279191081105977">ଗୋଷ୍ଠୀ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6544,6 +6550,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8191230140820435481">ନିଜର ଆପ୍ସ, ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଓ ଥିମ୍‍ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8195027750202970175">ଡିସ୍କରେ ଆକାର</translation>
 <translation id="8198323535106903877">ଆମେ ଆପଣଙ୍କ ପାଇଁ ସେହି <ph name="NUMBER_OF_APPS" />ଟି ଆପ୍‌ ଇନଷ୍ଟଲ୍‌ କରିବୁ</translation>
+<translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
 <translation id="8199300056570174101">ନେଟ୍‍ୱାର୍କ (ସେବା) ଏବଂ ଡିଭାଇସ୍‍ର ଗୁଣଧର୍ମ</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> ଆଲବମ୍ ଚୟନ କରନ୍ତୁ</translation>
@@ -6840,7 +6847,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8551588720239073785">ତାରିଖ ଏବଂ ସମୟ ସେଟିଂସ୍</translation>
 <translation id="8553342806078037065">ଅନ୍ୟ ଲୋକମାନଙ୍କୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8554899698005018844">କୌଣସି ଭାଷା ନାହିଁ</translation>
-<translation id="8555195867496021627">କୌଣସି eSIM ପ୍ରୋଫାଇଲ୍ ଉପଲବ୍ଧ ନାହିଁ। <ph name="BEGIN_LINK" />ଏଠାରେ<ph name="END_LINK" /> ଏକ ନୂଆ ପ୍ରୋଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରନ୍ତୁ।</translation>
 <translation id="8557022314818157177">ଆପଣଙ୍କର ଟିପଚିହ୍ନ କ୍ୟାପଚର୍ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ ସୁରକ୍ଷା କୀକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="8557930019681227453">ମାନିଫେଷ୍ଟ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
@@ -7020,7 +7026,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ର ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8746654918629346731">ଆପଣ ପୂର୍ବରୁ "<ph name="EXTENSION_NAME" />" ଅନୁରୋଧ କରିଛନ୍ତି</translation>
 <translation id="874689135111202667">{0,plural, =1{ଏହି ସାଇଟ୍‌କୁ ଏକ ଫାଇଲ୍‌ ଅପ୍‌ଲୋଡ୍‌ କରିବେ କି?}other{ଏହି ସାଇଟ୍‌କୁ #ଟି ଫାଇଲ୍‌ ଅପ୍‌ଲୋଡ୍‌ କରିବେ କି?}}</translation>
-<translation id="8749556627204742888">ଏହି ଡିଭାଇସର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସହିତ ଆପଣ ଏହି ନେଟୱାର୍କ ସେୟାର୍ କରୁଛନ୍ତି।</translation>
 <translation id="8749805710397399240">ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ କାଷ୍ଟ କରିବାକୁ ଅସମର୍ଥ। ସିଷ୍ଟମ୍ ପସନ୍ଦଗୁଡ଼ିକରେ ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ଅନୁମତି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8749863574775030885">ଏକ ଅଜ୍ଞାତ ଭେଣ୍ଡର ID ମାଧ୍ୟମରେ USB ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ଏକ ସିରିଏଲ୍ ପୋର୍ଟକୁ ସଂଯୋଗ କରିବାକୁ ଚାହୁଁଛି</translation>
@@ -7082,7 +7087,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8808744862003883508">ଏହି ପୃଷ୍ଠାରେ ଆପଣ Chromeରେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ସମସ୍ତ ଏକ୍ସଟେନ୍‍ସନ୍ ଦେଖିପାରିବେ।</translation>
 <translation id="8809147117840417135">ହାଲୁକା ଟିଲ୍</translation>
 <translation id="8811862054141704416">Crostini ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍</translation>
-<translation id="8812552797690463522">ଏହି ନେଟୱାର୍କ ଆପଣଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଇଛି।</translation>
 <translation id="8812593354822910461">ଆପଣଙ୍କୁ <ph name="DOMAIN" />ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦେବା ବ୍ରାଉଜିଂ ଡାଟା (<ph name="URL" />)କୁ ମଧ୍ୟ ଖାଲି କରନ୍ତୁ। <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">ମୋତେ ପରେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />ରେ ସାଇନ୍ ଇନ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -7127,6 +7131,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8847523528195140327">କଭର୍ ବନ୍ଦ ଥିଲେ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ଲୁକ୍କାୟିତ</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ନାମକ eSIM ପ୍ରୋଫାଇଲକୁ କାଢ଼ିଦେବାର ପ୍ରକ୍ରିୟାକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="8850251000316748990">ଅଧିକ ଦେଖନ୍ତୁ...</translation>
 <translation id="885246833287407341">API ଫଙ୍କ୍‌ସନ୍‌ର ତର୍କ</translation>
 <translation id="8853586775156634952">ଏହି କାର୍ଡ କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ସେଭ୍ କରାଯିବ</translation>
@@ -7293,7 +7298,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9021662811137657072">ଭାଇରସ୍ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="902236149563113779">ଗେମ୍ କିମ୍ବା ହେଡସ୍-ଅପ୍ ଦିଗନିର୍ଦ୍ଦେଶଗୁଡ଼ିକ ପରି, AR ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ କ୍ୟାମେରାର ସ୍ଥିତି ଟ୍ରାକ୍ କରିଥାଏ</translation>
 <translation id="9022847679183471841">ଏହି ଆକାଉଣ୍ଟ ପୂର୍ବରୁ ଏହି କମ୍ପ୍ୟୁଟର୍‍‍ରେ <ph name="AVATAR_NAME" />ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଇଛି।</translation>
-<translation id="9023009238991294202">ଏହି ଡିଭାଇସ୍‌ର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାମାନେ ଏହି ନେଟ୍‌ୱର୍କ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="9023015617655685412">ଏହି ଟାବ୍ ବୁକ୍‍ମାର୍କ କରନ୍ତୁ...</translation>
 <translation id="9023909777842748145">ଏହି ଫିଚରକୁ ବନ୍ଦ କରିବା ଫଳରେ ସିଷ୍ଟମ୍ ଅପଡେଟ୍ ଓ ସୁରକ୍ଷା ପରି ଆପଣଙ୍କ ଡିଭାଇସର ଅତ୍ୟାବଶ୍ୟକ ସେବା ପାଇଁ ଆବଶ୍ୟକୀୟ ସୂଚନା ପଠାଇବା କ୍ଷମତାକୁ ପ୍ରଭାବିତ କରେ ନାହିଁ।</translation>
 <translation id="9024127637873500333">&amp;ନୂଆ ଟାବ୍‌ରେ ଖୋଲନ୍ତୁ</translation>

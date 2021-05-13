@@ -436,17 +436,6 @@
       Докладніше на сторінці https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Заборонити використовувати режим headless</translation>
 <translation id="1588240398285670601">Налаштування веб-переглядача</translation>
-<translation id="1590071725627230651">Це налаштування пропонує кілька варіантів доступності для веб-переглядача <ph name="LACROS_NAME" />.
-
-      Якщо правило не налаштувати або вибрати для нього значення <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, користувач зможе ввімкнути <ph name="LACROS_NAME" /> і зробити його основним веб-переглядачем. <ph name="LACROS_NAME" /> усе ще можна буде заборонити за допомогою правила <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Якщо для правила вибрати значення <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, користувач не зможе працювати в <ph name="LACROS_NAME" />. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> ігноруватиметься.
-
-      Якщо для правила вибрати значення <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> буде ввімкнено, але він не стане основним веб-переглядачем. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> ігноруватиметься.
-
-      Якщо для правила вибрати значення <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> буде ввімкнено й вибрано основним веб-переглядачем. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> ігноруватиметься.
-
-      У майбутньому буде можливість зробити <ph name="LACROS_NAME" /> єдиним доступним веб-переглядачем в <ph name="PRODUCT_OS_NAME" />, вибравши значення <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Увімкнути Ізоляцію сайтів для вказаних джерел на пристроях Android</translation>
 <translation id="159946228300522107">Якщо для цього правила вибрано значення True, Chrome розгортає перше вікно, яке відкривається під час першого запуску.
 

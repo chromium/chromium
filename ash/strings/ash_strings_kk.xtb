@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> есептік жазбасы туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1165712434476988950">Жаңарту күшіне енуі үшін, құрылғыны қайта іске қосу қажет.</translation>
+<translation id="1170240434488307589">Құрылғы микрофонының дыбысы өшірілді.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">Енгізу әдістерін әкімші конфигурациялайды.</translation>
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
 <translation id="1761222317188459878">Желі байланысын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
 <translation id="1771761307086386028">Оңға айналдыру</translation>
 <translation id="1782199038061388045">аударма</translation>
 <translation id="1787955149152357925">Өшірулі</translation>

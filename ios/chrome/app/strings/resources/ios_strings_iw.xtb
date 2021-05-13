@@ -112,7 +112,7 @@
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
-<translation id="2086623437239112659">ייתכן שהפרטים השמורים לכניסה לחשבון לא עדכניים.</translation>
+<translation id="2086623437239112659">יכול להיות שהפרטים שנשמרו לכניסה לחשבון לא עדכניים.</translation>
 <translation id="209018056901015185">טעינת גרסת האתר למחשב</translation>
 <translation id="2103075008456228677">‏פתיחת history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים הועברו</translation>
@@ -188,6 +188,7 @@
 <translation id="2871695793448672541">נסתר, סיסמה</translation>
 <translation id="2876369937070532032">‏שולחת ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, אם מתגלה סיכון אבטחה</translation>
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
+<translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2898963176829412617">תיקייה חדשה…</translation>
 <translation id="2916171785467530738">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
 <translation id="291754862089661335">‏יש למקם את קוד ה-QR או הברקוד במסגרת זו</translation>
@@ -628,6 +629,7 @@
 <translation id="7203585745079012652">משוב לתשובות על-ידי דיבור</translation>
 <translation id="7207383424303353046">‏חדש: אם Chrome יוגדר כאפליקציית הדפדפן בברירת מחדל, אתרים ייפתחו בו באופן אוטומטי. <ph name="BEGIN_LINK" />לפתיחת ההגדרות<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">כינוי הכרטיס לא חוקי</translation>
+<translation id="722454870747268814">כרטיסייה חדשה לגלישה בסתר</translation>
 <translation id="7265758999917665941">אף פעם עבור אתר זה</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="7291368939935408496">הכנת הסיסמאות מתבצעת...</translation>

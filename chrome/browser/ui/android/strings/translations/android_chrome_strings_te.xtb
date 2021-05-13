@@ -41,7 +41,6 @@
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ను షేర్ చేయడం సాధ్యపడలేదు</translation>
-<translation id="1276279242344007853">మీరు ఫాలో చేస్తున్న సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
 <translation id="1285310382777185058">భాషను మార్చండి</translation>
 <translation id="1291207594882862231">చరిత్ర, కుక్కీలు, సైట్ డేటా, కాష్‌ను తీసివేస్తుంది…</translation>
@@ -533,6 +532,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
+<translation id="4615382002648696011">ఫాలో చేస్తున్నారు, చదవని కథనాలు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
@@ -549,7 +549,6 @@
 <translation id="4697543623252708062">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. 'ఫాలోలను మేనేజ్ చేయి'లో మీరు ఫాలో చేసే సైట్‌లను కంట్రోల్ చేయవచ్చు.</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైల్‌లు</translation>
 <translation id="4714588616299687897">మీ డేటాలో 60% వరకు ఆదా చేసుకోండి</translation>
-<translation id="4716066120200945007">ఫాలో చేస్తున్నారు</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />లో తెరువు</translation>
 <translation id="4720982865791209136">Chromeను మెరుగుపరచడంలో సహాయపడండి. <ph name="BEGIN_LINK" />సర్వేలో పాల్గొనండి<ph name="END_LINK" /></translation>
@@ -751,7 +750,6 @@
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
 <translation id="5942872142862698679">శోధన కోసం Googleను ఉపయోగిస్తోంది</translation>
 <translation id="5951119116059277034">లైవ్ పేజీని చూస్తున్నారు</translation>
-<translation id="5951615825629292797">భాష సిద్ధంగా ఉంది, <ph name="APP_NAME" />ను రీస్టార్ట్ చేయండి</translation>
 <translation id="5952764234151283551">మీరు చేరుకోవాలని ప్రయత్నిస్తున్న పేజీ URLని Googleకి పంపుతుంది</translation>
 <translation id="5956665950594638604">Chrome సహాయ కేంద్రాన్ని కొత్త ట్యాబ్‌లో తెరవండి</translation>
 <translation id="5957442310066583693">మీ టాప్ సైట్‍లు చూడటానికి, హోమ్ బటన్‍ను ట్యాప్ చేయండి</translation>
@@ -1130,7 +1128,6 @@
 <translation id="834313815369870491">ఈ సైట్‌లను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="8349013245300336738">వినియోగించిన డేటా పరిమాణం ద్వారా క్రమీకరించు</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
-<translation id="8362134094656482681">మీరు ఆసక్తిని కలిగి ఉన్న అంశాలను మేనేజ్ చేయండి</translation>
 <translation id="8364299278605033898">ప్రసిద్ధ వెబ్‌సైట్‌లను చూడండి</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> సిద్ధంగా ఉంది.</translation>
@@ -1179,6 +1176,7 @@
 <translation id="8659579665266920523">Chromeతో సెర్చ్ చేయడం ఎలా</translation>
 <translation id="8662811608048051533">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది.</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
+<translation id="8676789164135894283">సైన్ ఇన్ వెరిఫికేషన్‌లు</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{సిగ్నల్ సామర్థ్యం స్థాయి: # బార్}other{సిగ్నల్ సామర్థ్యం స్థాయి: # బార్‌లు}}</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>

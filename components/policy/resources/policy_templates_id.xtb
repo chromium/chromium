@@ -436,17 +436,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Buka https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Jangan izinkan penggunaan Mode Headless</translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
-<translation id="1590071725627230651">Setelan ini memberikan beberapa opsi ketersediaan untuk browser <ph name="LACROS_NAME" />.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> atau tidak disetel, pengguna dapat mengaktifkan <ph name="LACROS_NAME" /> dan menjadikannya sebagai browser utama. <ph name="LACROS_NAME" /> bisa tetap tidak diizinkan dengan kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, pengguna tidak dapat menggunakan <ph name="LACROS_NAME" />. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan tetapi bukan sebagai browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan dan menjadi browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Mengaktifkan Isolasi Situs untuk asal yang ditentukan di perangkat Android</translation>
 <translation id="159946228300522107">Jika kebijakan ditetapkan ke Benar (True), Chrome akan memaksimalkan jendela pertama yang ditampilkan saat pertama kali dijalankan.
 

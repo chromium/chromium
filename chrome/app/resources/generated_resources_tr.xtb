@@ -356,7 +356,6 @@
 <translation id="138784436342154190">Varsayılan başlangıç sayfası geri yüklensin mi?</translation>
 <translation id="1388253969141979417">Mikrofonunuzu kullanmasına izin verilen siteler</translation>
 <translation id="1388728792929436380">Güncellemeler tamamlandığında <ph name="DEVICE_TYPE" /> yeniden başlatılacak.</translation>
-<translation id="138900021244932468">Hiçbir profil bulunamadı. Yeni bir ağ oluşturmak için cihaz kamerasını kullanarak QR kodunu tarayın veya operatörünüz tarafından sağlanan etkinleştirme kodunu girin.</translation>
 <translation id="139013308650923562">Cihazınızda yüklü yazı tiplerini kullanmasına izin verilen siteler</translation>
 <translation id="1390548061267426325">Normal Sekme Olarak Aç</translation>
 <translation id="1393283411312835250">Güneş ve bulutlar</translation>
@@ -5912,6 +5911,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> cihazınız kurumsal yönetim için başarıyla kaydettirildi.</translation>
 <translation id="7507207699631365376">Bu sağlayıcının <ph name="BEGIN_LINK" />gizlilik politikasına<ph name="END_LINK" /> bakın</translation>
 <translation id="7507930499305566459">Durum Yanıtlayıcı Sertifikası</translation>
+<translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
 <translation id="7513029293694390567">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik devre dışı bırakılırsa, bir web sitesinde oturum açmadan önce her defasında işlemi onaylamanız istenir.</translation>
 <translation id="7514239104543605883">Cihazıma kopyala</translation>
 <translation id="7514365320538308">İndir</translation>
@@ -6443,7 +6443,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8061091456562007989">Geri değiştir</translation>
 <translation id="8061991877177392872">Asistanınızla Voice Match'i başka bir cihazda zaten kurmuş olduğunuz anlaşılıyor. Önceki bu kayıtlar, bu cihazda bir ses modeli oluşturmak için kullanıldı.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kağıt}other{{COUNT} kağıt}}</translation>
-<translation id="8062879968880283306">Cihaz kamerasını kullanarak QR kodunu tarayın veya operatörünüz tarafından sağlanan etkinleştirme kodunu girin.</translation>
 <translation id="8063235345342641131">Varsayılan yeşil avatar</translation>
 <translation id="8063535366119089408">Dosyayı göster</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> grubu - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6864,7 +6863,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8551588720239073785">Tarih ve zaman ayarları</translation>
 <translation id="8553342806078037065">Diğer kişileri yönet</translation>
 <translation id="8554899698005018844">Dil yok</translation>
-<translation id="8555195867496021627">Kullanılabilir eSIM profili yok. <ph name="BEGIN_LINK" />Buradan<ph name="END_LINK" /> yeni profil indirin.</translation>
 <translation id="8557022314818157177">Parmak iziniz alınana kadar güvenlik anahtarınıza dokunmaya devam edin</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Tümünü &amp;Yeni Pencerede Aç}=1{&amp;Yeni Pencerede Aç}other{Tümünü ({COUNT}) &amp;Yeni Pencerede Aç}}</translation>
@@ -7044,7 +7042,6 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="8743164338060742337">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından Yönetiliyor, Bağlan</translation>
 <translation id="8746654918629346731">"<ph name="EXTENSION_NAME" />" zaten istendi</translation>
 <translation id="874689135111202667">{0,plural, =1{Bu siteye bir dosya yüklensin mi?}other{Bu siteye # dosya yüklensin mi?}}</translation>
-<translation id="8749556627204742888">Bu ağı, bu cihazın diğer kullanıcılarıyla paylaşıyorsunuz.</translation>
 <translation id="8749805710397399240">Ekranınız yayınlanamıyor. Sistem Tercihleri'nden Ekran Kaydı iznini kontrol edin.</translation>
 <translation id="8749863574775030885">Bilinmeyen bir tedarikçinin USB cihazlarına erişme</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> bir seri bağlantı noktasına bağlanmak istiyor</translation>
@@ -7106,7 +7103,6 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="8808744862003883508">Chrome'da yüklü tüm uzantıları bu sayfada görebilirsiniz.</translation>
 <translation id="8809147117840417135">Açık turkuaz</translation>
 <translation id="8811862054141704416">Crostini mikrofon erişimi</translation>
-<translation id="8812552797690463522">Bu ağ sizinle paylaşılıyor.</translation>
 <translation id="8812593354822910461">Ayrıca tarama verilerini (<ph name="URL" />) temizle. Bu işlem <ph name="DOMAIN" /> oturumunuzu kapatabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Sonra hatırlat</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> hesabında oturum açılamıyor</translation>
@@ -7318,7 +7314,6 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9021662811137657072">Virüs algılandı</translation>
 <translation id="902236149563113779">Siteler; oyunlar veya uyarı yönlendirmeleri gibi artırılmış gerçeklik özelliklerinin kullanılması için genellikle kamera konumunuzu izler</translation>
 <translation id="9022847679183471841">Bu hesap bu bilgisayarda <ph name="AVATAR_NAME" /> tarafından zaten kullanılıyor.</translation>
-<translation id="9023009238991294202">Bu cihazın diğer kullanıcıları bu ağı kullanabilir.</translation>
 <translation id="9023015617655685412">Bu sekmeye yer işareti koy...</translation>
 <translation id="9023909777842748145">Bu özelliğin kapatılması cihazınızın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.</translation>
 <translation id="9024127637873500333">&amp;Yeni Sekmede Aç</translation>

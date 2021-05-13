@@ -188,6 +188,7 @@
 <translation id="2871695793448672541">Прихований пароль</translation>
 <translation id="2876369937070532032">Надсилає в Google URL-адреси деяких відвіданих сторінок, коли ваша безпека під загрозою</translation>
 <translation id="288655811176831528">Закрити вкладку</translation>
+<translation id="2893180576842394309">Google може використовувати вашу історію, щоб персоналізувати Пошук та інші сервіси Google</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
 <translation id="2916171785467530738">Автозавершення пошукових запитів і URL-адрес</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
@@ -613,6 +614,7 @@
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7062545763355031412">Прийняти та перейти в інший обліковий запис</translation>
+<translation id="708844789167408367">Вийти й вимкнути синхронізацію…</translation>
 <translation id="7099761977003084116">Останні вкладки</translation>
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Сховати</translation>
@@ -627,6 +629,7 @@
 <translation id="7203585745079012652">Озвучувати відповіді</translation>
 <translation id="7207383424303353046">Новинка: щоб автоматично відкривати сайти в додатку Chrome, установіть його своїм веб-переглядачем за умовчанням. <ph name="BEGIN_LINK" />Відкрити налаштування<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Недійсний псевдонім картки</translation>
+<translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7265758999917665941">Ніколи для цього сайту</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
 <translation id="7291368939935408496">Готуються паролі…</translation>

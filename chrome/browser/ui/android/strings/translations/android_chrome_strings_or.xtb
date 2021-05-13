@@ -41,7 +41,6 @@
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1258753120186372309">Google ଡୁଡଲ୍: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ସେୟାର୍ କରିହେଲା ନାହିଁ</translation>
-<translation id="1276279242344007853">ଆପଣ ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1283039547216852943">ପ୍ରସାରଣ କରିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1285310382777185058">ଭାଷା ବଦଳାନ୍ତୁ</translation>
 <translation id="1291207594882862231">ଇତିବୃତ୍ତି, କୁକୀ, ସାଇଟ୍ ଡାଟା, କ୍ୟାଚିକୁ ଖାଲି କରନ୍ତୁ…</translation>
@@ -533,6 +532,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ମିନିଟ୍‌ ପୂର୍ବେ}other{#ମିନିଟ୍ ପୂର୍ବେ}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
+<translation id="4615382002648696011">ଅନୁସରଣ କରାଯାଉଥିବା ଫିଡରେ, ପଢ଼ାଯାଇନଥିବା ଷ୍ଟୋରୀଗୁଡ଼ିକ ପ୍ରସ୍ତୁତ ଅଛି</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="4619564267100705184">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4634124774493850572">ପାସ୍‌ୱର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -549,7 +549,6 @@
 <translation id="4697543623252708062">ଶୀଘ୍ର, ଆପଣ ଏକ ନୂଆ ଟାବ୍ ଖୋଲିଲେ <ph name="SITE_NAME" />ରୁ ଷ୍ଟୋରୀଗୁଡ଼ିକୁ ଦେଖିବେ। ଆପଣ ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ "ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ"ରେ ନିୟନ୍ତ୍ରଣ କରିପାରିବେ।</translation>
 <translation id="4699172675775169585">କେଚ୍‍ ଛବି ଏବଂ ଫାଇଲ୍‌</translation>
 <translation id="4714588616299687897">ଆପଣଙ୍କ ଡାଟାର 60% ପର୍ଯ୍ୟନ୍ତ ସେଭ୍ କରନ୍ତୁ</translation>
-<translation id="4716066120200945007">ଅନୁସରଣ କରୁଛନ୍ତି</translation>
 <translation id="4719927025381752090">ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4720982865791209136">Chromeକୁ ଉନ୍ନତ କରିବାରେ ସହାୟତା କରନ୍ତୁ। <ph name="BEGIN_LINK" />ସର୍ବେକ୍ଷଣରେ ଭାଗ ନିଅନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -751,7 +750,6 @@
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
 <translation id="5942872142862698679">ସନ୍ଧାନ ପାଇଁ Google ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="5951119116059277034">ଲାଇଭ୍ ପୃଷ୍ଠା ଦେଖୁଛନ୍ତି</translation>
-<translation id="5951615825629292797">ଭାଷା ପ୍ରସ୍ତୁତ ଅଛି, <ph name="APP_NAME" />କୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5952764234151283551">Googleରେ ପହଞ୍ଚିବା ପାଇଁ ଆପଣ ଚେଷ୍ଟା କରୁଥିବା ଗୋଟିଏ ପୃଷ୍ଠାର URLକୁ ପଠାଇଥାଏ</translation>
 <translation id="5956665950594638604">ଏକ ନୂଆ ଟାବ୍‌ରେ Chrome ସାହାଯ୍ୟ କେନ୍ଦ୍ର ଖୋଲନ୍ତୁ</translation>
 <translation id="5957442310066583693">ଆପଣଙ୍କ ଶ୍ରେଷ୍ଠ ସାଇଟଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ, ହୋମ୍ ବଟନରେ ଟାପ୍ କରନ୍ତୁ</translation>
@@ -1130,7 +1128,6 @@
 <translation id="834313815369870491">ସାଇଟଗୁଡ଼ିକୁ କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8349013245300336738">ବ୍ୟବହାର କରାଯାଇଥିବା ଡାଟାର ପରିମାଣର କ୍ରମରେ ସଜାନ୍ତୁ</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" />ଟି ଡାଉନଲୋଡ୍ ରିଷ୍ଟୋର୍ କରାଯାଇଛି</translation>
-<translation id="8362134094656482681">ଆପଣଙ୍କ ଆଗ୍ରହ ଥିବା ବିଷୟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8364299278605033898">ଲୋକପ୍ରିୟ ୱେବ୍‍ସାଇଟ୍‌ଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="8368027906805972958">ଅଜଣା କିମ୍ବା ଅସମର୍ଥିତ ଡିଭାଇସ୍ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ପ୍ରସ୍ତୁତ ଅଛି।</translation>
@@ -1179,6 +1176,7 @@
 <translation id="8659579665266920523">Chrome ସହ କିପରି ସନ୍ଧାନ କରିବେ</translation>
 <translation id="8662811608048051533">ଆପଣଙ୍କୁ ଅଧିକାଂଶ ସାଇଟ୍‌ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦିଏ।</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
+<translation id="8676789164135894283">ସାଇନ୍-ଇନ୍ ପାଇଁ ଯାଞ୍ଚକରଣ</translation>
 <translation id="8683039184091909753">ଛବି</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}other{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}}</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>

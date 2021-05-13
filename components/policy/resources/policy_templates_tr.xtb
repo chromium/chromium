@@ -436,17 +436,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       https://www.chromestatus.com/feature/4664843055398912 adresine bakın.</translation>
 <translation id="1587585749332985896">Gözetimsiz Mod'un kullanımına izin verme</translation>
 <translation id="1588240398285670601">Tarayıcı Ayarları</translation>
-<translation id="1590071725627230651">Bu ayar, <ph name="LACROS_NAME" /> tarayıcısı için çeşitli kullanılabilirlik seçenekleri sunar.
-
-      Bu politika <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="LACROS_NAME" />, kullanıcılar tarafından etkinleştirilebilir ve birincil tarayıcı yapılabilir. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası <ph name="LACROS_NAME" /> tarayıcısını engellemeye devam edebilir.
-
-      Politika <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> değerine ayarlanırsa kullanıcılar <ph name="LACROS_NAME" /> tarayıcısını kullanamaz. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
-
-      Politika <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> değerine ayarlanırsa <ph name="LACROS_NAME" /> tarayıcısı etkinleştirilir ancak birincil tarayıcı olmaz. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
-
-      Politika <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> değerine ayarlanırsa <ph name="LACROS_NAME" /> etkinleştirilir ve birincil tarayıcı olur. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
-
-      İleride <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> değeri kullanılarak <ph name="LACROS_NAME" /> tarayıcısının <ph name="PRODUCT_OS_NAME" /> ile kullanılabilen tek tarayıcı olması sağlanabilecektir.</translation>
 <translation id="1599424828227887013">Android cihazlarda Site İzolasyonu'nu belirtilen kaynaklar için etkinleştirme</translation>
 <translation id="159946228300522107">Politikayı True (Doğru) değerine ayarlamak, Chrome'un ilk çalıştırmada birinci pencereyi büyüteceği anlamına gelir.
 

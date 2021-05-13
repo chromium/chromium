@@ -356,7 +356,6 @@
 <translation id="138784436342154190">Të restaurohet faqja e parazgjedhur e nisjes?</translation>
 <translation id="1388253969141979417">Lejohen të përdorin mikrofonin tënd</translation>
 <translation id="1388728792929436380">Pajisja <ph name="DEVICE_TYPE" /> do të riniset kur të përfundojnë përditësimet.</translation>
-<translation id="138900021244932468">Nuk u zbulua asnjë profil. Për të konfiguruar një rrjet të ri, skano kodin QR duke përdorur kamerën e pajisjes ose fut kodin e aktivizimit që të është dhënë nga operatori celular.</translation>
 <translation id="139013308650923562">Lejohen që të përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="1390548061267426325">Hape si skedë të zakonshme</translation>
 <translation id="1393283411312835250">Diell dhe re</translation>
@@ -5897,6 +5896,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7506541170099744506">Pajisja jote <ph name="DEVICE_TYPE" /> është regjistruar me sukses për menaxhimin e ndërmarrjes.</translation>
 <translation id="7507207699631365376">Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> së këtij ofruesi</translation>
 <translation id="7507930499305566459">Certifikata e reaguesit të statusit</translation>
+<translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7513029293694390567">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Nëse është çaktivizuar, do të të kërkohet gjithmonë konfirmimi përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="7514239104543605883">Kopjo te pajisja jote</translation>
 <translation id="7514365320538308">Shkarko</translation>
@@ -6427,7 +6427,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8061091456562007989">Ndryshoje përsëri</translation>
 <translation id="8061991877177392872">Me sa duket e ke konfiguruar tashmë Voice Match me "Asistentin" tënd në një pajisje tjetër. Këto regjistrime të mëparshme janë përdorur për të krijuar një model zanor në këtë pajisje.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 fletë letre}other{{COUNT} fletë letre}}</translation>
-<translation id="8062879968880283306">Skano kodin QR duke përdorur kamerën e pajisjes ose fut kodin e aktivizimit të dhënë nga operatori yt.</translation>
 <translation id="8063235345342641131">Avatari i parazgjedhur i gjelbër</translation>
 <translation id="8063535366119089408">Shiko skedarin</translation>
 <translation id="8064279191081105977">Grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6848,7 +6847,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
-<translation id="8555195867496021627">Asnjë profil i disponueshëm karte eSIM. Shkarko një profil të ri <ph name="BEGIN_LINK" />këtu.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="8557930019681227453">Manifesti</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare të re}=1{Hape në &amp;dritare të re}other{Hapi të gjitha ({COUNT}) në &amp;dritare të re}}</translation>
@@ -7028,7 +7026,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8743164338060742337">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
 <translation id="8746654918629346731">Ke kërkuar tashmë "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Të ngarkohet një skedar në këtë sajt?}other{Të ngarkohen # skedarë në këtë sajt?}}</translation>
-<translation id="8749556627204742888">Po e ndan këtë rrjet me përdoruesit e tjerë të kësaj pajisjeje.</translation>
 <translation id="8749805710397399240">Ekrani yt nuk mund të transmetohet. Kontrollo lejen për "Regjistrimin e ekranit" te "Preferencat e sistemit".</translation>
 <translation id="8749863574775030885">Qasu te pajisjet USB nga një shitës i panjohur</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> dëshiron të lidhet me një portë serie</translation>
@@ -7090,7 +7087,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8808744862003883508">Në këtë faqe mund të shikosh të gjitha shtesat e instaluara në Chrome.</translation>
 <translation id="8809147117840417135">Gurkali e çelur</translation>
 <translation id="8811862054141704416">Qasja te mikrofoni i Crostini</translation>
-<translation id="8812552797690463522">Ky rrjet është ndarë me ty.</translation>
 <translation id="8812593354822910461">Pastro gjithashtu të dhënat e shfletimit, (<ph name="URL" />) gjë që mund të të bëjë të dalësh nga <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Më kujto më vonë</translation>
 <translation id="8813698869395535039">Nuk mund të identifikohet në <ph name="USERNAME" /></translation>
@@ -7302,7 +7298,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9021662811137657072">U zbulua një virus</translation>
 <translation id="902236149563113779">Sajtet monitorojnë zakonisht pozicionin e kamerës për veçoritë e realitetit AR, si p.sh. lojërat ose udhëzimet paraprake</translation>
 <translation id="9022847679183471841">Kjo llogari tashmë po përdoret në këtë kompjuter nga <ph name="AVATAR_NAME" />.</translation>
-<translation id="9023009238991294202">Përdoruesit e tjerë të kësaj pajisjeje mund të përdorin këtë rrjet.</translation>
 <translation id="9023015617655685412">Shtoje këtë skedë te faqeshënuesit...</translation>
 <translation id="9023909777842748145">Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e pajisjes sate për të dërguar informacionet e nevojshme për shërbimet bazë, si siguria dhe përditësimet e sistemit.</translation>
 <translation id="9024127637873500333">&amp;Hape në një skedë të re</translation>

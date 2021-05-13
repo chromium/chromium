@@ -41,7 +41,6 @@
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
-<translation id="1276279242344007853">उन साइटों को मैनेज करें जिन्हें आप फ़ॉलो कर रहे हैं</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1285310382777185058">भाषा बदलें</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कैश साफ़ करें…</translation>
@@ -533,7 +532,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
-<translation id="4615382002648696011">आगे फ़ीड के लिए, वह कॉन्टेंट दिया गया है जिसे पढ़ा नहीं गया है</translation>
+<translation id="4615382002648696011">आगे वाले फ़ीड में, वह कॉन्टेंट मौजूद है जिसे पढ़ा नहीं गया है</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> को खोलें</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">जल्द ही आप कोई भी नया टैब खोलते ही, <ph name="SITE_NAME" /> से जुड़ी जानकारी देख सकेंगे. आप जिन साइटों को फ़ॉलो कर रहे हैं उन्हें 'फ़ॉलो की जा रही साइटों को मैनेज करें' टैब में जाकर कंट्रोल कर सकते हैं.</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4714588616299687897">अपना 60% तक डेटा बचाएं</translation>
-<translation id="4716066120200945007">फ़ॉलो किया जा रहा है</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> में खोलें</translation>
 <translation id="4720982865791209136">Chrome को बेहतर बनाने में सहायता करें. <ph name="BEGIN_LINK" />सर्वे में भाग लें<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="5942872142862698679">खोजने के लिए Google का उपयोग किया जा रहा है</translation>
 <translation id="5951119116059277034">लाइव पेज देखा जा रहा है</translation>
-<translation id="5951615825629292797">भाषा, इस्तेमाल के लिए तैयार है. <ph name="APP_NAME" /> को रीस्टार्ट करें</translation>
 <translation id="5952764234151283551">आप जिस पेज पर जाने की कोशिश कर रहे हैं उसका यूआरएल Google को भेजती है</translation>
 <translation id="5956665950594638604">Chrome सहायता केंद्र को नए टैब में खोलें</translation>
 <translation id="5957442310066583693">अपने हिसाब से खास साइटें देखने के लिए, होम बटन पर टैप करें</translation>
@@ -1131,7 +1128,6 @@
 <translation id="834313815369870491">साइटों का अनुवाद कभी न करें</translation>
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
-<translation id="8362134094656482681">जो विषय आपको पसंद हैं उन्हें मैनेज करें</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> इस्तेमाल के लिए तैयार है.</translation>

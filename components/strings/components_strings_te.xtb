@@ -658,6 +658,7 @@
 <translation id="3428151540071562330">DnsOverHttpsTemplates సర్వర్ టెంప్లేట్‌ URIలు చెల్లవు, ఉపయోగించబడవు.</translation>
 <translation id="3431636764301398940">ఈ కార్డ్‌ను ఈ పరికరానికి సేవ్ చేయి</translation>
 <translation id="3432601291244612633">పేజీని మూసివేయండి</translation>
+<translation id="3435738964857648380">భద్రత</translation>
 <translation id="3435896845095436175">ప్రారంభించండి</translation>
 <translation id="3438829137925142401">మీ Google ఖాతాలో సేవ్ చేయబడిన పాస్‌వర్డ్‌‌లను ఉపయోగించండి</translation>
 <translation id="3443726618221119081">జుర్రో-కు-కాయ్</translation>
@@ -1175,6 +1176,7 @@
 <translation id="5314967030527622926">బుక్‌లెట్ తయారీ దారు</translation>
 <translation id="5316812925700871227">అపసవ్య దిశలో తిప్పు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
+<translation id="5321288445143113935">గరిష్ఠీకరించబడింది</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />లో <ph name="MATCH_POSITION" /></translation>
 <translation id="5324080437450482387">సంప్రదింపు సమాచారాన్ని ఎంచుకోండి</translation>
 <translation id="5327248766486351172">పేరు</translation>
@@ -1401,6 +1403,7 @@
 <translation id="6218753634732582820">Chromium నుండి చిరునామాను తీసివేయాలా?</translation>
 <translation id="622039917539443112">పారలల్ ఫోల్డ్</translation>
 <translation id="6221345481584921695">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />మాల్వేర్‌ను గుర్తించింది<ph name="END_LINK" />. సాధారణంగా సురక్షితమైన వెబ్‌సైట్‌‌లకు కూడా కొన్నిసార్లు మాల్వేర్ సోకుతుంది. ఈ హానికరమైన కంటెంట్, మాల్వేర్ పంపిణీదారుగా ప్రసిద్ధిగాంచిన <ph name="SUBRESOURCE_HOST" /> నుండి సంక్రమిస్తుంది.</translation>
+<translation id="6232619828520900263">ప్రస్తుతం ID చెల్లదు</translation>
 <translation id="6234122620015464377">ప్రతి పత్రం తర్వాత కత్తిరించండి</translation>
 <translation id="6240447795304464094">Google Pay లోగో</translation>
 <translation id="6241121617266208201">సూచనలను దాచు</translation>

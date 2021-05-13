@@ -41,7 +41,6 @@
 <translation id="124678866338384709">தற்போதைய தாவலை மூடும்</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
-<translation id="1276279242344007853">பின்தொடரும் தளங்களை நிர்வகிக்கலாம்</translation>
 <translation id="1283039547216852943">விரிவாக்க, தட்டவும்</translation>
 <translation id="1285310382777185058">மொழியை மாற்றுங்கள்</translation>
 <translation id="1291207594882862231">வரலாறு, குக்கீகள், தளத் தரவு, தற்காலிகச் சேமிப்பை அழி…</translation>
@@ -533,6 +532,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
+<translation id="4615382002648696011">பின்தொடர்கிறீர்கள், படிக்காத கதைகள் தயாராக உள்ளன</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
@@ -549,7 +549,6 @@
 <translation id="4697543623252708062">விரைவில், புதிய தாவலைத் திறக்கும்போது <ph name="SITE_NAME" /> தளத்தில் உள்ள கதைகள் காட்டப்படும். ‘பின்தொடர்பவற்றை நிர்வகியுங்கள்’ என்பதில் நீங்கள் பின்தொடரும் தளங்களைக் கட்டுப்படுத்தலாம்.</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் கோப்புகள்</translation>
 <translation id="4714588616299687897">தரவில் 60% வரை சேமியுங்கள்</translation>
-<translation id="4716066120200945007">பின்தொடர்பவை</translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />இல் திற</translation>
 <translation id="4720982865791209136">Chromeஐ மேம்படுத்த உதவவும். <ph name="BEGIN_LINK" />கருத்துக்கணிப்பில் பங்கேற்கவும்<ph name="END_LINK" /></translation>
@@ -751,7 +750,6 @@
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="5942872142862698679">தேடலுக்கு Googleளைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="5951119116059277034">நேரலைப் பக்கம் காட்டப்படுகிறது</translation>
-<translation id="5951615825629292797">மொழி பதிவிறக்கப்பட்டது, <ph name="APP_NAME" /> ஆப்ஸை மீண்டும் தொடங்கவும்</translation>
 <translation id="5952764234151283551">நீங்கள் செல்ல முயலும் பக்கத்தின் URLலை Googleளுக்கு அனுப்பும்</translation>
 <translation id="5956665950594638604">Chrome உதவி மையத்தைப் புதிய தாவலில் திறக்கும்</translation>
 <translation id="5957442310066583693">நீங்கள் அடிக்கடி பயன்படுத்தும் தளங்களைப் பார்க்க, முகப்புப் பட்டனைத் தட்டவும்</translation>
@@ -1130,7 +1128,6 @@
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>
 <translation id="8349013245300336738">பயன்படுத்திய தரவு அளவின்படி வரிசைப்படுத்தும்</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் மீட்டெடுக்கப்பட்டன</translation>
-<translation id="8362134094656482681">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="8364299278605033898">பிரபல இணையதளங்களைப் பாருங்கள்</translation>
 <translation id="8368027906805972958">அறியாத அல்லது ஆதரிக்கப்படாத சாதனம் (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> மொழித்தொகுப்பு தயாராக உள்ளது.</translation>
@@ -1179,6 +1176,7 @@
 <translation id="8659579665266920523">Chromeமைப் பயன்படுத்தி எப்படித் தேடுவது?</translation>
 <translation id="8662811608048051533">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்.</translation>
 <translation id="8664979001105139458">கோப்புப் பெயர் ஏற்கனவே உள்ளது</translation>
+<translation id="8676789164135894283">உள்நுழைவுச் சரிபார்ப்புகள்</translation>
 <translation id="8683039184091909753">படம்</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{சிக்னல் வலிமையின் அளவு: # கோடு}other{சிக்னல் வலிமையின் அளவு: # கோடுகள்}}</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>

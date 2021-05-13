@@ -653,6 +653,7 @@
 <translation id="3428151540071562330">ஒன்று அல்லது அதற்கு மேற்பட்ட DnsOverHttpsTemplates சேவையக டெம்ப்ளேட் URIகள் தவறாக உள்ளன. அவை பயன்படுத்தப்படாது.</translation>
 <translation id="3431636764301398940">இந்தச் சாதனத்தில் கார்டைச் சேமி</translation>
 <translation id="3432601291244612633">பக்கத்தை மூடுக</translation>
+<translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3435896845095436175">இயக்கு</translation>
 <translation id="3438829137925142401">உங்கள் Google கணக்கில் சேமித்த கடவுச்சொற்களைப் பயன்படுத்தவும்</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -1169,6 +1170,7 @@
 <translation id="5314967030527622926">புக்லெட் மேக்கர்</translation>
 <translation id="5316812925700871227">கடிகார எதிர்த்திசையில் சுழற்று</translation>
 <translation id="5317780077021120954">சேமி</translation>
+<translation id="5321288445143113935">பெரிதாக்கப்பட்டது</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> இல் <ph name="MATCH_POSITION" /></translation>
 <translation id="5324080437450482387">தொடர்புத் தகவலைத் தேர்வு செய்</translation>
 <translation id="5327248766486351172">பெயர்</translation>
@@ -1394,6 +1396,7 @@
 <translation id="6218753634732582820">Chromium இலிருந்து முகவரியை அகற்றவா?</translation>
 <translation id="622039917539443112">பேரலல் ஃபோல்டு</translation>
 <translation id="6221345481584921695">Google பாதுகாப்பு உலாவலானது, சமீபத்தில் <ph name="SITE" /> இல் <ph name="BEGIN_LINK" />மால்வேர் உள்ளதைக் கண்டுபிடித்தது<ph name="END_LINK" />. இயல்பாகவே பாதுகாப்பாக இருக்கும் இணையதளங்களும் சில சமயங்களில் மால்வேரினால் பாதிக்கப்பட்டிருக்கும். தீங்குவிளைவிக்கும் உள்ளடக்கமானது மால்வேரைப் பகிர்பவர் என அழைக்கப்படும் <ph name="SUBRESOURCE_HOST" /> இலிருந்து வருகிறது.</translation>
+<translation id="6232619828520900263">ஐடி தற்போது தவறாக உள்ளது</translation>
 <translation id="6234122620015464377">டிரிம் ஆஃப்டர் ஈச் டாக்குமெண்ட்</translation>
 <translation id="6240447795304464094">Google Pay லோகோ</translation>
 <translation id="6241121617266208201">பரிந்துரைகளை மறை</translation>

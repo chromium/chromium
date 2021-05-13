@@ -41,7 +41,6 @@
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
-<translation id="1276279242344007853">팔로우하는 사이트를 관리합니다.</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1285310382777185058">언어 변경</translation>
 <translation id="1291207594882862231">방문 기록, 쿠키, 사이트 데이터, 캐시 삭제…</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 팔로우 관리에서 팔로우 중인 사이트를 관리할 수 있습니다.</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4714588616299687897">데이터 최대 60% 절약</translation>
-<translation id="4716066120200945007">팔로우 중</translation>
 <translation id="4719927025381752090">번역 옵션 제공</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />에서 열기</translation>
 <translation id="4720982865791209136">Chrome을 개선하는 데 도움을 주세요. <ph name="BEGIN_LINK" />설문조사 참여하기<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5942872142862698679">검색할 때 Google 사용</translation>
 <translation id="5951119116059277034">라이브 페이지 보기 중</translation>
-<translation id="5951615825629292797">언어 준비됨, <ph name="APP_NAME" /> 다시 시작</translation>
 <translation id="5952764234151283551">접속하려는 페이지의 URL을 Google에 전송</translation>
 <translation id="5956665950594638604">새 탭에서 Chrome 고객센터 열기</translation>
 <translation id="5957442310066583693">맞춤 인기 사이트를 보려면 홈 버튼 탭하기</translation>
@@ -1131,10 +1128,10 @@
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8349013245300336738">사용된 데이터 양에 따라 정렬</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
-<translation id="8362134094656482681">관심 주제를 관리합니다.</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>
 <translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />를 사용할 준비가 되었습니다.</translation>
+<translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8410695015584479363">가격 추적</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>

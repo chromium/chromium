@@ -433,17 +433,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Não permitir o uso do modo headless</translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
-<translation id="1590071725627230651">Essa configuração apresenta várias opções de disponibilidade para o navegador <ph name="LACROS_NAME" />.
-
-      Se a política for configurada como <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> ou for deixada sem definição, o usuário poderá ativar o <ph name="LACROS_NAME" /> e usá-lo como o principal. O <ph name="LACROS_NAME" /> ainda pode ser proibido com o uso da política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Se a política for configurada como <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, o usuário não poderá usar o <ph name="LACROS_NAME" />. A política <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      Se a política for configurada como<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, o <ph name="LACROS_NAME" /> será ativado, mas não será o navegador principal. A política <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      Se a política for configurada como<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, o <ph name="LACROS_NAME" /> será ativado e definido como o navegador principal. A política <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      No futuro, será possível fazer com que o <ph name="LACROS_NAME" /> seja o único navegador disponível no <ph name="PRODUCT_OS_NAME" /> com o valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Ativa o isolamento de sites para origens específicas em dispositivos Android</translation>
 <translation id="159946228300522107">Se a política for definida como verdadeira, o Chrome maximizará a primeira janela exibida durante a primeira execução.
 

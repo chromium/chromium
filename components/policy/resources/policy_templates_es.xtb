@@ -437,17 +437,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">No permite utilizar el modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
-<translation id="1590071725627230651">Este ajuste proporciona varias opciones de disponibilidad del navegador <ph name="LACROS_NAME" />.
-
-      Si a esta política se le asigna el valor <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> o no se le asigna ninguno, el usuario podrá habilitar <ph name="LACROS_NAME" /> y convertirlo en el navegador principal. Se podrá seguir inhabilitando <ph name="LACROS_NAME" /> con la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, el usuario no podrá usar <ph name="LACROS_NAME" />. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      En el futuro, se podrá establecer que <ph name="LACROS_NAME" /> sea el único navegador disponible en <ph name="PRODUCT_OS_NAME" /> con el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Habilitar el aislamiento de sitios web específicos en dispositivos Android</translation>
 <translation id="159946228300522107">Si se asigna el valor "Verdadero" a esta política, Chrome maximizará la primera ventana que se muestre al ejecutarse por primera vez.
 
@@ -2536,7 +2525,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4331357743227845302">Esta política permite a los administradores configurar los servicios Bluetooth a los que puede conectarse <ph name="PRODUCT_OS_NAME" />.
 
 Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a los servicios Bluetooth especificados. Si la lista está vacía, los usuarios podrán usar cualquier servicio. Los UUIDs reservados por Bluetooth SIG se pueden representar como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o como <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUIDs personalizados se pueden representar como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUIDs no distinguen entre mayúsculas y minúsculas. Si no se asigna ningún valor a esta política, los usuarios podrán conectarse a cualquier servicio Bluetooth.</translation>
-<translation id="4332177773549877617">Registrar eventos de descargas de aplicación para Android</translation>
+<translation id="4332177773549877617">Registrar eventos de descargas de la aplicación para Android</translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará la codificación UTF‑8.</translation>

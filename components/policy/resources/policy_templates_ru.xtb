@@ -434,17 +434,6 @@
       Подробную информацию можно прочитать по ссылке https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1587585749332985896">Запретить использование режима консольного браузера</translation>
 <translation id="1588240398285670601">Настройки браузера</translation>
-<translation id="1590071725627230651">Эта настройка предоставляет несколько вариантов доступности браузера <ph name="LACROS_NAME" />.
-
-      Если правило не настроено или задано значение <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, пользователь может включить браузер <ph name="LACROS_NAME" /> и сделать его основным. При необходимости браузер <ph name="LACROS_NAME" /> можно отключить с помощью правила <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Если для правила задано значение <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, использовать браузер <ph name="LACROS_NAME" /> невозможно. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> игнорируется.
-
-      Если для правила выбрано значение <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, то браузер <ph name="LACROS_NAME" /> включен, но не является основным. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> игнорируется.
-
-      Если для правила выбрано значение <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, то браузер <ph name="LACROS_NAME" /> включен и является основным. Правило <ph name="LACROS_ALLOWED_POLICY_NAME" /> игнорируется.
-
-      В дальнейшем у пользователей появится возможность сделать браузер <ph name="LACROS_NAME" /> единственно доступным в <ph name="PRODUCT_OS_NAME" />, установив значение <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="1599424828227887013">Включить изоляцию для определенных сайтов на устройствах Android</translation>
 <translation id="159946228300522107">Если для правила задано значение True, Chrome будет всегда разворачивать первое окно при начальном запуске.
 

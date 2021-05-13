@@ -435,17 +435,6 @@
       請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="1587585749332985896">禁止使用無頭模式</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
-<translation id="1590071725627230651">這項設定針對 <ph name="LACROS_NAME" /> 瀏覽器提供了多個可用性選項。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> 或未設定，使用者就能啟用 <ph name="LACROS_NAME" /> 並設為主要瀏覽器。<ph name="LACROS_NAME" /> 仍可能受到 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁止使用。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />，使用者就無法使用 <ph name="LACROS_NAME" />。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用，但不是主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用並設為主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" />中唯一可用的瀏覽器。</translation>
 <translation id="1599424828227887013">在 Android 裝置上為指定來源啟用網站隔離</translation>
 <translation id="159946228300522107">如果將這項政策設為 True，Chrome 首次執行時會將第一個顯示的視窗最大化。
 

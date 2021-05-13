@@ -358,7 +358,6 @@
 <translation id="138784436342154190">기본 시작 페이지를 복원하시겠습니까?</translation>
 <translation id="1388253969141979417">마이크 사용이 허용됨</translation>
 <translation id="1388728792929436380">업데이트가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
-<translation id="138900021244932468">발견된 프로필이 없습니다. 새 네트워크를 설정하려면 기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="139013308650923562">기기에 설치된 글꼴을 사용할 수 있음</translation>
 <translation id="1390548061267426325">일반 탭으로 열기</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
@@ -516,6 +515,7 @@
 <translation id="1545775234664667895">테마('<ph name="THEME_NAME" />')를 설치했습니다.</translation>
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
+<translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
 <translation id="1549275686094429035">ARC 사용 설정됨</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1552301827267621511">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 검색에 <ph name="SEARCH_PROVIDER_DOMAIN" /> 서비스를 사용하도록 변경했습니다.</translation>
@@ -552,6 +552,7 @@
 <translation id="1588438908519853928">일반</translation>
 <translation id="158849752021629804">홈 네크워크가 필요합니다.</translation>
 <translation id="1588870296199743671">다음으로 링크 열기...</translation>
+<translation id="1588919647604819635">마우스 오른쪽 버튼으로 클릭 카드</translation>
 <translation id="1589055389569595240">영문 철자 및 문법 보기</translation>
 <translation id="1591679663873027990">Parallels Desktop에 USB 기기 액세스 권한을 부여하세요. 삭제된 USB 기기는 Parallels Desktop에 저장되지 않습니다.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />에서 ADB 디버깅이 사용 중지되었으며 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 다시 시작하기 전에 파일을 백업하세요.</translation>
@@ -996,6 +997,7 @@
 
 부모 기기에 Family Link 앱을 설치하여 이 계정의 설정을 관리할 수 있습니다.  안내가 담긴 이메일을 보내 드렸습니다.</translation>
 <translation id="2040460856718599782">인증을 시도하는 중에 문제가 발생했습니다. 로그인 사용자 인증 정보를 확인하고 다시 시도해 주세요.</translation>
+<translation id="2042279886444479655">활성화된 프로필</translation>
 <translation id="2044014337866019681">세션을 잠금 해제하려면 <ph name="ACCOUNT" /> 계정을 인증하세요.</translation>
 <translation id="2044023416777079300">모뎀이 등록되지 않음</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1337,6 +1339,7 @@
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> 기기가 엔터프라이즈 관리용으로 등록되었지만 애셋과 위치 정보를 전송하지 못했습니다. 기기의 관리 콘솔에서 애셋과 위치 정보를 직접 입력하세요.</translation>
 <translation id="2396387085693598316">관리자가 ‘<ph name="EXTENSION_NAME" />’ 확장 프로그램을 차단함</translation>
 <translation id="2396783860772170191">4자리 PIN(0000~9999) 입력</translation>
+<translation id="2398546389094871088">기기를 파워워시해도 eSIM 프로필이 삭제되지는 않습니다. <ph name="LINK_BEGIN" />모바일 설정<ph name="LINK_END" />으로 이동하여 프로필을 직접 삭제하세요.</translation>
 <translation id="2399699884460174994">알림 사용 설정됨</translation>
 <translation id="2399939490305346086">보안 키 로그인 데이터</translation>
 <translation id="2400664245143453337">즉시 업데이트 필요</translation>
@@ -1754,6 +1757,7 @@
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
 <translation id="284805635805850872">유해한 소프트웨어를 삭제하시겠습니까?</translation>
+<translation id="2849035674501872372">찾기</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />(<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">정리하지 못했습니다.</translation>
 <translation id="2849936225196189499">중요</translation>
@@ -2065,6 +2069,7 @@
 <translation id="3189187154924005138">큰 커서</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
+<translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
 <translation id="3199127022143353223">서버</translation>
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
@@ -2086,6 +2091,7 @@
 <translation id="3223531857777746191">초기화 버튼</translation>
 <translation id="3225084153129302039">기본 보라색 아바타</translation>
 <translation id="3225319735946384299">코드 서명</translation>
+<translation id="3226487301970807183">왼쪽 정렬 측면 패널 전환</translation>
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
 <translation id="3238192140106069382">연결 및 확인 중</translation>
@@ -2355,6 +2361,7 @@
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3519564332031442870">인쇄 백엔드 서비스</translation>
+<translation id="3519938335881974273">페이지를 다른 이름으로 저장...</translation>
 <translation id="3521606918211282604">디스크 크기 변경</translation>
 <translation id="3522088408596898827">디스크 저장 공간이 매우 부족합니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="3524965460886318643">활동 내보내기</translation>
@@ -2378,6 +2385,7 @@
 <translation id="3550593477037018652">셀룰러 네트워크 연결 해제</translation>
 <translation id="3550915441744863158">Chrome은 자동으로 업데이트되므로 항상 최신 버전을 사용할 수 있습니다.</translation>
 <translation id="3551320343578183772">탭 닫기</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">종료 시 삭제됨</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" />에서 관리하는 기기입니다. 관리자가 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="3555812735919707620">확장 프로그램 삭제</translation>
@@ -2430,6 +2438,7 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3608576286259426129">사용자 이미지 미리보기</translation>
+<translation id="3609277884604412258">빠른 검색</translation>
 <translation id="3610369246614755442">도크 팬 서비스 필요</translation>
 <translation id="361106536627977100">Flash 데이터</translation>
 <translation id="3611655097742243705">Play 스토어에 방문하여 더 많은 앱을 찾아보세요.</translation>
@@ -3371,6 +3380,7 @@
 <translation id="4636682061478263818">Drive 파일</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4637083375689622795">추가 작업, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">다시 카메라 사용</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{텍스트}other{텍스트 #개}}</translation>
 <translation id="4638930039313743000">ADB 디버깅 사용 설정</translation>
 <translation id="4641539339823703554">Chrome에서 시스템 시간을 설정할 수 없습니다. 아래에서 시간을 확인한 다음 필요한 경우 수정해 주세요.</translation>
@@ -4121,6 +4131,7 @@
 <translation id="5499313591153584299">이 파일은 컴퓨터에 해로울 수 있습니다.</translation>
 <translation id="5499453227627332024">Linux 컨테이너를 업그레이드할 수 있습니다. 나중에 설정 앱에서 업그레이드해도 됩니다.</translation>
 <translation id="5500709606820808700">안전 확인이 오늘 실행됨</translation>
+<translation id="5501322521654567960">왼쪽 정렬 측면 패널</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}}</translation>
 <translation id="5502500733115278303">Firefox에서 가져온 북마크</translation>
 <translation id="5502915260472117187">자녀</translation>
@@ -5332,6 +5343,7 @@
 <translation id="6856348640027512653">가상 현실 기기 또는 데이터 사용이 허용되지 않음</translation>
 <translation id="6856459657722366306">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="6856623341093082836">터치스크린 설정 및 정확도 조정</translation>
+<translation id="6857145580237920905">파워워시 전에 eSIM 프로필을 삭제하세요</translation>
 <translation id="6857699260879628349">구성 정보 가져오기</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
 <translation id="6860097299815761905">프록시 설정...</translation>
@@ -5913,6 +5925,7 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" />이(가) 기업 관리에 등록되었습니다.</translation>
 <translation id="7507207699631365376">제공업체의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" /> 보기</translation>
 <translation id="7507930499305566459">상태 응답자 인증서</translation>
+<translation id="7509246181739783082">본인 확인</translation>
 <translation id="7513029293694390567">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
@@ -6445,7 +6458,6 @@
 <translation id="8061091456562007989">이전 설정으로 되돌리기</translation>
 <translation id="8061991877177392872">다른 기기의 어시스턴트에서 이미 Voice Match를 설정한 것 같습니다. 이전에 녹음된 음성을 사용하여 이 기기에서 음성 모델을 만들었습니다.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{용지 1장}other{용지 {COUNT}장}}</translation>
-<translation id="8062879968880283306">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="8063235345342641131">기본 녹색 아바타</translation>
 <translation id="8063535366119089408">파일 보기</translation>
 <translation id="8064279191081105977">그룹 <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6866,7 +6878,6 @@
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
-<translation id="8555195867496021627">사용할 수 있는 eSIM 프로필이 없습니다. <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />에서 새 프로필을 다운로드하세요.</translation>
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="8557930019681227453">매니페스트</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
@@ -7046,7 +7057,6 @@
 <translation id="8743164338060742337">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 연결</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>
-<translation id="8749556627204742888">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8749805710397399240">화면을 전송할 수 없습니다. 시스템 환경설정에서 화면 녹화 권한을 확인하세요.</translation>
 <translation id="8749863574775030885">알 수 없는 공급업체의 USB 기기에 액세스</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" />에서 시리얼 포트에 연결하려고 합니다.</translation>
@@ -7108,7 +7118,6 @@
 <translation id="8808744862003883508">이 페이지에서 Chrome에 설치된 모든 확장 프로그램을 볼 수 있습니다.</translation>
 <translation id="8809147117840417135">연한 청록색</translation>
 <translation id="8811862054141704416">Crostini 마이크 액세스</translation>
-<translation id="8812552797690463522">나와 공유된 네트워크입니다.</translation>
 <translation id="8812593354822910461">인터넷 사용 기록(<ph name="URL" />)도 삭제합니다. 이렇게 하면 <ph name="DOMAIN" />에서 로그아웃됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>
@@ -7320,7 +7329,6 @@
 <translation id="9021662811137657072">바이러스가 발견됨</translation>
 <translation id="902236149563113779">사이트에서는 일반적으로 게임 또는 전방 방향 안내와 같은 AR 기능을 사용하기 위해 카메라 위치를 추적합니다.</translation>
 <translation id="9022847679183471841">이미 <ph name="AVATAR_NAME" />이(가) 이 컴퓨터에서 이 계정을 사용하고 있습니다.</translation>
-<translation id="9023009238991294202">이 기기의 다른 사용자가 이 네트워크를 사용할 수 있습니다.</translation>
 <translation id="9023015617655685412">현재 탭을 북마크에 추가</translation>
 <translation id="9023909777842748145">이 기능을 사용 중지해도 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
 <translation id="9024127637873500333">새 탭에서 열기(&amp;O)</translation>

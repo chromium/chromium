@@ -188,6 +188,7 @@
 <translation id="2871695793448672541">รหัสผ่านแบบซ่อน</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
+<translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
 <translation id="2916171785467530738">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
@@ -613,6 +614,7 @@
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7062545763355031412">ยอมรับและเปลี่ยนบัญชี</translation>
+<translation id="708844789167408367">ออกจากระบบและปิดการซิงค์...</translation>
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>
@@ -627,6 +629,7 @@
 <translation id="7203585745079012652">พูดคำตอบกลับ</translation>
 <translation id="7207383424303353046">ใหม่: เปิดเว็บไซต์ใน Chrome โดยอัตโนมัติด้วยการตั้งเป็นแอปเบราว์เซอร์เริ่มต้น <ph name="BEGIN_LINK" />เปิดการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
+<translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7291368939935408496">กำลังเตรียมรหัสผ่าน...</translation>

@@ -33,6 +33,7 @@
 <translation id="122699739164161391">关闭所有标签页</translation>
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
 <translation id="1231733316453485619">开启同步功能？</translation>
+<translation id="1242044645101871359">重新登录</translation>
 <translation id="1254117744268754948">选择文件夹</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
+<translation id="1894205589103145703">登录期间出了点问题。</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1923342640370224680">过去 1 小时</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
+<translation id="2086623437239112659">您存储的登录信息可能已过期。</translation>
 <translation id="209018056901015185">请求切换到桌面版网站</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
@@ -185,6 +188,7 @@
 <translation id="2871695793448672541">目前为隐藏状态的密码</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
 <translation id="288655811176831528">关闭标签页</translation>
+<translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
 <translation id="2916171785467530738">自动补全搜索字词和网址</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
@@ -399,6 +403,7 @@
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
 <translation id="5140288047769711648">Chrome 将为您记住此密码，因此，您不必记住它。</translation>
 <translation id="5150492518600715772">发送到您的设备</translation>
+<translation id="5168414296986405587">专为 iPadOS 打造</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
 <translation id="5188482106078495165">您的 Cookie 设置适用于所有标签页。若要对某个已打开的标签页应用新设置，请重新加载该标签页。</translation>
@@ -623,6 +628,7 @@
 <translation id="7203585745079012652">说出答案</translation>
 <translation id="7207383424303353046">新功能：将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开网站。<ph name="BEGIN_LINK" />打开“设置”<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
+<translation id="722454870747268814">打开新的无痕模式标签页</translation>
 <translation id="7265758999917665941">此网站一律不保存密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>

@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">اس صفحے کے مطابق</translation>
 <translation id="153384715582417236">ابھی کیلئے بس اتنا ہی</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
+<translation id="1539840569003678498">رپورٹ بھیج دی گئی:</translation>
 <translation id="154408704832528245">ڈیلیوری کا پتہ منتخب کریں</translation>
 <translation id="1549470594296187301">‏اس خصوصیت کا استعمال کرنے کیلئے JavaScript کا فعال ہونا لازمی ہے۔</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -217,6 +218,7 @@
 <translation id="1682696192498422849">چھوٹا کنارہ پہلے</translation>
 <translation id="168693727862418163">اس پالیسی کی قدر اس کے سکیما کو توثیق کرنے میں ناکام ہو گئی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="168841957122794586">سرور سرٹیفکیٹ میں ایک ہفتے کی کرپٹوگرافک کلید شامل ہے۔</translation>
+<translation id="1696290444144917273">ورچوئل کارڈ کی تفصیلات دیکھیں</translation>
 <translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ کی میعاد ممکنہ طور پر کل سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔}other{یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ کی میعاد ممکنہ طور پر مستقبل میں  # دن بعد سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔}}</translation>
@@ -228,6 +230,7 @@
 <translation id="1717494416764505390">میل باکس 3</translation>
 <translation id="1718029547804390981">دستاویز اتنی بڑی ہے کہ اس کی تشریح نہیں کی جا سکتی</translation>
 <translation id="1721424275792716183">* فیلڈ لازمی ہے</translation>
+<translation id="1727613060316725209">سرٹیفیکیٹ درست ہے</translation>
 <translation id="1727741090716970331">درست کارڈ نمبر شامل کریں</translation>
 <translation id="1728677426644403582">آپ ویب صفحہ کا ماخذ دیکھ رہے ہیں</translation>
 <translation id="173080396488393970">اس قسم کا کارڈ تعاون یافتہ نہیں ہے</translation>
@@ -661,6 +664,7 @@
 <translation id="3428151540071562330">‏ایک یا ایک سے زیادہ DnsOverHttpsTemplates سرور تمثیل URIs غلط ہیں اور استعمال نہیں کیے جائیں گے۔</translation>
 <translation id="3431636764301398940">اس کارڈ کو اس آلہ میں محفوظ کریں</translation>
 <translation id="3432601291244612633">صفحہ بند کریں</translation>
+<translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3435896845095436175">فعال کریں</translation>
 <translation id="3438829137925142401">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈ کا استعمال کریں</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -704,6 +708,7 @@
 <translation id="3586931643579894722">تفصیلات چھپائیں</translation>
 <translation id="3587738293690942763">وسطی</translation>
 <translation id="3590643883886679995">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔</translation>
+<translation id="359126217934908072">ماہ/سال:</translation>
 <translation id="3592413004129370115">Italian ‎(Envelope‎)‎</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3603507503523709">ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کیا گیا</translation>
@@ -759,6 +764,7 @@
 <translation id="3781428340399460090">گہرا گلابی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
+<translation id="3787675388804467730">ورچوئل کارڈ نمبر</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> کو میعاد ختم ہو رہی ہے</translation>
 <translation id="3789155188480882154">سائز 16</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
@@ -1426,6 +1432,7 @@
 <translation id="6289939620939689042">صفحے کا رنگ</translation>
 <translation id="6290238015253830360">آپ کے تجویز کردہ مضامین یہاں ظاہر ہوتے ہیں</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">‏Chrome میں Google اسسٹنٹ موقوف کی جا ر ہی ہے</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ناقابل رسائی ہے۔</translation>
 <translation id="6312113039770857350">ویب صفحہ دستیاب نہیں ہے</translation>
@@ -1558,6 +1565,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">‏پڑھنے کو زیادہ آسان بنانے کے ليے Chrome نے اس صفحے کو آسان بنایا۔ Chrome نے غیر محفوظ کنکشن پر اصل صفحہ کو بازیاب کیا۔</translation>
 <translation id="6891596781022320156">پالیسی کی سطح تعاون یافتہ نہیں ہے۔</translation>
+<translation id="6895143722905299846">ورچوئل نمبر:</translation>
 <translation id="6895330447102777224">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
 <translation id="6897140037006041989">صارف کا ایجنٹ</translation>
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
@@ -1596,6 +1604,7 @@
 <translation id="7014741021609395734">زوم کی سطح</translation>
 <translation id="7016992613359344582">یہ چارجز ایک بار یا بار بار عائد ہوسکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
+<translation id="7030436163253143341">سرٹیفیکیٹ درست نہیں ہے</translation>
 <translation id="7031646650991750659">‏آپ نے کن Google Play ایپس کو انسٹال کیا ہے</translation>
 <translation id="7050187094878475250">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک سرٹیفکیٹ پیش کیا جس کے جواز کا عرصہ اتنا طویل ہے کہ اس پر بھروسہ نہیں کیا جا سکتا۔</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{اس کارڈ کو ابھی محفوظ نہیں کیا جا سکتا}other{ان کارڈز کو ابھی محفوظ نہیں کیا جا سکتا}}</translation>

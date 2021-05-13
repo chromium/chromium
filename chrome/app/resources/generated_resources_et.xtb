@@ -358,7 +358,6 @@
 <translation id="138784436342154190">Kas taastada käivitamisel avatav vaikeleht?</translation>
 <translation id="1388253969141979417">Lubatud kasutada teie mikrofoni</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> taaskäivitub pärast värskendamise lõpetamist.</translation>
-<translation id="138900021244932468">Ühtegi profiili ei leitud. Uue võrgu seadistamiseks skannige QR-kood seadme kaameraga või sisestage operaatorilt saadud aktiveerimiskood.</translation>
 <translation id="139013308650923562">Võivad kasutada teie seadmesse installitud fonte</translation>
 <translation id="1390548061267426325">Ava tavalisel vahelehel</translation>
 <translation id="1393283411312835250">Päike ja pilved</translation>
@@ -5919,6 +5918,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7506541170099744506">Teie <ph name="DEVICE_TYPE" /> registreeriti ettevõtte halduse jaoks.</translation>
 <translation id="7507207699631365376">Vaadake selle teenusepakkuja <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">Olekuvastaja sertifikaat</translation>
+<translation id="7509246181739783082">Kinnitage oma isik</translation>
 <translation id="7513029293694390567">Teid logitakse salvestatud mandaadiga veebisaitidele automaatselt sisse. Kui see on keelatud, palutakse teilt iga kord enne veebisaidile sisselogimist kinnitust.</translation>
 <translation id="7514239104543605883">Kopeeri seadmesse</translation>
 <translation id="7514365320538308">Laadi alla</translation>
@@ -6451,7 +6451,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8061091456562007989">Taasta</translation>
 <translation id="8061991877177392872">Näib, et olete Voice Matchi oma assistendiga muus seadmes juba seadistanud. Neid varasemaid salvestisi kasutati häälemudeli loomiseks selles seadmes.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 paberileht}other{{COUNT} paberilehte}}</translation>
-<translation id="8062879968880283306">Skannige QR-kood seadme kaameraga või sisestage operaatorilt saadud aktiveerimiskood.</translation>
 <translation id="8063235345342641131">Roheline vaikeavatar</translation>
 <translation id="8063535366119089408">Kuva fail</translation>
 <translation id="8064279191081105977">Grupp <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -6872,7 +6871,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8553342806078037065">Teiste inimeste haldamine</translation>
 <translation id="8554899698005018844">Keel puudub</translation>
-<translation id="8555195867496021627">Saadaval ei ole ühtki eSIM-i profiili. Laadige uus profiil alla <ph name="BEGIN_LINK" />siit<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Hoidke sõrme turvavõtmel, kuni sõrmejälg jäädvustatakse</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ava kõik &amp;uues aknas}=1{Ava &amp;uues aknas}other{Ava kõik ({COUNT}) &amp;uues aknas}}</translation>
@@ -7052,7 +7050,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, ühenda</translation>
 <translation id="8746654918629346731">Taotlesite juba laiendust „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="874689135111202667">{0,plural, =1{Kas laadida sellele saidile üles üks fail?}other{Kas laadida sellele saidile üles # faili?}}</translation>
-<translation id="8749556627204742888">Jagate seda võrku teiste selle seadme kasutajatega.</translation>
 <translation id="8749805710397399240">Ekraanikuva ei saa üle kanda. Kontrollige süsteemieelistustes ekraanisalvestuse luba.</translation>
 <translation id="8749863574775030885">Juurdepääs tundmatu müüja USB-seadmetele</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> soovib järjestikpordiga ühendust luua</translation>
@@ -7114,7 +7111,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8808744862003883508">Sellel lehel näete kõiki Chrome'i installitud laiendusi.</translation>
 <translation id="8809147117840417135">Helesinakasroheline</translation>
 <translation id="8811862054141704416">Crostini juurdepääs mikrofonile</translation>
-<translation id="8812552797690463522">Seda võrku jagatakse teiega.</translation>
 <translation id="8812593354822910461">Kustutage ka sirvimisandmed (<ph name="URL" />). See võib teid saidilt <ph name="DOMAIN" /> välja logida. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Tuleta mulle hiljem meelde</translation>
 <translation id="8813698869395535039">Kasutaja <ph name="USERNAME" /> kontole ei saa sisse logida</translation>
@@ -7326,7 +7322,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="9021662811137657072">Leiti viirus</translation>
 <translation id="902236149563113779">Saidid jälgivad teie kaamera asendit tavaliselt AR-funktsioonide jaoks, nt mängudeks või juhiste esitamisel</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> juba kasutab arvutis seda kontot.</translation>
-<translation id="9023009238991294202">Teised selle seadme kasutajad saavad seda võrku kasutada.</translation>
 <translation id="9023015617655685412">Lisa vaheleht järjehoidjatesse …</translation>
 <translation id="9023909777842748145">Kui lülitate selle funktsiooni välja, saab seade endiselt saata oluliste teenuste (nagu süsteemivärskendused ja turvalisus) kasutamiseks vajalikku teavet.</translation>
 <translation id="9024127637873500333">&amp;Ava uuel vahelehel</translation>

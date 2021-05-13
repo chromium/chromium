@@ -41,7 +41,6 @@
 <translation id="124678866338384709">වත්මන් ටැබය වසන්න</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැකි විය</translation>
-<translation id="1276279242344007853">ඔබ අනුගමනය කරන අඩවි කළමනාකරණය කරන්න</translation>
 <translation id="1283039547216852943">දිග හැරීමට තට්ටු කරන්න</translation>
 <translation id="1285310382777185058">භාෂාව මාරු කරන්න</translation>
 <translation id="1291207594882862231">ඉතිහාසය, කුකීස්, අඩවි දත්ත, හැඹිලිය හිස් කරන්න...</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">ළඟදීම, ඔබ නව ටැබයක් විවෘත කරන විට <ph name="SITE_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත. අනුගමනය කිරීම් කළමනාකරණය කරන්න තුළ ඔබට ඔබ අනුගමනය කරන අඩවි පාලනය කළ හැකිය.</translation>
 <translation id="4699172675775169585">අනුරූ සහ ගොනු කෑෂ් කරන්න</translation>
 <translation id="4714588616299687897">ඔබේ දත්තවලින් 60%ක් දක්වා සුරකින්න</translation>
-<translation id="4716066120200945007">අනුගමනය කරයි</translation>
 <translation id="4719927025381752090">පරිවර්තනය කිරීමට පිරිනමන්න</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> හි විවෘත කරන්න</translation>
 <translation id="4720982865791209136">Chrome වැඩි දියුණුවට උදවු කරන්න. <ph name="BEGIN_LINK" />සමීක්ෂණය ගන්න<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
 <translation id="5942872142862698679">සෙවීම සඳහා Google භාවිත කරමින්</translation>
 <translation id="5951119116059277034">සජීවී පිටුව නරඹමින්</translation>
-<translation id="5951615825629292797">භාෂාව සූදානම්ය, <ph name="APP_NAME" /> යළි අරඹන්න</translation>
 <translation id="5952764234151283551">ඔබ Google වෙත ළඟා වීමට උත්සාහ කරන පිටුවේ URL යවයි</translation>
 <translation id="5956665950594638604">Chrome උදවු මධ්‍යස්ථානය නව ටැබයක විවෘත කරන්න</translation>
 <translation id="5957442310066583693">ඔබගේ ඉහළම අඩවි බැලීමට, මුල් පිටු බොත්තම තට්ටු කරන්න</translation>
@@ -1131,7 +1128,6 @@
 <translation id="834313815369870491">කිසි විටක අඩවි පරිවර්තනය නොකරන්න</translation>
 <translation id="8349013245300336738">භාවිත දත්ත ප්‍රමාණයේ එකතුව අනුව අනුපිළිවෙලට සකසන්න</translation>
 <translation id="835847953965672673">බාගැනීම් <ph name="NUMBER_OF_DOWNLOADS" />ක් ප්‍රතිසාධනය කරන ලදි</translation>
-<translation id="8362134094656482681">ඔබ ලැදිකමක් දක්වන මාතෘකා කළමනාකරණය කරන්න</translation>
 <translation id="8364299278605033898">ජනප්‍රිය වෙබ් අඩවි බලන්න</translation>
 <translation id="8368027906805972958">නොදන්නා හෝ සහය නොදැක්වෙන උපාංගය (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> සූදානම්ය.</translation>

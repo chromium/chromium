@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">បើក​ប្រអប់ព័ត៌មាន​សម្រាប់ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">ឧបករណ៍​ដែល​បាន​ផ្គូផ្គង</translation>
 <translation id="1165712434476988950">តម្រូវឱ្យ​ចាប់ផ្ដើម​ឧបករណ៍​ឡើងវិញ ដើម្បី​អនុវត្ត​កំណែថ្មី​។</translation>
+<translation id="1170240434488307589">ប៊ូតុងមីក្រូហ្វូន​របស់ឧបករណ៍ត្រូវ​បានបិទសំឡេង។</translation>
 <translation id="1175572348579024023">រំកិល</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">វិធីសាស្ត្រ​បញ្ចូលត្រូវ​បានកំណត់​រចនាសម្ព័ន្ធ​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1747827819627189109">ក្តារចុចលើអេក្រង់បានបើកដំណើរការ</translation>
 <translation id="1761222317188459878">បិទ/បើក​ការតភ្ជាប់​បណ្ដាញ។ <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច <ph name="LAUNCHER_KEY_NAME" /> + Period។ ដើម្បីប្រើគ្រាប់ចុច Insert សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace។</translation>
 <translation id="1771761307086386028">រំកិល​ទៅស្តាំ</translation>
 <translation id="1782199038061388045">ការបកប្រែ</translation>
 <translation id="1787955149152357925">បិទ</translation>

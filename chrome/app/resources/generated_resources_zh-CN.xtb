@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">需要更新 Chrome 操作系统</translation>
 <translation id="1067048845568873861">创建时间</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
+<translation id="1069355737714877171">移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="1070377999570795893">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的扩展程序。
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -980,6 +981,7 @@
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2044014337866019681">请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
+<translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
 <translation id="2045117674524495717">键盘快捷键助手</translation>
 <translation id="2045969484888636535">继续拦截 Cookie</translation>
@@ -4077,6 +4079,7 @@
 <translation id="5486261815000869482">确认密码</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" />正在与<ph name="TAB_NAME" />共享您的屏幕。</translation>
 <translation id="5486561344817861625">模拟浏览器重启</translation>
+<translation id="5487460042548760727">将配置文件重命名为“<ph name="PROFILE_NAME" />”</translation>
 <translation id="5487521232677179737">清除数据</translation>
 <translation id="5488093641312826914">已复制“<ph name="COPIED_ITEM_NAME" />”</translation>
 <translation id="5488508217173274228">同步加密选项</translation>
@@ -4818,6 +4821,7 @@
 <translation id="6308937455967653460">链接另存为(&amp;K)...</translation>
 <translation id="6309443618838462258">您的管理员不允许使用此输入法</translation>
 <translation id="6309510305002439352">麦克风已关闭</translation>
+<translation id="6310141306111263820">无法安装 eSIM 卡配置文件。如需帮助，请与您的运营商联系。</translation>
 <translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
 <translation id="6312403991423642364">未知网络错误</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前运行过安全检查}other{{NUM_DAYS} 天前运行过安全检查}}</translation>
@@ -5889,6 +5893,7 @@
 <translation id="7506541170099744506">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务。</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">状态响应程序证书</translation>
+<translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7513029293694390567">使用存储的凭据自动登录网站。停用该功能后，系统会在您每次登录网站时要求您进行确认。</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
@@ -5955,6 +5960,7 @@
 <translation id="7582582252461552277">首选此网络</translation>
 <translation id="7582844466922312471">移动数据</translation>
 <translation id="7583948862126372804">计数</translation>
+<translation id="7586051298768394542">无法下载语音识别结果文件。“语音输入”功能会继续运作，将您的语音内容发送给 Google。</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
 <translation id="7589461650300748890">注意！</translation>
 <translation id="7593653750169415785">已自动阻止显示通知，因为您已多次拒绝接收通知</translation>
@@ -6420,7 +6426,6 @@
 <translation id="8061091456562007989">改回原来的设置</translation>
 <translation id="8061991877177392872">您似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音用来在此设备上创建语音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 张纸}other{{COUNT} 张纸}}</translation>
-<translation id="8062879968880283306">使用设备的摄像头扫描二维码，或者输入您的运营商提供的激活码。</translation>
 <translation id="8063235345342641131">默认的绿色头像</translation>
 <translation id="8063535366119089408">查看文件</translation>
 <translation id="8064279191081105977">群组“<ph name="GROUP_NAME" />”- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6543,6 +6548,7 @@
 <translation id="8191230140820435481">管理您的应用、扩展程序和主题背景</translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8198323535106903877">我们将为您安装这 <ph name="NUMBER_OF_APPS" /> 款应用</translation>
+<translation id="8198456017687137612">正在投射标签页</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8201717382574620700">选择 <ph name="TOPIC_SOURCE" />影集</translation>
@@ -6839,7 +6845,6 @@
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
-<translation id="8555195867496021627">无可用的 eSIM 卡配置文件。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的配置文件。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
@@ -7019,7 +7024,6 @@
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，连接</translation>
 <translation id="8746654918629346731">您已请求安装“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="874689135111202667">{0,plural, =1{将 1 个文件上传到此网站？}other{将 # 个文件上传到此网站？}}</translation>
-<translation id="8749556627204742888">您正在与此设备的其他用户共享该网络。</translation>
 <translation id="8749805710397399240">无法投射您的屏幕。请在“系统偏好设置”中启用“屏幕录制”权限。</translation>
 <translation id="8749863574775030885">访问来自未知供应商的 USB 设备</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 想连接到串行端口</translation>
@@ -7081,7 +7085,6 @@
 <translation id="8808744862003883508">在此页面上，您可看到 Chrome 中已安装的所有扩展程序。</translation>
 <translation id="8809147117840417135">浅蓝绿色</translation>
 <translation id="8811862054141704416">Crostini 麦克风使用权限</translation>
-<translation id="8812552797690463522">已与您共享该网络。</translation>
 <translation id="8812593354822910461">一并清除浏览数据 (<ph name="URL" />)，这会使您在 <ph name="DOMAIN" /> 上退出帐号。<ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8813698869395535039">无法登录 <ph name="USERNAME" /></translation>
@@ -7126,6 +7129,7 @@
 <translation id="8847523528195140327">合盖后退出帐号</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>
+<translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函数参数</translation>
 <translation id="8853586775156634952">此信用卡信息将仅保存到此设备上</translation>
@@ -7292,7 +7296,6 @@
 <translation id="9021662811137657072">检测到病毒</translation>
 <translation id="902236149563113779">网站通常会跟踪您的摄像头位置以实现 AR 功能（例如游戏或方向提醒）</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在此计算机上使用该帐号。</translation>
-<translation id="9023009238991294202">此设备的其他用户将可以使用此网络。</translation>
 <translation id="9023015617655685412">为此标签页添加书签…</translation>
 <translation id="9023909777842748145">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
 <translation id="9024127637873500333">在新标签页中打开(&amp;O)</translation>

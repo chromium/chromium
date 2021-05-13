@@ -112,7 +112,7 @@
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2086623437239112659">Les infos de connexion que vous avez enregistrées sont peut-être obsolètes.</translation>
+<translation id="2086623437239112659">Les infos de connexion enregistrées sont peut-être obsolètes.</translation>
 <translation id="209018056901015185">Voir version ordinateur</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
@@ -188,6 +188,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2871695793448672541">Masqué, Mot de passe</translation>
 <translation id="2876369937070532032">Envoyer à Google les URL des pages que vous consultez présentant un risque pour votre sécurité</translation>
 <translation id="288655811176831528">Fermer l'onglet</translation>
+<translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
 <translation id="2898963176829412617">Nouveau dossier…</translation>
 <translation id="2916171785467530738">Saisir semi-automatiquement les recherches et les URL</translation>
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
@@ -627,6 +628,8 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7203585745079012652">Énoncer les réponses</translation>
 <translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme appli de navigation par défaut. <ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
+<translation id="722454870747268814">Nouvel onglet de navigation privée 
+</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
 <translation id="7291368939935408496">Préparation des mots de passe…</translation>

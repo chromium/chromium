@@ -650,6 +650,7 @@
 <translation id="3428151540071562330">一个或多个 DnsOverHttpsTemplates 服务器模板 URI 无效，因此不会被使用。</translation>
 <translation id="3431636764301398940">将此卡的信息保存到该设备</translation>
 <translation id="3432601291244612633">关闭页面</translation>
+<translation id="3435738964857648380">安全</translation>
 <translation id="3435896845095436175">启用</translation>
 <translation id="3438829137925142401">使用您 Google 帐号中保存的密码</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -1160,6 +1161,7 @@
 <translation id="5314967030527622926">手册制作工具</translation>
 <translation id="5316812925700871227">逆时针旋转</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5321288445143113935">最大化</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，第 <ph name="MATCH_POSITION" /> 个（共 <ph name="NUM_MATCHES" /> 个）</translation>
 <translation id="5324080437450482387">选择联系信息</translation>
 <translation id="5327248766486351172">名称</translation>
@@ -1385,6 +1387,7 @@
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
+<translation id="6232619828520900263">ID 目前无效</translation>
 <translation id="6234122620015464377">完成每份文档后裁切</translation>
 <translation id="6240447795304464094">Google Pay 徽标</translation>
 <translation id="6241121617266208201">隐藏建议</translation>

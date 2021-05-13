@@ -41,7 +41,6 @@
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
-<translation id="1276279242344007853">フォローしているサイトを管理します</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1285310382777185058">言語を変更する</translation>
 <translation id="1291207594882862231">履歴、Cookie、サイトデータ、キャッシュを削除…</translation>
@@ -550,7 +549,6 @@
 <translation id="4697543623252708062">まもなく、新しいタブを開くと、<ph name="SITE_NAME" /> のストーリーが表示されるようになります。[フォローを管理] でフォローするサイトを管理できます。</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4714588616299687897">データを最大 60% 削減できます</translation>
-<translation id="4716066120200945007">フォロー中</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
 <translation id="4720982865791209136">Chrome の品質向上にご協力ください。<ph name="BEGIN_LINK" />アンケートに回答する<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@
 <translation id="5939518447894949180">リセット</translation>
 <translation id="5942872142862698679">検索に Google を使用します</translation>
 <translation id="5951119116059277034">実際のページを表示しています</translation>
-<translation id="5951615825629292797">言語を使用できるようになりました。<ph name="APP_NAME" /> を再起動してください</translation>
 <translation id="5952764234151283551">アクセスしようとしているページの URL を Google に送信します</translation>
 <translation id="5956665950594638604">Chrome ヘルプセンターを新しいタブで開く</translation>
 <translation id="5957442310066583693">よく使用するサイトを表示するには、ホームボタンをタップします</translation>
@@ -1131,10 +1128,10 @@
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8349013245300336738">データ使用量で並べ替え</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードが復元されました</translation>
-<translation id="8362134094656482681">興味のあるトピックを管理します</translation>
 <translation id="8364299278605033898">人気のウェブサイトを表示します</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> を使用できるようになりました。</translation>
+<translation id="8387617938027387193">本人確認</translation>
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8410695015584479363">料金をチェック</translation>
 <translation id="8413126021676339697">全履歴を表示</translation>

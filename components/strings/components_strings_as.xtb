@@ -656,6 +656,7 @@
 <translation id="3428151540071562330">এটা অথবা একাধিক DnsOverHttpsTemplates ছার্ভাৰ টেমপ্লেটৰ URIসমূহ মান্য নহয় আৰু সেয়া ব্যৱহাৰ কৰা নহ’ব।</translation>
 <translation id="3431636764301398940">এই ডিভাইচটোত এই কাৰ্ডখন ছেভ কৰক</translation>
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
+<translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3435896845095436175">সক্ষম কৰক</translation>
 <translation id="3438829137925142401">আপোনাৰ Google একাউণ্টত ছেভ কৰা পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -1170,6 +1171,7 @@
 <translation id="5314967030527622926">বুকলেট প্ৰস্তুত কৰোঁতা</translation>
 <translation id="5316812925700871227">ঘড়ীৰ কাঁটাৰ বিপৰীত দিশত ঘূৰাওক</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
+<translation id="5321288445143113935">আকাৰ বিস্তাৰিত কৰা হ'ল</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />ৰ <ph name="MATCH_POSITION" /></translation>
 <translation id="5324080437450482387">সম্পর্কৰ তথ্য বাছনি কৰক</translation>
 <translation id="5327248766486351172">নাম</translation>
@@ -1394,6 +1396,7 @@
 <translation id="6218753634732582820">Chromiumৰ পৰা ঠিকনা আঁতৰাবনে?</translation>
 <translation id="622039917539443112">সমান্তৰালকৈ ফ'ল্ড কৰক</translation>
 <translation id="6221345481584921695">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়। ক্ষতিকাৰক সমল এটা জনাজাত মালৱেৰ বিতৰণকাৰী <ph name="SUBRESOURCE_HOST" />ৰ পৰা আহে।</translation>
+<translation id="6232619828520900263">বৰ্তমান আইডিটো মান্য নহয়</translation>
 <translation id="6234122620015464377">প্ৰতিখন নথিৰ পাছত ট্ৰিম কৰক</translation>
 <translation id="6240447795304464094">Google Pay ৰ ল’গ’</translation>
 <translation id="6241121617266208201">পৰামৰ্শসমূহ লুকুৱাওক</translation>

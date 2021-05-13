@@ -380,6 +380,13 @@
 <translation id="1516486219683984217">システム通知の使用を許可しない</translation>
 <translation id="1522425503138261032">サイトに対してユーザーの物理的な現在地の追跡を許可する</translation>
 <translation id="1523774894176285446">設定したウェブサイトに対して起動する代替ブラウザ。</translation>
+<translation id="1524243669991877602">このポリシーを有効に設定した場合、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> アカウントに関連付けられているポリシーをマシンレベルのポリシーに統合できます。
+
+      なお、統合できるのはセキュア ユーザーのポリシーのみです。セキュア ユーザーとは、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> を使用してブラウザを管理している企業に所属するユーザーです。他のすべてのユーザーレベルのポリシーは常に無視されます。
+
+      ポリシーを統合するには、<ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> または <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" /> での設定も必要です。これら 2 つのポリシーのどちらも設定していない場合、このポリシーは無視されます。
+
+      このポリシーを未設定のままにするか無効に設定した場合、ユーザーレベルのクラウド ポリシーを他のソースのポリシーと統合することはできません。</translation>
 <translation id="152657506688053119">デフォルトの検索プロバイダが使用する代替 URL のリスト</translation>
 <translation id="1527298988676981599">ログイン画面で特定のベンダー ID と製品 ID の USB デバイスへのアクセスを自動的に許可するサイトの URL パターンリストを設定できます。リストの各項目では、「<ph name="DEVICES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="DEVICES_FIELD_NAME" />」フィールドの各項目には、「<ph name="VENDOR_ID_FIELD_NAME" />」と「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定できます。「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドを省略した場合、あらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを省略した場合、指定したベンダー ID のあらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定して「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドは指定しなかった場合、ポリシーは無効になります。
 
@@ -420,17 +427,6 @@
       詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
 <translation id="1587585749332985896">ヘッドレス モードの使用を許可しない</translation>
 <translation id="1588240398285670601">ブラウザの設定</translation>
-<translation id="1590071725627230651">この設定は、<ph name="LACROS_NAME" /> ブラウザの使用に関する複数のオプションを提供します。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定するか、未設定のままにした場合、ユーザーは <ph name="LACROS_NAME" /> を有効にするとともにメインのブラウザとして設定できます。この場合も、<ph name="LACROS_NAME" /> は <ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーで無効にできます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> に設定した場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になりますが、メインのブラウザとしては設定されません。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になり、メインのブラウザとして設定されます。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      今後、<ph name="PRODUCT_OS_NAME" /> で <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 値を使用して、<ph name="LACROS_NAME" /> を唯一の使用可能なブラウザとして設定できるようになる予定です。</translation>
 <translation id="1599424828227887013">Android デバイスで指定の発行元に対してサイト分離を有効にする</translation>
 <translation id="159946228300522107">このポリシーを True に設定した場合、Chrome では初回実行時に最初に表示されたウィンドウが最大化されます。このポリシーを False に設定した場合、または未設定のままにした場合、画面サイズによっては、Chrome で最初に表示されたウィンドウが最大化されます。</translation>
 <translation id="1600340610556453828">このポリシーを無効に設定した場合、<ph name="PRODUCT_OS_NAME" /> で Wi-Fi がオフになり、ユーザーはこの設定を変更できません。
@@ -1147,6 +1143,7 @@
           このポリシーを未設定のままにした場合、テキストカーソルによるハイライト表示が無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
 <translation id="2509748672176727116">ネットワーク パケット キャプチャの実行をユーザーに許可する</translation>
 <translation id="2509919237512982967">M84 まで従来のフォーム コントロールを使用する</translation>
+<translation id="2512972020817284317">ユーザーレベルのクラウド ポリシーの統合を有効にする。</translation>
 <translation id="2515699738406900920">起動時のプロフィール選択画面の状態</translation>
 <translation id="2517466659416174529">バックグラウンド タブの凍結を許可する</translation>
 <translation id="2518231489509538392">音声の再生を許可する</translation>
@@ -2671,6 +2668,7 @@
 
       注: この設定は <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> より優先されます（指定されている場合）。</translation>
 <translation id="4661889655253181651">[コンテンツの設定] では、特定のタイプのコンテンツ（Cookie、画像、JavaScript など）を処理する方法を指定できます。</translation>
+<translation id="4663509616441994711">ユーザーレベルのクラウド ポリシーの統合を無効にする。</translation>
 <translation id="4665897631924472251">拡張機能の管理設定</translation>
 <translation id="4666930704271463612">サーバー プリンタについてのクエリを送信するプリント サーバーのサブセットを指定します。
 
@@ -5076,6 +5074,7 @@
 
           このポリシーを設定しない場合、ハイ コントラストは初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
 <translation id="7869986671709030417">背景のグラフィックのデフォルト印刷モード</translation>
+<translation id="7877924399554599110">ユーザーのクラウド ポリシーをマシンレベルのポリシーに統合できる</translation>
 <translation id="7881421274383404138">このポリシーでは、企業プリンタを設定します。フォーマットは <ph name="PRINTERS_POLICY_NAME" /> ディクショナリと一致させ、許可リストまたは拒否リストに登録するプリンタごとに「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドを追加で指定する必要があります。ファイルのサイズは 5 MB 以下とし、JSON 形式にします。5 MB は、約 21,000 台のプリンタを指定してエンコードしたファイルに相当します。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。このファイルはダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。<ph name="PRODUCT_OS_NAME" /> ではプリンタ設定ファイルがダウンロードされ、<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />、<ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> に沿ってプリンタが利用可能になります。
 
       このポリシーでは、ユーザーが各自のデバイスでプリンタを設定できるかどうかは制御されません。このポリシーは、個々のユーザーのプリンタ設定を補完することを目的としたものです。

@@ -41,7 +41,6 @@
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">Управувајте со сајтовите што ги следите</translation>
 <translation id="1283039547216852943">Допрете за да се прошири</translation>
 <translation id="1285310382777185058">Изменете го јазикот</translation>
 <translation id="1291207594882862231">Исчистете ги историјата, колачињата, податоците на сајтот, кешот…</translation>
@@ -550,7 +549,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4697543623252708062">Наскоро ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Може да ги контролирате сајтовите што ги следите во „Управувајте со сајтовите што ги следите“.</translation>
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4714588616299687897">Заштедете до 60% од сообраќајот</translation>
-<translation id="4716066120200945007">СЕ СЛЕДИ</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720023427747327413">Отвори во <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогнете да се подобри Chrome. <ph name="BEGIN_LINK" />Учествувајте во анкетата<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="5942872142862698679">Се користи Google за пребарување</translation>
 <translation id="5951119116059277034">Се прикажува активна страница</translation>
-<translation id="5951615825629292797">Јазикот е подготвен, рестартирајте ја <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Ја испраќа URL-адресата од страница до којашто се обидувате да стигнете до Google</translation>
 <translation id="5956665950594638604">Отвори „Центар за помош на Chrome“ во нова картичка</translation>
 <translation id="5957442310066583693">За да ги гледате најдобрите сајтови, допрете го копчето за почетен екран</translation>
@@ -1131,7 +1128,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8349013245300336738">Подреди по количина на искористен сообраќај</translation>
 <translation id="835847953965672673">Вратени се <ph name="NUMBER_OF_DOWNLOADS" /> преземања</translation>
-<translation id="8362134094656482681">Управувајте со темите што ве интересираат</translation>
 <translation id="8364299278605033898">Разгледајте ги популарните веб-сајтови</translation>
 <translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> е подготвен.</translation>

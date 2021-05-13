@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="1153356358378277386">कनेक्ट गरिएका डिभाइस</translation>
 <translation id="1165712434476988950">यो अपडेट लागू गर्न डिभाइस रिस्टार्ट गर्नु पर्ने हुन्छ।</translation>
+<translation id="1170240434488307589">डिभाइसमा रहेको माइक्रोफोन बटन म्युट छ।</translation>
 <translation id="1175572348579024023">स्क्रोल गर्नुहोस्</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
 <translation id="1761222317188459878">नेटवर्क जडान टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
 <translation id="1787955149152357925">अफ छ</translation>
@@ -792,7 +794,7 @@
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7618774594543487847">तटस्थ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">नजिकैका यन्त्रसँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
+<translation id="7633755430369750696">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
 <translation id="7641938616688887143">रेकर्ड गर्नुहोस्</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
@@ -985,7 +987,7 @@
 <translation id="9105450214093926548">Lacros ब्राउजर चलिरहेका बेला अर्का प्रयोगकर्ताले साइन इन गर्न मिल्दैन। कृपया Lacros मा अर्को ब्राउजर प्रोफाइल प्रयोग गर्नुहोस् वा Lacros बन्द गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9151726767154816831">अद्यावधिक गर्न रिस्टार्ट गरी powerwash गर्नुहोस्</translation>
-<translation id="9166331175924255663">नजिकैका यन्त्रसँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी टगल गर्नुहोस्।</translation>
+<translation id="9166331175924255663">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी टगल गर्नुहोस्।</translation>
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>

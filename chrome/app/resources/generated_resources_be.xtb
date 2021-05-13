@@ -359,7 +359,6 @@
 <translation id="138784436342154190">Аднавіць стандартную пачатковую старонку?</translation>
 <translation id="1388253969141979417">Дазволена выкарыстоўваць мікрафон</translation>
 <translation id="1388728792929436380">Пасля завяршэння абнаўлення прылада "<ph name="DEVICE_TYPE" />" перазапусціцца.</translation>
-<translation id="138900021244932468">Профіляў не выяўлена. Каб наладзіць новую сетку, адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, атрыманы ад аператара.</translation>
 <translation id="139013308650923562">Сайты, якім дазволена выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
 <translation id="1390548061267426325">Адкрыць у звычайнай укладцы</translation>
 <translation id="1393283411312835250">Сонца і аблокі</translation>
@@ -516,6 +515,7 @@
 <translation id="1545775234664667895">Усталявана тэма "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Пашырэнне змяніла старонку, якая адкрываецца пры націсканні кнопкі галоўнай старонкі.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> хоча ўсталяваць пашырэнне <ph name="EXTENSION_TYPE" />, якое зможа:</translation>
+<translation id="1547808936554660006">Я разумею, што, калі я выкарыстаю Powerwash, усталяваныя профілі eSIM-карты выдалены не будуць</translation>
 <translation id="1549275686094429035">Тэхналогія ARC уключана</translation>
 <translation id="1549788673239553762">Праграма "<ph name="APP_NAME" />" запытвае доступ да <ph name="VOLUME_NAME" />. Яна можа змяніць або выдаліць вашы файлы.</translation>
 <translation id="1552301827267621511">Пашырэнне "<ph name="EXTENSION_NAME" />" зрабіла стандартнай пошукавай сістэмай наступную: <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -552,6 +552,7 @@
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="158849752021629804">Патрабуецца хатняя сетка</translation>
 <translation id="1588870296199743671">Адкрыць спасылку з дапамогай...</translation>
+<translation id="1588919647604819635">Картка пры націсканні правай кнопкай мышы</translation>
 <translation id="1589055389569595240">Паказваць парады па правапісе і граматыцы</translation>
 <translation id="1591679663873027990">Дазволіць Parallels Desktop доступ да прылад USB. Parallels Desktop не захавае даных пра прыладу USB пасля яе вымання.</translation>
 <translation id="1592074621872221573">Сайт <ph name="MANAGER" /> выключыў адладку ADB, што прывядзе да скіду налад прылады <ph name="DEVICE_TYPE" />. Зрабіце рэзервовыя копіі файлаў перад яе перазапускам.</translation>
@@ -987,6 +988,7 @@
 
 Для кіравання наладамі ўліковага запісу можна ўсталяваць на прыладу праграму Family Link.  Мы адправілі вам інструкцыі па электроннай пошце.</translation>
 <translation id="2040460856718599782">Памылка!  Падчас аўтэнтыфікацыі нешта пайшло не так.  Праверце ўліковыя даныя і паўтарыце спробу.</translation>
+<translation id="2042279886444479655">Актыўныя профілі</translation>
 <translation id="2044014337866019681">Каб разблакіраваць сеанс, вы павінны спраўдзіць уліковы запіс <ph name="ACCOUNT" />.</translation>
 <translation id="2044023416777079300">Мадэм не зарэгістраваны</translation>
 <translation id="204497730941176055">Назва шаблона сертыфіката Microsoft</translation>
@@ -1325,6 +1327,7 @@
 <translation id="2395616325548404795">Ваша прылада <ph name="DEVICE_TYPE" /> паспяхова зарэгістравана для карпаратыўнага кіравання, але не адправіла інфармацыю аб аб'екце ўласнасці і месцазнаходжанні. Увядзіце гэту інфармацыю пра прыладу ўручную на кансолі адміністратара.</translation>
 <translation id="2396387085693598316">Адміністратар заблакіраваў пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Увядзіце 4-значны PIN-код (0000–9999)</translation>
+<translation id="2398546389094871088">Пры выкарыстанні функцыі Powerwash для скіду налад профілі eSIM-карты не выдаляюцца. Іх можна выдаліць уручную ў <ph name="LINK_BEGIN" />наладах мабільнай прылады<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Апавяшчэнні ўключаны</translation>
 <translation id="2399939490305346086">Уліковыя даныя ключа бяспекі</translation>
 <translation id="2400664245143453337">Патрабуецца неадкладнае абнаўленне</translation>
@@ -1741,6 +1744,7 @@
 <translation id="2844809857160214557">Прагляд заданняў друку і кіраванне імі</translation>
 <translation id="2845382757467349449">Заўсёды паказваць панэль закладак</translation>
 <translation id="284805635805850872">Выдаліць шкоднае праграмнае забеспячэнне?</translation>
+<translation id="2849035674501872372">Знайсці</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Не ўдалося выканаць ачыстку</translation>
 <translation id="2849936225196189499">Крытычна важнае</translation>
@@ -2052,6 +2056,7 @@
 <translation id="3189187154924005138">Вялікі курсор</translation>
 <translation id="3190558889382726167">Пароль захаваны</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
+<translation id="3197453258332670132">Па націсканні правай кнопкай мышы або доўгім націсканні паказваць звязаную інфармацыю пра вылучаны вамі тэкст</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3201422919974259695">Тут з'явяцца даступныя прылады USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
@@ -2073,6 +2078,7 @@
 <translation id="3223531857777746191">Кнопка "Скінуць"</translation>
 <translation id="3225084153129302039">Стандартны фіялетавы аватар</translation>
 <translation id="3225319735946384299">Падпісванне кода</translation>
+<translation id="3226487301970807183">Паказаць або схаваць бакавую панэль злева</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3233271424239923319">Стварыць рэзервовую копію файлаў і праграм Linux</translation>
 <translation id="3238192140106069382">Ідзе падключэнне і спраўджанне</translation>
@@ -2342,6 +2348,7 @@
 <translation id="3515983984924808886">Каб пацвердзіць скід, дакраніцеся да ключа бяспекі яшчэ раз. Уся захаваная на ключы бяспекі інфармацыя, у тым ліку яго PIN-код, будзе выдалена.</translation>
 <translation id="3518985090088779359">Прыняць і працягнуць</translation>
 <translation id="3519564332031442870">Серверны сэрвіс друку</translation>
+<translation id="3519938335881974273">Захаваць старонку як...</translation>
 <translation id="3521606918211282604">Змяніць памер дыска</translation>
 <translation id="3522088408596898827">Вельмі мала месца на дыску. Вызваліце месца на дыску і паўтарыце спробу.</translation>
 <translation id="3524965460886318643">Экспартаваць дзеянні</translation>
@@ -2365,6 +2372,7 @@
 <translation id="3550593477037018652">Выключыць сотавую сетку</translation>
 <translation id="3550915441744863158">Chrome абнаўляецца аўтаматычна, таму ў вас заўсёды будзе ўсталявана апошняя версія</translation>
 <translation id="3551320343578183772">Закрыць укладку</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Будзе выдалены пры выхадзе</translation>
 <translation id="3554493885489666172">Гэтай прыладай кіруе <ph name="PROFILE_NAME" />. Адміністратары маюць доступ да даных ва ўсіх профілях на гэтай прыладзе.</translation>
 <translation id="3555812735919707620">Выдаліць пашырэнне</translation>
@@ -2417,6 +2425,7 @@
 <translation id="3604713164406837697">Змяніць шпалеры</translation>
 <translation id="3605780360466892872">Бізнесмен</translation>
 <translation id="3608576286259426129">Папярэдні прагляд відарыса карыстальніка</translation>
+<translation id="3609277884604412258">Хуткі пошук</translation>
 <translation id="3610369246614755442">Вентылятару док-станцыі патрабуецца абслугоўванне</translation>
 <translation id="361106536627977100">Даныя Flash</translation>
 <translation id="3611655097742243705">Больш праграм можна знайсці ў Краме Play</translation>
@@ -3360,6 +3369,7 @@
 <translation id="4636682061478263818">Файлы на Дыску</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4637083375689622795">Іншыя дзеянні, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Выкарыстаць камеру яшчэ раз</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Тэкст}one{# тэкст}few{# тэксты}many{# тэкстаў}other{# тэксту}}</translation>
 <translation id="4638930039313743000">Уключыць адладку ADB</translation>
 <translation id="4641539339823703554">Браўзеру Chrome не ўдалося задаць сістэмны час. Праверце ўказаны ніжэй час і пры неабходнасці выправіце яго.</translation>
@@ -4108,6 +4118,7 @@
 <translation id="5499313591153584299">Гэты файл можа нанесці шкоду вашаму камп'ютару.</translation>
 <translation id="5499453227627332024">Для кантэйнера Linux ёсць абнаўленне. Усталяваць абнаўленне можна будзе і пазней – з праграмы "Налады".</translation>
 <translation id="5500709606820808700">Праверка бяспекі выконвалася сёння</translation>
+<translation id="5501322521654567960">Бакавая панэль злева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="5502500733115278303">Імпартаваныя з браўзера Firefox</translation>
 <translation id="5502915260472117187">Дзіця</translation>
@@ -5316,6 +5327,7 @@
 <translation id="6856348640027512653">Не маюць дазволу выкарыстоўваць даныя або прылады віртуальнай рэальнасці</translation>
 <translation id="6856459657722366306">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="6856623341093082836">Наладзіць і адрэгуляваць дакладнасць сэнсарнага экрана</translation>
+<translation id="6857145580237920905">Перш чым выкарыстаць Powerwash, выдаліце профілі eSIM-карты</translation>
 <translation id="6857699260879628349">Паглядзець інфармацыю аб канфігурацыі</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6860097299815761905">Налады проксі-сервера...</translation>
@@ -5760,6 +5772,7 @@
 <translation id="7361297102842600584">Націсніце правай клавішай мышы, каб запусціць <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сайты могуць запытваць дазвол на падключэнне да прылад з Bluetooth</translation>
 <translation id="7364591875953874521">Доступ запытаны</translation>
+<translation id="7364745943115323529">Трансліраваць...</translation>
 <translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="7365076891350562061">Памер манітора</translation>
 <translation id="7366316827772164604">Ідзе пошук прылад паблізу…</translation>
@@ -5896,6 +5909,7 @@
 <translation id="7506541170099744506">Ваша прылада (<ph name="DEVICE_TYPE" />) паспяхова зарэгістравана для карпаратыўнага кіравання.</translation>
 <translation id="7507207699631365376">Азнаёміцца з <ph name="BEGIN_LINK" />палітыкай прыватнасці<ph name="END_LINK" /> гэтага пастаўшчыка</translation>
 <translation id="7507930499305566459">Сертыфікат паведамлення аб стане</translation>
+<translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
 <translation id="7513029293694390567">Аўтаматычна ўваходзіць на вэб-сайты, выкарыстоўваючы захаваныя ўліковыя даныя. Калі функцыя выключана, ад вас будзе патрабавацца пацвярджэнне пры кожным уваходзе ва ўліковы запіс на вэб-сайце.</translation>
 <translation id="7514239104543605883">Скапіраваць на прыладу</translation>
 <translation id="7514365320538308">Спампаваць</translation>
@@ -6427,7 +6441,6 @@
 <translation id="8061091456562007989">Вярнуць ранейшыя налады</translation>
 <translation id="8061991877177392872">Здаецца, вы ўжо наладзілі работу функцыі Voice Match з Памочнікам на іншай прыладзе. Зробленыя пры наладцы запісы былі выкарыстаны для стварэння галасавой мадэлі на гэтай прыладзе.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперы}one{{COUNT} аркуш паперы}few{{COUNT} аркушы паперы}many{{COUNT} аркушаў паперы}other{{COUNT} аркуша паперы}}</translation>
-<translation id="8062879968880283306">Адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, дадзены аператарам.</translation>
 <translation id="8063235345342641131">Стандартны зялёны аватар</translation>
 <translation id="8063535366119089408">Прагледзець файл</translation>
 <translation id="8064279191081105977">Група "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -6848,7 +6861,6 @@
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8553342806078037065">Іншыя карыстальнікі</translation>
 <translation id="8554899698005018844">Мова не выбрана</translation>
-<translation id="8555195867496021627">Даступных профіляў eSIM няма. Спампуйце новы профіль <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Каб дадаць адбітак пальца, націскайце на ключ бяспекі</translation>
 <translation id="8557930019681227453">Маніфест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
@@ -7028,7 +7040,6 @@
 <translation id="8743164338060742337">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падключыцеся да сеткі</translation>
 <translation id="8746654918629346731">Вы ўжо зрабілі запыт на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Запампаваць адзін файл на гэты сайт?}one{Запампаваць # файл на гэты сайт?}few{Запампаваць # файлы на гэты сайт?}many{Запампаваць # файлаў на гэты сайт?}other{Запампаваць # файла на гэты сайт?}}</translation>
-<translation id="8749556627204742888">Вы абагульваеце гэту сетку з іншымі карыстальнікамі гэтай прылады.</translation>
 <translation id="8749805710397399240">Не ўдалося трансліраваць ваш экран. Праверце наяўнасць дазволу на запіс экрана ў наладах System Preferences.</translation>
 <translation id="8749863574775030885">Доступ да USB-прылад ад невядомага пастаўшчыка</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> хоча падключыцца да серыйнага порта</translation>
@@ -7093,7 +7104,6 @@
 <translation id="8808744862003883508">На гэтай старонцы можна бачыць усе ўсталяваныя ў Chrome пашырэнні.</translation>
 <translation id="8809147117840417135">Светла-бірузовы</translation>
 <translation id="8811862054141704416">Доступ да мікрафона ў Crostini</translation>
-<translation id="8812552797690463522">Гэта сетка абагулена з вамі.</translation>
 <translation id="8812593354822910461">Таксама выдаліць гісторыю праглядаў сайта (<ph name="URL" />), што можа прывесці да выхаду з уліковага запісу на дамене <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8813698869395535039">Не ўдаецца ўвайсці ва ўліковы запіс <ph name="USERNAME" /></translation>
@@ -7305,7 +7315,6 @@
 <translation id="9021662811137657072">Выяўлены вірус</translation>
 <translation id="902236149563113779">Сайты звычайна адсочваюць становішча камеры для функцый дапоўненай рэальнасці (напрыклад, для гульняў або ўказання маршрутаў)</translation>
 <translation id="9022847679183471841">Гэты ўліковы запіс ужо выкарыстоўваецца на гэтым камп'ютары карыстальнікам <ph name="AVATAR_NAME" />.</translation>
-<translation id="9023009238991294202">Іншыя карыстальнікі прылады могуць выкарыстоўваць гэту сетку.</translation>
 <translation id="9023015617655685412">Дадаць гэту ўкладку ў закладкі...</translation>
 <translation id="9023909777842748145">Выключэнне гэтай функцыі не ўплывае на адпраўку прыладай інфармацыі, неабходнай для працы асноўных сэрвісаў, такіх як абнаўленне сістэмы і бяспека прылады.</translation>
 <translation id="9024127637873500333">&amp;Адкрыць у новай укладцы</translation>

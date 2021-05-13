@@ -358,7 +358,6 @@
 <translation id="138784436342154190">Restore default start-up page?</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
-<translation id="138900021244932468">No profiles were discovered. To set up a new network, scan the QR code using the device camera or enter the activation code provided by your operator.</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1390548061267426325">Open as a standard tab</translation>
 <translation id="1393283411312835250">Sun and clouds</translation>
@@ -5929,6 +5928,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7506541170099744506">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management.</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">Status Responder Certificate</translation>
+<translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7513029293694390567">Automatically sign in to websites using stored credentials. If disabled, you will be asked for confirmation every time before signing in to a website.</translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
@@ -6461,7 +6461,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8061091456562007989">Change it back</translation>
 <translation id="8061991877177392872">It looks as though you've already set up Voice Match with your Assistant on another device. These previous recordings were used to make a voice model on this device.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 sheet of paper}other{{COUNT} sheets of paper}}</translation>
-<translation id="8062879968880283306">Scan QR code using device camera or enter activation code provided by your operator.</translation>
 <translation id="8063235345342641131">Default green avatar</translation>
 <translation id="8063535366119089408">View file</translation>
 <translation id="8064279191081105977">Group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -6882,7 +6881,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8551588720239073785">Date and time settings</translation>
 <translation id="8553342806078037065">Manage other people</translation>
 <translation id="8554899698005018844">No language</translation>
-<translation id="8555195867496021627">No available eSIM profiles. Download a new profile <ph name="BEGIN_LINK" />here.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
@@ -7062,7 +7060,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, connect</translation>
 <translation id="8746654918629346731">You already requested '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="874689135111202667">{0,plural, =1{Upload one file to this site?}other{Upload # files to this site?}}</translation>
-<translation id="8749556627204742888">You are sharing this network with other users of this device.</translation>
 <translation id="8749805710397399240">Unable to cast your screen. Check the Screen recording permission in system preferences.</translation>
 <translation id="8749863574775030885">Access USB devices from an unknown vendor</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> wants to connect to a serial port</translation>
@@ -7124,7 +7121,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8808744862003883508">On this page you can see all the extensions installed in Chrome.</translation>
 <translation id="8809147117840417135">Light teal</translation>
 <translation id="8811862054141704416">Crostini microphone access</translation>
-<translation id="8812552797690463522">This network is shared with you.</translation>
 <translation id="8812593354822910461">Also clear browsing data (<ph name="URL" />) which will sign you out of <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8813698869395535039">Can't sign in to <ph name="USERNAME" /></translation>
@@ -7336,7 +7332,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9021662811137657072">Virus detected</translation>
 <translation id="902236149563113779">Sites usually track your camera position for AR features, like games or heads-up directions</translation>
 <translation id="9022847679183471841">This account is already being used on this computer by <ph name="AVATAR_NAME" />.</translation>
-<translation id="9023009238991294202">Other users of this device can use this network.</translation>
 <translation id="9023015617655685412">Bookmark this tab...</translation>
 <translation id="9023909777842748145">Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.</translation>
 <translation id="9024127637873500333">&amp;Open in New Tab</translation>

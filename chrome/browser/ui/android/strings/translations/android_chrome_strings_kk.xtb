@@ -41,7 +41,6 @@
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> бөлісу мүмкін болмады.</translation>
-<translation id="1276279242344007853">Жазылған сайттарыңызды басқарыңыз.</translation>
 <translation id="1283039547216852943">Жаю үшін түртіңіз</translation>
 <translation id="1285310382777185058">Тілді ауыстыру</translation>
 <translation id="1291207594882862231">Тарихты, cookie файлдарын, сайт деректерін, кэшті жою…</translation>
@@ -550,7 +549,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4697543623252708062">Жаңа қойындыны ашқан кезде, жаңалықтарды <ph name="SITE_NAME" /> сайтынан көре аласыз. Жазылған сайттарыңызды "Жазылымдарды басқару" бөлімінде басқара аласыз.</translation>
 <translation id="4699172675775169585">Кэштелген кескіндер мен файлдар</translation>
 <translation id="4714588616299687897">Трафикті 60%-ға дейін үнемдеңіз</translation>
-<translation id="4716066120200945007">ЖАЗЫЛЫМДАР</translation>
 <translation id="4719927025381752090">Аудармасын ұсыну</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ішінен ашу</translation>
 <translation id="4720982865791209136">Chrome браузерін жақсартуға көмектесіңіз. <ph name="BEGIN_LINK" />Сауалнамаға қатысыңыз<ph name="END_LINK" /></translation>
@@ -752,7 +750,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5939518447894949180">Қалпына келтіру</translation>
 <translation id="5942872142862698679">Google қызметімен іздеу</translation>
 <translation id="5951119116059277034">Онлайн бет</translation>
-<translation id="5951615825629292797">Тіл бумасы дайын. <ph name="APP_NAME" /> қолданбасын қайта қосыңыз.</translation>
 <translation id="5952764234151283551">Кіргіңіз келетін беттің URL мекенжайын Google-ға жібереді</translation>
 <translation id="5956665950594638604">Chrome анықтама орталығын жаңа қойындыда ашу</translation>
 <translation id="5957442310066583693">Жиі қолданатын сайттарыңызды көру үшін негізгі экран түймесін түртіңіз.</translation>
@@ -1131,10 +1128,10 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="834313815369870491">Ешқашан сайттарды аудармау</translation>
 <translation id="8349013245300336738">Пайдаланылған деректер көлемі бойынша сұрыптау</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> жүктеп алынған файл қалпына келтірілді.</translation>
-<translation id="8362134094656482681">Өзіңізді қызықтыратын тақырыптарды басқарыңыз.</translation>
 <translation id="8364299278605033898">Танымал веб-сайттарды көріңіз.</translation>
 <translation id="8368027906805972958">Белгісіз немесе жарамсыз құрылғы (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> тіл бумасы дайын.</translation>
+<translation id="8387617938027387193">Жеке басыңызды растаңыз</translation>
 <translation id="8393700583063109961">Хабар жіберу</translation>
 <translation id="8410695015584479363">Бағаларды қадағалау</translation>
 <translation id="8413126021676339697">Толық журналды көрсету</translation>

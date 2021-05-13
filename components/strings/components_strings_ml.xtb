@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">ഈ പേജ് പറയുന്നത്:</translation>
 <translation id="153384715582417236">ഇപ്പോൾ ഇത്രമാത്രം ലഭ്യം</translation>
 <translation id="1536390784834419204">പേജ് വിവർത്തനം ചെയ്യുക</translation>
+<translation id="1539840569003678498">റിപ്പോർട്ട് അയച്ചു:</translation>
 <translation id="154408704832528245">ഡെലിവറി നൽകേണ്ട വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1549470594296187301">ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ JavaScript പ്രവർത്തനക്ഷമമാക്കിയിരിക്കണം.</translation>
 <translation id="155039086686388498">എഞ്ചിനീയറിംഗ്-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">നീളം കുറഞ്ഞ അരിക് ആദ്യം</translation>
 <translation id="168693727862418163">ഈ നയ മൂല്യം അതിന്റെ സ്‌കീമയുമായി സാധൂകരിക്കാൻ കഴിയാത്തതിനാൽ അത് അവഗണിക്കപ്പെടും.</translation>
 <translation id="168841957122794586">സെർവർ സർട്ടിഫിക്കറ്റിൽ ഒരു ദുർബലമായ ഗൂഢഭാഷ കീ ഉൾപ്പെടുന്നു.</translation>
+<translation id="1696290444144917273">വെർച്വൽ കാർഡ് വിശദാംശങ്ങൾ കാണുക</translation>
 <translation id="1697532407822776718">എല്ലാം സജ്ജമായിക്കഴിഞ്ഞു!</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706954506755087368">{1,plural, =1{ഈ സെർവറിന് ഇത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് ഇന്നലെ മുതൽ സാധുവല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.}other{ഈ സെർവറിന് ഇത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് # ദിവസം മുതൽ സാധുവായിരിക്കില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">മെയിൽബോക്സ് 3</translation>
 <translation id="1718029547804390981">അനോട്ടേറ്റ് ചെയ്യാനാവുന്നതിലും വളരെ വലുതാണ് ഈ ഡോക്യുമെൻ്റ്</translation>
 <translation id="1721424275792716183">* ഫീൽഡ് ആവശ്യമാണ്</translation>
+<translation id="1727613060316725209">സാധുതയുള്ള സർട്ടിഫിക്കറ്റാണ്</translation>
 <translation id="1727741090716970331">സാധുവായ കാർഡ് നമ്പർ ചേർക്കുക</translation>
 <translation id="1728677426644403582">നിങ്ങൾ ഒരു വെബ് പേജിന്റെ ഉറവിടമാണ് കാണുന്നത്</translation>
 <translation id="173080396488393970">ഇത്തരത്തിലുള്ള കാർഡ് അനുയോജ്യമല്ല</translation>
@@ -654,6 +657,7 @@
 <translation id="3428151540071562330">DnsOverHttpsTemplates സെർവർ ടെംപ്ലേറ്റ് URI-കളിൽ ഒന്നോ അതിലധികമോ അസാധുവാണ്, അവ ഉപയോഗിക്കില്ല.</translation>
 <translation id="3431636764301398940">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
 <translation id="3432601291244612633">പേജ് അടയ്ക്കുക</translation>
+<translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3435896845095436175">തയ്യാറാക്കുക</translation>
 <translation id="3438829137925142401">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടുള്ള പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="3443726618221119081">ജുറോ-കു-കായ്</translation>
@@ -697,6 +701,7 @@
 <translation id="3586931643579894722">വിശദാംശങ്ങൾ മറയ്‌ക്കുക‍‌</translation>
 <translation id="3587738293690942763">മദ്ധ്യം</translation>
 <translation id="3590643883886679995">നിങ്ങൾ അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടന്ന ശേഷം സൈൻ ഇൻ ഡാറ്റ ഈ ഉപകരണത്തിൽ സംഭരിക്കും.</translation>
+<translation id="359126217934908072">മാസം/വർഷം:</translation>
 <translation id="3592413004129370115">ഇറ്റാലിയൻ (എൻവലപ്പ്)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ആപ്പ് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
@@ -752,6 +757,7 @@
 <translation id="3781428340399460090">ഹോട്ട് പിങ്ക്</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth ഉപകരണങ്ങൾ</translation>
+<translation id="3787675388804467730">വെർച്വൽ കാർഡ് നമ്പർ</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />-ൽ അവസാനിക്കുന്നു</translation>
 <translation id="3789155188480882154">വലുപ്പം 16</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
@@ -1549,6 +1555,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">വായന എളുപ്പമാക്കുന്നതിന് Chrome ഈ പേജ് ലളിതമാക്കി. സുരക്ഷിതമല്ലാത്ത കണക്ഷനിലൂടെ Chrome ഒറിജിനൽ പേജ് വീണ്ടെടുത്തു.</translation>
 <translation id="6891596781022320156">നയ നില പിന്തുണയ്ക്കുന്നില്ല.</translation>
+<translation id="6895143722905299846">വെർച്വൽ നമ്പർ:</translation>
 <translation id="6895330447102777224">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിച്ചു</translation>
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
 <translation id="6898699227549475383">ഓര്‍‌ഗനൈസേഷന്‍‌ (O)</translation>
@@ -1587,6 +1594,7 @@
 <translation id="7014741021609395734">സൂം നില</translation>
 <translation id="7016992613359344582">ഈ നിരക്കുകൾ ഒറ്റത്തവണ അടയ്ക്കുന്നതോ അല്ലെങ്കിൽ ആവർത്തിക്കുന്നവയോ ആവാം, ഒപ്പം വ്യക്തമല്ലായിരിക്കാം.</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
+<translation id="7030436163253143341">സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>
 <translation id="7050187094878475250">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ തീരെ വിശ്വാസയോഗ്യമല്ലാത്ത ഒരു കാലാവധിയുള്ള സർട്ടിഫിക്കറ്റാണ് സെർവർ കാണിക്കുന്നത്.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ഈ കാർഡ് ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}other{ഈ കാർഡുകൾ ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}}</translation>

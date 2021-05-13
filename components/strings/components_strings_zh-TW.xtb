@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">這個網頁顯示</translation>
 <translation id="153384715582417236">暫無內容</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
+<translation id="1539840569003678498">回報時間：</translation>
 <translation id="154408704832528245">選擇快遞地址</translation>
 <translation id="1549470594296187301">您必須啟用 JavaScript 才能使用這項功能。</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">這項政策的值未通過其結構定義的驗證，因此會遭到忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
+<translation id="1696290444144917273">查看虛擬卡片資料</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{這個伺服器無法證明所在網域是 <ph name="DOMAIN" />；伺服器的安全性憑證預定明天才生效。這可能是因為設定錯誤，或是有攻擊者攔截您的連線。}other{這個伺服器無法證明所在網域是 <ph name="DOMAIN" />；伺服器的安全性憑證預定 # 天後才生效。這可能是因為設定錯誤，或是有攻擊者攔截您的連線。}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1718029547804390981">文件過大，無法加註</translation>
 <translation id="1721424275792716183">* 這是必填欄位</translation>
+<translation id="1727613060316725209">憑證有效</translation>
 <translation id="1727741090716970331">新增有效的信用卡號碼</translation>
 <translation id="1728677426644403582">目前顯示的是網頁原始碼</translation>
 <translation id="173080396488393970">不支援這種信用卡類型</translation>
@@ -652,6 +655,7 @@
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3431636764301398940">將這張信用卡儲存到這個裝置</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
+<translation id="3435738964857648380">安全性</translation>
 <translation id="3435896845095436175">啟用</translation>
 <translation id="3438829137925142401">使用儲存在 Google 帳戶中的密碼</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
@@ -695,6 +699,7 @@
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587738293690942763">中間</translation>
 <translation id="3590643883886679995">系統會在無痕模式結束後將登入資料儲存在這部裝置上。</translation>
+<translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (信封)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已遭系統管理員封鎖的應用程式</translation>
@@ -750,6 +755,7 @@
 <translation id="3781428340399460090">亮粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
+<translation id="3787675388804467730">虛擬卡號</translation>
 <translation id="3787705759683870569">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">粗細：16</translation>
 <translation id="3789841737615482174">安裝</translation>
@@ -1544,6 +1550,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已簡化這個頁面，讓內容更易於閱讀。Chrome 透過不安全的連線擷取原始頁面。</translation>
 <translation id="6891596781022320156">系統不支援這項政策的層級。</translation>
+<translation id="6895143722905299846">虛擬卡號：</translation>
 <translation id="6895330447102777224">您的信用卡已通過驗證</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">組織 (O)</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能只收取一次，也可能屬於週期性費用，而且你不一定會注意到自己需要付費。</translation>
 <translation id="7029809446516969842">密碼</translation>
+<translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
 <translation id="7050187094878475250">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證有效期限太長，因此難以信任。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{目前無法儲存這張卡片}other{目前無法儲存這些卡片}}</translation>
