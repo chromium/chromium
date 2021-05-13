@@ -472,6 +472,39 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
           .ExtractString());
 }
 
+class FlocEligibilityBrowserTestBypassIPIsPubliclyRoutableCheck
+    : public FlocEligibilityBrowserTest {
+ public:
+  FlocEligibilityBrowserTestBypassIPIsPubliclyRoutableCheck() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kInterestCohortFeaturePolicy,
+                              federated_learning::
+                                  kFlocBypassIPIsPubliclyRoutableCheck},
+        /*disabled_features=*/{
+            federated_learning::
+                kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FlocEligibilityBrowserTestBypassIPIsPubliclyRoutableCheck,
+    EligibleForHistoryOnPrivateIP) {
+  GURL main_page_url = https_server_.GetURL(
+      "a.test", "/federated_learning/page_with_script_and_iframe.html");
+
+  // Three resources in the main frame and one favicon.
+  NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
+
+  InvokeInterestCohortJsApi(web_contents());
+
+  // Expect that the navigation history is eligible for floc computation.
+  base::Optional<bool> query_floc_eligible =
+      QueryFlocEligibleForURL(main_page_url);
+  EXPECT_TRUE(query_floc_eligible);
+  EXPECT_TRUE(query_floc_eligible.value());
+}
+
 class FlocEligibilityBrowserTestPagesWithAdResourcesDefaultIncluded
     : public FlocEligibilityBrowserTest {
  public:

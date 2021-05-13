@@ -48,8 +48,10 @@ FlocEligibilityObserver::OnCommit(
 
   // If the IP was not publicly routable, the navigation history is not eligible
   // for floc. We can stop observing now.
-  if (!navigation_handle->GetSocketAddress().address().IsPubliclyRoutable())
+  if (!navigation_handle->GetSocketAddress().address().IsPubliclyRoutable() &&
+      !base::FeatureList::IsEnabled(kFlocBypassIPIsPubliclyRoutableCheck)) {
     return ObservePolicy::STOP_OBSERVING;
+  }
 
   // If the interest-cohort permissions policy in the main document disallows
   // the floc inclusion, the navigation history is not eligible for floc. We can

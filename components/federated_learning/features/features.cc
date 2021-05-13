@@ -8,6 +8,12 @@
 
 namespace federated_learning {
 
+// If enabled, the check for whether the IP address is publicly routable will be
+// bypassed when determining the eligibility for a page to be included in floc
+// computation. This is useful for developers to test FLoC in local environment.
+const base::Feature kFlocBypassIPIsPubliclyRoutableCheck{
+    "FlocBypassIPIsPubliclyRoutableCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the FlocIdComputed event logging, which happens when a
 // floc id is first computed for a browsing session or is refreshed due to a
 // long period of time has passed since the last computation.

@@ -10,6 +10,7 @@
 
 namespace federated_learning {
 
+extern const base::Feature kFlocBypassIPIsPubliclyRoutableCheck;
 extern const base::Feature kFlocIdComputedEventLogging;
 extern const base::Feature
     kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation;
