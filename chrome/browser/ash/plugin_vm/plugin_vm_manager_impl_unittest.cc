@@ -70,6 +70,7 @@ class PluginVmManagerImplTest : public testing::Test {
   }
 
   ~PluginVmManagerImplTest() override {
+    chromeos::DlcserviceClient::Shutdown();
     histogram_tester_.reset();
     chrome_shelf_controller_.reset();
     shelf_model_.reset();
@@ -80,8 +81,6 @@ class PluginVmManagerImplTest : public testing::Test {
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
-    // TODO(yusukes): Fix the shutdown order.
-    chromeos::DlcserviceClient::Shutdown();
   }
 
  protected:
