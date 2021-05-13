@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
+class Profile;
 
 class ChromeLabsButton : public ToolbarButton {
  public:
@@ -20,7 +21,8 @@ class ChromeLabsButton : public ToolbarButton {
   ChromeLabsButton& operator=(const ChromeLabsButton&) = delete;
   ~ChromeLabsButton() override;
 
-  static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model);
+  static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model,
+                               Profile* profile);
 
  private:
   void ButtonPressed();

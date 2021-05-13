@@ -17,9 +17,11 @@
 #include "ui/views/controls/button/button_controller.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/owner_flags_storage.h"
 #endif
 
@@ -71,8 +73,15 @@ void ChromeLabsButton::ButtonPressed() {
 }
 
 // static
-bool ChromeLabsButton::ShouldShowButton(
-    const ChromeLabsBubbleViewModel* model) {
+bool ChromeLabsButton::ShouldShowButton(const ChromeLabsBubbleViewModel* model,
+                                        Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kSafeMode) ||
+      !ash::ProfileHelper::IsPrimaryProfile(profile)) {
+    return false;
+  }
+#endif
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =

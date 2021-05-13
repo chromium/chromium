@@ -17,7 +17,22 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/common/pref_names.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif
+
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kFakeUserName[] = "test@example.com";
+constexpr char kFakeGaiaId[] = "1234567890";
+#endif
+
 const char kFirstTestFeatureId[] = "feature-1";
 const base::Feature kTestFeature1{"FeatureName1",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
@@ -29,10 +44,24 @@ const base::Feature kTestFeature2{"FeatureName2",
 class ChromeLabsButtonTest : public TestWithBrowserView {
  public:
   ChromeLabsButtonTest()
-      : scoped_feature_entries_({{kFirstTestFeatureId, "", "",
+      :
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        user_manager_(new ash::FakeChromeUserManager()),
+        user_manager_enabler_(base::WrapUnique(user_manager_)),
+#endif
+
+        scoped_feature_entries_({{kFirstTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
-                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {}
+                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {
+  }
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+    user_manager_->AddUser(account_id);
+    user_manager_->LoginUser(account_id);
+#endif
+
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     std::vector<LabInfo> test_feature_info = {
@@ -43,6 +72,12 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
                                       true);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ protected:
+  ash::FakeChromeUserManager* user_manager_;
+  user_manager::ScopedUserManager user_manager_enabler_;
+#endif
 
  private:
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
@@ -81,6 +116,49 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
                                     false);
   EXPECT_FALSE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ChromeLabsButtonTestSafeMode : public ChromeLabsButtonTest {
+ public:
+  ChromeLabsButtonTestSafeMode() : ChromeLabsButtonTest() {}
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kSafeMode);
+    ChromeLabsButtonTest::SetUp();
+  }
+
+  void TearDown() override {
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        ash::switches::kSafeMode);
+    ChromeLabsButtonTest::TearDown();
+  }
+};
+
+TEST_F(ChromeLabsButtonTestSafeMode, ShouldButtonShowTest) {
+  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+}
+
+class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
+ public:
+  ChromeLabsButtonTestSecondaryUser() : ChromeLabsButtonTest() {}
+
+  void SetUp() override {
+    // Set the email of |secondary_user| to
+    // |TestingProfile::kDefaultProfileUserName| so
+    // |ProfileHelperImpl::GetUserByProfile| returns this user.
+    AccountId secondary_user =
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
+    user_manager_->AddUser(secondary_user);
+    ChromeLabsButtonTest::SetUp();
+  }
+};
+
+TEST_F(ChromeLabsButtonTestSecondaryUser, ShouldButtonShowTest) {
+  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+}
+
+#endif
 
 class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
  public:

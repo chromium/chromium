@@ -296,7 +296,8 @@ void ToolbarView::Init() {
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
     chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
-    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get())) {
+    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get(),
+                                           browser_->profile())) {
       chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
           browser_, chrome_labs_model_.get()));
 

@@ -70,7 +70,12 @@ const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
 class ChromeLabsBubbleTest : public TestWithBrowserView {
  public:
   ChromeLabsBubbleTest()
-      : scoped_feature_entries_(
+      :
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        user_manager_(new ash::FakeChromeUserManager()),
+        user_manager_enabler_(base::WrapUnique(user_manager_)),
+#endif
+        scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
               flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kTestFeature1)},
@@ -91,6 +96,13 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
   }
 
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+    user_manager_->AddUser(account_id);
+    user_manager_->LoginUser(account_id);
+#endif
+
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     // Set up test data on the model.
@@ -198,6 +210,11 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
 
     return test_feature_info;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::FakeChromeUserManager* user_manager_;
+  user_manager::ScopedUserManager user_manager_enabler_;
+#endif
 
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
