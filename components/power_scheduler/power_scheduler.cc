@@ -16,6 +16,24 @@
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with base::CpuAffinityMode and CpuAffinityMode in enums.xml.
+enum class CpuAffinityModeForUma {
+  kDefault = 0,
+  kLittleCoresOnly = 1,
+  kMaxValue = kLittleCoresOnly,
+};
+
+CpuAffinityModeForUma GetCpuAffinityModeForUma(base::CpuAffinityMode affinity) {
+  switch (affinity) {
+    case base::CpuAffinityMode::kDefault:
+      return CpuAffinityModeForUma::kDefault;
+    case base::CpuAffinityMode::kLittleCoresOnly:
+      return CpuAffinityModeForUma::kLittleCoresOnly;
+  }
+}
+
 perfetto::StaticString TraceEventNameForAffinityMode(
     base::CpuAffinityMode affinity) {
   if (affinity == base::CpuAffinityMode::kDefault) {
@@ -39,6 +57,11 @@ void ApplyProcessCpuAffinityMode(base::CpuAffinityMode affinity) {
 
   base::UmaHistogramBoolean(
       "Power.CpuAffinityExperiments.ProcessAffinityUpdateSuccess", success);
+  if (success) {
+    base::UmaHistogramEnumeration(
+        "Power.CpuAffinityExperiments.ProcessAffinityMode",
+        GetCpuAffinityModeForUma(affinity));
+  }
 }
 
 bool CpuAffinityApplicable() {
