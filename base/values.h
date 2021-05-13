@@ -657,6 +657,7 @@ class BASE_EXPORT DictionaryValue : public Value {
   size_t size() const { return dict().size(); }
 
   // Returns whether the dictionary is empty.
+  // DEPRECATED, use `Value::DictEmpty()` instead.
   bool empty() const { return dict().empty(); }
 
   // Clears any current contents of this dictionary.

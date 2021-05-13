@@ -1472,7 +1472,7 @@ bool DictionaryValue::RemovePath(StringPiece path,
   if (!GetDictionary(subdict_path, &subdict))
     return false;
   result = subdict->RemovePath(path.substr(delimiter_position + 1), out_value);
-  if (result && subdict->empty())
+  if (result && subdict->DictEmpty())
     RemoveKey(subdict_path);
 
   return result;

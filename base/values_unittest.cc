@@ -1533,11 +1533,11 @@ TEST(ValuesTest, DictionaryDeletion) {
   std::string key = "test";
   DictionaryValue dict;
   dict.Set(key, std::make_unique<Value>());
-  EXPECT_FALSE(dict.empty());
+  EXPECT_FALSE(dict.DictEmpty());
   EXPECT_FALSE(dict.DictEmpty());
   EXPECT_EQ(1U, dict.DictSize());
   dict.DictClear();
-  EXPECT_TRUE(dict.empty());
+  EXPECT_TRUE(dict.DictEmpty());
   EXPECT_TRUE(dict.DictEmpty());
   EXPECT_EQ(0U, dict.DictSize());
 }
@@ -1697,7 +1697,7 @@ TEST(ValuesTest, DictionaryRemovePath) {
   EXPECT_TRUE(dict.RemovePath("a.long.key.path", &removed_item));
   ASSERT_TRUE(removed_item);
   EXPECT_TRUE(removed_item->is_bool());
-  EXPECT_TRUE(dict.empty());
+  EXPECT_TRUE(dict.DictEmpty());
 }
 
 TEST(ValuesTest, DeepCopy) {
@@ -2044,7 +2044,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   root->SetWithoutPathExpansion("a.b.c.d.e",
                                 std::make_unique<DictionaryValue>());
   root = root->DeepCopyWithoutEmptyChildren();
-  EXPECT_TRUE(root->empty());
+  EXPECT_TRUE(root->DictEmpty());
 
   // Make sure we don't prune too much.
   root->SetBoolKey("bool", true);
