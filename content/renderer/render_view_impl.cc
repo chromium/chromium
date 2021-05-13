@@ -451,10 +451,6 @@ void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
                               this, &RenderViewImpl::SendFrameStateUpdates);
 }
 
-bool RenderViewImpl::AcceptsLoadDrops() {
-  return GetRendererPreferences().can_accept_load_drops;
-}
-
 void RenderViewImpl::RegisterRendererPreferenceWatcher(
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
   GetWebView()->RegisterRendererPreferenceWatcher(std::move(watcher));

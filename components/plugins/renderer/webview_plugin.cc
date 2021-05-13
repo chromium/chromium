@@ -276,6 +276,13 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(preferences, web_view_);
+
+  // Turn off AcceptLoadDrops for this plugin webview.
+  blink::RendererPreferences renderer_preferences =
+      web_view_->GetRendererPreferences();
+  renderer_preferences.can_accept_load_drops = false;
+  web_view_->SetRendererPreferences(renderer_preferences);
+
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view_, this, nullptr, blink::LocalFrameToken(), nullptr);
   blink::WebFrameWidget* frame_widget = web_frame->InitializeFrameWidget(
@@ -297,10 +304,6 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
 
 WebViewPlugin::WebViewHelper::~WebViewHelper() {
   web_view_->Close();
-}
-
-bool WebViewPlugin::WebViewHelper::AcceptsLoadDrops() {
-  return false;
 }
 
 bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {

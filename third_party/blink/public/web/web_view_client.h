@@ -96,10 +96,6 @@ class WebViewClient {
 
   // UI ------------------------------------------------------------------
 
-  // Called to determine if drag-n-drop operations may initiate a page
-  // navigation.
-  virtual bool AcceptsLoadDrops() { return true; }
-
   // Called to check if layout update should be processed.
   virtual bool CanUpdateLayout() { return false; }
 
