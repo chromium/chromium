@@ -20,11 +20,15 @@
 <link rel="import" href="../../settings_vars_css.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="search_engine.html">
 
 <dom-module id="settings-search-subpage">
   <template>
     <style include="cr-shared-style settings-shared">
     </style>
+    <settings-search-engine
+        deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
+    </settings-search-engine>
     <settings-toggle-button id="quick-answers-enable"
         class="hr"
         pref="{{prefs.settings.quick_answers.enabled}}"

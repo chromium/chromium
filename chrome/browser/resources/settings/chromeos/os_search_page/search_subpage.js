@@ -23,6 +23,7 @@ Polymer({
     supportedSettingIds: {
       type: Object,
       value: () => new Set([
+        chromeos.settings.mojom.Setting.kPreferredSearchEngine,
         chromeos.settings.mojom.Setting.kQuickAnswersOnOff,
       ]),
     },

@@ -17,6 +17,9 @@ suite('OSSearchPageTests', function() {
   let page = null;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      shouldShowQuickAnswersSettings: false,
+    });
     page = document.createElement('os-settings-search-page');
     document.body.appendChild(page);
     Polymer.dom.flush();

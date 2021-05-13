@@ -35,10 +35,15 @@ namespace chromeos {
 namespace settings {
 namespace {
 
+bool ShouldShowQuickAnswersSettings() {
+  return ash::features::IsQuickAnswersStandaloneSettingsEnabled();
+}
+
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
-       mojom::kSearchAndAssistantSectionPath,
+       ShouldShowQuickAnswersSettings() ? mojom::kSearchSubpagePath
+                                        : mojom::kSearchAndAssistantSectionPath,
        mojom::SearchResultIcon::kMagnifyingGlass,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -145,10 +150,6 @@ bool IsVoiceMatchAllowed() {
   return !assistant::features::IsVoiceMatchDisabled();
 }
 
-bool ShouldShowQuickAnswersSettings() {
-  return ash::features::IsQuickAnswersStandaloneSettingsEnabled();
-}
-
 void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"quickAnswersEnable", IDS_SETTINGS_QUICK_ANSWERS_ENABLE},
@@ -197,6 +198,21 @@ void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("hotwordDspAvailable", IsHotwordDspAvailable());
   html_source->AddBoolean("voiceMatchDisabled", !IsVoiceMatchAllowed());
+}
+
+const std::vector<mojom::Setting>& GetSearchSettings() {
+  if (ShouldShowQuickAnswersSettings()) {
+    static const base::NoDestructor<std::vector<mojom::Setting>> settings({
+        mojom::Setting::kQuickAnswersOnOff,
+        mojom::Setting::kPreferredSearchEngine,
+    });
+    return *settings;
+  } else {
+    static const base::NoDestructor<std::vector<mojom::Setting>> settings({
+        mojom::Setting::kQuickAnswersOnOff,
+    });
+    return *settings;
+  }
 }
 
 }  // namespace
@@ -287,17 +303,15 @@ bool SearchSection::LogMetric(mojom::Setting setting,
 }
 
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
-  generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
+  if (!ShouldShowQuickAnswersSettings())
+    generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
 
   // Search.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_SEARCH_SUBPAGE_TITLE, mojom::Subpage::kSearch,
       mojom::SearchResultIcon::kMagnifyingGlass,
       mojom::SearchResultDefaultRank::kMedium, mojom::kSearchSubpagePath);
-  static constexpr mojom::Setting kSearchSettings[] = {
-      mojom::Setting::kQuickAnswersOnOff,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kSearch, kSearchSettings,
+  RegisterNestedSettingBulk(mojom::Subpage::kSearch, GetSearchSettings(),
                             generator);
 
   // Assistant.

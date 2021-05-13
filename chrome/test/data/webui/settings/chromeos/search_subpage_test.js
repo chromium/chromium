@@ -32,6 +32,24 @@ suite('SearchSubpage', function() {
     page.remove();
   });
 
+  test('Deep link to Preferred Search Engine', async () => {
+    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+    const params = new URLSearchParams;
+    params.append('settingId', '600');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SEARCH_SUBPAGE, params);
+
+    const deepLinkElement =
+        page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
+    assertTrue(!!deepLinkElement);
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Preferred Search Engine button should be focused for settingId=600.');
+  });
+
   test('Deep link to Quick Answers On/Off', async () => {
     loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
