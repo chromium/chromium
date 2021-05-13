@@ -2894,9 +2894,6 @@ extern const char kEnableMDRoundedCornersOnDialogsDescription[];
 extern const char kInstallableInkDropName[];
 extern const char kInstallableInkDropDescription[];
 
-extern const char kTextfieldFocusOnTapUpName[];
-extern const char kTextfieldFocusOnTapUpDescription[];
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------

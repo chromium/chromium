@@ -1629,13 +1629,8 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
 void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   PermitExternalProtocolHandler();
 
-  static const bool kTakeFocusOnTapUp =
-      base::FeatureList::IsEnabled(views::features::kTextfieldFocusOnTapUp);
-
   const bool gesture_should_take_focus =
-      !HasFocus() &&
-      event->type() ==
-          (kTakeFocusOnTapUp ? ui::ET_GESTURE_TAP : ui::ET_GESTURE_TAP_DOWN);
+      !HasFocus() && event->type() == ui::ET_GESTURE_TAP;
   if (gesture_should_take_focus) {
     select_all_on_gesture_tap_ = true;
 

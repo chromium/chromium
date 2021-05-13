@@ -763,19 +763,9 @@ bool Textfield::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void Textfield::OnGestureEvent(ui::GestureEvent* event) {
-  static const bool kTakeFocusOnTapUp =
-      base::FeatureList::IsEnabled(features::kTextfieldFocusOnTapUp);
-
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
-      if (!kTakeFocusOnTapUp) {
-        RequestFocusForGesture(event->details());
-        event->SetHandled();
-      }
-      break;
     case ui::ET_GESTURE_TAP:
-      if (kTakeFocusOnTapUp)
-        RequestFocusForGesture(event->details());
+      RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
         event->SetHandled();
         return;

@@ -27,10 +27,5 @@ const base::Feature kEnableViewPaintOptimization{
 const base::Feature kInheritNativeThemeFromParentWidget{
     "InheritNativeThemeFromParentWidget", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Change views::Textfield to take focus on a completed tap, rather than
-// immediately on tap down. This only affects touch input.
-const base::Feature kTextfieldFocusOnTapUp{"TextfieldFocusOnTapUp",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace views

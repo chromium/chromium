@@ -4961,11 +4961,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "textfield-focus-on-tap-up",
-    "owners": [ "collinbaker" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "texture-layer-skip-wait-for-activation",
     "owners": [ "fserb@chromium.org", "aaronhk@chromium.org" ],
     "expiry_milestone": 90

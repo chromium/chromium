@@ -6395,12 +6395,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableGoogleIssuedCardDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableGoogleIssuedCard)},
 
-#if defined(TOOLKIT_VIEWS)
-    {"textfield-focus-on-tap-up", flag_descriptions::kTextfieldFocusOnTapUpName,
-     flag_descriptions::kTextfieldFocusOnTapUpDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(views::features::kTextfieldFocusOnTapUp)},
-#endif  // defined(TOOLKIT_VIEWS)
-
     {"permission-chip", flag_descriptions::kPermissionChipName,
      flag_descriptions::kPermissionChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionChip)},

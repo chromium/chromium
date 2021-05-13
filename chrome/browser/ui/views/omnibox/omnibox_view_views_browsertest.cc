@@ -336,18 +336,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTap) {
 
   // Take the focus away and tap in the omnibox again, but drag a bit before
   // releasing. This shouldn't select text.
-  //
-  // Whether it'll focus depends on the state of the below feature: touch and
-  // drag will send a tap-down event, then a scroll or swipe event, but no
-  // complete tap event. When enabled, textfields will take focus on a complete
-  // tap instead of tap-down.
-  const bool focused_after_drag =
-      !base::FeatureList::IsEnabled(views::features::kTextfieldFocusOnTapUp);
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
   ASSERT_NO_FATAL_FAILURE(Tap(tap_location, tap2_location));
-  EXPECT_EQ(focused_after_drag,
-            ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 }
 

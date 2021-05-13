@@ -80,11 +80,6 @@
 namespace views {
 namespace test {
 
-const ui::EventType kFocusEvent =
-    base::FeatureList::IsEnabled(features::kTextfieldFocusOnTapUp)
-        ? ui::ET_GESTURE_TAP
-        : ui::ET_GESTURE_TAP_DOWN;
-
 const char16_t kHebrewLetterSamekh = 0x05E1;
 
 // Convenience to make constructing a GestureEvent simpler.

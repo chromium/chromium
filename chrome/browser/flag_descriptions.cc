@@ -4953,11 +4953,6 @@ const char kInstallableInkDropDescription[] =
     "InstallableInkDrop is part of an InkDrop refactoring effort. This enables "
     "the pilot implementation where available.";
 
-const char kTextfieldFocusOnTapUpName[] = "Focus UI text fields on touch-up";
-const char kTextfieldFocusOnTapUpDescription[] =
-    "When enabled, Views-based text fields take focus on touch-up instead of "
-    "touch-down. This includes the Omnibox.";
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
