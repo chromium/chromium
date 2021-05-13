@@ -59,10 +59,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       public RenderFrameMetadataProvider::Observer,
       public viz::HostFrameSinkClient {
  public:
-  // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
-      const blink::ScreenInfo& parent_screen_info);
+      const blink::ScreenInfo& screen_info);
 
   void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
@@ -215,9 +214,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewChildFrameTest,
                            ForwardsBeginFrameAcks);
 
-  // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
-  RenderWidgetHostViewChildFrame(RenderWidgetHost* widget,
-                                 const blink::ScreenInfo& parent_screen_info);
+  explicit RenderWidgetHostViewChildFrame(RenderWidgetHost* widget,
+                                          const blink::ScreenInfo& screen_info);
   void Init();
 
   // Sets |parent_frame_sink_id_| and registers frame sink hierarchy. If the
@@ -310,7 +308,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // created, to be used before this view is connected to its FrameDelegate.
   // This is kept up to date anytime GetScreenInfo() is called and we have
   // a FrameDelegate.
-  blink::ScreenInfo parent_screen_info_;
+  blink::ScreenInfo screen_info_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);
