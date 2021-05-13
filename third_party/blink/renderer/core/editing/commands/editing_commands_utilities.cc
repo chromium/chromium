@@ -655,7 +655,8 @@ void ChangeSelectionAfterCommand(LocalFrame* frame,
   if (!selection_did_not_change_dom_position)
     return;
   frame->Client()->DidChangeSelection(
-      !frame->Selection().GetSelectionInDOMTree().IsRange());
+      !frame->Selection().GetSelectionInDOMTree().IsRange(),
+      blink::SyncCondition::kNotForced);
 }
 
 InputEvent::EventIsComposing IsComposingFromCommand(

@@ -4351,7 +4351,10 @@ TEST_F(WebFrameTest, ClearFocusedNodeTest) {
 class ChangedSelectionCounter : public frame_test_helpers::TestWebFrameClient {
  public:
   ChangedSelectionCounter() : call_count_(0) {}
-  void DidChangeSelection(bool isSelectionEmpty) override { ++call_count_; }
+  void DidChangeSelection(bool isSelectionEmpty,
+                          blink::SyncCondition force_sync) override {
+    ++call_count_;
+  }
   int Count() const { return call_count_; }
   void Reset() { call_count_ = 0; }
 

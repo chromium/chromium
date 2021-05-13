@@ -389,13 +389,14 @@ void WebFrameTestProxy::DidStopLoading() {
   test_runner()->RemoveLoadingFrame(GetWebFrame());
 }
 
-void WebFrameTestProxy::DidChangeSelection(bool is_selection_empty) {
+void WebFrameTestProxy::DidChangeSelection(bool is_selection_empty,
+                                           blink::SyncCondition force_sync) {
   if (test_runner()->ShouldDumpEditingCallbacks()) {
     test_runner()->PrintMessage(
         "EDITING DELEGATE: "
         "webViewDidChangeSelection:WebViewDidChangeSelectionNotification\n");
   }
-  RenderFrameImpl::DidChangeSelection(is_selection_empty);
+  RenderFrameImpl::DidChangeSelection(is_selection_empty, force_sync);
 }
 
 void WebFrameTestProxy::DidChangeContents() {

@@ -884,9 +884,13 @@ void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
 
 void Editor::RespondToChangedSelection() {
   GetSpellChecker().RespondToChangedSelection();
-  frame_->Client()->DidChangeSelection(
-      !GetFrameSelection().GetSelectionInDOMTree().IsRange());
+  SyncSelection(blink::SyncCondition::kNotForced);
   SetStartNewKillRingSequence(true);
+}
+
+void Editor::SyncSelection(SyncCondition force_sync) {
+  frame_->Client()->DidChangeSelection(
+      !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
 }
 
 SpellChecker& Editor::GetSpellChecker() const {

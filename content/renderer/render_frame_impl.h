@@ -546,7 +546,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   void AbortClientNavigation() override;
-  void DidChangeSelection(bool is_empty_selection) override;
+  void DidChangeSelection(bool is_empty_selection,
+                          blink::SyncCondition force_sync) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
@@ -599,11 +600,12 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
+
   // Dispatches the current state of selection on the webpage to the browser if
-  // it has changed.
-  // TODO(varunjain): delete this method once we figure out how to keep
-  // selection handles in sync with the webpage.
-  void SyncSelectionIfRequired() override;
+  // it has changed or if the forced flag is passed. The forced flag is used
+  // when the browser selection may be out of sync with the renderer due to
+  // incorrect prediction.
+  void SyncSelectionIfRequired(blink::SyncCondition force_sync) override;
   void CreateAudioInputStream(
       blink::CrossVariantMojoRemote<
           blink::mojom::RendererAudioInputStreamFactoryClientInterfaceBase>

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
@@ -374,6 +376,14 @@ inline void EventDispatcher::DispatchEventPostProcess(
           break;
       }
     }
+  } else {
+#if defined(OS_MAC)
+    // If a keypress event is prevented, the cursor position may be out of
+    // sync as RenderWidgetHostViewCocoa::insertText assumes that the text
+    // has been accepted. See https://crbug.com/1204523 for details.
+    if (event_->type() == event_type_names::kKeypress)
+      view_->GetFrame().GetEditor().SyncSelection(SyncCondition::kForced);
+#endif  // defined(OS_MAC)
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);

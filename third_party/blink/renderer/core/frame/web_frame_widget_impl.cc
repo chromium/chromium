@@ -3495,7 +3495,10 @@ void WebFrameWidgetImpl::Replace(const String& word) {
   if (!focused_frame->HasSelection())
     focused_frame->SelectWordAroundCaret();
   focused_frame->ReplaceSelection(word);
-  focused_frame->Client()->SyncSelectionIfRequired();
+  // If the resulting selection is not actually a change in selection, we do not
+  // need to explicitly notify about the selection change.
+  focused_frame->Client()->SyncSelectionIfRequired(
+      blink::SyncCondition::kNotForced);
 }
 
 void WebFrameWidgetImpl::ReplaceMisspelling(const String& word) {

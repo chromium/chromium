@@ -976,9 +976,10 @@ bool LocalFrameClientImpl::HandleCurrentKeyboardEvent() {
       ->HandleCurrentKeyboardEvent();
 }
 
-void LocalFrameClientImpl::DidChangeSelection(bool is_selection_empty) {
+void LocalFrameClientImpl::DidChangeSelection(bool is_selection_empty,
+                                              blink::SyncCondition force_sync) {
   if (web_frame_->Client())
-    web_frame_->Client()->DidChangeSelection(is_selection_empty);
+    web_frame_->Client()->DidChangeSelection(is_selection_empty, force_sync);
 }
 
 void LocalFrameClientImpl::DidChangeContents() {

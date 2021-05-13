@@ -19,6 +19,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "ui/events/test/cocoa_test_event_utils.h"
 
 @interface TextInputFlagChangeWaiter : NSObject
 @end
@@ -86,6 +87,24 @@ class TextCallbackWaiter {
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TextCallbackWaiter);
+};
+
+class TextSelectionWaiter : public TextInputManager::Observer {
+ public:
+  TextSelectionWaiter(RenderWidgetHostViewMac* rwhv) {
+    rwhv->GetTextInputManager()->AddObserver(this);
+  }
+
+  void OnTextSelectionChanged(TextInputManager* text_input_manager,
+                              RenderWidgetHostViewBase* updated_view) override {
+    text_input_manager->RemoveObserver(this);
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -164,6 +183,43 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
   [flag_change_waiter wait];
   EXPECT_TRUE(rwhv_cocoa.textInputFlags &
               blink::kWebTextInputFlagAutocorrectOff);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       InputTextPreventedSyncsCursorLocation) {
+  class InputMethodObserver {};
+
+  GURL url("data:text/html,<!doctype html><textarea id=ta></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      "ta.addEventListener('keypress', (evt) => {evt.preventDefault();}); "
+      "ta.focus();"));
+
+  // Before typing anything, we're at position 0.
+  EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
+
+  TextSelectionWaiter waiter(rwhv_mac);
+  NSEvent* key_a =
+      cocoa_test_event_utils::KeyEventWithKeyCode('a', 'a', NSKeyDown, 0);
+  [rwhv_cocoa keyEvent:key_a];
+
+  // After typing 'a', the browser process assumes that the text was entered and
+  // we are at position 1.
+  EXPECT_EQ(1lu, [rwhv_cocoa selectedRange].location);
+
+  // Wait for the renderer to sync the selection to the browser.
+  waiter.Wait();
+
+  // The synced selection updates the selected position back to 0.
+  EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
 }
 
 }  // namespace content

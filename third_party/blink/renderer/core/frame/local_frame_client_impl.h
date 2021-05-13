@@ -233,7 +233,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   bool HandleCurrentKeyboardEvent() override;
 
-  void DidChangeSelection(bool is_selection_empty) override;
+  void DidChangeSelection(bool is_selection_empty,
+                          blink::SyncCondition force_sync) override;
 
   void DidChangeContents() override;
 

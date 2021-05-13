@@ -347,7 +347,13 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual bool HandleCurrentKeyboardEvent() { return false; }
 
-  virtual void DidChangeSelection(bool is_selection_empty) {}
+  // Called when the selection may have changed (Note, that due to
+  // http://crbug.com/632920 the selection may not have changed). Additionally,
+  // in some circumstances the browser selection may be known to not match the
+  // last synced value, in which case SyncCondition::kForced is passed to force
+  // an update even if the selection appears unchanged since the last call.
+  virtual void DidChangeSelection(bool is_selection_empty,
+                                  blink::SyncCondition force_sync) {}
 
   virtual void DidChangeContents() {}
 

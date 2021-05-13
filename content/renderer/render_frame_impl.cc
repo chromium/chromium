@@ -1968,7 +1968,11 @@ void RenderFrameImpl::PepperSelectionChanged(
     PepperPluginInstanceImpl* instance) {
   if (instance != focused_pepper_plugin_)
     return;
-  SyncSelectionIfRequired();
+
+  // We have no reason to believe the locally cached last synced selection is
+  // invalid so we do not need to force the update if it matches our last synced
+  // value.
+  SyncSelectionIfRequired(blink::SyncCondition::kNotForced);
 }
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -3879,7 +3883,8 @@ void RenderFrameImpl::AbortClientNavigation() {
   navigation_client_impl_.reset();
 }
 
-void RenderFrameImpl::DidChangeSelection(bool is_empty_selection) {
+void RenderFrameImpl::DidChangeSelection(bool is_empty_selection,
+                                         blink::SyncCondition force_sync) {
   if (!GetLocalRootWebFrameWidget()->HandlingInputEvent() &&
       !GetLocalRootWebFrameWidget()->HandlingSelectRange())
     return;
@@ -3893,7 +3898,7 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection) {
   // to notify the selection was changed.  Focus change should be notified
   // before selection change.
   GetLocalRootWebFrameWidget()->UpdateTextInputState();
-  SyncSelectionIfRequired();
+  SyncSelectionIfRequired(force_sync);
 }
 
 void RenderFrameImpl::OnMainFrameIntersectionChanged(
@@ -5209,7 +5214,7 @@ void RenderFrameImpl::UpdateEncoding(WebFrame* frame,
     GetFrameHost()->UpdateEncoding(encoding_name);
 }
 
-void RenderFrameImpl::SyncSelectionIfRequired() {
+void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
   std::u16string text;
   size_t offset;
   gfx::Range range;
@@ -5257,7 +5262,8 @@ void RenderFrameImpl::SyncSelectionIfRequired() {
   // Sometimes we get repeated didChangeSelection calls from webkit when
   // the selection hasn't actually changed. We don't want to report these
   // because it will cause us to continually claim the X clipboard.
-  if (selection_text_offset_ != offset || selection_range_ != range ||
+  if (force_sync == blink::SyncCondition::kForced ||
+      selection_text_offset_ != offset || selection_range_ != range ||
       selection_text_ != text) {
     selection_text_ = text;
     selection_text_offset_ = offset;
