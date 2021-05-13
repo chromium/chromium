@@ -66,7 +66,7 @@ public class CachedZeroSuggestionsManager {
         SparseArray<GroupDetails> groupsDetails =
                 CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
         removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails);
-        return new AutocompleteResult(suggestions, groupsDetails);
+        return AutocompleteResult.fromCache(suggestions, groupsDetails);
     }
 
     /**

@@ -112,7 +112,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @UiThreadTest
     public void setNewSuggestions_cachedSuggestionsWithPostdataBeforeAndAfterAreSame() {
         AutocompleteResult dataToCache =
-                new AutocompleteResult(buildDummySuggestionsList(2, true), null);
+                AutocompleteResult.fromCache(buildDummySuggestionsList(2, true), null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -123,7 +123,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @UiThreadTest
     public void setNewSuggestions_cachedSuggestionsWithoutPostdataBeforeAndAfterAreSame() {
         AutocompleteResult dataToCache =
-                new AutocompleteResult(buildDummySuggestionsList(2, false), null);
+                AutocompleteResult.fromCache(buildDummySuggestionsList(2, false), null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -142,8 +142,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 Arrays.asList(createSuggestionBuilder(2, OmniboxSuggestionType.HISTORY_URL).build(),
                         createSuggestionBuilder(4, OmniboxSuggestionType.SEARCH_HISTORY).build());
 
-        AutocompleteResult dataToCache = new AutocompleteResult(mix_list, null);
-        AutocompleteResult dataToExpected = new AutocompleteResult(expected_list, null);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(mix_list, null);
+        AutocompleteResult dataToExpected = AutocompleteResult.fromCache(expected_list, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToExpected, dataFromCache);
@@ -155,7 +155,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     public void groupsDetails_restoreDetailsFromEmptyCache() {
         // Note: purge cache explicitly, because tests are run on an actual device
         // and cache may hold content from other test runs.
-        AutocompleteResult dataToCache = new AutocompleteResult(null, null);
+        AutocompleteResult dataToCache = AutocompleteResult.EMPTY_RESULT;
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -169,7 +169,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         groupsDetails.put(10, new GroupDetails("Header For Group 10", false));
         groupsDetails.put(20, new GroupDetails("Header For Group 20", false));
         groupsDetails.put(30, new GroupDetails("Header For Group 30", false));
-        AutocompleteResult dataToCache = new AutocompleteResult(null, groupsDetails);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(null, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -185,14 +185,14 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 AutocompleteMatch.INVALID_GROUP, new GroupDetails("Header For Group 20", true));
         groupsDetails.put(30, new GroupDetails("", false));
 
-        AutocompleteResult dataToCache = new AutocompleteResult(null, groupsDetails);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(null, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
 
         SparseArray<GroupDetails> validGroupsDetails = new SparseArray<>();
         validGroupsDetails.put(10, new GroupDetails("Header For Group 10", false));
         assertAutocompleteResultEquals(
-                dataFromCache, new AutocompleteResult(null, validGroupsDetails));
+                dataFromCache, AutocompleteResult.fromCache(null, validGroupsDetails));
     }
 
     @Test
@@ -205,10 +205,10 @@ public class CachedZeroSuggestionsManagerUnitTest {
         groupsDetails.put(20, new GroupDetails("", false));
         groupsDetails.put(30, new GroupDetails("", false));
 
-        AutocompleteResult dataToCache = new AutocompleteResult(null, groupsDetails);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(null, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(dataFromCache, new AutocompleteResult(null, null));
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
         groupsDetails.put(1, new GroupDetails("Valid Header", true));
 
-        AutocompleteResult dataToCache = new AutocompleteResult(list, groupsDetails);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -234,8 +234,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
         List<AutocompleteMatch> listToCache = buildDummySuggestionsList(2, false);
         listToCache.add(createSuggestionBuilder(33).setGroupId(1).build());
 
-        AutocompleteResult dataExpected = new AutocompleteResult(listExpected, null);
-        AutocompleteResult dataToCache = new AutocompleteResult(listToCache, null);
+        AutocompleteResult dataExpected = AutocompleteResult.fromCache(listExpected, null);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(listToCache, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataExpected, dataFromCache);
@@ -252,7 +252,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
         // Save one valid suggestion to cache.
         AutocompleteResult dataToCache =
-                new AutocompleteResult(buildDummySuggestionsList(1, true), null);
+                AutocompleteResult.fromCache(buildDummySuggestionsList(1, true), null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
         // Signal that there's actually 2 items in the cache.
@@ -261,7 +261,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Construct an expected raw suggestion list content. This constitutes one valid entry
         // and 1 totally empty entry.
         AutocompleteResult rawDataFromCache =
-                new AutocompleteResult(buildDummySuggestionsList(1, true), null);
+                AutocompleteResult.fromCache(buildDummySuggestionsList(1, true), null);
         rawDataFromCache.getSuggestionsList().add(new AutocompleteMatchBuilder().build());
 
         // readCachedSuggestionList makes full attempt to restore whatever could be scraped from the
@@ -269,7 +269,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
         List<AutocompleteMatch> readList =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
         Assert.assertEquals(2, readList.size());
-        assertAutocompleteResultEquals(new AutocompleteResult(readList, null), rawDataFromCache);
+        assertAutocompleteResultEquals(
+                AutocompleteResult.fromCache(readList, null), rawDataFromCache);
 
         // Cache recovery however should be smart here and remove items that make no sense.
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
@@ -290,7 +291,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         groupsDetails.put(12, new GroupDetails("Valid group", true));
         groupsDetails.put(34, new GroupDetails("", false));
         groupsDetails.put(AutocompleteMatch.INVALID_GROUP, new GroupDetails("Invalid group", true));
-        AutocompleteResult invalidDataToCache = new AutocompleteResult(null, groupsDetails);
+        AutocompleteResult invalidDataToCache = AutocompleteResult.fromCache(null, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(invalidDataToCache);
 
         // Report that we actually have 4 items in the cache.
@@ -313,7 +314,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Cache recovery however should be smart here and remove items that make no sense.
         SparseArray<GroupDetails> wantGroupsDetails = new SparseArray<>();
         wantGroupsDetails.put(12, new GroupDetails("Valid group", true));
-        AutocompleteResult wantDataFromCache = new AutocompleteResult(null, wantGroupsDetails);
+        AutocompleteResult wantDataFromCache =
+                AutocompleteResult.fromCache(null, wantGroupsDetails);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
 
         assertAutocompleteResultEquals(dataFromCache, wantDataFromCache);
@@ -343,9 +345,9 @@ public class CachedZeroSuggestionsManagerUnitTest {
         listWithInvalidItems.add(createSuggestionBuilder(74).setGroupId(34).build());
 
         AutocompleteResult dataWithInvalidItems =
-                new AutocompleteResult(listWithInvalidItems, groupsDetailsWithInvalidItems);
+                AutocompleteResult.fromCache(listWithInvalidItems, groupsDetailsWithInvalidItems);
         AutocompleteResult dataExpected =
-                new AutocompleteResult(listExpected, groupsDetailsExpected);
+                AutocompleteResult.fromCache(listExpected, groupsDetailsExpected);
 
         CachedZeroSuggestionsManager.removeInvalidSuggestionsAndGroupsDetails(
                 dataWithInvalidItems.getSuggestionsList(), dataWithInvalidItems.getGroupsDetails());
@@ -371,7 +373,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
                         .build(),
                 createSuggestionBuilder(4, OmniboxSuggestionType.SEARCH_HISTORY).build());
 
-        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -390,7 +392,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
                         .addSubtype(17)
                         .build());
 
-        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
         // Insert garbage for the Suggestion Subtypes.
@@ -402,7 +404,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 garbageSubtypes);
 
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(new AutocompleteResult(null, null), dataFromCache);
+        assertAutocompleteResultEquals(AutocompleteResult.EMPTY_RESULT, dataFromCache);
     }
 
     @Test
@@ -414,7 +416,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
                         .addSubtype(1)
                         .build());
 
-        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
@@ -425,6 +427,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 garbageSubtypes);
 
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(new AutocompleteResult(null, null), dataFromCache);
+        assertAutocompleteResultEquals(AutocompleteResult.EMPTY_RESULT, dataFromCache);
     }
 }

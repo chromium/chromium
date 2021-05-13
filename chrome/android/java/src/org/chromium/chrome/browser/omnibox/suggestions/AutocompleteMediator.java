@@ -81,8 +81,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private final PropertyModel mListPropertyModel;
     private final ModelList mSuggestionModels;
     private final Handler mHandler;
-    @Nullable
-    private AutocompleteResult mAutocompleteResult;
+    @NonNull
+    private AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     @Nullable
     private Runnable mCurrentAutocompleteRequest;
     @Nullable
@@ -137,9 +137,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     private String mUrlTextAfterSuggestionsReceived;
 
-    private DeferredOnSelectionRunnable mDeferredOnSelection;
-
-    private boolean mShowCachedZeroSuggestResults;
     private boolean mShouldPreventOmniboxAutocomplete;
 
     private long mLastActionUpTimestamp;
@@ -178,7 +175,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mBringTabToFrontCallback = bringTabToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
-        mAutocompleteResult = new AutocompleteResult(null, null);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
                 mAutocomplete, activityTabSupplier, bookmarkState);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
@@ -304,8 +300,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param showCachedZeroSuggestResults Whether cached zero suggest should be shown.
      */
     void setShowCachedZeroSuggestResults(boolean showCachedZeroSuggestResults) {
-        mShowCachedZeroSuggestResults = showCachedZeroSuggestResults;
-        if (mShowCachedZeroSuggestResults) mAutocomplete.startCachedZeroSuggest();
+        if (showCachedZeroSuggestResults) mAutocomplete.startCachedZeroSuggest();
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -449,13 +444,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSuggestionClicked(
             @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url) {
-        if (mShowCachedZeroSuggestResults && !mNativeInitialized) {
-            mDeferredOnSelection = new DeferredOnSelectionRunnable(suggestion, position) {
-                @Override
-                public void run() {
-                    onSuggestionClicked(mSuggestion, mPosition, url);
-                }
-            };
+        if (mAutocompleteResult.isFromCachedResult() && !mNativeInitialized) {
+            // clang-format off
+            mDeferredLoadAction = () -> loadUrlForOmniboxMatch(
+                            position, suggestion, url, mLastActionUpTimestamp, true);
+            // clang-format on
             return;
         }
 
@@ -714,21 +707,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             return;
         }
 
-        // This is a callback from a listener that is set up by onNativeLibraryReady,
-        // so can only be called once the native side is set up unless we are showing
-        // cached java-only suggestions.
-        assert mNativeInitialized
-                || mShowCachedZeroSuggestResults
-            : "Native suggestions received before native side intialialized";
-
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
-        if (mDeferredOnSelection != null) {
-            mDeferredOnSelection.setShouldLog(newSuggestions.size() > mDeferredOnSelection.mPosition
-                    && mDeferredOnSelection.mSuggestion.equals(
-                            newSuggestions.get(mDeferredOnSelection.mPosition)));
-            mDeferredOnSelection.run();
-            mDeferredOnSelection = null;
-        }
         String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
         mUrlTextAfterSuggestionsReceived = userText + inlineAutocompleteText;
 
@@ -817,6 +796,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList) {
         SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
+        // Clear the deferred site load action in case it executes. Reclaims a bit of memory.
+        mDeferredLoadAction = null;
+
         mOmniboxFocusResultedInNavigation = true;
         url = updateSuggestionUrlIfNeeded(suggestion, matchPosition, url, !inVisibleSuggestionList);
 
@@ -826,11 +808,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         int transition = suggestion.getTransition();
         int type = suggestion.getType();
 
-        boolean shouldSkipNativeLog = mShowCachedZeroSuggestResults
-                && (mDeferredOnSelection != null) && !mDeferredOnSelection.shouldLog();
-        if (!shouldSkipNativeLog) {
-            recordMetrics(matchPosition, WindowOpenDisposition.CURRENT_TAB, suggestion);
-        }
+        recordMetrics(matchPosition, WindowOpenDisposition.CURRENT_TAB, suggestion);
         if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
                 && TextUtils.equals(url.getSpec(), mDataProvider.getCurrentUrl())) {
             // When the user hit enter on the existing permanent URL, treat it like a
@@ -913,7 +891,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         stopAutocomplete(true);
 
         mDropdownViewInfoListManager.clear();
-        mAutocompleteResult = new AutocompleteResult(null, null);
+        mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
         updateOmniboxSuggestionsVisibility();
     }
 
@@ -951,32 +929,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDropdownViewInfoListBuilder.setAutocompleteControllerForTest(controller);
     }
 
-    private abstract static class DeferredOnSelectionRunnable implements Runnable {
-        protected final AutocompleteMatch mSuggestion;
-        protected final int mPosition;
-        protected boolean mShouldLog;
-
-        public DeferredOnSelectionRunnable(AutocompleteMatch suggestion, int position) {
-            this.mSuggestion = suggestion;
-            this.mPosition = position;
-        }
-
-        /**
-         * Set whether the selection matches with native results for logging to make sense.
-         * @param log Whether the selection should be logged in native code.
-         */
-        public void setShouldLog(boolean log) {
-            mShouldLog = log;
-        }
-
-        /**
-         * @return Whether the selection should be logged in native code.
-         */
-        public boolean shouldLog() {
-            return mShouldLog;
-        }
-    }
-
     /**
      * Respond to Suggestion list height change and update list of presented suggestions.
      *
@@ -1011,6 +963,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param suggestion The suggestion selected.
      */
     private void recordMetrics(int matchPosition, int disposition, AutocompleteMatch suggestion) {
+        SuggestionsMetrics.recordUsedSuggestionFromCache(mAutocompleteResult.isFromCachedResult());
+
+        // Do not attempt to record other metrics for cached suggestions if the source of the list
+        // is local cache. These suggestions do not have corresponding native objects and will fail
+        // validation.
+        if (mAutocompleteResult.isFromCachedResult()) return;
+
         String currentPageUrl = mDataProvider.getCurrentUrl();
         int pageClassification =
                 mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());

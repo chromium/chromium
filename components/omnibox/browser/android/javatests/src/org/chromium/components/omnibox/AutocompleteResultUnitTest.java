@@ -62,8 +62,8 @@ public class AutocompleteResultUnitTest {
         groupsDetails2.put(10, new GroupDetails("Hello", false));
         groupsDetails2.put(20, new GroupDetails("Test", true));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list2, groupsDetails2);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertEquals(res1, res2);
         Assert.assertEquals(res1.hashCode(), res2.hashCode());
@@ -86,8 +86,8 @@ public class AutocompleteResultUnitTest {
         groupsDetails2.put(10, new GroupDetails("Hello", false));
         groupsDetails2.put(20, new GroupDetails("Test", true));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list2, groupsDetails2);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -109,8 +109,8 @@ public class AutocompleteResultUnitTest {
 
         groupsDetails2.put(10, new GroupDetails("Hello", true));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list2, groupsDetails2);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -133,8 +133,8 @@ public class AutocompleteResultUnitTest {
         groupsDetails2.put(10, new GroupDetails("Hello", false));
         groupsDetails2.put(20, new GroupDetails("Test", false));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list2, groupsDetails2);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -158,8 +158,8 @@ public class AutocompleteResultUnitTest {
         groupsDetails2.put(20, new GroupDetails("Test", false));
         groupsDetails2.put(30, new GroupDetails("Yikes", false));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list2, groupsDetails2);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -173,8 +173,8 @@ public class AutocompleteResultUnitTest {
         List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(4));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -199,9 +199,9 @@ public class AutocompleteResultUnitTest {
         groupsDetails3.put(10, new GroupDetails("Hello", false));
         groupsDetails3.put(20, new GroupDetails("Test 2", false));
 
-        AutocompleteResult res1 = new AutocompleteResult(list, groupsDetails1);
-        AutocompleteResult res2 = new AutocompleteResult(list, groupsDetails2);
-        AutocompleteResult res3 = new AutocompleteResult(list, groupsDetails3);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list, groupsDetails1);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list, groupsDetails2);
+        AutocompleteResult res3 = AutocompleteResult.fromCache(list, groupsDetails3);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1, res3);
@@ -227,8 +227,8 @@ public class AutocompleteResultUnitTest {
                         .addSubtype(4)
                         .build());
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
         Assert.assertNotEquals(res1, res2);
     }
@@ -241,8 +241,8 @@ public class AutocompleteResultUnitTest {
         List<AutocompleteMatch> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(4));
 
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -253,8 +253,8 @@ public class AutocompleteResultUnitTest {
     public void autocompleteResult_emptyListsAreEqual() {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
         final List<AutocompleteMatch> list2 = new ArrayList<>();
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
         Assert.assertEquals(res1, res2);
         Assert.assertEquals(res1.hashCode(), res2.hashCode());
     }
@@ -263,8 +263,8 @@ public class AutocompleteResultUnitTest {
     @SmallTest
     public void autocompleteResult_nullAndEmptyListsAreEqual() {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(null, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.EMPTY_RESULT;
         Assert.assertEquals(res1, res2);
         Assert.assertEquals(res1.hashCode(), res2.hashCode());
     }
@@ -274,8 +274,8 @@ public class AutocompleteResultUnitTest {
     public void autocompleteResult_emptyAndNonEmptyListsAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(buildSuggestionForIndex(1));
         final List<AutocompleteMatch> list2 = new ArrayList<>();
-        AutocompleteResult res1 = new AutocompleteResult(list1, null);
-        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
+        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
     }

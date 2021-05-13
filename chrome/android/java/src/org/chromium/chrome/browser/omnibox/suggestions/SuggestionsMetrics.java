@@ -111,4 +111,14 @@ class SuggestionsMetrics {
         RecordHistogram.recordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
+
+    /**
+     * Record whether the used suggestion originates from Cache or Autocomplete subsystem.
+     *
+     * @param isFromCache Whether the suggestion selected by the User comes from suggestion cache.
+     */
+    static final void recordUsedSuggestionFromCache(boolean isFromCache) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Omnibox.UsedSuggestionFromCache", isFromCache);
+    }
 }

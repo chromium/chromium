@@ -8,13 +8,14 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,20 +52,51 @@ public class AutocompleteResult {
         }
     };
 
+    /** An empty, initialized AutocompleteResult object. */
+    public static final AutocompleteResult EMPTY_RESULT =
+            new AutocompleteResult(0, Collections.emptyList(), null);
+
     private final @NonNull SparseArray<GroupDetails> mGroupsDetails;
-    private @NonNull List<AutocompleteMatch> mSuggestions;
+    private final @NonNull List<AutocompleteMatch> mSuggestions;
+    private final boolean mIsFromCachedResult;
     private long mNativeAutocompleteResult;
 
-    public AutocompleteResult(
-            List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
+    /**
+     * Create AutocompleteResult object that is associated with an (optional) Native
+     * AutocompleteResult object.
+     *
+     * @param nativeResult Opaque pointer to Native AutocompleteResult object (or 0 if this object
+     *         is built from local cache)
+     * @param suggestions List of AutocompleteMatch objects.
+     * @param groupsDetails Additional information about the AutocompleteMatch groups.
+     */
+    private AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
+            @Nullable SparseArray<GroupDetails> groupsDetails) {
+        // Consider all locally constructed AutocompleteResult objects as coming from Cache.
+        // These results do not have a native counterpart, meaning there's no corresponding C++
+        // structure describing the same AutocompleteResult.
+        // Note that the mNativeResult might change at any point during the lifecycle of this object
+        // to reflect relocation or destruction of the native object, so we cache this information
+        // separately.
+        mIsFromCachedResult = nativeResult != 0;
+        mNativeAutocompleteResult = nativeResult;
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
         mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
     }
 
-    public AutocompleteResult(long nativeResult, List<AutocompleteMatch> suggestions,
-            SparseArray<GroupDetails> groupsDetails) {
-        this(suggestions, groupsDetails);
-        mNativeAutocompleteResult = nativeResult;
+    /**
+     * Create AutocompleteResult object from cached information.
+     *
+     * Newly created AutocompleteResult object is not associated with any Native AutocompleteResult
+     * counterpart.
+     *
+     * @param suggestions List of AutocompleteMatch objects.
+     * @param groupsDetails Additional information about the AutocompleteMatch groups.
+     * @return AutocompleteResult object encompassing supplied information.
+     */
+    public static AutocompleteResult fromCache(@Nullable List<AutocompleteMatch> suggestions,
+            @Nullable SparseArray<GroupDetails> groupsDetails) {
+        return new AutocompleteResult(0, suggestions, groupsDetails);
     }
 
     @CalledByNative
@@ -80,14 +112,16 @@ public class AutocompleteResult {
                     new GroupDetails(groupNames[index], groupCollapsedStates[index]));
         }
 
-        AutocompleteResult result = new AutocompleteResult(
-                nativeAutocompleteResult, Arrays.asList(suggestions), groupsDetails);
+        AutocompleteResult result =
+                new AutocompleteResult(nativeAutocompleteResult, null, groupsDetails);
+        result.updateMatches(suggestions);
         return result;
     }
 
     @CalledByNative
     private void updateMatches(@NonNull AutocompleteMatch[] suggestions) {
-        mSuggestions = Arrays.asList(suggestions);
+        mSuggestions.clear();
+        Collections.addAll(mSuggestions, suggestions);
     }
 
     @CalledByNative
@@ -109,6 +143,10 @@ public class AutocompleteResult {
     @NonNull
     public SparseArray<GroupDetails> getGroupsDetails() {
         return mGroupsDetails;
+    }
+
+    public boolean isFromCachedResult() {
+        return mIsFromCachedResult;
     }
 
     /**

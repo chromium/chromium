@@ -133,7 +133,7 @@ public class MostVisitedTilesTest {
         mTile3 = new NavsuggestTile(
                 "Test Server", new GURL(mTestServer.getURL("/chrome/test/data/android/test.html")));
 
-        AutocompleteResult autocompleteResult = new AutocompleteResult(null, null);
+        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null, null);
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
         // First suggestion is the current content of the Omnibox.

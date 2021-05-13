@@ -49,7 +49,7 @@ public class AutocompleteController {
     private boolean mUseCachedZeroSuggestResults;
     private boolean mWaitingForSuggestionsToCache;
     private Profile mProfile;
-    private @NonNull AutocompleteResult mAutocompleteResult;
+    private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
 
     /**
      * Listener for receiving OmniboxSuggestions.
@@ -60,7 +60,6 @@ public class AutocompleteController {
     }
 
     public AutocompleteController(@NonNull Callback<Profile> spareRendererCreator) {
-        mAutocompleteResult = new AutocompleteResult(null, null);
         mSpareRendererCreator = spareRendererCreator;
     }
 

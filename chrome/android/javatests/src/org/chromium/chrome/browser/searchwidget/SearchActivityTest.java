@@ -395,7 +395,7 @@ public class SearchActivityTest {
         List<AutocompleteMatch> list = new ArrayList<>();
         list.add(mockSuggestion);
         list.add(mockSuggestion2);
-        AutocompleteResult data = new AutocompleteResult(list, null);
+        AutocompleteResult data = AutocompleteResult.fromCache(list, null);
         CachedZeroSuggestionsManager.saveToCache(data);
 
         // Wait for the activity to load, but don't let it load the native library.

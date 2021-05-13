@@ -46,7 +46,6 @@ public class OmniboxTestUtils {
      */
     public static class TestAutocompleteController extends AutocompleteController {
         private final Map<String, Pair<String, AutocompleteResult>> mAutocompleteResults;
-        private final AutocompleteResult mEmptyResult;
 
         /**
          * Create new Autocomplete controller.
@@ -55,7 +54,6 @@ public class OmniboxTestUtils {
         public TestAutocompleteController(OnSuggestionsReceivedListener listener) {
             super(profile -> {});
             mAutocompleteResults = new HashMap<>();
-            mEmptyResult = new AutocompleteResult(null, null);
             setOnSuggestionsReceivedListener(listener);
         }
 

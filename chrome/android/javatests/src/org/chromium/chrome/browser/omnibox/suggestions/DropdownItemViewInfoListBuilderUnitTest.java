@@ -122,7 +122,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
         final List<DropdownItemViewInfo> model = mBuilder.buildDropdownViewInfoList(
-                new AutocompleteResult(actualList, groupsDetails));
+                AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockHeaderProcessor, times(1)).populateModel(any(), eq(1), eq("Header 1"));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -172,7 +172,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
         final List<DropdownItemViewInfo> model = mBuilder.buildDropdownViewInfoList(
-                new AutocompleteResult(actualList, groupsDetails));
+                AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
@@ -245,15 +245,15 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenReturn(true);
         // Create AutocompleteResult with a lot of suggestions.
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = new AutocompleteResult(
+        final AutocompleteResult result = AutocompleteResult.fromCache(
                 Arrays.asList(match, match, match, match, match, match, match, match, match, match),
                 null);
         Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(result));
 
         // Same, with a shorter list of suggestions; in this case we don't know the height of the
         // dropdown view, so we assume we can comfortably fit 5 suggestions.
-        final AutocompleteResult shortResult =
-                new AutocompleteResult(Arrays.asList(match, match, match, match, match), null);
+        final AutocompleteResult shortResult = AutocompleteResult.fromCache(
+                Arrays.asList(match, match, match, match, match), null);
         Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(shortResult));
     }
 
@@ -268,7 +268,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = new AutocompleteResult(
+        final AutocompleteResult result = AutocompleteResult.fromCache(
                 Arrays.asList(match, match, match, match, match, match, match, match, match, match),
                 null);
 
@@ -291,7 +291,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(AutocompleteMatch.class), anyInt()))
                 .thenReturn(true);
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = new AutocompleteResult(
+        final AutocompleteResult result = AutocompleteResult.fromCache(
                 Arrays.asList(match, match, match, match, match, match, match, match, match, match),
                 null);
 
@@ -317,7 +317,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         final AutocompleteMatch match2 = builder.setDescription("2").build();
         final AutocompleteMatch match3 = builder.setDescription("3").build();
         final AutocompleteResult result =
-                new AutocompleteResult(Arrays.asList(match1, match2, match3), null);
+                AutocompleteResult.fromCache(Arrays.asList(match1, match2, match3), null);
 
         // Heights reported by processors for suggestions 1, 2 and 3.
         when(mMockSuggestionProcessor.doesProcessSuggestion(eq(match1), anyInt())).thenReturn(true);
@@ -360,8 +360,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                         .build();
         final int viewHeight = 20;
 
-        final AutocompleteResult result =
-                new AutocompleteResult(Arrays.asList(suggestion, suggestion, suggestion), null);
+        final AutocompleteResult result = AutocompleteResult.fromCache(
+                Arrays.asList(suggestion, suggestion, suggestion), null);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(viewHeight);
 
