@@ -2490,8 +2490,9 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
   testing::Mock::VerifyAndClearExpectations(client());
 }
 
+// TODO(crbug.com/1208501): Fix flakes and re-enable.
 // Verifies that the holding space tray animates in and out as expected.
-TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
+TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
