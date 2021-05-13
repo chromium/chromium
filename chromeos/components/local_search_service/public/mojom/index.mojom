@@ -35,4 +35,7 @@ interface Index {
 
   // Clears all data stored by the index.
   ClearIndex() => ();
+
+  // Sets search parameters for the index.
+  SetSearchParams(SearchParams search_params) => ();
 };

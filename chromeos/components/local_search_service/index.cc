@@ -54,6 +54,12 @@ void Index::SetReporterRemote(
   reporter_remote_.Bind(std::move(reporter_remote));
 }
 
+void Index::SetSearchParams(const SearchParams& search_params,
+                            SetSearchParamsCallback callback) {
+  search_params_ = search_params;
+  std::move(callback).Run();
+}
+
 void Index::MaybeLogSearchResultsStats(ResponseStatus status,
                                        size_t num_results,
                                        base::TimeDelta latency) {

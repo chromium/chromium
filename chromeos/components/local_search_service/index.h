@@ -28,6 +28,10 @@ class Index : public mojom::Index {
   void SetReporterRemote(
       mojo::PendingRemote<mojom::SearchMetricsReporter> reporter_remote);
 
+  // mojom::Index
+  void SetSearchParams(const SearchParams& search_params,
+                       SetSearchParamsCallback callback) override;
+
   void SetSearchParams(const SearchParams& search_params) {
     search_params_ = search_params;
   }
