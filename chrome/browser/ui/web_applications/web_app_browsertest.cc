@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,6 +68,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -1002,24 +1004,66 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
       "navigator.geolocation.getCurrentPosition(function(){});"));
 }
 
+class WebAppBrowserTest_PrefixInTitle
+    : public WebAppBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppBrowserTest_PrefixInTitle() {
+    // Focus mode uses AppBrowserController without an AppId, which we must
+    // handle in `GetTitle()`, so we have to test with this feature.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFocusMode, features::kPrefixWebAppWindowsWithAppName},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFocusMode}, {features::kPrefixWebAppWindowsWithAppName});
+    }
+  }
+
+  bool ExpectPrefixInTitle() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Ensure that web app windows with blank titles don't display the URL as a
 // default window title.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, EmptyTitlesDoNotDisplayUrl) {
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+                       WebAppWindowTitleForEmptyAndSimpleWebContentTitles) {
+  // Ensure web app windows show the expected title when the contents have an
+  // empty or simple title.
   const GURL app_url = https_server()->GetURL("app.site.com", "/empty.html");
-  const AppId app_id = InstallPWA(app_url);
+  const std::u16string app_title = u"A Web App";
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->title = app_title;
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(std::u16string(), app_browser->GetWindowTitleForCurrentTab(false));
+  if (ExpectPrefixInTitle()) {
+    EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
+  } else {
+    EXPECT_EQ(std::u16string(),
+              app_browser->GetWindowTitleForCurrentTab(false));
+  }
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.com", "/simple.html"));
-  EXPECT_EQ(u"OK", app_browser->GetWindowTitleForCurrentTab(false));
+  if (ExpectPrefixInTitle()) {
+    EXPECT_EQ(u"A Web App - OK",
+              app_browser->GetWindowTitleForCurrentTab(false));
+  } else {
+    EXPECT_EQ(u"OK", app_browser->GetWindowTitleForCurrentTab(false));
+  }
 }
 
 // Ensure that web app windows display the app title instead of the page
 // title when off scope.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopeUrlsDisplayAppTitle) {
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+                       OffScopeUrlsDisplayAppTitle) {
   const GURL app_url = GetSecureAppURL();
   const std::u16string app_title = u"A Web App";
 
@@ -1035,14 +1079,46 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopeUrlsDisplayAppTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // When we are within scope, show the page title.
-  EXPECT_EQ(u"Google", app_browser->GetWindowTitleForCurrentTab(false));
-
+  if (ExpectPrefixInTitle()) {
+    EXPECT_EQ(u"A Web App - Google",
+              app_browser->GetWindowTitleForCurrentTab(false));
+  } else {
+    EXPECT_EQ(u"Google", app_browser->GetWindowTitleForCurrentTab(false));
+  }
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.com", "/simple.html"));
 
   // When we are off scope, show the app title.
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
 }
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+                       GetTitleWorksWithNoAppId) {
+  // Focus mode uses web app window codepaths without installing a web app,
+  // which means there is no available app id.
+  const GURL url("http://aaa.com/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  Browser* app_browser = web_app::ReparentWebContentsForFocusMode(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_NE(app_browser, browser());
+
+  content::WebContents* main_browser_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(main_browser_web_contents);
+  EXPECT_NE(url, main_browser_web_contents->GetLastCommittedURL());
+
+  GURL app_browser_url = app_browser->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL();
+  EXPECT_EQ(url, app_browser_url);
+  EXPECT_TRUE(app_browser->is_focus_mode());
+}
+
+INSTANTIATE_TEST_SUITE_P(WebAppBrowserTestTitlePrefix,
+                         WebAppBrowserTest_PrefixInTitle,
+                         ::testing::Values(true, false));
 
 // Ensure that web app windows display the app title instead of the page
 // title when using http.
@@ -1064,55 +1140,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
 
   // The page title is "OK" but the page is being served over HTTP, so the app
   // title should be used instead.
-  EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
-}
-
-class WebAppBrowserTest_PrefixInTitle : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_PrefixInTitle() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPrefixWebAppWindowsWithAppName);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Ensure that web app windows display the app title as a prefix.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
-  const GURL app_url = GetSecureAppURL();
-  const std::u16string app_title = u"A Web App";
-
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = app_url;
-  web_app_info->scope = app_url.GetWithoutFilename();
-  web_app_info->title = app_title;
-  const AppId app_id = InstallWebApp(std::move(web_app_info));
-
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // The page title should be the combination of app name and title.
-  EXPECT_EQ(u"A Web App - Google",
-            app_browser->GetWindowTitleForCurrentTab(false));
-}
-
-// Ensure that web app windows with blank titles only display the app name.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
-                       EmptyTitlesDisplayAppName) {
-  const GURL app_url = https_server()->GetURL("app.site.com", "/empty.html");
-  const std::u16string app_title = u"A Web App";
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = app_url;
-  web_app_info->scope = app_url.GetWithoutFilename();
-  web_app_info->title = app_title;
-  const AppId app_id = InstallWebApp(std::move(web_app_info));
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
 }
 

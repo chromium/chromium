@@ -449,8 +449,13 @@ std::u16string AppBrowserController::GetTitle() const {
       web_contents->GetController().GetVisibleEntry();
   std::u16string raw_title = entry ? entry->GetTitle() : std::u16string();
 
-  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
+  // The AppBrowserController is still used for focus mode windows, which do not
+  // have an `app_id_`. Exit early in that case.
+  if (!base::FeatureList::IsEnabled(
+          features::kPrefixWebAppWindowsWithAppName) ||
+      !HasAppId()) {
     return raw_title;
+  }
 
   std::u16string app_name =
       base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())
