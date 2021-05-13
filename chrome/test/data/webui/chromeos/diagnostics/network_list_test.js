@@ -97,9 +97,9 @@ export function networkListTestSuite() {
     // of its initialization. Registering this observer causes it to
     // fire once.
     return initializeNetworkList(fakeNetworkGuidInfoList).then(() => {
-      dx_utils.assertElementContainsText(
-          getConnectivityCard().$$('#activeGuid'),
-          /**  @type {string} */ (fakeNetworkGuidInfoList[0].activeGuid));
+      assertEquals(
+          getConnectivityCard().activeGuid,
+          fakeNetworkGuidInfoList[0].activeGuid);
     });
   });
 
@@ -109,9 +109,9 @@ export function networkListTestSuite() {
         .then(() => {
           // Triggering the NetworkListObserver provides
           // the second observation: fakeNetworkGuidInfoList[1].
-          dx_utils.assertElementContainsText(
-              getConnectivityCard().$$('#activeGuid'),
-              /** @type {string} */ (fakeNetworkGuidInfoList[1].activeGuid));
+          assertEquals(
+              getConnectivityCard().activeGuid,
+              fakeNetworkGuidInfoList[1].activeGuid);
         });
   });
 
@@ -160,9 +160,9 @@ export function networkListTestSuite() {
           dx_utils.assertTextContains(
               cellularInfoElement.$$('#guid').value, fakeCellularNetwork.guid);
 
-          dx_utils.assertElementContainsText(
-              getConnectivityCard().$$('#activeGuid'),
-              fakeEthernetNetwork.guid);
+          assertEquals(
+              getConnectivityCard().activeGuid,
+              fakeNetworkGuidInfoList[0].activeGuid);
 
           return triggerNetworkListObserver();
         })
@@ -171,8 +171,9 @@ export function networkListTestSuite() {
               networkCardElements[0].$$('network-info'));
           dx_utils.assertTextContains(
               cellularInfoElement.$$('#guid').value, fakeCellularNetwork.guid);
-          dx_utils.assertElementContainsText(
-              getConnectivityCard().$$('#activeGuid'), fakeWifiNetwork.guid);
+          assertEquals(
+              getConnectivityCard().activeGuid,
+              fakeNetworkGuidInfoList[1].activeGuid);
         });
   });
 }

@@ -66,6 +66,7 @@ js_library("cellular_info") {
 
 js_library("connectivity_card") {
   deps = [
+    ":network_info",
     ":routine_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

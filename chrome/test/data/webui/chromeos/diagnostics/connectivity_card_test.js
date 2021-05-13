@@ -58,8 +58,11 @@ export function connectivityCardTestSuite() {
   test('ConnectivityCardPopulated', () => {
     return initializeConnectivityCard('ethernetGuid', [fakeEthernetNetwork])
         .then(() => {
-          dx_utils.assertElementContainsText(
-              connectivityCardElement.$$('#activeGuid'), 'ethernetGuid');
+          const ethernetInfoElement = dx_utils.getEthernetInfoElement(
+              connectivityCardElement.$$('network-info'));
+          dx_utils.assertTextContains(
+              dx_utils.getDataPointValue(ethernetInfoElement, '#guid'),
+              fakeEthernetNetwork.guid);
         });
   });
 }

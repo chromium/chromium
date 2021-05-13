@@ -4,7 +4,7 @@
 <diagnostics-card>
     <!-- TODO(michaelcheco): Add localized strings. -->
   <div id="cardTitle" slot="title">Connectivity</div>
-  <div id="activeGuid" slot="body">[[network_.guid]]</div>
+  <network-info slot="body" guid="[[activeGuid]]"></network-info>
   <routine-section slot="routines" routines="[[routines_]]"
   is-test-running="{{isTestRunning}}"
   run-tests-button-text="Run Network test"
