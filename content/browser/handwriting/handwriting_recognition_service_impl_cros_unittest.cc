@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -29,6 +30,9 @@ class HandwritingRecognitionServiceImplCrOSTest
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_ml_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+    // We need to add the switch to "enable" HWR support.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        "ondevice_handwriting", "use_rootfs");
   }
 
   chromeos::machine_learning::FakeServiceConnectionImpl&
