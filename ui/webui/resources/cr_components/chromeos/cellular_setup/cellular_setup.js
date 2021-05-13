@@ -15,9 +15,24 @@ Polymer({
     /** @type {!cellular_setup.CellularSetupDelegate} */
     delegate: Object,
 
+    /**
+     * Title of the flow, shown at the top of the dialog. No title shown if the
+     * string is empty.
+     */
     flowTitle: {
       type: String,
       notify: true,
+      value: '',
+    },
+
+    /**
+     * Header for the flow, shown below the title. No header shown if the string
+     * is empty.
+     */
+    flowHeader: {
+      type: String,
+      notify: true,
+      value: '',
     },
 
     /**

@@ -9,6 +9,8 @@
 Polymer({
   is: 'os-settings-cellular-setup-dialog',
 
+  behaviors: [I18nBehavior],
+
   properties: {
 
     /**
@@ -25,7 +27,11 @@ Polymer({
     /*** @private */
     dialogTitle_: {
       type: String,
-      notify: true,
+    },
+
+    /*** @private */
+    dialogHeader_: {
+      type: String,
     },
   },
 
@@ -55,5 +61,17 @@ Polymer({
    */
   shouldShowDialogTitle_(title) {
     return !!this.dialogTitle_;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDialogHeader_() {
+    if (this.dialogHeader_) {
+      return this.dialogHeader_;
+    }
+
+    return this.i18n('cellularSetupDialogTitle');
   },
 });

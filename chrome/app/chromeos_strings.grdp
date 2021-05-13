@@ -303,8 +303,11 @@
   <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of cellular setup when ChromeOS encountered an error completing activation.">
     An error occured during activation.
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_SUCCESS_HEADER" desc="Header displayed at the top of the success screen of the eSIM installation flow that tells user that a new eSIM profile has been added.">
+    Network added
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of eSIM cellular setup that tells user that their profile has been activated.">
-    Profile has been added successfully. This connection will be available to all users of this device.
+    This mobile network will be available to all users on this device
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of eSIM cellular setup when ChromeOS encountered an error installing eSIM profiles.">
     Couldn't install eSIM profile. For help, please contact your carrier.

@@ -69,6 +69,16 @@ cr.define('cellular_setup', function() {
       /** @type {!cellular_setup.CellularSetupDelegate} */
       delegate: Object,
 
+      /**
+       * Header shown at the top of the flow. No header shown if the string is
+       * empty.
+       */
+      header: {
+        type: String,
+        notify: true,
+        computed: 'computeHeader_(selectedESimPageName_, showError_)',
+      },
+
       forwardButtonLabel: {
         type: String,
         notify: true,
@@ -666,6 +676,19 @@ cr.define('cellular_setup', function() {
       return hasActiveCellularNetwork ?
           LoadingPageState.CELLULAR_DISCONNECT_WARNING :
           LoadingPageState.LOADING;
+    },
+
+    /**
+     * @return {string}
+     * @private
+     */
+    computeHeader_() {
+      if (this.selectedESimPageName_ === ESimPageName.FINAL &&
+          !this.showError_) {
+        return this.i18n('eSimFinalPageSuccessHeader');
+      }
+
+      return '';
     },
   });
 

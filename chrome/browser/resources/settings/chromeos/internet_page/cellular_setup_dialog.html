@@ -57,13 +57,12 @@
             [[dialogTitle_]]
           </div>
         </template>
-        <div id="header">
-          $i18n{cellularSetupDialogTitle}
-        </div>
+        <div id="header">[[getDialogHeader_(dialogHeader_)]]</div>
       </div>
       <div slot="body">
         <cellular-setup
             flow-title="{{dialogTitle_}}"
+            flow-header="{{dialogHeader_}}"
             delegate="[[delegate_]]"
             current-page-name="[[pageName]]">
         </cellular-setup>
