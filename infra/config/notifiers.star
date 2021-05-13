@@ -50,7 +50,7 @@ luci.notifier(
     name = "cronet",
     on_status_change = True,
     notify_emails = [
-        "cronet-bots-observer@google.com",
+        "cronet-sheriff@grotations.appspotmail.com",
     ],
 )
 
