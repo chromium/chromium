@@ -29,11 +29,10 @@ import org.chromium.components.user_prefs.UserPrefs;
  */
 public class DownloadSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
-    public static final String PREF_LOCATION_CHANGE = "location_change";
-    private static final String PREF_DOWNLOAD_LATER_PROMPT_ENABLED =
-            "download_later_prompt_enabled";
-    private static final String PREF_LOCATION_PROMPT_ENABLED = "location_prompt_enabled";
-    private static final String PREF_PREFETCHING_ENABLED = "prefetching_enabled";
+    static final String PREF_LOCATION_CHANGE = "location_change";
+    static final String PREF_DOWNLOAD_LATER_PROMPT_ENABLED = "download_later_prompt_enabled";
+    static final String PREF_LOCATION_PROMPT_ENABLED = "location_prompt_enabled";
+    static final String PREF_PREFETCHING_ENABLED = "prefetching_enabled";
 
     private PrefService mPrefService;
     private DownloadLocationPreference mLocationChangePref;
