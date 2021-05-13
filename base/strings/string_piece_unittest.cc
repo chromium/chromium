@@ -193,8 +193,7 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
   ASSERT_EQ(d.data(), nullptr);
   ASSERT_EQ(d.begin(), d.end());
 
-  ASSERT_GE(a.max_size(), a.capacity());
-  ASSERT_GE(a.capacity(), a.size());
+  ASSERT_GE(a.max_size(), a.size());
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckFind) {

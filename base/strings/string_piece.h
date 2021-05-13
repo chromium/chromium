@@ -212,8 +212,6 @@ class BasicStringPiece {
     v.length_ = length;
   }
 
-  size_type capacity() const { return length_; }
-
   constexpr size_type copy(CharT* dest,
                            size_type count,
                            size_type pos = 0) const {
