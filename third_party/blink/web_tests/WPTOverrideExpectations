@@ -211,3 +211,25 @@ external/wpt/webauthn/idlharness.https.window.html [ Pass ] # wpt_use_checked_in
 external/wpt/webauthn/securecontext.http.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/webauthn/securecontext.https.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/webauthn/webauthn-testdriver-basic.https.html [ Pass ] # wpt_use_checked_in_metadata
+
+crbug.com/1208893 external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_attributes_nohover_pointers.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_change-touch-action-onpointerdown_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_pointercancel_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_pointerleave_after_pointercancel_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_pointerout_after_pointercancel_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_releasepointercapture_onpointercancel_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-auto-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-x_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-inherit_highest-parent-none_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-down-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-left-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-x-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Failure ]
+crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-table-none-test_touch.html [ Failure ]
