@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<meta charset="UTF-8">
+
+<p>This test passes if the two lines of text look the same.</p>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+  <text x="100" y="100" font-size="28">سلام  ชุตินันท์</text>
+  <path fill="transparent" id="f" d="m100 200 L 300 200Z"/>
+  <text font-size="28">
+    <textPath xlink:href="#f">سلام  ชุตินันท์</textPath>
+  </text>
+</svg>
