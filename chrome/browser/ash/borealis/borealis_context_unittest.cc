@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -31,9 +32,8 @@ class BorealisContextTest : public testing::Test {
  public:
   BorealisContextTest() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(
-        reinterpret_cast<chromeos::FakeCiceroneClient*>(
-            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
+    chromeos::CiceroneClient::InitializeFake();
+    chromeos::ConciergeClient::InitializeFake();
     chromeos::SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -63,6 +63,7 @@ class BorealisContextTest : public testing::Test {
     borealis_context_.reset();  // must destroy before DBusThreadManager
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
+    chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -102,8 +103,7 @@ TEST_F(BorealisContextTest, ConciergeFailure) {
 }
 
 TEST_F(BorealisContextTest, CiceroneFailure) {
-  auto* cicerone_client = static_cast<chromeos::FakeCiceroneClient*>(
-      chromeos::DBusThreadManager::Get()->GetCiceroneClient());
+  auto* cicerone_client = chromeos::FakeCiceroneClient::Get();
 
   cicerone_client->NotifyCiceroneStopped();
   histogram_tester_.ExpectUniqueSample(

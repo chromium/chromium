@@ -56,30 +56,27 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
       args.begin(), args.end(),
       google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
 
-  chromeos::DBusThreadManager::Get()
-      ->GetCiceroneClient()
-      ->LaunchContainerApplication(
-          std::move(request),
-          base::BindOnce(
-              [](OnLaunchedCallback callback,
-                 base::Optional<
-                     vm_tools::cicerone::LaunchContainerApplicationResponse>
-                     response) {
-                if (!response) {
-                  LOG(ERROR)
-                      << "Failed to launch app: No response from cicerone";
-                  std::move(callback).Run(LaunchResult::kNoResponse);
-                  return;
-                }
-                if (!response->success()) {
-                  LOG(ERROR)
-                      << "Failed to launch app: " << response->failure_reason();
-                  std::move(callback).Run(LaunchResult::kError);
-                  return;
-                }
-                std::move(callback).Run(LaunchResult::kSuccess);
-              },
-              std::move(callback)));
+  chromeos::CiceroneClient::Get()->LaunchContainerApplication(
+      std::move(request),
+      base::BindOnce(
+          [](OnLaunchedCallback callback,
+             base::Optional<
+                 vm_tools::cicerone::LaunchContainerApplicationResponse>
+                 response) {
+            if (!response) {
+              LOG(ERROR) << "Failed to launch app: No response from cicerone";
+              std::move(callback).Run(LaunchResult::kNoResponse);
+              return;
+            }
+            if (!response->success()) {
+              LOG(ERROR) << "Failed to launch app: "
+                         << response->failure_reason();
+              std::move(callback).Run(LaunchResult::kError);
+              return;
+            }
+            std::move(callback).Run(LaunchResult::kSuccess);
+          },
+          std::move(callback)));
 }
 
 BorealisAppLauncher::BorealisAppLauncher(Profile* profile)

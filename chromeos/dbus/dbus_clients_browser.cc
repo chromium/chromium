@@ -18,8 +18,6 @@
 #include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
 #include "chromeos/dbus/cec_service_client.h"
 #include "chromeos/dbus/chunneld_client.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -87,7 +85,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
   cec_service_client_ = CREATE_DBUS_CLIENT(CecServiceClient, use_real_clients);
   cros_disks_client_ = CREATE_DBUS_CLIENT(CrosDisksClient, use_real_clients);
   chunneld_client_ = CREATE_DBUS_CLIENT(ChunneldClient, use_real_clients);
-  cicerone_client_ = CREATE_DBUS_CLIENT(CiceroneClient, use_real_clients);
   debug_daemon_client_ =
       CREATE_DBUS_CLIENT(DebugDaemonClient, use_real_clients);
   easy_unlock_client_ = CREATE_DBUS_CLIENT(EasyUnlockClient, use_real_clients);
@@ -124,7 +121,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   arc_obb_mounter_client_->Init(system_bus);
   cec_service_client_->Init(system_bus);
   chunneld_client_->Init(system_bus);
-  cicerone_client_->Init(system_bus);
   cros_disks_client_->Init(system_bus);
   debug_daemon_client_->Init(system_bus);
   easy_unlock_client_->Init(system_bus);

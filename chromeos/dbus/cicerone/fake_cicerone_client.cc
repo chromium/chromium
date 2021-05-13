@@ -7,11 +7,21 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
 
+namespace {
+
+FakeCiceroneClient* g_instance = nullptr;
+
+}  // namespace
+
 FakeCiceroneClient::FakeCiceroneClient() {
+  DCHECK(!g_instance);
+  g_instance = this;
+
   launch_container_application_response_.set_success(true);
 
   get_linux_package_info_response_.set_success(true);
@@ -55,7 +65,10 @@ FakeCiceroneClient::FakeCiceroneClient() {
       vm_tools::cicerone::RemoveFileWatchResponse::SUCCEEDED);
 }
 
-FakeCiceroneClient::~FakeCiceroneClient() = default;
+FakeCiceroneClient::~FakeCiceroneClient() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
 void FakeCiceroneClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -496,6 +509,11 @@ void FakeCiceroneClient::NotifyFileWatchTriggered(
   for (auto& observer : observer_list_) {
     observer.OnFileWatchTriggered(signal);
   }
+}
+
+// static
+FakeCiceroneClient* FakeCiceroneClient::Get() {
+  return g_instance;
 }
 
 }  // namespace chromeos

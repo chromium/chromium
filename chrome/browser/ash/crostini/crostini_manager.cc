@@ -82,7 +82,7 @@ namespace crostini {
 namespace {
 
 chromeos::CiceroneClient* GetCiceroneClient() {
-  return chromeos::DBusThreadManager::Get()->GetCiceroneClient();
+  return chromeos::CiceroneClient::Get();
 }
 
 chromeos::ConciergeClient* GetConciergeClient() {

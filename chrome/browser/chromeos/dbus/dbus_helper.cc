@@ -97,6 +97,7 @@ void InitializeDBus() {
   InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<CdmFactoryDaemonClient>(bus);
+  InitializeDBusClient<CiceroneClient>(bus);
   InitializeDBusClient<ConciergeClient>(bus);  // depends on CiceroneClient.
   InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<CrosHealthdClient>(bus);
@@ -191,6 +192,7 @@ void ShutdownDBus() {
   CrosHealthdClient::Shutdown();
   CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
+  CiceroneClient::Shutdown();
   CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();
