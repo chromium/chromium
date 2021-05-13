@@ -7,6 +7,7 @@
 // #import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // clang-format on
 
 suite('NetworkIpConfigTest', function() {
@@ -14,6 +15,9 @@ suite('NetworkIpConfigTest', function() {
   let ipConfig;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
     ipConfig = document.createElement('network-ip-config');
     document.body.appendChild(ipConfig);
     Polymer.dom.flush();
@@ -21,8 +25,7 @@ suite('NetworkIpConfigTest', function() {
 
   test('Enabled', function() {
     const mojom = chromeos.networkConfig.mojom;
-    assertTrue(!!ipConfig.$.autoConfigIpToggle);
-
+    assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
@@ -32,31 +35,20 @@ suite('NetworkIpConfigTest', function() {
       type: mojom.NetworkType.kWiFi,
     };
     Polymer.dom.flush();
-    assertFalse(ipConfig.$.autoConfigIpToggle.disabled);
-
-    // Cellular network should disable autoConfigIpToggle.
-    ipConfig.managedProperties = {
-      ipAddressConfigType: {
-        activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
-      },
-      type: mojom.NetworkType.kCellular,
-    };
-    Polymer.dom.flush();
-    assertTrue(ipConfig.$.autoConfigIpToggle.disabled);
+    assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
   test('Auto-config toggle policy enforcement', function() {
     const mojom = chromeos.networkConfig.mojom;
 
-    assertTrue(!!ipConfig.$.autoConfigIpToggle);
+    assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
 
     // ipAddressConfigType is not set; auto-config is toggleable.
     ipConfig.managedProperties = {
       ipAddressConfigType: null,
     };
     Polymer.dom.flush();
-    assertFalse(ipConfig.$.autoConfigIpToggle.disabled);
+    assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is not enforced (kNone).
     ipConfig.managedProperties = {
@@ -66,7 +58,7 @@ suite('NetworkIpConfigTest', function() {
       },
     };
     Polymer.dom.flush();
-    assertFalse(ipConfig.$.autoConfigIpToggle.disabled);
+    assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is enforced.
     ipConfig.managedProperties = {
@@ -76,7 +68,7 @@ suite('NetworkIpConfigTest', function() {
       },
     };
     Polymer.dom.flush();
-    assertTrue(ipConfig.$.autoConfigIpToggle.disabled);
+    assertTrue(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
   test('Disabled UI state', function() {
@@ -97,7 +89,7 @@ suite('NetworkIpConfigTest', function() {
     };
     Polymer.dom.flush();
 
-    const autoConfigIpToggle = ipConfig.$.autoConfigIpToggle;
+    const autoConfigIpToggle = ipConfig.$$('#autoConfigIpToggle');
     const propertyList = ipConfig.$$('network-property-list-mojo');
 
     assertFalse(autoConfigIpToggle.disabled);
@@ -107,5 +99,24 @@ suite('NetworkIpConfigTest', function() {
 
     assertTrue(autoConfigIpToggle.disabled);
     assertTrue(propertyList.disabled);
+  });
+
+  test('Do not show toggle if network is cellular', function() {
+    const getAutoConfig = () => ipConfig.$$('#autoConfig');
+    const mojom = chromeos.networkConfig.mojom;
+
+    const properties = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular');
+    ipConfig.managedProperties = properties;
+    Polymer.dom.flush();
+
+    assertFalse(!!getAutoConfig());
+
+    const wifi = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'someguid', '');
+    ipConfig.managedProperties = wifi;
+    Polymer.dom.flush();
+
+    assertTrue(!!getAutoConfig());
   });
 });

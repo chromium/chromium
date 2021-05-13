@@ -140,6 +140,24 @@ Polymer({
       },
       readOnly: true
     },
+
+    /**
+     * True if automatically-configured IP address toggle should be visible.
+     * @private
+     */
+    shouldShowAutoIpConfigToggle_: {
+      type: Boolean,
+      value: true,
+      computed: 'computeShouldShowAutoIpConfigToggle_(managedProperties)',
+    },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
   },
 
   /**
@@ -384,4 +402,29 @@ Polymer({
           {}
     });
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShouldShowAutoIpConfigToggle_() {
+    if (this.managedProperties.type ===
+            chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFieldsClassList_() {
+    let classes = 'property-box single-column stretch';
+    if (this.shouldShowAutoIpConfigToggle_) {
+      classes += ' indented';
+    }
+    return classes;
+  }
 });

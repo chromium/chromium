@@ -15,21 +15,23 @@
         margin-inline-start: var(--settings-control-label-spacing);
       }
     </style>
-    <div class="property-box">
-      <div id="autoIPConfigLabel" class="start">
-        [[i18n('networkIPConfigAuto')]]
+    <template is="dom-if" if="[[shouldShowAutoIpConfigToggle_]]" restamp>
+      <div id="autoConfig" class="property-box">
+        <div id="autoIPConfigLabel" class="start">
+          [[i18n('networkIPConfigAuto')]]
+        </div>
+        <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
+            managedProperties.ipAddressConfigType)]]">
+        </cr-policy-indicator>
+        <cr-toggle id="autoConfigIpToggle" checked="{{automatic_}}"
+            disabled="[[!canChangeIPConfigType_(managedProperties, disabled)]]"
+            on-change="onAutomaticChange_"
+            aria-labelledby="autoIPConfigLabel">
+        </cr-toggle>
       </div>
-      <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
-          managedProperties.ipAddressConfigType)]]">
-      </cr-policy-indicator>
-      <cr-toggle id="autoConfigIpToggle" checked="{{automatic_}}"
-          disabled="[[!canChangeIPConfigType_(managedProperties, disabled)]]"
-          on-change="onAutomaticChange_"
-          aria-labelledby="autoIPConfigLabel">
-      </cr-toggle>
-    </div>
+    </template>
     <template is="dom-if" if="[[hasIpConfigFields_(ipConfig_)]]">
-      <div class="property-box single-column indented stretch">
+      <div class$="[[getFieldsClassList_(shouldShowAutoIpConfigToggle_)]]">
         <network-property-list-mojo fields="[[ipConfigFields_]]"
             all-fields-read-only="[[automatic_]]"
             property-dict="[[ipConfig_]]"
