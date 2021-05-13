@@ -80,10 +80,12 @@ std::unique_ptr<ZipWriter> ZipWriter::CreateWithFd(
   DCHECK(zip_file_fd != base::kInvalidPlatformFile);
   zipFile zip_file =
       internal::OpenFdForZipping(zip_file_fd, APPEND_STATUS_CREATE);
+
   if (!zip_file) {
-    DLOG(ERROR) << "Couldn't create ZIP file for FD " << zip_file_fd;
+    DLOG(ERROR) << "Cannot create ZIP file for FD " << zip_file_fd;
     return nullptr;
   }
+
   return std::unique_ptr<ZipWriter>(
       new ZipWriter(zip_file, root_dir, file_accessor));
 }
@@ -97,10 +99,12 @@ std::unique_ptr<ZipWriter> ZipWriter::Create(
   DCHECK(!zip_file_path.empty());
   zipFile zip_file = internal::OpenForZipping(zip_file_path.AsUTF8Unsafe(),
                                               APPEND_STATUS_CREATE);
+
   if (!zip_file) {
-    DLOG(ERROR) << "Couldn't create ZIP file at path " << zip_file_path;
+    DLOG(ERROR) << "Cannot create ZIP file '" << zip_file_path << "'";
     return nullptr;
   }
+
   return std::unique_ptr<ZipWriter>(
       new ZipWriter(zip_file, root_dir, file_accessor));
 }
@@ -110,7 +114,10 @@ ZipWriter::ZipWriter(zipFile zip_file,
                      FileAccessor* file_accessor)
     : zip_file_(zip_file), root_dir_(root_dir), file_accessor_(file_accessor) {}
 
-ZipWriter::~ZipWriter() {}
+ZipWriter::~ZipWriter() {
+  if (zip_file_)
+    zipClose(zip_file_, nullptr);
+}
 
 bool ZipWriter::WriteEntries(Paths paths) {
   return AddEntries(paths) && Close();

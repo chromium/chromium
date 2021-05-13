@@ -54,6 +54,7 @@ class ZipWriter {
   bool WriteEntries(Paths paths);
 
  private:
+  // Takes ownership of |zip_file|.
   ZipWriter(zipFile zip_file,
             const base::FilePath& root_dir,
             FileAccessor* file_accessor);
