@@ -4,7 +4,7 @@
 
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 export function shortcutCustomizationAppTest() {
   /** @type {?ShortcutCustomizationAppElement} */
@@ -24,8 +24,6 @@ export function shortcutCustomizationAppTest() {
   test('LandingPageLoaded', () => {
     // TODO(jimmyxgong): Remove this stub test once the page has more
     // capabilities to test.
-    assertEquals(
-        'Shortcut Customization',
-        page.shadowRoot.querySelector('#header').textContent);
+    assertTrue(!!page.shadowRoot.querySelector('navigation-view-panel'));
   });
 }
