@@ -376,10 +376,6 @@ void AVIFImageDecoder::DecodeToYUV() {
   uint32_t width = image->width;
   uint32_t height = image->height;
 
-  // |height| comes from the AV1 sequence header or frame header, which encodes
-  // max_frame_height_minus_1 and frame_height_minus_1, respectively, as n-bit
-  // unsigned integers for some n.
-  DCHECK_GT(height, 0u);
   for (size_t plane_index = 0; plane_index < cc::kNumYUVPlanes; ++plane_index) {
     const cc::YUVIndex plane = static_cast<cc::YUVIndex>(plane_index);
     const size_t src_row_bytes =
