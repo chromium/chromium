@@ -68,8 +68,12 @@ class InternetSection
   void OnNetworkList(
       std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
 
-  // Null if no cellular network exists.
-  base::Optional<std::string> cellular_guid_;
+  // Null if no active cellular network exists. The active cellular network
+  // corresponds to the currently active SIM slot, and may not be
+  // currently connected. A connected cellular network will always be the
+  // active cellular network.
+  base::Optional<std::string> active_cellular_iccid_;
+  base::Optional<std::string> active_cellular_guid_;
 
   // Note: If not connected, the below fields are null.
   base::Optional<std::string> connected_ethernet_guid_;

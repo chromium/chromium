@@ -23,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -354,10 +355,9 @@ const std::vector<SearchConcept>& GetCellularConnectedSearchConcepts() {
   return *tags;
 }
 
-// TODO(1093185): Merge GetCellularSetupAndDetailMenuSearchConcepts() with
-// GetCellularConnectedSearchConcepts() when flag is enabled.
-const std::vector<SearchConcept>&
-GetCellularSetupAndDetailMenuSearchConcepts() {
+// TODO(1204440): Add "install eSIM profile" search result and show
+// appropriately.
+const std::vector<SearchConcept>& GetCellularESimCapableSearchTerms() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ADD_CELLULAR,
        mojom::kMobileDataNetworksSubpagePath,
@@ -367,6 +367,12 @@ GetCellularSetupAndDetailMenuSearchConcepts() {
        {.setting = mojom::Setting::kCellularAddNetwork},
        {IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT1,
         IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT2, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetCellularPrimaryIsESimSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CELLULAR_REMOVE_PROFILE,
        mojom::kCellularDetailsSubpagePath,
        mojom::SearchResultIcon::kCellular,
@@ -560,6 +566,19 @@ std::string GetDetailsSubpageUrl(const std::string& url_to_modify,
   return base::StringPrintf(
       "%s%sguid=%s", url_to_modify.c_str(),
       url_to_modify.find('?') == std::string::npos ? "?" : "&", guid.c_str());
+}
+
+bool IsESimCapable() {
+  return HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+}
+
+base::Optional<std::string> GetCellularActiveSimIccid(
+    const network_config::mojom::DeviceStatePropertiesPtr& device) {
+  for (const auto& sim_info : *device->sim_infos) {
+    if (sim_info->is_primary)
+      return sim_info->iccid;
+  }
+  return base::nullopt;
 }
 
 }  // namespace
@@ -996,7 +1015,7 @@ std::string InternetSection::ModifySearchResultUrl(
     return GetDetailsSubpageUrl(modified_url, *connected_wifi_guid_);
 
   if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails))
-    return GetDetailsSubpageUrl(modified_url, *cellular_guid_);
+    return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
 
   if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails))
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
@@ -1034,6 +1053,7 @@ void InternetSection::OnDeviceList(
   updater.RemoveSearchTags(GetWifiOffSearchConcepts());
   updater.RemoveSearchTags(GetCellularOnSearchConcepts());
   updater.RemoveSearchTags(GetCellularOffSearchConcepts());
+  updater.RemoveSearchTags(GetCellularESimCapableSearchTerms());
   updater.RemoveSearchTags(GetInstantTetheringSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringOnSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringOffSearchConcepts());
@@ -1041,6 +1061,8 @@ void InternetSection::OnDeviceList(
   // Keep track of ethernet devices to handle an edge case where Ethernet device
   // is present but no network is connected.
   does_ethernet_device_exist_ = false;
+
+  active_cellular_iccid_.reset();
 
   for (const auto& device : devices) {
     switch (device->type) {
@@ -1053,13 +1075,18 @@ void InternetSection::OnDeviceList(
         break;
 
       case NetworkType::kCellular:
+        active_cellular_iccid_ = GetCellularActiveSimIccid(device);
+
         // Note: Cellular search concepts all point to the cellular details
         // page, which is only available if a cellular network exists. This
         // check is in OnNetworkList().
-        if (device->device_state == DeviceStateType::kEnabled)
+        if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetCellularOnSearchConcepts());
-        else if (device->device_state == DeviceStateType::kDisabled)
+          if (features::IsCellularActivationUiEnabled() && IsESimCapable())
+            updater.AddSearchTags(GetCellularESimCapableSearchTerms());
+        } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetCellularOffSearchConcepts());
+        }
         break;
 
       case NetworkType::kTether:
@@ -1104,12 +1131,12 @@ void InternetSection::OnNetworkList(
   updater.RemoveSearchTags(GetWifiHiddenSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
   updater.RemoveSearchTags(GetCellularConnectedSearchConcepts());
-  updater.RemoveSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
+  updater.RemoveSearchTags(GetCellularPrimaryIsESimSearchConcepts());
   updater.RemoveSearchTags(GetCellularMeteredSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringConnectedSearchConcepts());
   updater.RemoveSearchTags(GetVpnConnectedSearchConcepts());
 
-  cellular_guid_.reset();
+  active_cellular_guid_.reset();
 
   connected_ethernet_guid_.reset();
   connected_wifi_guid_.reset();
@@ -1118,10 +1145,23 @@ void InternetSection::OnNetworkList(
 
   for (const auto& network : networks) {
     // Special case: Some cellular search functionality is available even if the
-    // network is not connected.
+    // primary cellular network is not connected.
     if (network->type == NetworkType::kCellular) {
-      cellular_guid_ = network->guid;
-      updater.AddSearchTags(GetCellularSearchConcepts());
+      bool is_primary_cellular_network =
+          active_cellular_iccid_.has_value() &&
+          network->type_state->get_cellular()->iccid == *active_cellular_iccid_;
+
+      if (!features::IsCellularActivationUiEnabled()) {
+        active_cellular_guid_ = network->guid;
+        updater.AddSearchTags(GetCellularSearchConcepts());
+      } else if (is_primary_cellular_network) {
+        active_cellular_guid_ = network->guid;
+        updater.AddSearchTags(GetCellularSearchConcepts());
+
+        // If the primary cellular network is ESim.
+        if (!network->type_state->get_cellular()->eid.empty())
+          updater.AddSearchTags(GetCellularPrimaryIsESimSearchConcepts());
+      }
     }
 
     if (!IsConnected(network->connection_state))
@@ -1143,13 +1183,9 @@ void InternetSection::OnNetworkList(
         break;
 
       case NetworkType::kCellular:
-        // Note: GUID is set above.
         updater.AddSearchTags(GetCellularConnectedSearchConcepts());
         if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
           updater.AddSearchTags(GetCellularMeteredSearchConcepts());
-
-        if (features::IsCellularActivationUiEnabled())
-          updater.AddSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
         break;
 
       case NetworkType::kTether:
