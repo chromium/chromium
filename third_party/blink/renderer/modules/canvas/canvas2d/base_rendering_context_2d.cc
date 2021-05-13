@@ -1666,6 +1666,10 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
   float x = clampTo<float>(centerX);
   float y = clampTo<float>(centerY);
 
+  // convert |startAngle| from radians to degree and rotate 90 degree, so
+  // |startAngle| at 0 starts from x-axis.
+  a = rad2deg(a) + 90;
+
   auto* gradient = MakeGarbageCollected<CanvasGradient>(a, FloatPoint(x, y));
   return gradient;
 }
