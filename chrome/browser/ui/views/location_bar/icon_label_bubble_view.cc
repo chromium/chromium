@@ -154,7 +154,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
       [](IconLabelBubbleView* host) {
         std::unique_ptr<views::InkDrop> ink_drop =
             views::InkDrop::CreateInkDropForFloodFillRipple(
-                host->ink_drop(), /*highlight_on_hover=*/false,
+                host->ink_drop(), /*highlight_on_hover=*/true,
                 /*highlight_on_focus=*/!host->focus_ring());
         ink_drop->AddObserver(host);
         return ink_drop;
