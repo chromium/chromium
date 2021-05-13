@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /** @interface */
 class LocalStorageProxy {
   /**
@@ -30,6 +28,12 @@ export class LocalStorageProxyImpl {
   setItem(key, value) {
     window.localStorage.setItem(key, value);
   }
+
+  /** @return {!LocalStorageProxy} */
+  static getInstance() {
+    return instance || (instance = new LocalStorageProxyImpl());
+  }
 }
 
-addSingletonGetter(LocalStorageProxyImpl);
+/** @type {?LocalStorageProxy} */
+let instance = null;

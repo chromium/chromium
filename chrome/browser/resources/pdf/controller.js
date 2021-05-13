@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -564,6 +563,12 @@ export class PluginController {
 
     resolver.resolve(messageData);
   }
+
+  /** @return {!PluginController} */
+  static getInstance() {
+    return instance || (instance = new PluginController());
+  }
 }
 
-addSingletonGetter(PluginController);
+/** @type {?PluginController} */
+let instance = null;

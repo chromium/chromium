@@ -285,8 +285,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
     this.sidenavCollapsed_ = Boolean(Number.parseInt(
-        LocalStorageProxyImpl.getInstance().getItem(
-            LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY),
+        /** @type {string} */ (LocalStorageProxyImpl.getInstance().getItem(
+            LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY)),
         10));
 
     // Non-Polymer properties
@@ -1099,7 +1099,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
 
     LocalStorageProxyImpl.getInstance().setItem(
-        LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY, this.sidenavCollapsed_ ? 1 : 0);
+        LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY,
+        (this.sidenavCollapsed_ ? 1 : 0).toString());
   }
 
   /**

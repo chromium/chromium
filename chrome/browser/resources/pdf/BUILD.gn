@@ -260,20 +260,17 @@ js_library("ink_controller") {
     ":annotation_tool",
     ":controller",
     ":viewport",
-    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("local_storage_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("controller") {
   deps = [
     ":viewport",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js/cr:event_target.m",

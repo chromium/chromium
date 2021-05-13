@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {ContentController} from './controller.js';
@@ -185,6 +184,12 @@ export class InkController {
     this.inkHost_ = null;
     this.isActive = false;
   }
+
+  /** @return {!InkController} */
+  static getInstance() {
+    return instance || (instance = new InkController());
+  }
 }
 
-addSingletonGetter(InkController);
+/** @type {?InkController} */
+let instance = null;
