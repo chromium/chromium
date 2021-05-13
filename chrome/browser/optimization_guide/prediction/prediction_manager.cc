@@ -735,11 +735,8 @@ void PredictionManager::OnStoreInitialized() {
   if (features::IsModelDownloadingEnabled() && !profile_->IsOffTheRecord() &&
       !prediction_model_download_manager_) {
     base::FilePath models_dir;
-    bool dir_exists = base::PathService::Get(
-        chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS, &models_dir);
-    UMA_HISTOGRAM_BOOLEAN(
-        "OptimizationGuide.PredictionManager.PredictionModelPathExists",
-        dir_exists);
+    base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                           &models_dir);
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(
             DownloadServiceFactory::GetForKey(profile_->GetProfileKey()),

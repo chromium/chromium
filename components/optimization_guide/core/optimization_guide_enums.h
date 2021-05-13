@@ -129,27 +129,27 @@ enum class PredictionManagerModelStatus {
 // Keep in sync with OptimizationGuidePredictionModelDownloadStatus
 // in enums.xml.
 enum class PredictionModelDownloadStatus {
-  kUnknown = 0,
+  kUnknown,
   // The downloaded file was successfully verified and processed.
-  kSuccess = 1,
+  kSuccess,
   // The downloaded file was not a valid CRX file.
-  kFailedCrxVerification = 2,
+  kFailedCrxVerification,
   // A temporary directory for unzipping the CRX file failed to be created.
-  kFailedUnzipDirectoryCreation = 3,
+  kFailedUnzipDirectoryCreation,
   // The CRX file failed to be unzipped.
-  kFailedCrxUnzip = 4,
+  kFailedCrxUnzip,
   // The model info failed to be read from disk.
-  kFailedModelInfoFileRead = 5,
+  kFailedModelInfoFileRead,
   // The model info failed to be parsed.
-  kFailedModelInfoParsing = 6,
+  kFailedModelInfoParsing,
   // The model file was not found in the CRX file.
-  kFailedModelFileNotFound = 7,
+  kFailedModelFileNotFound,
   // The model file failed to be moved to a more permanent directory.
-  kFailedModelFileOtherError = 8,
+  kFailedModelFileOtherError,
   // The model info was invalid.
-  kFailedModelInfoInvalid = 9,
+  kFailedModelInfoInvalid,
   // The CRX file was a valid CRX file but did not come from a valid publisher.
-  kFailedCrxInvalidPublisher = 10,
+  kFailedCrxInvalidPublisher,
 
   // Add new values above this line.
   kMaxValue = kFailedCrxInvalidPublisher,
