@@ -8,7 +8,7 @@
  * just provodes a summary and link to the subpage.
  */
 
-/* #export */ const bluetoothApis = window['bluetoothApis'] || {
+export const bluetoothApis = window['bluetoothApis'] || {
   /**
    * Set this to provide a fake implementation for testing.
    * @type {Bluetooth}
@@ -22,14 +22,35 @@
   bluetoothPrivateApiForTest: null,
 };
 
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import '../os_icons.m.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import '../../prefs/prefs.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import './bluetooth_subpage.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-bluetooth-page',
 
   behaviors: [
     I18nBehavior,
     DeepLinkingBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -76,9 +97,9 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.BLUETOOTH_DEVICES) {
+        if (routes.BLUETOOTH_DEVICES) {
           map.set(
-              settings.routes.BLUETOOTH_DEVICES.path,
+              routes.BLUETOOTH_DEVICES.path,
               '#bluetoothDevices .subpage-arrow');
         }
         return map;
@@ -178,14 +199,14 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} newRoute
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
     // Does not apply to this page.
-    if (newRoute !== settings.routes.BLUETOOTH) {
+    if (newRoute !== routes.BLUETOOTH) {
       return;
     }
 
@@ -245,7 +266,7 @@ Polymer({
    */
   onBluetoothToggledByUser_() {
     // Record that the user manually enabled/disabled Bluetooth.
-    settings.recordSettingChange(
+    recordSettingChange(
         chromeos.settings.mojom.Setting.kBluetoothOnOff,
         {boolValue: this.bluetoothToggleState_});
   },
@@ -297,6 +318,6 @@ Polymer({
 
   /** @private */
   openSubpage_() {
-    settings.Router.getInstance().navigateTo(settings.routes.BLUETOOTH_DEVICES);
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
   }
 });

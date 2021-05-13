@@ -3,21 +3,20 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":bluetooth_device_list_item.m",
-    ":bluetooth_page.m",
-    ":bluetooth_subpage.m",
+    ":bluetooth_device_list_item",
+    ":bluetooth_page",
+    ":bluetooth_subpage",
   ]
 }
 
-js_library("bluetooth_device_list_item.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/bluetooth_page/bluetooth_device_list_item.m.js" ]
+js_library("bluetooth_device_list_item") {
   deps = [
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -25,13 +24,11 @@ js_library("bluetooth_device_list_item.m") {
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
   ]
   externs_list = [ "$externs_path/bluetooth.js" ]
-  extra_deps = [ ":bluetooth_device_list_item_module" ]
 }
 
-js_library("bluetooth_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/bluetooth_page/bluetooth_page.m.js" ]
+js_library("bluetooth_page") {
   deps = [
-    ":bluetooth_subpage.m",
+    ":bluetooth_subpage",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
@@ -46,11 +43,9 @@ js_library("bluetooth_page.m") {
     "$externs_path/bluetooth.js",
     "$externs_path/bluetooth_private.js",
   ]
-  extra_deps = [ ":bluetooth_page_module" ]
 }
 
-js_library("bluetooth_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/bluetooth_page/bluetooth_subpage.m.js" ]
+js_library("bluetooth_subpage") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
@@ -68,40 +63,12 @@ js_library("bluetooth_subpage.m") {
     "$externs_path/bluetooth.js",
     "$externs_path/bluetooth_private.js",
   ]
-  extra_deps = [ ":bluetooth_subpage_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":bluetooth_device_list_item_module",
-    ":bluetooth_page_module",
-    ":bluetooth_subpage_module",
+html_to_js("web_components") {
+  js_files = [
+    "bluetooth_device_list_item.js",
+    "bluetooth_page.js",
+    "bluetooth_subpage.js",
   ]
-}
-
-polymer_modulizer("bluetooth_device_list_item") {
-  js_file = "bluetooth_device_list_item.js"
-  html_file = "bluetooth_device_list_item.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("bluetooth_page") {
-  js_file = "bluetooth_page.js"
-  html_file = "bluetooth_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("bluetooth_subpage") {
-  js_file = "bluetooth_subpage.js"
-  html_file = "bluetooth_subpage.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
 }

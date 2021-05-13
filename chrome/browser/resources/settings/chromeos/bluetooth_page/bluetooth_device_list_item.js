@@ -6,10 +6,22 @@
  * @fileoverview Polymer element for displaying a bluetooth device in a list.
  */
 
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
+
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'bluetooth-device-list-item',
 
-  behaviors: [I18nBehavior, cr.ui.FocusRowBehavior],
+  behaviors: [I18nBehavior, FocusRowBehavior],
 
   properties: {
     /**

@@ -257,9 +257,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/ambient_mode_page/constants.m.js",
     "chromeos/ambient_mode_page/topic_source_item.m.js",
     "chromeos/ambient_mode_page/topic_source_list.m.js",
-    "chromeos/bluetooth_page/bluetooth_device_list_item.m.js",
-    "chromeos/bluetooth_page/bluetooth_page.m.js",
-    "chromeos/bluetooth_page/bluetooth_subpage.m.js",
+    "chromeos/bluetooth_page/bluetooth_device_list_item.js",
+    "chromeos/bluetooth_page/bluetooth_page.js",
+    "chromeos/bluetooth_page/bluetooth_subpage.js",
     "chromeos/crostini_page/crostini_arc_adb.m.js",
     "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.m.js",
     "chromeos/crostini_page/crostini_browser_proxy.m.js",
@@ -653,7 +653,7 @@ group("polymer3_elements") {
   public_deps = [
     # Sub-folder targets
     "ambient_mode_page:polymer3_elements",
-    "bluetooth_page:polymer3_elements",
+    "bluetooth_page:web_components",
     "crostini_page:polymer3_elements",
     "date_time_page:polymer3_elements",
     "device_page:polymer3_elements",

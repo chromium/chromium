@@ -14,7 +14,27 @@ const MAX_NUMBER_DEVICE_SHOWN = 50;
  *  properties and devices.
  */
 
+import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
+import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_behavior.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import '../../settings_shared_css.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import './bluetooth_device_list_item.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-bluetooth-subpage',
 
   behaviors: [
@@ -22,7 +42,7 @@ Polymer({
     CrScrollableBehavior,
     DeepLinkingBehavior,
     ListPropertyUpdateBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -224,8 +244,8 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
+   * RouteObserverBehavior
+   * @param {!Route} route
    * @protected
    */
   currentRouteChanged(route) {
@@ -235,7 +255,7 @@ Polymer({
     this.startOrStopRefreshingDeviceList_();
 
     // Does not apply to this page.
-    if (route !== settings.routes.BLUETOOTH_DEVICES) {
+    if (route !== routes.BLUETOOTH_DEVICES) {
       return;
     }
 
@@ -315,8 +335,7 @@ Polymer({
     if (!this.adapterState || !this.adapterState.powered) {
       return;
     }
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.BLUETOOTH_DEVICES) {
+    if (Router.getInstance().getCurrentRoute() === routes.BLUETOOTH_DEVICES) {
       this.startDiscovery_();
     } else {
       this.stopDiscovery_();
@@ -475,7 +494,7 @@ Polymer({
         this.$.deviceDialog.close();
       }
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -490,7 +509,7 @@ Polymer({
             chrome.runtime.lastError.message);
       }
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -505,7 +524,7 @@ Polymer({
             chrome.runtime.lastError.message);
       }
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -514,7 +533,7 @@ Polymer({
       return;
     }
     // Call flush so that the dialog gets sized correctly before it is opened.
-    Polymer.dom.flush();
+    flush();
     this.$.deviceDialog.open();
     this.dialogShown_ = true;
   },

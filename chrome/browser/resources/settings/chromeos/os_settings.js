@@ -4,9 +4,9 @@
 
 import '../prefs/prefs.js';
 import './ambient_mode_page/ambient_mode_page.m.js';
-import './bluetooth_page/bluetooth_device_list_item.m.js';
-import './bluetooth_page/bluetooth_page.m.js';
-import './bluetooth_page/bluetooth_subpage.m.js';
+import './bluetooth_page/bluetooth_device_list_item.js';
+import './bluetooth_page/bluetooth_page.js';
+import './bluetooth_page/bluetooth_subpage.js';
 import './device_page/device_page.m.js';
 import './device_page/display.m.js';
 import './device_page/display_layout.m.js';
@@ -94,7 +94,7 @@ export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettin
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.m.js';
 export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.m.js';
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.m.js';
-export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
+export {bluetoothApis} from './bluetooth_page/bluetooth_page.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
