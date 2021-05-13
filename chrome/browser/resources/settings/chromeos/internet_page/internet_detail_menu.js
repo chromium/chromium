@@ -13,6 +13,7 @@ Polymer({
   // to show the actions for search result.
   behaviors: [
     settings.RouteObserverBehavior,
+    ESimManagerListenerBehavior,
   ],
 
   properties: {
@@ -22,8 +23,11 @@ Polymer({
      */
     deviceState: Object,
 
-    /** @private {?OncMojo.NetworkStateProperties} */
-    networkState_: {
+    /**
+     * Null if current network on network detail page is not an eSIM network.
+     * @private {?OncMojo.NetworkStateProperties}
+     */
+    eSimNetworkState_: {
       type: Object,
       value: null,
     },
@@ -43,6 +47,12 @@ Polymer({
         return loadTimeData.getBoolean('isGuest');
       },
     },
+
+    /** @private*/
+    guid_: {
+      type: String,
+      value: '',
+    }
   },
 
   /**
@@ -52,11 +62,12 @@ Polymer({
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
+    this.eSimNetworkState_ = null;
+    this.guid_ = '';
     if (route !== settings.routes.NETWORK_DETAIL ||
         !this.isUpdatedCellularUiEnabled_) {
       return;
     }
-    this.networkState_ = null;
 
     // Check if the current network is Cellular using the GUID in the
     // current route. We can't use the 'type' parameter in the url
@@ -68,16 +79,35 @@ Polymer({
       console.error('No guid specified for page:' + route);
       return;
     }
+    this.guid_ = guid;
+
+    // Needed to set initial eSimNetworkState_.
+    this.setESimNetworkState_();
+  },
+
+  /**
+   * ESimManagerListenerBehavior override
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   */
+  onProfileChanged(profile) {
+    this.setESimNetworkState_();
+  },
+
+  /**
+   * Gets and sets current eSIM network state.
+   * @private
+   */
+  setESimNetworkState_() {
     const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
-    networkConfig.getNetworkState(guid).then(response => {
+    networkConfig.getNetworkState(this.guid_).then(response => {
       if (response.result.type !==
               chromeos.networkConfig.mojom.NetworkType.kCellular ||
           !response.result.typeState.cellular.eid ||
           !response.result.typeState.cellular.iccid) {
         return;
       }
-      this.networkState_ = response.result;
+      this.eSimNetworkState_ = response.result;
     });
   },
 
@@ -105,9 +135,9 @@ Polymer({
       return false;
     }
 
-    // Show if |this.networkState_| has been fetched. Note that this only occurs
-    // if this is a cellular network with an ICCID.
-    return !!this.networkState_;
+    // Show if |this.eSimNetworkState_| has been fetched. Note that this only
+    // occurs if this is a cellular network with an ICCID.
+    return !!this.eSimNetworkState_;
   },
 
   /**
@@ -128,7 +158,8 @@ Polymer({
   onRenameESimProfileTap_(e) {
     this.closeMenu_();
     this.fire(
-        'show-esim-profile-rename-dialog', {networkState: this.networkState_});
+        'show-esim-profile-rename-dialog',
+        {networkState: this.eSimNetworkState_});
   },
 
   /**
@@ -138,7 +169,8 @@ Polymer({
   onRemoveESimProfileTap_(e) {
     this.closeMenu_();
     this.fire(
-        'show-esim-remove-profile-dialog', {networkState: this.networkState_});
+        'show-esim-remove-profile-dialog',
+        {networkState: this.eSimNetworkState_});
   },
 
   /** @private */

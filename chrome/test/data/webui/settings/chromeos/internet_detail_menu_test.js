@@ -12,17 +12,23 @@
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
 // clang-format on
 
 suite('InternetDetailMenu', function() {
   let internetDetailMenu;
   let mojoApi_;
   let mojom;
+  let eSimManagerRemote;
 
   setup(function() {
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     mojoApi_.resetForTest();
+
+    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
+    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
 
     mojom = chromeos.networkConfig.mojom;
     mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
@@ -211,5 +217,48 @@ suite('InternetDetailMenu', function() {
       inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     assertFalse(tripleDot.disabled);
+  });
+
+  test('Raname Dialog ', async function() {
+    const profileName = 'test profile name';
+    const iccid = '100000';
+    const eid = '1111111111';
+
+    addEsimCellularNetwork(iccid, eid);
+    init();
+    await flushAsync();
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
+    assertFalse(tripleDot.disabled);
+
+    // Change esim profile name.
+    const cellular =
+        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+    cellular.typeProperties.cellular.iccid = iccid;
+    cellular.typeProperties.cellular.eid = eid;
+    cellular.name.activeValue = profileName;
+    mojoApi_.setManagedPropertiesForTest(cellular);
+    await flushAsync();
+
+    // Trigger change in esim manager listener
+    eSimManagerRemote.notifyProfileChangedForTest(null);
+    await flushAsync();
+
+    tripleDot.click();
+    await flushAsync();
+
+    const actionMenu =
+        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
+    assertTrue(actionMenu.open);
+
+    const renameBtn = actionMenu.querySelector('#renameBtn');
+    assertTrue(!!renameBtn);
+
+    const renameProfilePromise = test_util.eventToPromise(
+        'show-esim-profile-rename-dialog', internetDetailMenu);
+    renameBtn.click();
+    const event = await renameProfilePromise;
+    assertEquals(profileName, event.detail.networkState.name);
   });
 });
