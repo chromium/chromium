@@ -35,7 +35,7 @@ class VmApp extends PolymerElement {
     const url = new URL(window.location.href);
     switch (url.pathname) {
       case '/parallels':
-        this.setTitle_(loadTimeData.getString('pluginVmTitle'));
+        this.setTitle_(this.getTitle('pluginVmAppName'));
         this.showContentsPage_ = false;
         this.diagnostics_ =
             (await VmDiagnosticsProvider.getRemote().getPluginVmDiagnostics())
@@ -80,6 +80,15 @@ class VmApp extends PolymerElement {
       case Status.kNotApplicable:
         return '';
     }
+  }
+
+  getTitle(appNameId) {
+    return loadTimeData.getStringF(
+        'pageTitle', loadTimeData.getString(appNameId));
+  }
+
+  formatTopErrorMessage(topErrorMessage) {
+    return loadTimeData.getStringF('notEnabledMessage', topErrorMessage);
   }
 }
 

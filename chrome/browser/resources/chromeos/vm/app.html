@@ -47,14 +47,14 @@
 
   <template is="dom-if" if="[[showContentsPage_]]">
     <ul>
-      <li><a href="/parallels">$i18n{pluginVmTitle}</a></li>
+      <li><a href="/parallels">[[getTitle("pluginVmAppName")]]</a></li>
     </ul>
   </template>
 
   <template is="dom-if" if="[[!showContentsPage_]]">
     <template is="dom-if" if="[[diagnostics_.topError]]">
       <div id="top-error">
-        $i18n{notEnabledLabel}: [[diagnostics_.topError.message]]
+        [[formatTopErrorMessage(diagnostics_.topError.message)]]
         <a href$="[[diagnostics_.topError.learnMoreLink]]"
             hidden$="[[!diagnostics_.topError.learnMoreLink]]">
           $i18n{learnMoreLabel}

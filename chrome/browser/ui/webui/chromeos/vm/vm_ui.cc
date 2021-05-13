@@ -13,9 +13,12 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/webui/web_ui_util.h"
 
 // TODO(b/173653141) We need to port this to lacros eventually.
 
@@ -40,17 +43,20 @@ class VmUIImpl : public vm::mojom::VmDiagnosticsProvider {
 };
 
 void AddStringResources(content::WebUIDataSource* source) {
-  source->AddString("contentsPageTitle", "VM debugging page");
-  source->AddString("pluginVmTitle", "Parallels Desktop status");
-  source->AddString("passLabel", "Pass");
-  source->AddString("failLabel", "Fail");
-  source->AddString("notApplicableLabel", "N/A");
-  source->AddString("notEnabledLabel", "Not Enabled");
-  source->AddString("learnMoreLabel", "Learn more");
-
-  source->AddString("requirementLabel", "Requirement");
-  source->AddString("statusLabel", "Status");
-  source->AddString("explanationLabel", "Explanation");
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"contentsPageTitle", IDS_VM_STATUS_INDEX_PAGE_TITLE},
+      {"passLabel", IDS_VM_STATUS_PAGE_PASS_LABEL},
+      {"failLabel", IDS_VM_STATUS_PAGE_FAIL_LABEL},
+      {"notApplicableLabel", IDS_VM_STATUS_PAGE_NOT_APPLICABLE_LABEL},
+      {"notEnabledMessage", IDS_VM_STATUS_PAGE_NOT_ENABLED_MESSAGE},
+      {"learnMoreLabel", IDS_LEARN_MORE},
+      {"requirementLabel", IDS_VM_STATUS_PAGE_REQUIREMENT_LABEL},
+      {"statusLabel", IDS_VM_STATUS_PAGE_STATUS_LABEL},
+      {"explanationLabel", IDS_VM_STATUS_PAGE_EXPLANATION_LABEL},
+      {"pageTitle", IDS_VM_STATUS_PAGE_TITLE},
+      {"pluginVmAppName", IDS_PLUGIN_VM_APP_NAME},
+  };
+  source->AddLocalizedStrings(kStrings);
 }
 
 }  // namespace

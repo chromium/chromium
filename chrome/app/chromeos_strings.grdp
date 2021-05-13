@@ -5227,6 +5227,35 @@
     Looking for file shares
   </message>
 
+  <!-- Strings for the VM status page (chrome://vm). -->
+  <message name="IDS_VM_STATUS_INDEX_PAGE_TITLE" desc="The title for the VM (virtual machine) status index page. This string is used both for the heading and the page title.">
+    VM status
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_TITLE" desc="The title for the VM (virtual machine) status page of a particular product (e.g. 'Parallels Desktop' or 'Crostini').">
+    <ph name="VM_NAME">$1<ex>Parallels Desktop</ex></ph> status
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_PASS_LABEL" desc="Status indicating that we passed a check that is required for running the software.">
+    Pass
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_FAIL_LABEL" desc="Status indicating that we failed a check that is required for running the software.">
+    Fail
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_NOT_APPLICABLE_LABEL" desc="Status indicating that a check required for running the software does not apply or could not be checked.">
+    N/A
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_NOT_ENABLED_MESSAGE" desc="A message to tell the user why the VM (virtual machine) either cannot be installed or is not installed.">
+    Not enabled: <ph name="REASON">$1<ex>Drallion is not supported</ex></ph>
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_REQUIREMENT_LABEL" desc="The heading for the 'requirement' column in a VM status page table. The requirement column specifies the requirements for running a VM (virtual machine).">
+    Requirement
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_STATUS_LABEL" desc="The heading for the 'status' column in a VM status page table. The status can be either 'pass', 'fail', or 'N/A'.">
+    Status
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_EXPLANATION_LABEL" desc="The heading for the 'explanation' column in a VM status page table. This column provides additional information for checks that have failed.">
+    Explanation
+  </message>
+
   <!-- Strings for Plugin VM -->
   <message name="IDS_PLUGIN_VM_APP_NAME" desc="Product name for 'Parallels Desktop'. Should not be translated as it is a third party name." translateable="false">
     Parallels Desktop
