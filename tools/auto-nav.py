@@ -46,16 +46,17 @@ import os
 import subprocess
 import sys
 import time
+import urllib
 
 try:
   import psutil
   from selenium import webdriver
 except ImportError:
-  print('Error importing required modules. Run with vpython instead of python.')
+  print('Error importing required modules. Run with vpython3 instead of python.')
   sys.exit(1)
 
 DEFAULT_INTERVAL = 1
-
+EXIT_CODE_ERROR = 1
 
 # Splits list |positional_args| into two lists: |urls| and |chrome_args|, where
 # arguments starting with '-' are treated as chrome args, and the rest as URLs.
@@ -115,7 +116,12 @@ def ParseArgs():
   if not args.url:
     parser.print_usage()
     print(os.path.basename(__file__) + ': error: missing URL argument')
-    exit(1)
+    exit(EXIT_CODE_ERROR)
+  for url in args.url:
+    if not urllib.parse.urlparse(url).scheme:
+      print(os.path.basename(__file__) +
+            ': error: URL is missing required scheme (e.g., "https://"): ' + url)
+      exit(EXIT_CODE_ERROR)
   return [args, chrome_args]
 
 
@@ -126,7 +132,7 @@ def ExitIfNotFound(path, error_message=None):
     print('File not found: {}.'.format(path))
     if error_message:
       print(error_message)
-    exit()
+    exit(EXIT_CODE_ERROR)
 
 
 def main():
