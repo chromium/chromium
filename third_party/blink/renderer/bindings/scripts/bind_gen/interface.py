@@ -484,8 +484,11 @@ def bind_callback_local_vars(code_node, cg_context):
         "${class_name}::GetWrapperTypeInfo(), "
         "${info}.Holder());")
 
-    code_node.register_code_symbols(local_vars)
     code_node.add_template_vars(template_vars)
+    # Allow implementation-specific symbol definitions to have priority.
+    for symbol_node in local_vars:
+        if symbol_node.name not in code_node.own_template_vars:
+            code_node.register_code_symbol(symbol_node)
 
 
 def _make_reflect_content_attribute_key(code_node, cg_context):
@@ -2194,69 +2197,95 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    assert cg_context.operation_group and len(cg_context.operation_group) == 1
+    S = SymbolNode
+    T = TextNode
+    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
 
-    func_like = cg_context.operation_group[0]
+    class ArgumentInfo(object):
+        def __init__(self, v8_type, v8_arg_name, blink_arg_name, symbol_node):
+            self.v8_type = v8_type
+            self.v8_arg_name = v8_arg_name
+            self.blink_arg_name = blink_arg_name
+            self.symbol_node = symbol_node
 
-    return_type = ("void" if func_like.return_type.is_void else
-                   blink_type_info(func_like.return_type).value_t)
-    arg_type_and_names = [(blink_type_info(arg.idl_type).value_t,
-                           name_style.arg_f("arg{}_{}", index + 1,
-                                            arg.identifier))
-                          for index, arg in enumerate(func_like.arguments)]
-    arg_decls = ["v8::ApiObject arg0_receiver"] + [
-        "{} {}".format(arg_type, arg_name)
-        for arg_type, arg_name in arg_type_and_names
-    ]
-    arg_decls.append("v8::FastApiCallbackOptions& arg_callback_options")
+    def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
+        if argument.idl_type.unwrap().is_interface:
+            return ("v8::Local<v8::Value>",
+                    make_v8_to_blink_value(blink_arg_name,
+                                           "${{{}}}".format(v8_arg_name),
+                                           argument.idl_type,
+                                           argument=argument,
+                                           cg_context=cg_context))
+        else:
+            return (blink_type_info(argument.idl_type).value_t,
+                    S(blink_arg_name,
+                      "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
+
+    arg_list = []
+    for argument in cg_context.operation.arguments:
+        blink_arg_name = name_style.arg_f("arg{}_{}", argument.index + 1,
+                                          argument.identifier)
+        v8_arg_name = name_style.arg_f("v8_arg{}_{}", argument.index + 1,
+                                       argument.identifier)
+        v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
+                                                       blink_arg_name)
+        arg_list.append(
+            ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
+
+    arg_decls = (["v8::Local<v8::Object> v8_arg0_receiver"] +
+                 map(lambda arg: "{} {}".format(arg.v8_type, arg.v8_arg_name),
+                     arg_list) +
+                 ["v8::FastApiCallbackOptions& v8_arg_callback_options"])
+    return_type = ("void" if cg_context.operation.return_type.is_void else
+                   blink_type_info(cg_context.operation.return_type).value_t)
+
     func_def = CxxFuncDefNode(name=function_name,
                               arg_decls=arg_decls,
                               return_type=return_type)
+    func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
+    for arg in arg_list:
+        body.add_template_var(arg.v8_arg_name, arg.v8_arg_name)
+        body.register_code_symbol(arg.symbol_node)
+    body.add_template_vars({
+        "v8_arg0_receiver": "v8_arg0_receiver",
+        "v8_arg_callback_options": "v8_arg_callback_options"
+    })
+    body.register_code_symbols([
+        S("blink_receiver", (_format(
+            "{}* ${blink_receiver} = "
+            "${class_name}::ToWrappableUnsafe(${v8_receiver});",
+            blink_class_name(cg_context.interface)))),
+        S("isolate",
+          "v8::Isolate* ${isolate} = ${v8_receiver}->GetIsolate();"),
+        S("v8_receiver", ("v8::Local<v8::Object> ${v8_receiver} = "
+                          "${v8_arg0_receiver};")),
+    ])
+    bind_callback_local_vars(body, cg_context)
 
-    pattern = """\
-ThreadState::NoAllocationScope thread_no_alloc_scope(ThreadState::Current());
-v8::Object* v8_receiver = reinterpret_cast<v8::Object*>(&arg0_receiver);
-v8::Isolate* isolate = v8_receiver->GetIsolate();
-v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope(
-    isolate,
-    v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);
-{blink_class}* blink_receiver =
-    ToScriptWrappable(v8_receiver)->ToImpl<{blink_class}>();
-blink::NoAllocDirectCallScope no_alloc_direct_call_scope(
-    blink_receiver, &arg_callback_options);\
-"""
-    blink_class = blink_class_name(cg_context.interface)
-    body.append(TextNode(_format(pattern, blink_class=blink_class)))
+    body.extend([
+        T("ThreadState::NoAllocationScope "
+          "thread_no_alloc_scope(ThreadState::Current());"),
+        T("v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope("
+          "${isolate}, "
+          "v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);"),
+        T("blink::NoAllocDirectCallScope no_alloc_direct_call_scope("
+          "${blink_receiver}, &${v8_arg_callback_options});"),
+        EmptyNode(),
+    ])
 
-    blink_arguments = [arg_name for arg_type, arg_name in arg_type_and_names]
-
+    blink_arguments = list(
+        map(lambda arg: "${{{}}}".format(arg.blink_arg_name), arg_list))
     if cg_context.may_throw_exception:
-        pattern = """\
-NoAllocDirectCallExceptionState no_alloc_exception_state(
-    blink_receiver,
-    isolate,
-    ExceptionState::kExecutionContext,
-    "{interface_name}",
-    "{property_name}");\
-"""
-        body.append(
-            TextNode(
-                _format(pattern,
-                        interface_name=cg_context.class_like.identifier,
-                        property_name=func_like.identifier)))
-        blink_arguments.append("no_alloc_exception_state")
-        body.accumulate(
-            CodeGenAccumulator.require_include_headers([
-                "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
-            ]))
-
-    member_func = backward_compatible_api_func(cg_context)
+        blink_arguments.append("${exception_state}")
     body.append(
-        TextNode(
-            _format("return blink_receiver->{member_func}({blink_arguments});",
-                    member_func=member_func,
-                    blink_arguments=", ".join(blink_arguments))))
+        F("${blink_receiver}->{member_func}({blink_arguments});",
+          member_func=backward_compatible_api_func(cg_context),
+          blink_arguments=", ".join(blink_arguments)))
+    if cg_context.may_throw_exception:
+        body.append(
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              body=T("return;")))
 
     return func_def
 
@@ -4565,9 +4594,8 @@ ${npo_prototype_template}->SetInternalFieldCount(
           "<% npo_interface_template.request_symbol_definition() %>"))
 
     # Arguments have priority over local vars.
-    template_vars = code_node.template_vars
     for symbol_node in local_vars:
-        if symbol_node.name not in template_vars:
+        if symbol_node.name not in code_node.own_template_vars:
             code_node.register_code_symbol(symbol_node)
 
 
