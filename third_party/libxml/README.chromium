@@ -1,6 +1,6 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: 7279d236364739a05657a8a614c15990eb08d0c6
+Version: bfd2f4300fb348a0fb8265a17546a0eb8bdec719
 CPEPrefix: cpe:/a:xmlsoft:libxml2:2.9.9
 License: MIT
 License File: src/Copyright
@@ -20,8 +20,6 @@ Modifications:
     See https://crbug.com/708433
 - libxml2-2.9.4-security-xpath-nodetab-uaf.patch: See https://crbug.com/705445
 - chromium-issue-708434.patch: Guard against input counter overflow.
-- revert-non-recursive-xml-parsing.patch: Making parts of the XML parser
-    non-recursive broke a few web platform tests.
 - chromium-issue-1138555.patch: Change TRUE to 1 for ICU68 which remove the
   #define of TRUE.
 - Add helper classes in the chromium/ subdirectory.

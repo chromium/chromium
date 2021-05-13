@@ -66,8 +66,6 @@ import tempfile
 #    e. Complete the review as usual
 
 PATCHES = [
-    # TODO(dcheng): reach out upstream to see what's going on here.
-    'revert-non-recursive-xml-parsing.patch',
     'chromium-issue-599427.patch',
     'chromium-issue-628581.patch',
     'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
