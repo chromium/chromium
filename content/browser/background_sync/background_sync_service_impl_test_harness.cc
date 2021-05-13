@@ -94,9 +94,9 @@ void BackgroundSyncServiceImplTestHarness::SetUp() {
   // Don't let the tests be confused by the real-world device connectivity
   background_sync_test_util::SetIgnoreNetworkChanges(true);
 
-  mojo::SetDefaultProcessErrorHandler(base::AdaptCallbackForRepeating(
-      base::BindOnce(&BackgroundSyncServiceImplTestHarness::CollectMojoError,
-                     base::Unretained(this))));
+  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
+      &BackgroundSyncServiceImplTestHarness::CollectMojoError,
+      base::Unretained(this)));
 
   CreateTestHelper();
   CreateStoragePartition();

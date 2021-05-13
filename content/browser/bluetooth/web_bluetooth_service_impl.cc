@@ -907,17 +907,18 @@ void WebBluetoothServiceImpl::RemoteServerConnect(
   mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient>
       web_bluetooth_server_client(std::move(client));
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface. The |callback| will only be called once, but it is
   // passed to both the success and error callbacks.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.device->CreateGattConnection(
       base::BindOnce(&WebBluetoothServiceImpl::OnCreateGATTConnectionSuccess,
                      weak_ptr_factory_.GetWeakPtr(), device_id, start_time,
-                     std::move(web_bluetooth_server_client), copyable_callback),
+                     std::move(web_bluetooth_server_client),
+                     std::move(split_callback.first)),
       base::BindOnce(&WebBluetoothServiceImpl::OnCreateGATTConnectionFailed,
                      weak_ptr_factory_.GetWeakPtr(), start_time,
-                     copyable_callback));
+                     std::move(split_callback.second)));
 }
 
 void WebBluetoothServiceImpl::RemoteServerDisconnect(
@@ -1189,15 +1190,16 @@ void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   base::OnceClosure write_callback = base::BindOnce(
       &WebBluetoothServiceImpl::OnCharacteristicWriteValueSuccess,
-      weak_ptr_factory_.GetWeakPtr(), copyable_callback);
+      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first));
   BluetoothGattCharacteristic::ErrorCallback write_error_callback =
       base::BindOnce(&WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback);
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second));
   using WebBluetoothWriteType = blink::mojom::WebBluetoothWriteType;
   using WriteType = BluetoothRemoteGattCharacteristic::WriteType;
   switch (write_type) {
@@ -1260,15 +1262,17 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotifications(
   mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
       characteristic_client(std::move(client));
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.characteristic->StartNotifySession(
       base::BindOnce(&WebBluetoothServiceImpl::OnStartNotifySessionSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(characteristic_client), copyable_callback),
+                     std::move(characteristic_client),
+                     std::move(split_callback.first)),
       base::BindOnce(&WebBluetoothServiceImpl::OnStartNotifySessionFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void WebBluetoothServiceImpl::RemoteCharacteristicStopNotifications(
@@ -1360,15 +1364,17 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.descriptor->WriteRemoteDescriptor(
       value,
       base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorWriteValueSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorWriteValueFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void WebBluetoothServiceImpl::RequestScanningStart(

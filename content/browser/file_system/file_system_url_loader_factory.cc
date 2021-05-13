@@ -433,8 +433,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         url_,
         FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
             FileSystemOperation::GET_METADATA_FIELD_SIZE,
-        base::AdaptCallbackForRepeating(base::BindOnce(
-            &FileSystemFileURLLoader::DidGetMetadata, base::AsWeakPtr(this))));
+        base::BindOnce(&FileSystemFileURLLoader::DidGetMetadata,
+                       base::AsWeakPtr(this)));
   }
 
   void DidGetMetadata(base::File::Error error_code,

@@ -2102,13 +2102,13 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
 
   // The logic below (via CheckQuotaManagedDataDeletionStatus) only
   // invokes the callback when all processing is complete.
-  base::RepeatingClosure done_callback = base::AdaptCallbackForRepeating(
+  base::OnceClosure done_callback =
       perform_storage_cleanup
           ? base::BindOnce(&PerformQuotaManagerStorageCleanup,
                            base::WrapRefCounted(quota_manager),
                            quota_storage_type, quota_client_types,
                            std::move(callback))
-          : std::move(callback));
+          : std::move(callback);
 
   size_t* deletion_task_count = new size_t(0u);
   (*deletion_task_count)++;
@@ -2122,15 +2122,19 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
       continue;
     }
 
+    auto split_callback = base::SplitOnceCallback(std::move(done_callback));
+    done_callback = std::move(split_callback.first);
+
     (*deletion_task_count)++;
     quota_manager->DeleteOriginData(
         origin, quota_storage_type, quota_client_types,
         base::BindOnce(&OnQuotaManagedOriginDeleted, origin, quota_storage_type,
-                       deletion_task_count, done_callback));
+                       deletion_task_count, std::move(split_callback.second)));
   }
   (*deletion_task_count)--;
 
-  CheckQuotaManagedDataDeletionStatus(deletion_task_count, done_callback);
+  CheckQuotaManagedDataDeletionStatus(deletion_task_count,
+                                      std::move(done_callback));
 }
 
 base::OnceClosure
