@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
@@ -41,6 +40,8 @@ class JavaRef;
 }  // namespace android
 #endif
 
+template <typename T>
+class Optional;
 class TimeDelta;
 class UnguessableToken;
 class Value;

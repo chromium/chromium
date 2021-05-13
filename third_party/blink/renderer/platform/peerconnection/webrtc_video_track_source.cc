@@ -228,8 +228,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     }
 
     DeliverFrame(std::move(frame), std::move(scaled_frames),
-                 base::OptionalOrNullptr(cropped_rect),
-                 translated_camera_time_us);
+                 OptionalOrNullptr(cropped_rect), translated_camera_time_us);
     return;
   }
 
@@ -275,7 +274,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // of the pipeline.
   if (video_frame->natural_size() == video_frame->visible_rect().size()) {
     DeliverFrame(std::move(video_frame), std::move(scaled_frames),
-                 base::OptionalOrNullptr(accumulated_update_rect_),
+                 OptionalOrNullptr(accumulated_update_rect_),
                  translated_camera_time_us);
     return;
   }
@@ -287,7 +286,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   }
 
   DeliverFrame(std::move(video_frame), std::move(scaled_frames),
-               base::OptionalOrNullptr(accumulated_update_rect_),
+               OptionalOrNullptr(accumulated_update_rect_),
                translated_camera_time_us);
 }
 

@@ -300,7 +300,7 @@ TEST(ObserverListThreadSafeTest, CrossThreadNotifications) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
-  Optional<test::TaskEnvironment> task_environment(absl::in_place);
+  Optional<test::TaskEnvironment> task_environment(in_place);
   scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
       new ObserverListThreadSafe<Foo>);
 

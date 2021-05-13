@@ -4,7 +4,6 @@
 
 #include "media/formats/webm/webm_colour_parser.h"
 
-#include "base/check.h"
 #include "base/logging.h"
 #include "media/formats/webm/webm_constants.h"
 #include "third_party/libwebm/source/mkvmuxer/mkvmuxer.h"

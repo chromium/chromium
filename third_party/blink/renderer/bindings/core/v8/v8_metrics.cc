@@ -108,7 +108,7 @@ V8MetricsRecorder::GetUkmRecorderAndSourceId(
   ukm::UkmRecorder* ukm_recorder = document->UkmRecorder();
   if (!ukm_recorder)
     return base::Optional<UkmRecorderAndSourceId>();
-  return base::Optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
+  return base::Optional<UkmRecorderAndSourceId>(base::in_place, ukm_recorder,
                                                 document->UkmSourceID());
 }
 

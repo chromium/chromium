@@ -7,8 +7,12 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
+
+namespace base {
+template <typename T>
+class Optional;
+}
 
 // A tutorial's identifier. Each defined tutorial has a FeatureTutorial enum
 // value.

@@ -11,7 +11,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/check.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"

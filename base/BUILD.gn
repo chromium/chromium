@@ -3727,6 +3727,7 @@ if (enable_nocompile_tests) {
       "metrics/field_trial_params_unittest.nc",
       "metrics/histogram_unittest.nc",
       "observer_list_unittest.nc",
+      "optional_unittest.nc",
       "sequence_checker_unittest.nc",
       "task/task_traits_extension_unittest.nc",
       "task/task_traits_unittest.nc",

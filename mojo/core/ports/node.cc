@@ -1056,7 +1056,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
-    base::Optional<PortLocker> locker(absl::in_place, port_refs, 2);
+    base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
     auto* port0 = locker->GetPort(port0_ref);
     auto* port1 = locker->GetPort(port1_ref);
 

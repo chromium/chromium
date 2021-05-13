@@ -103,7 +103,6 @@ if (enable_nocompile_tests) {
         "-Wfatal-errors",
         "-Wthread-safety",
         "-I" + rebase_path("//", root_build_dir),
-        "-I" + rebase_path("//third_party/abseil-cpp/", root_build_dir),
         "-I" + rebase_path(root_gen_dir, root_build_dir),
 
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn

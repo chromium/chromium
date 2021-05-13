@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_web_vector.h"
@@ -23,6 +22,11 @@
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace base {
+template <typename T>
+class Optional;
+}
 
 namespace blink {
 template <typename T>

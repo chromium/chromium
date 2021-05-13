@@ -462,7 +462,7 @@ void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
 
   GetDisplayManager()->set_mixed_mirror_mode_params(
       base::Optional<display::MixedMirrorModeParams>(
-          absl::in_place, mirroring_source_id, mirroring_destination_ids));
+          base::in_place, mirroring_source_id, mirroring_destination_ids));
 }
 
 void StoreDisplayLayoutPref(PrefService* pref_service,

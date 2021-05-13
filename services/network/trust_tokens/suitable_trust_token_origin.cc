@@ -27,7 +27,7 @@ base::Optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
     return base::nullopt;
 
   return base::Optional<SuitableTrustTokenOrigin>(
-      absl::in_place, base::PassKey<SuitableTrustTokenOrigin>(),
+      base::in_place, base::PassKey<SuitableTrustTokenOrigin>(),
       std::move(origin));
 }
 

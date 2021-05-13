@@ -214,7 +214,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerFreedOnThreadExit) {
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
   base::Optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
-      tls_owned_pointer(absl::in_place);
+      tls_owned_pointer(base::in_place);
   bool tls_was_destroyed_other = false;
 
   Thread thread("TestThread");
@@ -256,7 +256,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
   testing::FLAGS_gtest_death_test_style = "threadsafe";
 
   base::Optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
-      absl::in_place);
+      base::in_place);
 
   Thread thread("TestThread");
   thread.Start();
