@@ -45,13 +45,13 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final Tab mTab;
     private final ChromeShareExtras mChromeShareExtras;
     private final long mShareStartTime;
-    private final ShareParams mShareTextParams;
     private final long mRequestSelectorStartTime;
 
     private ShareParams mShareLinkParams;
     private TextFragmentReceiver mProducer;
     private boolean mCancelRequest;
     private String mSelectedText;
+    private ShareParams mShareTextParams;
 
     public LinkToTextCoordinator(Context context, Tab tab,
             ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
@@ -185,6 +185,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
+                        mShareTextParams =
+                                new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", "")
+                                        .setText(mSelectedText)
+                                        .build();
                         onSelectorReady(mVisibleUrl);
                     }
                 });
