@@ -30,8 +30,8 @@ class SyncWebSocketImplTest : public testing::Test {
   ~SyncWebSocketImplTest() override {}
 
   void SetUp() override {
-    base::Thread::Options options(base::MessagePumpType::IO, 0);
-    ASSERT_TRUE(client_thread_.StartWithOptions(options));
+    ASSERT_TRUE(client_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
     context_getter_ = new URLRequestContextGetter(client_thread_.task_runner());
     ASSERT_TRUE(server_.Start());
   }

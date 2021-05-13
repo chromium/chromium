@@ -41,8 +41,8 @@ class FetchUrlTest : public testing::Test,
       : io_thread_("io"),
         response_(kSendHello),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    base::Thread::Options options(base::MessagePumpType::IO, 0);
-    CHECK(io_thread_.StartWithOptions(options));
+    CHECK(io_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
 
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
