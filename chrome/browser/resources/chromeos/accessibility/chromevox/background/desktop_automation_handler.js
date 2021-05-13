@@ -47,6 +47,16 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     /** @private {AutomationNode} */
     this.lastValueTarget_ = null;
 
+    /**
+     * The last time we handled an alert event.
+     * @type {!Date}
+     * @private
+     */
+    this.lastAlertTime_ = new Date(0);
+
+    /** @private {string} */
+    this.lastAlertText_ = '';
+
     /** @private {string} */
     this.lastRootUrl_ = '';
 
@@ -177,10 +187,18 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     }
 
     const range = cursors.Range.fromNode(node);
-
     const output = new Output()
                        .withSpeechCategory(TtsCategory.LIVE)
                        .withSpeechAndBraille(range, null, evt.type);
+
+    const alertDelayMet = new Date() - this.lastAlertTime_ >
+        DesktopAutomationHandler.MIN_ALERT_DELAY_MS;
+    if (!alertDelayMet && output.toString() === this.lastAlertText_) {
+      return;
+    }
+
+    this.lastAlertTime_ = new Date();
+    this.lastAlertText_ = output.toString();
 
     // A workaround for alert nodes that contain no actual content.
     if (output.toString()) {
@@ -780,6 +798,12 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
  * @const {number}
  */
 DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
+
+/**
+ * Time to wait until processing more alert events with the same text content.
+ * @const {number}
+ */
+DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 50;
 
 /**
  * Time to wait before announcing attribute changes that are otherwise too

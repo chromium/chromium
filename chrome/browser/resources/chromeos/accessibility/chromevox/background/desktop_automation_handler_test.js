@@ -122,3 +122,30 @@ TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate', function() {
         .replay();
   });
 });
+
+TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `<button>Hello world</button>`;
+      this.runWithLoadedTree(site, function(root) {
+        const button = root.find({role: RoleType.BUTTON});
+        assertTrue(!!button);
+        const event = new CustomAutomationEvent(EventType.ALERT, button);
+        mockFeedback
+            .call(() => {
+              DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 20 * 1000;
+              this.handler_.onAlert(event);
+            })
+            .expectSpeech('Hello world')
+            .clearPendingOutput()
+            .call(() => {
+              // Repeated alerts should be ignored.
+              this.handler_.onAlert(event);
+              assertFalse(mockFeedback.utteranceInQueue('Hello world'));
+              this.handler_.onAlert(event);
+              assertFalse(mockFeedback.utteranceInQueue('Hello world'));
+            })
+            .replay();
+      });
+    });
