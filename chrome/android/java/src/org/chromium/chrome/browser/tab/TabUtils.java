@@ -17,6 +17,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 
@@ -89,10 +90,16 @@ public class TabUtils {
     }
 
     /**
+     * Check if the tab is large enough for displaying desktop sites. This method will only check
+     * for tablets, if the device is a phone, will return false regardless of tab size.
      * @param tab The tab to be checked if the size is large enough for desktop site.
      * @return Whether or not the screen size is large enough for desktop sites.
      */
     public static boolean isTabLargeEnoughForDesktopSite(Tab tab) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(tab.getContext())) {
+            // The device is a phone, do not check the tab size.
+            return false;
+        }
         Activity activity = ((TabImpl) tab).getActivity();
         if (activity == null) {
             // It is possible that we are in custom tabs or tests, and need to access the activity

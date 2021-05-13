@@ -59,7 +59,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -1664,13 +1663,14 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 ? false
                 : getWebContents().getNavigationController().getUseDesktopUserAgent();
 
-        if (!mUserForcedUserAgent && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+        // We only calculate the user agent when users did not manually choose one.
+        if (!mUserForcedUserAgent
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS,
                         REQUEST_DESKTOP_ENABLED_PARAM, false)) {
             // We only do the following logic to choose the desktop/mobile user agent if
-            // 1. User never manually made choice in app menu for requesting desktop site or not.
+            // 1. User never manually made a choice in app menu for requesting desktop site.
             // 2. The browser is running in tablets.
             boolean shouldRequestDesktopSite = TabUtils.isTabLargeEnoughForDesktopSite(this);
 
@@ -1678,13 +1678,14 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 RecordHistogram.recordBooleanHistogram(
                         "Android.RequestDesktopSite.UseDesktopUserAgent", shouldRequestDesktopSite);
 
-                // The user is not forcing any mode and we determined that we need to change,
-                // therefore we are using TRUE or FALSE option. On Android TRUE mean override to
-                // Desktop user agent, while FALSE means go with Mobile version.
+                // The user is not forcing any mode and we determined that we need to
+                // change, therefore we are using TRUE or FALSE option. On Android TRUE mean
+                // override to Desktop user agent, while FALSE means go with Mobile version.
                 return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
                                                 : UserAgentOverrideOption.FALSE;
             }
         }
+
         RecordHistogram.recordBooleanHistogram(
                 "Android.RequestDesktopSite.UseDesktopUserAgent", currentRequestDesktopSite);
 
