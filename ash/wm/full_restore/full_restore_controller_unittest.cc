@@ -5,6 +5,7 @@
 #include "ash/wm/full_restore/full_restore_controller.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -109,7 +110,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
       aura::Window* root_window = Shell::GetPrimaryRootWindow(),
-      base::Optional<int32_t> restore_window_id = base::nullopt) {
+      base::Optional<int32_t> restore_window_id = base::nullopt,
+      chromeos::WindowStateType window_state_type =
+          chromeos::WindowStateType::kNormal) {
     // Full restore widgets are inactive when created as we do not want to take
     // activation from a possible activated window, and we want to stack them in
     // a certain order.
@@ -119,6 +122,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         .SetBounds(bounds)
         .SetShow(false)
         .SetContext(root_window)
+        .SetShowState(chromeos::ToWindowShowState(window_state_type))
         .SetWindowProperty(full_restore::kActivationIndexKey,
                            new int32_t(activation_index))
         .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true);
@@ -132,7 +136,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
     SetResizable(widget);
     FullRestoreController::Get()->OnWidgetInitialized(widget);
-    widget->Show();
+    if (window_state_type != chromeos::WindowStateType::kMinimized)
+      widget->Show();
     return widget;
   }
 
@@ -148,9 +153,11 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         fake_full_restore_file_[restore_window_id].info.get();
     const gfx::Rect bounds = info->current_bounds.value_or(gfx::Rect(200, 200));
     const int32_t activation_index = info->activation_index.value_or(-1);
+    const auto window_state_type =
+        info->window_state_type.value_or(chromeos::WindowStateType::kNormal);
     return CreateTestFullRestoredWidget(activation_index, bounds,
                                         Shell::GetPrimaryRootWindow(),
-                                        restore_window_id);
+                                        restore_window_id, window_state_type);
   }
 
   void VerifyStackingOrder(aura::Window* parent,
@@ -869,16 +876,57 @@ TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
   TabletModeControllerTestApi().EnterTabletMode();
   HotseatWidget* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   EXPECT_EQ(HotseatState::kShownHomeLauncher, hotseat_widget->state());
+  auto* app_list_widget = views::Widget::GetWidgetForNativeWindow(
+      Shell::Get()->app_list_controller()->GetWindow());
+  ASSERT_TRUE(app_list_widget->IsActive());
 
-  // Add an entry and restore it. The widget should be visible and the hotseat
-  // should now be hidden.
+  // Add two entries, where the window highest on the z-order is minimized.
+  // Restore both entries. The hotseat should now be hidden.
   AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
-                     chromeos::WindowStateType::kNormal);
-  views::Widget* restored_widget =
+                     chromeos::WindowStateType::kMinimized,
+                     /*activation_index=*/1);
+  AddEntryToFakeFile(/*restore_window_id=*/2, gfx::Rect(200, 200),
+                     chromeos::WindowStateType::kNormal,
+                     /*activation_index=*/2);
+  views::Widget* restored_widget_1 =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
-  EXPECT_TRUE(restored_widget->IsVisible());
+  views::Widget* restored_widget_2 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
+  EXPECT_FALSE(restored_widget_1->IsVisible());
+  EXPECT_TRUE(restored_widget_2->IsVisible());
+  EXPECT_FALSE(restored_widget_1->IsActive());
+  EXPECT_FALSE(restored_widget_2->IsActive());
   EXPECT_EQ(HotseatState::kHidden, hotseat_widget->state());
-  // TODO(chinsenj|sammiequon): Ensure that the app list is deactivated here.
+  EXPECT_FALSE(app_list_widget->IsActive());
+}
+
+// Tests that the app list isn't deactivated when all restored windows are
+// minimized.
+TEST_F(FullRestoreControllerTest,
+       AppListNotDeactivatedWhenAllWindowsMinimized) {
+  // Enter tablet mode and ensure the app list is active.
+  TabletModeControllerTestApi().EnterTabletMode();
+  auto* app_list_widget = views::Widget::GetWidgetForNativeWindow(
+      Shell::Get()->app_list_controller()->GetWindow());
+  ASSERT_TRUE(app_list_widget->IsActive());
+
+  // Create multiple minimized entries and restore them. The app list should
+  // still be active.
+  AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
+                     chromeos::WindowStateType::kMinimized,
+                     /*activation_index=*/1);
+  AddEntryToFakeFile(/*restore_window_id=*/2, gfx::Rect(200, 200),
+                     chromeos::WindowStateType::kMinimized,
+                     /*activation_index=*/2);
+  views::Widget* restored_widget_1 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+  views::Widget* restored_widget_2 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
+  EXPECT_FALSE(restored_widget_1->IsVisible());
+  EXPECT_FALSE(restored_widget_2->IsVisible());
+  EXPECT_FALSE(restored_widget_1->IsActive());
+  EXPECT_FALSE(restored_widget_2->IsActive());
+  EXPECT_TRUE(app_list_widget->IsActive());
 }
 
 }  // namespace ash

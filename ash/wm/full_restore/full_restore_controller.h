@@ -51,6 +51,15 @@ class ASH_EXPORT FullRestoreController
   // Shell.
   static FullRestoreController* Get();
 
+  // When windows are restored, they're restored inactive so during tablet mode
+  // a window may be restored above the app list while the app list is still
+  // active. To prevent this situation, the app list is deactivated and this
+  // function should be called when determining the next focus target to prevent
+  // the app list from being reactivated. Returns true if we're in tablet mode,
+  // |window| is the window for the app list, and the topmost window of any
+  // active desk container is a restored window.
+  static bool CanActivateAppList(const aura::Window* window);
+
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.
   void SaveWindow(WindowState* window_state);

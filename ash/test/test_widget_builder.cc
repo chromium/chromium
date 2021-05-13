@@ -87,6 +87,13 @@ TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
   return *this;
 }
 
+TestWidgetBuilder& TestWidgetBuilder::SetShowState(
+    ui::WindowShowState show_state) {
+  DCHECK(!built_);
+  widget_init_params_.show_state = show_state;
+  return *this;
+}
+
 TestWidgetBuilder& TestWidgetBuilder::SetWindowId(int window_id) {
   DCHECK(!built_);
   window_id_ = window_id;

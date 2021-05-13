@@ -8,9 +8,11 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -130,6 +132,38 @@ FullRestoreController::~FullRestoreController() {
 // static
 FullRestoreController* FullRestoreController::Get() {
   return g_instance;
+}
+
+// static
+bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  if (!tablet_mode_controller || !tablet_mode_controller->InTabletMode())
+    return true;
+
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  if (!app_list_controller || app_list_controller->GetWindow() != window)
+    return true;
+
+  for (auto* root_window : Shell::GetAllRootWindows()) {
+    auto active_desk_children =
+        desks_util::GetActiveDeskContainerForRoot(root_window)->children();
+
+    // Find the topmost unminimized window.
+    auto topmost_visible_iter = active_desk_children.rbegin();
+    while (topmost_visible_iter != active_desk_children.rend() &&
+           WindowState::Get(*topmost_visible_iter)->IsMinimized()) {
+      topmost_visible_iter = std::next(topmost_visible_iter);
+    }
+
+    if (topmost_visible_iter != active_desk_children.rend() &&
+        (*topmost_visible_iter)
+            ->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
+      DCHECK(features::IsFullRestoreEnabled());
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void FullRestoreController::SaveWindow(WindowState* window_state) {
