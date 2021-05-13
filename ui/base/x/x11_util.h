@@ -288,27 +288,6 @@ static const int32_t kAllDesktops = -1;
 COMPONENT_EXPORT(UI_BASE_X)
 bool GetWindowDesktop(x11::Window window, int32_t* desktop);
 
-// Implementers of this interface receive a notification for every X window of
-// the main display.
-class EnumerateWindowsDelegate {
- public:
-  // |window| is the X Window ID of the enumerated window.  Return true to stop
-  // further iteration.
-  virtual bool ShouldStopIterating(x11::Window window) = 0;
-
- protected:
-  virtual ~EnumerateWindowsDelegate() = default;
-};
-
-// Enumerates all windows in the current display.  Will recurse into child
-// windows up to a depth of |max_depth|.
-COMPONENT_EXPORT(UI_BASE_X)
-bool EnumerateAllWindows(EnumerateWindowsDelegate* delegate, int max_depth);
-
-// Enumerates the top-level windows of the current display.
-COMPONENT_EXPORT(UI_BASE_X)
-void EnumerateTopLevelWindows(ui::EnumerateWindowsDelegate* delegate);
-
 // Returns all children windows of a given window in top-to-bottom stacking
 // order.
 COMPONENT_EXPORT(UI_BASE_X)

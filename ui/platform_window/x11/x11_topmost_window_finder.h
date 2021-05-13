@@ -20,8 +20,7 @@ class X11Window;
 
 // Utility class for finding the topmost window at a given screen position.
 class X11_WINDOW_EXPORT X11TopmostWindowFinder
-    : public ui::EnumerateWindowsDelegate,
-      public ui::XTopmostWindowFinder {
+    : public ui::XTopmostWindowFinder {
  public:
   X11TopmostWindowFinder();
   ~X11TopmostWindowFinder() override;
@@ -37,8 +36,7 @@ class X11_WINDOW_EXPORT X11TopmostWindowFinder
   x11::Window FindWindowAt(const gfx::Point& screen_loc_in_pixels) override;
 
  private:
-  // ui::EnumerateWindowsDelegate:
-  bool ShouldStopIterating(x11::Window window) override;
+  bool ShouldStopIterating(x11::Window window);
 
   // Returns true if |window| does not not belong to |ignore|, is visible and
   // contains |screen_loc_|.
