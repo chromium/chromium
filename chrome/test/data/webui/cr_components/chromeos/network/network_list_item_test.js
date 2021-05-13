@@ -126,13 +126,6 @@ suite('NetworkListItemTest', function() {
       return element ? element.textContent.trim() : '';
     };
 
-    const properties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kEthernet, 'eth0');
-    mojoApi_.setManagedPropertiesForTest(properties);
-    listItem.item = OncMojo.managedPropertiesToNetworkState(properties);
-    await flushAsync();
-    assertEquals('Ethernet', getTitle());
-
     const euicc = eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 2);
     const profiles = (await euicc.getProfileList()).profiles;
     assertEquals(2, profiles.length);
@@ -164,6 +157,15 @@ suite('NetworkListItemTest', function() {
     assertEquals(
         listItem.i18n('networkListItemTitle', 'Cellular', 'provider2'),
         getTitle());
+
+    // Change to network state without provider name and verify that that title
+    // is displayed correctly.
+    const ethernetProperties = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kEthernet, 'eth0');
+    mojoApi_.setManagedPropertiesForTest(ethernetProperties);
+    listItem.item = OncMojo.managedPropertiesToNetworkState(ethernetProperties);
+    await flushAsync();
+    assertEquals('Ethernet', getTitle());
   });
 
   test('Network title is escaped', async () => {

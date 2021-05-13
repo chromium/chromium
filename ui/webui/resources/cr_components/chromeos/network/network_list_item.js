@@ -240,6 +240,10 @@ Polymer({
       return;
     }
 
+    // Clear subtitle to ensure that stale values are not displayed when this
+    // component is recycled for a case without subtitles.
+    this.subtitle_ = '';
+
     // Show service provider subtext only when networkState is an eSIM cellular
     // network.
     if (!this.networkState ||
