@@ -8,12 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "ui/accessibility/ax_export.h"
-
-namespace base {
-template <typename T>
-class Optional;
-}
 
 namespace ui {
 

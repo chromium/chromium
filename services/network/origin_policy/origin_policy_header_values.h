@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_ORIGIN_POLICY_ORIGIN_POLICY_HEADER_VALUES_H_
 
 #include <string>
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/optional.h"
 

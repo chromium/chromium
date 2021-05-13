@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <random>
 
+#include "base/check.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

@@ -114,7 +114,7 @@ TEST_F(AcceleratorCommandsTest, CycleMixedMirrorModeSwapPrimaryDisplay) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, id_list[0], dst_ids);
+      absl::in_place, id_list[0], dst_ids);
 
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
 

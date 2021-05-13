@@ -103,7 +103,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
         landing_page_(landing_page),
         notification_id_(notification_id),
         disposition_(WEBUSB_NOTIFICATION_CLOSED),
-        browser_tab_strip_tracker_(base::in_place_t(), this, nullptr) {
+        browser_tab_strip_tracker_(absl::in_place, this, nullptr) {
     browser_tab_strip_tracker_->Init();
   }
 

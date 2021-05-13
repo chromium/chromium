@@ -85,7 +85,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
   base::Optional<ServiceProcessLauncher> launcher(
-      base::in_place, &service_process_launcher_delegate, test_service_path);
+      absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
       Identity(), sandbox::policy::SandboxType::kNoSandbox,
@@ -114,7 +114,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
   base::Optional<ServiceProcessLauncher> launcher(
-      base::in_place, &service_process_launcher_delegate, test_service_path);
+      absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(Identity(), sandbox::policy::SandboxType::kNoSandbox,
                   base::BindOnce(&ProcessReadyCallbackAdapter,

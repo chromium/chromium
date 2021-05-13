@@ -98,7 +98,7 @@ class TestReadCallback {
 
  private:
   std::vector<uint8_t> value_;
-  base::Optional<base::RunLoop> run_loop_{base::in_place};
+  base::Optional<base::RunLoop> run_loop_{absl::in_place};
 };
 
 using TestConnectionCallbackReceiver = test::ValueCallbackReceiver<bool>;

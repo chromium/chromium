@@ -4210,7 +4210,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, id_list[0], dst_ids);
+      absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4235,7 +4235,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, id_list[0], dst_ids);
+      absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4277,7 +4277,7 @@ TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, id_list[0], dst_ids);
+      absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
@@ -4311,7 +4311,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeRestore) {
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
   base::Optional<display::MixedMirrorModeParams> mixed_params(
-      base::in_place, internal_display_id, dst_ids);
+      absl::in_place, internal_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(internal_display_id, display_manager()->mirroring_source_id());

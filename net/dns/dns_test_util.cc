@@ -196,7 +196,7 @@ DnsResponse BuildTestDnsResponse(
   std::string dns_name;
   CHECK(DNSDomainFromDot(name, &dns_name));
 
-  base::Optional<DnsQuery> query(base::in_place, 0, std::move(dns_name), type);
+  base::Optional<DnsQuery> query(absl::in_place, 0, std::move(dns_name), type);
   return DnsResponse(0, true /* is_authoritative */, answers,
                      authority /* authority_records */,
                      additional /* additional_records */, query, rcode,
@@ -376,7 +376,7 @@ class MockDnsTransactionFactory::MockTransaction
           std::vector<DnsResourceRecord> authority_records;
           std::string dns_name;
           CHECK(DNSDomainFromDot(hostname_, &dns_name));
-          base::Optional<DnsQuery> query(base::in_place, 22 /* id */, dns_name,
+          base::Optional<DnsQuery> query(absl::in_place, 22 /* id */, dns_name,
                                          qtype_);
           switch (result->type) {
             case MockDnsClientRule::NODOMAIN:

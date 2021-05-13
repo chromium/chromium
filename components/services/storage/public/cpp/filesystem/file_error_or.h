@@ -21,7 +21,7 @@ class FileErrorOr {
   explicit FileErrorOr() = default;
   FileErrorOr(base::File::Error error) : error_(error) {}
   FileErrorOr(ValueType&& value)
-      : maybe_value_(base::in_place, std::move(value)) {}
+      : maybe_value_(absl::in_place, std::move(value)) {}
   FileErrorOr(const FileErrorOr&) = delete;
   FileErrorOr(FileErrorOr&&) = default;
   FileErrorOr& operator=(const FileErrorOr&) = delete;

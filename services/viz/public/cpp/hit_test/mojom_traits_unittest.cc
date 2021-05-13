@@ -38,7 +38,7 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
 }
 
 TEST(StructTraitsTest, HitTestRegionList) {
-  base::Optional<HitTestRegionList> input(base::in_place);
+  base::Optional<HitTestRegionList> input(absl::in_place);
   input->flags = HitTestRegionFlags::kHitTestAsk;
   input->async_hit_test_reasons = AsyncHitTestReasons::kOverlappedRegion;
   input->bounds = gfx::Rect(1, 2, 3, 4);

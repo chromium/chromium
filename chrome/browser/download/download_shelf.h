@@ -6,20 +6,14 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/download/download_ui_model.h"
 
 class Browser;
 class Profile;
 
 namespace base {
-template <typename T>
-class Optional;
 class TimeDelta;
-}  // namespace base
-
-namespace base {
-template <typename T>
-class Optional;
 }  // namespace base
 
 namespace offline_items_collection {

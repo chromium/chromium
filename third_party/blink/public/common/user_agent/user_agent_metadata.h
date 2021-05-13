@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_USER_AGENT_USER_AGENT_METADATA_H_
 
 #include <string>
+#include <vector>
 
 #include "base/optional.h"
 #include "third_party/blink/public/common/common_export.h"

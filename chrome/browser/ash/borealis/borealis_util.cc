@@ -20,7 +20,7 @@ base::Optional<int> GetBorealisAppId(std::string exec) {
   if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
     return app_id;
   } else {
-    return base::nullopt_t(0);
+    return base::nullopt;
   }
 }
 

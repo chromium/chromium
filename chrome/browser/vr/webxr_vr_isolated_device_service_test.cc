@@ -19,7 +19,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestDeviceServiceDisconnect) {
   // Ensure that any time the XR Device Service is started, we have installed
   // a new local hook before the IsolatedDeviceProvider has a chance to issue
   // any enumeration requests.
-  base::Optional<MockXRDeviceHookBase> device_hook(base::in_place);
+  base::Optional<MockXRDeviceHookBase> device_hook(absl::in_place);
   content::SetXRDeviceServiceStartupCallbackForTesting(
       base::BindLambdaForTesting([&] { device_hook.emplace(); }));
 

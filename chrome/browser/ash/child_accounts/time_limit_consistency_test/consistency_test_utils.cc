@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h"
+
+#include "base/check.h"
+
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 
 namespace ash {

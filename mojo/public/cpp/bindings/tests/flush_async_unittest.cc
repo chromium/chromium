@@ -261,7 +261,7 @@ TEST_P(FlushAsyncTest, DroppedFlusherCompletesPendingFlush) {
   // corresponding AsyncFlusher. The call should eventually execute.
   base::RunLoop loop;
   base::flat_map<std::string, std::string> snapshot;
-  base::Optional<AsyncFlusher> flusher(base::in_place);
+  base::Optional<AsyncFlusher> flusher(absl::in_place);
   key_value_store().PauseReceiverUntilFlushCompletes(
       PendingFlush(&flusher.value()));
   key_value_store()->GetSnapshot(base::BindLambdaForTesting(
@@ -299,7 +299,7 @@ TEST_P(FlushAsyncTest, PausedInterfaceDoesNotAutoResumeOnFlush) {
   Remote<mojom::Pinger> pinger;
   PingerImpl impl(pinger.BindNewPipeAndPassReceiver());
 
-  base::Optional<AsyncFlusher> flusher(base::in_place);
+  base::Optional<AsyncFlusher> flusher(absl::in_place);
   PendingFlush flush(&flusher.value());
   pinger.PauseReceiverUntilFlushCompletes(std::move(flush));
 
@@ -343,7 +343,7 @@ TEST_P(FlushAsyncTest, ResumeDoesNotInterruptWaitingOnFlush) {
   Remote<mojom::Pinger> pinger;
   PingerImpl impl(pinger.BindNewPipeAndPassReceiver());
 
-  base::Optional<AsyncFlusher> flusher(base::in_place);
+  base::Optional<AsyncFlusher> flusher(absl::in_place);
   PendingFlush flush(&flusher.value());
   pinger.PauseReceiverUntilFlushCompletes(std::move(flush));
 
