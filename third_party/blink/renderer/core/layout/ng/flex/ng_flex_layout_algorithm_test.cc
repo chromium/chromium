@@ -142,5 +142,12 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBaseline) {
             devtools.lines[1].items[1].baseline);
 }
 
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display: flex;" id=flexbox><img></div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
 }  // namespace
 }  // namespace blink
