@@ -157,14 +157,11 @@ void MojoChromePromptIPC::RunPromptUserTask(
       base::BindOnce(&MojoChromePromptIPC::OnChromeResponseReceived,
                      base::Unretained(this), std::move(callback));
 
-  const auto& version_callback = base::BindRepeating(
-      &MojoChromePromptIPC::PromptUserCheckVersion, base::Unretained(this),
-      std::move(files_to_delete), std::move(registry_keys),
-      // Uses the AdaptCallbackForRepeating because we are bound by the mojo API
-      // to use a RepeatingCallback even though this only should be called once.
-      std::move(extension_ids),
-      AdaptCallbackForRepeating(std::move(response_callback)));
-  (*chrome_prompt_service_).QueryVersion(version_callback);
+  (*chrome_prompt_service_)
+      .QueryVersion(base::BindOnce(
+          &MojoChromePromptIPC::PromptUserCheckVersion, base::Unretained(this),
+          std::move(files_to_delete), std::move(registry_keys),
+          std::move(extension_ids), std::move(response_callback)));
 }
 
 }  // namespace chrome_cleaner
