@@ -817,13 +817,6 @@ class LocalDeviceInstrumentationTestRun(
         for apk in self._test_instance.additional_apks:
           device.ForceStop(apk.GetPackageName())
 
-    # TODO(crbug.com/1181389): Remove this workaround once the deadlocks in
-    # ArCore are resolved.
-    for r in results:
-      if (r.GetType() == base_test_result.ResultType.TIMEOUT
-          and 'WebXrAr' in r.GetName()):
-        r.SetType(base_test_result.ResultType.PASS)
-
     # Handle failures by:
     #   - optionally taking a screenshot
     #   - logging the raw output at INFO level
