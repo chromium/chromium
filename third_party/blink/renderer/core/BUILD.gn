@@ -283,6 +283,7 @@ component("core") {
     "//build:chromeos_buildflags",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
+    "//components/power_scheduler",
     "//components/shared_highlighting/core/common",
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",

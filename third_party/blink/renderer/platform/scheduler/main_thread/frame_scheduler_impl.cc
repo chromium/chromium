@@ -630,7 +630,7 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   if (!is_same_document) {
     loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kLoading);
     loading_power_mode_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kLoadingTimeout);
+        power_scheduler::PowerModeVoter::kStuckLoadingTimeout);
 
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
@@ -967,7 +967,8 @@ void FrameSchedulerImpl::OnLoad() {
     main_thread_scheduler_->OnMainFrameLoad(*this);
   }
 
-  loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kIdle);
+  loading_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
 
 bool FrameSchedulerImpl::IsWaitingForContentfulPaint() const {

@@ -384,6 +384,9 @@ _CONFIG = [
             'skia::.+',
             'url::.+',
 
+            # Power scheduling instrumentation, which only depends on //base
+            "power_scheduler::.+",
+
             # Nested namespaces under the blink namespace
             'bindings::.+',
             'canvas_heuristic_parameters::.+',

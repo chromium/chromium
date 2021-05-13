@@ -22,6 +22,8 @@ constexpr base::TimeDelta PowerModeVoter::kVideoTimeout;
 constexpr base::TimeDelta PowerModeVoter::kSoftwareDrawTimeout;
 // static
 constexpr base::TimeDelta PowerModeVoter::kLoadingTimeout;
+// static
+constexpr base::TimeDelta PowerModeVoter::kStuckLoadingTimeout;
 
 PowerModeVoter::~PowerModeVoter() {
   delegate_->OnVoterDestroyed(this);

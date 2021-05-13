@@ -45,9 +45,12 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   static constexpr base::TimeDelta kSoftwareDrawTimeout =
       base::TimeDelta::FromMilliseconds(100);
 
+  // Give frames an extra second to draw & settle after load completion.
+  static constexpr base::TimeDelta kLoadingTimeout =
+      base::TimeDelta::FromSeconds(1);
   // Avoid getting stuck in loading stage forever. More than 99.9% of
   // navigations load (to largest contentful paint) in less than a minute.
-  static constexpr base::TimeDelta kLoadingTimeout =
+  static constexpr base::TimeDelta kStuckLoadingTimeout =
       base::TimeDelta::FromSeconds(60);
 
   ~PowerModeVoter();
