@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
 
+  // Calls |Raise()| on the underlying MediaSession, which will focus the
+  // WebContents if the MediaSession is associated with one.
+  void Raise();
+
   base::WeakPtr<MediaSessionNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

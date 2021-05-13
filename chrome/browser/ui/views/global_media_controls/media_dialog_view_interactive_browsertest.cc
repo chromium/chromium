@@ -794,6 +794,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Clicking the first notification should make the first tab active.
   ClickNotificationByTitle(u"Big Buck Bunny");
+
+  // Allow the MediaSessionNotificationItem to flush its message to the
+  // MediaSessionImpl. There isn't currently a clean way for us to access the
+  // MediaSessionNotificationItem directly to force it to flush, so we use this
+  // non-ideal |RunUntilIdle()| call instead.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(first_web_contents, GetActiveWebContents());
 }
 

@@ -187,6 +187,13 @@ media_message_center::SourceType MediaSessionNotificationItem::SourceType() {
   return media_message_center::SourceType::kLocalMediaSession;
 }
 
+void MediaSessionNotificationItem::Raise() {
+  if (!media_controller_remote_.is_bound())
+    return;
+
+  media_controller_remote_->Raise();
+}
+
 void MediaSessionNotificationItem::SetController(
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info) {

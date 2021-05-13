@@ -437,18 +437,10 @@ void MediaSessionNotificationProducer::OnContainerClicked(
 
   it->second.OnSessionInteractedWith();
 
-  content::WebContents* web_contents = it->second.web_contents();
-  if (!web_contents)
-    return;
-
-  content::WebContentsDelegate* delegate = web_contents->GetDelegate();
-  if (!delegate)
-    return;
-
   base::UmaHistogramEnumeration("Media.Notification.Click",
                                 MediaNotificationClickSource::kMedia);
 
-  delegate->ActivateContents(web_contents);
+  it->second.item()->Raise();
 }
 
 void MediaSessionNotificationProducer::OnContainerDismissed(
