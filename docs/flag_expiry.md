@@ -53,8 +53,10 @@ Google employees: See more at
 ## Removing A Flag
 If a flag is no longer used (for instance, it was used to control a feature
 that has since launched), the flag should be removed. Delete the entry in
-[`//chrome/browser/about_flags.cc`](../chrome/browser/about_flags.cc) (and any
-corresponding entries for the flag description), and remove any references in
+[`//chrome/browser/about_flags.cc`](../chrome/browser/about_flags.cc) or
+[`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm)
+for iOS (and any corresponding entries for the flag description), and remove any
+references in
 [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json).
 
 ## Removed Flags
@@ -76,7 +78,7 @@ there's also
 * [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json)
 * [`//chrome/browser/flag-never-expire-list.json`](../chrome/browser/flag-never-expire-list.json)
 * [`//chrome/browser/expired_flags_list.h`](../chrome/browser/expired_flags_list.h)
-* [`//ios/chrome/browser/about_flags.mm`](../ios/chrome/browser/about_flags.mm)
+* [`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm)
 * [`//tools/flags/generate_expired_list.py`](../tools/flags/generate_expired_list.py)
 * [`//tools/flags/generate_unexpire_flags.py`](../tools/flags/generate_unexpire_flags.py)
 

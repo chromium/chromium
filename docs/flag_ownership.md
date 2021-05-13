@@ -22,7 +22,7 @@ you find, either:
 - **If it is not in use:** delete the entry from the [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json)
   file, and delete it from `kFeatureEntries` in
   [`//chrome/browser/about_flags.cc`](../chrome/browser/about_flags.cc) or
-  [`//ios/chrome/browser/about_flags.mm`](../ios/chrome/browser/about_flags.mm)
+  [`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm)
   for iOS. Remember to file a cleanup bug to remove code paths that become dead.
 
 ## Wait, What Are You Doing?
@@ -91,6 +91,6 @@ there's also
 * [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json)
 * [`//chrome/browser/flag-never-expire-list.json`](../chrome/browser/flag-never-expire-list.json)
 * [`//chrome/browser/expired_flags_list.h`](../chrome/browser/expired_flags_list.h)
-* [`//ios/chrome/browser/about_flags.mm`](../ios/chrome/browser/about_flags.mm)
+* [`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm)
 * [`//tools/flags/generate_expired_list.py`](../tools/flags/generate_expired_list.py)
 * [`//tools/flags/generate_unexpire_flags.py`](../tools/flags/generate_unexpire_flags.py)
