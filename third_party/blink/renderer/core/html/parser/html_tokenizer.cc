@@ -38,9 +38,65 @@
 
 namespace blink {
 
+// clang-format off
+#define INT_0_TO_127_LIST(V)                                                    \
+V(0),   V(1),   V(2),   V(3),   V(4),   V(5),   V(6),   V(7),   V(8),   V(9),   \
+V(10),  V(11),  V(12),  V(13),  V(14),  V(15),  V(16),  V(17),  V(18),  V(19),  \
+V(20),  V(21),  V(22),  V(23),  V(24),  V(25),  V(26),  V(27),  V(28),  V(29),  \
+V(30),  V(31),  V(32),  V(33),  V(34),  V(35),  V(36),  V(37),  V(38),  V(39),  \
+V(40),  V(41),  V(42),  V(43),  V(44),  V(45),  V(46),  V(47),  V(48),  V(49),  \
+V(50),  V(51),  V(52),  V(53),  V(54),  V(55),  V(56),  V(57),  V(58),  V(59),  \
+V(60),  V(61),  V(62),  V(63),  V(64),  V(65),  V(66),  V(67),  V(68),  V(69),  \
+V(70),  V(71),  V(72),  V(73),  V(74),  V(75),  V(76),  V(77),  V(78),  V(79),  \
+V(80),  V(81),  V(82),  V(83),  V(84),  V(85),  V(86),  V(87),  V(88),  V(89),  \
+V(90),  V(91),  V(92),  V(93),  V(94),  V(95),  V(96),  V(97),  V(98),  V(99),  \
+V(100), V(101), V(102), V(103), V(104), V(105), V(106), V(107), V(108), V(109), \
+V(110), V(111), V(112), V(113), V(114), V(115), V(116), V(117), V(118), V(119), \
+V(120), V(121), V(122), V(123), V(124), V(125), V(126), V(127),
+// clang-format on
+
+// Character flags for fast paths.
+enum class ScanFlags : uint8_t {
+  // Base flags
+  kNullCharacter = 1 << 0,
+  kNewlineOrCarriageReturn = 1 << 1,
+  kWhitespaceNotNewline = 1 << 2,
+  kAmpersandAndOpenTag = 1 << 3,
+  // Compound flags
+  kWhitespace = kWhitespaceNotNewline | kNewlineOrCarriageReturn,
+  kCharacterTokenSpecial =
+      kNullCharacter | kNewlineOrCarriageReturn | kAmpersandAndOpenTag,
+  kNullOrNewline = kNullCharacter | kNewlineOrCarriageReturn,
+};
+
+static constexpr uint8_t CreateScanFlags(UChar cc) {
+#define SCAN_FLAG(flag) static_cast<uint8_t>(ScanFlags::flag)
+  DCHECK(!(cc & ~0x7F));  // IsASCII
+  uint8_t scan_flag = 0;
+  if (cc == '\0')
+    scan_flag = SCAN_FLAG(kNullCharacter);
+  else if (cc == '\n' || cc == '\r')
+    scan_flag = SCAN_FLAG(kNewlineOrCarriageReturn);
+  else if (cc == ' ' || cc == '\x09' || cc == '\x0C')
+    scan_flag = SCAN_FLAG(kWhitespaceNotNewline);
+  else if (cc == '&' || cc == '<')
+    scan_flag = SCAN_FLAG(kAmpersandAndOpenTag);
+  return scan_flag;
+#undef SCAN_FLAG
+}
+
+// Table of precomputed scan flags for the first 128 ASCII characters.
+static constexpr const uint8_t character_scan_flags_[128] = {
+    INT_0_TO_127_LIST(CreateScanFlags)};
+
 static inline UChar ToLowerCase(UChar cc) {
   DCHECK(IsASCIIAlpha(cc));
   return cc | 0x20;
+}
+
+static inline bool CheckScanFlag(UChar cc, ScanFlags flag) {
+  return IsASCII(cc) &&
+         (character_scan_flags_[cc] & static_cast<uint8_t>(flag));
 }
 
 static inline UChar ToLowerCaseIfAlpha(UChar cc) {
@@ -59,6 +115,8 @@ static inline bool VectorEqualsString(const LiteralBuffer<LChar, 32>& vector,
 }
 
 #define HTML_BEGIN_STATE(stateName) BEGIN_STATE(HTMLTokenizer, stateName)
+#define HTML_BEGIN_STATE_NOLABEL(stateName) \
+  BEGIN_STATE_NOLABEL(HTMLTokenizer, stateName)
 #define HTML_RECONSUME_IN(stateName) RECONSUME_IN(HTMLTokenizer, stateName)
 #define HTML_ADVANCE_TO(stateName) ADVANCE_TO(HTMLTokenizer, stateName)
 #define HTML_ADVANCE_PAST_NON_NEWLINE_TO(stateName) \
@@ -169,8 +227,7 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
       } else if (cc == kEndOfFileMarker)
         return EmitEndOfFile(source);
       else {
-        BufferCharacter(cc);
-        HTML_CONSUME(kDataState);
+        return EmitData(source, cc);
       }
     }
     END_STATE()
@@ -227,11 +284,10 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     }
     END_STATE()
 
-    HTML_BEGIN_STATE(kPLAINTEXTState) {
+    HTML_BEGIN_STATE_NOLABEL(kPLAINTEXTState) {
       if (cc == kEndOfFileMarker)
         return EmitEndOfFile(source);
-      BufferCharacter(cc);
-      HTML_CONSUME(kPLAINTEXTState);
+      return EmitPLAINTEXT(source, cc);
     }
     END_STATE()
 
@@ -701,9 +757,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kBeforeAttributeNameState) {
-      if (IsTokenizerWhitespace(cc)) {
-        HTML_CONSUME(kBeforeAttributeNameState);
-      } else if (cc == '/') {
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kSelfClosingStartTagState);
       } else if (cc == '>') {
         return EmitAndResumeIn(source, HTMLTokenizer::kDataState);
@@ -748,9 +804,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kAfterAttributeNameState) {
-      if (IsTokenizerWhitespace(cc)) {
-        HTML_CONSUME(kAfterAttributeNameState);
-      } else if (cc == '/') {
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kSelfClosingStartTagState);
       } else if (cc == '=') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kBeforeAttributeValueState);
@@ -1092,9 +1148,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kBeforeDOCTYPENameState) {
-      if (IsTokenizerWhitespace(cc)) {
-        HTML_CONSUME(kBeforeDOCTYPENameState);
-      } else if (cc == '>') {
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '>') {
         ParseError();
         token_->BeginDOCTYPE();
         token_->SetForceQuirks();
@@ -1128,8 +1184,8 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kAfterDOCTYPENameState) {
-      if (IsTokenizerWhitespace(cc))
-        HTML_CONSUME(kAfterDOCTYPENameState);
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
       if (cc == '>')
         return EmitAndResumeIn(source, HTMLTokenizer::kDataState);
       else if (cc == kEndOfFileMarker) {
@@ -1191,9 +1247,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kBeforeDOCTYPEPublicIdentifierState) {
-      if (IsTokenizerWhitespace(cc))
-        HTML_CONSUME(kBeforeDOCTYPEPublicIdentifierState);
-      else if (cc == '"') {
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '"') {
         token_->SetPublicIdentifierToEmptyString();
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(
             kDOCTYPEPublicIdentifierDoubleQuotedState);
@@ -1281,9 +1337,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kBetweenDOCTYPEPublicAndSystemIdentifiersState) {
-      if (IsTokenizerWhitespace(cc))
-        HTML_CONSUME(kBetweenDOCTYPEPublicAndSystemIdentifiersState);
-      else if (cc == '>')
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '>')
         return EmitAndResumeIn(source, HTMLTokenizer::kDataState);
       else if (cc == '"') {
         token_->SetSystemIdentifierToEmptyString();
@@ -1335,8 +1391,8 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kBeforeDOCTYPESystemIdentifierState) {
-      if (IsTokenizerWhitespace(cc))
-        HTML_CONSUME(kBeforeDOCTYPESystemIdentifierState);
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
       if (cc == '"') {
         token_->SetSystemIdentifierToEmptyString();
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(
@@ -1398,9 +1454,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kAfterDOCTYPESystemIdentifierState) {
-      if (IsTokenizerWhitespace(cc))
-        HTML_CONSUME(kAfterDOCTYPESystemIdentifierState);
-      else if (cc == '>')
+      if (!SkipWhitespaces(source, cc))
+        return HaveBufferedCharacterToken();
+      if (cc == '>')
         return EmitAndResumeIn(source, HTMLTokenizer::kDataState);
       else if (cc == kEndOfFileMarker) {
         ParseError();
@@ -1460,6 +1516,109 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
 
   NOTREACHED();
   return false;
+}
+
+bool HTMLTokenizer::SkipWhitespaces(SegmentedString& source, UChar& cc) {
+  if (cc == '\n')  // We could be pointing to '\r'.
+    cc = source.CurrentChar();
+  while (true) {
+    while (CheckScanFlag(cc, ScanFlags::kWhitespaceNotNewline)) {
+      cc = source.AdvancePastNonNewline();
+    }
+    switch (cc) {
+      case '\n':
+        cc = source.AdvancePastNewlineAndUpdateLineNumber();
+        break;
+      case '\r':
+        if (!input_stream_preprocessor_.AdvancePastCarriageReturn(source, cc))
+          return false;
+        break;
+      case '\0':
+        if (!input_stream_preprocessor_.ProcessNullCharacter(source, cc))
+          return false;
+        if (cc == kEndOfFileMarker)
+          return true;
+        break;
+      default:
+        return true;
+    }
+  }
+}
+
+bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
+  token_->EnsureIsCharacterToken();
+  if (cc == '\n')  // We could be pointing to '\r'.
+    cc = source.CurrentChar();
+  while (true) {
+    while (!CheckScanFlag(cc, ScanFlags::kCharacterTokenSpecial)) {
+      token_->AppendToCharacter(cc);
+      cc = source.AdvancePastNonNewline();
+    }
+    switch (cc) {
+      case '&':
+        state_ = kCharacterReferenceInDataState;
+        source.AdvanceAndASSERT('&');
+        if (!ProcessEntity(source))
+          return true;
+        state_ = kDataState;
+        if (source.IsEmpty())
+          return true;
+        cc = source.CurrentChar();
+        break;
+      case '\n':
+        token_->AppendToCharacter(cc);
+        cc = source.AdvancePastNewlineAndUpdateLineNumber();
+        break;
+      case '\r':
+        token_->AppendToCharacter('\n');  // Canonize newline.
+        if (!input_stream_preprocessor_.AdvancePastCarriageReturn(source, cc))
+          return true;
+        break;
+      case '<':
+        return true;
+      case '\0':
+        if (!input_stream_preprocessor_.ProcessNullCharacter(source, cc))
+          return true;
+        if (cc == kEndOfFileMarker)
+          return EmitEndOfFile(source);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+}
+
+bool HTMLTokenizer::EmitPLAINTEXT(SegmentedString& source, UChar cc) {
+  token_->EnsureIsCharacterToken();
+  if (cc == '\n')  // We could be pointing to '\r'.
+    cc = source.CurrentChar();
+  while (true) {
+    while (!CheckScanFlag(cc, ScanFlags::kNullOrNewline)) {
+      token_->AppendToCharacter(cc);
+      cc = source.AdvancePastNonNewline();
+    }
+    switch (cc) {
+      case '\n':
+        token_->AppendToCharacter(cc);
+        cc = source.AdvancePastNewlineAndUpdateLineNumber();
+        break;
+      case '\r':
+        token_->AppendToCharacter('\n');  // Canonize newline.
+        if (!input_stream_preprocessor_.AdvancePastCarriageReturn(source, cc))
+          return true;
+        break;
+      case '\0':
+        if (!input_stream_preprocessor_.ProcessNullCharacter(source, cc))
+          return true;
+        if (cc == kEndOfFileMarker)
+          return EmitEndOfFile(source);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
 }
 
 String HTMLTokenizer::BufferedCharacters() const {

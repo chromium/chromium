@@ -59,6 +59,7 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
 #define BEGIN_STATE(prefix, stateName) \
   case prefix::stateName:              \
   stateName:
+#define BEGIN_STATE_NOLABEL(prefix, stateName) case prefix::stateName:
 #define END_STATE() \
   NOTREACHED();     \
   break;
