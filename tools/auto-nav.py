@@ -5,7 +5,7 @@
 This script runs Chrome and automatically navigates through the given list of
 URLs the specified number of times.
 
-Usage: vpython auto-nav.py <chrome dir> <number of navigations> <url> <url> ...
+Usage: vpython3 auto-nav.py <chrome dir> <number of navigations> <url> <url> ...
 
 Optional flags:
 * --interval <seconds>, -i <seconds>: specify a number of seconds to wait
@@ -26,7 +26,7 @@ script, which would cause an unrecognized-argument error.
 """
 
 # [VPYTHON:BEGIN]
-# python_version: "2.7"
+# python_version: "3.8"
 # wheel: <
 #   name: "infra/python/wheels/selenium-py2_py3"
 #   version: "version:3.14.0"
@@ -37,7 +37,7 @@ script, which would cause an unrecognized-argument error.
 # >
 # wheel: <
 #   name: "infra/python/wheels/psutil/${vpython_platform}"
-#   version: "version:5.6.2"
+#   version: "version:5.7.2"
 # >
 # [VPYTHON:END]
 
@@ -152,7 +152,7 @@ def main():
 
   if args.start_prompt:
     driver.get(args.url[0])
-    raw_input('Press Enter to begin navigation...')
+    input('Press Enter to begin navigation...')
 
   # Start IdleWakeups, if using, passing the browser process's ID as its target.
   # IdleWakeups will monitor the browser process and its children. Other running
@@ -179,7 +179,7 @@ def main():
       time.sleep(interval)
 
   if args.exit_prompt:
-    raw_input('Press Enter to exit...')
+    input('Press Enter to exit...')
   driver.quit()
 
   # Print IdleWakeups' output, if using.
