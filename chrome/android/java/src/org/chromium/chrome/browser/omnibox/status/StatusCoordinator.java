@@ -307,6 +307,13 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
     }
 
+    /** Returns the additional end margin for the url container. */
+    public int getAdditionalUrlContainerMarginEnd() {
+        return mMediator.shouldDisplaySearchEngineIcon() && isSearchEngineStatusIconVisible()
+                ? getEndPaddingPixelSizeOnFocusDelta()
+                : 0;
+    }
+
     public void destroy() {
         mMediator.destroy();
         mLocationBarDataProvider.removeObserver(this);

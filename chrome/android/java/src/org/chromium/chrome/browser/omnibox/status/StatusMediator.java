@@ -524,12 +524,12 @@ public class StatusMediator
      * Returns whether the search engine icon should be displayed in the current context. This is
      * independent from alpha/visibility.
      */
-    @VisibleForTesting
     boolean shouldDisplaySearchEngineIcon() {
         boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
         boolean showIconOnNTP =
                 UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
-                && !mLocationBarDataProvider.isLoading() && !mIsTablet;
+                && !mLocationBarDataProvider.isLoading() && !mIsTablet
+                && (mUrlHasFocus || mUrlFocusPercent > 0);
 
         return mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                        mLocationBarDataProvider.isIncognito())
