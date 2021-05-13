@@ -549,7 +549,7 @@ TwoWayTest::~TwoWayTest() {
 void TwoWayTest::SetUp() {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  io_thread_.StartWithOptions(options);
+  io_thread_.StartWithOptions(std::move(options));
   plugin_thread_.Start();
 
   mojo::MessagePipe pipe;

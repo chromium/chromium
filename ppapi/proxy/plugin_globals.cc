@@ -167,7 +167,7 @@ base::TaskRunner* PluginGlobals::GetFileTaskRunner() {
     file_thread_ = std::make_unique<base::Thread>("Plugin::File");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    file_thread_->StartWithOptions(options);
+    file_thread_->StartWithOptions(std::move(options));
   }
   return file_thread_->task_runner().get();
 }
