@@ -96,26 +96,21 @@ interface SpeechRecognitionRecognizer {
   // to the originating media.
   SendAudioToSpeechRecognitionService(AudioDataS16 buffer);
 
-  // Notify the speech recognition recognizer that the caption bubble was
-  // closed. Used to determine whether the caption bubble was visible when
-  // recording watch time.
-  OnCaptionBubbleClosed();
-
-  // Notify the speech recognition recognizer that audio was received by the
-  // renderer after the caption bubble was closed.
-  AudioReceivedAfterBubbleClosed(mojo_base.mojom.TimeDelta duration);
-
   // Notify the speech recognition recognizer that the language changed. Takes
   // in the locale string (e.g. "en-US").
   OnLanguageChanged(string language);
 };
 
 // The interface used to return speech recognition events from the speech
-// recognition service back to the originating media. The remote lives in the
-// speech recognition process and the receiver lives in the renderer process.
+// recognition service to the client that will display the results to the user.
+// The remote lives in the speech recognition process and the receiver lives in
+// the browser process.
 interface SpeechRecognitionRecognizerClient {
   // Triggered by speech recognition process on a speech recognition event.
-  OnSpeechRecognitionRecognitionEvent(SpeechRecognitionResult result);
+  // Returns whether the result was received successfully. Speech recognition
+  // will halt if this returns false.
+  OnSpeechRecognitionRecognitionEvent(SpeechRecognitionResult result)
+      => (bool success);
 
   // Triggered by an error within the speech recognition service.
   OnSpeechRecognitionError();
@@ -125,7 +120,7 @@ interface SpeechRecognitionRecognizerClient {
 };
 
 // A speech recognition result created by the speech service and passed to the
-// renderer.
+// browser.
 struct SpeechRecognitionResult {
   string transcription;
 

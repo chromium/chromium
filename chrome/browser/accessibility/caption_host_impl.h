@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 
-#include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,10 +20,11 @@ class CaptionController;
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Host Impl
 //
-//  A class that implements the Mojo interface CaptionHost. There exists one
-//  CaptionHostImpl per render frame.
+//  A class that implements the Mojo interface
+//  SpeechRecognitionRecognizerClient. There exists one CaptionHostImpl per
+//  render frame.
 //
-class CaptionHostImpl : public chrome::mojom::CaptionHost,
+class CaptionHostImpl : public media::mojom::SpeechRecognitionRecognizerClient,
                         public content::WebContentsObserver {
  public:
   explicit CaptionHostImpl(content::RenderFrameHost* frame_host);
@@ -35,15 +35,16 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   // static
   static void Create(
       content::RenderFrameHost* frame_host,
-      mojo::PendingReceiver<chrome::mojom::CaptionHost> receiver);
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+          receiver);
 
-  // chrome::mojom::CaptionHost:
-  void OnTranscription(
-      chrome::mojom::TranscriptionResultPtr transcription_result,
-      OnTranscriptionCallback reply) override;
+  // media::mojom::SpeechRecognitionRecognizerClient:
+  void OnSpeechRecognitionRecognitionEvent(
+      media::mojom::SpeechRecognitionResultPtr result,
+      OnSpeechRecognitionRecognitionEventCallback reply) override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
-  void OnError() override;
+  void OnSpeechRecognitionError() override;
 
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.

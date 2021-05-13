@@ -4,6 +4,8 @@
 
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 
+#include <utility>
+
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +73,15 @@ void FakeSpeechRecognitionService::SendSpeechRecognitionResult(
   ASSERT_TRUE(recognizer_client_remote_.is_bound());
   EXPECT_TRUE(capturing_audio_ || has_received_audio_);
   recognizer_client_remote_->OnSpeechRecognitionRecognitionEvent(
-      std::move(result));
+      std::move(result),
+      base::BindOnce(&FakeSpeechRecognitionService::
+                         OnSpeechRecognitionRecognitionEventCallback,
+                     base::Unretained(this)));
+}
+
+void FakeSpeechRecognitionService::OnSpeechRecognitionRecognitionEventCallback(
+    bool success) {
+  capturing_audio_ = success;
 }
 
 void FakeSpeechRecognitionService::SendSpeechRecognitionError() {

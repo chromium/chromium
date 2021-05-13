@@ -19,7 +19,8 @@ namespace captions {
 // static
 void CaptionHostImpl::Create(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<chrome::mojom::CaptionHost> receiver) {
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+        receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<CaptionHostImpl>(frame_host),
                               std::move(receiver));
 }
@@ -38,16 +39,15 @@ CaptionHostImpl::~CaptionHostImpl() {
     caption_controller->OnAudioStreamEnd(this);
 }
 
-void CaptionHostImpl::OnTranscription(
-    chrome::mojom::TranscriptionResultPtr transcription_result,
-    OnTranscriptionCallback reply) {
+void CaptionHostImpl::OnSpeechRecognitionRecognitionEvent(
+    media::mojom::SpeechRecognitionResultPtr result,
+    OnSpeechRecognitionRecognitionEventCallback reply) {
   CaptionController* caption_controller = GetCaptionController();
   if (!caption_controller) {
     std::move(reply).Run(false);
     return;
   }
-  std::move(reply).Run(
-      caption_controller->DispatchTranscription(this, transcription_result));
+  std::move(reply).Run(caption_controller->DispatchTranscription(this, result));
 }
 
 void CaptionHostImpl::OnLanguageIdentificationEvent(
@@ -59,7 +59,7 @@ void CaptionHostImpl::OnLanguageIdentificationEvent(
   caption_controller->OnLanguageIdentificationEvent(std::move(event));
 }
 
-void CaptionHostImpl::OnError() {
+void CaptionHostImpl::OnSpeechRecognitionError() {
   CaptionController* caption_controller = GetCaptionController();
   if (caption_controller)
     caption_controller->OnError(this);

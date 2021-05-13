@@ -86,19 +86,23 @@ class SpeechRecognitionRecognizerImpl
   const bool enable_soda_;
 
  private:
-  void OnCaptionBubbleClosed() final;
-
-  void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) final;
-
   void OnLanguageChanged(const std::string& language) final;
 
   void RecordDuration();
+
+  // Called as a response to sending a SpeechRecognitionEvent to the client
+  // remote.
+  void OnSpeechRecognitionRecognitionEventCallback(bool success);
+
+  // Called when the client host is disconnected. Halts future speech
+  // recognition.
+  void OnClientHostDisconnected();
 
   // Reset and initialize the SODA client.
   void ResetSoda();
 
   // The remote endpoint for the mojo pipe used to return transcribed audio from
-  // the speech recognition service back to the renderer.
+  // the speech recognition service to the browser process.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
 
   std::unique_ptr<soda::SodaClient> soda_client_;
@@ -120,7 +124,9 @@ class SpeechRecognitionRecognizerImpl
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;
-  bool caption_bubble_closed_ = false;
+
+  // Whether the client is still requesting speech recognition.
+  bool is_client_requesting_speech_recognition_ = true;
 
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};
 

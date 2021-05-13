@@ -5,6 +5,7 @@
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -128,13 +129,16 @@ void OnDeviceSpeechRecognizer::Stop() {
 }
 
 void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
-    media::mojom::SpeechRecognitionResultPtr result) {
+    media::mojom::SpeechRecognitionResultPtr result,
+    OnSpeechRecognitionRecognitionEventCallback reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!result->transcription.size())
     return;
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_IN_SPEECH);
   delegate()->OnSpeechResult(base::UTF8ToUTF16(result->transcription),
                              result->is_final, base::nullopt);
+  // Returning true ensures the speech recognition continues.
+  std::move(reply).Run(true);
 }
 
 void OnDeviceSpeechRecognizer::OnSpeechRecognitionError() {

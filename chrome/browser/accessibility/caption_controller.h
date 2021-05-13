@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -59,7 +58,7 @@ class CaptionController : public KeyedService,
   // this returns false.
   bool DispatchTranscription(
       CaptionHostImpl* caption_host_impl,
-      const chrome::mojom::TranscriptionResultPtr& transcription_result);
+      const media::mojom::SpeechRecognitionResultPtr& result);
 
   void OnLanguageIdentificationEvent(
       const media::mojom::LanguageIdentificationEventPtr& event);

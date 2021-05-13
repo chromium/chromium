@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/common/caption.mojom.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
 
 namespace captions {
@@ -38,7 +38,7 @@ class CaptionBubbleController {
   // Transcriptions will halt if this returns false.
   virtual bool OnTranscription(
       CaptionHostImpl* caption_host_impl,
-      const chrome::mojom::TranscriptionResultPtr& transcription_result) = 0;
+      const media::mojom::SpeechRecognitionResultPtr& result) = 0;
 
   // Called when the speech service has an error.
   virtual void OnError(CaptionHostImpl* caption_host_impl) = 0;

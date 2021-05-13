@@ -15,13 +15,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/caption.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -147,7 +147,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                               CaptionHostImpl* caption_host_impl) {
     return GetController()->OnTranscription(
         caption_host_impl,
-        chrome::mojom::TranscriptionResult::New(text, false));
+        media::mojom::SpeechRecognitionResult::New(text, false));
   }
 
   bool OnFinalTranscription(std::string text) {
@@ -157,7 +157,8 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   bool OnFinalTranscription(std::string text,
                             CaptionHostImpl* caption_host_impl) {
     return GetController()->OnTranscription(
-        caption_host_impl, chrome::mojom::TranscriptionResult::New(text, true));
+        caption_host_impl,
+        media::mojom::SpeechRecognitionResult::New(text, true));
   }
 
   void OnError() { OnError(GetCaptionHostImpl()); }

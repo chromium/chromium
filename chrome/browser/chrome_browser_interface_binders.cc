@@ -140,7 +140,6 @@
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
-#include "chrome/common/caption.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/search/ntp_features.h"
 #include "media/base/media_switches.h"
@@ -484,9 +483,10 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
   }
 }
 
-void BindCaptionContextHandler(
+void BindSpeechRecognitionRecognizerClientHandler(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<chrome::mojom::CaptionHost> receiver) {
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+        receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
@@ -607,8 +607,8 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindSpeechRecognitionContextHandler));
   map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(
       base::BindRepeating(&BindSpeechRecognitionClientBrowserInterfaceHandler));
-  map->Add<chrome::mojom::CaptionHost>(
-      base::BindRepeating(&BindCaptionContextHandler));
+  map->Add<media::mojom::SpeechRecognitionRecognizerClient>(
+      base::BindRepeating(&BindSpeechRecognitionRecognizerClientHandler));
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)

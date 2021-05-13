@@ -57,8 +57,6 @@ class FakeSpeechRecognitionService
   // media::mojom::SpeechRecognitionRecognizer:
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer) override;
-  void OnCaptionBubbleClosed() override {}
-  void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) override {}
   void OnLanguageChanged(const std::string& language) override {}
 
   // Methods for testing plumbing to SpeechRecognitionRecognizerClient.
@@ -86,6 +84,8 @@ class FakeSpeechRecognitionService
 
  private:
   void OnRecognizerClientDisconnected();
+
+  void OnSpeechRecognitionRecognitionEventCallback(bool success);
 
   // Whether multichannel audio is supported.
   bool is_multichannel_supported_ = false;

@@ -40,9 +40,9 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
-  bool OnTranscription(CaptionHostImpl* caption_host_impl,
-                       const chrome::mojom::TranscriptionResultPtr&
-                           transcription_result) override;
+  bool OnTranscription(
+      CaptionHostImpl* caption_host_impl,
+      const media::mojom::SpeechRecognitionResultPtr& result) override;
 
   // Called when the speech service has an error.
   void OnError(CaptionHostImpl* caption_host_impl) override;

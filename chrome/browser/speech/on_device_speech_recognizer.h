@@ -50,7 +50,8 @@ class OnDeviceSpeechRecognizer
 
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
-      media::mojom::SpeechRecognitionResultPtr result) override;
+      media::mojom::SpeechRecognitionResultPtr result,
+      OnSpeechRecognitionRecognitionEventCallback reply) override;
   void OnSpeechRecognitionError() override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;

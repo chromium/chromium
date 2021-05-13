@@ -125,7 +125,7 @@ class CaptionControllerTest : public InProcessBrowserTest {
   bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
         GetCaptionHostImpl(),
-        chrome::mojom::TranscriptionResult::New(text, false /* is_final */));
+        media::mojom::SpeechRecognitionResult::New(text, false /* is_final */));
   }
 
   void OnError() { OnErrorOnProfile(browser()->profile()); }

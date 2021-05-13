@@ -724,8 +724,6 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]
-  } else {
-    sources += [ "caption.mojom" ]
   }
 
   if (is_mac) {

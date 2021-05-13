@@ -75,8 +75,7 @@ void ChromeSpeechRecognitionClient::AddAudio(
 }
 
 bool ChromeSpeechRecognitionClient::IsSpeechRecognitionAvailable() {
-  return !is_website_blocked_ && is_browser_requesting_transcription_ &&
-         is_recognizer_bound_;
+  return !is_website_blocked_ && is_recognizer_bound_;
 }
 
 // The OnReadyCallback is set by the owner of |this| and is executed when speech
@@ -100,27 +99,6 @@ void ChromeSpeechRecognitionClient::OnRecognizerBound(
     std::move(on_ready_callback_).Run();
 }
 
-void ChromeSpeechRecognitionClient::OnSpeechRecognitionRecognitionEvent(
-    media::mojom::SpeechRecognitionResultPtr result) {
-  if (!caption_host_.is_bound())
-    return;
-  caption_host_->OnTranscription(
-      chrome::mojom::TranscriptionResult::New(result->transcription,
-                                              result->is_final),
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnTranscriptionCallback,
-                     base::Unretained(this)));
-}
-
-void ChromeSpeechRecognitionClient::OnSpeechRecognitionError() {
-  if (caption_host_.is_bound())
-    caption_host_->OnError();
-}
-
-void ChromeSpeechRecognitionClient::OnLanguageIdentificationEvent(
-    media::mojom::LanguageIdentificationEventPtr event) {
-  caption_host_->OnLanguageIdentificationEvent(std::move(event));
-}
-
 void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
   if (is_speech_recognition_available) {
@@ -132,29 +110,39 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
 
 void ChromeSpeechRecognitionClient::SpeechRecognitionLanguageChanged(
     const std::string& language) {
-  speech_recognition_recognizer_->OnLanguageChanged(language);
+  if (speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->OnLanguageChanged(language);
+  }
 }
 
 void ChromeSpeechRecognitionClient::Initialize() {
   if (speech_recognition_context_.is_bound())
     return;
 
+  // Create a SpeechRecognitionRecognizerClient remote and bind it to the
+  // render frame. The receiver is in the browser.
+  mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+      speech_recognition_client_remote;
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      speech_recognition_client_remote.InitWithNewPipeAndPassReceiver());
+
+  // Create a SpeechRecognitionContext and bind it to the render frame. The
+  // SpeechRecognitionContext passes the SpeechRecognitionRecognizer receiver
+  // and moves the SpeechRecognitionRecognizerClient. The receiver is in the
+  // utility process on Linux/Mac/Windows and in the Ash process on ChromeOS.
   mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_receiver =
           speech_recognition_context_.BindNewPipeAndPassReceiver();
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
-      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      std::move(speech_recognition_client_remote),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption),
       media::BindToCurrentLoop(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));
-
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_context_receiver));
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
-      caption_host_.BindNewPipeAndPassReceiver());
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     is_website_blocked_ = false;
@@ -172,44 +160,22 @@ void ChromeSpeechRecognitionClient::Initialize() {
   speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
       base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
                      weak_factory_.GetWeakPtr())));
-
-  // Unretained is safe because |this| owns the mojo::Remote.
-  caption_host_.set_disconnect_handler(
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnCaptionHostDisconnected,
-                     base::Unretained(this)));
 }
 
 void ChromeSpeechRecognitionClient::Reset() {
   is_recognizer_bound_ = false;
-  is_browser_requesting_transcription_ = true;
   speech_recognition_context_.reset();
   speech_recognition_recognizer_.reset();
-  speech_recognition_client_receiver_.reset();
-  caption_host_.reset();
 }
 
 void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr audio_data) {
   DCHECK(audio_data);
-  if (!speech_recognition_recognizer_.is_bound())
-    return;
-  if (IsSpeechRecognitionAvailable()) {
+  if (speech_recognition_recognizer_.is_bound() &&
+      IsSpeechRecognitionAvailable()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
-  } else if (is_recognizer_bound_) {
-    speech_recognition_recognizer_->AudioReceivedAfterBubbleClosed(
-        media::AudioTimestampHelper::FramesToTime(audio_data->frame_count,
-                                                  audio_data->sample_rate));
   }
-}
-
-void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
-  if (!success && is_browser_requesting_transcription_ &&
-      speech_recognition_recognizer_.is_bound()) {
-    speech_recognition_recognizer_->OnCaptionBubbleClosed();
-  }
-
-  is_browser_requesting_transcription_ = success;
 }
 
 bool ChromeSpeechRecognitionClient::IsUrlBlocked(const std::string& url) const {
@@ -218,10 +184,4 @@ bool ChromeSpeechRecognitionClient::IsUrlBlocked(const std::string& url) const {
 
 void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
   is_recognizer_bound_ = false;
-  if (caption_host_.is_bound())
-    caption_host_->OnError();
-}
-
-void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
-  is_browser_requesting_transcription_ = false;
 }

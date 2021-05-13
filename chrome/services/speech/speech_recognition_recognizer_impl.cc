@@ -131,16 +131,28 @@ bool SpeechRecognitionRecognizerImpl::IsMultichannelSupported() {
 void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     const std::string& result,
     const bool is_final) {
+  if (!client_remote_.is_bound())
+    return;
   client_remote_->OnSpeechRecognitionRecognitionEvent(
-      media::mojom::SpeechRecognitionResult::New(result, is_final));
+      media::mojom::SpeechRecognitionResult::New(result, is_final),
+      base::BindOnce(&SpeechRecognitionRecognizerImpl::
+                         OnSpeechRecognitionRecognitionEventCallback,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SpeechRecognitionRecognizerImpl::
+    OnSpeechRecognitionRecognitionEventCallback(bool success) {
+  is_client_requesting_speech_recognition_ = success;
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
     const std::string& language,
     const media::mojom::ConfidenceLevel confidence_level) {
-  client_remote_->OnLanguageIdentificationEvent(
-      media::mojom::LanguageIdentificationEvent::New(language,
-                                                     confidence_level));
+  if (client_remote_.is_bound()) {
+    client_remote_->OnLanguageIdentificationEvent(
+        media::mojom::LanguageIdentificationEvent::New(language,
+                                                       confidence_level));
+  }
 }
 
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
@@ -160,6 +172,12 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       media::BindToCurrentLoop(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
           weak_factory_.GetWeakPtr()));
+
+  // Unretained is safe because |this| owns the mojo::Remote.
+  client_remote_.set_disconnect_handler(
+      base::BindOnce(&SpeechRecognitionRecognizerImpl::OnClientHostDisconnected,
+                     weak_factory_.GetWeakPtr()));
+
   if (enable_soda_) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
@@ -178,6 +196,10 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   }
 }
 
+void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {
+  is_client_requesting_speech_recognition_ = false;
+}
+
 void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr buffer) {
   int channel_count = buffer->channel_count;
@@ -189,10 +211,11 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
   // Update watch time durations.
   base::TimeDelta duration =
       media::AudioTimestampHelper::FramesToTime(frame_count, sample_rate);
-  if (!caption_bubble_closed_) {
+  if (is_client_requesting_speech_recognition_) {
     caption_bubble_visible_duration_ += duration;
   } else {
     caption_bubble_hidden_duration_ += duration;
+    return;
   }
 
   // Verify the channel count.
@@ -221,7 +244,9 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
 }
 
 void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
-  client_remote_->OnSpeechRecognitionError();
+  if (client_remote_.is_bound()) {
+    client_remote_->OnSpeechRecognitionError();
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::
@@ -262,15 +287,6 @@ void SpeechRecognitionRecognizerImpl::
     cloud_client_->AddAudio(base::span<const char>(
         reinterpret_cast<char*>(buffer->data.data()), buffer_size));
   }
-}
-
-void SpeechRecognitionRecognizerImpl::OnCaptionBubbleClosed() {
-  caption_bubble_closed_ = true;
-}
-
-void SpeechRecognitionRecognizerImpl::AudioReceivedAfterBubbleClosed(
-    base::TimeDelta duration) {
-  caption_bubble_hidden_duration_ += duration;
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(

@@ -214,11 +214,10 @@ void CaptionController::UpdateAccessibilityCaptionHistograms() {
 
 bool CaptionController::DispatchTranscription(
     CaptionHostImpl* caption_host_impl,
-    const chrome::mojom::TranscriptionResultPtr& transcription_result) {
+    const media::mojom::SpeechRecognitionResultPtr& result) {
   if (!caption_bubble_controller_)
     return false;
-  return caption_bubble_controller_->OnTranscription(caption_host_impl,
-                                                     transcription_result);
+  return caption_bubble_controller_->OnTranscription(caption_host_impl, result);
 }
 
 void CaptionController::OnError(CaptionHostImpl* caption_host_impl) {
