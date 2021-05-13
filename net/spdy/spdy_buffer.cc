@@ -97,11 +97,6 @@ scoped_refptr<IOBuffer> SpdyBuffer::GetIOBufferForRemainingData() {
   return base::MakeRefCounted<SharedFrameIOBuffer>(shared_frame_, offset_);
 }
 
-size_t SpdyBuffer::EstimateMemoryUsage() const {
-  // TODO(xunjieli): Estimate |consume_callbacks_|. https://crbug.com/669108.
-  return base::trace_event::EstimateMemoryUsage(shared_frame_->data);
-}
-
 void SpdyBuffer::ConsumeHelper(size_t consume_size,
                                ConsumeSource consume_source) {
   DCHECK_GE(consume_size, 1u);

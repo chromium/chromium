@@ -85,7 +85,6 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
     DCHECK_GT(stream_->stream_id(), 0u);
     return std::make_unique<SpdyBuffer>(stream_->ProduceHeadersFrame());
   }
-  size_t EstimateMemoryUsage() const override { return 0; }
 
  private:
   const base::WeakPtr<SpdyStream> stream_;
@@ -835,15 +834,6 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
       recv_first_byte_time_for_non_informational_response_;
   load_timing_info->first_early_hints_time = first_early_hints_time_;
   return result;
-}
-
-size_t SpdyStream::EstimateMemoryUsage() const {
-  // TODO(xunjieli): https://crbug.com/669108. Estimate |pending_send_data_|
-  // once scoped_refptr support is in.
-  return base::trace_event::EstimateMemoryUsage(url_) +
-         base::trace_event::EstimateMemoryUsage(request_headers_) +
-         base::trace_event::EstimateMemoryUsage(pending_recv_data_) +
-         base::trace_event::EstimateMemoryUsage(response_headers_);
 }
 
 void SpdyStream::QueueNextDataFrame() {

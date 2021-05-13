@@ -189,11 +189,6 @@ class GreasedBufferProducer : public SpdyBufferProducer {
     return std::make_unique<SpdyBuffer>(std::move(serialized_frame));
   }
 
-  size_t EstimateMemoryUsage() const override {
-    return base::trace_event::EstimateMemoryUsage(
-        greased_http2_frame_->payload);
-  }
-
  private:
   base::WeakPtr<SpdyStream> stream_;
   const SpdySessionPool::GreasedHttp2Frame* const greased_http2_frame_;
@@ -1798,9 +1793,6 @@ size_t SpdySession::DumpMemoryStats(StreamSocket::SocketMemoryStats* stats,
          base::trace_event::EstimateMemoryUsage(pooled_aliases_) +
          base::trace_event::EstimateMemoryUsage(active_streams_) +
          base::trace_event::EstimateMemoryUsage(created_streams_) +
-         base::trace_event::EstimateMemoryUsage(write_queue_) +
-         base::trace_event::EstimateMemoryUsage(in_flight_write_) +
-         base::trace_event::EstimateMemoryUsage(buffered_spdy_framer_) +
          base::trace_event::EstimateMemoryUsage(initial_settings_) +
          base::trace_event::EstimateMemoryUsage(stream_send_unstall_queue_) +
          base::trace_event::EstimateMemoryUsage(priority_dependency_state_);

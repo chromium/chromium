@@ -62,11 +62,6 @@ class RequeingBufferProducer : public SpdyBufferProducer {
     return std::move(buffer_);
   }
 
-  size_t EstimateMemoryUsage() const override {
-    NOTREACHED();
-    return 0;
-  }
-
   static void ConsumeCallback(SpdyWriteQueue* queue,
                               size_t size,
                               SpdyBuffer::ConsumeSource source) {

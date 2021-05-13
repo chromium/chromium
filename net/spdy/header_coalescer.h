@@ -29,9 +29,6 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
   spdy::Http2HeaderBlock release_headers();
   bool error_seen() const { return error_seen_; }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   // Helper to add a header. Return true on success.
   bool AddHeader(base::StringPiece key, base::StringPiece value);

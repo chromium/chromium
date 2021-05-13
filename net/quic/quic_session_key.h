@@ -68,8 +68,6 @@ class QUIC_EXPORT_PRIVATE QuicSessionKey {
 
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
-  size_t EstimateMemoryUsage() const;
-
  private:
   quic::QuicServerId server_id_;
   SocketTag socket_tag_;

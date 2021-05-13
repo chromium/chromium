@@ -44,10 +44,6 @@ SpdyWriteQueue::PendingWrite::PendingWrite(PendingWrite&& other) = default;
 SpdyWriteQueue::PendingWrite& SpdyWriteQueue::PendingWrite::operator=(
     PendingWrite&& other) = default;
 
-size_t SpdyWriteQueue::PendingWrite::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(frame_producer);
-}
-
 SpdyWriteQueue::SpdyWriteQueue() : removing_writes_(false) {}
 
 SpdyWriteQueue::~SpdyWriteQueue() {
@@ -222,10 +218,6 @@ void SpdyWriteQueue::Clear() {
   }
   removing_writes_ = false;
   num_queued_capped_frames_ = 0;
-}
-
-size_t SpdyWriteQueue::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(queue_);
 }
 
 }  // namespace net

@@ -229,7 +229,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
     const QuicSessionKey& session_key() const { return session_key_; }
 
     // Returns the estimate of dynamically allocated memory in bytes.
-    size_t EstimateMemoryUsage() const;
 
    private:
     HostPortPair destination_;

@@ -27,9 +27,6 @@ class NET_EXPORT_PRIVATE SpdyBufferProducer {
 
   virtual ~SpdyBufferProducer();
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  virtual size_t EstimateMemoryUsage() const = 0;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(SpdyBufferProducer);
 };
@@ -42,8 +39,6 @@ class NET_EXPORT_PRIVATE SimpleBufferProducer : public SpdyBufferProducer {
   ~SimpleBufferProducer() override;
 
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override;
-
-  size_t EstimateMemoryUsage() const override;
 
  private:
   std::unique_ptr<SpdyBuffer> buffer_;

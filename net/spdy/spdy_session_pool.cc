@@ -578,9 +578,6 @@ void SpdySessionPool::DumpMemoryStats(
     if (is_session_active)
       num_active_sessions++;
   }
-  total_size +=
-      base::trace_event::EstimateMemoryUsage(spdy::ObtainHpackStaticTable()) +
-      base::trace_event::EstimateMemoryUsage(push_promise_index_);
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(base::StringPrintf(
           "%s/spdy_session_pool", parent_dump_absolute_name.c_str()));

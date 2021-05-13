@@ -62,10 +62,6 @@ spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
   return std::move(headers_);
 }
 
-size_t HeaderCoalescer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(headers_);
-}
-
 bool HeaderCoalescer::AddHeader(base::StringPiece key,
                                 base::StringPiece value) {
   if (key.empty()) {

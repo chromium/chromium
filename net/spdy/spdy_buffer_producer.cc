@@ -27,8 +27,4 @@ std::unique_ptr<SpdyBuffer> SimpleBufferProducer::ProduceBuffer() {
   return std::move(buffer_);
 }
 
-size_t SimpleBufferProducer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(buffer_);
-}
-
 }  // namespace net

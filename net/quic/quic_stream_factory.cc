@@ -76,12 +76,6 @@ using NetworkHandle = net::NetworkChangeNotifier::NetworkHandle;
 
 namespace net {
 
-// Returns the estimate of dynamically allocated memory of an IPEndPoint in
-// bytes. Used in tracking IPAliasMap.
-size_t EstimateMemoryUsage(const IPEndPoint& end_point) {
-  return 0;
-}
-
 namespace {
 
 enum CreateSessionFailure {
@@ -351,9 +345,6 @@ class QuicStreamFactory::Job {
   base::WeakPtr<Job> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
   void AddRequest(QuicStreamRequest* request) {
     stream_requests_.insert(request);
@@ -685,10 +676,6 @@ void QuicStreamFactory::Job::PopulateNetErrorDetails(
   details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
       session_->connection()->version());
   details->quic_connection_error = session_->error();
-}
-
-size_t QuicStreamFactory::Job::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(key_);
 }
 
 int QuicStreamFactory::Job::DoResolveHost() {
@@ -1095,11 +1082,6 @@ bool QuicStreamFactory::QuicSessionAliasKey::operator==(
     const QuicSessionAliasKey& other) const {
   return destination_.Equals(other.destination_) &&
          session_key_ == other.session_key_;
-}
-
-size_t QuicStreamFactory::QuicSessionAliasKey::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(destination_) +
-         base::trace_event::EstimateMemoryUsage(session_key_.server_id());
 }
 
 QuicStreamFactory::QuicStreamFactory(
@@ -1669,17 +1651,6 @@ void QuicStreamFactory::DumpMemoryStats(
     return;
   base::trace_event::MemoryAllocatorDump* factory_dump =
       pmd->CreateAllocatorDump(parent_absolute_name + "/quic_stream_factory");
-  size_t memory_estimate =
-      base::trace_event::EstimateMemoryUsage(all_sessions_) +
-      base::trace_event::EstimateMemoryUsage(active_sessions_) +
-      base::trace_event::EstimateMemoryUsage(session_aliases_) +
-      base::trace_event::EstimateMemoryUsage(ip_aliases_) +
-      base::trace_event::EstimateMemoryUsage(session_peer_ip_) +
-      base::trace_event::EstimateMemoryUsage(gone_away_aliases_) +
-      base::trace_event::EstimateMemoryUsage(active_jobs_);
-  factory_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                          memory_estimate);
   factory_dump->AddScalar("all_sessions",
                           base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                           all_sessions_.size());

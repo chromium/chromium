@@ -76,8 +76,4 @@ bool QuicSessionKey::CanUseForAliasing(const QuicSessionKey& other) const {
          secure_dns_policy_ == other.secure_dns_policy_;
 }
 
-size_t QuicSessionKey::EstimateMemoryUsage() const {
-  return server_id_.EstimateMemoryUsage();
-}
-
 }  // namespace net

@@ -239,9 +239,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   // Returns the maximum size of the header encoder compression table.
   uint32_t header_encoder_table_size() const;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   spdy::SpdyFramer spdy_framer_;
   http2::Http2DecoderAdapter deframer_;
@@ -274,9 +271,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
     spdy::SpdyStreamId last_accepted_stream_id;
     spdy::SpdyErrorCode error_code;
     std::string debug_data;
-
-    // Returns the estimate of dynamically allocated memory in bytes.
-    size_t EstimateMemoryUsage() const;
   };
   std::unique_ptr<GoAwayFields> goaway_fields_;
 
