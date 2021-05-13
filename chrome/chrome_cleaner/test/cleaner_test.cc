@@ -35,6 +35,7 @@
 namespace {
 
 using chrome_cleaner::Engine;
+using chrome_cleaner::ExecutionMode;
 using chrome_cleaner::PUPData;
 using ::testing::Combine;
 using ::testing::Values;
@@ -338,15 +339,15 @@ class CleanerTest
   }
 
   base::CommandLine BuildCommandLine(
-      const base::FilePath& executable_path,
-      chrome_cleaner::ExecutionMode execution_mode =
-          chrome_cleaner::ExecutionMode::kNone) {
-    base::CommandLine command_line(executable_path);
+      const wchar_t* executable_path,
+      ExecutionMode execution_mode = ExecutionMode::kNone) {
+    base::FilePath path(executable_path);
+    base::CommandLine command_line(path);
     chrome_cleaner::AppendTestSwitches(temp_dir_, &command_line);
     command_line.AppendSwitchASCII(
         chrome_cleaner::kEngineSwitch,
         base::NumberToString(static_cast<int>(engine_)));
-    if (execution_mode != chrome_cleaner::ExecutionMode::kNone) {
+    if (execution_mode != ExecutionMode::kNone) {
       command_line.AppendSwitchASCII(
           chrome_cleaner::kExecutionModeSwitch,
           base::NumberToString(static_cast<int>(execution_mode)));
@@ -384,8 +385,7 @@ class CleanerTest
 };
 
 TEST_P(CleanerTest, Scanner_ScanOnly) {
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kScannerExecutable));
+  base::CommandLine command_line = BuildCommandLine(kScannerExecutable);
   ExpectExitCode(command_line,
                  chrome_cleaner::RESULT_CODE_REPORT_ONLY_PUPS_FOUND);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
@@ -393,8 +393,7 @@ TEST_P(CleanerTest, Scanner_ScanOnly) {
 
 TEST_P(CleanerTest, Scanner_Removable) {
   CreateRemovableUwS();
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kScannerExecutable));
+  base::CommandLine command_line = BuildCommandLine(kScannerExecutable);
 
   ExpectExitCode(command_line, chrome_cleaner::RESULT_CODE_SUCCESS);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
@@ -404,8 +403,7 @@ TEST_P(CleanerTest, Scanner_Removable) {
 
 TEST_P(CleanerTest, Cleaner_ScanOnly) {
   base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable),
-                       chrome_cleaner::ExecutionMode::kCleanup);
+      BuildCommandLine(kCleanerExecutable, ExecutionMode::kCleanup);
   ExpectExitCode(command_line,
                  chrome_cleaner::RESULT_CODE_REPORT_ONLY_PUPS_FOUND);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
@@ -414,8 +412,7 @@ TEST_P(CleanerTest, Cleaner_ScanOnly) {
 TEST_P(CleanerTest, Cleaner_Removable) {
   CreateRemovableUwS();
   base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable),
-                       chrome_cleaner::ExecutionMode::kCleanup);
+      BuildCommandLine(kCleanerExecutable, ExecutionMode::kCleanup);
 
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
 
@@ -428,8 +425,7 @@ TEST_P(CleanerTest, Cleaner_LockedFiles) {
   CreateRemovableUwS();
   LockRemovableUwS();
   base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable),
-                       chrome_cleaner::ExecutionMode::kCleanup);
+      BuildCommandLine(kCleanerExecutable, ExecutionMode::kCleanup);
   ExpectExitCode(command_line, chrome_cleaner::RESULT_CODE_PENDING_REBOOT);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
   EXPECT_TRUE(base::PathExists(removable_test_uws_));
@@ -438,8 +434,7 @@ TEST_P(CleanerTest, Cleaner_LockedFiles) {
 
 TEST_P(CleanerTest, PostReboot_ScanOnly) {
   base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable),
-                       chrome_cleaner::ExecutionMode::kCleanup);
+      BuildCommandLine(kCleanerExecutable, ExecutionMode::kCleanup);
   command_line.AppendSwitch(chrome_cleaner::kPostRebootSwitch);
   ExpectExitCode(command_line, chrome_cleaner::RESULT_CODE_POST_REBOOT_SUCCESS);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
@@ -447,12 +442,11 @@ TEST_P(CleanerTest, PostReboot_ScanOnly) {
 
 TEST_P(CleanerTest, PostReboot_Removable) {
   CreateRemovableUwS();
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable));
+  base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);
   command_line.AppendSwitch(chrome_cleaner::kPostRebootSwitch);
-  command_line.AppendSwitchASCII(chrome_cleaner::kExecutionModeSwitch,
-                                 base::NumberToString(static_cast<int>(
-                                     chrome_cleaner::ExecutionMode::kCleanup)));
+  command_line.AppendSwitchASCII(
+      chrome_cleaner::kExecutionModeSwitch,
+      base::NumberToString(static_cast<int>(ExecutionMode::kCleanup)));
   ExpectExitCode(command_line, chrome_cleaner::RESULT_CODE_POST_REBOOT_SUCCESS);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
 
@@ -464,12 +458,11 @@ TEST_P(CleanerTest, PostReboot_Removable) {
 TEST_P(CleanerTest, PostReboot_LockedFiles) {
   CreateRemovableUwS();
   LockRemovableUwS();
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable));
+  base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);
   command_line.AppendSwitch(chrome_cleaner::kPostRebootSwitch);
-  command_line.AppendSwitchASCII(chrome_cleaner::kExecutionModeSwitch,
-                                 base::NumberToString(static_cast<int>(
-                                     chrome_cleaner::ExecutionMode::kCleanup)));
+  command_line.AppendSwitchASCII(
+      chrome_cleaner::kExecutionModeSwitch,
+      base::NumberToString(static_cast<int>(ExecutionMode::kCleanup)));
 
   ExpectExitCode(command_line,
                  chrome_cleaner::RESULT_CODE_POST_CLEANUP_VALIDATION_FAILED);
@@ -479,11 +472,10 @@ TEST_P(CleanerTest, PostReboot_LockedFiles) {
 }
 
 TEST_P(CleanerTest, NoPotentialFalsePositivesOnCleanMachine) {
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable));
-  command_line.AppendSwitchASCII(chrome_cleaner::kExecutionModeSwitch,
-                                 base::NumberToString(static_cast<int>(
-                                     chrome_cleaner::ExecutionMode::kCleanup)));
+  base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);
+  command_line.AppendSwitchASCII(
+      chrome_cleaner::kExecutionModeSwitch,
+      base::NumberToString(static_cast<int>(ExecutionMode::kCleanup)));
 
   // Delete the scan only uws to make the machine clean.
   base::DeleteFile(scan_only_test_uws_);
@@ -494,13 +486,12 @@ TEST_P(CleanerTest, NoPotentialFalsePositivesOnCleanMachine) {
 TEST_P(CleanerTest, NoUnsanitizedPaths) {
   CreateRemovableUwS();
 
-  base::CommandLine command_line =
-      BuildCommandLine(base::FilePath(kCleanerExecutable));
+  base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);
   LOG(ERROR) << command_line.GetCommandLineString();
   command_line.AppendSwitch(chrome_cleaner::kDumpRawLogsSwitch);
-  command_line.AppendSwitchASCII(chrome_cleaner::kExecutionModeSwitch,
-                                 base::NumberToString(static_cast<int>(
-                                     chrome_cleaner::ExecutionMode::kCleanup)));
+  command_line.AppendSwitchASCII(
+      chrome_cleaner::kExecutionModeSwitch,
+      base::NumberToString(static_cast<int>(ExecutionMode::kCleanup)));
   ExpectExitCode(command_line, chrome_cleaner::RESULT_CODE_SUCCESS);
 
   chrome_cleaner::ChromeCleanerReport chrome_cleaner_report;
