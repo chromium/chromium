@@ -131,7 +131,7 @@ function initializeConfig() {
         $("config_locale").appendChild(option);
     }
     
-    config.locale = getParam("locale") || "en_US";
+    config.locale = getParam("locale") || "en-US";
     config.isLocaleRTL = getParam("locale_rtl") === "true";
     config.weekStartDay = parseInt(getParam("weekStartDay") || "0", 10);
     config.type = getParam("type") || "date";
@@ -151,7 +151,7 @@ function initializeConfig() {
 };
 
 var locale_data = {
-    "en_US": {
+    "en-US": {
         "displayName": "English (United States)",
         "shortMonthLabels": [
         "Jan",
@@ -283,28 +283,28 @@ function openCalendar() {
     doc.documentElement.innerHTML = '<head></head><body><div id=main>Loading...</div></body>';
     var commonCssLink = doc.createElement('link');
     commonCssLink.rel = 'stylesheet';
-    commonCssLink.href = '../../Source/core/html/forms/resources/pickerCommon.css?' + (new Date()).getTime();
+    commonCssLink.href = '../../renderer/core/html/forms/resources/pickerCommon.css?' + (new Date()).getTime();
     doc.head.appendChild(commonCssLink);
     var buttonCssLink = doc.createElement('link');
     buttonCssLink.rel = 'stylesheet';
-    buttonCssLink.href = '../../Source/core/html/forms/resources/pickerButton.css?' + (new Date()).getTime();
+    buttonCssLink.href = '../../renderer/core/html/forms/resources/pickerButton.css?' + (new Date()).getTime();
     doc.head.appendChild(buttonCssLink);
     var suggestionPickerCssLink = doc.createElement('link');
     suggestionPickerCssLink.rel = 'stylesheet';
-    suggestionPickerCssLink.href = '../../Source/core/html/forms/resources/suggestionPicker.css?' + (new Date()).getTime();
+    suggestionPickerCssLink.href = '../../renderer/core/html/forms/resources/suggestionPicker.css?' + (new Date()).getTime();
     doc.head.appendChild(suggestionPickerCssLink);
     var link = doc.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '../../Source/core/html/forms/resources/calendarPicker.css?' + (new Date()).getTime();
+    link.href = '../../renderer/core/html/forms/resources/calendarPicker.css?' + (new Date()).getTime();
     doc.head.appendChild(link);
     var commonJsScript = doc.createElement('script');
-    commonJsScript.src = '../../Source/core/html/forms/resources/pickerCommon.js?' + (new Date()).getTime();
+    commonJsScript.src = '../../renderer/core/html/forms/resources/pickerCommon.js?' + (new Date()).getTime();
     doc.body.appendChild(commonJsScript);
     var suggestionPickerJsScript = doc.createElement('script');
-    suggestionPickerJsScript.src = '../../Source/core/html/forms/resources/suggestionPicker.js?' + (new Date()).getTime();
+    suggestionPickerJsScript.src = '../../renderer/core/html/forms/resources/suggestionPicker.js?' + (new Date()).getTime();
     doc.body.appendChild(suggestionPickerJsScript);
     var script = doc.createElement('script');
-    script.src = '../../Source/core/html/forms/resources/calendarPicker.js?' + (new Date()).getTime();
+    script.src = '../../renderer/core/html/forms/resources/calendarPicker.js?' + (new Date()).getTime();
     doc.body.appendChild(script);
 
     var pagePopupController = {
