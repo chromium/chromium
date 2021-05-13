@@ -14,6 +14,11 @@
         "project": "chromium-m90",
         "ref": "refs/branch-heads/4430"
     },
+    "90-lts": {
+        "name": "m90-lts",
+        "project": "chromium-m90-lts",
+        "ref": "refs/branch-heads/4430_101"
+    },
     "91": {
         "name": "m91",
         "project": "chromium-m91",
