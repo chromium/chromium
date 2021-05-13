@@ -47,7 +47,6 @@ const bool PlatformStyle::kReturnClicksFocusedControl = true;
 const bool PlatformStyle::kTableViewSupportsKeyboardNavigationByCell = true;
 const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = false;
 const bool PlatformStyle::kUseRipples = true;
-const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = false;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = true;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = false;
 const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =

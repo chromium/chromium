@@ -307,9 +307,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
 #define MAYBE_SelectionRestoreOnTabSwitch SelectionRestoreOnTabSwitch
 #endif
 IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
+#if defined(OS_MAC)
   // Mac intentionally changes selection on focus.
-  if (views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    return;
+  GTEST_SKIP() << "Mac intentionally has different behavior";
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Make sure Chrome is in the foreground, otherwise sending input
@@ -412,9 +413,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   ui_test_utils::FindInPage(
       browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
       nullptr, nullptr);
-  // Mac intentionally changes selection on focus.
-  if (!views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    EXPECT_EQ(u"b", GetFindBarSelectedText());
+  EXPECT_EQ(u"b", GetFindBarSelectedText());
 
   // Set focus away from the Find bar (to the Location bar).
   chrome::FocusLocationBar(browser());
@@ -424,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  if (!views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    EXPECT_EQ(u"a", GetFindBarSelectedText());
+  EXPECT_EQ(u"a", GetFindBarSelectedText());
 
   // Select tab B. Location bar should get focus.
   browser()->tab_strip_model()->ActivateTabAt(

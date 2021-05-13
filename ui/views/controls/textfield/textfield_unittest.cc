@@ -3764,34 +3764,6 @@ TEST_F(TextfieldTest, SwitchFocusInKeyDown) {
   EXPECT_EQ(u" ", textfield_->GetText());
 }
 
-TEST_F(TextfieldTest, FocusChangesScrollToStart) {
-  const std::u16string kText = u"abcdef";
-  InitTextfield();
-  textfield_->SetText(kText);
-  EXPECT_EQ(std::u16string(), textfield_->GetSelectedText());
-  textfield_->AboutToRequestFocusFromTabTraversal(false);
-  EXPECT_EQ(kText, textfield_->GetSelectedText());
-  if (PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    EXPECT_EQ(0U, textfield_->GetCursorPosition());
-  else
-    EXPECT_EQ(kText.size(), textfield_->GetCursorPosition());
-
-  // The OnBlur() behavior below is only meaningful on platforms where textfield
-  // focus moves on focus change.
-  if (!PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    return;
-
-  // The cursor is at the start (so that it scrolls in to view), but the
-  // "Select All" is currently undirected. Shift+right will give it a direction
-  // and scroll to the end.
-  SendKeyEvent(ui::VKEY_RIGHT, true, false);
-  EXPECT_EQ(kText.size(), textfield_->GetCursorPosition());
-
-  // And a focus loss should scroll back to the start.
-  textfield_->OnBlur();
-  EXPECT_EQ(0U, textfield_->GetCursorPosition());
-}
-
 TEST_F(TextfieldTest, SendingDeletePreservesShiftFlag) {
   InitTextfield();
   SendKeyPress(ui::VKEY_DELETE, 0);

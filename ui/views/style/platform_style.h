@@ -61,10 +61,6 @@ class VIEWS_EXPORT PlatformStyle {
   // Whether ripples should be used for visual feedback on control activation.
   static const bool kUseRipples;
 
-  // Whether to scroll text fields to the beginning when they gain or lose
-  // focus.
-  static const bool kTextfieldScrollsToStartOnFocusChange;
-
   // Whether text fields should use a "drag" cursor when not actually
   // dragging but available to do so.
   static const bool kTextfieldUsesDragCursorWhenDraggable;

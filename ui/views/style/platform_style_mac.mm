@@ -37,7 +37,6 @@ const int PlatformStyle::kMinLabelButtonHeight = 30;
 const bool PlatformStyle::kDialogDefaultButtonCanBeCancel = false;
 const bool PlatformStyle::kSelectWordOnRightClick = true;
 const bool PlatformStyle::kSelectAllOnRightClickWhenUnfocused = true;
-const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = true;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = false;
 const bool PlatformStyle::kTableViewSupportsKeyboardNavigationByCell = false;
 const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
