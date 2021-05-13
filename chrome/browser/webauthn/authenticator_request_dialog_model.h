@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
@@ -25,6 +26,11 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace gfx {
+struct VectorIcon;
+}
 
 namespace device {
 class AuthenticatorGetAssertionResponse;
@@ -139,6 +145,42 @@ class AuthenticatorRequestDialogModel {
     virtual void OnCancelRequest() {}
   };
 
+  // A Mechanism is a user-visable method of authenticating. It might be a
+  // transport (such as USB), a platform authenticator, a phone, or even a
+  // delegation to a platform API. Mechanisms are listed in the UI for the
+  // user to select between.
+  struct Mechanism {
+    // These types describe the type of Mechanism, but this is only for testing.
+    using Transport =
+        base::StrongAlias<class TransportTag, AuthenticatorTransport>;
+    using WindowsAPI = base::StrongAlias<class WindowsAPITag,
+                                         bool /* unused, but cannot be void */>;
+    using Phone = base::StrongAlias<class PhoneTag, std::string>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone>;
+
+    Mechanism(Type type,
+              std::u16string name,
+              std::u16string short_name,
+              const gfx::VectorIcon* icon,
+              base::RepeatingClosure callback,
+              bool is_priority);
+    ~Mechanism();
+    Mechanism(Mechanism&&);
+    Mechanism(const Mechanism&) = delete;
+    Mechanism& operator=(const Mechanism&) = delete;
+
+    const std::u16string name;
+    const std::u16string short_name;
+    const gfx::VectorIcon* const icon;
+    const base::RepeatingClosure callback;
+    // priority is true if this mechanism should be activated immediately.
+    // Only a single Mechanism in a list should have priority.
+    const bool priority;
+
+    // type should only be accessed by tests.
+    const Type type;
+  };
+
   // PairedPhone represents a paired caBLEv2 device.
   struct PairedPhone {
     PairedPhone() = delete;
@@ -175,7 +217,6 @@ class AuthenticatorRequestDialogModel {
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
   ~AuthenticatorRequestDialogModel();
 
-  void SetCurrentStep(Step step);
   Step current_step() const { return current_step_; }
 
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
@@ -234,24 +275,9 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
 
-  // Requests that the step-by-step wizard flow commence, guiding the user
-  // through using the Secutity Key with the given |transport|.
-  //
-  // Valid action when at step: kNotStarted.
-  // kTransportSelection, and steps where the other transports menu is shown,
-  // namely, kUsbInsertAndActivate, kCableActivate.
-  void StartGuidedFlowForTransport(AuthenticatorTransport transport);
-
   // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
   // UI instead.
   void HideDialogAndDispatchToNativeWindowsApi();
-
-  // Displays a resident-key warning if needed and then calls
-  // |HideDialogAndDispatchToNativeWindowsApi|.
-  void StartWinNativeApi();
-
-  // Contacts a paired phone. The phone is specified by name.
-  void ContactPhone(const std::string& name);
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -413,6 +439,25 @@ class AuthenticatorRequestDialogModel {
 
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
+  base::span<const Mechanism> mechanisms() const;
+
+  // current_mechanism returns the index into |mechanisms| of the most recently
+  // activated mechanism, or nullopt if there isn't one.
+  base::Optional<size_t> current_mechanism() const;
+
+  // ContactPhoneForTesting triggers a contact for a phone with the given name.
+  // Only for unittests. UI should use |mechanisms()| to enumerate the
+  // user-visible mechanisms and use the callbacks therein.
+  void ContactPhoneForTesting(const std::string& name);
+
+  // StartTransportFlowForTesting moves the UI to focus on the given transport.
+  // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
+  // use the callbacks therein.
+  void StartTransportFlowForTesting(AuthenticatorTransport transport);
+
+  // SetCurrentStepForTesting forces the model to the specified step.
+  void SetCurrentStepForTesting(Step step);
+
   ObservableAuthenticatorList& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;
   }
@@ -434,6 +479,7 @@ class AuthenticatorRequestDialogModel {
                   uint32_t min_pin_length,
                   int attempts,
                   base::OnceCallback<void(std::u16string)> provide_pin_cb);
+  void FinishCollectToken();
   uint32_t min_pin_length() const { return min_pin_length_; }
   device::pin::PINEntryError pin_error() const { return pin_error_; }
   base::Optional<int> pin_attempts() const { return pin_attempts_; }
@@ -505,12 +551,31 @@ class AuthenticatorRequestDialogModel {
     std::vector<device::PublicKeyCredentialUserEntity> users_;
   };
 
+  void SetCurrentStep(Step step);
+
+  // Requests that the step-by-step wizard flow commence, guiding the user
+  // through using the Secutity Key with the given |transport|.
+  //
+  // Valid action when at step: kNotStarted.
+  // kTransportSelection, and steps where the other transports menu is shown,
+  // namely, kUsbInsertAndActivate, kCableActivate.
+  void StartGuidedFlowForTransport(AuthenticatorTransport transport,
+                                   size_t mechanism_index);
+
+  // Displays a resident-key warning if needed and then calls
+  // |HideDialogAndDispatchToNativeWindowsApi|.
+  void StartWinNativeApi(size_t mechanism_index);
+
+  // Contacts a paired phone. The phone is specified by name.
+  void ContactPhone(const std::string& name, size_t mechanism_index);
+
   void StartLocationBarBubbleRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
+  void PopulateMechanisms();
 
   EphemeralState ephemeral_state_;
 
@@ -569,6 +634,14 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
+
+  // mechanisms contains the entries that appear in the "transport" selection
+  // sheet and the drop-down menu.
+  std::vector<Mechanism> mechanisms_;
+
+  // current_mechanism_ contains the index of the most recently activated
+  // mechanism.
+  base::Optional<size_t> current_mechanism_;
 
   // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
   base::Optional<CableUIType> cable_ui_type_;

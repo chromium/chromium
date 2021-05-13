@@ -227,7 +227,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
             // should fallback to the lower-priority phone with the same name.
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhone("name2");
+                  parent_->model()->ContactPhoneForTesting("name2");
                 }));
             break;
 
@@ -235,7 +235,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
             // Try some other phones.
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhone("zzz");
+                  parent_->model()->ContactPhoneForTesting("zzz");
                 }));
             break;
 
@@ -243,7 +243,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
             // Try some other phones.
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([this]() {
-                  parent_->model()->ContactPhone("aaa");
+                  parent_->model()->ContactPhoneForTesting("aaa");
                 }));
             break;
 
@@ -368,7 +368,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       }
 
       // Simulate a click on the transport selection sheet.
-      parent_->model()->ContactPhone("name2");
+      parent_->model()->ContactPhoneForTesting("name2");
     }
 
    private:

@@ -149,29 +149,14 @@ std::u16string AuthenticatorTransportSelectorSheetModel::GetStepDescription()
       IDS_WEBAUTHN_TRANSPORT_SELECTION_DESCRIPTION);
 }
 
-void AuthenticatorTransportSelectorSheetModel::OnTransportSelected(
-    AuthenticatorTransport transport) {
-  dialog_model()->StartGuidedFlowForTransport(transport);
-}
-
-void AuthenticatorTransportSelectorSheetModel::StartWinNativeApi() {
-  dialog_model()->StartWinNativeApi();
-}
-
-void AuthenticatorTransportSelectorSheetModel::ContactPhone(
-    const std::string& name) {
-  dialog_model()->ContactPhone(name);
-}
-
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------
 
 AuthenticatorInsertAndActivateUsbSheetModel::
     AuthenticatorInsertAndActivateUsbSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
-      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
-          dialog_model,
-          AuthenticatorTransport::kUsbHumanInterfaceDevice)) {}
+      other_transports_menu_model_(
+          std::make_unique<OtherTransportsMenuModel>(dialog_model)) {}
 
 AuthenticatorInsertAndActivateUsbSheetModel::
     ~AuthenticatorInsertAndActivateUsbSheetModel() = default;
@@ -492,9 +477,8 @@ AuthenticatorOffTheRecordInterstitialSheetModel::
     AuthenticatorOffTheRecordInterstitialSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
-      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
-          dialog_model,
-          AuthenticatorTransport::kInternal)) {}
+      other_transports_menu_model_(
+          std::make_unique<OtherTransportsMenuModel>(dialog_model)) {}
 
 AuthenticatorOffTheRecordInterstitialSheetModel::
     ~AuthenticatorOffTheRecordInterstitialSheetModel() = default;
@@ -554,9 +538,8 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
 AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
-      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
-          dialog_model,
-          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy)) {}
+      other_transports_menu_model_(
+          std::make_unique<OtherTransportsMenuModel>(dialog_model)) {}
 
 AuthenticatorPaaskSheetModel::~AuthenticatorPaaskSheetModel() = default;
 
@@ -619,9 +602,8 @@ AuthenticatorAndroidAccessorySheetModel::
     AuthenticatorAndroidAccessorySheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
-      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
-          dialog_model,
-          AuthenticatorTransport::kAndroidAccessory)) {}
+      other_transports_menu_model_(
+          std::make_unique<OtherTransportsMenuModel>(dialog_model)) {}
 
 AuthenticatorAndroidAccessorySheetModel::
     ~AuthenticatorAndroidAccessorySheetModel() = default;
@@ -660,9 +642,8 @@ AuthenticatorAndroidAccessorySheetModel::GetOtherTransportsMenuModel() {
 AuthenticatorPaaskV2SheetModel::AuthenticatorPaaskV2SheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
-      other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
-          dialog_model,
-          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy)) {}
+      other_transports_menu_model_(
+          std::make_unique<OtherTransportsMenuModel>(dialog_model)) {}
 
 AuthenticatorPaaskV2SheetModel::~AuthenticatorPaaskV2SheetModel() = default;
 

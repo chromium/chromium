@@ -112,7 +112,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
     auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
         /*relying_party_id=*/"example.com");
-    dialog_model->SetCurrentStep(
+    dialog_model->SetCurrentStepForTesting(
         AuthenticatorRequestDialogModel::Step::kTimedOut);
     AuthenticatorRequestDialogView* dialog =
         test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(

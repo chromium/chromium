@@ -702,8 +702,7 @@ void ChromeAuthenticatorRequestDelegate::FinishCollectToken() {
   if (!weak_dialog_model_)
     return;
 
-  weak_dialog_model_->SetCurrentStep(
-      AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);
+  weak_dialog_model_->FinishCollectToken();
 }
 
 void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {

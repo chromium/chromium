@@ -4390,8 +4390,6 @@ static_library("ui") {
       "webauthn/sheet_models.h",
       "webauthn/transport_hover_list_model.cc",
       "webauthn/transport_hover_list_model.h",
-      "webauthn/transport_utils.cc",
-      "webauthn/transport_utils.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
     ]

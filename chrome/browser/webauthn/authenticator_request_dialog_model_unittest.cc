@@ -22,6 +22,7 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +97,8 @@ base::StringPiece RequestTypeToString(RequestType req_type) {
 enum class TransportAvailabilityParam {
   kHasPlatformCredential,
   kHasWinNativeAuthenticator,
-  kHasCableExtension,
+  kHasCableV1Extension,
+  kHasCableV2Extension,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -106,8 +108,10 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kHasPlatformCredential";
     case TransportAvailabilityParam::kHasWinNativeAuthenticator:
       return "kHasWinNativeAuthenticator";
-    case TransportAvailabilityParam::kHasCableExtension:
-      return "kHasCableExtension";
+    case TransportAvailabilityParam::kHasCableV1Extension:
+      return "kHasCableV1Extension";
+    case TransportAvailabilityParam::kHasCableV2Extension:
+      return "kHasCableV2Extension";
   }
 }
 
@@ -134,160 +138,93 @@ class AuthenticatorRequestDialogModelTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogModelTest);
 };
 
-TEST_F(AuthenticatorRequestDialogModelTest, TransportAutoSelection) {
+TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
+  const auto mc = RequestType::kMakeCredential;
+  const auto ga = RequestType::kGetAssertion;
+  const auto usb = AuthenticatorTransport::kUsbHumanInterfaceDevice;
+  const auto internal = AuthenticatorTransport::kInternal;
+  const auto cable = AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy;
+  const auto aoa = AuthenticatorTransport::kAndroidAccessory;
+  const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
+  const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
+  const auto has_winapi =
+      TransportAvailabilityParam::kHasWinNativeAuthenticator;
+  const auto has_plat = TransportAvailabilityParam::kHasPlatformCredential;
+  using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
+  using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
+  const auto winapi =
+      AuthenticatorRequestDialogModel::Mechanism::WindowsAPI(true);
+  const auto usb_ui = Step::kUsbInsertAndActivate;
+  const auto tss = Step::kTransportSelection;
+  const auto plat_ui = Step::kNotStarted;
+  const auto cable_ui = Step::kCableActivate;
+
   const struct {
     RequestType request_type;
-    base::flat_set<AuthenticatorTransport> available_transports;
-    base::flat_set<TransportAvailabilityParam> transport_params;
+    base::flat_set<AuthenticatorTransport> transports;
+    base::flat_set<TransportAvailabilityParam> params;
+    std::vector<std::string> phone_names;
+    std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
+        expected_mechanisms;
     Step expected_first_step;
-  } kTestCases[] = {
-      // Only a single transport is available for a GetAssertion call.
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {},
-       Step::kUsbInsertAndActivate},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kInternal},
-       {},
-       Step::kErrorInternalUnrecognized},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kInternal},
-       {TransportAvailabilityParam::kHasPlatformCredential},
-       Step::kNotStarted},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy},
-       {TransportAvailabilityParam::kHasCableExtension},
-       Step::kCableActivate},
+  } kTests[] = {
+      // If there's only a single mechanism, it should activate.
+      {mc, {usb}, {}, {}, {t(usb)}, usb_ui},
+      {ga, {usb}, {}, {}, {t(usb)}, usb_ui},
+      // ... otherwise should the selection sheet.
+      {mc, {usb, internal}, {}, {}, {t(usb), t(internal)}, tss},
+      {ga, {usb, internal}, {}, {}, {t(usb), t(internal)}, tss},
 
-      {RequestType::kGetAssertion,
-       kAllTransportsWithoutCable,
-       {},
-       Step::kTransportSelection},
+      // If the platform authenticator has a credential it should activate.
+      {ga, {usb, internal}, {has_plat}, {}, {t(usb), t(internal)}, plat_ui},
 
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kInternal,
-        AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {},
-       Step::kTransportSelection},
+      // If the Windows API is available without caBLE, it should activate.
+      {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      // ... even if, somehow, there's another transport.
+      {mc, {usb}, {has_winapi}, {}, {t(usb), winapi}, plat_ui},
+      {ga, {usb}, {has_winapi}, {}, {t(usb), winapi}, plat_ui},
 
-      // The KeyChain contains an allowed Touch ID credential.
-      {RequestType::kGetAssertion,
-       kAllTransports,
-       {TransportAvailabilityParam::kHasPlatformCredential},
-       Step::kNotStarted},
+      // A caBLEv1 extension should cause us to go directly to caBLE.
+      {ga, {usb, cable}, {v1}, {}, {t(usb), t(cable)}, cable_ui},
+      // A caBLEv2 extension should cause us to go directly to caBLE, but also
+      // show the AOA option.
+      {ga, {usb, aoa, cable}, {v2}, {}, {t(usb), t(aoa), t(cable)}, cable_ui},
 
-      // The KeyChain does not contain an allowed Touch ID credential.
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kInternal},
-       {},
-       Step::kErrorInternalUnrecognized},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kInternal},
-       {},
-       Step::kErrorInternalUnrecognized},
-      {RequestType::kGetAssertion,
-       kAllTransportsWithoutCable,
-       {},
-       Step::kTransportSelection},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice,
-        AuthenticatorTransport::kInternal},
-       {},
-       Step::kTransportSelection},
+      // If there are linked phones then AOA doesn't show up, but the phones do,
+      // and sorted. The selection sheet should show.
+      {mc, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
+      {ga, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
 
-      // The KeyChain contains an allowed Touch ID credential, but Touch ID is
-      // not enabled by the relying party.
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {TransportAvailabilityParam::kHasPlatformCredential},
-       Step::kUsbInsertAndActivate},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice,
-        AuthenticatorTransport::kNearFieldCommunication},
-       {TransportAvailabilityParam::kHasPlatformCredential},
-       Step::kTransportSelection},
-
-      // If caBLE is one of the allowed transports, it has second-highest
-      // priority after Touch ID, and is auto-selected for GetAssertion
-      // operations.
-      {RequestType::kGetAssertion,
-       kAllTransports,
-       {TransportAvailabilityParam::kHasCableExtension},
-       Step::kCableActivate},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
-        AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {TransportAvailabilityParam::kHasCableExtension},
-       Step::kCableActivate},
-
-      // caBLE should not enjoy this same high priority for MakeCredential
-      // calls.
-      {RequestType::kMakeCredential,
-       kAllTransports,
-       {},
-       Step::kTransportSelection},
-
-      // No transports available.
-      {RequestType::kGetAssertion, {}, {}, Step::kErrorNoAvailableTransports},
-
-      // We default to transport selection modal for MakeCredential.
-      {RequestType::kMakeCredential,
-       kAllTransports,
-       {},
-       Step::kTransportSelection},
-
-      // When only one transport is available, we still want to skip transport
-      // selection view for MakeCredential call.
-      {RequestType::kMakeCredential,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {},
-       Step::kUsbInsertAndActivate},
-      {RequestType::kMakeCredential,
-       {AuthenticatorTransport::kInternal},
-       {},
-       Step::kNotStarted},
-      {RequestType::kMakeCredential,
-       {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy},
-       {TransportAvailabilityParam::kHasCableExtension},
-       Step::kCableActivate},
-      {RequestType::kMakeCredential,
-       {AuthenticatorTransport::kUsbHumanInterfaceDevice},
-       {},
-       Step::kUsbInsertAndActivate},
-
-      // Windows authenticator will bypass the UI unless caBLE is also
-      // available.
-      {RequestType::kGetAssertion,
-       {},
-       {TransportAvailabilityParam::kHasWinNativeAuthenticator},
-       Step::kNotStarted},
-      {RequestType::kGetAssertion,
-       {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy},
-       {TransportAvailabilityParam::kHasWinNativeAuthenticator,
-        TransportAvailabilityParam::kHasCableExtension},
-       Step::kCableActivate},
+      // On Windows, if there are linked phones we'll show a selection sheet for
+      // makeCredential.
+      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, tss},
+      // ... but not for getAssertion (currently).
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, plat_ui},
   };
 
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(static_cast<int>(test_case.expected_first_step));
-    SCOPED_TRACE((SetToString<TransportAvailabilityParam,
-                              TransportAvailabilityParamToString>(
-        test_case.transport_params)));
+  unsigned test_num = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(static_cast<int>(test.expected_first_step));
+    SCOPED_TRACE(
+        (SetToString<TransportAvailabilityParam,
+                     TransportAvailabilityParamToString>(test.params)));
     SCOPED_TRACE((SetToString<device::FidoTransportProtocol, device::ToString>(
-        test_case.available_transports)));
-    SCOPED_TRACE(RequestTypeToString(test_case.request_type));
+        test.transports)));
+    SCOPED_TRACE(RequestTypeToString(test.request_type));
+    SCOPED_TRACE(test_num++);
 
     TransportAvailabilityInfo transports_info;
     transports_info.is_ble_powered = true;
-    transports_info.request_type = test_case.request_type;
-    transports_info.available_transports = test_case.available_transports;
+    transports_info.request_type = test.request_type;
+    transports_info.available_transports = test.transports;
 
     transports_info.has_recognized_platform_authenticator_credential =
-        base::Contains(test_case.transport_params,
+        base::Contains(test.params,
                        TransportAvailabilityParam::kHasPlatformCredential);
 
     if (base::Contains(
-            test_case.transport_params,
+            test.params,
             TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       transports_info.has_win_native_api_authenticator = true;
       transports_info.win_native_api_authenticator_id = "some_authenticator_id";
@@ -295,15 +232,39 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportAutoSelection) {
 
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
 
-    if (base::Contains(test_case.transport_params,
-                       TransportAvailabilityParam::kHasCableExtension)) {
-      model.set_cable_transport_info(true, {}, base::DoNothing(),
-                                     base::nullopt);
+    base::Optional<bool> has_v2_cable_extension;
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasCableV1Extension)) {
+      has_v2_cable_extension = false;
+    }
+
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasCableV2Extension)) {
+      CHECK(!has_v2_cable_extension.has_value());
+      has_v2_cable_extension = true;
+    }
+
+    if (has_v2_cable_extension.has_value() || !test.phone_names.empty()) {
+      std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones;
+      for (const auto& name : test.phone_names) {
+        std::array<uint8_t, device::kP256X962Length> public_key = {0};
+        public_key[0] = base::checked_cast<uint8_t>(phones.size());
+        phones.emplace_back(name, /*contact_id=*/0, public_key);
+      }
+      model.set_cable_transport_info(has_v2_cable_extension, std::move(phones),
+                                     base::DoNothing(), base::nullopt);
     }
 
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false);
-    EXPECT_EQ(test_case.expected_first_step, model.current_step());
+    EXPECT_EQ(test.expected_first_step, model.current_step());
+
+    std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
+        mechanism_types;
+    for (const auto& mech : model.mechanisms()) {
+      mechanism_types.push_back(mech.type);
+    }
+    EXPECT_EQ(test.expected_mechanisms, mechanism_types);
 
     if (!model.offer_try_again_in_ui()) {
       continue;
@@ -311,25 +272,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportAutoSelection) {
 
     model.StartOver();
     EXPECT_EQ(Step::kTransportSelection, model.current_step());
-  }
-}
-
-TEST_F(AuthenticatorRequestDialogModelTest, TransportList) {
-  for (const bool cable_extension_provided : {false, true}) {
-    TransportAvailabilityInfo transports_info;
-    transports_info.available_transports = kAllTransports;
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
-    model.set_cable_transport_info(cable_extension_provided, {},
-                                   base::DoNothing(),
-                                   /*cable_qr_string=*/base::nullopt);
-    model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
-    EXPECT_THAT(model.available_transports(),
-                ::testing::UnorderedElementsAre(
-                    AuthenticatorTransport::kUsbHumanInterfaceDevice,
-                    AuthenticatorTransport::kNearFieldCommunication,
-                    AuthenticatorTransport::kInternal,
-                    AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy));
   }
 }
 
@@ -408,6 +350,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
 
   for (const auto test_case : kTestCases) {
     TransportAvailabilityInfo transports_info;
+    transports_info.request_type = RequestType::kGetAssertion;
     transports_info.available_transports = {test_case.transport};
     transports_info.can_power_on_ble_adapter = true;
     transports_info.is_ble_powered = true;
@@ -435,6 +378,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
 
   for (const auto test_case : kTestCases) {
     TransportAvailabilityInfo transports_info;
+    transports_info.request_type = RequestType::kGetAssertion;
     transports_info.available_transports = {test_case.transport};
     transports_info.can_power_on_ble_adapter = false;
     transports_info.is_ble_powered = false;
@@ -477,6 +421,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   for (const auto test_case : kTestCases) {
     TransportAvailabilityInfo transports_info;
+    transports_info.request_type = RequestType::kGetAssertion;
     transports_info.available_transports = {test_case.transport};
     transports_info.can_power_on_ble_adapter = true;
     transports_info.is_ble_powered = false;
@@ -527,17 +472,17 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   // Simulate switching back and forth between transports. The request callback
   // should only be invoked once (USB is not dispatched through the UI).
-  model.StartGuidedFlowForTransport(AuthenticatorTransport::kInternal);
+  model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, num_called);
-  model.StartGuidedFlowForTransport(
+  model.StartTransportFlowForTesting(
       AuthenticatorTransport::kUsbHumanInterfaceDevice);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate,
             model.current_step());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, num_called);
-  model.StartGuidedFlowForTransport(AuthenticatorTransport::kInternal);
+  model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, num_called);
