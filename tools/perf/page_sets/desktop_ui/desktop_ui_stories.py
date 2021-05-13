@@ -29,11 +29,15 @@ class DesktopUIStorySet(story.StorySet):
   DOWNLOAD_SHELF_STORIES = [
       download_shelf_story.DownloadShelfStory1File,
       download_shelf_story.DownloadShelfStory5File,
+      download_shelf_story.DownloadShelfStoryMeasureMemory,
+      download_shelf_story.DownloadShelfStoryTop10Loading,
   ]
 
   DOWNLOAD_SHELF_WEBUI_STORIES = [
       download_shelf_story.DownloadShelfWebUIStory1File,
       download_shelf_story.DownloadShelfWebUIStory5File,
+      download_shelf_story.DownloadShelfWebUIStoryMeasureMemory,
+      download_shelf_story.DownloadShelfWebUIStoryTop10Loading,
   ]
 
   WEBUI_TAB_STRIP_STORIES = [

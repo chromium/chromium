@@ -4,8 +4,10 @@
 
 import logging
 from page_sets.desktop_ui.browser_utils import Resize
+from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn, IsMac, PressKey
+from page_sets.desktop_ui.url_list import TOP_URL
 from page_sets.desktop_ui.webui_utils import Inspect
 
 from telemetry.internal.browser.ui_devtools import MOUSE_EVENT_BUTTON_RIGHT
@@ -49,6 +51,14 @@ class DownloadShelfStory(MultiTabStory):
     if self.IsWebUI():
       action_runner = Inspect(action_runner.tab.browser,
                               WEBUI_DOWNLOAD_SHELF_URL)
+      action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
+                                      'used_js_heap_size_begin')
+    self.InteractWithPage(action_runner)
+    if self.IsWebUI():
+      action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
+                                      'used_js_heap_size_end')
+
+  def InteractWithPage(self, action_runner):
     self.ContextMenu(action_runner)
     action_runner.Wait(2)
     browser = action_runner.tab.browser
@@ -91,6 +101,34 @@ class DownloadShelfStory5File(DownloadShelfStory):
   URL = URL_LIST[0]
 
 
+class DownloadShelfStoryTop10Loading(DownloadShelfStory):
+  NAME = 'download_shelf:top10:loading'
+  URL_LIST = TOP_URL[:10] + [DOWNLOAD_URL]
+  URL = URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class DownloadShelfStoryMeasureMemory(DownloadShelfStory):
+  NAME = 'download_shelf:measure_memory'
+  URL_LIST = [DOWNLOAD_URL]
+  URL = URL_LIST[0]
+
+  def WillStartTracing(self, chrome_trace_config):
+    super(DownloadShelfStoryMeasureMemory,
+          self).WillStartTracing(chrome_trace_config)
+    chrome_trace_config.category_filter.AddExcludedCategory('*')
+    chrome_trace_config.category_filter.AddIncludedCategory('blink.console')
+    chrome_trace_config.category_filter.AddDisabledByDefault(
+        'disabled-by-default-memory-infra')
+
+  def GetExtraTracingMetrics(self):
+    return super(DownloadShelfStoryMeasureMemory,
+                 self).GetExtraTracingMetrics() + ['memoryMetric']
+
+  def InteractWithPage(self, action_runner):
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+
 class DownloadShelfWebUIStory1File(DownloadShelfStory):
   NAME = 'download_shelf_webui:1file'
   URL_LIST = [DOWNLOAD_URL]
@@ -100,6 +138,19 @@ class DownloadShelfWebUIStory1File(DownloadShelfStory):
 class DownloadShelfWebUIStory5File(DownloadShelfStory):
   NAME = 'download_shelf_webui:5file'
   URL_LIST = [DOWNLOAD_URL] * 5
+  URL = URL_LIST[0]
+
+
+class DownloadShelfWebUIStoryTop10Loading(DownloadShelfStory):
+  NAME = 'download_shelf_webui:top10:loading'
+  URL_LIST = TOP_URL[:10] + [DOWNLOAD_URL]
+  URL = URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class DownloadShelfWebUIStoryMeasureMemory(DownloadShelfStoryMeasureMemory):
+  NAME = 'download_shelf_webui:measure_memory'
+  URL_LIST = [DOWNLOAD_URL]
   URL = URL_LIST[0]
 
 
