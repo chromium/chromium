@@ -1121,9 +1121,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 // IPC from the renderer process is handled.  See also
 // https://crbug.com/1056949#c75.
 //
-// TODO(lukasza): https://crbug.com/1129592: Flaky on Android.  No flakiness
-// observed whatsoever on Windows, Linux or CrOS.
-#if defined(OS_ANDROID)
+// TODO(lukasza): https://crbug.com/1129592: Flaky on Android and Mac.  No
+// flakiness observed whatsoever on Windows, Linux or CrOS.
+#if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_BetweenCommitNavigationAndDidCommit \
   DISABLED_BetweenCommitNavigationAndDidCommit
 #else
