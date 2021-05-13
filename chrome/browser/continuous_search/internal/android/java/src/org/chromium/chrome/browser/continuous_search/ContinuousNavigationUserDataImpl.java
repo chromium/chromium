@@ -24,6 +24,8 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
     private HashSet<ContinuousNavigationUserDataObserver> mObservers = new HashSet<>();
     private GURL mCurrentUrl;
     private int mCurrentPosition = INVALID_POSITION;
+    @VisibleForTesting
+    boolean mAllowNativeUrlChecks = true;
 
     private static ContinuousNavigationUserDataImpl sInstanceForTesting;
 
@@ -92,9 +94,7 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         if (!isValid()) return null;
 
         for (GURL validUrl : mValidUrls) {
-            // Match the origin and path ignoring query and ref.
-            if (validUrl.getOrigin().equals(url.getOrigin())
-                    && validUrl.getPath().equals(url.getPath())) {
+            if (equalsValidUrl(validUrl, url)) {
                 return validUrl;
             }
         }
@@ -133,6 +133,13 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         return query != null && query.equals(mData.getQuery())
                 && SearchUrlHelper.getSrpPageCategoryFromUrl(url) == mData.getCategory();
+    }
+
+    private boolean equalsValidUrl(GURL validUrl, GURL url) {
+        // Allow matching the origin and path ignoring query and ref.
+        return validUrl.equals(url)
+                || (mAllowNativeUrlChecks && validUrl.getOrigin().equals(url.getOrigin())
+                        && validUrl.getPath().equals(url.getPath()));
     }
 
     @VisibleForTesting

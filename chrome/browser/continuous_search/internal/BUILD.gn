@@ -46,6 +46,8 @@ android_library("junit") {
 
   sources = [
     "android/junit/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserverTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImplTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserverTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducerTest.java",
   ]
 
