@@ -2201,7 +2201,7 @@ void WebContentsImpl::AttachInnerWebContents(
   DCHECK(!inner_web_contents_impl->node_.outer_web_contents());
   auto* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
-  DCHECK_EQ(&frame_tree_, render_frame_host_impl->frame_tree());
+  DCHECK_EQ(this, render_frame_host_impl->delegate()->GetAsWebContents());
 
   // Mark |render_frame_host_impl| as outer delegate frame.
   render_frame_host_impl->SetIsOuterDelegateFrame(true);
@@ -6792,7 +6792,7 @@ void WebContentsImpl::FocusOuterAttachmentFrameChain() {
 
   FrameTreeNode* outer_node =
       FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
-  outer_contents->frame_tree_.SetFocusedFrame(outer_node, nullptr);
+  outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
 
   // For a browser initiated focus change, let embedding renderer know of the
   // change. Otherwise, if the currently focused element is just across a

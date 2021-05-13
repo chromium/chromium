@@ -424,8 +424,8 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
 
 void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame(
     content::RenderFrameHost* render_frame_host) {
-  // Assume the embedder WebContents is valid here.
-  DCHECK(embedder_web_contents());
+  DCHECK(GetEmbedderFrame());
+  DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
 
   // For plugin elements, the embedder should be notified so that the queued
   // messages (postMessage) are forwarded to the guest page. Otherwise we

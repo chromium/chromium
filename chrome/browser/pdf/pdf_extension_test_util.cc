@@ -10,10 +10,10 @@
 namespace pdf_extension_test_util {
 
 testing::AssertionResult EnsurePDFHasLoaded(
-    content::WebContents* web_contents) {
+    const content::ToRenderFrameHost& frame) {
   bool load_success = false;
   if (!content::ExecuteScriptAndExtractBool(
-          web_contents,
+          frame,
           "window.addEventListener('message', event => {"
           "  if (event.origin !=="
           "          'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {"

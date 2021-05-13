@@ -653,7 +653,7 @@ class WebContents : public PageNavigator,
   virtual void DispatchBeforeUnload(bool auto_cancel) = 0;
 
   // Attaches |inner_web_contents| to the container frame |render_frame_host|,
-  // which should be in this WebContents' FrameTree. This outer WebContents
+  // which must be in a FrameTree for this WebContents. This outer WebContents
   // takes ownership of |inner_web_contents|.
   // Note: |render_frame_host| will be swapped out and destroyed during the
   // process. Generally a frame same-process with its parent is the right choice

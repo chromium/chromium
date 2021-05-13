@@ -9,17 +9,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
-class WebContents;
+class ToRenderFrameHost;
 }  // namespace content
 
 namespace pdf_extension_test_util {
 
-// Ensures, inside the given `web_contents`, that a PDF has either finished
+// Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads
 // successfully, otherwise it indicates failure. If it doesn't finish loading,
 // the test will hang.
-testing::AssertionResult EnsurePDFHasLoaded(content::WebContents* web_contents)
-    WARN_UNUSED_RESULT;
+testing::AssertionResult EnsurePDFHasLoaded(
+    const content::ToRenderFrameHost& frame) WARN_UNUSED_RESULT;
 
 }  // namespace pdf_extension_test_util
 

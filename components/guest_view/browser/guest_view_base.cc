@@ -43,15 +43,15 @@ base::LazyInstance<WebContentsGuestViewMap>::Leaky g_webcontents_guestview_map =
 
 }  // namespace
 
-SetSizeParams::SetSizeParams() {
-}
-SetSizeParams::~SetSizeParams() {
-}
+SetSizeParams::SetSizeParams() = default;
+SetSizeParams::~SetSizeParams() = default;
 
+// TODO(832879): It would be better to have proper ownership semantics than
+// manually destroying guests and their WebContents.
+//
 // This observer ensures that the GuestViewBase destroys itself when its
 // embedder goes away. It also tracks when the embedder's fullscreen is
-// toggled or when its page scale factor changes so the guest can change
-// itself accordingly.
+// toggled so the guest can change itself accordingly.
 class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  public:
   OwnerContentsObserver(GuestViewBase* guest,
@@ -61,7 +61,7 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
         destroyed_(false),
         guest_(guest) {}
 
-  ~OwnerContentsObserver() override {}
+  ~OwnerContentsObserver() override = default;
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override {
@@ -71,6 +71,8 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // TODO(1206312, 1205920): It is incorrect to assume that a navigation will
+    // destroy the embedder.
     // If the embedder navigates to a different page then destroy the guest.
     if (!navigation_handle->IsInMainFrame() ||
         !navigation_handle->HasCommitted() ||
@@ -149,7 +151,7 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
       : WebContentsObserver(guest->GetOpener()->web_contents()),
         guest_(guest) {}
 
-  ~OpenerLifetimeObserver() override {}
+  ~OpenerLifetimeObserver() override = default;
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override {

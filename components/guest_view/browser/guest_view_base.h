@@ -449,8 +449,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   std::unique_ptr<base::DictionaryValue> attach_params_;
 
   // This observer ensures that this guest self-destructs if the embedder goes
-  // away. It also tracks when the embedder's fullscreen is toggled or when its
-  // page scale factor changes so the guest can change itself accordingly.
+  // away. It also tracks when the embedder's fullscreen is toggled so the guest
+  // can change itself accordingly.
   std::unique_ptr<OwnerContentsObserver> owner_contents_observer_;
 
   // This observer ensures that if the guest is unattached and its opener goes

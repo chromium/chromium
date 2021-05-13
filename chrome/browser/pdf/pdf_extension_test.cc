@@ -87,6 +87,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -3431,4 +3432,53 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   // Test that navigation occurred correctly.
   const GURL& expected_url = GetActiveWebContents()->GetURL();
   EXPECT_EQ("https://bing.com/", expected_url.spec());
+}
+
+class PDFExtensionPrerenderTest : public PDFExtensionTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PDFExtensionTest::SetUpCommandLine(command_line);
+    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because PDFExtensionTest also uses a ScopedFeatureList
+    // and initialization order matters.
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(&PDFExtensionPrerenderTest::GetActiveWebContents,
+                            base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    PDFExtensionTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_;
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+// TODO(1206312, 1205920): As of writing this test, we can attempt to prerender
+// the PDF viewer without crashing, however the viewer itself fails to load a
+// PDF. This test should be extended once that works.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
+                       LoadPdfWhilePrerenderedDoesNotCrash) {
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  const GURL pdf_url =
+      embedded_test_server()->GetURL("a.test", "/pdf/test.pdf");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const int host_id = prerender_helper().AddPrerender(pdf_url);
+  content::RenderFrameHost* prerendered_render_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerendered_render_frame_host);
+  ASSERT_EQ(web_contents->GetURL(), initial_url);
+
+  prerender_helper().NavigatePrimaryPage(pdf_url);
+  ASSERT_EQ(web_contents->GetURL(), pdf_url);
 }
