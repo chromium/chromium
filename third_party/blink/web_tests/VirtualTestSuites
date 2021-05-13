@@ -365,6 +365,12 @@
              "--dark-mode-settings=ImagePolicy=0,ImageGrayScalePercent=1.0"]
   },
   {
+    "prefix": "dark-mode-increase-text-contrast",
+    "bases": ["dark-mode/colors"],
+    "args": ["--blink-settings=forceDarkModeEnabled=true",
+             "--dark-mode-settings=IncreaseTextContrast=1"]
+  },
+  {
     "prefix": "presentation",
     "bases": [],
     "args": ["--force-presentation-receiver-for-testing"]

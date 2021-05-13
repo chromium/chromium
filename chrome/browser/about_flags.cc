@@ -544,6 +544,9 @@ const FeatureEntry::FeatureParam kForceDark_SelectiveGeneralInversion[] = {
     {"text_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
+const FeatureEntry::FeatureParam kForceDark_IncreaseTextContrast[] = {
+    {"increase_text_contrast", "true"}};
+
 const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with simple HSL-based inversion", kForceDark_SimpleHsl,
      base::size(kForceDark_SimpleHsl), nullptr},
@@ -558,7 +561,9 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      base::size(kForceDark_SelectiveElementInversion), nullptr},
     {"with selective inversion of everything",
      kForceDark_SelectiveGeneralInversion,
-     base::size(kForceDark_SelectiveGeneralInversion), nullptr}};
+     base::size(kForceDark_SelectiveGeneralInversion), nullptr},
+    {"with increased text contrast", kForceDark_IncreaseTextContrast,
+     base::size(kForceDark_IncreaseTextContrast), nullptr}};
 #endif  // !OS_CHROMEOS
 
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};

@@ -501,6 +501,10 @@ class PLATFORM_EXPORT GraphicsContext {
 
   class DarkModeFlags;
 
+  bool ShouldDrawDarkModeTextContrastOutline(
+      const PaintFlags& original_flags,
+      const DarkModeFlags& dark_flags) const;
+
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.

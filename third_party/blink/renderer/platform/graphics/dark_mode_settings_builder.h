@@ -10,7 +10,7 @@
 
 namespace blink {
 
-DarkModeSettings PLATFORM_EXPORT GetCurrentDarkModeSettings();
+PLATFORM_EXPORT const DarkModeSettings& GetCurrentDarkModeSettings();
 
 }  // namespace blink
 
