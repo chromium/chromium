@@ -341,4 +341,8 @@ scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }
 
+gfx::ColorSpace Platform::GetRenderingColorSpace() const {
+  return {};
+}
+
 }  // namespace blink

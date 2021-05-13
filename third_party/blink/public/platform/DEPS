@@ -28,6 +28,7 @@ include_rules = [
     "+cc",
     "+components/viz/common",
     "+media/base/audio_capturer_source.h",
+    "+media/base/audio_latency.h",
     "+media/base/audio_renderer_sink.h",
     "+media/base/eme_constants.h",
     "+media/base/media_content_type.h",

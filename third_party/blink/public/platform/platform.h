@@ -36,35 +36,26 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_piece.h"
-#include "base/threading/thread.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/media_log.h"
-#include "mojo/public/cpp/base/big_buffer.h"
-#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
@@ -99,8 +90,19 @@ class MediaPermission;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace network {
+namespace mojom {
+class URLLoaderFactoryInterfaceBase;
+}
 class SharedURLLoaderFactory;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace v8 {
@@ -121,6 +123,7 @@ class ThreadSafeBrowserInterfaceBrokerProxy;
 class Thread;
 struct ThreadCreationParams;
 class URLLoaderThrottle;
+class UserMetricsAction;
 class WebAudioBus;
 class WebAudioLatencyHint;
 class WebCrypto;
@@ -777,7 +780,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) {}
 
-  virtual gfx::ColorSpace GetRenderingColorSpace() const { return {}; }
+  virtual gfx::ColorSpace GetRenderingColorSpace() const;
 
   // Renderer Memory Metrics ----------------------------------------------
 
