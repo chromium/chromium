@@ -500,7 +500,8 @@ struct HashTraits<blink::ThreadMarker>
     : GenericHashTraits<blink::ThreadMarker> {
   static const bool kEmptyValueIsZero = true;
   static void ConstructDeletedValue(blink::ThreadMarker& slot, bool) {
-    new (NotNull, &slot) blink::ThreadMarker(kHashTableDeletedValue);
+    new (NotNullTag::kNotNull, &slot)
+        blink::ThreadMarker(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const blink::ThreadMarker& slot) {
     return slot.IsHashTableDeletedValue();

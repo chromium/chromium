@@ -1333,7 +1333,7 @@ inline Address NormalPageArena::AllocateObject(size_t allocation_size,
     current_allocation_point_ += allocation_size;
     remaining_allocation_size_ -= allocation_size;
     DCHECK_GT(gc_info_index, 0u);
-    new (NotNull, header_address)
+    new (NotNullTag::kNotNull, header_address)
         HeapObjectHeader(allocation_size, gc_info_index);
     DCHECK(!PageFromObject(header_address)->IsLargeObjectPage());
     static_cast<NormalPage*>(PageFromObject(header_address))

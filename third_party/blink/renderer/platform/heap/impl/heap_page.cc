@@ -824,7 +824,7 @@ bool NormalPageArena::ShrinkObject(HeapObjectHeader* header, size_t new_size) {
   DCHECK_GE(shrink_size, sizeof(HeapObjectHeader));
   DCHECK_GT(header->GcInfoIndex(), 0u);
   Address shrink_address = header->PayloadEnd() - shrink_size;
-  HeapObjectHeader* freed_header = new (NotNull, shrink_address)
+  HeapObjectHeader* freed_header = new (NotNullTag::kNotNull, shrink_address)
       HeapObjectHeader(shrink_size, header->GcInfoIndex());
   // Since only size has been changed, we don't need to update object starts.
   PromptlyFreeObjectInFreeList(freed_header, shrink_size);
@@ -1011,7 +1011,7 @@ Address LargeObjectArena::DoAllocateLargeObjectPage(size_t allocation_size,
   DCHECK_GT(gc_info_index, 0u);
   LargeObjectPage* large_page = new (large_page_address)
       LargeObjectPage(page_memory, this, allocation_size);
-  HeapObjectHeader* header = new (NotNull, header_address)
+  HeapObjectHeader* header = new (NotNullTag::kNotNull, header_address)
       HeapObjectHeader(kLargeObjectSizeInHeader, gc_info_index);
   Address result = header_address + sizeof(*header);
   DCHECK(!(reinterpret_cast<uintptr_t>(result) & kAllocationMask));
@@ -1105,13 +1105,13 @@ void FreeList::Add(Address address, size_t size) {
     // Create a dummy header with only a size and freelist bit set.
     DCHECK_GE(size, sizeof(HeapObjectHeader));
     // Free list encode the size to mark the lost memory as freelist memory.
-    new (NotNull, address)
+    new (NotNullTag::kNotNull, address)
         HeapObjectHeader(size, kGcInfoIndexForFreeListHeader);
     ASAN_POISON_MEMORY_REGION(address, size);
     // This memory gets lost. Sweeping can reclaim it.
     return;
   }
-  entry = new (NotNull, address) FreeListEntry(size);
+  entry = new (NotNullTag::kNotNull, address) FreeListEntry(size);
 
 #if DCHECK_IS_ON() || defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
   // The following logic delays reusing free lists for (at least) one GC

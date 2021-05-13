@@ -140,7 +140,7 @@ struct HashTraits<blink::PropertyHandle>
     : SimpleClassHashTraits<blink::PropertyHandle> {
   static const bool kNeedsDestruction = true;
   static void ConstructDeletedValue(blink::PropertyHandle& slot, bool) {
-    new (NotNull, &slot) blink::PropertyHandle(
+    new (NotNullTag::kNotNull, &slot) blink::PropertyHandle(
         blink::PropertyHandle::DeletedValueForHashTraits());
   }
   static bool IsDeletedValue(const blink::PropertyHandle& value) {

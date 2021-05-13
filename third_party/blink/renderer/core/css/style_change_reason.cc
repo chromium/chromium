@@ -63,15 +63,17 @@ DEFINE_GLOBAL(AtomicString, g_unresolved);
 void Init() {
   DCHECK(IsMainThread());
 
-  new (NotNull, (void*)&g_active) AtomicString(":active");
-  new (NotNull, (void*)&g_disabled) AtomicString(":disabled");
-  new (NotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
-  new (NotNull, (void*)&g_focus) AtomicString(":focus");
-  new (NotNull, (void*)&g_focus_visible) AtomicString(":focus-visible");
-  new (NotNull, (void*)&g_focus_within) AtomicString(":focus-within");
-  new (NotNull, (void*)&g_hover) AtomicString(":hover");
-  new (NotNull, (void*)&g_past) AtomicString(":past");
-  new (NotNull, (void*)&g_unresolved) AtomicString(":unresolved");
+  new (NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
+  new (NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
+  new (NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
+  new (NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
+  new (NotNullTag::kNotNull, (void*)&g_focus_visible)
+      AtomicString(":focus-visible");
+  new (NotNullTag::kNotNull, (void*)&g_focus_within)
+      AtomicString(":focus-within");
+  new (NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
+  new (NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
+  new (NotNullTag::kNotNull, (void*)&g_unresolved) AtomicString(":unresolved");
 }
 
 }  // namespace style_change_extra_data

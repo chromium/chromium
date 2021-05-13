@@ -108,7 +108,8 @@ struct HashTraits<blink::CSSPropertyName>
   static const bool kEmptyValueIsZero = false;
   static const bool kNeedsDestruction = true;
   static void ConstructDeletedValue(CSSPropertyName& slot, bool) {
-    new (NotNull, &slot) CSSPropertyName(CSSPropertyName::kDeletedValue);
+    new (NotNullTag::kNotNull, &slot)
+        CSSPropertyName(CSSPropertyName::kDeletedValue);
   }
   static bool IsDeletedValue(CSSPropertyName value) {
     return value.IsDeletedValue();

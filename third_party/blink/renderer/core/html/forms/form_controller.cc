@@ -195,7 +195,7 @@ unsigned ControlKeyHash::GetHash(const ControlKey& key) {
 
 struct ControlKeyHashTraits : WTF::GenericHashTraits<ControlKey> {
   static void ConstructDeletedValue(ControlKey& slot, bool) {
-    new (NotNull, &slot) ControlKey(WTF::kHashTableDeletedValue);
+    new (NotNullTag::kNotNull, &slot) ControlKey(WTF::kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const ControlKey& value) {
     return value.IsHashTableDeletedValue();

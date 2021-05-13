@@ -376,7 +376,7 @@ ALWAYS_INLINE void AtomicWriteSwap(T& lhs, T& rhs) {
 }  // namespace WTF
 
 // This version of placement new omits a 0 check.
-enum NotNullTag { NotNull };
+enum class NotNullTag { kNotNull };
 inline void* operator new(size_t, NotNullTag, void* location) {
   DCHECK(location);
   return location;
