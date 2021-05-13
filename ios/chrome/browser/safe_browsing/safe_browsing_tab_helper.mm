@@ -182,6 +182,7 @@ SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     web::NavigationItem* reloaded_item = navigation_manager->GetPendingItem();
     if (ui::PageTransitionCoreTypeIs(request_info.transition_type,
                                      ui::PAGE_TRANSITION_RELOAD) &&
+        reloaded_item &&
         reloaded_item == navigation_manager->GetLastCommittedItem() &&
         unsafe_resource_container->GetSubFrameUnsafeResource(reloaded_item)) {
       // Store the safe browsing error decision without re-checking the URL.

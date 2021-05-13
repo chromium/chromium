@@ -579,6 +579,25 @@ TEST_P(SafeBrowsingTabHelperTest, StaleIframeReload) {
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
 }
 
+// Tests the case of a main frame reload request that arrives when both the last
+// committed item and pending items are null.
+TEST_P(SafeBrowsingTabHelperTest, MainFrameReload) {
+  GURL url("http://chromium.test");
+  ASSERT_FALSE(navigation_manager_->GetLastCommittedItem());
+  ASSERT_FALSE(navigation_manager_->GetPendingItem());
+
+  auto request_decision = ShouldAllowRequestUrl(
+      url, /*for_main_frame=*/true, ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(request_decision.ShouldAllowNavigation());
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
 // Tests the case of a redirection chain, where all URLs in the chain are safe.
 TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChain) {
   GURL url1("http://chromium1.test");
