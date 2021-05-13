@@ -108,7 +108,13 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
-    DCHECK_EQ(primary_profile_, nullptr);
+    // TODO(https://crbug.com/1208416): Investigate why OnUserProfileLoaded
+    // is called more than once.
+    if (primary_profile_ != nullptr) {
+      NOTREACHED();
+      CHECK_EQ(primary_profile_, profile);
+      return;
+    }
     primary_profile_ = profile;
 
     InitRlz(profile);
