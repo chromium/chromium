@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+js_type_check("closure_compile") {
+  deps = [ ":most_visited_title" ]
+}
+
+js_library("most_visited_title") {
+  sources = [ "most_visited_title.js" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
+  externs_list = [ "externs.js" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "new_tab_page_instant"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "most_visited_title.css",
+    "most_visited_title.html",
+    "most_visited_title.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+grit("resources") {
+  defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/new_tab_page_instant_resources.h",
+    "grit/new_tab_page_instant_resources_map.cc",
+    "grit/new_tab_page_instant_resources_map.h",
+    "new_tab_page_instant_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

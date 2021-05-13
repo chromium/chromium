@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/local_ntp_resources.h"
+#include "chrome/grit/new_tab_page_instant_resources.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -44,11 +44,14 @@ void MostVisitedIframeSource::StartDataRequest(
   const std::string path(url.path());
 
   if (path == kTitleHTMLPath) {
-    SendResource(IDR_MOST_VISITED_TITLE_HTML, std::move(callback));
+    SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML,
+                 std::move(callback));
   } else if (path == kTitleCSSPath) {
-    SendResource(IDR_MOST_VISITED_TITLE_CSS, std::move(callback));
+    SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_CSS,
+                 std::move(callback));
   } else if (path == kTitleJSPath) {
-    SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS, wc_getter, std::move(callback));
+    SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS, wc_getter,
+                     std::move(callback));
   } else if (path == kAssertJsPath) {
     SendResource(IDR_WEBUI_JS_ASSERT_JS, std::move(callback));
   } else {

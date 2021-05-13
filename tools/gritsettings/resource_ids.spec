@@ -154,7 +154,8 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [1590],
   },
-  "chrome/browser/resources/local_ntp/local_ntp_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page_instant/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
     "includes": [1620],
   },
    "chrome/browser/resources/webid/webid_resources.grd": {

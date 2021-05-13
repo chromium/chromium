@@ -23,7 +23,6 @@ group("resources") {
     public_deps += [
       ":component_extension_resources",
       ":dev_ui_paks",
-      ":local_ntp_resources",
       ":webid_resources",
       "bookmarks:resources",
       "commander:resources",
@@ -35,6 +34,7 @@ group("resources") {
       "media_router:resources",
       "memories:resources",
       "new_tab_page:resources",
+      "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
       "read_later:resources",
       "settings:resources",
@@ -113,12 +113,12 @@ if (enable_js_type_check) {
         "history:closure_compile",
         "inline_login:closure_compile",
         "internals/user_education:closure_compile",
-        "local_ntp:closure_compile",
         "management:closure_compile",
         "media_router:closure_compile",
         "memories:closure_compile",
         "nearby_internals:closure_compile",
         "new_tab_page:closure_compile",
+        "new_tab_page_instant:closure_compile",
         "new_tab_page_third_party:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",
@@ -203,16 +203,6 @@ if (!is_android) {
       "grit/component_extension_resources_map.cc",
       "grit/component_extension_resources_map.h",
       "component_extension_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("local_ntp_resources") {
-    source = "local_ntp/local_ntp_resources.grd"
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/local_ntp_resources.h",
-      "local_ntp_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

@@ -1,4 +1,3 @@
 monorail: {
   component: "UI>Browser>NewTabPage"
 }
-team_email: "ntp-dev@chromium.org"

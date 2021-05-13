@@ -80,8 +80,3 @@ let NtpTheme;
 
 /** @type {?NtpTheme} */
 window.chrome.embeddedSearch.newTabPage.ntpTheme;
-
-/**
- * No params.
- */
-window.chrome.embeddedSearch.newTabPage.useDefaultTheme;
