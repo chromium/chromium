@@ -313,6 +313,28 @@ Element* DisplayLockUtilities::NearestLockedExclusiveAncestor(
   return nullptr;
 }
 
+Element* DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
+    const Node& node) {
+  if (!node.isConnected() || node.GetDocument()
+                                     .GetDisplayLockDocumentState()
+                                     .LockedDisplayLockCount() == 0) {
+    return nullptr;
+  }
+
+  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
+    DCHECK(ancestor.GetTreeScope() == node.GetTreeScope());
+    Element* ancestor_element = DynamicTo<Element>(ancestor);
+    if (!ancestor_element)
+      continue;
+    if (DisplayLockContext* context =
+            ancestor_element->GetDisplayLockContext()) {
+      if (context->IsLocked())
+        return ancestor_element;
+    }
+  }
+  return nullptr;
+}
+
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||

@@ -128,6 +128,12 @@ class CORE_EXPORT DisplayLockUtilities {
   static Element* NearestLockedInclusiveAncestor(const LayoutObject& object);
   static Element* NearestLockedExclusiveAncestor(const LayoutObject& object);
 
+  // Returns the nearest inclusive ancestor of |node| that is display locked
+  // within the same TreeScope as |node|, meaning that no flat tree traversals
+  // are made.
+  static Element* NearestLockedInclusiveAncestorWithinTreeScope(
+      const Node& node);
+
   // Returns the nearest ancestor element which has a lock that prevents
   // prepaint. Note that this is different from a nearest locked ancestor since
   // the prepaint update can be forced.

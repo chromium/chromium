@@ -258,16 +258,6 @@ void SlotAssignment::RecalcAssignment() {
     SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
         owner_->GetDocument());
 
-    // Before forbidding flat tree traversal, figure out which slots' subtrees
-    // are in display locked state. Note that it could be the slot itself is
-    // locked or it could be that some flat tree ancestor of the slot is locked.
-    HeapHashMap<Member<HTMLSlotElement>, bool> display_lock_map;
-    for (Member<HTMLSlotElement> slot : Slots()) {
-      display_lock_map.Set(
-          slot, DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                    *slot, kIncludeSelf));
-    }
-
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
         owner_->GetDocument());
 
@@ -349,8 +339,14 @@ void SlotAssignment::RecalcAssignment() {
           .RemoveShadowRootNeedingRecalc(*owner_);
     }
 
-    for (auto& slot : Slots())
-      slot->DidRecalcAssignedNodes(display_lock_map.at(slot));
+    for (auto& slot : Slots()) {
+      // TODO(crbug.com/1208573): Consider if we really need to be using
+      // IsInLockedSubtreeCrossingFrames, or if
+      // NearestLockedInclusiveAncestorWithinTreeScope is good enough as-is.
+      slot->DidRecalcAssignedNodes(
+          DisplayLockUtilities::NearestLockedInclusiveAncestorWithinTreeScope(
+              *slot));
+    }
   }
 
   // Update an dir=auto flag from a host of slots to its all descendants.
