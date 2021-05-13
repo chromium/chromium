@@ -338,9 +338,7 @@ AppPlatformMetrics::AppPlatformMetrics(
     Profile* profile,
     apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry)
-    : profile_(profile),
-      app_registry_cache_(app_registry_cache),
-      first_report_on_current_device_(true) {
+    : profile_(profile), app_registry_cache_(app_registry_cache) {
   apps::AppRegistryCache::Observer::Observe(&app_registry_cache);
   apps::InstanceRegistry::Observer::Observe(&instance_registry);
   InitRunningDuration();
@@ -389,13 +387,6 @@ std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
 }
 
 void AppPlatformMetrics::OnNewDay() {
-  // Ignores the first report. Apps and extensions may sync slowly after the
-  // OOBE process, biasing the metrics downwards toward zero.
-  if (first_report_on_current_device_) {
-    first_report_on_current_device_ = false;
-    return;
-  }
-
   should_record_metrics_on_new_day_ = true;
   RecordAppsCount(apps::mojom::AppType::kUnknown);
   RecordAppsRunningDuration();

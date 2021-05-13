@@ -137,7 +137,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   AppRegistryCache& app_registry_cache_;
 
   bool should_record_metrics_on_new_day_ = false;
-  bool first_report_on_current_device_ = false;
 
   bool should_refresh_duration_pref = false;
   bool should_refresh_activated_count_pref = false;

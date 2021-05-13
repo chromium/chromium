@@ -78,6 +78,9 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     base::TimeDelta forward_by = start_time - base::Time::Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_environment_.AdvanceClock(forward_by);
+    GetPrefService()->SetInteger(
+        kAppPlatformMetricsDayId,
+        start_time.UTCMidnight().since_origin().InDaysFloored());
 
     chromeos::PowerManagerClient::InitializeFake();
     app_platform_metrics_service_ =
