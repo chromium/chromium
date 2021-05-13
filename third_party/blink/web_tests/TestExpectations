@@ -6863,3 +6863,7 @@ crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextme
 
 # Sheriff 2021-05-12
 crbug.com/1095540 [ Linux Debug ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html [ Pass Failure ]
+
+# Sheriff 2021-05-13
+crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Pass Failure ]
+crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Pass Failure ]
