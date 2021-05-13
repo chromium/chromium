@@ -306,11 +306,11 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
     // No matches or the IME is showing a popup window which may overlap
     // the omnibox popup window.  Close any existing popup.
     if (popup_) {
+      popup_->CloseAnimated();  // This will eventually delete the popup.
+      popup_.reset();
       NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
       // The active descendant should be cleared when the popup closes.
       FireAXEventsForNewActiveDescendant(nullptr);
-      popup_->CloseAnimated();  // This will eventually delete the popup.
-      popup_.reset();
     }
     return;
   }
