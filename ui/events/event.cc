@@ -618,7 +618,8 @@ void MouseEvent::SetClickCount(int click_count) {
 std::string MouseEvent::ToString() const {
   return base::StrCat(
       {LocatedEvent::ToString(), " flags ",
-       base::JoinString(make_span(MouseEventFlagsNames(flags())), " | ")});
+       base::JoinString(base::make_span(MouseEventFlagsNames(flags())),
+                        " | ")});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1110,7 +1111,7 @@ std::string KeyEvent::ToString() const {
   return base::StrCat(
       {Event::ToString(), " key ", base::StringPrintf("(0x%.4x)", key_code_),
        " flags ",
-       base::JoinString(make_span(KeyEventFlagsNames(flags())), " | ")});
+       base::JoinString(base::make_span(KeyEventFlagsNames(flags())), " | ")});
 }
 
 KeyboardCode KeyEvent::GetLocatedWindowsKeyboardCode() const {

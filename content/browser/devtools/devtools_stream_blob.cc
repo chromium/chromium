@@ -201,7 +201,8 @@ void DevToolsStreamBlob::OnReadComplete(int bytes_read) {
     status = blob_reader_->remaining_bytes() ? StatusSuccess : StatusEOF;
     if (is_binary_) {
       base64_encoded = true;
-      Base64Encode(base::StringPiece(io_buf_->data(), bytes_read), data.get());
+      base::Base64Encode(base::StringPiece(io_buf_->data(), bytes_read),
+                         data.get());
     } else {
       // TODO(caseq): truncate at UTF8 boundary.
       *data = std::string(io_buf_->data(), bytes_read);

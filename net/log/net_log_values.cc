@@ -58,8 +58,8 @@ base::Value NetLogStringValue(base::StringPiece raw) {
 
 base::Value NetLogBinaryValue(const void* bytes, size_t length) {
   std::string b64;
-  Base64Encode(base::StringPiece(reinterpret_cast<const char*>(bytes), length),
-               &b64);
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(bytes), length), &b64);
   return base::Value(std::move(b64));
 }
 

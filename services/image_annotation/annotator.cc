@@ -491,7 +491,7 @@ std::string Annotator::FormatJsonRequest(
   for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; ++it) {
     // Re-encode image bytes into base64, which can be represented in JSON.
     std::string base64_data;
-    Base64Encode(
+    base::Base64Encode(
         base::StringPiece(reinterpret_cast<const char*>(it->image_bytes.data()),
                           it->image_bytes.size()),
         &base64_data);

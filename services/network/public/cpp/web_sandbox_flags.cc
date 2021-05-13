@@ -43,7 +43,7 @@ WebSandboxFlags ParseWebSandboxToken(const base::StringPiece& token) {
   };
 
   for (const auto& it : table) {
-    if (CompareCaseInsensitiveASCII(it.token, token) == 0)
+    if (base::CompareCaseInsensitiveASCII(it.token, token) == 0)
       return it.flags;
   }
 

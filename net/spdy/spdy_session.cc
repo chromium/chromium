@@ -150,7 +150,7 @@ enum PushedStreamVaryResponseHeaderValues ParseVaryInPushedResponse(
     return kVaryIsEmpty;
   if (value == kStar)
     return kVaryIsStar;
-  std::string lowercase_value = ToLowerASCII(value);
+  std::string lowercase_value = base::ToLowerASCII(value);
   if (lowercase_value == kAcceptEncoding)
     return kVaryIsAcceptEncoding;
   // Both comma and newline delimiters occur in the wild.

@@ -46,10 +46,10 @@ void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
   base::StringPairs kv_pairs;
   bool parsed_values = false;
   bool invalid_values = false;
-  SplitStringIntoKeyValuePairs(blocklist_string,
-                               ':',  // Key-value delimiter
-                               ',',  // Key-value pair delimiter
-                               &kv_pairs);
+  base::SplitStringIntoKeyValuePairs(blocklist_string,
+                                     ':',  // Key-value delimiter
+                                     ',',  // Key-value pair delimiter
+                                     &kv_pairs);
   for (const auto& pair : kv_pairs) {
     BluetoothUUID uuid(pair.first);
     if (uuid.IsValid() && pair.second.size() == 1u) {
