@@ -51,6 +51,9 @@ void EcheSignaler::Bind(
 }
 
 void EcheSignaler::OnMessageReceived(const std::string& payload) {
+  if (!observer_.is_bound())
+    return;
+
   proto::ExoMessage message;
   message.ParseFromString(payload);
   std::string signal;
@@ -62,8 +65,7 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
     signal = {};
   }
   std::vector<uint8_t> encoded_signal(signal.begin(), signal.end());
-  if (observer_)
-    std::move(observer_)->OnReceivedSignalingMessage(encoded_signal);
+  observer_->OnReceivedSignalingMessage(encoded_signal);
 }
 
 }  // namespace eche_app
