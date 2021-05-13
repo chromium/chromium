@@ -993,7 +993,6 @@
                   'chrome/browser/chromeos/extensions/file_manager|' \
                   'chrome/browser/chromeos/extensions/file_system_provider|' \
                   'chrome/browser/chromeos/file_manager|' \
-                  'chrome/browser/chromeos/file_system_provider|' \
                   'chrome/browser/drive|' \
                   'chrome/test/data/extensions/api_test/file_system_provider|' \
                   'components/drive|' \
@@ -1006,7 +1005,6 @@
     'fsp': {
       'filepath': 'chrome/browser/ash/file_system_provider|' \
                   'chrome/browser/chromeos/extensions/file_system_provider|' \
-                  'chrome/browser/chromeos/file_system_provider|' \
                   'chrome/test/data/extensions/api_test/file_system_provider'
     },
     'fuchsia': {
@@ -1688,7 +1686,6 @@
     },
     'smb': {
       'filepath': 'chrome/browser/ash/file_system_provider' \
-                  '|chrome/browser/chromeos/file_system_provider'\
                   '|chrome/browser/chromeos/smb_client'\
                   '|chromeos/dbus/fake_smb_provider_client'\
                   '|chromeos/dbus/smb_provider_client',

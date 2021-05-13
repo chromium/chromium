@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
 

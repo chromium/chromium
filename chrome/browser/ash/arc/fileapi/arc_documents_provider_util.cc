@@ -95,7 +95,7 @@ constexpr char kDocumentsProviderVolumeIdPrefix[] = "documents_provider:";
 
 // This is based on net/base/escape.cc: net::(anonymous namespace)::Escape.
 // TODO(nya): Consider consolidating this function with EscapeFileSystemId() in
-// chrome/browser/chromeos/file_system_provider/mount_path_util.cc.
+// chrome/browser/ash/file_system_provider/mount_path_util.cc.
 // This version differs from the other one in the point that dots are not always
 // escaped because authorities often contain harmless dots.
 std::string EscapePathComponent(const std::string& name) {

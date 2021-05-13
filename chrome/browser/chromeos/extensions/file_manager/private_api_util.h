@@ -14,7 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/file_system_provider/icon_set.h"
+#include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
