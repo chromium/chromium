@@ -4,6 +4,7 @@
 
 #include "ash/keyboard/ui/container_full_width_behavior.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -101,6 +102,9 @@ bool ContainerFullWidthBehavior::HandlePointerEvent(
 bool ContainerFullWidthBehavior::HandleGestureEvent(
     const ui::GestureEvent& event,
     const gfx::Rect& bounds_in_screen) {
+  if (!ash::TabletMode::Get()->InTabletMode())
+    return false;
+
   if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
     // Check that the user is swiping upwards near the bottom of the keyboard.
     // The coordinates of the |event| is relative to the window.

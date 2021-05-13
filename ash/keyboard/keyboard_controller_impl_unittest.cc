@@ -748,4 +748,26 @@ TEST_F(KeyboardControllerImplTest, FlingUpToShowOverviewMode) {
             GetShelfLayoutManager()->hotseat_state());
 }
 
+TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
+
+  keyboard_ui_controller()->ShowKeyboard(/* lock */ false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(start + gfx::Vector2d(0, -80));
+  const base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(100);
+  const int num_scroll_steps = 4;
+  GetEventGenerator()->GestureScrollSequence(start, end, time_delta,
+                                             num_scroll_steps);
+
+  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+}
+
 }  // namespace ash
