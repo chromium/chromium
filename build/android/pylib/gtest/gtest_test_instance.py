@@ -285,8 +285,16 @@ def ParseGTestJSON(json_content):
     name, value = openstack.pop()
 
     if 'expected' in value and 'actual' in value:
-      result_type = base_test_result.ResultType.PASS if value[
-          'actual'] == 'PASS' else base_test_result.ResultType.FAIL
+      if value['actual'] == 'PASS':
+        result_type = base_test_result.ResultType.PASS
+      elif value['actual'] == 'SKIP':
+        result_type = base_test_result.ResultType.SKIP
+      elif value['actual'] == 'CRASH':
+        result_type = base_test_result.ResultType.CRASH
+      elif value['actual'] == 'TIMEOUT':
+        result_type = base_test_result.ResultType.TIMEOUT
+      else:
+        result_type = base_test_result.ResultType.FAIL
       results.append(base_test_result.BaseTestResult(name, result_type))
     else:
       openstack += [("%s.%s" % (name, k), v) for k, v in six.iteritems(value)]
