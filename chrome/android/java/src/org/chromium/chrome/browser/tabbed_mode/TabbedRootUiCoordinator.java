@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -114,7 +115,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ActivityTabTabObserver mTabObserver;
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
-    private Callback<Integer> mContinuousSearchObserver;
+    private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
     private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
 
@@ -466,15 +467,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void updateTopControlsHeight() {
+    private void updateTopControlsHeight(boolean animate) {
         final BrowserControlsSizer browserControlsSizer = mActivity.getBrowserControlsManager();
         final int resourceId = mActivity.getControlContainerHeightResource();
         final int topControlsNewHeight = mActivity.getResources().getDimensionPixelSize(resourceId)
                 + mStatusIndicatorHeight + mContinuousSearchHeight;
 
-        browserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+        browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
-        browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+        if (animate) browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
@@ -496,7 +497,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                 mStatusIndicatorHeight = indicatorHeight;
-                updateTopControlsHeight();
+                updateTopControlsHeight(/*animate=*/true);
             }
         };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
@@ -548,9 +549,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mTabSupplier, browserControlsSizer, mCanAnimateBrowserControls,
                 defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(),
                 mActivity.getResources(), mToolbarManager::setForceHideShadow);
-        mContinuousSearchObserver = newHeight -> {
+        mContinuousSearchObserver = (newHeight, animate) -> {
             mContinuousSearchHeight = newHeight;
-            updateTopControlsHeight();
+            updateTopControlsHeight(animate);
         };
         mContinuousSearchContainerCoordinator.addHeightObserver(mContinuousSearchObserver);
         mContinuousSearchTabObscuringHandlerObserver =

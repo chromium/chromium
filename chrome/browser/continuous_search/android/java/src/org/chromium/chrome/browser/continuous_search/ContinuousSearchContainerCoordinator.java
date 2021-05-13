@@ -25,6 +25,19 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * takes care of positioning itself in the top controls area and hosts the CSN list.
  */
 public class ContinuousSearchContainerCoordinator implements View.OnLayoutChangeListener {
+    /**
+     * An observer that is notified of the container height changes.
+     */
+    @FunctionalInterface
+    public interface HeightObserver {
+        /**
+         * This function is called when the container height changes.
+         * @param newHeight the new container height.
+         * @param animate whether the height change should be animated.
+         */
+        void onHeightChange(int newHeight, boolean animate);
+    }
+
     private final ContinuousSearchContainerMediator mContainerMediator;
     private final ContinuousSearchListCoordinator mListCoordinator;
     private final ContinuousSearchSceneLayer mSceneLayer;
@@ -51,7 +64,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mSceneLayer = new ContinuousSearchSceneLayer(mResourceManager);
         mLayoutManager.addSceneOverlay(mSceneLayer);
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
-                canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
+                layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
         mListCoordinator = new ContinuousSearchListCoordinator(tabSupplier, isVisible -> {
             if (isVisible) {
@@ -95,11 +108,11 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
     /**
      *  Registers an observer that gets notified when the height of the CSN container changes.
      */
-    public void addHeightObserver(Callback<Integer> observer) {
+    public void addHeightObserver(HeightObserver observer) {
         mContainerMediator.addHeightObserver(observer);
     }
 
-    public void removeHeightObserver(Callback<Integer> observer) {
+    public void removeHeightObserver(HeightObserver observer) {
         mContainerMediator.removeHeightObserver(observer);
     }
 

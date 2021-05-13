@@ -11,6 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
@@ -21,8 +24,9 @@ import java.util.HashSet;
  */
 class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.Observer {
     private PropertyModel mModel;
-    private final HashSet<Callback<Integer>> mObservers = new HashSet<>();
+    private final HashSet<HeightObserver> mObservers = new HashSet<>();
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final LayoutStateProvider mLayoutStateProvider;
     private final Runnable mInitializeLayout;
     private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
     private Runnable mRequestLayout;
@@ -35,10 +39,12 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private int mJavaLayoutHeight;
 
     ContinuousSearchContainerMediator(BrowserControlsStateProvider browserControlsStateProvider,
+            LayoutStateProvider layoutStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
             Supplier<Integer> defaultTopContainerHeightSupplier, Runnable initializeLayout,
             Callback<Boolean> hideToolbarShadow) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mLayoutStateProvider = layoutStateProvider;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mDefaultTopContainerHeightSupplier = defaultTopContainerHeightSupplier;
         mInitializeLayout = initializeLayout;
@@ -100,16 +106,17 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         mBrowserControlsStateProvider.addObserver(this);
         mHideToolbarShadow.onResult(isVisible);
 
-        for (Callback<Integer> observer : mObservers) {
-            observer.onResult(isVisible ? mJavaLayoutHeight : 0);
+        for (HeightObserver observer : mObservers) {
+            observer.onHeightChange(isVisible ? mJavaLayoutHeight : 0,
+                    mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING));
         }
     }
 
-    void addHeightObserver(Callback<Integer> observer) {
+    void addHeightObserver(HeightObserver observer) {
         mObservers.add(observer);
     }
 
-    void removeHeightObserver(Callback<Integer> observer) {
+    void removeHeightObserver(HeightObserver observer) {
         mObservers.remove(observer);
     }
 

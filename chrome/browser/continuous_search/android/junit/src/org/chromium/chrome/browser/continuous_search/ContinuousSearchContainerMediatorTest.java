@@ -10,12 +10,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -23,6 +29,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContinuousSearchContainerMediatorTest {
+    @Mock
+    private LayoutStateProvider mLayoutStateProvider;
     private ContinuousSearchContainerMediator mMediator;
     private PropertyModel mModel;
     private BrowserControlsStateProvider.Observer mCurrentBrowserControlsObserver;
@@ -36,6 +44,7 @@ public class ContinuousSearchContainerMediatorTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         BrowserControlsStateProvider browserControlsStateProvider =
                 new BrowserControlsStateProvider() {
                     @Override
@@ -115,11 +124,13 @@ public class ContinuousSearchContainerMediatorTest {
         Runnable initializeLayout = () -> {};
         Callback<Boolean> hideToolbarShadow = (hide) -> {};
         mMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
-                canAnimateNativeSupplier, defaultContainerHeightSupplier, initializeLayout,
-                hideToolbarShadow);
+                mLayoutStateProvider, canAnimateNativeSupplier, defaultContainerHeightSupplier,
+                initializeLayout, hideToolbarShadow);
         Runnable requestLayout = () -> mMediator.setJavaHeight(JAVA_HEIGHT);
         mModel = new PropertyModel(ContinuousSearchContainerProperties.ALL_KEYS);
         mMediator.onLayoutInitialized(mModel, requestLayout);
+        Mockito.when(mLayoutStateProvider.isLayoutVisible(Mockito.eq(LayoutType.BROWSING)))
+                .thenReturn(true);
     }
 
     @Test
@@ -238,6 +249,24 @@ public class ContinuousSearchContainerMediatorTest {
                 mCurrentBrowserControlsObserver);
     }
 
+    @Test
+    public void testHide_noAnimation() {
+        triggerShow();
+        Mockito.when(mLayoutStateProvider.isLayoutVisible(Mockito.eq(LayoutType.BROWSING)))
+                .thenReturn(false);
+        mMediator.addHeightObserver(
+                (result, animate)
+                        -> Assert.assertFalse("Height change should not be animated", animate));
+        triggerHide();
+
+        updateBrowserControlParamsAndAssertModel(
+                DEFAULT_CONTAINER_HEIGHT, 0, true, 0, DEFAULT_CONTAINER_HEIGHT, false, View.GONE);
+
+        Assert.assertNull(
+                "Mediator should be not registered as a BrowserControlsStateProvider.Observer.",
+                mCurrentBrowserControlsObserver);
+    }
+
     /**
      * Tests that the container is invisible when the tab is obscured.
      */
@@ -314,13 +343,16 @@ public class ContinuousSearchContainerMediatorTest {
 
     private void triggerShow() {
         CallbackHelper heightObserverCallback = new CallbackHelper();
-        mMediator.addHeightObserver(result -> {
+        HeightObserver heightObserver = (result, animate) -> {
             Assert.assertEquals("Height provided by mediator doesn't match java height.",
-                    mCurrentExpectedHeight, result.intValue());
+                    mCurrentExpectedHeight, result);
+            Assert.assertTrue("Height change should be animated", animate);
             heightObserverCallback.notifyCalled();
-        });
+        };
+        mMediator.addHeightObserver(heightObserver);
         mCurrentExpectedHeight = JAVA_HEIGHT;
         mMediator.show();
+        mMediator.removeHeightObserver(heightObserver);
         Assert.assertTrue("Mediator should be visible.", mMediator.isVisibleForTesting());
         Assert.assertEquals(
                 "Height observer should've been called.", 1, heightObserverCallback.getCallCount());

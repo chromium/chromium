@@ -133,6 +133,7 @@ android_library("junit") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/continuous_search/internal:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/theme:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
