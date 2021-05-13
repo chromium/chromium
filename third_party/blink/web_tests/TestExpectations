@@ -2490,6 +2490,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/Create-valid-url-binaryType-blob.any.worker.html?wpt_flags=h2 [ Timeout ]
