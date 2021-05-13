@@ -55,3 +55,19 @@ source_set("public") {
     "infobar_translate_modal_constants.mm",
   ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "infobar_save_address_profile_table_view_controller_unittest.mm" ]
+  deps = [
+    ":modals",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

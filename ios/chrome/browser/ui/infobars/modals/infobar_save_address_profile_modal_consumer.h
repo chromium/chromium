@@ -12,7 +12,10 @@ namespace {
 NSString* kAddressPrefKey = @"AddressPrefKey";
 NSString* kPhonePrefKey = @"PhonePrefKey";
 NSString* kEmailPrefKey = @"EmailPrefKey";
-NSString* kCurrentAddressProfileSavedPrefKey = @"currentAddressProfileSaved";
+NSString* kCurrentAddressProfileSavedPrefKey = @"CurrentAddressProfileSavedKey";
+NSString* kIsUpdateModalPrefKey = @"IsUpdateModalPrefKey";
+NSString* kProfileDataDiffKey = @"ProfileDataDiffKey";
+NSString* kUpdateModalDescriptionKey = @"UpdateModalDescriptionKey";
 }  // namespace
 
 // Consumer for model to push configurations to the SaveAddressProfile UI.

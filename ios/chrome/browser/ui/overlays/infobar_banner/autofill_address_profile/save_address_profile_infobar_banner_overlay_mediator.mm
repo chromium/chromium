@@ -61,10 +61,7 @@ using autofill_address_profile_infobar_overlays::
   [self.consumer
       setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];
 
-  if (!self.config->is_update_banner()) {
-    // TODO(crbug.com/1167062): Implement update address modal.
-    [self.consumer setPresentsModal:YES];
-  }
+  [self.consumer setPresentsModal:YES];
 }
 
 @end

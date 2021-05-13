@@ -60,8 +60,6 @@ using autofill_address_profile_infobar_overlays::
   InfobarSaveAddressProfileTableViewController* modalViewController =
       [[InfobarSaveAddressProfileTableViewController alloc]
           initWithModalDelegate:modalMediator];
-  // TODO(crbug.com/1167062): Replace with proper localized string.
-  modalViewController.title = @"Save Address Profile";
   modalMediator.consumer = modalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;

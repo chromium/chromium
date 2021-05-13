@@ -48,12 +48,17 @@ using save_address_profile_infobar_modal_responses::
     return;
 
   NSDictionary* prefs = @{
-    kAddressPrefKey : base::SysUTF16ToNSString(config->GetAddress()),
-    kPhonePrefKey : base::SysUTF16ToNSString(config->GetPhoneNumber()),
-    kEmailPrefKey : base::SysUTF16ToNSString(config->GetEmailAddress()),
+    kAddressPrefKey : base::SysUTF16ToNSString(config->address()),
+    kPhonePrefKey : base::SysUTF16ToNSString(config->phoneNumber()),
+    kEmailPrefKey : base::SysUTF16ToNSString(config->emailAddress()),
     kCurrentAddressProfileSavedPrefKey :
-        @(config->current_address_profile_saved())
+        @(config->current_address_profile_saved()),
+    kIsUpdateModalPrefKey : @(config->IsUpdateModal()),
+    kProfileDataDiffKey : config->profile_diff(),
+    kUpdateModalDescriptionKey :
+        base::SysUTF16ToNSString(config->update_modal_description())
   };
+
   [_consumer setupModalViewControllerWithPrefs:prefs];
 }
 

@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,21 +32,37 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
   emailAddress_ = delegate->GetEmailAddress();
   phoneNumber_ = delegate->GetPhoneNumber();
   current_address_profile_saved_ = infobar->accepted();
+  profile_diff_ = [[NSMutableDictionary alloc] init];
+
+  if (IsUpdateModal()) {
+    StoreProfileDiff(delegate->GetProfileDiff());
+    update_modal_description_ = delegate->GetDescription();
+  }
+
+  current_address_profile_saved_ = infobar->accepted();
 }
 
 SaveAddressProfileModalRequestConfig::~SaveAddressProfileModalRequestConfig() =
     default;
 
-std::u16string SaveAddressProfileModalRequestConfig::GetAddress() const {
-  return address_;
+bool SaveAddressProfileModalRequestConfig::IsUpdateModal() const {
+  return static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
+             infobar_->delegate())
+      ->GetOriginalProfile();
 }
 
-std::u16string SaveAddressProfileModalRequestConfig::GetPhoneNumber() const {
-  return phoneNumber_;
-}
-
-std::u16string SaveAddressProfileModalRequestConfig::GetEmailAddress() const {
-  return emailAddress_;
+void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
+    const base::flat_map<autofill::ServerFieldType,
+                         std::pair<std::u16string, std::u16string>>& diff_map) {
+  for (const auto& row : diff_map) {
+    [profile_diff_
+        setObject:@[
+          base::SysUTF16ToNSString(row.second.first),
+          base::SysUTF16ToNSString(row.second.second)
+        ]
+           forKey:[NSNumber
+                      numberWithInt:AutofillUITypeFromAutofillType(row.first)]];
+  }
 }
 
 void SaveAddressProfileModalRequestConfig::CreateAuxiliaryData(

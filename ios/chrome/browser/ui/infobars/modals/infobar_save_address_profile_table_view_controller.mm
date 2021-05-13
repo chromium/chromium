@@ -12,8 +12,10 @@
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -26,18 +28,35 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// Height of the space used by header/footer when none is set. Default is
+// |estimatedSection{Header|Footer}Height|.
+const CGFloat kDefaultHeaderFooterHeight = 10;
+// Estimated height of the header/footer, used to speed the constraints.
+const CGFloat kEstimatedHeaderFooterHeight = 50;
+
+}  // namespace
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierFields = kSectionIdentifierEnumZero,
+  SectionIdentifierSaveModalFields = kSectionIdentifierEnumZero,
+  SectionIdentifierUpdateModalNewFields,
+  SectionIdentifierUpdateModalOldFields,
+  SectionIdentifierUpdateButton,
+  SectionIdentifierUpdateDescription
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAddress = kItemTypeEnumZero,
   ItemTypePhoneNumber,
   ItemTypeEmailAddress,
-  ItemTypeAddressProfileSave,
+  ItemTypeAddressProfileSaveUpdateButton,
+  ItemTypeUpdateNew,
+  ItemTypeUpdateOld,
+  ItemTypeHeader,
+  ItemTypeFooter
 };
 
-@interface InfobarSaveAddressProfileTableViewController () <UITextFieldDelegate>
+@interface InfobarSaveAddressProfileTableViewController ()
 
 // InfobarSaveAddressProfileModalDelegate for this ViewController.
 @property(nonatomic, strong) id<InfobarSaveAddressProfileModalDelegate>
@@ -53,9 +72,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* emailAddress;
 // YES if the Address Profile being displayed has been saved.
 @property(nonatomic, assign) BOOL currentAddressProfileSaved;
-// Item for displaying the save address profile button.
-@property(nonatomic, strong)
-    TableViewTextButtonItem* saveAddressProfileButtonItem;
+// Yes, if the update address profile modal is to be displayed.
+@property(nonatomic, assign) BOOL isUpdateModal;
+// Contains the content for the update modal.
+@property(nonatomic, copy) NSDictionary* profileDataDiff;
+// Description of the update modal.
+@property(nonatomic, copy) NSString* updateModalDescription;
 
 @end
 
@@ -78,7 +100,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.tableView.sectionHeaderHeight = 0;
+  if (self.isUpdateModal) {
+    self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
+    self.tableView.estimatedSectionFooterHeight = kEstimatedHeaderFooterHeight;
+  } else {
+    self.tableView.sectionHeaderHeight = 0;
+  }
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
@@ -88,18 +115,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            target:self
                            action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
-  UIImage* settingsImage = [[UIImage imageNamed:@"infobar_settings_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc]
-      initWithImage:settingsImage
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(presentAddressProfileSettings)];
-  // TODO(crbug.com/1167062): Replace with proper localized string.
-  settingsButton.accessibilityLabel = @"Access profile settings";
   self.navigationItem.leftBarButtonItem = cancelButton;
-  self.navigationItem.rightBarButtonItem = settingsButton;
+
+  if (!self.currentAddressProfileSaved) {
+    UIBarButtonItem* editButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                             target:self
+                             action:@selector(showEditAddressProfileModal)];
+    // TODO(crbug.com/1167062): Add accessibility identifier for the edit
+    // button.
+    self.navigationItem.rightBarButtonItem = editButton;
+  }
+
   self.navigationController.navigationBar.prefersLargeTitles = NO;
+
+  // TODO(crbug.com/1167062): Replace with proper localized string.
+  if (self.isUpdateModal) {
+    self.navigationItem.title = @"Update Address";
+  } else {
+    self.navigationItem.title = @"Save Address";
+  }
 
   [self loadModel];
 }
@@ -125,36 +160,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
 
-  // TODO(crbug.com/1167062): Add image icons for the fields.
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewImageItem* addressImageItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeAddress];
-  addressImageItem.title = self.address;
-  [model addItem:addressImageItem
-      toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewImageItem* emailImageItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeEmailAddress];
-  emailImageItem.title = self.emailAddress;
-  [model addItem:emailImageItem
-      toSectionWithIdentifier:SectionIdentifierFields];
-
-  TableViewImageItem* phoneImageItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypePhoneNumber];
-  phoneImageItem.title = self.phoneNumber;
-  [model addItem:phoneImageItem
-      toSectionWithIdentifier:SectionIdentifierFields];
-
-  self.saveAddressProfileButtonItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeAddressProfileSave];
-  self.saveAddressProfileButtonItem.textAlignment = NSTextAlignmentNatural;
-  self.saveAddressProfileButtonItem.buttonText = @"Save";
-  self.saveAddressProfileButtonItem.enabled = !self.currentAddressProfileSaved;
-  self.saveAddressProfileButtonItem.disableButtonIntrinsicWidth = YES;
-  [model addItem:self.saveAddressProfileButtonItem
-      toSectionWithIdentifier:SectionIdentifierFields];
+  if (self.isUpdateModal) {
+    [self loadUpdateAddressModal];
+  } else {
+    [self loadSaveAddressModal];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -165,7 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                      cellForRowAtIndexPath:indexPath];
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
-  if (itemType == ItemTypeAddressProfileSave) {
+  if (itemType == ItemTypeAddressProfileSaveUpdateButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
         base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button
@@ -189,21 +199,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.emailAddress = prefs[kEmailPrefKey];
   self.currentAddressProfileSaved =
       [prefs[kCurrentAddressProfileSavedPrefKey] boolValue];
+  self.isUpdateModal = [prefs[kIsUpdateModalPrefKey] boolValue];
+  self.profileDataDiff = prefs[kProfileDataDiffKey];
+  self.updateModalDescription = prefs[kUpdateModalDescriptionKey];
   [self.tableView reloadData];
 }
 
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  return 0;
+    heightForHeaderInSection:(NSInteger)section {
+  if ([self.tableViewModel headerForSection:section])
+    return UITableViewAutomaticDimension;
+  return kDefaultHeaderFooterHeight;
 }
 
-#pragma mark - UITextFieldDelegate
-
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  [textField resignFirstResponder];
-  return YES;
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if ([self.tableViewModel footerForSection:section])
+    return UITableViewAutomaticDimension;
+  return kDefaultHeaderFooterHeight;
 }
 
 #pragma mark - Private Methods
@@ -222,26 +237,131 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
 }
 
-- (void)presentAddressProfileSettings {
-  base::RecordAction(base::UserMetricsAction("MobileMessagesModalSettings"));
-  [self.saveAddressProfileModalDelegate presentAddressProfileSettings];
+- (void)showEditAddressProfileModal {
+  // TODO(crbug.com/1167062): Show edit view.
 }
 
-#pragma mark - Helpers
+- (void)loadUpdateAddressModal {
+  DCHECK([self.profileDataDiff count] > 0);
 
-- (TableViewTextEditItem*)textEditItemWithType:(ItemType)type
-                                 textFieldName:(NSString*)name
-                                textFieldValue:(NSString*)value
-                              textFieldEnabled:(BOOL)enabled {
-  TableViewTextEditItem* textEditItem =
-      [[TableViewTextEditItem alloc] initWithType:type];
-  textEditItem.textFieldName = name;
-  textEditItem.textFieldValue = value;
-  textEditItem.textFieldEnabled = enabled;
-  textEditItem.hideIcon = !enabled;
-  textEditItem.returnKeyType = UIReturnKeyDone;
+  // Determines whether the old section is to be shown or not.
+  BOOL showOld = NO;
+  for (NSNumber* type in self.profileDataDiff) {
+    if ([self.profileDataDiff[type][1] length] > 0) {
+      showOld = YES;
+      break;
+    }
+  }
 
-  return textEditItem;
+  // TODO(crbug.com/1167062): Add image icons for the fields.
+  // TODO(crbug.com/1167062): Add line separators between sections.
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierUpdateDescription];
+  [model setFooter:[self updateModalDescriptionFooter]
+      forSectionWithIdentifier:SectionIdentifierUpdateDescription];
+
+  // New
+  [model addSectionWithIdentifier:SectionIdentifierUpdateModalNewFields];
+
+  if (showOld) {
+    // TODO(crbug.com/1167062): Use i18n strings.
+    [model setHeader:[self updateHeaderWithText:@"New"]
+        forSectionWithIdentifier:SectionIdentifierUpdateModalNewFields];
+  }
+  for (NSNumber* type in self.profileDataDiff) {
+    if ([self.profileDataDiff[type][0] length] > 0) {
+      TableViewImageItem* item =
+          [[TableViewImageItem alloc] initWithType:ItemTypeUpdateNew];
+      // TODO(crbug.com/1167062): Use type for determining the icons.
+      item.title = self.profileDataDiff[type][0];
+      item.useCustomSeparator = YES;
+      [model addItem:item
+          toSectionWithIdentifier:SectionIdentifierUpdateModalNewFields];
+    }
+  }
+
+  if (showOld) {
+    // Old
+    [model addSectionWithIdentifier:SectionIdentifierUpdateModalOldFields];
+
+    // TODO(crbug.com/1167062): Use i18n strings.
+    [model setHeader:[self updateHeaderWithText:@"Old"]
+        forSectionWithIdentifier:SectionIdentifierUpdateModalOldFields];
+    for (NSNumber* type in self.profileDataDiff) {
+      if ([self.profileDataDiff[type][1] length] > 0) {
+        TableViewImageItem* item =
+            [[TableViewImageItem alloc] initWithType:ItemTypeUpdateOld];
+        // TODO(crbug.com/1167062): Use type for determining the icons.
+        item.title = self.profileDataDiff[type][1];
+        item.useCustomSeparator = YES;
+        [model addItem:item
+            toSectionWithIdentifier:SectionIdentifierUpdateModalOldFields];
+      }
+    }
+  }
+
+  [model addSectionWithIdentifier:SectionIdentifierUpdateButton];
+  [model addItem:[self saveUpdateButton]
+      toSectionWithIdentifier:SectionIdentifierUpdateButton];
+}
+
+- (void)loadSaveAddressModal {
+  // TODO(crbug.com/1167062): Add image icons for the fields.
+  TableViewModel* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SectionIdentifierSaveModalFields];
+
+  TableViewImageItem* addressImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeAddress];
+  addressImageItem.title = self.address;
+  [model addItem:addressImageItem
+      toSectionWithIdentifier:SectionIdentifierSaveModalFields];
+
+  TableViewImageItem* emailImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeEmailAddress];
+  emailImageItem.title = self.emailAddress;
+  [model addItem:emailImageItem
+      toSectionWithIdentifier:SectionIdentifierSaveModalFields];
+
+  TableViewImageItem* phoneImageItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypePhoneNumber];
+  phoneImageItem.title = self.phoneNumber;
+  [model addItem:phoneImageItem
+      toSectionWithIdentifier:SectionIdentifierSaveModalFields];
+
+  [model addItem:[self saveUpdateButton]
+      toSectionWithIdentifier:SectionIdentifierSaveModalFields];
+}
+
+- (TableViewTextButtonItem*)saveUpdateButton {
+  TableViewTextButtonItem* saveUpdateButton = [[TableViewTextButtonItem alloc]
+      initWithType:ItemTypeAddressProfileSaveUpdateButton];
+  saveUpdateButton.textAlignment = NSTextAlignmentNatural;
+
+  // TODO(crbug.com/1167062): Use i18n strings.
+  if (self.isUpdateModal) {
+    saveUpdateButton.buttonText = @"Update";
+  } else {
+    saveUpdateButton.buttonText = @"Save";
+  }
+
+  saveUpdateButton.enabled = !self.currentAddressProfileSaved;
+  saveUpdateButton.disableButtonIntrinsicWidth = YES;
+  return saveUpdateButton;
+}
+
+- (TableViewTextHeaderFooterItem*)updateHeaderWithText:(NSString*)text {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+  header.text = text;
+  return header;
+}
+
+- (TableViewHeaderFooterItem*)updateModalDescriptionFooter {
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  footer.text = self.updateModalDescription;
+  return footer;
 }
 
 @end
