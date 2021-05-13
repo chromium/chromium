@@ -96,7 +96,8 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs),
       random_generator_((uint32_t)base::RandUint64()),
-      bernoulli_distribution_(kUMASampleProbability) {
+      bernoulli_distribution_(kUMASampleProbability),
+      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
   is_valid_size_ = IsValidImageSize(Host()->Size());
 
   // Clear the background transparent or opaque.
@@ -315,11 +316,6 @@ bool OffscreenCanvasRenderingContext2D::isContextLost() const {
 
 bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
   return Host()->ResourceProvider();
-}
-
-CanvasColorParams OffscreenCanvasRenderingContext2D::GetCanvas2DColorParams()
-    const {
-  return CanvasRenderingContext::CanvasRenderingContextColorParams();
 }
 
 bool OffscreenCanvasRenderingContext2D::WritePixels(

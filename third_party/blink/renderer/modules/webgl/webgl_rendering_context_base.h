@@ -628,6 +628,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     void Trace(Visitor*) const;
   };
 
+  // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
+  // contexts, and should be removed.
+  CanvasColorParams CanvasRenderingContextColorParams() const override {
+    return color_params_;
+  }
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetFilterQuality(SkFilterQuality) override;
   bool IsWebGL2() { return context_type_ == Platform::kWebGL2ContextType; }
@@ -1894,6 +1899,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   int number_of_user_allocated_multisampled_renderbuffers_;
 
   bool has_been_drawn_to_ = false;
+
+  CanvasColorParams color_params_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGLRenderingContextBase);
 };

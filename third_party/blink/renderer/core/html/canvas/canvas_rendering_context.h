@@ -92,8 +92,10 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
 
   CanvasRenderingContextHost* Host() const { return host_; }
 
-  const CanvasColorParams& CanvasRenderingContextColorParams() const {
-    return color_params_;
+  // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
+  // contexts, and should be removed.
+  virtual CanvasColorParams CanvasRenderingContextColorParams() const {
+    return CanvasColorParams();
   }
 
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;

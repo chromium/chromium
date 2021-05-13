@@ -147,7 +147,14 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   }
 
  protected:
-  CanvasColorParams GetCanvas2DColorParams() const override;
+  // This reports CanvasColorParams to the CanvasRenderingContext interface.
+  CanvasColorParams CanvasRenderingContextColorParams() const override {
+    return color_params_;
+  }
+  // This reports CanvasColorParams to the BaseRenderingContext2D interface.
+  CanvasColorParams GetCanvas2DColorParams() const override {
+    return color_params_;
+  }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
@@ -177,6 +184,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   std::mt19937 random_generator_;
   std::bernoulli_distribution bernoulli_distribution_;
+  CanvasColorParams color_params_;
 };
 
 }  // namespace blink
