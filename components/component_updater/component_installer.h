@@ -166,7 +166,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
                            scoped_refptr<RegistrationInfo> registration_info);
   update_client::CrxInstaller::Result InstallHelper(
       const base::FilePath& unpack_path,
-      std::unique_ptr<base::DictionaryValue>* manifest,
+      base::Value* manifest,
       base::Version* version,
       base::FilePath* install_path);
   void StartRegistration(scoped_refptr<RegistrationInfo> registration_info);

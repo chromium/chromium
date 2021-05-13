@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -103,18 +104,19 @@ void ComponentInstaller::OnUpdateError(int error) {
   LOG(ERROR) << "Component update error: " << error;
 }
 
-Result ComponentInstaller::InstallHelper(
-    const base::FilePath& unpack_path,
-    std::unique_ptr<base::DictionaryValue>* manifest,
-    base::Version* version,
-    base::FilePath* install_path) {
-  auto local_manifest = update_client::ReadManifest(unpack_path);
-  if (!local_manifest)
+Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
+                                         base::Value* manifest,
+                                         base::Version* version,
+                                         base::FilePath* install_path) {
+  base::Value local_manifest = update_client::ReadManifest(unpack_path);
+  if (!local_manifest.is_dict())
     return Result(InstallError::BAD_MANIFEST);
 
-  std::string version_ascii;
-  local_manifest->GetStringASCII("version", &version_ascii);
-  const base::Version manifest_version(version_ascii);
+  const std::string* version_ascii = local_manifest.FindStringKey("version");
+  if (!version_ascii || !base::IsStringASCII(*version_ascii))
+    return Result(InstallError::INVALID_VERSION);
+
+  const base::Version manifest_version(*version_ascii);
 
   VLOG(1) << "Install: version=" << manifest_version.GetString()
           << " current version=" << current_version_.GetString();
@@ -158,14 +160,17 @@ Result ComponentInstaller::InstallHelper(
   DCHECK(!base::PathExists(unpack_path));
   DCHECK(base::PathExists(local_install_path));
 
-  const Result result =
-      installer_policy_->OnCustomInstall(*local_manifest, local_install_path);
+  const base::DictionaryValue& local_manifest_dict =
+      base::Value::AsDictionaryValue(local_manifest);
+  const Result result = installer_policy_->OnCustomInstall(local_manifest_dict,
+                                                           local_install_path);
   if (result.error)
     return result;
 
-  if (!installer_policy_->VerifyInstallation(*local_manifest,
-                                             local_install_path))
+  if (!installer_policy_->VerifyInstallation(local_manifest_dict,
+                                             local_install_path)) {
     return Result(InstallError::INSTALL_VERIFICATION_FAILED);
+  }
 
   *manifest = std::move(local_manifest);
   *version = manifest_version;
@@ -180,7 +185,7 @@ void ComponentInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback /*progress_callback*/,
     Callback callback) {
-  std::unique_ptr<base::DictionaryValue> manifest;
+  base::Value manifest;
   base::Version version;
   base::FilePath install_path;
   const Result result =
@@ -196,8 +201,10 @@ void ComponentInstaller::Install(
   current_install_dir_ = install_path;
 
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ComponentInstaller::ComponentReady, this,
-                                std::move(manifest)));
+      FROM_HERE,
+      base::BindOnce(&ComponentInstaller::ComponentReady, this,
+                     base::DictionaryValue::From(
+                         base::Value::ToUniquePtrValue(std::move(manifest)))));
   main_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(std::move(callback), result));
 }
@@ -227,20 +234,22 @@ bool ComponentInstaller::FindPreinstallation(
     return false;
   }
 
-  std::unique_ptr<base::DictionaryValue> manifest =
-      update_client::ReadManifest(path);
-  if (!manifest) {
+  base::Value manifest = update_client::ReadManifest(path);
+  if (!manifest.is_dict()) {
     DVLOG(1) << "Manifest does not exist: " << path.MaybeAsASCII();
     return false;
   }
 
-  if (!installer_policy_->VerifyInstallation(*manifest, path)) {
+  std::unique_ptr<base::DictionaryValue> manifest_dict =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(std::move(manifest)));
+  if (!installer_policy_->VerifyInstallation(*manifest_dict, path)) {
     DVLOG(1) << "Installation verification failed: " << path.MaybeAsASCII();
     return false;
   }
 
   std::string version_lexical;
-  if (!manifest->GetStringASCII("version", &version_lexical)) {
+  if (!manifest_dict->GetStringASCII("version", &version_lexical)) {
     DVLOG(1) << "Failed to get component version from the manifest.";
     return false;
   }
@@ -257,7 +266,7 @@ bool ComponentInstaller::FindPreinstallation(
 
   registration_info->install_dir = path;
   registration_info->version = version;
-  registration_info->manifest = std::move(manifest);
+  registration_info->manifest = std::move(manifest_dict);
 
   return true;
 }
@@ -334,7 +343,8 @@ void ComponentInstaller::StartRegistration(
     }
 
     std::unique_ptr<base::DictionaryValue> manifest =
-        update_client::ReadManifest(path);
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(update_client::ReadManifest(path)));
     if (!manifest || !installer_policy_->VerifyInstallation(*manifest, path)) {
       PLOG(ERROR) << "Failed to read manifest or verify installation for "
                   << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
