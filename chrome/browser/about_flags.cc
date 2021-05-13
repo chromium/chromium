@@ -5679,11 +5679,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kAutoScreenBrightness)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"audio-worklet-realtime-thread",
-     flag_descriptions::kAudioWorkletRealtimeThreadName,
-     flag_descriptions::kAudioWorkletRealtimeThreadDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAudioWorkletRealtimeThread)},
-
     {"privacy-sandbox-settings", flag_descriptions::kPrivacySandboxSettingsName,
      flag_descriptions::kPrivacySandboxSettingsDescription,
      kOsDesktop | kOsAndroid,

@@ -114,13 +114,8 @@ AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
   if (!has_realtime_constraint)
     return std::make_unique<OfflineAudioWorkletThread>(worker_reporting_proxy);
 
-  // If the flag is set, it overrides the default thread priority for
-  // subframes. This is only allowed for the experimental purposes, and this
-  // flag will be deprecated in M90. (See crbug.com/1156842)
-  if (is_top_level_frame ||
-      base::FeatureList::IsEnabled(features::kAudioWorkletRealtimeThread)) {
+  if (is_top_level_frame)
     return std::make_unique<RealtimeAudioWorkletThread>(worker_reporting_proxy);
-  }
 
   return std::make_unique<SemiRealtimeAudioWorkletThread>(
       worker_reporting_proxy);

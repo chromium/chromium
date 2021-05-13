@@ -328,54 +328,37 @@ struct ThreadPriorityTestParam {
   const bool has_realtime_constraint;
   const bool is_top_level_frame;
   const bool is_enabled_by_finch;
-  const bool is_enabled_by_flag;
   const base::ThreadPriority expected_priority;
 };
 
 constexpr ThreadPriorityTestParam kThreadPriorityTestParams[] = {
-  // RT thread enabled by Finch.
-  {true, true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
-  {true, true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
+    // RT thread enabled by Finch.
+    {true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
 
-  // RT thread disabled by Finch.
-  {true, true, true, false, true, base::ThreadPriority::NORMAL},
-  {true, true, true, false, false, base::ThreadPriority::NORMAL},
+    // RT thread disabled by Finch.
+    {true, true, true, false, base::ThreadPriority::NORMAL},
 
-  // Non-main frame, RT thread enabled by Finch: depends the local flag.
-  {true, true, false, true, true, base::ThreadPriority::REALTIME_AUDIO},
-  {true, true, false, true, false, base::ThreadPriority::DISPLAY},
+    // Non-main frame, RT thread enabled by Finch.
+    {true, true, false, true, base::ThreadPriority::DISPLAY},
 
-  // Non-main frame, RT thread disabled by Finch.
-  {true, true, false, false, true, base::ThreadPriority::NORMAL},
-  {true, true, false, false, false, base::ThreadPriority::NORMAL},
+    // Non-main frame, RT thread disabled by Finch.
+    {true, true, false, false, base::ThreadPriority::NORMAL},
 
-  // The OfflineAudioContext always uses a NORMAL priority thread.
-  {true, false, true, true, true, base::ThreadPriority::NORMAL},
-  {true, false, true, true, false, base::ThreadPriority::NORMAL},
-  {true, false, true, false, true, base::ThreadPriority::NORMAL},
-  {true, false, true, false, false, base::ThreadPriority::NORMAL},
-  {true, false, false, true, true, base::ThreadPriority::NORMAL},
-  {true, false, false, true, false, base::ThreadPriority::NORMAL},
-  {true, false, false, false, true, base::ThreadPriority::NORMAL},
-  {true, false, false, false, false, base::ThreadPriority::NORMAL},
+    // The OfflineAudioContext always uses a NORMAL priority thread.
+    {true, false, true, true, base::ThreadPriority::NORMAL},
+    {true, false, true, false, base::ThreadPriority::NORMAL},
+    {true, false, false, true, base::ThreadPriority::NORMAL},
+    {true, false, false, false, base::ThreadPriority::NORMAL},
 
-  // Top-level await does not affect the test result.
-  {false, true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
-  {false, true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
-  {false, true, true, false, true, base::ThreadPriority::NORMAL},
-  {false, true, true, false, false, base::ThreadPriority::NORMAL},
-  {false, true, false, true, true, base::ThreadPriority::REALTIME_AUDIO},
-  {false, true, false, true, false, base::ThreadPriority::DISPLAY},
-  {false, true, false, false, true, base::ThreadPriority::NORMAL},
-  {false, true, false, false, false, base::ThreadPriority::NORMAL},
-  {false, false, true, true, true, base::ThreadPriority::NORMAL},
-  {false, false, true, true, false, base::ThreadPriority::NORMAL},
-  {false, false, true, false, true, base::ThreadPriority::NORMAL},
-  {false, false, true, false, false, base::ThreadPriority::NORMAL},
-  {false, false, false, true, true, base::ThreadPriority::NORMAL},
-  {false, false, false, true, false, base::ThreadPriority::NORMAL},
-  {false, false, false, false, true, base::ThreadPriority::NORMAL},
-  {false, false, false, false, false, base::ThreadPriority::NORMAL},
+    // Top-level await does not affect the test result.
+    {false, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
+    {false, true, true, false, base::ThreadPriority::NORMAL},
+    {false, true, false, true, base::ThreadPriority::DISPLAY},
+    {false, true, false, false, base::ThreadPriority::NORMAL},
+    {false, false, true, true, base::ThreadPriority::NORMAL},
+    {false, false, true, false, base::ThreadPriority::NORMAL},
+    {false, false, false, true, base::ThreadPriority::NORMAL},
+    {false, false, false, false, base::ThreadPriority::NORMAL},
 };
 
 class AudioWorkletThreadPriorityTest
@@ -385,18 +368,13 @@ class AudioWorkletThreadPriorityTest
   AudioWorkletThreadPriorityTest()
       : AudioWorkletThreadTestBase(GetParam().use_top_level_await) {}
 
-  void InitWithRealtimePrioritySettings(bool is_enabled_by_finch,
-                                        bool is_enabled_by_flag) {
+  void InitWithRealtimePrioritySettings(bool is_enabled_by_finch) {
     std::vector<base::Feature> enabled;
     std::vector<base::Feature> disabled;
     if (is_enabled_by_finch)
       enabled.push_back(features::kAudioWorkletThreadRealtimePriority);
     else
       disabled.push_back(features::kAudioWorkletThreadRealtimePriority);
-    if (is_enabled_by_flag)
-      enabled.push_back(features::kAudioWorkletRealtimeThread);
-    else
-      disabled.push_back(features::kAudioWorkletRealtimeThread);
     feature_list_.InitWithFeatures(enabled, disabled);
   }
 
@@ -454,8 +432,7 @@ class AudioWorkletThreadPriorityTest
 
 TEST_P(AudioWorkletThreadPriorityTest, CheckThreadPriority) {
   const auto& test_param = GetParam();
-  InitWithRealtimePrioritySettings(test_param.is_enabled_by_finch,
-                                   test_param.is_enabled_by_flag);
+  InitWithRealtimePrioritySettings(test_param.is_enabled_by_finch);
   CreateCheckThreadPriority(test_param.has_realtime_constraint,
                             test_param.is_top_level_frame,
                             test_param.expected_priority);

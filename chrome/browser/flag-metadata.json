@@ -281,11 +281,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "audio-worklet-realtime-thread",
-    "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "auto-screen-brightness",
     "owners": [ "jiameng", "napper" ],
     "expiry_milestone": 90

@@ -204,10 +204,6 @@
       status: "experimental",
     },
     {
-      name: "AudioWorkletRealtimeThread",
-      status: "experimental",
-    },
-    {
       name: "AutoLazyLoadOnReloads",
       depends_on: ["LazyFrameLoading"],
     },

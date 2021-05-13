@@ -382,9 +382,6 @@ const base::Feature kWebFontsCacheAwareTimeoutAdaption {
 const base::Feature kBlockingFocusWithoutUserActivation{
     "BlockingFocusWithoutUserActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAudioWorkletRealtimeThread{
-    "AudioWorkletRealtimeThread", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // A server-side switch for the REALTIME_AUDIO thread priority of
 // RealtimeAudioWorkletThread object. When disabled, it will use the NORMAL
 // priority thread.

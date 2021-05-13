@@ -163,12 +163,6 @@ const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[] =
     "a blob and the verification process of the signed exchange is skipped for "
     "the succeeding navigation.";
 
-const char kAudioWorkletRealtimeThreadName[] =
-    "Use realtime priority thread for Audio Worklet";
-const char kAudioWorkletRealtimeThreadDescription[] =
-    "Run Audio Worklet operation on a realtime priority thread for better "
-    "audio stream stability.";
-
 const char kUpdatedCellularActivationUiName[] =
     "Updated Cellular Activation UI";
 const char kUpdatedCellularActivationUiDescription[] =
