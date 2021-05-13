@@ -33,7 +33,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
-import {AppState, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings} from './scanning_app_types.js';
+import {AppState, MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
@@ -907,8 +907,25 @@ Polymer({
       this.savedScanSettings_.scanners[scannerIndex] = newScannerSetting;
     }
 
+    if (this.savedScanSettings_.scanners.length > MAX_NUM_SAVED_SCANNERS) {
+      this.evictScannersFromScanSettings_();
+    }
+
     this.browserProxy_.saveScanSettings(
         JSON.stringify(this.savedScanSettings_));
+  },
+
+  /**
+   * Sort the saved settings scanners array so the oldest scanners are moved to
+   * the back then dropped.
+   * @private
+   */
+  evictScannersFromScanSettings_() {
+    this.savedScanSettings_.scanners.sort((firstScanner, secondScanner) => {
+      return new Date(secondScanner.lastScanDate) -
+          new Date(firstScanner.lastScanDate);
+    });
+    this.savedScanSettings_.scanners.splice(MAX_NUM_SAVED_SCANNERS);
   },
 
   /**

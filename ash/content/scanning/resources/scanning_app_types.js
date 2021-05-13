@@ -32,6 +32,12 @@ export const ScanCompleteAction = {
 };
 
 /**
+ * Maximum number of scanners allowed in saved scan settings.
+ * @const {number}
+ */
+export const MAX_NUM_SAVED_SCANNERS = 20;
+
+/**
  * @typedef {!Array<!ash.scanning.mojom.Scanner>}
  */
 export let ScannerArr;

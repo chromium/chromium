@@ -7,7 +7,7 @@ import 'chrome://scanning/scanning_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
-import {ScannerArr, ScannerSetting, ScanSettings} from 'chrome://scanning/scanning_app_types.js';
+import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
@@ -443,6 +443,8 @@ export function scanningAppTest() {
 
     // Replace |lastScanDate|, which is a current date timestamp, with a fixed
     // date so assertArrayEquals() can be used.
+    expectedScanSettings.scanners.forEach(
+        scanner => scanner.lastScanDate = LAST_SCAN_DATE);
     actualScanSettings.scanners.forEach(
         scanner => scanner.lastScanDate = LAST_SCAN_DATE);
     assertArrayEquals(
@@ -1388,6 +1390,105 @@ export function scanningAppTest() {
           const actualSavedScanSettings = /** @type {!ScanSettings} */
               (JSON.parse(/** @type {string} */ (
                   testBrowserProxy.getArgs('saveScanSettings')[0])));
+          compareSavedScanSettings(savedScanSettings, actualSavedScanSettings);
+        });
+  });
+
+  // Verify that the correct scanner gets evicted when there are too many
+  // scanners in saved scan settings.
+  test('evictScannersOverTheMaxLimit', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const scannerToEvict = {
+      name: secondScannerName,
+      lastScanDate: '1/1/2021',
+      sourceName: ADF_DUPLEX,
+      fileType: ash.scanning.mojom.FileType.kPng,
+      colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+      pageSize: ash.scanning.mojom.PageSize.kMax,
+      resolutionDpi: 100,
+    };
+
+    // Create an identical scanner with `lastScanDate` set to infinity so it
+    // will always have a later `lastScanDate` than |scannerToEvict|.
+    const scannerToKeep = Object.assign({}, scannerToEvict);
+    scannerToKeep.lastScanDate = '9999-12-31T08:00:00.000Z';
+    assertTrue(
+        new Date(scannerToKeep.lastScanDate) >
+        new Date(scannerToEvict.lastScanDate));
+
+
+    const scannersToKeep =
+        /** @type {!Array<ScannerSetting>} */ (
+            new Array(MAX_NUM_SAVED_SCANNERS).fill(scannerToKeep));
+
+    // Put |scannerToEvict| in the front of |scannersToKeep| to test that it
+    // get correctly sorted to the back of the array when evicting scanners.
+    const savedScanSettings = {
+      lastUsedScannerName: secondScannerName,
+      scanToPath: MY_FILES_PATH,
+      scanners: [scannerToEvict].concat(scannersToKeep),
+    };
+    testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+
+          const actualSavedScanSettings = /** @type {!ScanSettings} */
+              (JSON.parse(/** @type {string} */ (
+                  testBrowserProxy.getArgs('saveScanSettings')[0])));
+          assertEquals(
+              MAX_NUM_SAVED_SCANNERS, actualSavedScanSettings.scanners.length);
+          assertArrayEquals(scannersToKeep, actualSavedScanSettings.scanners);
+        });
+  });
+
+  // Verify that no scanners get evicted when the number of scanners in saved
+  // scan settings is equal to |MAX_NUM_SAVED_SCANNERS|.
+  test('doNotEvictScannersAtMax', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const scanners = /** @type {!Array<ScannerSetting>} */ (
+        new Array(MAX_NUM_SAVED_SCANNERS));
+    for (let i = 0; i < MAX_NUM_SAVED_SCANNERS; i++) {
+      scanners[i] = {
+        name: 'Scanner ' + (i + 1),
+        lastScanDate: new Date(new Date().getTime() + i),
+        sourceName: ADF_DUPLEX,
+        fileType: ash.scanning.mojom.FileType.kPng,
+        colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+        pageSize: ash.scanning.mojom.PageSize.kMax,
+        resolutionDpi: 300,
+      };
+    }
+
+    const savedScanSettings = {
+      lastUsedScannerName: firstScannerName,
+      scanToPath: MY_FILES_PATH,
+      scanners: scanners,
+    };
+    testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+
+          const actualSavedScanSettings = /** @type {!ScanSettings} */
+              (JSON.parse(/** @type {string} */ (
+                  testBrowserProxy.getArgs('saveScanSettings')[0])));
+          assertEquals(
+              MAX_NUM_SAVED_SCANNERS, actualSavedScanSettings.scanners.length);
           compareSavedScanSettings(savedScanSettings, actualSavedScanSettings);
         });
   });
