@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -27,7 +28,17 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;
 
 // Test fixture for SaveAddressProfileInfobarBannerOverlayMediator.
-using SaveAddressProfileInfobarBannerOverlayMediatorTest = PlatformTest;
+class SaveAddressProfileInfobarBannerOverlayMediatorTest : public PlatformTest {
+ public:
+  SaveAddressProfileInfobarBannerOverlayMediatorTest()
+      : callback_installer_(
+            &callback_receiver_,
+            {InfobarBannerShowModalResponse::ResponseSupport()}) {}
+
+ protected:
+  MockOverlayRequestCallbackReceiver callback_receiver_;
+  FakeOverlayRequestCallbackInstaller callback_installer_;
+};
 
 // Tests that a SaveAddressProfileInfobarBannerOverlayMediator correctly sets up
 // its consumer.
@@ -67,4 +78,36 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
   EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);
+}
+
+// Tests that the modal is shown when infobar button is pressed.
+TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
+       PresentModalWhenInfobarButtonIsPressed) {
+  autofill::AutofillProfile profile(base::GenerateGUID(),
+                                    "https://www.example.com/");
+  std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
+      passed_delegate = std::make_unique<
+          autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
+          profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+          base::BindOnce(
+              ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
+                    user_decision,
+                autofill::AutofillProfile profile){
+              }));
+  InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+                     std::move(passed_delegate));
+
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<SaveAddressProfileBannerRequestConfig>(
+          &infobar);
+  callback_installer_.InstallCallbacks(request.get());
+  SaveAddressProfileInfobarBannerOverlayMediator* mediator =
+      [[SaveAddressProfileInfobarBannerOverlayMediator alloc]
+          initWithRequest:request.get()];
+
+  EXPECT_CALL(
+      callback_receiver_,
+      DispatchCallback(request.get(),
+                       InfobarBannerShowModalResponse::ResponseSupport()));
+  [mediator bannerInfobarButtonWasPressed:nil];
 }

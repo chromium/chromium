@@ -22,10 +22,12 @@ class SaveAddressProfileInfobarBannerInteractionHandler
   ~SaveAddressProfileInfobarBannerInteractionHandler() override;
 
   // InfobarBannerInteractionHandler:
-  void MainButtonTapped(InfoBarIOS* infobar) override;
   void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
   void ShowModalButtonTapped(InfoBarIOS* infobar,
                              web::WebState* web_state) override;
+  // The delegate's InfoBarDismissed() would be called in
+  // BannerVisibilityChanged().
+  void BannerDismissedByUser(InfoBarIOS* infobar) override {}
 
  private:
   // Returns the SaveAddressProfile delegate from |infobar|.

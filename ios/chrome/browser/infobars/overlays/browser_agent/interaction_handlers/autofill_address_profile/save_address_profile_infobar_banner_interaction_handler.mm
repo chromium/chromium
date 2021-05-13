@@ -29,11 +29,6 @@ SaveAddressProfileInfobarBannerInteractionHandler::
 SaveAddressProfileInfobarBannerInteractionHandler::
     ~SaveAddressProfileInfobarBannerInteractionHandler() = default;
 
-void SaveAddressProfileInfobarBannerInteractionHandler::MainButtonTapped(
-    InfoBarIOS* infobar) {
-  infobar->set_accepted(GetInfobarDelegate(infobar)->Accept());
-}
-
 void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
@@ -47,15 +42,7 @@ void SaveAddressProfileInfobarBannerInteractionHandler::ShowModalButtonTapped(
   // Inform delegate that the modal is shown.
   GetInfobarDelegate(infobar)->set_modal_is_shown_to_true();
 
-  InsertParams params(infobar);
-  params.infobar = infobar;
-  params.overlay_type = InfobarOverlayType::kModal;
-  params.insertion_index = OverlayRequestQueue::FromWebState(
-                               web_state, OverlayModality::kInfobarModal)
-                               ->size();
-  params.source = InfobarOverlayInsertionSource::kBanner;
-  InfobarOverlayRequestInserter::FromWebState(web_state)->InsertOverlayRequest(
-      params);
+  InfobarBannerInteractionHandler::ShowModalButtonTapped(infobar, web_state);
 }
 
 #pragma mark - Private

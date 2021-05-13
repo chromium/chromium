@@ -43,12 +43,6 @@ class SaveAddressProfileInfobarBannerInteractionHandlerTest
   std::unique_ptr<InfoBarIOS> infobar_;
 };
 
-// Tests MainButtonTapped() calls Accept() on the mock delegate.
-TEST_F(SaveAddressProfileInfobarBannerInteractionHandlerTest, MainButton) {
-  EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
-  handler_.MainButtonTapped(infobar_.get());
-}
-
 // Tests that BannerVisibilityChanged() InfobarDismissed() on the mock delegate.
 TEST_F(SaveAddressProfileInfobarBannerInteractionHandlerTest, Presentation) {
   EXPECT_CALL(mock_delegate(), InfoBarDismissed());

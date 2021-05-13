@@ -43,6 +43,13 @@ using autofill_address_profile_infobar_overlays::
   return SaveAddressProfileBannerRequestConfig::RequestSupport();
 }
 
+#pragma mark - InfobarOverlayRequestMediator
+
+- (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  // Present the modal if the save/update button is pressed.
+  [self presentInfobarModalFromBanner];
+}
+
 @end
 
 @implementation SaveAddressProfileInfobarBannerOverlayMediator (ConsumerSupport)
@@ -60,8 +67,6 @@ using autofill_address_profile_infobar_overlays::
   [self.consumer setRestrictSubtitleTextToSingleLine:YES];
   [self.consumer
       setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];
-
-  [self.consumer setPresentsModal:YES];
 }
 
 @end
