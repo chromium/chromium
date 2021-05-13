@@ -29,7 +29,6 @@ class MockSaveAddressProfilePromptView : public SaveAddressProfilePromptView {
                const AutofillProfile& autofill_profile,
                bool is_update),
               (override));
-  MOCK_METHOD(void, RefreshContent, (), (override));
 };
 
 class SaveAddressProfilePromptControllerTest : public testing::Test {
@@ -135,7 +134,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
-       ShouldInvokeSaveCallbackWhenUserAcceptsAfterEditingTheProfile) {
+       ShouldInvokeSaveCallbackWhenUserEditsProfile) {
   controller_->DisplayPrompt();
 
   AutofillProfile edited_profile = GetFullProfileNoStatus();
@@ -148,7 +147,6 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->OnUserEdited(
       env_, mock_caller_,
       base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));
-  controller_->OnUserAccepted(env_, mock_caller_);
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
@@ -192,28 +190,6 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
   EXPECT_EQ(u"Update", controller_->GetPositiveButtonText());
   EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
-}
-
-TEST_F(SaveAddressProfilePromptControllerTest,
-       ShouldRefreshContentAfterEditingTheProfile) {
-  controller_->DisplayPrompt();
-
-  AutofillProfile edited_profile = GetFullProfileNoStatus();
-  base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
-      PersonalDataManagerAndroid::CreateJavaProfileFromNative(env_,
-                                                              edited_profile);
-  EXPECT_CALL(*prompt_view_, RefreshContent());
-  controller_->OnUserEdited(
-      env_, mock_caller_,
-      base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));
-
-  // Also the getters should return data for the `edited_profile`.
-  EXPECT_EQ(
-      u"Mona J. Liza\nCompany Inc.\n33 Narrow Street\nApt 42\nPlaya Vista, LA "
-      u"12345\nUnited States",
-      controller_->GetAddress());
-  EXPECT_EQ(u"email@example.com", controller_->GetEmail());
-  EXPECT_EQ(u"13105551234", controller_->GetPhoneNumber());
 }
 
 }  // namespace autofill

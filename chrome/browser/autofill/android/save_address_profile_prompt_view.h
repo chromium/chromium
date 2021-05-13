@@ -20,8 +20,6 @@ class SaveAddressProfilePromptView {
                     const AutofillProfile& autofill_profile,
                     bool is_update) = 0;
 
-  virtual void RefreshContent() = 0;
-
   virtual ~SaveAddressProfilePromptView() = default;
 };
 

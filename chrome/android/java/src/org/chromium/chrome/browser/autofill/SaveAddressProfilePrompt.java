@@ -162,6 +162,7 @@ public class SaveAddressProfilePrompt {
 
     private void onEdited(AutofillAddress autofillAddress) {
         mController.onUserEdited(autofillAddress.getProfile());
+        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
@@ -172,6 +173,7 @@ public class SaveAddressProfilePrompt {
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 mController.onUserDeclined();
                 break;
+            case DialogDismissalCause.ACTION_ON_CONTENT:
             default:
                 // No explicit user decision.
                 break;

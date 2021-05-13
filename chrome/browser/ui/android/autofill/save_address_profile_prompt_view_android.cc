@@ -38,7 +38,6 @@ bool SaveAddressProfilePromptViewAndroid::Show(
     SaveAddressProfilePromptController* controller,
     const AutofillProfile& autofill_profile,
     bool is_update) {
-  DCHECK(!controller_);
   DCHECK(controller);
   if (!web_contents_->GetTopLevelNativeWindow()) {
     return false;  // No window attached (yet or anymore).
@@ -67,35 +66,34 @@ bool SaveAddressProfilePromptViewAndroid::Show(
   if (!java_object_)
     return false;
 
-  controller_ = controller;
-  is_update_ = is_update;
-  RefreshContent();
+  SetContent(controller, is_update);
   Java_SaveAddressProfilePrompt_show(env, java_object_);
   return true;
 }
 
-void SaveAddressProfilePromptViewAndroid::RefreshContent() {
-  DCHECK(controller_);
+void SaveAddressProfilePromptViewAndroid::SetContent(
+    SaveAddressProfilePromptController* controller,
+    bool is_update) {
+  DCHECK(controller);
   DCHECK(java_object_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title =
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle());
+      base::android::ConvertUTF16ToJavaString(env, controller->GetTitle());
   ScopedJavaLocalRef<jstring> positive_button_text =
       base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetPositiveButtonText());
+          env, controller->GetPositiveButtonText());
   ScopedJavaLocalRef<jstring> negative_button_text =
       base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetNegativeButtonText());
+          env, controller->GetNegativeButtonText());
   Java_SaveAddressProfilePrompt_setDialogDetails(
       env, java_object_, title, positive_button_text, negative_button_text);
 
-  if (is_update_) {
+  if (is_update) {
     ScopedJavaLocalRef<jstring> subtitle =
-        base::android::ConvertUTF16ToJavaString(env,
-                                                controller_->GetSubtitle());
+        base::android::ConvertUTF16ToJavaString(env, controller->GetSubtitle());
     std::pair<std::u16string, std::u16string> differences =
-        controller_->GetDiffFromOldToNewProfile();
+        controller->GetDiffFromOldToNewProfile();
     ScopedJavaLocalRef<jstring> old_details =
         base::android::ConvertUTF16ToJavaString(env, differences.first);
     ScopedJavaLocalRef<jstring> new_details =
@@ -104,11 +102,11 @@ void SaveAddressProfilePromptViewAndroid::RefreshContent() {
                                                    old_details, new_details);
   } else {
     ScopedJavaLocalRef<jstring> address =
-        base::android::ConvertUTF16ToJavaString(env, controller_->GetAddress());
+        base::android::ConvertUTF16ToJavaString(env, controller->GetAddress());
     ScopedJavaLocalRef<jstring> email =
-        base::android::ConvertUTF16ToJavaString(env, controller_->GetEmail());
+        base::android::ConvertUTF16ToJavaString(env, controller->GetEmail());
     ScopedJavaLocalRef<jstring> phone = base::android::ConvertUTF16ToJavaString(
-        env, controller_->GetPhoneNumber());
+        env, controller->GetPhoneNumber());
     Java_SaveAddressProfilePrompt_setSaveDetails(env, java_object_, address,
                                                  email, phone);
   }
