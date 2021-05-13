@@ -232,9 +232,5 @@ void InputEngine::DisplaySuggestions(
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
-void InputEngine::RecordUkm(mojom::UkmEntryPtr entry) {
-  NOTIMPLEMENTED();  // Not used in the rulebased engine.
-}
-
 }  // namespace ime
 }  // namespace chromeos

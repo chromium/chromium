@@ -231,7 +231,6 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
   }
 
   const ime::PublicMessage& reply = wrapper.public_message();
-  // TODO(crbug/1146266): Add case to handle request for suggestions.
   switch (reply.param_case()) {
     case ime::PublicMessage::kOnKeyEventReply: {
       const auto it = pending_key_event_callbacks_.find(reply.seq_id());
@@ -286,12 +285,6 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
     case ime::PublicMessage::kDisplaySuggestions: {
       remote->DisplaySuggestions(
           ProtoToTextSuggestions(reply.display_suggestions()));
-      break;
-    }
-    case ime::PublicMessage::kRecordUkm: {
-      auto ukm = ProtoToUkmEntry(reply.record_ukm());
-      if (ukm)
-        remote->RecordUkm(std::move(ukm));
       break;
     }
     default:

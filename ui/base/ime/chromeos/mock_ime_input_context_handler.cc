@@ -136,8 +136,4 @@ bool MockIMEInputContextHandler::HasCompositionText() {
   return !last_update_composition_arg_.composition_text.text.empty();
 }
 
-ukm::SourceId MockIMEInputContextHandler::GetClientSourceForMetrics() {
-  return ukm::kInvalidSourceId;
-}
-
 }  // namespace ui

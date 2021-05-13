@@ -40395,14 +40395,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="pointerup"/>
 </enum>
 
-<enum name="InputMethodApiOperation">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="CommitText_MoveCursorAfterText"/>
-  <int value="2" label="CommitText_MoveCursorBeforeText"/>
-  <int value="3" label="SetCompositionText"/>
-  <int value="4" label="DeleteSurroundingText"/>
-</enum>
-
 <enum name="InputMethodCategory">
   <int value="0" label="Unkown"/>
   <int value="1" label="XKB">XKeyboard</int>
