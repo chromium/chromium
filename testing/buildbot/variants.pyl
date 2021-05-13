@@ -66,7 +66,7 @@
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
-      '--ash-chrome-path=../../lacros_version_skew_tests_M92/chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_M92/chrome',
     ],
     'identifier': 'Lacros version skew testing ash 92.0.4499.0',
     'swarming': {

@@ -52535,7 +52535,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--ash-chrome-path=../../lacros_version_skew_tests_M92/chrome"
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_M92/chrome"
         ],
         "merge": {
           "args": [],
