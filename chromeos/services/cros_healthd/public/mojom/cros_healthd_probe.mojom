@@ -36,6 +36,7 @@ enum ProbeCategoryEnum {
   kBluetooth,
   kSystem,
   kNetwork,
+  kAudio,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -527,6 +528,27 @@ union NetworkResult {
   ProbeError error;
 };
 
+// Audio probe result. Can either be populated with the AudioInfo or an
+// error retrieving the information.
+union AudioResult {
+  // Valid AudioInfo.
+  AudioInfo audio_info;
+  // The error that occurred attempting to retrieve the AudioInfo.
+  ProbeError error;
+};
+
+// Audio information.
+struct AudioInfo {
+  // Is active output device mute or not.
+  bool output_mute;
+  // Is active input device mute or not.
+  bool input_mute;
+  // Active output device's volume in [0, 100].
+  uint64 output_volume;
+  // Active output device's name.
+  string output_device_name;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -571,4 +593,7 @@ struct TelemetryInfo {
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.
   NetworkResult? network_result;
+  // Information about the audio devices. Only present when kAudio was included
+  // in the categories input to ProbeTelemetryInfo.
+  AudioResult? audio_result;
 };
