@@ -397,9 +397,10 @@ class PageContentAnnotationsServiceLoadEachExecutionTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky: crbug/1208866
 // Regression test for crbug/1204162.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
-                       ModelLoadsAndExecutes) {
+                       DISABLED_ModelLoadsAndExecutes) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
