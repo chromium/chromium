@@ -585,25 +585,29 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
 
     // 1.1. Let a = +Infinity and b = −Infinity.
     // ==> 'a' is left/top of characters. 'b' is right/top of characters.
-    float a = std::numeric_limits<float>::infinity();
-    float b = -std::numeric_limits<float>::infinity();
+    float min_position = std::numeric_limits<float>::infinity();
+    float max_position = -std::numeric_limits<float>::infinity();
     // 1.2. For each index k in the range [i, j] where the "addressable" flag
     // of result[k] is true:
     for (wtf_size_t k = i; k <= j; ++k) {
+      // The code in this block is simpler than the specification because
+      // min_char_pos is always smaller edge of the character though
+      // result[k].x/y in the specification is not.
+
       // 1.2.1. Let pos = the x coordinate of the position in result[k], if
       // the "horizontal" flag is true, and the y coordinate otherwise.
-      float pos = horizontal_ ? *result_[k].x : *result_[k].y;
+      const float min_char_pos = horizontal_ ? *result_[k].x : *result_[k].y;
       // 2.2.2. Let advance = the advance of the typographic character
       // corresponding to character k.
-      float advance = result_[k].inline_size;
+      const float inline_size = result_[k].inline_size;
       // 2.2.3. Set a = min(a, pos, pos + advance).
-      a = std::min(a, pos);
+      min_position = std::min(min_position, min_char_pos);
       // 2.2.4. Set b = max(b, pos, pos + advance).
-      b = std::max(b, pos + advance);
+      max_position = std::max(max_position, min_char_pos + inline_size);
     }
 
     // 1.3. if a != +Infinity, then:
-    if (a != std::numeric_limits<float>::infinity()) {
+    if (min_position != std::numeric_limits<float>::infinity()) {
       // 1.3.1. Let shift be the x coordinate of result[i], if the "horizontal"
       // flag is true, and the y coordinate otherwise.
       float shift = horizontal_ ? *result_[i].x : *result_[i].y;
@@ -631,13 +635,13 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
           NOTREACHED();
           FALLTHROUGH;
         case ETextAnchor::kStart:
-          shift = is_ltr ? shift - a : shift - b;
+          shift = is_ltr ? shift - min_position : shift - max_position;
           break;
         case ETextAnchor::kEnd:
-          shift = is_ltr ? shift - b : shift - a;
+          shift = is_ltr ? shift - max_position : shift - min_position;
           break;
         case ETextAnchor::kMiddle:
-          shift = shift - (a + b) / 2;
+          shift = shift - (min_position + max_position) / 2;
           break;
       }
 
