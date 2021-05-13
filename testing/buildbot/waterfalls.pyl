@@ -138,6 +138,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'lacros_smoke_tast_tests_eve',
@@ -152,6 +153,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
@@ -166,7 +168,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
