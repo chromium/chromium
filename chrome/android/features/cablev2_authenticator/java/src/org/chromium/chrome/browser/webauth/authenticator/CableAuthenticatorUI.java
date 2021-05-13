@@ -9,8 +9,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -43,6 +42,9 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -64,6 +66,10 @@ public class CableAuthenticatorUI
     // for before being replaced with a prompt to connect via USB cable.
     private static final int USB_PROMPT_TIMEOUT_SECS = 20;
 
+    // NOTIFICATION_TIMEOUT_SECS is the number of seconds that a notification
+    // will exist for. This stop ignored notifications hanging around.
+    private static final int NOTIFICATION_TIMEOUT_SECS = 60;
+
     private static final String FCM_EXTRA = "org.chromium.chrome.modules.cablev2_authenticator.FCM";
     private static final String NETWORK_CONTEXT_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
@@ -73,8 +79,6 @@ public class CableAuthenticatorUI
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
     private static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
-    private static final String NOTIFICATION_CHANNEL_ID =
-            "chrome.android.features.cablev2_authenticator";
 
     // These entries duplicate some of the enum values from
     // device::cablev2::authenticator::Platform::Error. They must be kept in
@@ -532,22 +536,6 @@ public class CableAuthenticatorUI
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Register a channel for this notification. Registering the same
-            // channel twice is harmless.
-            CharSequence name = "Security key activations";
-            // TODO: finalise string and translate.
-            String description =
-                    "Notifications that appear when you attempt to log in on another device";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel =
-                    new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager =
-                    context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-
         Intent intent;
         try {
             intent = new Intent(context, Class.forName(activityClassName));
@@ -577,17 +565,23 @@ public class CableAuthenticatorUI
                 break;
         }
 
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                        .setContentTitle(title)
-                        .setContentText(body)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true)
-                        .setContentIntent(pendingIntent)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        Notification notification = NotificationWrapperBuilderFactory
+                                            .createNotificationWrapperBuilder(
+                                                    /*preferCompat=*/true,
+                                                    ChromeChannelDefinitions.ChannelId.SECURITY_KEY)
+                                            .setAutoCancel(true)
+                                            .setCategory(Notification.CATEGORY_MESSAGE)
+                                            .setContentIntent(pendingIntent)
+                                            .setContentText(body)
+                                            .setContentTitle(title)
+                                            .setPriorityBeforeO(NotificationCompat.PRIORITY_MAX)
+                                            .setSmallIcon(org.chromium.chrome.R.drawable.ic_chrome)
+                                            .setTimeoutAfter(NOTIFICATION_TIMEOUT_SECS * 1000)
+                                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                                            .build();
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(NOTIFICATION_CHANNEL_ID, ID, builder.build());
+        notificationManager.notify(
+                NotificationConstants.NOTIFICATION_ID_SECURITY_KEY, notification);
     }
 }
