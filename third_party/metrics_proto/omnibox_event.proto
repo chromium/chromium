@@ -215,6 +215,8 @@ message OmniboxEventProto {
     // Only used by Android Chrome. Represents a suggestion showing query tiles
     // that users can tap on for bulding queries.
     QUERY_TILE = 19;
+    // Clusters generated on-device from the user's Chrome history.
+    HISTORY_CLUSTER = 20;
   }
 
   // The result set displayed on the completion popup
@@ -291,6 +293,12 @@ message OmniboxEventProto {
       CLIPBOARD_IMAGE = 29;        // An image based on the clipboard.
       TILE_SUGGESTION = 30;        // A search query from Chrome Query Tiles
                                    // feature. Only used by Android.
+      HISTORY_CLUSTER = 31;        // A past page that is a member of a cluster
+                                   // (an aggregation of related searches and
+                                   // URLs from the user's history) that
+                                   // contains the input (the input might or
+                                   // might not also match the title or URL of
+                                   // this page).
     }
     optional ResultType result_type = 2;
 
