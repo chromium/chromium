@@ -940,11 +940,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
     descendant_line_box->AddOutlineRectsForNormalChildren(
         outline_rects, additional_offset + descendant.Offset(), outline_type,
         containing_block);
-
-    if (!descendant_line_box->Size().IsEmpty()) {
-      outline_rects->emplace_back(additional_offset + descendant.Offset(),
-                                  descendant_line_box->Size().ToLayoutSize());
-    }
+    // We don't add the line box itself. crbug.com/1203247.
   }
 }
 
