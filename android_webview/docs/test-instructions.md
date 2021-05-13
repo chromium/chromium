@@ -119,6 +119,29 @@ $ adb logcat
 To run page cycler tests instead, use the `system_webview_shell_page_cycler_apk`
 target and test runner in the steps above.
 
+### UI tests
+
+Like [layout and page cycler tests](#Layout-tests-and-page-cycler-tests),
+WebView UI tests use the WebView installed on the system (and will automatically
+compile and install the `system_webview_apk` target). Unlike those tests
+however, this test suite _does not_ depend on the system WebView shell app, so
+the setup is simpler. You will still need to follow the [full build
+instructions](build-instructions.md) to correctly configure the
+`system_webview_apk` target, but will not need to worry about compiling the
+WebView shell (and do not need to worry about https://crbug.com/1205665).
+
+```sh
+# Build (this also compiles system_webview_apk)
+$ autoninja -C out/Default webview_ui_test_app_test_apk
+
+# Run layout tests (installs the test APK and system_webview_apk and also
+# switches your WebView provider)
+$ out/Default/bin/run_webview_ui_test_app_test_apk
+
+# Print both Java and C++ log messages to the console (optional):
+$ adb logcat
+```
+
 ### Useful test runner options
 
 #### Debugging flaky tests
