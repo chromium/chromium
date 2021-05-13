@@ -51112,6 +51112,11 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Low and High confidence."/>
 </enum>
 
+<enum name="MBOSupport">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Supported"/>
+</enum>
+
 <enum name="MdnsResponderServiceError">
   <int value="0" label="Fail to start manager"/>
   <int value="1" label="Fail to create responder"/>
