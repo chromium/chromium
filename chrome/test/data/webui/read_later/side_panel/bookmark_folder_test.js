@@ -6,15 +6,20 @@
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
 import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
+import {TestReadLaterApiProxy} from '../test_read_later_api_proxy.js';
 
 suite('SidePanelBookmarkFolderTest', () => {
   /** @type {!BookmarkFolderElement} */
   let bookmarkFolder;
+
+  /** @type {!TestReadLaterApiProxy} */
+  let readLaterApi;
 
   /** @type {!chrome.bookmarks.BookmarkTreeNode} */
   const folder = {
@@ -48,6 +53,9 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   setup(async () => {
     document.body.innerHTML = '';
+
+    readLaterApi = new TestReadLaterApiProxy();
+    ReadLaterApiProxyImpl.instance_ = readLaterApi;
 
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));
@@ -99,5 +107,12 @@ suite('SidePanelBookmarkFolderTest', () => {
     bookmarkFolder.shadowRoot.querySelector('.row').click();
     assertTrue(arrowIcon.hasAttribute('open'));
     assertFalse(childrenElement.hasAttribute('hidden'));
+  });
+
+  test('OpensBookmark', async () => {
+    getChildElements()[1].click();
+    const [url, updateReadStatus] = await readLaterApi.whenCalled('openURL');
+    assertEquals(folder.children[1].url, url.url);
+    assertFalse(updateReadStatus);
   });
 });

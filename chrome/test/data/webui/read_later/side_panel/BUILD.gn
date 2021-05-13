@@ -30,6 +30,7 @@ js_library("bookmarks_list_test") {
 
 js_library("bookmark_folder_test") {
   deps = [
+    "../:test_read_later_api_proxy",
     "../..:chai_assert",
     "//chrome/browser/resources/read_later/side_panel:bookmark_folder",
     "//ui/webui/resources/js:icon.m",

@@ -63,7 +63,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
 
   /** @private */
   onClick_() {
-    this.apiProxy_.openSavedEntry(this.data.url);
+    this.apiProxy_.openURL(this.data.url, true);
   }
 
   /**

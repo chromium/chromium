@@ -12,7 +12,7 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getReadLaterEntries',
-      'openSavedEntry',
+      'openURL',
       'updateReadStatus',
       'removeEntry',
       'showUI',
@@ -33,8 +33,8 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  openSavedEntry(url) {
-    this.methodCalled('openSavedEntry', url);
+  openURL(url, mark_as_read) {
+    this.methodCalled('openURL', [url, mark_as_read]);
   }
 
   /** @override */

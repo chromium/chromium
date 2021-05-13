@@ -105,8 +105,9 @@ suite('ReadLaterAppTest', () => {
   test('click on item passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     clickItem(expectedUrl);
-    const url = await testProxy.whenCalled('openSavedEntry');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
     assertEquals(url.url, expectedUrl);
+    assertTrue(updateReadStatus);
   });
 
   test('Click on item mark as read button triggers actions', async () => {
@@ -160,8 +161,9 @@ suite('ReadLaterAppTest', () => {
         (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
 
     keyDownOn(readLaterItem, 0, [], 'Enter');
-    const url = await testProxy.whenCalled('openSavedEntry');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
     assertEquals(url.url, expectedUrl);
+    assertTrue(updateReadStatus);
   });
 
   test('Space key triggers action and passes correct url', async () => {
@@ -170,8 +172,9 @@ suite('ReadLaterAppTest', () => {
         (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
 
     keyDownOn(readLaterItem, 0, [], ' ');
-    const url = await testProxy.whenCalled('openSavedEntry');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
     assertEquals(url.url, expectedUrl);
+    assertTrue(updateReadStatus);
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {

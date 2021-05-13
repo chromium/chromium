@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
 export class BookmarkFolderElement extends PolymerElement {
   static get is() {
@@ -44,6 +45,13 @@ export class BookmarkFolderElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+
+    /** @private @const {!ReadLaterApiProxy} */
+    this.readLaterApi_ = ReadLaterApiProxyImpl.getInstance();
+  }
+
   ready() {
     super.ready();
     this.open_ = this.openByDefault;
@@ -55,7 +63,7 @@ export class BookmarkFolderElement extends PolymerElement {
    */
   onBookmarkClick_(event) {
     event.preventDefault();
-    // TODO(johntlee): Navigate to bookmark URL in current tab.
+    this.readLaterApi_.openURL({url: event.model.item.url}, false);
   }
 
   /**

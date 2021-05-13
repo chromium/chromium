@@ -82,7 +82,7 @@ void ReadLaterPageHandler::GetReadLaterEntries(
   std::move(callback).Run(CreateReadLaterEntriesByStatusData());
 }
 
-void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
+void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -97,7 +97,9 @@ void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
-  reading_list_model_->SetReadStatus(url, true);
+
+  if (mark_as_read)
+    reading_list_model_->SetReadStatus(url, true);
 }
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {

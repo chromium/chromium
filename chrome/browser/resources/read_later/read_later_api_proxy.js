@@ -16,8 +16,11 @@ export class ReadLaterApiProxy {
    */
   getReadLaterEntries() {}
 
-  /** @param {!url.mojom.Url} url */
-  openSavedEntry(url) {}
+  /**
+   * @param {!url.mojom.Url} url
+   * @param {boolean} mark_as_read
+   */
+  openURL(url, mark_as_read) {}
 
   /**
    * @param {!url.mojom.Url} url
@@ -57,8 +60,8 @@ export class ReadLaterApiProxyImpl {
   }
 
   /** @override */
-  openSavedEntry(url) {
-    this.handler.openSavedEntry(url);
+  openURL(url, mark_as_read) {
+    this.handler.openURL(url, mark_as_read);
   }
 
   /** @override */

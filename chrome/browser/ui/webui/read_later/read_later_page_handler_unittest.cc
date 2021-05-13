@@ -173,18 +173,18 @@ TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
       /* expected_read_data= */ {});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryOnNTP) {
+TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
   // Open and navigate to NTP.
   AddTabWithTitle(browser(), GURL(chrome::kChromeUINewTabURL), "NTP");
 
-  // Check that OpenSavedEntry from the NTP does not open a new tab.
+  // Check that OpenURL from the NTP does not open a new tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
-  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->OpenURL(GURL(kTabUrl3), true);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged to be called 3 times.
   // Twice for the two AddEntry calls in SetUp().
-  // Once for the OpenSavedEntry call above.
+  // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
 
   // Get Read later entries.
@@ -195,15 +195,15 @@ TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryOnNTP) {
       /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryNotOnNTP) {
-  // Check that OpenSavedEntry opens a new tab when not on the NTP.
+TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
+  // Check that OpenURL opens a new tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->OpenURL(GURL(kTabUrl3), true);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged to be called 3 times.
   // Twice for the two AddEntry calls in SetUp().
-  // Once for the OpenSavedEntry call above.
+  // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
 
   // Get Read later entries.
@@ -219,7 +219,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
 
   // Expect ItemsChanged to be called 3 times.
   // Twice for the two AddEntry calls in SetUp().
-  // Once for the OpenSavedEntry call above.
+  // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
 
   // Get Read later entries.
@@ -248,13 +248,13 @@ TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
-  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->OpenURL(GURL(kTabUrl3), true);
   handler()->RemoveEntry(GURL(kTabUrl3));
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
   // Expect ItemsChanged to be called 4 times.
   // Twice for the two AddEntry calls in SetUp().
-  // Once for the OpenSavedEntry call above.
+  // Once for the OpenURL call above.
   // Once for the RemoveEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
 
@@ -269,7 +269,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
 TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
   auto token = model()->BeginBatchUpdates();
   EXPECT_TRUE(model()->IsPerformingBatchUpdates());
-  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->OpenURL(GURL(kTabUrl3), true);
   handler()->RemoveEntry(GURL(kTabUrl3));
   token.reset();
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
@@ -296,7 +296,7 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
       content::WebContents::Create(params);
   handler()->set_web_contents_for_testing(web_contents.get());
 
-  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->OpenURL(GURL(kTabUrl3), true);
   handler()->RemoveEntry(GURL(kTabUrl3));
 
   // Expect ItemsChanged to be called twice from the two AddEntry calls in
