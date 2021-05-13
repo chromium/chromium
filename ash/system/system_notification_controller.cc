@@ -5,9 +5,11 @@
 #include "ash/system/system_notification_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
+#include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
@@ -43,7 +45,11 @@ SystemNotificationController::SystemNotificationController()
       session_limit_(std::make_unique<SessionLimitNotificationController>()),
       tracing_(std::make_unique<TracingNotificationController>()),
       update_(std::make_unique<UpdateNotificationController>()),
-      wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {}
+      wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {
+  if (features::IsMicMuteNotificationsEnabled()) {
+    microphone_mute_ = std::make_unique<MicrophoneMuteNotificationController>();
+  }
+}
 
 SystemNotificationController::~SystemNotificationController() = default;
 

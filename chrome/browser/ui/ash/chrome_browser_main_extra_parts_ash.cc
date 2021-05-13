@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
+#include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
@@ -215,6 +217,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
 
   media_client_ = std::make_unique<MediaClientImpl>();
   media_client_->Init();
+
+  if (ash::features::IsMicMuteNotificationsEnabled()) {
+    microphone_mute_notification_delegate_ =
+        std::make_unique<MicrophoneMuteNotificationDelegateImpl>();
+  }
 
   // Instantiate DisplaySettingsHandler after CrosSettings has been
   // initialized.

@@ -150,9 +150,8 @@ void FakeCrasAudioClient::GetNumberOfActiveOutputStreams(
 }
 
 void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
-    DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback) {
-  base::flat_map<std::string, uint32_t> res;
-  std::move(callback).Run(std::move(res));
+    DBusMethodCallback<ClientTypeToInputStreamCount> callback) {
+  std::move(callback).Run(active_input_streams_);
 }
 
 void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
@@ -328,6 +327,13 @@ void FakeCrasAudioClient::NotifyHotwordTriggeredForTesting(uint64_t tv_sec,
 
 void FakeCrasAudioClient::SetBluetoothBattteryLevelForTesting(uint32_t level) {
   battery_level_ = level;
+}
+
+void FakeCrasAudioClient::SetActiveInputStreamsWithPermission(
+    const ClientTypeToInputStreamCount& input_streams) {
+  active_input_streams_ = input_streams;
+  for (auto& observer : observers_)
+    observer.NumberOfInputStreamsWithPermissionChanged(active_input_streams_);
 }
 
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {

@@ -3076,6 +3076,17 @@ Here are some things you can try to get started.
         An application is using your microphone
       </message>
 
+      <!-- Strings for microphone mute switch notification -->
+      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
+        Microphone is off
+      </message>
+      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
+        An app is trying to access the microphone. Turn off the microphone mute switch to allow access.
+      </message>
+      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
+        <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is trying to access the microphone. Turn off the microphone mute switch to allow access.
+      </message>
+
       <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION" desc="The short message to encourage user to unlock the device so that Chrome OS can perform the notification action selected by user after unlocking.">
         Unlock device to perform the notification action
       </message>

@@ -19,6 +19,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
     : public CrasAudioClient {
  public:
+  using ClientTypeToInputStreamCount = base::flat_map<std::string, uint32_t>;
+
   FakeCrasAudioClient();
   ~FakeCrasAudioClient() override;
 
@@ -36,7 +38,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) override;
   void GetNumberOfInputStreamsWithPermission(
-      DBusMethodCallback<base::flat_map<std::string, uint32_t>>) override;
+      DBusMethodCallback<ClientTypeToInputStreamCount>) override;
   void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override;
   void SetOutputNodeVolume(uint64_t node_id, int32_t volume) override;
   void SetOutputUserMute(bool mute_on) override;
@@ -92,6 +94,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Set a mock battery level for ResendBatteryLevel.
   void SetBluetoothBattteryLevelForTesting(uint32_t level);
 
+  // Sets a mock mapping from client type to number of active input streams per
+  // the client type.
+  void SetActiveInputStreamsWithPermission(
+      const ClientTypeToInputStreamCount& input_streams);
+
   const AudioNodeList& node_list() const { return node_list_; }
   const uint64_t& active_input_node_id() const { return active_input_node_id_; }
   const uint64_t& active_output_node_id() const {
@@ -113,6 +120,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // SetOutputNodeVolume fake dbus call.
   bool notify_volume_change_with_delay_ = false;
   uint32_t battery_level_ = 0;
+  // Maps audio client type to the number of active input streams for clients
+  // with the type specified
+  ClientTypeToInputStreamCount active_input_streams_;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCrasAudioClient);

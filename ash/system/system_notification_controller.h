@@ -17,6 +17,7 @@ class CapsLockNotificationController;
 class GestureEducationNotificationController;
 class CastNotificationController;
 class CellularSetupNotifier;
+class MicrophoneMuteNotificationController;
 class PowerNotificationController;
 class ScreenSecurityNotificationController;
 class SessionLimitNotificationController;
@@ -40,6 +41,7 @@ class SystemNotificationController {
   const std::unique_ptr<CellularSetupNotifier> cellular_setup_notifier_;
   const std::unique_ptr<GestureEducationNotificationController>
       gesture_education_;
+  std::unique_ptr<MicrophoneMuteNotificationController> microphone_mute_;
   const std::unique_ptr<PowerNotificationController> power_;
   const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;

@@ -5311,6 +5311,7 @@ test("unit_tests") {
       "../browser/ui/ash/keyboard_shortcut_viewer_metadata_unittest.cc",
       "../browser/ui/ash/media_client_impl_unittest.cc",
       "../browser/ui/ash/media_notification_provider_impl_unittest.cc",
+      "../browser/ui/ash/microphone_mute_notification_delegate_impl_unittest.cc",
       "../browser/ui/ash/multi_user/multi_profile_support_unittest.cc",
       "../browser/ui/ash/multi_user/multi_user_context_menu_chromeos_unittest.cc",
       "../browser/ui/ash/multi_user/multi_user_util_chromeos_unittest.cc",

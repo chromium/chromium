@@ -192,6 +192,8 @@ component("cpp") {
     "message_center/arc_notifications_host_initializer.h",
     "metrics_util.cc",
     "metrics_util.h",
+    "microphone_mute_notification_delegate.cc",
+    "microphone_mute_notification_delegate.h",
     "move_to_desks_menu_delegate.cc",
     "move_to_desks_menu_delegate.h",
     "nearby_share_controller.h",
