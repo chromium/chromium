@@ -802,7 +802,7 @@ void NGSVGTextLayoutAlgorithm::PositionOnPath(
         // in result[index − 1].
         info.x = *result_[index - 1].x;
         info.y = *result_[index - 1].y;
-        info.rotate = *result_[index - 1].rotate;
+        info.rotate = result_[index - 1].rotate;
       }
     } else {
       // 5.2. If the character at index i is not within a ‘textPath’ element
