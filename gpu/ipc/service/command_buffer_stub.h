@@ -91,6 +91,25 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void ExecuteDeferredRequest(
       mojom::DeferredCommandBufferRequestParams& params);
 
+  // Instructs the CommandBuffer to wait asynchronously until the reader has
+  // updated the token value to be within the [start, end] range (inclusive).
+  // `callback` is invoked with the last known State once this occurs, or with
+  // an invalid State if the CommandBuffer is destroyed first.
+  using WaitForStateCallback =
+      base::OnceCallback<void(const CommandBuffer::State&)>;
+  void WaitForTokenInRange(int32_t start,
+                           int32_t end,
+                           WaitForStateCallback callback);
+
+  // Instructs the CommandBuffer to wait asynchronously until the reader has
+  // reached a get offset within the range [start, end] (inclusive). `callback`
+  // is invoked with the last known State once this occurs, or with an invalid
+  // State if the CommandBuffer is destroyed first.
+  void WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
+                               int32_t start,
+                               int32_t end,
+                               WaitForStateCallback callback);
+
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& message) override;
 
@@ -203,13 +222,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // Message handlers:
   void OnSetGetBuffer(int32_t shm_id);
   void OnGetState(IPC::Message* reply_message);
-  void OnWaitForTokenInRange(int32_t start,
-                             int32_t end,
-                             IPC::Message* reply_message);
-  void OnWaitForGetOffsetInRange(uint32_t set_get_buffer_count,
-                                 int32_t start,
-                                 int32_t end,
-                                 IPC::Message* reply_message);
   void OnAsyncFlush(int32_t put_offset,
                     uint32_t flush_id,
                     const std::vector<SyncToken>& sync_token_fences);

@@ -302,9 +302,10 @@ gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForTokenInRange(
   TryUpdateState();
   if (!InRange(start, end, last_state_.token) &&
       last_state_.error == gpu::error::kNoError) {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     gpu::CommandBuffer::State state;
-    if (Send(new GpuCommandBufferMsg_WaitForTokenInRange(route_id_, start, end,
-                                                         &state))) {
+    if (channel_->GetGpuChannel().WaitForTokenInRange(route_id_, start, end,
+                                                      &state)) {
       SetStateFromMessageReply(state);
     }
   }
@@ -336,10 +337,12 @@ gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForGetOffsetInRange(
   if (((set_get_buffer_count != last_state_.set_get_buffer_count) ||
        !InRange(start, end, last_state_.get_offset)) &&
       last_state_.error == gpu::error::kNoError) {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     gpu::CommandBuffer::State state;
-    if (Send(new GpuCommandBufferMsg_WaitForGetOffsetInRange(
-            route_id_, set_get_buffer_count, start, end, &state)))
+    if (channel_->GetGpuChannel().WaitForGetOffsetInRange(
+            route_id_, set_get_buffer_count, start, end, &state)) {
       SetStateFromMessageReply(state);
+    }
   }
   if (((set_get_buffer_count != last_state_.set_get_buffer_count) ||
        !InRange(start, end, last_state_.get_offset)) &&

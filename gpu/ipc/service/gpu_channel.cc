@@ -157,6 +157,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       std::vector<mojom::DeferredRequestPtr> requests) override;
   void CreateStreamTexture(int32_t stream_id,
                            CreateStreamTextureCallback callback) override;
+  void WaitForTokenInRange(int32_t routing_id,
+                           int32_t start,
+                           int32_t end,
+                           WaitForTokenInRangeCallback callback) override;
+  void WaitForGetOffsetInRange(
+      int32_t routing_id,
+      uint32_t set_get_buffer_count,
+      int32_t start,
+      int32_t end,
+      WaitForGetOffsetInRangeCallback callback) override;
 
   IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
@@ -299,19 +309,8 @@ bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
   if (!gpu_channel_)
     return MessageErrorHandler(message, "Channel destroyed");
 
-  bool handle_out_of_order =
-      message.routing_id() == MSG_ROUTING_CONTROL ||
-      message.type() == GpuCommandBufferMsg_WaitForTokenInRange::ID ||
-      message.type() == GpuCommandBufferMsg_WaitForGetOffsetInRange::ID;
-
-  if (handle_out_of_order) {
-    // It's OK to post task that may never run even for sync messages, because
-    // if the channel is destroyed, the client Send will fail.
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&gpu::GpuChannel::HandleOutOfOrderMessage,
-                                  gpu_channel_->AsWeakPtr(), message));
-    return true;
-  }
+  if (message.routing_id() == MSG_ROUTING_CONTROL)
+    return MessageErrorHandler(message, "Invalid control message");
 
   // Messages which do not have sync token dependencies.
   SequenceId sequence_id = GetSequenceId(message.routing_id());
@@ -415,7 +414,7 @@ void GpuChannelMessageFilter::CreateCommandBuffer(
     CreateCommandBufferCallback callback) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_) {
-    std::move(callback).Run(ContextResult::kFatalFailure, Capabilities());
+    receiver_.reset();
     return;
   }
 
@@ -433,7 +432,7 @@ void GpuChannelMessageFilter::DestroyCommandBuffer(
     DestroyCommandBufferCallback callback) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_) {
-    std::move(callback).Run();
+    receiver_.reset();
     return;
   }
 
@@ -456,7 +455,7 @@ void GpuChannelMessageFilter::CreateStreamTexture(
     CreateStreamTextureCallback callback) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_) {
-    std::move(callback).Run(false);
+    receiver_.reset();
     return;
   }
   main_task_runner_->PostTaskAndReplyWithResult(
@@ -464,6 +463,44 @@ void GpuChannelMessageFilter::CreateStreamTexture(
       base::BindOnce(&TryCreateStreamTexture, gpu_channel_->AsWeakPtr(),
                      stream_id),
       std::move(callback));
+}
+
+void GpuChannelMessageFilter::WaitForTokenInRange(
+    int32_t routing_id,
+    int32_t start,
+    int32_t end,
+    WaitForTokenInRangeCallback callback) {
+  base::AutoLock lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    receiver_.reset();
+    return;
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&gpu::GpuChannel::WaitForTokenInRange,
+                     gpu_channel_->AsWeakPtr(), routing_id, start, end,
+                     base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                        std::move(callback))));
+}
+
+void GpuChannelMessageFilter::WaitForGetOffsetInRange(
+    int32_t routing_id,
+    uint32_t set_get_buffer_count,
+    int32_t start,
+    int32_t end,
+    WaitForGetOffsetInRangeCallback callback) {
+  base::AutoLock lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    receiver_.reset();
+    return;
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&gpu::GpuChannel::WaitForGetOffsetInRange,
+                     gpu_channel_->AsWeakPtr(), routing_id,
+                     set_get_buffer_count, start, end,
+                     base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 GpuChannel::GpuChannel(
@@ -649,18 +686,6 @@ void GpuChannel::RemoveRoute(int32_t route_id) {
   router_.RemoveRoute(route_id);
 }
 
-void GpuChannel::HandleMessage(const IPC::Message& msg) {
-  int32_t routing_id = msg.routing_id();
-  CommandBufferStub* stub = LookupCommandBuffer(routing_id);
-
-  DCHECK(!stub || stub->IsScheduled());
-
-  DVLOG(1) << "received message @" << &msg << " on channel @" << this
-           << " with type " << msg.type();
-
-  HandleMessageHelper(msg);
-}
-
 void GpuChannel::ExecuteDeferredRequest(
     mojom::DeferredRequestParamsPtr params) {
   switch (params->which()) {
@@ -700,6 +725,36 @@ void GpuChannel::ExecuteDeferredRequest(
   }
 }
 
+void GpuChannel::WaitForTokenInRange(
+    int32_t routing_id,
+    int32_t start,
+    int32_t end,
+    mojom::GpuChannel::WaitForTokenInRangeCallback callback) {
+  CommandBufferStub* stub = LookupCommandBuffer(routing_id);
+  if (!stub) {
+    std::move(callback).Run(CommandBuffer::State());
+    return;
+  }
+
+  stub->WaitForTokenInRange(start, end, std::move(callback));
+}
+
+void GpuChannel::WaitForGetOffsetInRange(
+    int32_t routing_id,
+    uint32_t set_get_buffer_count,
+    int32_t start,
+    int32_t end,
+    mojom::GpuChannel::WaitForGetOffsetInRangeCallback callback) {
+  CommandBufferStub* stub = LookupCommandBuffer(routing_id);
+  if (!stub) {
+    std::move(callback).Run(CommandBuffer::State());
+    return;
+  }
+
+  stub->WaitForGetOffsetInRange(set_get_buffer_count, start, end,
+                                std::move(callback));
+}
+
 void GpuChannel::HandleMessageForTesting(const IPC::Message& msg) {
   // Message filter gets message first on IO thread.
   filter_->OnMessageReceived(msg);
@@ -728,8 +783,14 @@ bool GpuChannel::CreateSharedImageStub() {
   return true;
 }
 
-void GpuChannel::HandleMessageHelper(const IPC::Message& msg) {
+void GpuChannel::HandleMessage(const IPC::Message& msg) {
   int32_t routing_id = msg.routing_id();
+  CommandBufferStub* stub = LookupCommandBuffer(routing_id);
+
+  DCHECK(!stub || stub->IsScheduled());
+
+  DVLOG(1) << "received message @" << &msg << " on channel @" << this
+           << " with type " << msg.type();
 
   bool handled = false;
   if (routing_id != MSG_ROUTING_CONTROL)
@@ -737,17 +798,6 @@ void GpuChannel::HandleMessageHelper(const IPC::Message& msg) {
 
   if (!handled && unhandled_message_listener_)
     handled = unhandled_message_listener_->OnMessageReceived(msg);
-
-  // Respond to sync messages even if router failed to route.
-  if (!handled && msg.is_sync()) {
-    IPC::Message* reply = IPC::SyncMessage::GenerateReply(&msg);
-    reply->set_reply_error();
-    Send(reply);
-  }
-}
-
-void GpuChannel::HandleOutOfOrderMessage(const IPC::Message& msg) {
-  HandleMessageHelper(msg);
 }
 
 #if defined(OS_ANDROID)

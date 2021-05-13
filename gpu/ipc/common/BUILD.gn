@@ -264,6 +264,25 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
+          mojom = "gpu.mojom.Error"
+          cpp = "::gpu::error::Error"
+        },
+        {
+          mojom = "gpu.mojom.ContextLostReason"
+          cpp = "::gpu::error::ContextLostReason"
+        },
+        {
+          mojom = "gpu.mojom.CommandBufferState"
+          cpp = "::gpu::CommandBuffer::State"
+        },
+      ]
+      traits_headers = [ "command_buffer_mojom_traits.h" ]
+      traits_sources = [ "command_buffer_mojom_traits.cc" ]
+      traits_public_deps = [ "//gpu/command_buffer/common:common_sources" ]
+    },
+    {
+      types = [
+        {
           mojom = "gpu.mojom.SchedulingPriority"
           cpp = "::gpu::SchedulingPriority"
         },

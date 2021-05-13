@@ -40,6 +40,19 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(std::vector<mojom::DeferredRequestPtr>));
   MOCK_METHOD2(CreateStreamTexture, bool(int32_t, bool*));
   MOCK_METHOD2(CreateStreamTexture, void(int32_t, CreateStreamTextureCallback));
+  MOCK_METHOD4(WaitForTokenInRange,
+               bool(int32_t, int32_t, int32_t, CommandBuffer::State*));
+  MOCK_METHOD4(WaitForTokenInRange,
+               void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
+  MOCK_METHOD5(
+      WaitForGetOffsetInRange,
+      bool(int32_t, uint32_t, int32_t, int32_t, CommandBuffer::State*));
+  MOCK_METHOD5(WaitForGetOffsetInRange,
+               void(int32_t,
+                    uint32_t,
+                    int32_t,
+                    int32_t,
+                    WaitForGetOffsetInRangeCallback));
 };
 
 }  // namespace gpu

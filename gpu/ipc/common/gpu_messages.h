@@ -142,19 +142,6 @@ IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_UpdateRotatedVisibleSize,
 // Sets the shared memory buffer used for commands.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_SetGetBuffer, int32_t /* shm_id */)
 
-// Wait until the token is in a specific range, inclusive.
-IPC_SYNC_MESSAGE_ROUTED2_1(GpuCommandBufferMsg_WaitForTokenInRange,
-                           int32_t /* start */,
-                           int32_t /* end */,
-                           gpu::CommandBuffer::State /* state */)
-
-// Wait until the get offset is in a specific range, inclusive.
-IPC_SYNC_MESSAGE_ROUTED3_1(GpuCommandBufferMsg_WaitForGetOffsetInRange,
-                           uint32_t /* set_get_buffer_count */,
-                           int32_t /* start */,
-                           int32_t /* end */,
-                           gpu::CommandBuffer::State /* state */)
-
 // Sent by the GPU process to display messages in the console.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_ConsoleMsg,
                     GPUCommandBufferConsoleMessage /* msg */)

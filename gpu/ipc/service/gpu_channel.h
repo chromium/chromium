@@ -159,10 +159,17 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // scheduled by the scheduler.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
 
-  // Some messages such as WaitForGetOffsetInRange and WaitForTokenInRange are
-  // processed as soon as possible because the client is blocked until they
-  // are completed.
-  void HandleOutOfOrderMessage(const IPC::Message& msg);
+  void WaitForTokenInRange(
+      int32_t routing_id,
+      int32_t start,
+      int32_t end,
+      mojom::GpuChannel::WaitForTokenInRangeCallback callback);
+  void WaitForGetOffsetInRange(
+      int32_t routing_id,
+      uint32_t set_get_buffer_count,
+      int32_t start,
+      int32_t end,
+      mojom::GpuChannel::WaitForGetOffsetInRangeCallback callback);
 
   void HandleMessageForTesting(const IPC::Message& msg);
   mojom::GpuChannel& GetGpuChannelForTesting();
@@ -203,8 +210,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
 
   void OnDestroyCommandBuffer(int32_t route_id);
-
-  void HandleMessageHelper(const IPC::Message& msg);
 
   // Message handlers for control messages.
   bool CreateSharedImageStub();

@@ -83,6 +83,27 @@ struct CreateCommandBufferParams {
   url.mojom.Url active_url;
 };
 
+// Corresponds to the definition in gpu/command_buffer/common/constants.h.
+[Native]
+enum Error;
+
+// Corresponds to the definition in gpu/command_buffer/common/constants.h.
+[Native]
+enum ContextLostReason;
+
+// Information used by the GPU service to convey the current state of a specific
+// CommandBuffer instance. Corresponds to gpu::CommandBuffer::State. See
+// gpu/command_buffer/common/command_buffer.h.
+struct CommandBufferState {
+  int32 get_offset;
+  int32 token;
+  uint64 release_count;
+  Error error;
+  ContextLostReason context_lost_reason;
+  uint32 generation;
+  uint32 set_get_buffer_count;
+};
+
 struct ScheduleImageDecodeParams {
   array<uint8> encoded_data;
   gfx.mojom.Size output_size;
@@ -148,6 +169,33 @@ interface GpuChannel {
 
   // Creates a StreamTexture associated with the given `stream_id`.
   [Sync] CreateStreamTexture(int32 stream_id) => (bool success);
+
+  // Instructs the command buffer to wait asynchronously until its State is
+  // changed by the reader to have a current token value within the (inclusive)
+  // range [start, end]. Once in range, the command buffer will reply and
+  // unblock the caller.
+  //
+  // TODO(rockot): This should move to the CommandBuffer interface, but it has
+  // unique dispatching constraints which require it to be processed
+  // out-of-order from other scheduled messages targeting the command buffer.
+  // For now we use a GpuChannel message with a `routing_id` to target a
+  // specific CommandBuffer.
+  [Sync, NoInterrupt] WaitForTokenInRange(
+      int32 routing_id, int32 start, int32 end) => (CommandBufferState state);
+
+  // Instructs the command buffer to wait asynchronously until its State is
+  // changed by the reader to have a current get offset within the (inclusive)
+  // range [start, end], on the get buffer identified by `set_get_buffer_count`.
+  // Once in range, the command buffer will reply and unblock the caller.
+  //
+  // TODO(rockot): This should move to the CommandBuffer interface, but it has
+  // unique dispatching constraints which require it to be processed
+  // out-of-order from other scheduled messages targeting the command buffer.
+  // For now we use a GpuChannel message with a `routing_id` to target a
+  // specific CommandBuffer.
+  [Sync, NoInterrupt] WaitForGetOffsetInRange(
+      int32 routing_id, uint32 set_get_buffer_count, int32 start, int32 end)
+      => (CommandBufferState state);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only
