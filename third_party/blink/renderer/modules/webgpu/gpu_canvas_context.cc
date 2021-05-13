@@ -129,15 +129,6 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
   switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
       break;
-    case WGPUTextureFormat_RGBA8Unorm:
-      if ((usage & WGPUTextureUsage_RenderAttachment) != usage) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kOperationError,
-            "rgba8unorm can only support RENDER_ATTACHMENT usage");
-      }
-      descriptor->device()->AddConsoleWarning(
-          "rgba8unorm swap chain is deprecated (for now); use bgra8unorm");
-      break;
     case WGPUTextureFormat_RGBA16Float:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kUnknownError,

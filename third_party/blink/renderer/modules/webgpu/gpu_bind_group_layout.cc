@@ -58,32 +58,6 @@ WGPUBindGroupLayoutEntry AsDawnType(
             webgpu_binding->storageTexture()->viewDimension());
   }
 
-  // Deprecated values
-  if (webgpu_binding->hasType()) {
-    device->AddConsoleWarning(
-        "The format of GPUBindGroupLayoutEntry has changed, and will soon "
-        "require the buffer, sampler, texture, or storageTexture members be "
-        "set rather than setting type, etc. on the entry directly.");
-
-    dawn_binding.type = AsDawnEnum<WGPUBindingType>(webgpu_binding->type());
-
-    dawn_binding.hasDynamicOffset = webgpu_binding->hasDynamicOffset();
-
-    dawn_binding.minBufferBindingSize =
-        webgpu_binding->hasMinBufferBindingSize()
-            ? webgpu_binding->minBufferBindingSize()
-            : 0;
-
-    dawn_binding.viewDimension =
-        AsDawnEnum<WGPUTextureViewDimension>(webgpu_binding->viewDimension());
-
-    dawn_binding.textureComponentType = AsDawnEnum<WGPUTextureComponentType>(
-        webgpu_binding->textureComponentType());
-
-    dawn_binding.storageTextureFormat =
-        AsDawnEnum<WGPUTextureFormat>(webgpu_binding->storageTextureFormat());
-  }
-
   return dawn_binding;
 }
 

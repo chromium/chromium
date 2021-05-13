@@ -5,27 +5,11 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPURenderPipelineDescriptor : GPUPipelineDescriptorBase {
-    // TODO: vertex should be required once deprecated path is removed.
-    GPUVertexState vertex;
+    required GPUVertexState vertex;
     GPUPrimitiveState primitive = {};
     GPUDepthStencilState depthStencil;
     GPUMultisampleState multisample = {};
     GPUFragmentState fragment;
-
-    // Deprecated layout
-    GPUProgrammableStage vertexStage; // required if vertex not set.
-    GPUProgrammableStage fragmentStage;
-
-    GPUPrimitiveTopology primitiveTopology; // required if vertex not set.
-    GPURasterizationStateDescriptor rasterizationState = {};
-    sequence<GPUColorStateDescriptor> colorStates; // required if vertex not set.
-    GPUDepthStencilStateDescriptor depthStencilState;
-    GPUVertexStateDescriptor vertexState = {};
-
-    GPUSize32 sampleCount = 1;
-
-    GPUSampleMask sampleMask = 0xFFFFFFFF;
-    boolean alphaToCoverageEnabled = false;
 };
 
 enum GPUPrimitiveTopology {

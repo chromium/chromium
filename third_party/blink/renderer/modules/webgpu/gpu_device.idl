@@ -31,10 +31,6 @@
     [CallWith=ScriptState] Promise<GPURenderPipeline?> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
-    // Deprecated
-    [CallWith=ScriptState] Promise<GPURenderPipeline?> createReadyRenderPipeline(GPURenderPipelineDescriptor descriptor);
-    [CallWith=ScriptState] Promise<GPUComputePipeline?> createReadyComputePipeline(GPUComputePipelineDescriptor descriptor);
-
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});
     GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
 

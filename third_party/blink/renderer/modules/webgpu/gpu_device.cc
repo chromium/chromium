@@ -288,19 +288,10 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (!descriptor->hasVertex()) {
-    // Shim asynchronous pipeline compilation with the deprecated shape of the
-    // GPURenderPipelineDescriptor by immediately creating a pipeline and
-    // resolving the promise.
-    resolver->Resolve(
-        GPURenderPipeline::Create(script_state, this, descriptor));
-    return promise;
-  }
-
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "GPUDevice", "createRenderPipelineAsync");
-  OwnedRenderPipelineDescriptor2 dawn_desc_info;
+  OwnedRenderPipelineDescriptor dawn_desc_info;
   ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,
                     exception_state);
   if (exception_state.HadException()) {
@@ -347,24 +338,6 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
   // ensure commands are flushed.
   EnsureFlush();
   return promise;
-}
-
-ScriptPromise GPUDevice::createReadyRenderPipeline(
-    ScriptState* script_state,
-    const GPURenderPipelineDescriptor* descriptor) {
-  AddConsoleWarning(
-      "createReadyRenderPipeline is deprecated in favor of "
-      "createRenderPipelineAsync");
-  return createRenderPipelineAsync(script_state, descriptor);
-}
-
-ScriptPromise GPUDevice::createReadyComputePipeline(
-    ScriptState* script_state,
-    const GPUComputePipelineDescriptor* descriptor) {
-  AddConsoleWarning(
-      "createReadyComputePipeline is deprecated in favor of "
-      "createComputePipelineAsync");
-  return createComputePipelineAsync(script_state, descriptor);
 }
 
 GPUCommandEncoder* GPUDevice::createCommandEncoder(

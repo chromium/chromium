@@ -205,46 +205,38 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   });
 
   const pipeline = device.createRenderPipeline({
-    vertexStage: {
+    vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
       }),
       entryPoint: 'main',
+      buffers: [{
+        arrayStride: 16,
+        attributes: [{
+          // position
+          shaderLocation: 0,
+          offset: 0,
+          format: 'float32x2',
+        },{
+          // uv
+          shaderLocation: 1,
+          offset: 8,
+          format: 'float32x2',
+        }],
+      }],
     },
-    fragmentStage: {
+    fragment: {
       module: device.createShaderModule({
         code: wgslShaders.fragment,
       }),
       entryPoint: 'main',
-    },
-    primitiveTopology: 'triangle-list',
-    vertexState: {
-      vertexBuffers: [
-        {
-          arrayStride: 16,
-          attributes: [
-            {
-              // position
-              shaderLocation: 0,
-              offset: 0,
-              format: 'float32x2',
-            },
-            {
-              // uv
-              shaderLocation: 1,
-              offset: 8,
-              format: 'float32x2',
-            },
-          ],
-        },
-      ],
-    },
-
-    colorStates: [
-      {
+      targets: [{
         format: swapChainFormat,
-      },
-    ],
+      }]
+    },
+    primitive: {
+      topology: 'triangle-list',
+    },
   });
 
   const renderPassDescriptor = {
@@ -252,6 +244,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       {
         attachment: undefined, // Assigned later
         loadValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+        storeOp: 'store',
       },
     ],
   };
@@ -296,39 +289,33 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     createVertexBufferForIcons(device, videos, videoRows, videoColumns);
 
   const pipelineForIcons = device.createRenderPipeline({
-    vertexStage: {
+    vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex_icons,
       }),
       entryPoint: 'main',
+      buffers: [{
+        arrayStride: 8,
+        attributes: [{
+          // position
+          shaderLocation: 0,
+          offset: 0,
+          format: 'float32x2',
+        }],
+      }],
     },
-    fragmentStage: {
+    fragment: {
       module: device.createShaderModule({
         code: wgslShaders.fragment_output_red,
       }),
       entryPoint: 'main',
-    },
-    primitiveTopology: 'triangle-list',
-    vertexState: {
-      vertexBuffers: [
-        {
-          arrayStride: 8,
-          attributes: [
-            {
-              // position
-              shaderLocation: 0,
-              offset: 0,
-              format: 'float32x2',
-            },
-          ],
-        },
-      ],
-    },
-    colorStates: [
-      {
+      targets: [{
         format: swapChainFormat,
-      },
-    ],
+      }]
+    },
+    primitive: {
+      topology: 'triangle-list',
+    }
   });
 
   // videos #0-#3 : 30 fps.

@@ -15,32 +15,6 @@ class GPURenderPipelineDescriptor;
 class ExceptionState;
 class ScriptState;
 
-struct OwnedRenderPipelineDescriptor {
- public:
-  OwnedRenderPipelineDescriptor() : dawn_desc({}) {}
-
-  //  This struct should be non-copyable non-movable because it contains
-  //  self-referencing pointers that would be invalidated when moved / copied.
-  OwnedRenderPipelineDescriptor(const OwnedRenderPipelineDescriptor& desc) =
-      delete;
-  OwnedRenderPipelineDescriptor(OwnedRenderPipelineDescriptor&& desc) = delete;
-  OwnedRenderPipelineDescriptor& operator=(
-      const OwnedRenderPipelineDescriptor& desc) = delete;
-  OwnedRenderPipelineDescriptor& operator=(
-      OwnedRenderPipelineDescriptor&& desc) = delete;
-
-  WGPURenderPipelineDescriptor dawn_desc;
-  std::string label;
-  OwnedProgrammableStageDescriptor vertex_stage_info;
-  OwnedProgrammableStageDescriptor fragment_stage_info;
-  WGPUVertexStateDescriptor vertex_state;
-  Vector<WGPUVertexBufferLayoutDescriptor> vertex_buffer_layouts;
-  Vector<WGPUVertexAttributeDescriptor> vertex_attributes;
-  WGPURasterizationStateDescriptor rasterization_state;
-  WGPUDepthStencilStateDescriptor depth_stencil_state;
-  std::unique_ptr<WGPUColorStateDescriptor[]> color_states;
-};
-
 struct OwnedFragmentState {
  public:
   OwnedFragmentState() = default;
@@ -73,20 +47,19 @@ struct OwnedPrimitiveState {
   WGPUPrimitiveDepthClampingState depth_clamping_state = {};
 };
 
-struct OwnedRenderPipelineDescriptor2 {
+struct OwnedRenderPipelineDescriptor {
  public:
-  OwnedRenderPipelineDescriptor2() = default;
+  OwnedRenderPipelineDescriptor() = default;
 
   //  This struct should be non-copyable non-movable because it contains
   //  self-referencing pointers that would be invalidated when moved / copied.
-  OwnedRenderPipelineDescriptor2(const OwnedRenderPipelineDescriptor& desc) =
+  OwnedRenderPipelineDescriptor(const OwnedRenderPipelineDescriptor& desc) =
       delete;
-  OwnedRenderPipelineDescriptor2(OwnedRenderPipelineDescriptor2&& desc) =
-      delete;
-  OwnedRenderPipelineDescriptor2& operator=(
-      const OwnedRenderPipelineDescriptor2& desc) = delete;
-  OwnedRenderPipelineDescriptor2& operator=(
-      OwnedRenderPipelineDescriptor2&& desc) = delete;
+  OwnedRenderPipelineDescriptor(OwnedRenderPipelineDescriptor&& desc) = delete;
+  OwnedRenderPipelineDescriptor& operator=(
+      const OwnedRenderPipelineDescriptor& desc) = delete;
+  OwnedRenderPipelineDescriptor& operator=(
+      OwnedRenderPipelineDescriptor&& desc) = delete;
 
   WGPURenderPipelineDescriptor2 dawn_desc = {};
   std::string label;
@@ -102,12 +75,6 @@ void ConvertToDawnType(v8::Isolate* isolate,
                        GPUDevice* device,
                        const GPURenderPipelineDescriptor* webgpu_desc,
                        OwnedRenderPipelineDescriptor* dawn_desc_info,
-                       ExceptionState& exception_state);
-
-void ConvertToDawnType(v8::Isolate* isolate,
-                       GPUDevice* device,
-                       const GPURenderPipelineDescriptor* webgpu_desc,
-                       OwnedRenderPipelineDescriptor2* dawn_desc_info,
                        ExceptionState& exception_state);
 
 class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {

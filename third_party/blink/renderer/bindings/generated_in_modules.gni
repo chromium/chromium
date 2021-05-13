@@ -447,8 +447,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_buffer_layout.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state_descriptor.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing_segment.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing_segment.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query.cc",

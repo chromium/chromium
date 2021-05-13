@@ -97,7 +97,6 @@ modules_dictionary_idl_files = [
   "gpu_vertex_attribute.idl",
   "gpu_vertex_buffer_layout.idl",
   "gpu_vertex_state.idl",
-  "gpu_vertex_state_descriptor.idl",
 ]
 
 modules_dependency_idl_files = [

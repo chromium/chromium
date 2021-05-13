@@ -28,7 +28,7 @@
         });
 
         const pipeline = device.createRenderPipeline({
-          vertexStage: {
+          vertex: {
             module: device.createShaderModule({
               code: `
 struct VertexOutput {
@@ -64,7 +64,7 @@ fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
             }),
             entryPoint: 'main',
           },
-          fragmentStage: {
+          fragment: {
             module: device.createShaderModule({
               code: `
 [[binding(0), group(0)]] var mySampler: sampler;
@@ -85,13 +85,13 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
 `,
             }),
             entryPoint: 'main',
-          },
-          primitiveTopology: 'triangle-list',
-          colorStates: [
-            {
+            targets: [{
               format: swapChainFormat,
-            },
-          ],
+            }],
+          },
+          primitive: {
+            topology: 'triangle-list',
+          },
         });
 
         const linearSampler = device.createSampler({
@@ -104,6 +104,7 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
             {
               attachment: undefined, // Assigned later
               loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+              storeOp: 'store',
             },
           ],
         };

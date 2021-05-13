@@ -8,19 +8,6 @@ dictionary GPUBindGroupLayoutEntry {
     GPUSamplerBindingLayout sampler;
     GPUTextureBindingLayout texture;
     GPUStorageTextureBindingLayout storageTexture;
-
-    // Deprecated BindGroupLayout members.
-    GPUBindingType type;
-
-    boolean hasDynamicOffset = false;
-
-    GPUSize64 minBufferBindingSize;
-
-    GPUTextureViewDimension viewDimension = "2d";
-
-    GPUTextureComponentType textureComponentType = "float";
-
-    GPUTextureFormat storageTextureFormat;
 };
 
 enum GPUBindingType {
