@@ -267,7 +267,9 @@ class DownloadServiceControllerImplTest : public testing::Test {
   MockTaskScheduler* task_scheduler_;
   MockFileMonitor* file_monitor_;
 
-  DownloadParams::StartCallback start_callback_;
+  // A repeatable DownloadParams::StartCallback.
+  base::RepeatingCallback<void(const std::string&, DownloadParams::StartResult)>
+      start_callback_;
   bool init_callback_called_;
 
  private:
@@ -537,7 +539,7 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadAccepted) {
   EXPECT_CALL(*this,
               StartCallback(params.guid, DownloadParams::StartResult::ACCEPTED))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
   // TODO(dtrainor): Compare the full DownloadParams with the full Entry.
   store_->TriggerUpdate(true);
@@ -569,12 +571,13 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadFailsWithBackoff) {
 
   // Trigger the download.
   DownloadParams params = MakeDownloadParams();
+  auto guid = params.guid;
   EXPECT_CALL(*this,
               StartCallback(params.guid, DownloadParams::StartResult::BACKOFF))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
-  EXPECT_FALSE(GuidInEntryList(store_->updated_entries(), params.guid));
+  EXPECT_FALSE(GuidInEntryList(store_->updated_entries(), guid));
 
   task_runner_->RunUntilIdle();
 }
@@ -600,7 +603,7 @@ TEST_F(DownloadServiceControllerImplTest,
       *this,
       StartCallback(params.guid, DownloadParams::StartResult::UNEXPECTED_GUID))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
   task_runner_->RunUntilIdle();
 }
@@ -616,20 +619,23 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadFailsWithDuplicateCall) {
   driver_->MakeReady();
   task_runner_->RunUntilIdle();
 
-  // Trigger the download twice.
-  DownloadParams params = MakeDownloadParams();
+  // Trigger two download with the same guids.
+  DownloadParams params1 = MakeDownloadParams();
+  DownloadParams params2 = MakeDownloadParams();
+  auto guid = params1.guid;
+  params1.guid = params2.guid = guid;
   EXPECT_CALL(
       *this,
-      StartCallback(params.guid, DownloadParams::StartResult::UNEXPECTED_GUID))
+      StartCallback(params1.guid, DownloadParams::StartResult::UNEXPECTED_GUID))
       .Times(1);
-  EXPECT_CALL(*this,
-              StartCallback(params.guid, DownloadParams::StartResult::ACCEPTED))
+  EXPECT_CALL(
+      *this, StartCallback(params1.guid, DownloadParams::StartResult::ACCEPTED))
       .Times(1);
-  controller_->StartDownload(params);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params1));
+  controller_->StartDownload(std::move(params2));
   store_->TriggerUpdate(true);
 
-  EXPECT_TRUE(GuidInEntryList(store_->updated_entries(), params.guid));
+  EXPECT_TRUE(GuidInEntryList(store_->updated_entries(), guid));
 
   task_runner_->RunUntilIdle();
 }
@@ -651,7 +657,7 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadFailsWithBadClient) {
               StartCallback(params.guid,
                             DownloadParams::StartResult::UNEXPECTED_CLIENT))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
   task_runner_->RunUntilIdle();
 }
@@ -668,13 +674,14 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadFailsWithClientCancel) {
 
   // Trigger the download.
   DownloadParams params = MakeDownloadParams();
+  auto guid = params.guid;
   EXPECT_CALL(
       *this,
       StartCallback(params.guid, DownloadParams::StartResult::CLIENT_CANCELLED))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
-  controller_->CancelDownload(params.guid);
+  controller_->CancelDownload(guid);
   store_->TriggerUpdate(true);
 
   task_runner_->RunUntilIdle();
@@ -695,7 +702,7 @@ TEST_F(DownloadServiceControllerImplTest, AddDownloadFailsWithInternalError) {
   EXPECT_CALL(*this, StartCallback(params.guid,
                                    DownloadParams::StartResult::INTERNAL_ERROR))
       .Times(1);
-  controller_->StartDownload(params);
+  controller_->StartDownload(std::move(params));
 
   store_->TriggerUpdate(false);
 

@@ -131,16 +131,15 @@ void HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable(
   }
 
   if (can_send_history_data_getter_.Run()) {
-    // base::AdaptCallbackForRepeating() is necessary here because
+    // base::SplitOnceCallback() is necessary here because
     // |response_callback| is needed to build both the empty response and local
     // lookup callbacks. This is safe because only one of the two is called.
-    base::RepeatingCallback<void(const favicon_base::FaviconRawBitmapResult&)>
-        repeating_response_callback =
-            base::AdaptCallbackForRepeating(std::move(response_callback));
+    auto split_response_callback =
+        base::SplitOnceCallback(std::move(response_callback));
     RequestFromGoogleServer(
         page_url,
         /*empty_response_callback=*/
-        base::BindOnce(repeating_response_callback,
+        base::BindOnce(std::move(split_response_callback.first),
                        favicon_base::FaviconRawBitmapResult()),
         /*local_lookup_callback=*/
         base::BindOnce(
@@ -149,7 +148,8 @@ void HistoryUiFaviconRequestHandlerImpl::OnBitmapLocalDataAvailable(
             // doesn't execute the callback if |this| is deleted.
             base::Unretained(favicon_service_), page_url,
             GetIconTypesForLocalQuery(), desired_size_in_pixel, kFallbackToHost,
-            repeating_response_callback, &cancelable_task_tracker_),
+            std::move(split_response_callback.second),
+            &cancelable_task_tracker_),
         origin_for_uma, request_start_time_for_uma);
     return;
   }
@@ -179,16 +179,15 @@ void HistoryUiFaviconRequestHandlerImpl::OnImageLocalDataAvailable(
   }
 
   if (can_send_history_data_getter_.Run()) {
-    // base::AdaptCallbackForRepeating() is necessary here because
+    // base::SplitOnceCallback() is necessary here because
     // |response_callback| is needed to build both the empty response and local
     // lookup callbacks. This is safe because only one of the two is called.
-    base::RepeatingCallback<void(const favicon_base::FaviconImageResult&)>
-        repeating_response_callback =
-            base::AdaptCallbackForRepeating(std::move(response_callback));
+    auto split_response_callback =
+        base::SplitOnceCallback(std::move(response_callback));
     RequestFromGoogleServer(
         page_url,
         /*empty_response_callback=*/
-        base::BindOnce(repeating_response_callback,
+        base::BindOnce(std::move(split_response_callback.first),
                        favicon_base::FaviconImageResult()),
         /*local_lookup_callback=*/
         base::BindOnce(
@@ -196,7 +195,8 @@ void HistoryUiFaviconRequestHandlerImpl::OnImageLocalDataAvailable(
             // base::Unretained() is safe here as RequestFromGoogleServer()
             // doesn't execture the callback if |this| is deleted.
             base::Unretained(favicon_service_), page_url,
-            repeating_response_callback, &cancelable_task_tracker_),
+            std::move(split_response_callback.second),
+            &cancelable_task_tracker_),
         origin_for_uma, request_start_time_for_uma);
     return;
   }

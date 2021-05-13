@@ -76,7 +76,7 @@ class DownloadService : public KeyedService {
   // Sends the download to the service.  A callback to
   // |DownloadParams::callback| will be triggered once the download has been
   // persisted and saved in the service.
-  virtual void StartDownload(const DownloadParams& download_params) = 0;
+  virtual void StartDownload(DownloadParams download_params) = 0;
 
   // Allows any feature to pause or resume downloads at will.  Paused downloads
   // will not start or stop based on scheduling criteria.  They will be

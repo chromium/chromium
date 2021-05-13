@@ -300,7 +300,7 @@ void WebTestBackgroundFetchDelegate::DownloadUrl(
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
 
-  download_service_->StartDownload(params);
+  download_service_->StartDownload(std::move(params));
 }
 
 void WebTestBackgroundFetchDelegate::Abort(const std::string& job_unique_id) {

@@ -452,13 +452,11 @@ void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
   if (process_pid_ == base::kNullProcessId)
     return;
 
-  // Using AdaptCallbackForRepeating allows for an easier transition to
-  // OnceCallbacks for https://crbug.com/714018.
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestPrivateMemoryFootprint(
-          process_pid_, base::AdaptCallbackForRepeating(base::BindOnce(
-                            &NoStatePrefetchContents::DidGetMemoryUsage,
-                            weak_factory_.GetWeakPtr())));
+          process_pid_,
+          base::BindOnce(&NoStatePrefetchContents::DidGetMemoryUsage,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void NoStatePrefetchContents::DidGetMemoryUsage(

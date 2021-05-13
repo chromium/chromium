@@ -78,7 +78,7 @@ class Controller {
   // Starts a download with |params|.  See DownloadParams::StartCallback and
   // DownloadParams::StartResponse for information on how a caller can determine
   // whether or not the download was successfully accepted and queued.
-  virtual void StartDownload(const DownloadParams& params) = 0;
+  virtual void StartDownload(DownloadParams params) = 0;
 
   // Pauses a download request associated with |guid| if one exists.
   virtual void PauseDownload(const std::string& guid) = 0;

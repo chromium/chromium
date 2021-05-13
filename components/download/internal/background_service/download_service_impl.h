@@ -38,7 +38,7 @@ class DownloadServiceImpl : public DownloadService {
                             TaskFinishedCallback callback) override;
   bool OnStopScheduledTask(DownloadTaskType task_type) override;
   ServiceStatus GetStatus() override;
-  void StartDownload(const DownloadParams& download_params) override;
+  void StartDownload(DownloadParams download_params) override;
   void PauseDownload(const std::string& guid) override;
   void ResumeDownload(const std::string& guid) override;
   void CancelDownload(const std::string& guid) override;

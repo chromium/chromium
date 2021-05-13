@@ -109,11 +109,11 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   }
 
   if (job_details->job_state == JobDetails::State::kStartedButPaused) {
-    job_details->on_resume =
-        base::BindOnce(&BackgroundFetchDelegateBase::StartDownload,
-                       GetWeakPtr(), job_id, params, has_request_body);
+    job_details->on_resume = base::BindOnce(
+        &BackgroundFetchDelegateBase::StartDownload, GetWeakPtr(), job_id,
+        std::move(params), has_request_body);
   } else {
-    StartDownload(job_id, params, has_request_body);
+    StartDownload(job_id, std::move(params), has_request_body);
   }
 
   DoUpdateUi(job_id);
@@ -195,15 +195,14 @@ JobDetails* BackgroundFetchDelegateBase::GetJobDetails(
   return &job_details_iter->second;
 }
 
-void BackgroundFetchDelegateBase::StartDownload(
-    const std::string& job_id,
-    const download::DownloadParams& params,
-    bool has_request_body) {
+void BackgroundFetchDelegateBase::StartDownload(const std::string& job_id,
+                                                download::DownloadParams params,
+                                                bool has_request_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetJobDetails(job_id)->current_fetch_guids.emplace(params.guid,
                                                      has_request_body);
-  GetDownloadService()->StartDownload(params);
+  GetDownloadService()->StartDownload(std::move(params));
 }
 
 void BackgroundFetchDelegateBase::Abort(const std::string& job_id) {

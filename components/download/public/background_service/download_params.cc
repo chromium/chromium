@@ -26,9 +26,9 @@ RequestParams::RequestParams()
 RequestParams::RequestParams(const RequestParams& other) = default;
 
 DownloadParams::DownloadParams() : client(DownloadClient::INVALID) {}
-
-DownloadParams::DownloadParams(const DownloadParams& other) = default;
-
 DownloadParams::~DownloadParams() = default;
+
+DownloadParams::DownloadParams(DownloadParams&& other) = default;
+DownloadParams& DownloadParams::operator=(DownloadParams&& other) = default;
 
 }  // namespace download

@@ -134,7 +134,7 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
   download_params.scheduling_params.network_requirements =
       download::SchedulingParams::NetworkRequirements::NONE;
 
-  download_service_->StartDownload(download_params);
+  download_service_->StartDownload(std::move(download_params));
 }
 
 void PredictionModelDownloadManager::CancelAllPendingDownloads() {

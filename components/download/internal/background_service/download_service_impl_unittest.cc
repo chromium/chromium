@@ -67,13 +67,14 @@ TEST_F(DownloadServiceImplTest, TestGetStatus) {
 
 TEST_F(DownloadServiceImplTest, TestApiPassThrough) {
   DownloadParams params = test::BuildBasicDownloadParams();
+  auto guid = params.guid;
   SchedulingParams scheduling_params;
   scheduling_params.priority = SchedulingParams::Priority::UI;
 
   EXPECT_CALL(*controller_, GetOwnerOfDownload(_))
       .WillRepeatedly(Return(DownloadClient::TEST));
 
-  EXPECT_CALL(*controller_, StartDownload(_)).Times(0);
+  EXPECT_CALL(*controller_, StartDownload_(_)).Times(0);
   EXPECT_CALL(*controller_, PauseDownload(params.guid)).Times(0);
   EXPECT_CALL(*controller_, ResumeDownload(params.guid)).Times(0);
   EXPECT_CALL(*controller_, CancelDownload(params.guid)).Times(0);
@@ -82,7 +83,7 @@ TEST_F(DownloadServiceImplTest, TestApiPassThrough) {
   {
     base::HistogramTester histogram_tester;
 
-    service_->StartDownload(params);
+    service_->StartDownload(std::move(params));
 
     histogram_tester.ExpectBucketCount(
         "Download.Service.Request.ClientAction",
@@ -99,38 +100,28 @@ TEST_F(DownloadServiceImplTest, TestApiPassThrough) {
     histogram_tester.ExpectTotalCount(
         "Download.Service.Request.ClientAction.__Test__", 1);
   }
-  service_->PauseDownload(params.guid);
-  service_->ResumeDownload(params.guid);
-  service_->CancelDownload(params.guid);
-  service_->ChangeDownloadCriteria(params.guid, scheduling_params);
+  service_->PauseDownload(guid);
+  service_->ResumeDownload(guid);
+  service_->CancelDownload(guid);
+  service_->ChangeDownloadCriteria(guid, scheduling_params);
   task_runner_->RunUntilIdle();
 
   testing::Sequence seq1;
-  EXPECT_CALL(*controller_, StartDownload(_)).Times(1).InSequence(seq1);
-  EXPECT_CALL(*controller_, PauseDownload(params.guid))
-      .Times(1)
-      .InSequence(seq1);
-  EXPECT_CALL(*controller_, ResumeDownload(params.guid))
-      .Times(1)
-      .InSequence(seq1);
-  EXPECT_CALL(*controller_, CancelDownload(params.guid))
-      .Times(1)
-      .InSequence(seq1);
-  EXPECT_CALL(*controller_, ChangeDownloadCriteria(params.guid, _))
+  EXPECT_CALL(*controller_, StartDownload_(_)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, PauseDownload(guid)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, ResumeDownload(guid)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, CancelDownload(guid)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, ChangeDownloadCriteria(guid, _))
       .Times(1)
       .InSequence(seq1);
 
   controller_->TriggerInitCompleted();
   task_runner_->RunUntilIdle();
 
-  EXPECT_CALL(*controller_, PauseDownload(params.guid))
-      .Times(1)
-      .InSequence(seq1);
-  EXPECT_CALL(*controller_, ResumeDownload(params.guid))
-      .Times(1)
-      .InSequence(seq1);
-  service_->PauseDownload(params.guid);
-  service_->ResumeDownload(params.guid);
+  EXPECT_CALL(*controller_, PauseDownload(guid)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, ResumeDownload(guid)).Times(1).InSequence(seq1);
+  service_->PauseDownload(guid);
+  service_->ResumeDownload(guid);
   task_runner_->RunUntilIdle();
 }
 

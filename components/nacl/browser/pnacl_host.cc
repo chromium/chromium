@@ -617,14 +617,13 @@ void PnaclHost::ClearTranslationCacheEntriesBetween(
   }
   pending_backend_operations_++;
 
-  base::RepeatingClosure copyable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int rv = disk_cache_->DoomEntriesBetween(
       initial_time, end_time,
       base::BindOnce(&PnaclHost::OnEntriesDoomed, base::Unretained(this),
-                     copyable_callback));
+                     std::move(split_callback.first)));
   if (rv != net::ERR_IO_PENDING)
-    OnEntriesDoomed(copyable_callback, rv);
+    OnEntriesDoomed(std::move(split_callback.second), rv);
 }
 
 void PnaclHost::OnEntriesDoomed(base::OnceClosure callback, int net_error) {

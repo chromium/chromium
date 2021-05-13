@@ -166,18 +166,15 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
                 base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
                 base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
                 base::trace_event::MemoryDumpDeterminism::NONE,
-                base::AdaptCallbackForRepeating(
-                    std::move(finished_dump_callback)));
+                std::move(finished_dump_callback));
       },
       std::move(finished_dump_callback));
 
   // The only reason this should return false is if tracing is already enabled,
   // which we've already checked.
-  // Use AdaptCallbackForRepeating since the argument passed to StartTracing()
-  // is intended to be a OnceCallback, but the code has not yet been migrated.
   bool result = content::TracingController::GetInstance()->StartTracing(
       GetBackgroundTracingConfig(anonymize),
-      base::AdaptCallbackForRepeating(std::move(trigger_memory_dump_callback)));
+      std::move(trigger_memory_dump_callback));
   DCHECK(result);
 }
 

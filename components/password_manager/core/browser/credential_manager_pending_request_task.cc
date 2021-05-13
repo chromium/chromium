@@ -327,20 +327,20 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     return;
   }
 
-  auto repeating_send_callback =
-      base::AdaptCallbackForRepeating(std::move(send_callback_));
+  auto split_send_callback = base::SplitOnceCallback(std::move(send_callback_));
   if (!delegate_->client()->PromptUserToChooseCredentials(
           std::move(local_results), origin_,
           base::BindOnce(
               &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
-              base::Unretained(delegate_), repeating_send_callback,
+              base::Unretained(delegate_), std::move(split_send_callback.first),
               mediation_))) {
     // Since PromptUserToChooseCredentials() does not invoke the callback when
     // returning false, `repeating_send_callback` has not been run in this
     // branch yet.
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kNone, mediation_);
-    delegate_->SendCredential(repeating_send_callback, CredentialInfo());
+    delegate_->SendCredential(std::move(split_send_callback.second),
+                              CredentialInfo());
   }
 }
 

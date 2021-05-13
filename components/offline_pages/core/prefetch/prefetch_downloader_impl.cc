@@ -108,9 +108,8 @@ void PrefetchDownloaderImpl::StartDownload(const std::string& download_id,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
   params.client = download::DownloadClient::OFFLINE_PAGE_PREFETCH;
   params.guid = download_id;
-  params.callback = base::AdaptCallbackForRepeating(
-      base::BindOnce(&PrefetchDownloaderImpl::OnStartDownload,
-                     weak_ptr_factory_.GetWeakPtr()));
+  params.callback = base::BindOnce(&PrefetchDownloaderImpl::OnStartDownload,
+                                   weak_ptr_factory_.GetWeakPtr());
   params.scheduling_params.network_requirements =
       download::SchedulingParams::NetworkRequirements::UNMETERED;
   params.scheduling_params.battery_requirements =
@@ -147,7 +146,7 @@ void PrefetchDownloaderImpl::StartDownload(const std::string& download_id,
   }
 
   // The download service can queue the download even if it is not fully up yet.
-  download_service_->StartDownload(params);
+  download_service_->StartDownload(std::move(params));
 }
 
 void PrefetchDownloaderImpl::OnDownloadServiceReady(

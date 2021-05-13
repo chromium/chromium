@@ -472,9 +472,8 @@ void CloudPolicyClient::FetchRobotAuthCodes(
           this,
           /*critical=*/false, std::move(auth),
           /*oauth_token=*/base::nullopt,
-          base::AdaptCallbackForRepeating(base::BindOnce(
-              &CloudPolicyClient::OnFetchRobotAuthCodesCompleted,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+          base::BindOnce(&CloudPolicyClient::OnFetchRobotAuthCodesCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   em::DeviceServiceApiAccessRequest* request =
       config->request()->mutable_service_api_access_request();
@@ -707,9 +706,8 @@ void CloudPolicyClient::FetchRemoteCommands(
           DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS, this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
           /*oauth_token=*/base::nullopt,
-          base::AdaptCallbackForRepeating(base::BindOnce(
-              &CloudPolicyClient::OnRemoteCommandsFetched,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+          base::BindOnce(&CloudPolicyClient::OnRemoteCommandsFetched,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   em::DeviceRemoteCommandRequest* const request =
       config->request()->mutable_remote_command_request();

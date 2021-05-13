@@ -24,7 +24,11 @@ class MockController : public Controller {
   // Controller implementation.
   void Initialize(base::OnceClosure callback) override;
   MOCK_METHOD0(GetState, Controller::State());
-  MOCK_METHOD1(StartDownload, void(const DownloadParams&));
+  void StartDownload(DownloadParams download_params) override {
+    // Redirect as gmock can't handle move-only types.
+    StartDownload_(download_params);
+  }
+  MOCK_METHOD1(StartDownload_, void(DownloadParams&));
   MOCK_METHOD1(PauseDownload, void(const std::string&));
   MOCK_METHOD1(ResumeDownload, void(const std::string&));
   MOCK_METHOD1(CancelDownload, void(const std::string&));

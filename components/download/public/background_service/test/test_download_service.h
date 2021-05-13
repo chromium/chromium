@@ -32,7 +32,7 @@ class TestDownloadService : public DownloadService {
                             TaskFinishedCallback callback) override;
   bool OnStopScheduledTask(DownloadTaskType task_type) override;
   DownloadService::ServiceStatus GetStatus() override;
-  void StartDownload(const DownloadParams& download_params) override;
+  void StartDownload(DownloadParams download_params) override;
   void PauseDownload(const std::string& guid) override;
   void ResumeDownload(const std::string& guid) override;
   void CancelDownload(const std::string& guid) override;
@@ -40,7 +40,8 @@ class TestDownloadService : public DownloadService {
                               const SchedulingParams& params) override;
   Logger* GetLogger() override;
 
-  base::Optional<DownloadParams> GetDownload(const std::string& guid) const;
+  const base::Optional<DownloadParams>& GetDownload(
+      const std::string& guid) const;
 
   // Set failed_download_id and fail_at_start.
   void SetFailedDownload(const std::string& failed_download_id,
@@ -76,7 +77,7 @@ class TestDownloadService : public DownloadService {
 
   Client* client_;
 
-  std::list<DownloadParams> downloads_;
+  std::list<base::Optional<DownloadParams>> downloads_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDownloadService);
 };

@@ -72,7 +72,7 @@ class ControllerImpl : public Controller,
   // Controller implementation.
   void Initialize(base::OnceClosure callback) override;
   State GetState() override;
-  void StartDownload(const DownloadParams& params) override;
+  void StartDownload(DownloadParams params) override;
   void PauseDownload(const std::string& guid) override;
   void ResumeDownload(const std::string& guid) override;
   void CancelDownload(const std::string& guid) override;

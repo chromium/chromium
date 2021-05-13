@@ -76,15 +76,15 @@ DownloadService::ServiceStatus DownloadServiceImpl::GetStatus() {
   }
 }
 
-void DownloadServiceImpl::StartDownload(const DownloadParams& download_params) {
+void DownloadServiceImpl::StartDownload(DownloadParams download_params) {
   stats::LogServiceApiAction(download_params.client,
                              stats::ServiceApiAction::START_DOWNLOAD);
   if (startup_completed_) {
-    controller_->StartDownload(download_params);
+    controller_->StartDownload(std::move(download_params));
   } else {
-    pending_actions_.push_back(
-        base::BindOnce(&Controller::StartDownload,
-                       base::Unretained(controller_.get()), download_params));
+    pending_actions_.push_back(base::BindOnce(
+        &Controller::StartDownload, base::Unretained(controller_.get()),
+        std::move(download_params)));
   }
 }
 

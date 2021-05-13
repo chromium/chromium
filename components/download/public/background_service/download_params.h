@@ -143,11 +143,13 @@ struct DownloadParams {
   };
 
   using StartCallback =
-      base::RepeatingCallback<void(const std::string&, StartResult)>;
+      base::OnceCallback<void(const std::string&, StartResult)>;
 
   DownloadParams();
-  DownloadParams(const DownloadParams& other);
   ~DownloadParams();
+
+  DownloadParams(DownloadParams&& other);
+  DownloadParams& operator=(DownloadParams&& other);
 
   // The feature that is requesting this download.
   DownloadClient client;

@@ -5,6 +5,7 @@
 #include "components/cast_channel/cast_socket_service.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/cast_channel/cast_test_util.h"
@@ -84,11 +85,8 @@ TEST_F(CastSocketServiceTest, TestOpenChannel) {
   mock_socket->SetIPEndpoint(ip_endpoint);
   cast_socket_service_->SetSocketForTest(base::WrapUnique(mock_socket));
 
-  EXPECT_CALL(*mock_socket, ConnectInternal(_))
-      .WillOnce(WithArgs<0>(
-          Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-            callback.Run(mock_socket);
-          })));
+  EXPECT_CALL(*mock_socket, Connect_(_))
+      .WillOnce(base::test::RunOnceCallback<0>(mock_socket));
   EXPECT_CALL(mock_on_open_callback_, Run(mock_socket));
   EXPECT_CALL(*mock_socket, AddObserver(_));
 

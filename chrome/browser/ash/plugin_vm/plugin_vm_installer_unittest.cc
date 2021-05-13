@@ -480,7 +480,7 @@ TEST_F(PluginVmInstallerDownloadServiceTest, DownloadPluginVmImageParamsTest) {
   StartAndRunUntil(InstallingState::kDownloadingImage);
 
   std::string guid = installer_->GetCurrentDownloadGuid();
-  base::Optional<download::DownloadParams> params =
+  const base::Optional<download::DownloadParams>& params =
       download_service_->GetDownload(guid);
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(guid, params->guid);

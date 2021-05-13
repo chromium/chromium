@@ -43,9 +43,9 @@ class BackgroundSyncPermissionContextTest
         permissions::PermissionRequestID::RequestLocalId());
     permission_context->RequestPermission(
         web_contents(), id, url, /* user_gesture= */ false,
-        base::AdaptCallbackForRepeating(base::BindOnce(
+        base::BindOnce(
             &BackgroundSyncPermissionContextTest::TrackPermissionDecision,
-            base::Unretained(this), run_loop.QuitClosure())));
+            base::Unretained(this), run_loop.QuitClosure()));
 
     run_loop.Run();
   }

@@ -163,7 +163,7 @@ Controller::State ControllerImpl::GetState() {
   return controller_state_;
 }
 
-void ControllerImpl::StartDownload(const DownloadParams& params) {
+void ControllerImpl::StartDownload(DownloadParams params) {
   DCHECK(controller_state_ == State::READY ||
          controller_state_ == State::UNAVAILABLE);
 
@@ -173,7 +173,7 @@ void ControllerImpl::StartDownload(const DownloadParams& params) {
   if (controller_state_ != State::READY) {
     HandleStartDownloadResponse(params.client, params.guid,
                                 DownloadParams::StartResult::INTERNAL_ERROR,
-                                params.callback);
+                                std::move(params.callback));
     return;
   }
 
@@ -183,7 +183,7 @@ void ControllerImpl::StartDownload(const DownloadParams& params) {
       model_->Get(params.guid) != nullptr) {
     HandleStartDownloadResponse(params.client, params.guid,
                                 DownloadParams::StartResult::UNEXPECTED_GUID,
-                                params.callback);
+                                std::move(params.callback));
     return;
   }
 
@@ -191,7 +191,7 @@ void ControllerImpl::StartDownload(const DownloadParams& params) {
   if (!client) {
     HandleStartDownloadResponse(params.client, params.guid,
                                 DownloadParams::StartResult::UNEXPECTED_CLIENT,
-                                params.callback);
+                                std::move(params.callback));
     return;
   }
 
@@ -200,11 +200,11 @@ void ControllerImpl::StartDownload(const DownloadParams& params) {
   if (client_count >= config_->max_scheduled_downloads) {
     HandleStartDownloadResponse(params.client, params.guid,
                                 DownloadParams::StartResult::BACKOFF,
-                                params.callback);
+                                std::move(params.callback));
     return;
   }
 
-  start_callbacks_[params.guid] = params.callback;
+  start_callbacks_[params.guid] = std::move(params.callback);
   Entry entry(params);
   entry.target_file_path = download_file_dir_.AppendASCII(params.guid);
   model_->Add(entry);
@@ -1105,9 +1105,9 @@ void ControllerImpl::HandleStartDownloadResponse(
     DownloadClient client,
     const std::string& guid,
     DownloadParams::StartResult result) {
-  auto callback = start_callbacks_[guid];
+  DownloadParams::StartCallback callback = std::move(start_callbacks_[guid]);
   start_callbacks_.erase(guid);
-  HandleStartDownloadResponse(client, guid, result, callback);
+  HandleStartDownloadResponse(client, guid, result, std::move(callback));
 }
 
 void ControllerImpl::HandleStartDownloadResponse(

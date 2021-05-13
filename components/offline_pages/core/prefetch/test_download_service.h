@@ -29,7 +29,7 @@ class TestDownloadService : public download::DownloadService {
                             download::TaskFinishedCallback callback) override;
   bool OnStopScheduledTask(download::DownloadTaskType task_type) override;
   DownloadService::ServiceStatus GetStatus() override;
-  void StartDownload(const download::DownloadParams& download_params) override;
+  void StartDownload(download::DownloadParams download_params) override;
   void PauseDownload(const std::string& guid) override;
   void ResumeDownload(const std::string& guid) override;
   void CancelDownload(const std::string& guid) override;

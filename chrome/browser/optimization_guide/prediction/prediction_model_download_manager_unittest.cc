@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -30,7 +31,6 @@ namespace optimization_guide {
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::SaveArg;
 
 class TestPredictionModelDownloadObserver
     : public PredictionModelDownloadObserver {
@@ -273,8 +273,8 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
       /*disabled_features=*/{});
 
   download::DownloadParams download_params;
-  EXPECT_CALL(*download_service(), StartDownload(_))
-      .WillOnce(SaveArg<0>(&download_params));
+  EXPECT_CALL(*download_service(), StartDownload_(_))
+      .WillOnce(MoveArg<0>(&download_params));
   download_manager()->StartDownload(GURL("someurl"));
 
   // Validate parameters - basically that we attach the correct client, just do
@@ -313,8 +313,8 @@ TEST_F(PredictionModelDownloadManagerTest,
       /*disabled_features=*/{});
 
   download::DownloadParams download_params;
-  EXPECT_CALL(*download_service(), StartDownload(_))
-      .WillOnce(SaveArg<0>(&download_params));
+  EXPECT_CALL(*download_service(), StartDownload_(_))
+      .WillOnce(MoveArg<0>(&download_params));
   download_manager()->StartDownload(GURL("someurl"));
 
   // Validate parameters - basically that we attach the correct client, just do
@@ -344,8 +344,8 @@ TEST_F(PredictionModelDownloadManagerTest,
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadFailedToSchedule) {
   download::DownloadParams download_params;
-  EXPECT_CALL(*download_service(), StartDownload(_))
-      .WillOnce(SaveArg<0>(&download_params));
+  EXPECT_CALL(*download_service(), StartDownload_(_))
+      .WillOnce(MoveArg<0>(&download_params));
   download_manager()->StartDownload(GURL("someurl"));
 
   // Now invoke start callback.

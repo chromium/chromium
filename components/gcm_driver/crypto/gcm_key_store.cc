@@ -281,8 +281,7 @@ void GCMKeyStore::LazyInitialize(base::OnceClosure done_closure) {
     return;
   }
 
-  delayed_task_controller_.AddTask(
-      base::AdaptCallbackForRepeating(std::move(done_closure)));
+  delayed_task_controller_.AddTask(std::move(done_closure));
   if (state_ == State::INITIALIZING)
     return;
 

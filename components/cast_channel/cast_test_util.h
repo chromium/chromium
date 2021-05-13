@@ -39,12 +39,12 @@ class MockCastTransport : public CastTransport {
                    net::CompletionOnceCallback callback) override {
     // GMock does not handle move-only types, we need to rely on a mock method
     // that takes a repeating callback, which will work well with GMock actions.
-    SendMessage(message, base::AdaptCallbackForRepeating(std::move(callback)));
+    SendMessage_(message, callback);
   }
 
-  MOCK_METHOD2(SendMessage,
+  MOCK_METHOD2(SendMessage_,
                void(const CastMessage& message,
-                    const net::CompletionRepeatingCallback& callback));
+                    net::CompletionOnceCallback& callback));
 
   MOCK_METHOD0(Start, void(void));
 
@@ -89,15 +89,12 @@ class MockCastSocketService : public CastSocketServiceImpl {
   void OpenSocket(NetworkContextGetter network_context_getter,
                   const CastSocketOpenParams& open_params,
                   CastSocket::OnOpenCallback open_cb) override {
-    // Unit test should not call |open_cb| more than once. Just use
-    // base::AdaptCallbackForRepeating to pass |open_cb| to a mock method.
-    OpenSocketInternal(open_params.ip_endpoint,
-                       base::AdaptCallbackForRepeating(std::move(open_cb)));
+    OpenSocket_(open_params.ip_endpoint, open_cb);
   }
 
-  MOCK_METHOD2(OpenSocketInternal,
+  MOCK_METHOD2(OpenSocket_,
                void(const net::IPEndPoint& ip_endpoint,
-                    const base::RepeatingCallback<void(CastSocket*)>& open_cb));
+                    CastSocket::OnOpenCallback& open_cb));
   MOCK_CONST_METHOD1(GetSocket, CastSocket*(int channel_id));
 };
 
@@ -109,19 +106,17 @@ class MockCastSocket : public CastSocket {
   ~MockCastSocket() override;
 
   void Connect(CastSocket::OnOpenCallback callback) override {
-    // Unit test should not call |open_cb| more than once. Just use
-    // base::AdaptCallbackForRepeating to pass |open_cb| to a mock method.
-    ConnectInternal(base::AdaptCallbackForRepeating(std::move(callback)));
+    Connect_(callback);
   }
 
   void Close(net::CompletionOnceCallback callback) override {
     // GMock does not handle move-only types, we need to rely on a mock method
     // that takes a repeating callback, which will work well with GMock actions.
-    Close(base::AdaptCallbackForRepeating(std::move(callback)));
+    Close_(callback);
   }
 
-  MOCK_METHOD1(ConnectInternal, void(const MockOnOpenCallback& callback));
-  MOCK_METHOD1(Close, void(const net::CompletionRepeatingCallback& callback));
+  MOCK_METHOD1(Connect_, void(CastSocket::OnOpenCallback& callback));
+  MOCK_METHOD1(Close_, void(net::CompletionOnceCallback& callback));
   MOCK_CONST_METHOD0(ready_state, ReadyState());
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
@@ -231,7 +226,7 @@ ACTION_TEMPLATE(PostCompletionCallbackTask,
                 HAS_1_TEMPLATE_PARAMS(int, cb_idx),
                 AND_1_VALUE_PARAMS(rv)) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(testing::get<cb_idx>(args), rv));
+      FROM_HERE, base::BindOnce(std::move(testing::get<cb_idx>(args)), rv));
 }
 
 }  // namespace cast_channel

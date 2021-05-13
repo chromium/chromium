@@ -133,7 +133,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
  private:
   // Starts a download according to `params` belonging to `job_id`.
   void StartDownload(const std::string& job_id,
-                     const download::DownloadParams& params,
+                     download::DownloadParams params,
                      bool has_request_body);
 
   void OnDownloadReceived(const std::string& guid,

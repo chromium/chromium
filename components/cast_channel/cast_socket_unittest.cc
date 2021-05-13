@@ -441,7 +441,7 @@ class MockCastSocketTest : public CastSocketTestBase {
     socket_->SetupMockTransport();
     CastMessage challenge_proto = CreateAuthChallenge();
     EXPECT_CALL(*socket_->GetMockTransport(),
-                SendMessage(EqualsProto(challenge_proto), _))
+                SendMessage_(EqualsProto(challenge_proto), _))
         .WillOnce(PostCompletionCallbackTask<1>(net::OK));
     EXPECT_CALL(*socket_->GetMockTransport(), Start());
     EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -658,7 +658,7 @@ TEST_F(MockCastSocketTest, TestConnectAuthMessageCorrupted) {
 
   CastMessage challenge_proto = CreateAuthChallenge();
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(challenge_proto), _))
+              SendMessage_(EqualsProto(challenge_proto), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   EXPECT_CALL(*socket_->GetMockTransport(), Start());
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -826,7 +826,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeSendError) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::ERR_CONNECTION_RESET));
 
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
@@ -846,7 +846,7 @@ TEST_F(MockCastSocketTest, TestConnectDestroyedAfterChallengeSent) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::ERR_CONNECTION_RESET));
   socket_->Connect(base::BindOnce(&CompleteHandler::OnConnectComplete,
                                   base::Unretained(&handler_)));
@@ -863,7 +863,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeReplyReceiveError) {
   client_socket_factory()->SetupTcpConnect(net::SYNCHRONOUS, net::OK);
   client_socket_factory()->SetupSslConnect(net::SYNCHRONOUS, net::OK);
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(CreateAuthChallenge()), _))
+              SendMessage_(EqualsProto(CreateAuthChallenge()), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   client_socket_factory()->AddReadResult(net::SYNCHRONOUS, net::ERR_FAILED);
   EXPECT_CALL(*observer_, OnError(_, ChannelError::CAST_SOCKET_ERROR));
@@ -891,7 +891,7 @@ TEST_F(MockCastSocketTest, TestConnectChallengeVerificationFails) {
   EXPECT_CALL(*observer_, OnError(_, ChannelError::AUTHENTICATION_ERROR));
   CastMessage challenge_proto = CreateAuthChallenge();
   EXPECT_CALL(*socket_->GetMockTransport(),
-              SendMessage(EqualsProto(challenge_proto), _))
+              SendMessage_(EqualsProto(challenge_proto), _))
       .WillOnce(PostCompletionCallbackTask<1>(net::OK));
   EXPECT_CALL(handler_, OnConnectComplete(socket_.get()));
   EXPECT_CALL(*socket_->GetMockTransport(), Start());

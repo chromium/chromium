@@ -528,16 +528,17 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                                       std::move(wifi_dict));
 
   std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->CreateConfiguration(
       user_id_hash, *properties,
       base::BindOnce(&ArcNetHostImpl::CreateNetworkSuccessCallback,
-                     weak_factory_.GetWeakPtr(), repeating_callback),
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&ArcNetHostImpl::CreateNetworkFailureCallback,
-                     weak_factory_.GetWeakPtr(), repeating_callback));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 bool ArcNetHostImpl::GetNetworkPathFromGuid(const std::string& guid,
@@ -573,13 +574,15 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
   }
 
   cached_guid_.clear();
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->RemoveConfiguration(
-      path, base::BindOnce(&ForgetNetworkSuccessCallback, repeating_callback),
-      base::BindOnce(&ForgetNetworkFailureCallback, repeating_callback));
+      path,
+      base::BindOnce(&ForgetNetworkSuccessCallback,
+                     std::move(split_callback.first)),
+      base::BindOnce(&ForgetNetworkFailureCallback,
+                     std::move(split_callback.second)));
 }
 
 void ArcNetHostImpl::StartConnect(const std::string& guid,
@@ -591,13 +594,15 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->ConnectToNetwork(
-      path, base::BindOnce(&StartConnectSuccessCallback, repeating_callback),
-      base::BindOnce(&StartConnectFailureCallback, repeating_callback),
+      path,
+      base::BindOnce(&StartConnectSuccessCallback,
+                     std::move(split_callback.first)),
+      base::BindOnce(&StartConnectFailureCallback,
+                     std::move(split_callback.second)),
       false /* check_error_state */, chromeos::ConnectCallbackMode::ON_STARTED);
 }
 
@@ -610,13 +615,15 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->DisconnectNetwork(
-      path, base::BindOnce(&StartDisconnectSuccessCallback, repeating_callback),
-      base::BindOnce(&StartDisconnectFailureCallback, repeating_callback));
+      path,
+      base::BindOnce(&StartDisconnectSuccessCallback,
+                     std::move(split_callback.first)),
+      base::BindOnce(&StartDisconnectFailureCallback,
+                     std::move(split_callback.second)));
 }
 
 void ArcNetHostImpl::GetWifiEnabledState(GetWifiEnabledStateCallback callback) {

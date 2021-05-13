@@ -146,7 +146,7 @@ void DownloadInternalsUIMessageHandler::HandleStartDownload(
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
 
   DCHECK(download_service_);
-  download_service_->StartDownload(params);
+  download_service_->StartDownload(std::move(params));
 }
 
 }  // namespace download_internals

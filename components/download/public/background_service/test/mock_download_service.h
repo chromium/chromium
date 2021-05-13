@@ -27,7 +27,13 @@ class MockDownloadService : public DownloadService {
                void(DownloadTaskType task_type, TaskFinishedCallback callback));
   MOCK_METHOD1(OnStopScheduledTask, bool(DownloadTaskType task_type));
   MOCK_METHOD0(GetStatus, ServiceStatus());
-  MOCK_METHOD1(StartDownload, void(const DownloadParams& download_params));
+
+  void StartDownload(DownloadParams download_params) override {
+    // Redirect as gmock can't handle move-only types.
+    StartDownload_(download_params);
+  }
+
+  MOCK_METHOD1(StartDownload_, void(DownloadParams& download_params));
   MOCK_METHOD1(PauseDownload, void(const std::string& guid));
   MOCK_METHOD1(ResumeDownload, void(const std::string& guid));
   MOCK_METHOD1(CancelDownload, void(const std::string& guid));
