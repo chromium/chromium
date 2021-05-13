@@ -23,7 +23,7 @@ AudioThreadImpl::AudioThreadImpl()
   // FIDL-based APIs require async_t, which is initialized on IO thread.
   thread_options.message_pump_type = base::MessagePumpType::IO;
 #endif
-  CHECK(thread_.StartWithOptions(thread_options));
+  CHECK(thread_.StartWithOptions(std::move(thread_options)));
 
 #if defined(OS_MAC)
   // On Mac, the audio task runner must belong to the main thread.

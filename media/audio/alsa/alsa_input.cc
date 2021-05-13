@@ -113,7 +113,7 @@ void AlsaPcmInputStream::Start(AudioInputCallback* callback) {
   } else {
     base::Thread::Options options;
     options.priority = base::ThreadPriority::REALTIME_AUDIO;
-    CHECK(capture_thread_.StartWithOptions(options));
+    CHECK(capture_thread_.StartWithOptions(std::move(options)));
 
     // We start reading data half |buffer_duration_| later than when the
     // buffer might have got filled, to accommodate some delays in the audio
