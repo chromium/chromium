@@ -551,14 +551,12 @@ PermissionManager::SubscribePermissionStatusChange(
     return SubscriptionId();
 
   ContentSettingsType content_type = PermissionTypeToContentSetting(permission);
-  auto type_count = subscription_type_counts_.find(content_type);
-  if (type_count != subscription_type_counts_.end()) {
-    type_count->second++;
-  } else {
+  auto& type_count = subscription_type_counts_[content_type];
+  if (type_count == 0) {
     PermissionContextBase* context = GetPermissionContext(content_type);
     context->AddObserver(this);
-    subscription_type_counts_.emplace(content_type, 1);
   }
+  ++type_count;
 
   auto subscription = std::make_unique<Subscription>();
 

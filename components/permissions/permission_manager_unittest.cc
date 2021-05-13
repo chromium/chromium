@@ -878,4 +878,49 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
       subscription_id);
 }
 
+TEST_F(PermissionManagerTest, SubscribeUnsubscribeAndResubscribe) {
+  const char* kOrigin1 = "https://example.com";
+  NavigateAndCommit(GURL(kOrigin1));
+
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
+      GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
+          PermissionType::GEOLOCATION, main_rfh(), GURL(kOrigin1),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
+  EXPECT_EQ(callback_count(), 0);
+
+  GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(callback_count(), 1);
+  EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
+
+  GetPermissionControllerDelegate()->UnsubscribePermissionStatusChange(
+      subscription_id);
+
+  // ensure no callbacks are received when unsubscribed.
+  GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+  GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(callback_count(), 1);
+
+  content::PermissionControllerDelegate::SubscriptionId subscription_id_2 =
+      GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
+          PermissionType::GEOLOCATION, main_rfh(), GURL(kOrigin1),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
+  EXPECT_EQ(callback_count(), 1);
+
+  GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+
+  EXPECT_EQ(callback_count(), 2);
+  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
+
+  GetPermissionControllerDelegate()->UnsubscribePermissionStatusChange(
+      subscription_id_2);
+}
+
 }  // namespace permissions
