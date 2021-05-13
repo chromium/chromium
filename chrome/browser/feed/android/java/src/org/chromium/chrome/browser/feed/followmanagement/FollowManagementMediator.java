@@ -114,8 +114,8 @@ class FollowManagementMediator {
                 boolean isColorDefault, @IconType int iconType) {
             // If we have a favicon, set it into the bitmap.  If not, make a monogram and put that
             // into the bitmap.
-            int faviconSize =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size);
+            int faviconSize = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.web_feed_management_icon_size);
 
             if (favicon == null) {
                 // TODO(crbug/1152592): Update monogram according to specs.

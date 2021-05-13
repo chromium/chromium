@@ -2799,7 +2799,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Activity
       </message>
       <message name="IDS_FEED_MANAGE_ACTIVITY_DESCRIPTION" desc="Content description to manage my activity from the feed header overflow menu.">
-        Control your Google accounts data
+        Control your Google Account data
       </message>
       <message name="IDS_FEED_MANAGE_INTERESTS" desc="Menu item to manage settings from the feed header overflow menu.">
         Interests

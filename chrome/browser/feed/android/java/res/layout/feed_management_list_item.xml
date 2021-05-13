@@ -19,7 +19,8 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_margin="@dimen/follow_margin" >
+        android:layout_marginHorizontal="@dimen/follow_margin"
+        android:layout_marginVertical="@dimen/follow_item_margin" >
 
         <TextView
             android:id="@+id/feed_management_menu_item_text"
