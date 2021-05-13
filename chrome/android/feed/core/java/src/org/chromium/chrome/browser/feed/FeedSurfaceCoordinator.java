@@ -561,7 +561,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mFeedSurfaceLifecycleManager.destroy();
             mFeedSurfaceLifecycleManager = null;
             mStream = null;
-            mSectionHeaderView = null;
             mSigninPromoView = null;
 
             mEnhancedProtectionPromoView = null;
@@ -587,6 +586,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             UiUtils.removeViewFromParent(mNtpHeader);
             mScrollViewForPolicy.addView(mNtpHeader);
         }
+        mHeaderCount = 0;
+
         mRootView.addView(mScrollViewForPolicy);
         mScrollViewResizer = ViewResizer.createAndAttach(
                 mScrollViewForPolicy, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);

@@ -193,7 +193,7 @@ public class FeedSurfaceCoordinatorTest {
 
         // Preferences to enable feed.
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistar, mPrefService);
-        FeedFeatures.setFakePrefsForTest(mPrefService, mPrefChangeRegistar);
+        FeedFeatures.setFakePrefsForTest(mPrefService);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
@@ -232,7 +232,7 @@ public class FeedSurfaceCoordinatorTest {
         FeedSurfaceTracker.getInstance().resetForTest();
         AppHooksImpl.setInstanceForTesting(null);
         IdentityServicesProvider.setInstanceForTests(null);
-        FeedFeatures.setFakePrefsForTest(null, null);
+        FeedFeatures.setFakePrefsForTest(null);
         FeedSurfaceMediator.setPrefForTest(null, null);
         TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
