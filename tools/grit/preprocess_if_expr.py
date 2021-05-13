@@ -101,8 +101,9 @@ def main(argv):
     manifest_data = {}
     manifest_data['base_dir'] = '%s' % args.out_folder
     manifest_data['files'] = args.in_files
-    manifest_file = open(
-        os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'wb')
+    manifest_file = io.open(
+        os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w',
+        encoding='utf-8', newline='\n')
     json.dump(manifest_data, manifest_file)
   return
 
