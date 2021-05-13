@@ -26,13 +26,23 @@ class ReadLaterSidePanelWebView : public views::WebView,
             IDS_READ_LATER_TITLE,
             /*enable_extension_apis=*/true,
             /*webui_resizes_host=*/false)) {
+    SetVisible(false);
     contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
     contents_wrapper_->ReloadWebContents();
     SetWebContents(contents_wrapper_->web_contents());
   }
 
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override {
+    WebView::ViewHierarchyChanged(details);
+    // Ensure the WebContents is in a visible state after being added to the
+    // side panel so the correct lifecycle hooks are triggered.
+    if (details.is_add && details.child == this)
+      contents_wrapper_->web_contents()->WasShown();
+  }
+
   // BubbleContentsWrapper::Host:
-  void ShowUI() override {}
+  void ShowUI() override { SetVisible(true); }
   void CloseUI() override { close_cb_.Run(); }
 
  private:

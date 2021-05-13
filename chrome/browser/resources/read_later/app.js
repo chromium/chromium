@@ -112,11 +112,16 @@ export class ReadLaterAppElement extends PolymerElement {
         'ReadingList.WebUI.ReadingListDataReceived',
         Math.round(Date.now() - getEntriesStartTimestamp));
 
-    listenOnce(this.$.readLaterList, 'dom-change', () => {
-      // Push ShowUI() callback to the event queue to allow deferred rendering
-      // to take place.
+    if (entries.unreadEntries.length !== 0 ||
+        entries.readEntries.length !== 0) {
+      listenOnce(this.$.readLaterList, 'dom-change', () => {
+        // Push ShowUI() callback to the event queue to allow deferred rendering
+        // to take place.
+        setTimeout(() => this.apiProxy_.showUI(), 0);
+      });
+    } else {
       setTimeout(() => this.apiProxy_.showUI(), 0);
-    });
+    }
 
     this.updateItems_(entries);
   }
