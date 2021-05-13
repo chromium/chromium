@@ -52,7 +52,8 @@ class ASH_EXPORT PowerButtonDisplayController
 
   // Overridden from ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool forced_off) override;
-  void OnScreenStateChanged(ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // Overridden from chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;

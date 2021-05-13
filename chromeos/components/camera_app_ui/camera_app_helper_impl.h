@@ -79,7 +79,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   void OnTabletModeEnded() override;
 
   // ash::ScreenBacklightObserver overrides;
-  void OnScreenStateChanged(ash::ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ash::ScreenBacklightState screen_backlight_state) override;
 
   // display::DisplayObserver overrides;
   void OnDisplayAdded(const display::Display& new_display) override;

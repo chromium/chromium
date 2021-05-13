@@ -38,7 +38,8 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
 
   // ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool backlights_forced_off) override;
-  void OnScreenStateChanged(ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // If lock screen note action is available, it requests a new lock screen note
   // with launch reason set to stylus eject.

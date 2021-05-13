@@ -24,8 +24,8 @@ class ASH_PUBLIC_EXPORT ScreenBacklight {
   virtual void AddObserver(ScreenBacklightObserver* observer) = 0;
   virtual void RemoveObserver(ScreenBacklightObserver* observer) = 0;
 
-  // Returns current system screen state.
-  virtual ScreenState GetScreenState() const = 0;
+  // Returns current system screen backlight state.
+  virtual ScreenBacklightState GetScreenBacklightState() const = 0;
 
  protected:
   ScreenBacklight();

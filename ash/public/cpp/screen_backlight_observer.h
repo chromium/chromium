@@ -19,8 +19,9 @@ class ASH_PUBLIC_EXPORT ScreenBacklightObserver {
   // starts forcing backlights off.
   virtual void OnBacklightsForcedOffChanged(bool backlights_forced_off) {}
 
-  // Called when the screen state change is detected.
-  virtual void OnScreenStateChanged(ScreenState screen_state) {}
+  // Called when the screen backlight state change is detected.
+  virtual void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_state) {}
 };
 
 }  // namespace ash

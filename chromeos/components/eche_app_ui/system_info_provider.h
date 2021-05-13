@@ -39,7 +39,8 @@ class SystemInfoProvider : public mojom::SystemInfoProvider,
 
  private:
   // ash::ScreenBacklightObserver overrides;
-  void OnScreenStateChanged(ash::ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ash::ScreenBacklightState screen_state) override;
 
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
   mojo::Remote<mojom::SystemInfoObserver> observer_remote_;

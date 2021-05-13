@@ -18,13 +18,13 @@
 namespace chromeos_camera {
 namespace {
 
-mojom::ScreenState ToMojoScreenState(ash::ScreenState s) {
+mojom::ScreenState ToMojoScreenState(ash::ScreenBacklightState s) {
   switch (s) {
-    case ash::ScreenState::ON:
+    case ash::ScreenBacklightState::ON:
       return mojom::ScreenState::ON;
-    case ash::ScreenState::OFF:
+    case ash::ScreenBacklightState::OFF:
       return mojom::ScreenState::OFF;
-    case ash::ScreenState::OFF_AUTO:
+    case ash::ScreenBacklightState::OFF_AUTO:
       return mojom::ScreenState::OFF_AUTO;
     default:
       NOTREACHED();
@@ -132,7 +132,7 @@ void CameraAppHelperImpl::SetScreenStateMonitor(
     SetScreenStateMonitorCallback callback) {
   screen_state_monitor_ = mojo::Remote<ScreenStateMonitor>(std::move(monitor));
   auto&& mojo_state =
-      ToMojoScreenState(ash::ScreenBacklight::Get()->GetScreenState());
+      ToMojoScreenState(ash::ScreenBacklight::Get()->GetScreenBacklightState());
   std::move(callback).Run(mojo_state);
 }
 
@@ -220,9 +220,10 @@ void CameraAppHelperImpl::OnTabletModeEnded() {
     tablet_mode_monitor_->Update(false);
 }
 
-void CameraAppHelperImpl::OnScreenStateChanged(ash::ScreenState screen_state) {
+void CameraAppHelperImpl::OnScreenBacklightStateChanged(
+    ash::ScreenBacklightState screen_backlight_state) {
   if (screen_state_monitor_.is_bound())
-    screen_state_monitor_->Update(ToMojoScreenState(screen_state));
+    screen_state_monitor_->Update(ToMojoScreenState(screen_backlight_state));
 }
 
 void CameraAppHelperImpl::OnDisplayAdded(const display::Display& new_display) {

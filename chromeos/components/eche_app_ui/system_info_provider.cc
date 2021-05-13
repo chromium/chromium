@@ -48,7 +48,8 @@ void SystemInfoProvider::Bind(
   info_receiver_.Bind(std::move(receiver));
 }
 
-void SystemInfoProvider::OnScreenStateChanged(ash::ScreenState screen_state) {
+void SystemInfoProvider::OnScreenBacklightStateChanged(
+    ash::ScreenBacklightState screen_state) {
   if (!observer_remote_.is_bound())
     return;
 

@@ -408,8 +408,9 @@ void PowerButtonController::OnBacklightsForcedOffChanged(bool forced_off) {
   DismissMenu();
 }
 
-void PowerButtonController::OnScreenStateChanged(ScreenState screen_state) {
-  if (screen_state != ScreenState::ON)
+void PowerButtonController::OnScreenBacklightStateChanged(
+    ScreenBacklightState screen_backlight_state) {
+  if (screen_backlight_state != ScreenBacklightState::ON)
     DismissMenu();
 }
 

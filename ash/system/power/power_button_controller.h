@@ -143,7 +143,8 @@ class ASH_EXPORT PowerButtonController
 
   // BacklightsForcedOffSetter::Observer:
   void OnBacklightsForcedOffChanged(bool forced_off) override;
-  void OnScreenStateChanged(ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
