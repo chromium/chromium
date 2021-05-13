@@ -667,7 +667,7 @@ class TestRunner(object):
             # Save the result of the latest run for each test.
             retry_results[test] = retry_result
 
-      output.mark_all_skipped(disabled)
+      output.mark_all_disabled(disabled)
       output.finalize()
 
       # Build test_results.json.

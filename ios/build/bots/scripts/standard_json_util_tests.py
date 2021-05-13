@@ -84,11 +84,11 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(output.tests['e']['is_flaky'])
     self.assertIsNot(output.tests['e'].get('is_unexpected'), True)
 
-  def test_skip(self):
+  def test_disabled(self):
     """Test setting expected skip."""
     test = 'f'
     output = sju.StdJson()
-    output.mark_skipped(test)
+    output.mark_disabled(test)
     self.assertEqual(output.tests['f']['actual'], 'SKIP')
     self.assertFalse(output.tests['f'].get('is_unexpected', False))
 
@@ -129,7 +129,7 @@ class UnitTest(unittest.TestCase):
     output.mark_failed('failed_test', 'logs')
     result_sink.post.assert_called_with(
         'failed_test', 'FAIL', False, test_log='logs')
-    output.mark_skipped('skipped_test')
+    output.mark_disabled('skipped_test')
     result_sink.post.assert_called_with(
         'skipped_test', 'SKIP', True, tags=[('disabled_test', 'true')])
     output.mark_timeout('timeout_test')

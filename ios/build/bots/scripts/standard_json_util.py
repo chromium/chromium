@@ -101,8 +101,8 @@ class StdJson():
     for test in tests:
       self.mark_failed(test)
 
-  def mark_skipped(self, test):
-    """Sets test(s) as expected SKIP.
+  def mark_disabled(self, test):
+    """Sets test(s) as expected SKIP with disabled test label.
 
     Params:
       test (str): a test in format "{TestCase}/{testMethod}"
@@ -115,9 +115,9 @@ class StdJson():
 
     self.tests[test] = self._init_test('SKIP', 'SKIP')
 
-  def mark_all_skipped(self, tests):
+  def mark_all_disabled(self, tests):
     for test in tests:
-      self.mark_skipped(test)
+      self.mark_disabled(test)
 
   def mark_timeout(self, test):
     """Sets test as TIMEOUT, which is used to indicate a test abort/timeout

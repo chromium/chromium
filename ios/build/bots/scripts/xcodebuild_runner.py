@@ -472,7 +472,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         for test in attempt_results['passed']:
           output.mark_passed(test)
 
-    output.mark_all_skipped(self.logs['disabled tests'])
+    output.mark_all_disabled(self.logs['disabled tests'])
     output.finalize()
 
     self.test_results['tests'] = output.tests
