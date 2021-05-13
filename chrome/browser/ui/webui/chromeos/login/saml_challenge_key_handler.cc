@@ -49,7 +49,7 @@ bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
                  << ". Check may be slow.";
   }
 
-  for (const base::Value& cur_pattern : *patterns) {
+  for (const base::Value& cur_pattern : patterns->GetList()) {
     if (ContentSettingsPattern::FromString(cur_pattern.GetString())
             .Matches(url)) {
       return true;

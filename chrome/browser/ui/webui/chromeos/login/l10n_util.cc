@@ -478,22 +478,19 @@ std::string FindMostRelevantLocale(
     const std::vector<std::string>& most_relevant_language_codes,
     const base::ListValue& available_locales,
     const std::string& fallback_locale) {
-  for (std::vector<std::string>::const_iterator most_relevant_it =
-          most_relevant_language_codes.begin();
-       most_relevant_it != most_relevant_language_codes.end();
-       ++most_relevant_it) {
-    for (base::ListValue::const_iterator available_it =
-             available_locales.begin();
-         available_it != available_locales.end(); ++available_it) {
-      const base::DictionaryValue* dict;
-      std::string available_locale;
-      if (!available_it->GetAsDictionary(&dict) ||
-          !dict->GetString("value", &available_locale)) {
+  for (const auto& most_relevant : most_relevant_language_codes) {
+    for (const auto& entry : available_locales.GetList()) {
+      const std::string* available_locale = nullptr;
+      if (entry.is_dict())
+        available_locale = entry.FindStringKey("value");
+
+      if (!available_locale) {
         NOTREACHED();
         continue;
       }
-      if (available_locale == *most_relevant_it)
-        return *most_relevant_it;
+
+      if (*available_locale == most_relevant)
+        return most_relevant;
     }
   }
 
