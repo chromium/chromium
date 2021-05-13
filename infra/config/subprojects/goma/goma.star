@@ -225,7 +225,7 @@ def goma_builder(
         *,
         name,
         builderless = False,
-        os = os.LINUX_DEFAULT,
+        os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
         **kwargs):
     return builder(
         name = name,

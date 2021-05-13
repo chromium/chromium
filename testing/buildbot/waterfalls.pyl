@@ -3385,7 +3385,7 @@
       },
       'Chromium Linux Goma RBE Staging': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -3396,7 +3396,7 @@
       },
       'Chromium Linux Goma RBE Staging (clobber)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -3407,7 +3407,7 @@
       },
       'Chromium Linux Goma RBE Staging (dbg)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -3418,7 +3418,7 @@
       },
       'Chromium Linux Goma RBE Staging (dbg) (clobber)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
