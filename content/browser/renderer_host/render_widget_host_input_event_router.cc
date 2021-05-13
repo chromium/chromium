@@ -1940,7 +1940,7 @@ void RenderWidgetHostInputEventRouter::SetCursor(const WebCursor& cursor) {
     return;
 
   last_device_scale_factor_ =
-      last_mouse_move_root_view_->GetCurrentDeviceScaleFactor();
+      last_mouse_move_root_view_->current_device_scale_factor();
   if (auto* cursor_manager = last_mouse_move_root_view_->GetCursorManager()) {
     for (auto it : owner_map_) {
       if (it.second)

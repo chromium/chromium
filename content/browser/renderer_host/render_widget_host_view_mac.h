@@ -148,11 +148,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
   base::Optional<SkColor> GetBackgroundColor() override;
+  void OnSynchronizedDisplayPropertiesChanged(bool rotation) override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
-  const std::vector<display::Display>& GetDisplays() const override;
-  void UpdateScreenInfo(gfx::NativeView view) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   void DidNavigate() override;
@@ -297,6 +296,11 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
         .max_time_between_phase_ended_and_momentum_phase_began();
   }
 
+  // Update the size, scale factor, color profile, vsync parameters, and any
+  // other properties of the NSView or its NSScreen. Propagate these to the
+  // RenderWidgetHostImpl as well.
+  void UpdateNSViewAndDisplayProperties();
+
   // RenderWidgetHostNSViewHostHelper implementation.
   id GetRootBrowserAccessibilityElement() override;
   id GetFocusedBrowserAccessibilityElement() override;
@@ -330,7 +334,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                                bool attached_to_window) override;
   void OnWindowFrameInScreenChanged(
       const gfx::Rect& window_frame_in_screen_dip) override;
-  void OnDisplaysChanged(const display::DisplayList& display_list) override;
+  void OnDisplayChanged(const display::Display& display) override;
   void BeginKeyboardEvent() override;
   void EndKeyboardEvent() override;
   void ForwardKeyboardEventWithCommands(
@@ -561,6 +565,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // The frame of the window in the global display::Screen coordinate system
   // (where the origin is the upper-left corner of Screen::GetPrimaryDisplay).
   gfx::Rect window_frame_in_screen_dip_;
+
+  // Cached copy of the display information pushed to us from the NSView.
+  display::Display display_;
 
   // Whether or not the NSView's NSWindow is the key window.
   bool is_window_key_ = false;

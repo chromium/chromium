@@ -80,9 +80,8 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   bool IsPopup() const { return !!popup_window_; }
 
   // display::DisplayObserver implementation.
-  void OnDisplayAdded(const display::Display&) override;
-  void OnDisplayRemoved(const display::Display&) override;
-  void OnDisplayMetricsChanged(const display::Display&, uint32_t) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
   // The NSView used for input and display.
   base::scoped_nsobject<RenderWidgetHostViewCocoa> cocoa_view_;

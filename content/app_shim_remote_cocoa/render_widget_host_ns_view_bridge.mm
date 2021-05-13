@@ -215,17 +215,9 @@ void RenderWidgetHostNSViewBridge::SetShowingContextMenu(bool showing) {
   [cocoa_view_ setShowingContextMenu:showing];
 }
 
-void RenderWidgetHostNSViewBridge::OnDisplayAdded(const display::Display&) {
-  [cocoa_view_ updateScreenProperties];
-}
-
-void RenderWidgetHostNSViewBridge::OnDisplayRemoved(const display::Display&) {
-  [cocoa_view_ updateScreenProperties];
-}
-
 void RenderWidgetHostNSViewBridge::OnDisplayMetricsChanged(
-    const display::Display&,
-    uint32_t) {
+    const display::Display& display,
+    uint32_t changed_metrics) {
   // Note that -updateScreenProperties is also be called by the notification
   // NSWindowDidChangeBackingPropertiesNotification (some of these calls
   // will be redundant).

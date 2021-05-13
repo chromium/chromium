@@ -32,7 +32,6 @@
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/renderer_host/cursor_manager.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #import "content/browser/renderer_host/input/synthetic_gesture_target_mac.h"
 #include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
@@ -188,15 +187,13 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   // Guess that the initial screen we will be on is the screen of the current
   // window (since that's the best guess that we have, and is usually right).
   // https://crbug.com/357443
-  display::Screen* screen = display::Screen::GetScreen();
-  display_list_ = display::DisplayList(
-      screen->GetAllDisplays(), screen->GetPrimaryDisplay().id(),
-      screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
+  display_ =
+      display::Screen::GetScreen()->GetDisplayNearestWindow([NSApp keyWindow]);
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
   browser_compositor_ = std::make_unique<BrowserCompositorMac>(
-      this, this, host()->is_hidden(), display_list_, frame_sink_id);
+      this, this, host()->is_hidden(), display_, frame_sink_id);
   DCHECK(![GetInProcessNSView() window]);
 
   host()->SetView(this);
@@ -257,10 +254,6 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   // If no host is specified, then use the locally hosted NSView.
   if (!remote_cocoa_application) {
     ns_view_ = in_process_ns_view_bridge_.get();
-    // Observe local Screen info, to correspond with the locally hosted NSView.
-    // TODO(crbug.com/1204273): Maybe recreate `in_process_ns_view_bridge_`?
-    display::Screen::GetScreen()->RemoveObserver(
-        in_process_ns_view_bridge_.get());
     return;
   }
 
@@ -282,12 +275,6 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
       std::move(stub_client), std::move(stub_bridge_receiver));
 
   ns_view_ = remote_ns_view_.get();
-
-  // End local display::Screen observation via `in_process_ns_view_bridge_`;
-  // the remote NSWindow's display::Screen information will be sent by Mojo.
-  // TODO(crbug.com/1204273): Maybe just destroy `in_process_ns_view_bridge_`?
-  display::Screen::GetScreen()->RemoveObserver(
-      in_process_ns_view_bridge_.get());
 
   // Popup windows will specify an invalid |parent_ns_view_id|, because popups
   // have their own NSWindows (of which they are the content NSView).
@@ -410,21 +397,45 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
   return GetActiveWidget();
 }
 
+void RenderWidgetHostViewMac::UpdateNSViewAndDisplayProperties() {
+  display_link_ = ui::DisplayLinkMac::GetForDisplay(display_.id());
+  if (!display_link_) {
+    // Note that on some headless systems, the display link will fail to be
+    // created, so this should not be a fatal error.
+    LOG(ERROR) << "Failed to create display link.";
+  }
+
+  // During auto-resize it is the responsibility of the caller to ensure that
+  // the NSView and RenderWidgetHostImpl are kept in sync.
+  if (host()->auto_resize_enabled())
+    return;
+
+  if (host()->delegate())
+    host()->delegate()->SendScreenRects();
+  else
+    host()->SendScreenRects();
+
+  // RenderWidgetHostImpl will query BrowserCompositorMac for the dimensions
+  // to send to the renderer, so it is required that BrowserCompositorMac be
+  // updated first. Only notify RenderWidgetHostImpl of the update if any
+  // properties it will query have changed.
+  if (browser_compositor_->UpdateSurfaceFromNSView(
+          view_bounds_in_window_dip_.size(), display_)) {
+    host()->NotifyScreenInfoChanged();
+  }
+}
+
 void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
-  const display::DisplayList& displays = browser_compositor_->display_list();
-  DisplayUtil::DisplayToScreenInfo(screen_info,
-                                   *displays.GetCurrentDisplayIterator());
-  // Recalculate some ScreenInfo properties from the cached screen info, which
-  // may originate from a remote process that hosts the associated NSWindow.
-  // DisplayToScreenInfo derives some properties from the latest display::Screen
-  // info observed directly in this process, which may be intermittently
-  // out-of-sync with remote info. Also, BrowserCompositorMac and
-  // RenderWidgetHostViewMac do not update their cached screen info during
-  // auto-resize.
-  // TODO(crbug.com/1194700): Pass cached remote process screen info to
-  // DisplayToScreenInfo; it should not use local process info internally.
-  screen_info->is_extended = displays.displays().size() > 1;
-  screen_info->is_primary = screen_info->display_id == displays.primary_id();
+  browser_compositor_->GetRendererScreenInfo(screen_info);
+}
+
+void RenderWidgetHostViewMac::OnSynchronizedDisplayPropertiesChanged(
+    bool rotation) {
+  // Update cached screen information when the current display changes.
+  const auto& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow([NSApp keyWindow]);
+  if (display != display_)
+    OnDisplayChanged(display);
 }
 
 void RenderWidgetHostViewMac::Show() {
@@ -733,50 +744,6 @@ void RenderWidgetHostViewMac::UpdateTooltip(
   SetTooltipText(tooltip_text);
 }
 
-const std::vector<display::Display>& RenderWidgetHostViewMac::GetDisplays()
-    const {
-  // Return cached screen info, which may originate from a remote process that
-  // hosts the associated NSWindow. The latest display::Screen info observed
-  // directly in this process may be intermittently out-of-sync with that info.
-  // Also, BrowserCompositorMac and RenderWidgetHostViewMac do not update their
-  // cached screen info during auto-resize.
-  return browser_compositor_->display_list().displays();
-}
-
-void RenderWidgetHostViewMac::UpdateScreenInfo(gfx::NativeView view) {
-  // Update the size, scale factor, color profile, vsync parameters, and any
-  // other properties of the NSView or pertinent NSScreens. Propagate these to
-  // the RenderWidgetHostImpl as well.
-
-  display_link_ = ui::DisplayLinkMac::GetForDisplay(display_list_.current_id());
-  if (!display_link_) {
-    // Note that on some headless systems, the display link will fail to be
-    // created, so this should not be a fatal error.
-    LOG(ERROR) << "Failed to create display link.";
-  }
-
-  // During auto-resize it is the responsibility of the caller to ensure that
-  // the NSView and RenderWidgetHostImpl are kept in sync.
-  if (host()->auto_resize_enabled())
-    return;
-
-  if (host()->delegate())
-    host()->delegate()->SendScreenRects();
-  else
-    host()->SendScreenRects();
-
-  // TODO(crbug.com/1169312): Unify display info caching and change detection.
-  // Notify the associated RenderWidgetHostImpl when screen info has changed.
-  // That will synchronize visual properties needed for frame tree rendering
-  // and for web platform APIs that expose screen and window info and events.
-  // RenderWidgetHostImpl will query BrowserCompositorMac for the dimensions
-  // to send to the renderer, so BrowserCompositorMac must be updated first.
-  if (browser_compositor_->UpdateSurfaceFromNSView(
-          view_bounds_in_window_dip_.size(), display_list_)) {
-    host()->NotifyScreenInfoChanged();
-  }
-}
-
 viz::ScopedSurfaceIdAllocator
 RenderWidgetHostViewMac::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
@@ -901,13 +868,10 @@ void RenderWidgetHostViewMac::CopyFromSurface(
                            ->GetDelegatedFrameHost()
                            ->GetWeakPtr();
   }
-  // TODO(crbug.com/1169321): Resolve potential differences between display info
-  // caches in RenderWidgetHostViewMac and BrowserCompositorMac.
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(),
       browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
-      popup_frame_host, src_subrect, dst_size,
-      display_list_.GetCurrentDisplayIterator()->device_scale_factor(),
+      popup_frame_host, src_subrect, dst_size, display_.device_scale_factor(),
       std::move(callback));
 }
 
@@ -1546,7 +1510,7 @@ void RenderWidgetHostViewMac::OnBoundsInWindowChanged(
   }
 
   if (view_size_changed)
-    UpdateScreenInfo(GetNativeView());
+    UpdateNSViewAndDisplayProperties();
 }
 
 void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
@@ -1561,16 +1525,11 @@ void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
     host()->SendScreenRects();
 }
 
-void RenderWidgetHostViewMac::OnDisplaysChanged(
-    const display::DisplayList& display_list) {
-  // Cache this screen info, which may originate from a remote process that
-  // hosts the associated NSWindow. The latest display::Screen info observed
-  // directly in this process may be intermittently out-of-sync with that info.
-  // Also, BrowserCompositorMac and RenderWidgetHostViewMac do not update their
-  // cached screen info during auto-resize.
-  // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
-  display_list_ = display_list;
-  UpdateScreenInfo(GetNativeView());
+void RenderWidgetHostViewMac::OnDisplayChanged(
+    const display::Display& display) {
+  display_ = display;
+  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
+  UpdateNSViewAndDisplayProperties();
 }
 
 void RenderWidgetHostViewMac::BeginKeyboardEvent() {

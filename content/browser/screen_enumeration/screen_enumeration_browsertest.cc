@@ -120,8 +120,6 @@ IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, DISABLED_GetScreensBasic) {
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
 }
 
-// TODO(crbug.com/1205676): Remove this test in favor of IsExtendedBasic.
-// window.isMultiScreen() is deprecated in favor of screen.isExtended.
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsMultiScreenBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'isMultiScreen' in self"));
@@ -193,8 +191,6 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
   EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
 }
 
-// TODO(crbug.com/1205676): Remove this test in favor of IsExtendedFaked.
-// window.isMultiScreen() is deprecated in favor of screen.isExtended.
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
 #if defined(OS_ANDROID) || defined(OS_WIN)
@@ -237,51 +233,50 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
 #if defined(OS_ANDROID) || defined(OS_WIN)
-#define MAYBE_ScreenOnchangeNoPermission DISABLED_ScreenOnchangeNoPermission
+#define MAYBE_OnScreensChangeNoPermission DISABLED_OnScreensChangeNoPermission
 #else
-#define MAYBE_ScreenOnchangeNoPermission ScreenOnchangeNoPermission
+#define MAYBE_OnScreensChangeNoPermission OnScreensChangeNoPermission
 #endif
-// Sites with no permission only get an event if screen.isExtended changes.
+// Sites with no permission only get an event if isMultiScreen() changes.
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
 IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
-                       MAYBE_ScreenOnchangeNoPermission) {
+                       MAYBE_OnScreensChangeNoPermission) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
-  constexpr char kSetScreenOnchange[] = R"(
-    window.screen.onchange = function() { ++document.title; };
+  ASSERT_EQ(true, EvalJs(test_shell(), "'onscreenschange' in self"));
+  constexpr char kSetOnScreensChange[] = R"(
+    onscreenschange = function() { ++document.title; };
     document.title = 0;
   )";
-  EXPECT_EQ(0, EvalJs(test_shell(), kSetScreenOnchange));
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(0, EvalJs(test_shell(), kSetOnScreensChange));
   EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
-  // screen.isExtended changes from false to true here, so an event is sent.
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  // isMultiScreen() changes from false to true here, so an event is sent.
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
-  // screen.isExtended remains unchanged, so no event is sent.
+  // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
-  // screen.isExtended remains unchanged, so no event is sent.
+  // isMultiScreen() remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
-  // screen.isExtended remains unchanged, so no event is sent.
+  // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(true, EvalJs(test_shell(), kIsMultiScreenScript));
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
-  // screen.isExtended changes from true to false here, so an event is sent.
+  // isMultiScreen() changes from true to false here, so an event is sent.
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_EQ(false, EvalJs(test_shell(), kIsMultiScreenScript));
   EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 

@@ -1392,13 +1392,11 @@ void ExtractUnderlines(NSAttributedString* string,
   if (!enclosingWindow)
     return;
 
-  display::Screen* screen = display::Screen::GetScreen();
   // TODO(ccameron): This will call [enclosingWindow screen], which may return
   // nil. Do that call here to avoid sending bogus display info to the host.
-  display::DisplayList display_list(screen->GetAllDisplays(),
-                                    screen->GetPrimaryDisplay().id(),
-                                    screen->GetDisplayNearestView(self).id());
-  _host->OnDisplaysChanged(display_list);
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestView(self);
+  _host->OnDisplayChanged(display);
 }
 
 // This will be called when the NSView's NSWindow moves from one NSScreen to

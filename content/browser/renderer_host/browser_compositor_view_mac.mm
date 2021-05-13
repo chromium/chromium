@@ -18,12 +18,14 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/compositor/image_transport_factory.h"
+#include "content/browser/renderer_host/display_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -50,11 +52,11 @@ BrowserCompositorMac::BrowserCompositorMac(
     ui::AcceleratedWidgetMacNSView* accelerated_widget_mac_ns_view,
     BrowserCompositorMacClient* client,
     bool render_widget_host_is_hidden,
-    const display::DisplayList& initial_display_list,
+    const display::Display& initial_display,
     const viz::FrameSinkId& frame_sink_id)
     : client_(client),
       accelerated_widget_mac_ns_view_(accelerated_widget_mac_ns_view),
-      display_list_(initial_display_list),
+      dfh_display_(initial_display),
       weak_factory_(this) {
   g_browser_compositors.Get().insert(this);
 
@@ -116,36 +118,22 @@ void BrowserCompositorMac::SetBackgroundColor(SkColor background_color) {
 
 bool BrowserCompositorMac::UpdateSurfaceFromNSView(
     const gfx::Size& new_size_dip,
-    const display::DisplayList& new_display_list) {
-  if (new_size_dip == dfh_size_dip_) {
-    if (new_display_list == display_list_)
-      return false;
-    if (*new_display_list.GetCurrentDisplayIterator() ==
-        *display_list_.GetCurrentDisplayIterator()) {
-      // Another display changed; no SurfaceId updates are needed here, but
-      // returning true instructs the caller to notify its RenderWidgetHostImpl.
-      // That will synchronize visual properties thoughout the frame tree,
-      // updating cached screen info and events exposed by web platform APIs.
-      display_list_ = new_display_list;
-      return true;
-    }
-  }
+    const display::Display& new_display) {
+  if (new_size_dip == dfh_size_dip_ && new_display == dfh_display_)
+    return false;
 
   bool is_resize = !dfh_size_dip_.IsEmpty() && new_size_dip != dfh_size_dip_;
 
   bool needs_new_surface_id =
       new_size_dip != dfh_size_dip_ ||
-      new_display_list.GetCurrentDisplayIterator()->device_scale_factor() !=
-          display_list_.GetCurrentDisplayIterator()->device_scale_factor();
+      new_display.device_scale_factor() != dfh_display_.device_scale_factor();
 
-  display_list_ = new_display_list;
+  dfh_display_ = new_display;
   dfh_size_dip_ = new_size_dip;
-  const display::Display& display = *display_list_.GetCurrentDisplayIterator();
-
   // The device scale factor is always an integer, so the result here is also
   // an integer.
-  dfh_size_pixels_ = gfx::ToRoundedSize(
-      gfx::ConvertSizeToPixels(dfh_size_dip_, display.device_scale_factor()));
+  dfh_size_pixels_ = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+      dfh_size_dip_, dfh_display_.device_scale_factor()));
   root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
 
   if (needs_new_surface_id) {
@@ -157,8 +145,8 @@ bool BrowserCompositorMac::UpdateSurfaceFromNSView(
 
   if (recyclable_compositor_) {
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          display.device_scale_factor(),
-                                          display.color_spaces());
+                                          dfh_display_.device_scale_factor(),
+                                          dfh_display_.color_spaces());
   }
 
   return true;
@@ -171,19 +159,16 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
     const viz::LocalSurfaceId& child_local_surface_id) {
   if (dfh_local_surface_id_allocator_.UpdateFromChild(child_local_surface_id)) {
     if (auto_resize_enabled) {
-      // TODO(crbug.com/1169312): Update RWHVMac's cached screen info similarly?
-      display::Display display = *display_list_.GetCurrentDisplayIterator();
-      display.set_device_scale_factor(new_device_scale_factor);
-      display_list_.UpdateDisplay(display);
+      dfh_display_.set_device_scale_factor(new_device_scale_factor);
       // TODO(danakj): We should avoid lossy conversions to integer DIPs.
       dfh_size_dip_ = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
-          new_size_in_pixels, display.device_scale_factor()));
+          new_size_in_pixels, dfh_display_.device_scale_factor()));
       dfh_size_pixels_ = new_size_in_pixels;
       root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
       if (recyclable_compositor_) {
-        recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                              display.device_scale_factor(),
-                                              display.color_spaces());
+        recyclable_compositor_->UpdateSurface(
+            dfh_size_pixels_, dfh_display_.device_scale_factor(),
+            dfh_display_.color_spaces());
       }
     }
     delegated_frame_host_->EmbedSurface(
@@ -285,11 +270,9 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     recyclable_compositor_ =
         ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
             content::GetContextFactory());
-    const display::Display& display =
-        *display_list_.GetCurrentDisplayIterator();
     recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          display.device_scale_factor(),
-                                          display.color_spaces());
+                                          dfh_display_.device_scale_factor(),
+                                          dfh_display_.color_spaces());
     recyclable_compositor_->compositor()->SetRootLayer(root_layer_.get());
     recyclable_compositor_->compositor()->SetBackgroundColor(background_color_);
     recyclable_compositor_->widget()->SetNSView(
@@ -347,7 +330,7 @@ void BrowserCompositorMac::OnFrameTokenChanged(
 }
 
 float BrowserCompositorMac::GetDeviceScaleFactor() const {
-  return display_list_.GetCurrentDisplayIterator()->device_scale_factor();
+  return dfh_display_.device_scale_factor();
 }
 
 void BrowserCompositorMac::InvalidateLocalSurfaceIdOnEviction() {
@@ -399,12 +382,14 @@ void BrowserCompositorMac::SetParentUiLayer(ui::Layer* new_parent_ui_layer) {
 }
 
 bool BrowserCompositorMac::ForceNewSurfaceForTesting() {
-  display::DisplayList new_display_list(display_list_);
-  display::Display display = *new_display_list.GetCurrentDisplayIterator();
-  // TODO(crbug.com/1169312): Update RWHVMac's cached screen info similarly?
-  display.set_device_scale_factor(display.device_scale_factor() * 2.0f);
-  new_display_list.UpdateDisplay(display);
-  return UpdateSurfaceFromNSView(dfh_size_dip_, new_display_list);
+  display::Display new_display(dfh_display_);
+  new_display.set_device_scale_factor(new_display.device_scale_factor() * 2.0f);
+  return UpdateSurfaceFromNSView(dfh_size_dip_, new_display);
+}
+
+void BrowserCompositorMac::GetRendererScreenInfo(
+    blink::ScreenInfo* screen_info) const {
+  DisplayUtil::DisplayToScreenInfo(screen_info, dfh_display_);
 }
 
 viz::ScopedSurfaceIdAllocator
