@@ -25,7 +25,6 @@
 #include "chrome/browser/chromeos/smb_client/smbfs_share.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"

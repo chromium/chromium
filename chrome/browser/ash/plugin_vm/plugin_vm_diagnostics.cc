@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
