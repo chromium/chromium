@@ -798,4 +798,27 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
   EXPECT_FALSE(external_tray->GetBubbleView());
 }
 
+class PaletteTrayTestWithOOBE : public PaletteTrayTest {
+ public:
+  PaletteTrayTestWithOOBE() = default;
+  ~PaletteTrayTestWithOOBE() override = default;
+
+  // PalatteTrayTest:
+  void SetUp() override {
+    set_start_session(false);
+    PaletteTrayTest::SetUp();
+  }
+};
+
+// Verify there are no crashes if the stylus is used during OOBE.
+TEST_F(PaletteTrayTestWithOOBE, StylusEventsSafeDuringOOBE) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->EnterPenPointerMode();
+  generator->PressTouch();
+  generator->ReleaseTouch();
+}
+
 }  // namespace ash

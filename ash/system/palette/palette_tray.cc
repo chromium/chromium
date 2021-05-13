@@ -291,16 +291,16 @@ bool PaletteTray::ShouldShowPalette() const {
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
-  if (!HasSeenStylus() && local_state_) {
+  if (local_state_ && !HasSeenStylus())
     local_state_->SetBoolean(prefs::kHasSeenStylus, true);
 
-    // Flip the enable stylus tools setting if the user has never interacted
-    // with it. crbug/1122609
-    if (!pref_change_registrar_user_->prefs()->HasPrefPath(
-            prefs::kEnableStylusTools)) {
-      pref_change_registrar_user_->prefs()->SetBoolean(
-          prefs::kEnableStylusTools, true);
-    }
+  // Flip the enable stylus tools setting if the user has never interacted
+  // with it. crbug/1122609
+  if (pref_change_registrar_user_ &&
+      !pref_change_registrar_user_->prefs()->HasPrefPath(
+          prefs::kEnableStylusTools)) {
+    pref_change_registrar_user_->prefs()->SetBoolean(prefs::kEnableStylusTools,
+                                                     true);
   }
 
   // Attempt to show the welcome bubble.
