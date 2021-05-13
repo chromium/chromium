@@ -53,8 +53,7 @@ template("generate_installer") {
   archive_name = target_name + "_archive"
   staging_dir = "$target_gen_dir/$target_name"
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(archive_name) {
+  action(archive_name) {
     script = "create_installer_archive.py"
 
     release_file = "updater.release"

@@ -11,7 +11,7 @@
 
 """
 
-import ConfigParser
+import configparser
 import glob
 import optparse
 import os
@@ -104,7 +104,7 @@ def Readconfig(input_file):
   """
   variables = {}
   variables['UpdaterDir'] = UPDATER_DIR
-  config = ConfigParser.SafeConfigParser(variables)
+  config = configparser.ConfigParser(variables)
   config.read(input_file)
   return config
 
@@ -113,14 +113,14 @@ def RunSystemCommand(cmd, verbose):
   captures its output and only emits it on failure.
   """
   if verbose:
-    print 'Running', cmd
+    print('Running', cmd)
 
   try:
     # Run |cmd|, redirecting stderr to stdout in order for captured errors to be
     # inline with corresponding stdout.
     output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     if verbose:
-      print output
+      print(output)
   except subprocess.CalledProcessError as e:
     raise Exception("Error while running cmd: %s\n"
                     "Exit code: %s\n"
@@ -345,5 +345,5 @@ def _ParseOptions():
 if '__main__' == __name__:
   options = _ParseOptions()
   if options.verbose:
-    print sys.argv
+    print(sys.argv)
   sys.exit(main(options))
