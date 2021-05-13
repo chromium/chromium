@@ -248,13 +248,18 @@ bool SynchronizedMinidumpManager::AcquireLockFile() {
 
   // The lockfile is open and locked. Parse it to provide subclasses with a
   // record of all the current dumps.
-  if (!ParseFiles()) {
+  bool create_lockfiles = false;
+  if (!base::PathExists(metadata_path_)) {
+    LOG(INFO) << "Metadata doesn't exist.";
+    create_lockfiles = true;
+  } else if (!ParseFiles()) {
     LOG(ERROR) << "Lockfile did not parse correctly. ";
-    if (!InitializeFiles() || !ParseFiles()) {
-      LOG(ERROR) << "Failed to create a new lock file!";
-      ReleaseLockFile();
-      return false;
-    }
+    create_lockfiles = true;
+  }
+  if (create_lockfiles && (!InitializeFiles() || !ParseFiles())) {
+    LOG(ERROR) << "Failed to create a new lock file!";
+    ReleaseLockFile();
+    return false;
   }
 
   DCHECK(dumps_);
