@@ -10,7 +10,6 @@
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -61,11 +60,6 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
     ui_controller_->ShowToolbar();
   else
     ui_controller_->CloseToolbar();
-}
-
-void ProjectorControllerImpl::StartProjectorSession(SourceType scope,
-                                                    aura::Window* window) {
-  // TODO(https://crbug.com/1185262): Start projector session.
 }
 
 bool ProjectorControllerImpl::IsEligible() const {

@@ -10,13 +10,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 
-namespace aura {
-class Window;
-}
-
 namespace ash {
 
-enum class SourceType;
 class ProjectorClient;
 
 // Interface to control projector in ash.
@@ -46,11 +41,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   // Sets projector toolbar visibility.
   virtual void SetProjectorToolsVisible(bool is_visible) = 0;
-
-  // Starts a projector session. If scope is SourceType::kUnset, window may be
-  // null.
-  virtual void StartProjectorSession(SourceType scope,
-                                     aura::Window* window) = 0;
 
   // Returns true if Projector is eligible to start a new session.
   virtual bool IsEligible() const = 0;

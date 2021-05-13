@@ -48,11 +48,6 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/public/cpp/projector/projector_session.h"
-#endif
-
 using content::DesktopMediaID;
 
 enum class DesktopMediaPickerDialogView::DialogSource : int {
@@ -184,56 +179,6 @@ void RecordUmaSelection(DialogSource dialog_source,
   }
 }
 
-bool IsProjectorEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::ProjectorController::Get())
-    return false;
-
-  // TODO(https://crbug.com/1184881): If there is a session ongoing we should
-  // disable the checkbox.
-  return ash::ProjectorController::Get()->IsEligible();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-}
-
-void SetProjectorToolsVisible(bool is_visible) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ProjectorController::Get()->SetProjectorToolsVisible(is_visible);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void ProjectorCheckboxPressed(views::Checkbox* presenter_checkbox) {
-  DCHECK(presenter_checkbox);
-  SetProjectorToolsVisible(presenter_checkbox->GetChecked());
-}
-
-void StartProjectorSession(const content::DesktopMediaID& accepted_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (accepted_id.type == content::DesktopMediaID::TYPE_NONE)
-    return;
-
-  ash::SourceType scope;
-
-  switch (accepted_id.type) {
-    case content::DesktopMediaID::TYPE_SCREEN:
-      scope = ash::SourceType::kFullscreen;
-      break;
-    case content::DesktopMediaID::TYPE_WINDOW:
-      scope = ash::SourceType::kWindow;
-      break;
-    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-      scope = ash::SourceType::kTab;
-      break;
-    case content::DesktopMediaID::TYPE_NONE:
-      scope = ash::SourceType::kUnset;
-      break;
-  }
-
-  ash::ProjectorController::Get()->StartProjectorSession(
-      scope, content::DesktopMediaID::GetNativeWindowById(accepted_id));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 }  // namespace
 
 DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
@@ -246,38 +191,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  std::unique_ptr<views::View> extra_views_container;
-  if (params.request_audio || IsProjectorEnabled()) {
-    extra_views_container = std::make_unique<views::View>();
-    // A simple horizontal layout manager.
-    extra_views_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>());
-
-    if (params.request_audio) {
-      std::unique_ptr<views::Checkbox> audio_share_checkbox =
-          std::make_unique<views::Checkbox>(
-              l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE));
-      audio_share_checkbox->SetChecked(params.approve_audio_by_default);
-      audio_share_checkbox_ =
-          extra_views_container->AddChildView(std::move(audio_share_checkbox));
-    }
-
-    if (IsProjectorEnabled()) {
-      std::unique_ptr<views::Checkbox> presenter_tools_checkbox =
-          std::make_unique<views::Checkbox>(
-              l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PRESENTER_TOOLS));
-
-      presenter_tools_checkbox_ = extra_views_container->AddChildView(
-          std::move(presenter_tools_checkbox));
-      presenter_tools_checked_subscription_ =
-          presenter_tools_checkbox_->AddCheckedChangedCallback(
-              base::BindRepeating(&ProjectorCheckboxPressed,
-                                  presenter_tools_checkbox_));
-      presenter_tools_checkbox_->SetChecked(true);
-    }
-
-    extra_views_container_ = SetExtraView(std::move(extra_views_container));
-    extra_views_container_->SetVisible(true);
+  if (params.request_audio) {
+    std::unique_ptr<views::Checkbox> audio_share_checkbox =
+        std::make_unique<views::Checkbox>(
+            l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE));
+    audio_share_checkbox->SetChecked(params.approve_audio_by_default);
+    audio_share_checkbox_ = SetExtraView(std::move(audio_share_checkbox));
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -643,24 +562,12 @@ bool DesktopMediaPickerDialogView::Accept() {
   if (parent_)
     parent_->NotifyDialogResult(source);
 
-  bool notify_projector_session_start =
-      presenter_tools_checkbox_ && presenter_tools_checkbox_->GetChecked() &&
-      IsProjectorEnabled();
-  if (notify_projector_session_start) {
-    StartProjectorSession(source);
-  }
-
   // Return true to close the window.
   return true;
 }
 
 bool DesktopMediaPickerDialogView::Cancel() {
   RecordUmaCancellation(dialog_source_);
-  bool hide_projector_tools =
-      presenter_tools_checkbox_ && presenter_tools_checkbox_->GetChecked();
-  // If the user cancels while the projector tools are visible, hide them.
-  if (hide_projector_tools)
-    SetProjectorToolsVisible(false);
   return views::DialogDelegateView::Cancel();
 }
 

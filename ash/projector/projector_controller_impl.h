@@ -40,7 +40,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
       const base::Optional<std::vector<base::TimeDelta>>& word_offsets,
       bool is_final) override;
   void SetProjectorToolsVisible(bool is_visible) override;
-  void StartProjectorSession(SourceType scope, aura::Window* window) override;
   bool IsEligible() const override;
 
   // Sets Caption bubble state to become opened/closed.
