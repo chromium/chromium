@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"

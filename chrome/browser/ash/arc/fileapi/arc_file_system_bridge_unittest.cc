@@ -22,7 +22,7 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_virtual_file_provider_client.h"
 #include "components/arc/session/arc_bridge_service.h"

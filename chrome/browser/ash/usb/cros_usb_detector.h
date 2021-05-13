@@ -14,7 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

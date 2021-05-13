@@ -8,7 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"

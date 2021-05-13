@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/connection_observer.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_TEST_HELPER_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/concierge/fake_concierge_client.h"
 
 class TestingProfile;
 

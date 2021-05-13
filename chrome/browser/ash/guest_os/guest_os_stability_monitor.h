@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/chunneld_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 
 namespace guest_os {

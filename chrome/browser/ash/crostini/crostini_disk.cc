@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace {

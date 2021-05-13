@@ -41,7 +41,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/components/smbfs/smbfs_mounter.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_smb_provider_client.h"
 #include "chromeos/disks/disk_mount_manager.h"

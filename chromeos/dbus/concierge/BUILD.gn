@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("concierge") {
+  defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus:cicerone_proto",
+    "//chromeos/dbus:common",
+    "//chromeos/dbus:concierge_proto",
+    "//chromeos/dbus/cicerone",
+    "//dbus",
+  ]
+
+  sources = [
+    "concierge_client.cc",
+    "concierge_client.h",
+    "fake_concierge_client.cc",
+    "fake_concierge_client.h",
+  ]
+}

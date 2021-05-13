@@ -58,7 +58,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
