@@ -112,7 +112,7 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
   aura::Window* CreateWindow(int hittest_code) {
     TestWindowDelegate* d1 = new TestWindowDelegate(hittest_code);
     aura::Window* w1 = new aura::Window(d1, aura::client::WINDOW_TYPE_NORMAL);
-    w1->set_id(1);
+    w1->SetId(1);
     w1->Init(ui::LAYER_TEXTURED);
     aura::Window* parent = Shell::GetContainer(
         Shell::GetPrimaryRootWindow(), desks_util::GetActiveDeskContainerId());

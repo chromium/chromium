@@ -113,7 +113,7 @@ class DragWindowController::DragWindowDetails {
     params.name = "DragWindow";
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.accept_events = false;
-    const int parent_id = original_window->parent()->id();
+    const int parent_id = original_window->parent()->GetId();
     params.parent = root_window_->GetChildById(parent_id);
 
     widget_ = std::make_unique<views::Widget>();
@@ -130,7 +130,7 @@ class DragWindowController::DragWindowDetails {
         /*show_non_client_view=*/true));
 
     aura::Window* window = widget_->GetNativeWindow();
-    window->set_id(kShellWindowId_PhantomWindow);
+    window->SetId(kShellWindowId_PhantomWindow);
     window->SetProperty(aura::client::kAnimationsDisabledKey, true);
     gfx::Rect bounds = original_window->bounds();
     ::wm::ConvertRectToScreen(original_window->parent(), &bounds);

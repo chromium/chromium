@@ -122,7 +122,7 @@ bool IsDeskContainer(aura::Window* container) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::desks_util::IsDeskContainer(container);
 #else
-  return container->id() == ash::kShellWindowId_DefaultContainerDeprecated;
+  return container->GetId() == ash::kShellWindowId_DefaultContainerDeprecated;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -167,7 +167,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnWindowDestroyed(aura::Window* window) override { delete this; }
   void OnWindowTargetVisibilityChanged(bool visible) override {}
   void OnWindowOcclusionChanged(
-      aura::Window::OcclusionState occlusion_state) override {
+      aura::Window::OcclusionState GetOcclusionState) override {
     surface_->OnWindowOcclusionChanged();
   }
   bool HasHitTestMask() const override { return true; }

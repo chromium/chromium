@@ -452,7 +452,7 @@ RestrictionLevelAndUrl DlpContentManager::GetAreaRestrictionInfo(
       continue;
     }
     aura::Window* web_contents_window = entry.first->GetNativeView();
-    if (web_contents_window->occlusion_state() ==
+    if (web_contents_window->GetOcclusionState() ==
         aura::Window::OcclusionState::OCCLUDED) {
       continue;
     }

@@ -296,10 +296,10 @@ class TestEventClient : public client::EventClient {
     client::SetEventClient(root_window_, this);
     Window* lock_window =
         test::CreateTestWindowWithBounds(root_window_->bounds(), root_window_);
-    lock_window->set_id(kLockWindowId);
+    lock_window->SetId(kLockWindowId);
     Window* non_lock_window =
         test::CreateTestWindowWithBounds(root_window_->bounds(), root_window_);
-    non_lock_window->set_id(kNonLockWindowId);
+    non_lock_window->SetId(kNonLockWindowId);
   }
   ~TestEventClient() override { client::SetEventClient(root_window_, NULL); }
 
@@ -348,10 +348,10 @@ TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
 
   Window* w1 = test::CreateTestWindowWithBounds(gfx::Rect(10, 10, 20, 20),
                                                 client.GetNonLockWindow());
-  w1->set_id(1);
+  w1->SetId(1);
   Window* w2 = test::CreateTestWindowWithBounds(gfx::Rect(30, 30, 20, 20),
                                                 client.GetNonLockWindow());
-  w2->set_id(2);
+  w2->SetId(2);
   std::unique_ptr<Window> w3(test::CreateTestWindowWithDelegate(
       &d, 3, gfx::Rect(30, 30, 20, 20), client.GetLockWindow()));
 

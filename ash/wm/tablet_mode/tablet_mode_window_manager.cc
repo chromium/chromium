@@ -714,7 +714,7 @@ bool TabletModeWindowManager::ShouldHandleWindow(aura::Window* window) {
     return false;
   }
 
-  return window->type() == aura::client::WINDOW_TYPE_NORMAL;
+  return window->GetType() == aura::client::WINDOW_TYPE_NORMAL;
 }
 
 void TabletModeWindowManager::AddWindowCreationObservers() {

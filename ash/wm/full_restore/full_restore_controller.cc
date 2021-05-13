@@ -268,7 +268,7 @@ void FullRestoreController::SaveWindowImpl(
 
   // Only apps whose parent is a certain container can be saved.
   if (!window->parent() ||
-      !base::Contains(kAppParentContainers, window->parent()->id())) {
+      !base::Contains(kAppParentContainers, window->parent()->GetId())) {
     return;
   }
 

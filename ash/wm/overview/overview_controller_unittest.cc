@@ -181,8 +181,8 @@ class TestOverviewObserver : public OverviewObserver {
 };
 
 void WaitForOcclusionStateChange(aura::Window* window) {
-  auto current_state = window->occlusion_state();
-  while (window->occlusion_state() == current_state)
+  auto current_state = window->GetOcclusionState();
+  while (window->GetOcclusionState() == current_state)
     base::RunLoop().RunUntilIdle();
 }
 
@@ -320,59 +320,59 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
 
   window1->TrackOcclusionState();
   window2->TrackOcclusionState();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   // Enter with windows.
   Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   observer.WaitForStartingAnimationComplete();
   // Occlusion tracking is paused.
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 
   // Exit with windows.
   Shell::Get()->overview_controller()->EndOverview();
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   observer.WaitForEndingAnimationComplete();
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
 
   observer.Reset();
 
   // Enter again.
   Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   auto* active = window_util::GetActiveWindow();
   EXPECT_EQ(window2.get(), active);
 
   observer.WaitForStartingAnimationComplete();
 
   // Window 1 is still occluded because tracker is paused.
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 
   wm::ActivateWindow(window1.get());
   observer.WaitForEndingAnimationComplete();
 
   // Windows are visible because tracker is paused.
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
   WaitForOcclusionStateChange(window2.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window2->GetOcclusionState());
 }
 
 // Tests that PIP windows are not shown in overview.

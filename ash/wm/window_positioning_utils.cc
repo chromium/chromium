@@ -136,7 +136,7 @@ void SetBoundsInScreen(aura::Window* window,
     DCHECK(dst_root);
     aura::Window* dst_container = nullptr;
     if (dst_root != window->GetRootWindow()) {
-      int container_id = window->parent()->id();
+      int container_id = window->parent()->GetId();
       // All containers that use screen coordinates must have valid window ids.
       DCHECK_GE(container_id, 0);
       // Don't move modal background.

@@ -134,7 +134,7 @@ class TooltipControllerTest : public ViewsTestBase {
         delegate
             ? delegate
             : aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
-    window->set_id(id);
+    window->SetId(id);
     window->Init(ui::LAYER_TEXTURED);
     parent->AddChild(window);
     window->SetBounds(gfx::Rect(0, 0, 100, 100));

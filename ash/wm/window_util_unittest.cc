@@ -145,7 +145,7 @@ TEST_F(WindowUtilTest, MoveWindowToDisplay) {
   const int64_t original_display_id =
       screen->GetDisplayNearestWindow(window.get()).id();
   EXPECT_EQ(screen->GetPrimaryDisplay().id(), original_display_id);
-  const int original_container_id = window->parent()->id();
+  const int original_container_id = window->parent()->GetId();
   const aura::Window* original_root = window->GetRootWindow();
 
   ASSERT_EQ(2, screen->GetNumDisplays());
@@ -154,13 +154,13 @@ TEST_F(WindowUtilTest, MoveWindowToDisplay) {
   EXPECT_TRUE(MoveWindowToDisplay(window.get(), secondary_display_id));
   EXPECT_EQ(secondary_display_id,
             screen->GetDisplayNearestWindow(window.get()).id());
-  EXPECT_EQ(original_container_id, window->parent()->id());
+  EXPECT_EQ(original_container_id, window->parent()->GetId());
   EXPECT_NE(original_root, window->GetRootWindow());
 
   EXPECT_TRUE(MoveWindowToDisplay(window.get(), original_display_id));
   EXPECT_EQ(original_display_id,
             screen->GetDisplayNearestWindow(window.get()).id());
-  EXPECT_EQ(original_container_id, window->parent()->id());
+  EXPECT_EQ(original_container_id, window->parent()->GetId());
   EXPECT_EQ(original_root, window->GetRootWindow());
 }
 

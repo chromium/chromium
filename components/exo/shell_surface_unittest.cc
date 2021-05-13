@@ -482,7 +482,7 @@ TEST_F(ShellSurfaceTest, EmulateOverrideRedirect) {
   // manager.
   EXPECT_TRUE(ash::WindowState::Get(child_window)->allow_set_bounds_direct());
   EXPECT_EQ(ash::kShellWindowId_ShelfBubbleContainer,
-            child_window->parent()->id());
+            child_window->parent()->GetId());
 
   // NONE/SHADOW frame type should work on override redirect.
   child_surface->SetFrame(SurfaceFrameType::SHADOW);
@@ -978,7 +978,7 @@ TEST_F(ShellSurfaceTest, Popup) {
 
   // Verify that created shell surface is popup and has capture.
   EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
-            popup_shell_surface->GetWidget()->GetNativeWindow()->type());
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
   EXPECT_EQ(WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow(),
             popup_shell_surface->GetWidget()->GetNativeWindow());
 
@@ -1002,7 +1002,7 @@ TEST_F(ShellSurfaceTest, Popup) {
   // The capture should be on sub_popup_shell_surface.
   EXPECT_EQ(WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow(),
             target);
-  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP, target->type());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP, target->GetType());
 
   {
     // Mouse is on the top most popup.
@@ -1076,7 +1076,7 @@ TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
 
   // Verify that created shell surface is popup and has capture.
   EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
-            popup_shell_surface->GetWidget()->GetNativeWindow()->type());
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
   EXPECT_EQ(WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow(),
             popup_shell_surface->GetWidget()->GetNativeWindow());
 

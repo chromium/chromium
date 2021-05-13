@@ -89,7 +89,7 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
         delegate
             ? delegate
             : aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
-    window->set_id(id);
+    window->SetId(id);
     window->Init(ui::LAYER_TEXTURED);
     parent->AddChild(window);
     window->SetBounds(bounds);

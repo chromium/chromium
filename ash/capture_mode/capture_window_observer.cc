@@ -41,7 +41,7 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
 
   // Don't capture wallpaper window.
   if (window && window->parent() &&
-      window->parent()->id() == kShellWindowId_WallpaperContainer) {
+      window->parent()->GetId() == kShellWindowId_WallpaperContainer) {
     window = nullptr;
   }
 

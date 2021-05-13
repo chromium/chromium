@@ -77,7 +77,7 @@ void MoveToDisplayForRestore(WindowState* window_state) {
         window_state->window()->GetRootWindow()) {
       aura::Window* new_container =
           new_root_controller->GetRootWindow()->GetChildById(
-              window_state->window()->parent()->id());
+              window_state->window()->parent()->GetId());
       new_container->AddChild(window_state->window());
     }
   }

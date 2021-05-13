@@ -113,7 +113,7 @@ std::unique_ptr<views::Widget> TestWidgetBuilder::BuildOwnsNativeWidget() {
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(widget_init_params_));
   if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->set_id(window_id_);
+    widget->GetNativeWindow()->SetId(window_id_);
   if (show_)
     widget->Show();
   return widget;
@@ -128,7 +128,7 @@ views::Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   widget->Init(std::move(widget_init_params_));
   if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->set_id(window_id_);
+    widget->GetNativeWindow()->SetId(window_id_);
   if (show_)
     widget->Show();
   return widget;

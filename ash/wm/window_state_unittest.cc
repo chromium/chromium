@@ -802,45 +802,45 @@ TEST_F(WindowStateTest, OpacityChange) {
   std::unique_ptr<aura::Window> window = CreateAppWindow();
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(window->transparent());
+  EXPECT_TRUE(window->GetTransparent());
 
   window_state->Maximize();
   EXPECT_TRUE(window_state->IsMaximized());
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
   EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(window->transparent());
+  EXPECT_TRUE(window->GetTransparent());
 
   window_state->Minimize();
   EXPECT_TRUE(window_state->IsMinimized());
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(window->transparent());
+  EXPECT_TRUE(window->GetTransparent());
 
   ToggleFullScreen(window_state, nullptr);
   ASSERT_TRUE(window_state->IsFullscreen());
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
   EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(window->transparent());
+  EXPECT_TRUE(window->GetTransparent());
 
   const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
   window_state->OnWMEvent(&snap_left);
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
-  EXPECT_TRUE(window->transparent());
+  EXPECT_TRUE(window->GetTransparent());
 
   const WMEvent snap_right(WM_EVENT_SNAP_RIGHT);
   window_state->OnWMEvent(&snap_left);
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 
   window_state->OnWMEvent(&snap_left);
-  EXPECT_FALSE(window->transparent());
+  EXPECT_FALSE(window->GetTransparent());
 }
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore

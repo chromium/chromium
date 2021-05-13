@@ -29,7 +29,7 @@ namespace {
 
 bool ValidateStacking(aura::Window* parent, int ids[], int count) {
   for (int i = 0; i < count; ++i) {
-    if (parent->children().at(i)->id() != ids[i])
+    if (parent->children().at(i)->GetId() != ids[i])
       return false;
   }
   return true;
@@ -258,17 +258,17 @@ TEST_F(WindowModalityControllerTest, GetModalTransient) {
   // Parent w2 to w1. It should get parented to the parent of w1.
   ::wm::AddTransientChild(w1.get(), w2.get());
   ASSERT_EQ(2U, w1->parent()->children().size());
-  EXPECT_EQ(-2, w1->parent()->children().at(1)->id());
+  EXPECT_EQ(-2, w1->parent()->children().at(1)->GetId());
 
   // Request the modal transient window for w1, it should be w2.
   wt = ::wm::GetModalTransient(w1.get());
   ASSERT_NE(nullptr, wt);
-  EXPECT_EQ(-2, wt->id());
+  EXPECT_EQ(-2, wt->GetId());
 
   // Request the modal transient window for w11, it should also be w2.
   wt = ::wm::GetModalTransient(w11.get());
   ASSERT_NE(nullptr, wt);
-  EXPECT_EQ(-2, wt->id());
+  EXPECT_EQ(-2, wt->GetId());
 }
 
 // Verifies we generate a capture lost when showing a modal window.

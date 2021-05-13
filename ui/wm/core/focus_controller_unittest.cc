@@ -560,7 +560,7 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
   }
   int GetFocusedWindowId() {
     aura::Window* focused_window = GetFocusedWindow();
-    return focused_window ? focused_window->id() : -1;
+    return focused_window ? focused_window->GetId() : -1;
   }
   void ActivateWindow(aura::Window* window) {
     GetActivationClient(root_window())->ActivateWindow(window);
@@ -573,7 +573,7 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
   }
   int GetActiveWindowId() {
     aura::Window* active_window = GetActiveWindow();
-    return active_window ? active_window->id() : -1;
+    return active_window ? active_window->GetId() : -1;
   }
 
   TestFocusRules* test_focus_rules() { return test_focus_rules_; }

@@ -143,8 +143,8 @@ TEST_F(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
       // TODO(flackr): Add a more readable error message by constructing a
       // string from the window IDs.
       const int index = index_path_for_direction[key_index][i];
-      EXPECT_EQ(GetOverviewHighlightedWindow()->id(),
-                overview_windows[index - 1]->GetWindow()->id());
+      EXPECT_EQ(GetOverviewHighlightedWindow()->GetId(),
+                overview_windows[index - 1]->GetWindow()->GetId());
     }
     ToggleOverview();
   }

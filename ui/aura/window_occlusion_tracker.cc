@@ -261,7 +261,7 @@ bool WindowOcclusionTracker::OcclusionStatesMatch(
     const base::flat_map<Window*, OcclusionData>& tracked_windows) {
   for (const auto& tracked_window : tracked_windows) {
     if (tracked_window.second.occlusion_state !=
-        tracked_window.first->occlusion_state())
+        tracked_window.first->GetOcclusionState())
       return false;
   }
   return true;
@@ -346,7 +346,7 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
   }
 
   // Sanity check: Occlusion states in |tracked_windows_| should match those
-  // returned by Window::occlusion_state().
+  // returned by Window::GetOcclusionState().
   DCHECK(OcclusionStatesMatch(tracked_windows_));
 }
 
@@ -450,7 +450,7 @@ bool WindowOcclusionTracker::VisibleWindowCanOccludeOtherWindows(
                                          : window->layer()->background_color();
     combined_opacity *= SkColorGetA(color) / 255.f;
   }
-  return (!window->transparent() && WindowHasContent(window) &&
+  return (!window->GetTransparent() && WindowHasContent(window) &&
           combined_opacity == 1.0f &&
           // For simplicity, a shaped window is not considered opaque.
           !WindowOrParentHasShape(window)) ||
@@ -656,7 +656,7 @@ bool WindowOcclusionTracker::WindowOrDescendantCanOccludeOtherWindows(
       WindowIsAnimated(window)) {
     return false;
   }
-  if ((!window->transparent() && WindowHasContent(window)) ||
+  if ((!window->GetTransparent() && WindowHasContent(window)) ||
       WindowHasOpaqueRegionsForOcclusion(window)) {
     return true;
   }

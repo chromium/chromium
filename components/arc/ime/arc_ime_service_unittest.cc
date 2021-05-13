@@ -166,7 +166,7 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
   bool IsInArcAppWindow(const aura::Window* window) const override {
     if (!window)
       return false;
-    return arc_window_id_.count(window->id());
+    return arc_window_id_.count(window->GetId());
   }
 
   void RegisterFocusObserver() override {}

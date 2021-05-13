@@ -1945,7 +1945,7 @@ void TabDragController::BringWindowUnderPointToFront(
       // already topmost and it is safe to return with no stacking change.
       if (*it == browser_window)
         return;
-      if ((*it)->type() != aura::client::WINDOW_TYPE_POPUP) {
+      if ((*it)->GetType() != aura::client::WINDOW_TYPE_POPUP) {
         widget_window->StackAbove(*it);
         break;
       }

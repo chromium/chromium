@@ -548,9 +548,9 @@ TEST_F(OverviewSessionTest, WindowsOrder) {
   ToggleOverview();
   const std::vector<std::unique_ptr<OverviewItem>>& overview1 =
       GetOverviewItemsForRoot(0);
-  EXPECT_EQ(1, overview1[0]->GetWindow()->id());
-  EXPECT_EQ(3, overview1[1]->GetWindow()->id());
-  EXPECT_EQ(2, overview1[2]->GetWindow()->id());
+  EXPECT_EQ(1, overview1[0]->GetWindow()->GetId());
+  EXPECT_EQ(3, overview1[1]->GetWindow()->GetId());
+  EXPECT_EQ(2, overview1[2]->GetWindow()->GetId());
   ToggleOverview();
 
   // Activate the second window.
@@ -560,9 +560,9 @@ TEST_F(OverviewSessionTest, WindowsOrder) {
       GetOverviewItemsForRoot(0);
 
   // The order should be MRU.
-  EXPECT_EQ(2, overview2[0]->GetWindow()->id());
-  EXPECT_EQ(1, overview2[1]->GetWindow()->id());
-  EXPECT_EQ(3, overview2[2]->GetWindow()->id());
+  EXPECT_EQ(2, overview2[0]->GetWindow()->GetId());
+  EXPECT_EQ(1, overview2[1]->GetWindow()->GetId());
+  EXPECT_EQ(3, overview2[2]->GetWindow()->GetId());
   ToggleOverview();
 }
 

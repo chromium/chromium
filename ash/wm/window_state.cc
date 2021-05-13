@@ -67,7 +67,7 @@ bool IsTabletModeEnabled() {
 
 bool IsToplevelContainer(aura::Window* window) {
   DCHECK(window);
-  int container_id = window->id();
+  int container_id = window->GetId();
   // ArcVirtualKeyboard is implemented as a exo window which requires
   // WindowState to manage its state.
   return IsActivatableShellWindowId(container_id) ||
@@ -148,7 +148,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
   for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
     if (!transient_child->parent())
       continue;
-    const int container_id = transient_child->parent()->id();
+    const int container_id = transient_child->parent()->GetId();
     DCHECK_GE(container_id, 0);
     aura::Window* container = dst_root->GetChildById(container_id);
     if (container->Contains(transient_child))
@@ -866,7 +866,7 @@ WindowState* WindowState::Get(aura::Window* window) {
   if (state)
     return state;
 
-  if (window->type() == aura::client::WINDOW_TYPE_CONTROL)
+  if (window->GetType() == aura::client::WINDOW_TYPE_CONTROL)
     return nullptr;
 
   DCHECK(window->parent());
@@ -979,7 +979,7 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& new_bounds,
                                         ui::PropertyChangeReason reason) {
   DCHECK_EQ(this->window(), window);
-  if (window_->transparent() && IsNormalStateType() &&
+  if (window_->GetTransparent() && IsNormalStateType() &&
       window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
   }

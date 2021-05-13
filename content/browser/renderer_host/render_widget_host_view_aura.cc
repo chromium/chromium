@@ -600,7 +600,7 @@ void RenderWidgetHostViewAura::HideImpl() {
     aura::WindowTreeHost* host = window_->GetHost();
       aura::Window* parent = window_->parent();
       aura::Window::OcclusionState parent_occl_state =
-          parent ? parent->occlusion_state()
+          parent ? parent->GetOcclusionState()
                  : aura::Window::OcclusionState::UNKNOWN;
       aura::Window::OcclusionState native_win_occlusion_state =
           host ? host->GetNativeWindowOcclusionState()

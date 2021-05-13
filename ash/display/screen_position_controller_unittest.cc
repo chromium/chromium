@@ -44,7 +44,7 @@ class ScreenPositionControllerTest : public AshTestBase {
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());
-    window_->set_id(1);
+    window_->SetId(1);
   }
 
   void TearDown() override {

@@ -78,7 +78,7 @@ class TransientWindowManagerTest : public aura::test::AuraTestBase {
   // Creates a transient window that is transient to |parent|.
   Window* CreateTransientChild(int id, Window* parent) {
     Window* window = new Window(NULL);
-    window->set_id(id);
+    window->SetId(id);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     AddTransientChild(parent, window);

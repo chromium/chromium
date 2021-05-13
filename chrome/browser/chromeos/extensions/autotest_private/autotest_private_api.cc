@@ -657,9 +657,9 @@ api::autotest_private::Location ToLocationDictionary(const gfx::Point& point) {
 
 aura::Window* FindAppWindowById(const int64_t id) {
   auto list = ash::GetAppWindowList();
-  auto iter =
-      std::find_if(list.begin(), list.end(),
-                   [id](aura::Window* window) { return window->id() == id; });
+  auto iter = std::find_if(
+      list.begin(), list.end(),
+      [id](aura::Window* window) { return window->GetId() == id; });
   if (iter == list.end())
     return nullptr;
   return *iter;
@@ -3764,10 +3764,10 @@ AutotestPrivateGetAppWindowListFunction::Run() {
   std::vector<api::autotest_private::AppWindowInfo> result_list;
 
   for (auto* window : window_list) {
-    if (window->id() == aura::Window::kInitialId)
-      window->set_id(id_count--);
+    if (window->GetId() == aura::Window::kInitialId)
+      window->SetId(id_count--);
     api::autotest_private::AppWindowInfo window_info;
-    window_info.id = window->id();
+    window_info.id = window->GetId();
     window_info.name = window->GetName();
     window_info.window_type = GetAppWindowType(
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)));
@@ -3800,7 +3800,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
             std::make_unique<std::string>(*package_name);
       } else {
         LOG(ERROR) << "The package name for window " << window->GetTitle()
-                   << " (ID: " << window->id()
+                   << " (ID: " << window->GetId()
                    << ") isn't available even though it is an ARC window.";
       }
     }
@@ -3854,7 +3854,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       // All widgets for app windows in chromeos should have a frame with
       // immersive controller. Non app windows may not have a frame and
       // frame mode will be NONE.
-      DCHECK(!widget || widget->GetNativeWindow()->type() !=
+      DCHECK(!widget || widget->GetNativeWindow()->GetType() !=
                             aura::client::WINDOW_TYPE_NORMAL);
       window_info.frame_mode =
           api::autotest_private::FrameMode::FRAME_MODE_NONE;

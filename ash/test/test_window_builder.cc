@@ -101,7 +101,7 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   window->Init(layer_type_);
   window->AcquireAllPropertiesFrom(std::move(init_properties_));
   if (window_id_ != aura::Window::kInitialId)
-    window->set_id(window_id_);
+    window->SetId(window_id_);
   if (parent_) {
     if (!bounds_.IsEmpty())
       window->SetBounds(bounds_);

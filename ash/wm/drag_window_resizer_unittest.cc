@@ -82,7 +82,7 @@ class DragWindowResizerTest : public AshTestBase {
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());
-    window_->set_id(1);
+    window_->SetId(1);
 
     always_on_top_window_ = std::make_unique<aura::Window>(&delegate2_);
     always_on_top_window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
@@ -90,7 +90,7 @@ class DragWindowResizerTest : public AshTestBase {
                                        ui::ZOrderLevel::kFloatingWindow);
     always_on_top_window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(always_on_top_window_.get());
-    always_on_top_window_->set_id(2);
+    always_on_top_window_->SetId(2);
 
     system_modal_window_ = std::make_unique<aura::Window>(&delegate3_);
     system_modal_window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
@@ -98,20 +98,20 @@ class DragWindowResizerTest : public AshTestBase {
                                       ui::MODAL_TYPE_SYSTEM);
     system_modal_window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(system_modal_window_.get());
-    system_modal_window_->set_id(3);
+    system_modal_window_->SetId(3);
 
     transient_child_ = new aura::Window(&delegate4_);
     transient_child_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     transient_child_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(transient_child_);
-    transient_child_->set_id(4);
+    transient_child_->SetId(4);
 
     transient_parent_ = std::make_unique<aura::Window>(&delegate5_);
     transient_parent_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     transient_parent_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(transient_parent_.get());
     ::wm::AddTransientChild(transient_parent_.get(), transient_child_);
-    transient_parent_->set_id(5);
+    transient_parent_->SetId(5);
   }
 
   void TearDown() override {

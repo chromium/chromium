@@ -19,7 +19,7 @@ namespace chromecast {
 
 class MockCastWindowManager : public CastWindowManagerAura {
  public:
-  MockCastWindowManager(bool enable_input)
+  explicit MockCastWindowManager(bool enable_input)
       : CastWindowManagerAura(enable_input),
         root_window_(new aura::Window(nullptr)) {
     root_window_->Init(ui::LAYER_TEXTURED);
@@ -329,7 +329,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> volume_window =
       std::make_unique<aura::Window>(nullptr);
   volume_window->Init(ui::LAYER_TEXTURED);
-  volume_window->set_id(CastWindowManager::VOLUME);
+  volume_window->SetId(CastWindowManager::VOLUME);
   root_window->AddChild(volume_window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
   volume_window->Show();
@@ -355,7 +355,7 @@ TEST_F(RoundedWindowCornersManagerTest, UnmanagedAppWithChild) {
   std::unique_ptr<aura::Window> unmanaged_app =
       std::make_unique<aura::Window>(nullptr);
   unmanaged_app->Init(ui::LAYER_TEXTURED);
-  unmanaged_app->set_id(CastWindowManager::UNMANAGED_APP);
+  unmanaged_app->SetId(CastWindowManager::UNMANAGED_APP);
   window_host->AddChild(unmanaged_app.get());
 
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));

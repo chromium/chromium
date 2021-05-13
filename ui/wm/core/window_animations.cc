@@ -202,7 +202,8 @@ base::TimeDelta GetWindowVisibilityAnimationDuration(
     const aura::Window& window) {
   base::TimeDelta duration =
       window.GetProperty(kWindowVisibilityAnimationDurationKey);
-  if (duration.is_zero() && window.type() == aura::client::WINDOW_TYPE_MENU) {
+  if (duration.is_zero() &&
+      window.GetType() == aura::client::WINDOW_TYPE_MENU) {
     return base::TimeDelta::FromMilliseconds(
         kDefaultAnimationDurationForMenuMS);
   }
@@ -214,8 +215,8 @@ base::TimeDelta GetWindowVisibilityAnimationDuration(
 int GetWindowVisibilityAnimationType(aura::Window* window) {
   int type = window->GetProperty(kWindowVisibilityAnimationTypeKey);
   if (type == WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT) {
-    return (window->type() == aura::client::WINDOW_TYPE_MENU ||
-            window->type() == aura::client::WINDOW_TYPE_TOOLTIP)
+    return (window->GetType() == aura::client::WINDOW_TYPE_MENU ||
+            window->GetType() == aura::client::WINDOW_TYPE_TOOLTIP)
                ? WINDOW_VISIBILITY_ANIMATION_TYPE_FADE
                : WINDOW_VISIBILITY_ANIMATION_TYPE_DROP;
   }

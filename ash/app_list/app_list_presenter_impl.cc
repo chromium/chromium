@@ -242,7 +242,7 @@ bool AppListPresenterImpl::IsVisibleDeprecated() const {
 bool AppListPresenterImpl::IsAtLeastPartiallyVisible() const {
   const auto* window = GetWindow();
   return window &&
-         window->occlusion_state() == aura::Window::OcclusionState::VISIBLE;
+         window->GetOcclusionState() == aura::Window::OcclusionState::VISIBLE;
 }
 
 bool AppListPresenterImpl::GetTargetVisibility() const {
@@ -414,10 +414,10 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
 
   int gained_focus_container_id = kShellWindowId_Invalid;
   if (gained_focus) {
-    gained_focus_container_id = gained_focus->id();
+    gained_focus_container_id = gained_focus->GetId();
     const aura::Window* container = ash::GetContainerForWindow(gained_focus);
     if (container)
-      gained_focus_container_id = container->id();
+      gained_focus_container_id = container->GetId();
   }
   aura::Window* applist_window = view_->GetWidget()->GetNativeView();
   const aura::Window* applist_container = applist_window->parent();

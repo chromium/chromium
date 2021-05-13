@@ -44,7 +44,7 @@ bool CanStartTwoFingerMove(aura::Window* window,
   // the tab strip is full and hitting the caption area is difficult. We check
   // the window type and the state type so that we do not steal touches from the
   // web contents.
-  if (window->type() != aura::client::WINDOW_TYPE_NORMAL ||
+  if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL ||
       !WindowState::Get(window) ||
       !WindowState::Get(window)->IsNormalOrSnapped()) {
     return false;

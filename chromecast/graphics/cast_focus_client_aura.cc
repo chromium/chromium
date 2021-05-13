@@ -8,9 +8,9 @@
 #include "base/logging.h"
 #include "ui/aura/window.h"
 
-#define LOG_WINDOW_INFO(top_level, window)                              \
-  "top-level: " << (top_level)->id() << ": '" << (top_level)->GetName() \
-                << "', window: " << (window)->id() << ": '"             \
+#define LOG_WINDOW_INFO(top_level, window)                                 \
+  "top-level: " << (top_level)->GetId() << ": '" << (top_level)->GetName() \
+                << "', window: " << (window)->GetId() << ": '"             \
                 << (window)->GetName() << "'"
 
 namespace chromecast {
@@ -200,7 +200,7 @@ aura::Window* CastFocusClientAura::GetWindowToFocus() {
     // Compare z-order of top-level windows using the window IDs.
     aura::Window* top_level = GetZOrderWindow(window);
     DCHECK(top_level);
-    if (!next || top_level->id() >= next_top_level->id()) {
+    if (!next || top_level->GetId() >= next_top_level->GetId()) {
       next = window;
       next_top_level = top_level;
     }

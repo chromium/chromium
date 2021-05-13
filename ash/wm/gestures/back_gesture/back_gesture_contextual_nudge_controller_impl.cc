@@ -157,7 +157,7 @@ bool BackGestureContextualNudgeControllerImpl::CanShowNudge(
 void BackGestureContextualNudgeControllerImpl::MaybeShowNudgeUi(
     aura::Window* window) {
   if ((!nudge_ || !nudge_->ShouldNudgeCountAsShown()) &&
-      window->type() == aura::client::WINDOW_TYPE_NORMAL &&
+      window->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
       !window->is_destroying() &&
       Shell::Get()->shell_delegate()->CanGoBack(window) &&
       CanShowNudge(nullptr)) {

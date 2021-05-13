@@ -6,7 +6,7 @@
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_WINDOW_ELEMENT_H_
 
 #include "base/macros.h"
-#include "components/ui_devtools/ui_element.h"
+#include "components/ui_devtools/views/ui_element_with_metadata.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -14,11 +14,14 @@
 
 namespace ui_devtools {
 
-class WindowElement : public aura::WindowObserver, public UIElement {
+class WindowElement : public aura::WindowObserver,
+                      public UIElementWithMetaData {
  public:
   WindowElement(aura::Window* window,
                 UIElementDelegate* ui_element_delegate,
                 UIElement* parent);
+  WindowElement(const WindowElement&) = delete;
+  WindowElement& operator=(const WindowElement&) = delete;
   ~WindowElement() override;
   aura::Window* window() const { return window_; }
 
@@ -34,8 +37,6 @@ class WindowElement : public aura::WindowObserver, public UIElement {
                              ui::PropertyChangeReason reason) override;
 
   // UIElement:
-  std::vector<UIElement::ClassProperties> GetCustomPropertiesForMatchedStyle()
-      const override;
   void GetBounds(gfx::Rect* bounds) const override;
   void SetBounds(const gfx::Rect& bounds) override;
   void GetVisible(bool* visible) const override;
@@ -48,10 +49,13 @@ class WindowElement : public aura::WindowObserver, public UIElement {
   static aura::Window* From(const UIElement* element);
   void InitSources() override;
 
+ protected:
+  ui::metadata::ClassMetaData* GetClassMetaData() const override;
+  void* GetClassInstance() const override;
+  ui::Layer* GetLayer() const override;
+
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowElement);
 };
 
 }  // namespace ui_devtools

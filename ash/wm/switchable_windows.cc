@@ -58,7 +58,7 @@ bool IsSwitchableContainer(const aura::Window* window) {
   if (!window)
     return false;
 
-  return base::Contains(GetSwitchableContainerIds(), window->id());
+  return base::Contains(GetSwitchableContainerIds(), window->GetId());
 }
 
 }  // namespace ash

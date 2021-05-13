@@ -162,7 +162,7 @@ ui::internal::InputMethodDelegate* WidgetTest::GetInputMethodDelegateForWidget(
 
 // static
 bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
-  return window->transparent();
+  return window->GetTransparent();
 }
 
 // static

@@ -45,7 +45,7 @@ void FrameLayoutManager::OnWindowResized() {
 }
 
 void FrameLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
-  if (child->type() == aura::client::WINDOW_TYPE_CONTROL) {
+  if (child->GetType() == aura::client::WINDOW_TYPE_CONTROL) {
     DCHECK(!main_child_);
     main_child_ = child;
     SetChildBoundsDirect(main_child_,
@@ -61,7 +61,7 @@ void FrameLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
 }
 
 void FrameLayoutManager::OnWillRemoveWindowFromLayout(aura::Window* child) {
-  if (child->type() == aura::client::WINDOW_TYPE_CONTROL) {
+  if (child->GetType() == aura::client::WINDOW_TYPE_CONTROL) {
     DCHECK_EQ(child, main_child_);
     main_child_ = nullptr;
   }

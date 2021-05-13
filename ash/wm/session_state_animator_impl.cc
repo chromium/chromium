@@ -267,7 +267,7 @@ void GetContainersInRootWindow(int container_mask,
     };
     if (non_lock_screen_containers) {
       for (aura::Window* window : non_lock_screen_containers->children()) {
-        if ((base::Contains(ContainersToAnimate, window->id()) ||
+        if ((base::Contains(ContainersToAnimate, window->GetId()) ||
              desks_util::IsActiveDeskContainer(window))) {
           containers->push_back(window);
         }

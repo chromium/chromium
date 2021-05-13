@@ -176,7 +176,7 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
     while (::wm::GetTransientParent(window))
       window = ::wm::GetTransientParent(window);
     if (window != exclude &&
-        window->type() == aura::client::WINDOW_TYPE_NORMAL &&
+        window->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
         window->GetRootWindow() == root_window && window->TargetVisibility() &&
         WindowState::Get(window)->GetWindowPositionManaged()) {
       if (found && found != window) {

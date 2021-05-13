@@ -218,7 +218,7 @@ class IdCheckingEventTargeter : public WindowTargeter {
   // WindowTargeter:
   bool SubtreeShouldBeExploredForEvent(Window* window,
                                        const ui::LocatedEvent& event) override {
-    return (window->id() == id_ &&
+    return (window->GetId() == id_ &&
             WindowTargeter::SubtreeShouldBeExploredForEvent(window, event));
   }
 

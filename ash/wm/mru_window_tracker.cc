@@ -134,7 +134,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
         if (active_desk_only) {
           // If only the active desk's MRU windows are requested, then exclude
           // children of the non-active desks' containers.
-          const int parent_id = window->parent()->id();
+          const int parent_id = window->parent()->GetId();
           if (desks_util::IsDeskContainerId(parent_id) &&
               parent_id != active_desk_id) {
             continue;

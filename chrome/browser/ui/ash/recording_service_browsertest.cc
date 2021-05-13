@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindowMultiDisplay) {
     auto* browser_window = GetBrowserWindow();
     EXPECT_NE(new_root, browser_window->GetRootWindow());
     auto* target_container =
-        new_root->GetChildById(browser_window->parent()->id());
+        new_root->GetChildById(browser_window->parent()->GetId());
     DCHECK(target_container);
     target_container->AddChild(browser_window);
     EXPECT_EQ(new_root, browser_window->GetRootWindow());

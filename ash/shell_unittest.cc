@@ -87,7 +87,7 @@ void ExpectAllContainers() {
     for (aura::Window* child : current_window->children())
       window_queue.push(child);
 
-    const int id = current_window->id();
+    const int id = current_window->GetId();
 
     // Skip windows with no IDs.
     if (id == aura::Window::kInitialId)

@@ -2412,7 +2412,7 @@ TEST_F(WindowOcclusionTrackerTest, ScopedForceVisibleHiddenContainer) {
   EXPECT_FALSE(browser_delegate->is_expecting_call());
   EXPECT_FALSE(webcontents_delegate->is_expecting_call());
 
-  EXPECT_EQ(Window::OcclusionState::VISIBLE, webcontents->occlusion_state());
+  EXPECT_EQ(Window::OcclusionState::VISIBLE, webcontents->GetOcclusionState());
   EXPECT_TRUE(webcontents->TargetVisibility());
 
   container_delegate->set_expectation(Window::OcclusionState::VISIBLE);

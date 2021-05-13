@@ -15,7 +15,7 @@ namespace {
 
 aura::Window* GetPopupAuraWindow(aura::Window* current) {
   DCHECK(current);
-  while (current && (current->type() != aura::client::WINDOW_TYPE_POPUP))
+  while (current && (current->GetType() != aura::client::WINDOW_TYPE_POPUP))
     current = current->parent();
   return current;
 }

@@ -218,7 +218,7 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
 
   content::WebContents* contents = GetWebContents();
   auto* contents_window = contents->GetNativeView();
-  contents_window->set_id(window_id);
+  contents_window->SetId(window_id);
   // The aura window is hidden to avoid being shown via the usual layer method,
   // instead it is shows via a SurfaceDrawQuad by exo.
   contents_window->Hide();

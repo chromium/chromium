@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   AllocateAndStartAndWaitForFirstFrame();
 
   ASSERT_EQ(aura::Window::OcclusionState::VISIBLE,
-            shell()->web_contents()->GetNativeView()->occlusion_state());
+            shell()->web_contents()->GetNativeView()->GetOcclusionState());
   // Create a window on top of the window being captured with same size so that
   // it is occluded.
   auto window = std::make_unique<aura::Window>(nullptr);
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   window->SetBounds(shell()->window()->bounds());
   window->Show();
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            shell()->web_contents()->GetNativeView()->occlusion_state());
+            shell()->web_contents()->GetNativeView()->GetOcclusionState());
 
   window.reset();
   StopAndDeAllocate();

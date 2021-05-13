@@ -33,6 +33,7 @@
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -109,8 +110,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public ui::EventTarget,
                            public ui::GestureConsumer,
                            public ui::PropertyHandler,
+                           public ui::metadata::MetaDataProvider,
                            public viz::HostFrameSinkClient {
  public:
+  METADATA_HEADER_BASE(Window);
+
   // Initial value of id() for newly created windows.
   static constexpr int kInitialId = -1;
 
@@ -166,11 +170,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // A type is used to identify a class of Windows and customize behavior such
   // as event handling and parenting.  This field should only be consumed by the
   // shell -- Aura itself shouldn't contain type-specific logic.
-  client::WindowType type() const { return type_; }
+  client::WindowType GetType() const;
   void SetType(client::WindowType type);
 
-  int id() const { return id_; }
-  void set_id(int id) { id_ = id; }
+  int GetId() const;
+  void SetId(int id);
 
   const std::string& GetName() const;
   void SetName(const std::string& name);
@@ -178,7 +182,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   const std::u16string& GetTitle() const;
   void SetTitle(const std::u16string& title);
 
-  bool transparent() const { return transparent_; }
+  bool GetTransparent() const;
 
   // Note: Setting a window transparent has significant performance impact,
   // especially on low-end Chrome OS devices. Please ensure you are not
@@ -221,7 +225,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // state of this window isn't tracked (Window::TrackOcclusionState) or
   // hasn't been computed yet. Is stale if called within the scope of a
   // WindowOcclusionTracker::ScopedPause.
-  OcclusionState occlusion_state() const { return occlusion_state_; }
+  OcclusionState GetOcclusionState() const;
 
   // Returns the currently occluded region in the root Window coordinates. This
   // will be empty unless the window is tracked and has a VISIBLE occlusion
@@ -511,7 +515,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   bool RequiresDoubleTapGestureEvents() const override;
 
   // Returns |state| as a string. This is generally only useful for debugging.
-  static const char* OcclusionStateToString(OcclusionState state);
+  static const std::u16string OcclusionStateToString(OcclusionState state);
 
   // Sets the regions of this window to consider opaque when computing the
   // occlusion of underneath windows. Opaque regions can only be set for a
@@ -574,9 +578,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // Changes the bounds of the window without condition.
   void SetBoundsInternal(const gfx::Rect& new_bounds);
 
-  // Updates the visible state of the layer, but does not make visible-state
-  // specific changes. Called from Show()/Hide().
-  void SetVisible(bool visible);
+  // Updates the visible state of the layer and the Window, but does not make
+  // visible-state specific changes. Called from Show()/Hide().
+  void SetVisibleInternal(bool visible);
 
   // Updates the occlusion info of the window.
   void SetOcclusionInfo(OcclusionState occlusion_state,
@@ -684,6 +688,27 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // Called by the destructor of ScopedWindowCaptureRequest to remove a request
   // to make this non-root window capturable by the FrameSinkVideoCapturer.
   void OnScopedWindowCaptureRequestRemoved();
+
+  // The following are intended for use by the metadata to access the internals
+  // of instances of this class. At some point they should be moved to the
+  // public section and code refactored to use them.
+
+  // Break out the separate elements of the Window bounds.
+  int GetHeight() const;
+  int GetWidth() const;
+  int GetX() const;
+  int GetY() const;
+  void SetHeight(int height);
+  void SetWidth(int width);
+  void SetX(int x);
+  void SetY(int y);
+
+  bool GetCapture() const;
+
+  viz::SurfaceId GetSurfaceId() const;
+
+  bool GetVisible() const;
+  void SetVisible(bool visible);
 
   // Bounds of this window relative to the parent. This is cached as the bounds
   // of the Layer and Window are not necessarily the same. In particular bounds

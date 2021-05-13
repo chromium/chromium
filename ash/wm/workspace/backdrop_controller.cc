@@ -296,7 +296,7 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
     if (window == backdrop_window_)
       continue;
 
-    if (window->type() != aura::client::WINDOW_TYPE_NORMAL)
+    if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL)
       continue;
 
     auto* window_state = WindowState::Get(window);
@@ -442,7 +442,7 @@ void BackdropController::EnsureBackdropWidget() {
   // To disallow the MRU list from picking this window up it should not be
   // activateable.
   params.activatable = views::Widget::InitParams::Activatable::kNo;
-  DCHECK_NE(kShellWindowId_Invalid, container_->id());
+  DCHECK_NE(kShellWindowId_Invalid, container_->GetId());
   params.parent = container_;
   params.init_properties_container.SetProperty(kHideInOverviewKey, true);
   params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
@@ -674,7 +674,7 @@ bool BackdropController::DoesWindowCauseBackdropUpdates(
   // recursive calls to UpdateBackdrop() from the WorkspaceLayoutManager caused
   // by the backdrop itself, even though we avoid recursion here via
   // |pause_update_|.
-  return window->type() != aura::client::WINDOW_TYPE_POPUP &&
+  return window->GetType() != aura::client::WINDOW_TYPE_POPUP &&
          (!backdrop_ || window != backdrop_->GetNativeWindow());
 }
 

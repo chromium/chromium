@@ -901,13 +901,13 @@ void WebContentsViewAura::UpdateWebContentsVisibility() {
 }
 
 Visibility WebContentsViewAura::GetVisibility() const {
-  if (window_->occlusion_state() == aura::Window::OcclusionState::VISIBLE)
+  if (window_->GetOcclusionState() == aura::Window::OcclusionState::VISIBLE)
     return Visibility::VISIBLE;
 
-  if (window_->occlusion_state() == aura::Window::OcclusionState::OCCLUDED)
+  if (window_->GetOcclusionState() == aura::Window::OcclusionState::OCCLUDED)
     return Visibility::OCCLUDED;
 
-  DCHECK_EQ(window_->occlusion_state(), aura::Window::OcclusionState::HIDDEN);
+  DCHECK_EQ(window_->GetOcclusionState(), aura::Window::OcclusionState::HIDDEN);
   return Visibility::HIDDEN;
 }
 

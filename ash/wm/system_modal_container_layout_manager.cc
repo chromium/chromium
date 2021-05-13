@@ -81,9 +81,9 @@ void SystemModalContainerLayoutManager::OnWindowResized() {
 
 void SystemModalContainerLayoutManager::OnWindowAddedToLayout(
     aura::Window* child) {
-  DCHECK(child->type() == aura::client::WINDOW_TYPE_NORMAL ||
-         child->type() == aura::client::WINDOW_TYPE_POPUP);
-  DCHECK(container_->id() != kShellWindowId_LockSystemModalContainer ||
+  DCHECK(child->GetType() == aura::client::WINDOW_TYPE_NORMAL ||
+         child->GetType() == aura::client::WINDOW_TYPE_POPUP);
+  DCHECK(container_->GetId() != kShellWindowId_LockSystemModalContainer ||
          Shell::Get()->session_controller()->IsUserSessionBlocked());
   // Since this is for SystemModal, there is no good reason to add windows
   // other than MODAL_TYPE_NONE or MODAL_TYPE_SYSTEM. DCHECK to avoid simple
@@ -183,7 +183,7 @@ void SystemModalContainerLayoutManager::DestroyModalBackground() {
 // static
 bool SystemModalContainerLayoutManager::IsModalBackground(
     aura::Window* window) {
-  int id = window->parent()->id();
+  int id = window->parent()->GetId();
   if (id != kShellWindowId_SystemModalContainer &&
       id != kShellWindowId_LockSystemModalContainer)
     return false;

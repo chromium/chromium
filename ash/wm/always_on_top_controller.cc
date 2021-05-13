@@ -97,8 +97,8 @@ void AlwaysOnTopController::RemoveWindow(aura::Window* window) {
 }
 
 void AlwaysOnTopController::ReparentWindow(aura::Window* window) {
-  DCHECK(window->type() == aura::client::WINDOW_TYPE_NORMAL ||
-         window->type() == aura::client::WINDOW_TYPE_POPUP);
+  DCHECK(window->GetType() == aura::client::WINDOW_TYPE_NORMAL ||
+         window->GetType() == aura::client::WINDOW_TYPE_POPUP);
   aura::Window* container = GetContainer(window);
   if (window->parent() != container &&
       !window->GetProperty(kDisallowReparentKey))

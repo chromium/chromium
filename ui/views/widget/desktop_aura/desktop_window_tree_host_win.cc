@@ -173,7 +173,7 @@ void DesktopWindowTreeHostWin::OnNativeWidgetCreated(
   window()->SetProperty(kDesktopWindowTreeHostKey, this);
 
   should_animate_window_close_ =
-      content_window()->type() != aura::client::WINDOW_TYPE_NORMAL &&
+      content_window()->GetType() != aura::client::WINDOW_TYPE_NORMAL &&
       !wm::WindowAnimationsDisabled(content_window());
 }
 

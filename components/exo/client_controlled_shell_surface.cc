@@ -694,7 +694,7 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   if (server_reparent_window_ &&
       window_state->GetDisplay().id() != display_id) {
     ScopedSetBoundsLocally scoped_set_bounds(this);
-    int container_id = window_state->window()->parent()->id();
+    int container_id = window_state->window()->parent()->GetId();
     aura::Window* new_parent =
         ash::Shell::GetRootWindowControllerWithDisplayId(display_id)
             ->GetContainer(container_id);

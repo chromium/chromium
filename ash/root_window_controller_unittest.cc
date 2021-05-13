@@ -177,7 +177,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   EXPECT_EQ(root_windows[1],
             unparented_control->GetNativeView()->GetRootWindow());
   EXPECT_EQ(kShellWindowId_UnparentedControlContainer,
-            unparented_control->GetNativeView()->parent()->id());
+            unparented_control->GetNativeView()->parent()->GetId());
 
   // Make sure a window that will delete itself when losing focus
   // will not crash.
@@ -243,7 +243,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   EXPECT_EQ(root_windows[0],
             unparented_control->GetNativeView()->GetRootWindow());
   EXPECT_EQ(kShellWindowId_UnparentedControlContainer,
-            unparented_control->GetNativeView()->parent()->id());
+            unparented_control->GetNativeView()->parent()->GetId());
 }
 
 TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
@@ -289,7 +289,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 
   views::Widget* lock_screen =
       CreateModalWidgetWithParent(gfx::Rect(10, 10, 100, 100), lock_container);
-  lock_screen->GetNativeWindow()->set_id(kLockScreenWindowId);
+  lock_screen->GetNativeWindow()->SetId(kLockScreenWindowId);
   lock_screen->SetFullscreen(true);
 
   ASSERT_EQ(lock_screen->GetNativeWindow(),

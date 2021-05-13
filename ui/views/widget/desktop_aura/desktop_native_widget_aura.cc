@@ -210,7 +210,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
                                  const gfx::Rect& bounds) override {
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
                          ui::SHOW_STATE_FULLSCREEN;
-    bool is_menu = window->type() == aura::client::WINDOW_TYPE_MENU;
+    bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
 
     if (is_fullscreen || is_menu) {
       ui::ZOrderLevel root_z_order = ui::ZOrderLevel::kNormal;

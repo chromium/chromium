@@ -145,7 +145,7 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
     // Ignore other window types when computing bounding box of overview target
     // item.
     if (window_iter != window &&
-        window_iter->type() != aura::client::WINDOW_TYPE_NORMAL) {
+        window_iter->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
       continue;
     }
     gfx::RectF target_bounds(window_iter->GetTargetBounds());

@@ -56,7 +56,7 @@ using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
 class COMPONENT_EXPORT(UI_BASE) MetaDataProvider {
  public:
   MetaDataProvider();
-  ~MetaDataProvider();
+  virtual ~MetaDataProvider();
   virtual class ClassMetaData* GetClassMetaData() = 0;
 
  protected:

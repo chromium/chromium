@@ -111,7 +111,7 @@ void GetBlockingContainersForRoot(aura::Window* root_window,
 }
 
 bool IsWindowUserPositionable(aura::Window* window) {
-  return window->type() == aura::client::WINDOW_TYPE_NORMAL;
+  return window->GetType() == aura::client::WINDOW_TYPE_NORMAL;
 }
 
 void PinWindow(aura::Window* window, bool trusted) {
@@ -152,7 +152,7 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
 
   // Moves |window| to the given |root| window's corresponding container.
   aura::Window* container = RootWindowController::ForWindow(root)->GetContainer(
-      window->parent()->id());
+      window->parent()->GetId());
   if (!container)
     return false;
 
@@ -213,7 +213,7 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
   // but there will be a flicker as the target window changes. Also exclude
   // unselectable windows such as extension popups.
   for (auto* parent = window->parent(); parent; parent = parent->parent()) {
-    if (parent->id() == kShellWindowId_AppListContainer)
+    if (parent->GetId() == kShellWindowId_AppListContainer)
       return true;
   }
 
@@ -403,7 +403,7 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
     // Ignore other window types when computing bounding box of overview target
     // item.
     if (window != transformed_window &&
-        window->type() != aura::client::WINDOW_TYPE_NORMAL) {
+        window->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
       continue;
     }
     gfx::RectF window_bounds(window->GetTargetBounds());

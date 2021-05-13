@@ -387,7 +387,7 @@ void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
     return;
 
   // Don't count popup windows.
-  if (gained_active->type() != aura::client::WINDOW_TYPE_NORMAL)
+  if (gained_active->GetType() != aura::client::WINDOW_TYPE_NORMAL)
     return;
 
   AppType app_type = GetAppType(gained_active);
@@ -467,7 +467,7 @@ void DemoSessionMetricsRecorder::TakeSampleOrPause() {
     return;
   }
 
-  DemoModeApp app = window->type() == aura::client::WINDOW_TYPE_NORMAL
+  DemoModeApp app = window->GetType() == aura::client::WINDOW_TYPE_NORMAL
                         ? GetAppFromWindow(window)
                         : DemoModeApp::kOtherWindow;
   RecordActiveAppSample(app);

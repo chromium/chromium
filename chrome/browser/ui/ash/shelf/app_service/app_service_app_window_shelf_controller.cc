@@ -171,7 +171,8 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   // An app window has type WINDOW_TYPE_NORMAL, a WindowDelegate and
   // is a top level views widget. Tooltips, menus, and other kinds of transient
   // windows that can't activate are filtered out.
-  if (window->type() != aura::client::WINDOW_TYPE_NORMAL || !window->delegate())
+  if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL ||
+      !window->delegate())
     return;
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (!widget || !widget->is_top_level())

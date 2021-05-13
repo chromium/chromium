@@ -133,6 +133,11 @@ std::u16string TypeConverter<gfx::SizeF>::ToString(
   return base::ASCIIToUTF16(source_value.ToString());
 }
 
+std::u16string TypeConverter<std::string>::ToString(
+    const std::string& source_value) {
+  return base::UTF8ToUTF16(source_value);
+}
+
 std::u16string TypeConverter<url::Component>::ToString(
     const url::Component& source_value) {
   return base::ASCIIToUTF16(
@@ -381,6 +386,11 @@ base::Optional<gfx::SizeF> TypeConverter<gfx::SizeF>::FromString(
     return gfx::SizeF(width, height);
   }
   return base::nullopt;
+}
+
+base::Optional<std::string> TypeConverter<std::string>::FromString(
+    const std::u16string& source_value) {
+  return base::UTF16ToUTF8(source_value);
 }
 
 base::Optional<url::Component> TypeConverter<url::Component>::FromString(

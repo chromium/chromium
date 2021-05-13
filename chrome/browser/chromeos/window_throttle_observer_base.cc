@@ -19,7 +19,7 @@ bool IsAppListWindow(const aura::Window* window) {
 
   const aura::Window* parent = window->parent();
   return parent &&
-         parent->id() == ash::ShellWindowId::kShellWindowId_AppListContainer;
+         parent->GetId() == ash::ShellWindowId::kShellWindowId_AppListContainer;
 }
 
 // Returns true if this window activation should be ignored (app list

@@ -342,7 +342,7 @@ std::unique_ptr<views::Widget> DesksBarView::CreateDesksWidget(
   widget->Init(std::move(params));
 
   auto* window = widget->GetNativeWindow();
-  window->set_id(kShellWindowId_DesksBarWindow);
+  window->SetId(kShellWindowId_DesksBarWindow);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
 
   return widget;

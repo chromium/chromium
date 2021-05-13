@@ -98,7 +98,7 @@ float WallpaperWidgetController::GetWallpaperBlur() const {
 void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
   StopAnimating();
   wallpaper_view_->SetLockShieldEnabled(
-      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->id() ==
+      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->GetId() ==
       kShellWindowId_LockScreenWallpaperContainer);
   RunAnimationEndCallbacks();
 }

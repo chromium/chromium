@@ -19,7 +19,7 @@ TestBackGestureContextualNudgeDelegate::
 
 void TestBackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
     aura::Window* window) {
-  if (window->type() == aura::client::WindowType::WINDOW_TYPE_NORMAL)
+  if (window->GetType() == aura::client::WindowType::WINDOW_TYPE_NORMAL)
     controller_->NavigationEntryChanged(window);
 }
 

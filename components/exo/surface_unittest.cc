@@ -1307,7 +1307,7 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
   sub_surface.reset();
   EXPECT_EQ(1, observer.num_occlusion_changes());
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            child_surface->window()->occlusion_state());
+            child_surface->window()->GetOcclusionState());
 }
 
 }  // namespace

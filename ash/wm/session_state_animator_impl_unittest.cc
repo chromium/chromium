@@ -16,12 +16,12 @@ namespace ash {
 namespace {
 
 bool ParentHasWindowWithId(const aura::Window* window, int id) {
-  return window->parent()->id() == id;
+  return window->parent()->GetId() == id;
 }
 
 bool ContainersHaveWindowWithId(const aura::Window::Windows windows, int id) {
   for (const aura::Window* window : windows) {
-    if (window->id() == id)
+    if (window->GetId() == id)
       return true;
   }
   return false;

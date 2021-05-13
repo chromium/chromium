@@ -79,7 +79,7 @@ bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
   // The desks bar widget is an activatable window placed in the active desk's
   // container, therefore it should be allowed to move outside of its desk when
   // its desk is removed.
-  if (window->id() == kShellWindowId_DesksBarWindow)
+  if (window->GetId() == kShellWindowId_DesksBarWindow)
     return true;
 
   // We never move transient descendants directly, this is taken care of by
@@ -161,7 +161,7 @@ class DeskContainerObserver : public aura::WindowObserver {
  public:
   DeskContainerObserver(Desk* owner, aura::Window* container)
       : owner_(owner), container_(container) {
-    DCHECK_EQ(container_->id(), owner_->container_id());
+    DCHECK_EQ(container_->GetId(), owner_->container_id());
     container->AddObserver(this);
   }
 
@@ -487,7 +487,7 @@ void Desk::MoveWindowToDesk(aura::Window* window,
   DCHECK(this != target_desk);
   // The desks bar should not be allowed to move individually to another desk.
   // Only as part of `MoveWindowsToDesk()` when the desk is removed.
-  DCHECK_NE(window->id(), kShellWindowId_DesksBarWindow);
+  DCHECK_NE(window->GetId(), kShellWindowId_DesksBarWindow);
 
   {
     ScopedWindowPositionerDisabler window_positioner_disabler;
@@ -636,7 +636,7 @@ void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                      display::Screen::GetScreen()
                                          ->GetDisplayNearestWindow(target_root)
                                          .id());
-    DCHECK_EQ(target_desk->container_id_, window->parent()->id());
+    DCHECK_EQ(target_desk->container_id_, window->parent()->GetId());
   }
 }
 

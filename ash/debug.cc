@@ -63,18 +63,20 @@ void PrintWindowHierarchy(const aura::Window* active_window,
       window->layer()->GetSubpixelOffset();
   *out << indent_str;
   *out << name << " (" << window << ")"
-       << " type=" << window->type();
-  int window_id = window->id();
+       << " type=" << window->GetType();
+  int window_id = window->GetId();
   if (window_id != aura::Window::kInitialId)
     *out << " id=" << window_id;
   if (window->GetProperty(kWindowStateKey))
     *out << " " << WindowState::Get(window)->GetStateType();
   *out << ((window == active_window) ? " [active]" : "")
        << ((window == focused_window) ? " [focused]" : "")
-       << (window->transparent() ? " [transparent]" : "")
+       << (window->GetTransparent() ? " [transparent]" : "")
        << (window->IsVisible() ? " [visible]" : "") << " "
-       << (window->occlusion_state() != aura::Window::OcclusionState::UNKNOWN
-               ? aura::Window::OcclusionStateToString(window->occlusion_state())
+       << (window->GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
+               ? base::UTF16ToUTF8(aura::Window::OcclusionStateToString(
+                                       window->GetOcclusionState()))
+                     .c_str()
                : "")
        << " " << window->bounds().ToString();
   if (!subpixel_position_offset.IsZero())

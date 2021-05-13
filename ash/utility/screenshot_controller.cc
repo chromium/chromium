@@ -75,7 +75,7 @@ aura::Window* FindWindowForEvent(const ui::LocatedEvent& event) {
 bool IsTopLevelWindow(aura::Window* window) {
   if (!window)
     return false;
-  if (window->type() == aura::client::WINDOW_TYPE_CONTROL ||
+  if (window->GetType() == aura::client::WINDOW_TYPE_CONTROL ||
       !window->delegate()) {
     return false;
   }
@@ -507,8 +507,9 @@ void ScreenshotController::UpdateSelectedWindow(const ui::LocatedEvent& event) {
   while (selected && !IsTopLevelWindow(selected))
     selected = selected->parent();
 
-  if (selected->parent()->id() == kShellWindowId_WallpaperContainer ||
-      selected->parent()->id() == kShellWindowId_LockScreenWallpaperContainer)
+  if (selected->parent()->GetId() == kShellWindowId_WallpaperContainer ||
+      selected->parent()->GetId() ==
+          kShellWindowId_LockScreenWallpaperContainer)
     selected = nullptr;
 
   SetSelectedWindow(selected);

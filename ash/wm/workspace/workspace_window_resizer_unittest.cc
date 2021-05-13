@@ -97,25 +97,25 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());
-    window_->set_id(1);
+    window_->SetId(1);
 
     window2_ = std::make_unique<aura::Window>(&delegate2_);
     window2_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window2_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window2_.get());
-    window2_->set_id(2);
+    window2_->SetId(2);
 
     window3_ = std::make_unique<aura::Window>(&delegate3_);
     window3_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window3_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window3_.get());
-    window3_->set_id(3);
+    window3_->SetId(3);
 
     window4_ = std::make_unique<aura::Window>(&delegate4_);
     window4_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window4_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window4_.get());
-    window4_->set_id(4);
+    window4_->SetId(4);
   }
 
   void TearDown() override {
@@ -136,7 +136,7 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     for (aura::Window::Windows::const_reverse_iterator i = windows.rbegin();
          i != windows.rend(); ++i) {
       if (*i == window_.get() || *i == window2_.get() || *i == window3_.get()) {
-        result.push_back((*i)->id());
+        result.push_back((*i)->GetId());
       }
     }
     return result;

@@ -147,7 +147,7 @@ void AnimateOpacity(ui::Layer* layer,
 // Returns true if the window is in the app list window container.
 bool IsAppListWindow(const aura::Window* window) {
   const aura::Window* parent = window->parent();
-  return parent && parent->id() == kShellWindowId_AppListContainer;
+  return parent && parent->GetId() == kShellWindowId_AppListContainer;
 }
 
 int GetOffset(int offset, bool from_touchpad) {

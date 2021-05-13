@@ -136,7 +136,7 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
   std::unique_ptr<views::Widget> modal =
       CreateTestWidget(delegate.release(), kShellWindowId_Invalid);
-  EXPECT_EQ(modal.get()->GetNativeView()->parent()->id(),
+  EXPECT_EQ(modal.get()->GetNativeView()->parent()->GetId(),
             kShellWindowId_SystemModalContainer);
 
   window_list = BuildMruWindowList();

@@ -717,7 +717,7 @@ void OverviewSession::OnWindowActivating(
     return;
 
   // Activating the Desks bar should not end overview.
-  if (gained_active && gained_active->id() == kShellWindowId_DesksBarWindow)
+  if (gained_active && gained_active->GetId() == kShellWindowId_DesksBarWindow)
     return;
 
   if (DesksController::Get()->AreDesksBeingModified()) {

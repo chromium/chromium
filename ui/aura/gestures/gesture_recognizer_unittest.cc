@@ -41,8 +41,9 @@ namespace test {
 namespace {
 
 std::string WindowIDAsString(ui::GestureConsumer* consumer) {
-  return consumer ? base::NumberToString(static_cast<Window*>(consumer)->id())
-                  : "?";
+  return consumer
+             ? base::NumberToString(static_cast<Window*>(consumer)->GetId())
+             : "?";
 }
 
 #define EXPECT_0_EVENTS(events) \
@@ -2214,7 +2215,7 @@ TEST_F(GestureRecognizerTest, GestureEventTouchLockSelectsCorrectWindow) {
     delegates[i] = new GestureEventConsumeDelegate();
     windows[i] = CreateTestWindowWithDelegate(
         delegates[i], i, window_bounds[i], root_window());
-    windows[i]->set_id(i);
+    windows[i]->SetId(i);
     ui::TouchEvent press(ui::ET_TOUCH_PRESSED, window_bounds[i].origin(),
                          tes.Now(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, i));

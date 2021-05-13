@@ -1081,7 +1081,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
   TestBrowserWindow* CreateTestBrowserWindowAura() {
     std::unique_ptr<aura::Window> window(
         new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL));
-    window->set_id(0);
+    window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(window.get(), GetContext(),
                                           gfx::Rect(200, 200));

@@ -128,7 +128,7 @@ class WindowDeletionWaiter : aura::WindowObserver {
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
 // Returns nullptr if no such window exists.
 aura::Window* FindMenuWindow(aura::Window* root) {
-  if (root->type() == aura::client::WINDOW_TYPE_MENU)
+  if (root->GetType() == aura::client::WINDOW_TYPE_MENU)
     return root;
   for (auto* child : root->children()) {
     auto* menu_in_child = FindMenuWindow(child);

@@ -174,7 +174,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   ~WindowOcclusionTracker() override;
 
   // Returns true iff the occlusion states in |tracked_windows| match those
-  // returned by Window::occlusion_state().
+  // returned by Window::GetOcclusionState().
   static bool OcclusionStatesMatch(
       const base::flat_map<Window*, OcclusionData>& tracked_windows);
 

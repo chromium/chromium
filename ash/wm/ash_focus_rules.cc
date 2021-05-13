@@ -25,7 +25,7 @@ namespace {
 bool BelongsToContainerWithEqualOrGreaterId(const aura::Window* window,
                                             int container_id) {
   for (; window; window = window->parent()) {
-    if (window->id() >= container_id)
+    if (window->GetId() >= container_id)
       return true;
   }
   return false;
@@ -33,7 +33,7 @@ bool BelongsToContainerWithEqualOrGreaterId(const aura::Window* window,
 
 bool BelongsToContainerWithId(const aura::Window* window, int container_id) {
   for (; window; window = window->parent()) {
-    if (window->id() == container_id)
+    if (window->GetId() == container_id)
       return true;
   }
   return false;
@@ -65,11 +65,11 @@ bool AshFocusRules::IsToplevelWindow(const aura::Window* window) const {
 
   // The window must exist within a container that supports activation.
   // The window cannot be blocked by a modal transient.
-  return base::Contains(activatable_container_ids_, window->parent()->id());
+  return base::Contains(activatable_container_ids_, window->parent()->GetId());
 }
 
 bool AshFocusRules::SupportsChildActivation(const aura::Window* window) const {
-  return base::Contains(activatable_container_ids_, window->id());
+  return base::Contains(activatable_container_ids_, window->GetId());
 }
 
 bool AshFocusRules::IsWindowConsideredVisibleForActivation(
@@ -93,7 +93,7 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
 
   const aura::Window* const parent = window->parent();
   return desks_util::IsDeskContainer(parent) ||
-         parent->id() == kShellWindowId_LockScreenContainer;
+         parent->GetId() == kShellWindowId_LockScreenContainer;
 }
 
 bool AshFocusRules::CanActivateWindow(const aura::Window* window) const {

@@ -153,7 +153,7 @@ void WindowPreviewView::AddWindow(aura::Window* window) {
   DCHECK(!unparented_transient_children_.contains(window));
   DCHECK(!window->HasObserver(this));
 
-  if (window->type() == aura::client::WINDOW_TYPE_POPUP)
+  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP)
     return;
 
   if (!window->HasObserver(this))

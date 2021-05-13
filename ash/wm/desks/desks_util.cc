@@ -92,7 +92,7 @@ const char* GetDeskContainerName(int container_id) {
 
 bool IsDeskContainer(const aura::Window* container) {
   DCHECK(container);
-  return IsDeskContainerId(container->id());
+  return IsDeskContainerId(container->GetId());
 }
 
 bool IsDeskContainerId(int id) {
@@ -115,7 +115,7 @@ int GetActiveDeskContainerId() {
 
 ASH_EXPORT bool IsActiveDeskContainer(const aura::Window* container) {
   DCHECK(container);
-  return container->id() == GetActiveDeskContainerId();
+  return container->GetId() == GetActiveDeskContainerId();
 }
 
 aura::Window* GetActiveDeskContainerForRoot(aura::Window* root) {
@@ -128,14 +128,14 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
 
   const int active_desk_id = GetActiveDeskContainerId();
   aura::Window* desk_container = GetDeskContainerForContext(window);
-  return desk_container && desk_container->id() == active_desk_id;
+  return desk_container && desk_container->GetId() == active_desk_id;
 }
 
 aura::Window* GetDeskContainerForContext(aura::Window* context) {
   DCHECK(context);
 
   while (context) {
-    if (IsDeskContainerId(context->id()))
+    if (IsDeskContainerId(context->GetId()))
       return context;
 
     context = context->parent();

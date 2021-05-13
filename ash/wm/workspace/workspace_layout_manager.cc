@@ -142,7 +142,7 @@ WorkspaceLayoutManager::~WorkspaceLayoutManager() {
 void WorkspaceLayoutManager::OnWindowResized() {}
 
 void WorkspaceLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
-  DCHECK_NE(aura::client::WINDOW_TYPE_CONTROL, child->type());
+  DCHECK_NE(aura::client::WINDOW_TYPE_CONTROL, child->GetType());
   WindowState* window_state = WindowState::Get(child);
   WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
   window_state->OnWMEvent(&event);
@@ -320,7 +320,7 @@ void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
   } else if (key == aura::client::kVisibleOnAllWorkspacesKey) {
     auto* desks_controller = Shell::Get()->desks_controller();
 
-    if (window->type() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
+    if (window->GetType() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
         window->GetProperty(aura::client::kZOrderingKey) !=
             ui::ZOrderLevel::kNormal) {
       return;

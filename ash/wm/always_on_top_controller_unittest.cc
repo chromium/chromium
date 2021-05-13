@@ -100,7 +100,7 @@ TEST_F(AlwaysOnTopControllerTest,
   aura::Window* container =
       always_on_top_controller->GetContainer(always_on_top_window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, container->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest, PipContainerReturnedForFloatingPipWindow) {
@@ -122,7 +122,7 @@ TEST_F(AlwaysOnTopControllerTest, PipContainerReturnedForFloatingPipWindow) {
   aura::Window* container =
       always_on_top_controller->GetContainer(pip_window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(kShellWindowId_PipContainer, container->id());
+  EXPECT_EQ(kShellWindowId_PipContainer, container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest,
@@ -138,7 +138,7 @@ TEST_F(AlwaysOnTopControllerTest,
   aura::Window* container =
       always_on_top_controller->GetContainer(window.get());
   ASSERT_TRUE(container);
-  EXPECT_EQ(desks_util::GetActiveDeskContainerId(), container->id());
+  EXPECT_EQ(desks_util::GetActiveDeskContainerId(), container->GetId());
 }
 
 TEST_F(AlwaysOnTopControllerTest,
@@ -149,20 +149,20 @@ TEST_F(AlwaysOnTopControllerTest,
   window->SetProperty(aura::client::kZOrderingKey,
                       ui::ZOrderLevel::kFloatingWindow);
 
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->GetId());
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
   EXPECT_TRUE(window_state->IsPip());
 
-  EXPECT_EQ(kShellWindowId_PipContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_PipContainer, window->parent()->GetId());
 
   const WMEvent enter_normal(WM_EVENT_NORMAL);
   window_state->OnWMEvent(&enter_normal);
   EXPECT_FALSE(window_state->IsPip());
 
-  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->id());
+  EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer, window->parent()->GetId());
 }
 
 }  // namespace ash

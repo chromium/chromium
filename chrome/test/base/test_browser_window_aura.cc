@@ -20,7 +20,7 @@ std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
     Browser::CreateParams* params) {
   if (window.get() == nullptr) {
     window = std::make_unique<aura::Window>(nullptr);
-    window->set_id(0);
+    window->SetId(0);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     window->Show();

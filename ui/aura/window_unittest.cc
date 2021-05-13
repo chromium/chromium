@@ -860,13 +860,13 @@ TEST_F(WindowTest, StackChildBelow) {
   parent.Init(ui::LAYER_NOT_DRAWN);
   Window child1(nullptr);
   child1.Init(ui::LAYER_NOT_DRAWN);
-  child1.set_id(1);
+  child1.SetId(1);
   Window child2(nullptr);
   child2.Init(ui::LAYER_NOT_DRAWN);
-  child2.set_id(2);
+  child2.SetId(2);
   Window child3(nullptr);
   child3.Init(ui::LAYER_NOT_DRAWN);
-  child3.set_id(3);
+  child3.SetId(3);
 
   parent.AddChild(&child1);
   parent.AddChild(&child2);
@@ -2492,7 +2492,7 @@ TEST_F(WindowTest, RecreateLayer) {
   // Set properties to non default values.
   gfx::Rect window_bounds(100, 100);
   Window w(new ColorTestWindowDelegate(SK_ColorWHITE));
-  w.set_id(1);
+  w.SetId(1);
   w.Init(ui::LAYER_SOLID_COLOR);
   w.SetBounds(window_bounds);
 

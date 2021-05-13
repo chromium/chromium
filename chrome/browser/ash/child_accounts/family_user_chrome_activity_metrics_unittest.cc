@@ -123,7 +123,7 @@ class FamilyUserChromeActivityMetricsTest
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow() {
     std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
         nullptr, aura::client::WINDOW_TYPE_NORMAL);
-    window->set_id(0);
+    window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;

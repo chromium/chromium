@@ -1218,7 +1218,7 @@ bool TouchExplorationController::IsTargetedToArcVirtualKeyboard(
   if (!container)
     return false;
 
-  return container->id() == kShellWindowId_ArcVirtualKeyboardContainer;
+  return container->GetId() == kShellWindowId_ArcVirtualKeyboardContainer;
 }
 
 bool TouchExplorationController::ShouldEnableVolumeSlideGesture(

@@ -32,7 +32,7 @@ int GetIndexOfChildInParent(aura::Window* window) {
 WindowElement::WindowElement(aura::Window* window,
                              UIElementDelegate* ui_element_delegate,
                              UIElement* parent)
-    : UIElement(UIElementType::WINDOW, ui_element_delegate, parent),
+    : UIElementWithMetaData(UIElementType::WINDOW, ui_element_delegate, parent),
       window_(window) {
   if (window)
     window_->AddObserver(this);
@@ -73,44 +73,10 @@ void WindowElement::OnWindowBoundsChanged(aura::Window* window,
   delegate()->OnUIElementBoundsChanged(this);
 }
 
-std::vector<UIElement::ClassProperties>
-WindowElement::GetCustomPropertiesForMatchedStyle() const {
-  std::vector<UIElement::ClassProperties> ret;
-  std::vector<UIElement::UIProperty> cur_properties;
-
-  ui::Layer* layer = window_->layer();
-  if (layer) {
-    AppendLayerPropertiesMatchedStyle(layer, &cur_properties);
-    ret.emplace_back("Layer", cur_properties);
-    cur_properties.clear();
-  }
-
-  gfx::Rect bounds;
-  GetBounds(&bounds);
-  cur_properties.emplace_back("x", base::NumberToString(bounds.x()));
-  cur_properties.emplace_back("y", base::NumberToString(bounds.y()));
-  cur_properties.emplace_back("width", base::NumberToString(bounds.width()));
-  cur_properties.emplace_back("height", base::NumberToString(bounds.height()));
-
-  std::string state_str =
-      aura::Window::OcclusionStateToString(window_->occlusion_state());
-  // change OcclusionState::UNKNOWN to UNKNOWN
-  state_str = state_str.substr(state_str.find("::") + 2);
-  cur_properties.emplace_back("occlusion-state", state_str);
-  cur_properties.emplace_back("is-visible",
-                              window_->IsVisible() ? "true" : "false");
-  cur_properties.emplace_back("surface",
-                              window_->GetSurfaceId().is_valid()
-                                  ? window_->GetSurfaceId().ToString()
-                                  : "none");
-  cur_properties.emplace_back("capture",
-                              window_->HasCapture() ? "true" : "false");
-  cur_properties.emplace_back(
-      "is-activatable", wm::CanActivateWindow(window_) ? "true" : "false");
-
-  ret.emplace_back("Window", cur_properties);
-  return ret;
-}
+// TODO (kylixrd@): Still need to add support for the following property.
+//
+//  cur_properties.emplace_back(
+//      "is-activatable", wm::CanActivateWindow(window_) ? "true" : "false");
 
 void WindowElement::GetBounds(gfx::Rect* bounds) const {
   *bounds = window_->bounds();
@@ -188,6 +154,18 @@ bool WindowElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
     window_->GetHost()->DispatchKeyEventPostIME(&key_event);
   }
   return true;
+}
+
+ui::metadata::ClassMetaData* WindowElement::GetClassMetaData() const {
+  return window_->GetClassMetaData();
+}
+
+void* WindowElement::GetClassInstance() const {
+  return window_;
+}
+
+ui::Layer* WindowElement::GetLayer() const {
+  return window_->layer();
 }
 
 }  // namespace ui_devtools

@@ -15,7 +15,7 @@ void SetShadowElevation(aura::Window* window, int elevation) {
 }
 
 int GetDefaultShadowElevationForWindow(const aura::Window* window) {
-  switch (window->type()) {
+  switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
       return kShadowElevationInactiveWindow;
 

@@ -210,7 +210,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   if (!params.child) {
     // Set up the transient child before the window is added. This way the
     // LayoutManager knows the window has a transient parent.
-    if (parent && parent->type() != aura::client::WINDOW_TYPE_UNKNOWN) {
+    if (parent && parent->GetType() != aura::client::WINDOW_TYPE_UNKNOWN) {
       wm::AddTransientChild(parent, window_);
       if (!context)
         context = parent;

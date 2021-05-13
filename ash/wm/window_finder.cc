@@ -57,9 +57,9 @@ aura::Window* GetTopmostWindowAtPointWithinWindow(
   if (!window->IsVisible())
     return nullptr;
 
-  if (window->id() == ash::kShellWindowId_PhantomWindow ||
-      window->id() == ash::kShellWindowId_OverlayContainer ||
-      window->id() == ash::kShellWindowId_MouseCursorContainer)
+  if (window->GetId() == ash::kShellWindowId_PhantomWindow ||
+      window->GetId() == ash::kShellWindowId_OverlayContainer ||
+      window->GetId() == ash::kShellWindowId_MouseCursorContainer)
     return nullptr;
 
   if (IsTopLevelWindow(window)) {

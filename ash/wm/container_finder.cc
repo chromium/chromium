@@ -29,7 +29,7 @@ aura::Window* FindContainerRoot(const gfx::Rect& bounds_in_screen) {
 bool HasTransientParentWindow(const aura::Window* window) {
   const aura::Window* transient_parent = ::wm::GetTransientParent(window);
   return transient_parent &&
-         transient_parent->type() != aura::client::WINDOW_TYPE_UNKNOWN;
+         transient_parent->GetType() != aura::client::WINDOW_TYPE_UNKNOWN;
 }
 
 aura::Window* GetSystemModalContainer(aura::Window* root,
@@ -57,7 +57,7 @@ aura::Window* GetSystemModalContainer(aura::Window* root,
 
   // Otherwise those that originate from LockScreen container and above are
   // placed in the screen lock modal container.
-  int window_container_id = transient_parent->parent()->id();
+  int window_container_id = transient_parent->parent()->GetId();
   if (window_container_id < kShellWindowId_LockScreenContainer)
     return root->GetChildById(kShellWindowId_SystemModalContainer);
   return root->GetChildById(kShellWindowId_LockSystemModalContainer);
@@ -75,7 +75,7 @@ aura::Window* GetContainerFromAlwaysOnTopController(aura::Window* root,
 aura::Window* GetContainerForWindow(aura::Window* window) {
   aura::Window* parent = window->parent();
   // The first parent with an explicit shell window ID is the container.
-  while (parent && parent->id() == kShellWindowId_Invalid)
+  while (parent && parent->GetId() == kShellWindowId_Invalid)
     parent = parent->parent();
   return parent;
 }
@@ -91,7 +91,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
     target_root = FindContainerRoot(bounds_in_screen);
   }
 
-  switch (window->type()) {
+  switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
     case aura::client::WINDOW_TYPE_POPUP:
       if (window->GetProperty(aura::client::kModalKey) == ui::MODAL_TYPE_SYSTEM)
@@ -108,8 +108,8 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
       return target_root->GetChildById(
           kShellWindowId_DragImageAndTooltipContainer);
     default:
-      NOTREACHED() << "Window " << window->id() << " has unhandled type "
-                   << window->type();
+      NOTREACHED() << "Window " << window->GetId() << " has unhandled type "
+                   << window->GetType();
       break;
   }
   return nullptr;

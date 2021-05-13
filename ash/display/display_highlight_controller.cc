@@ -56,7 +56,7 @@ std::unique_ptr<views::Widget> CreateHighlightWidget(
       views::CreateSolidBorder(highlight_thickness, kHighlightColor));
 
   auto* window = highlight_widget->GetNativeWindow();
-  window->set_id(kShellWindowId_DisplayIdentificationHighlightWindow);
+  window->SetId(kShellWindowId_DisplayIdentificationHighlightWindow);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
 
   MagnificationController* magnification_controller =
