@@ -35,7 +35,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -135,10 +134,6 @@ class CORE_EXPORT Blob : public ScriptWrappable,
 
  private:
   Blob() = delete;
-  // Helper called by text() and arrayBuffer(). The operations only differ by
-  // 1 line, depending on the read_type.
-  ScriptPromise ReadBlobInternal(ScriptState* script_state,
-                                 FileReaderLoader::ReadType read_type);
 
   scoped_refptr<BlobDataHandle> blob_data_handle_;
 };

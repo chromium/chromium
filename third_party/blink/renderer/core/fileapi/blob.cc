@@ -223,29 +223,32 @@ ReadableStream* Blob::stream(ScriptState* script_state) const {
   return body_buffer->Stream();
 }
 
-blink::ScriptPromise Blob::text(ScriptState* script_state) {
-  auto read_type = FileReaderLoader::kReadAsText;
-  return ReadBlobInternal(script_state, read_type);
-}
-
-blink::ScriptPromise Blob::arrayBuffer(ScriptState* script_state) {
-  auto read_type = FileReaderLoader::kReadAsArrayBuffer;
-  return ReadBlobInternal(script_state, read_type);
-}
-
-blink::ScriptPromise Blob::ReadBlobInternal(
+// Helper called by Blob::text() and arrayBuffer(). The operations only differ
+// by 1 line, depending on the read_type.
+static ScriptPromise ReadBlobHelper(
+    const scoped_refptr<BlobDataHandle>& blob_data_handle,
     ScriptState* script_state,
     FileReaderLoader::ReadType read_type) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
-  new BlobFileReaderClient(blob_data_handle_,
+  new BlobFileReaderClient(blob_data_handle,
                            ExecutionContext::From(script_state)
                                ->GetTaskRunner(TaskType::kFileReading),
                            read_type, resolver);
 
   return promise;
+}
+
+blink::ScriptPromise Blob::text(ScriptState* script_state) {
+  auto read_type = FileReaderLoader::kReadAsText;
+  return ReadBlobHelper(blob_data_handle_, script_state, read_type);
+}
+
+blink::ScriptPromise Blob::arrayBuffer(ScriptState* script_state) {
+  auto read_type = FileReaderLoader::kReadAsArrayBuffer;
+  return ReadBlobHelper(blob_data_handle_, script_state, read_type);
 }
 
 void Blob::AppendTo(BlobData& blob_data) const {

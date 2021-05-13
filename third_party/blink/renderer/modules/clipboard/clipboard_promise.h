@@ -18,6 +18,10 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace blink {
 
 class ClipboardWriter;
