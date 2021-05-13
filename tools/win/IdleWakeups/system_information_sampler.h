@@ -27,7 +27,7 @@ typedef std::vector<ThreadData> ThreadsVector;
 // Contains per process data stored in each data snapshot.
 struct ProcessData {
   ULONGLONG cpu_time;
-  ULONGLONG working_set;
+  ULONGLONG memory;  // Private commit
   DWORD handle_count;
   ThreadsVector threads;
 };

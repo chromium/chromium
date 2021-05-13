@@ -239,7 +239,14 @@ SystemInformationSampler::~SystemInformationSampler() {}
 ProcessData GetProcessData(const SYSTEM_PROCESS_INFORMATION* const pi) {
   ProcessData process_data;
   process_data.cpu_time = pi->KernelTime + pi->UserTime;
-  process_data.working_set = pi->WorkingSetPrivateSize;
+  // The PagefileUsage member measures Private Commit. Presumably the name was
+  // chosen because all private commit has to be backed by either memory or the
+  // page file. Private Commit is the standard measure for memory in Chromium,
+  // including in the Memory footprint column in Chrome's task manager.
+  // Private Commit is a much more stable and meaningful number than private
+  // working set which can be affected by memory pressure or other factors that
+  // cause Windows to drain the working set and page out or compress the memory.
+  process_data.memory = pi->VirtualMemoryCounters.PagefileUsage;
   process_data.handle_count = pi->HandleCount;
 
   // Iterate over threads and store each thread's ID and number of context
@@ -306,8 +313,8 @@ std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
       if (target_process_id_ > 0) {
         // If |pi| or its parent has the targeted process ID, add its data to
         // the snapshot.
-        if (reinterpret_cast<DWORD>(pi->ProcessId) == target_process_id_ ||
-            reinterpret_cast<DWORD>(pi->ParentProcessId) ==
+        if (reinterpret_cast<uintptr_t>(pi->ProcessId) == target_process_id_ ||
+            reinterpret_cast<uintptr_t>(pi->ParentProcessId) ==
                 target_process_id_) {
           snapshot->processes.insert(
               std::make_pair(pi->ProcessId, GetProcessData(pi)));

@@ -23,7 +23,7 @@ string prefix, e.g., `some_process` and `some_process.exe` would both work. If
 the parameter is numeric and a valid process ID, it is treated as a process ID.
 
 When the tool starts it begins gathering and aggregating CPU usage, private
-working set size, number of context switches / sec, and power usage for all
+commit, number of context switches / sec, power usage, and handle counts for all
 matched processes. Hit Ctrl-C to stop the measurements and print average and
 median values over the entire measurement interval.
 
