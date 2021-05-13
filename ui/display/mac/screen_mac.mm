@@ -58,8 +58,8 @@ Display BuildDisplayForScreen(NSScreen* screen) {
   TRACE_EVENT0("ui", "BuildDisplayForScreen");
   NSRect frame = [screen frame];
 
-  CGDirectDisplayID display_id = [[[screen deviceDescription]
-      objectForKey:@"NSScreenNumber"] unsignedIntValue];
+  CGDirectDisplayID display_id =
+      [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
 
   Display display(display_id, gfx::Rect(NSRectToCGRect(frame)));
   NSRect visible_frame = [screen visibleFrame];
@@ -175,8 +175,8 @@ std::vector<Display> BuildDisplaysFromQuartz() {
   ScreenIdsToScreensMap screen_ids_to_screens;
   for (NSScreen* screen in [NSScreen screens]) {
     NSDictionary* screen_device_description = [screen deviceDescription];
-    int64_t screen_id = [[screen_device_description
-        objectForKey:@"NSScreenNumber"] unsignedIntValue];
+    int64_t screen_id =
+        [screen_device_description[@"NSScreenNumber"] unsignedIntValue];
     screen_ids_to_screens[screen_id] = screen;
   }
 
@@ -328,7 +328,7 @@ class ScreenMac : public Screen {
       return GetPrimaryDisplay();
 
     NSPoint ns_point = NSPointFromCGPoint(point.ToCGPoint());
-    NSScreen* primary = [screens objectAtIndex:0];
+    NSScreen* primary = screens[0];
     ns_point.y = NSMaxY([primary frame]) - ns_point.y;
     for (NSScreen* screen in screens) {
       if (NSMouseInRect(ns_point, [screen frame], NO))
@@ -379,8 +379,8 @@ class ScreenMac : public Screen {
 
  private:
   Display GetCachedDisplayForScreen(NSScreen* screen) const {
-    const CGDirectDisplayID display_id = [[[screen deviceDescription]
-        objectForKey:@"NSScreenNumber"] unsignedIntValue];
+    const CGDirectDisplayID display_id =
+        [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
     for (const Display& display : displays_) {
       if (display_id == display.id())
         return display;

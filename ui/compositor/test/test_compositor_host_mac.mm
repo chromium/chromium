@@ -29,12 +29,12 @@
   ui::Compositor* _compositor;
 }
 // Designated initializer.
-- (id)init;
+- (instancetype)init;
 - (void)setCompositor:(ui::Compositor*)compositor;
 @end
 
 @implementation AcceleratedTestView
-- (id)init {
+- (instancetype)init {
   // The frame will be resized when reparented into the window's view hierarchy.
   if ((self = [super initWithFrame:NSZeroRect])) {
     [self setWantsLayer:YES];
