@@ -249,20 +249,24 @@ Polymer({
       return;
     }
 
-    const eSimProfileRemote = await cellular_setup.getESimProfile(
+    const properties = await cellular_setup.getESimProfileProperties(
         this.networkState.typeState.cellular.iccid);
-    if (!eSimProfileRemote) {
+    if (!properties) {
       return;
     }
 
-    const propertiesResponse = await eSimProfileRemote.getProperties();
-    if (!propertiesResponse || !propertiesResponse.properties) {
+    // The parent list component could recycle the same component to show
+    // different networks. So networkState could have changed while the async
+    // operations above were in progress. Skip updating subtitle if network
+    // state does not match the fetched eSIM profile.
+    if (!this.networkState || !this.networkState.typeState.cellular ||
+        this.networkState.typeState.cellular.iccid !== properties.iccid) {
       return;
     }
 
     // Service provider from mojo API is a string16 value represented as an
     // array of characters. Convert to string for display.
-    this.subtitle_ = propertiesResponse.properties.serviceProvider.data
+    this.subtitle_ = properties.serviceProvider.data
                          .map((charCode) => String.fromCharCode(charCode))
                          .join('');
   },

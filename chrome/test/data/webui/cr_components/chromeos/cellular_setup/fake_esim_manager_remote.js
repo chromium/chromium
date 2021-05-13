@@ -23,6 +23,8 @@ cr.define('cellular_setup', function() {
         state: chromeos.cellularSetup.mojom.ProfileState.kPending,
       };
 
+      this.deferGetProperties_ = false;
+      this.deferredGetPropertiesPromises_ = [];
       this.fakeEuicc_ = fakeEuicc;
     }
 
@@ -32,9 +34,30 @@ cr.define('cellular_setup', function() {
      *     chromeos.cellularSetup.mojom.ESimProfileProperties},}>}
      */
     getProperties() {
-      return Promise.resolve({
-        properties: this.properties,
-      });
+      if (this.deferGetProperties_) {
+        const deferred = this.deferredPromise_();
+        this.deferredGetPropertiesPromises_.push(deferred);
+        return deferred.promise;
+      } else {
+        return Promise.resolve({
+          properties: this.properties,
+        });
+      }
+    }
+
+    /**
+     * @param {boolean} defer
+     */
+    setDeferGetProperties(defer) {
+      this.deferGetProperties_ = defer;
+    }
+
+    resolveLastGetPropertiesPromise() {
+      if (!this.deferredGetPropertiesPromises_.length) {
+        return;
+      }
+      const deferred = this.deferredGetPropertiesPromises_.pop();
+      deferred.resolve({properties: this.properties});
     }
 
     /**

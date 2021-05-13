@@ -96,12 +96,14 @@ cr.define('cellular_setup', function() {
   }
 
   /**
-   * Returns the eSIM profile with iccid in the first EUICC and null if none
-   * found.
    * @param {string} iccid
-   * @return {!Promise<?chromeos.cellularSetup.mojom.ESimProfileRemote>}
+   * @return {!Promise<?{
+   *       profileRemote: chromeos.cellularSetup.mojom.ESimProfileRemote,
+   *       profileProperties: chromeos.cellularSetup.mojom.ESimProfileProperties
+   *     }>} Returns a eSIM profile remote and profile properties for given
+   *         |iccid|.
    */
-  /* #export */ async function getESimProfile(iccid) {
+  async function getESimProfileDetails(iccid) {
     if (!iccid) {
       return null;
     }
@@ -114,19 +116,52 @@ cr.define('cellular_setup', function() {
     const esimProfilesRemotes = await euicc.getProfileList();
 
     for (const profileRemote of esimProfilesRemotes.profiles) {
-      const profileProperties = await profileRemote.getProperties();
+      const profilePropertiesResponse = await profileRemote.getProperties();
+      if (!profilePropertiesResponse || !profilePropertiesResponse.properties) {
+        return null;
+      }
 
-      if (profileProperties.properties.iccid === iccid) {
-        return profileRemote;
+      const profileProperties = profilePropertiesResponse.properties;
+      if (profileProperties.iccid === iccid) {
+        return {profileRemote, profileProperties};
       }
     }
     return null;
+  }
+
+  /**
+   * Returns the eSIM profile with iccid in the first EUICC or null if none
+   * is found.
+   * @param {string} iccid
+   * @return {!Promise<?chromeos.cellularSetup.mojom.ESimProfileRemote>}
+   */
+  /* #export */ async function getESimProfile(iccid) {
+    const details = await getESimProfileDetails(iccid);
+    if (!details) {
+      return null;
+    }
+    return details.profileRemote;
+  }
+
+  /**
+   * Returns properties for eSIM profile with iccid in the first EUICC or null
+   * if none is found.
+   * @param {string} iccid
+   * @return {!Promise<?chromeos.cellularSetup.mojom.ESimProfileProperties>}
+   */
+  /* #export */ async function getESimProfileProperties(iccid) {
+    const details = await getESimProfileDetails(iccid);
+    if (!details) {
+      return null;
+    }
+    return details.profileProperties;
   }
 
   // #cr_define_end
   return {
     getEuicc,
     getESimProfile,
+    getESimProfileProperties,
     getPendingESimProfiles,
     getNonPendingESimProfiles,
     getNumESimProfiles,

@@ -121,28 +121,49 @@ suite('NetworkListItemTest', function() {
   test('Network provider name visibilty', async () => {
     init();
 
-    const getTitle = () => listItem.$$('#itemTitle');
+    const getTitle = () => {
+      const element = listItem.$$('#itemTitle');
+      return element ? element.textContent.trim() : '';
+    };
 
     const properties = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kEthernet, 'eth0');
     mojoApi_.setManagedPropertiesForTest(properties);
     listItem.item = OncMojo.managedPropertiesToNetworkState(properties);
     await flushAsync();
+    assertEquals('Ethernet', getTitle());
 
-    let title = getTitle();
-    assertTrue(!!title);
-    assertEquals('Ethernet', title.textContent.trim());
+    const euicc = eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 2);
+    const profiles = (await euicc.getProfileList()).profiles;
+    assertEquals(2, profiles.length);
+    profiles[0].setDeferGetProperties(/*defer=*/ true);
+    profiles[1].setDeferGetProperties(/*defer=*/ true);
 
-    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
-    const networkState = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
-    listItem.item = networkState;
+    const networkState1 = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
+    const networkState2 = initCellularNetwork(/*iccid=*/ '2', /*eid=*/ '1');
+
+    // Change network states to simulate list item recycling.
+    listItem.item = networkState1;
+    await flushAsync();
+    listItem.item = networkState2;
     await flushAsync();
 
-    title = getTitle();
-    assertTrue(!!title);
+    // Allow last getESimProfileProperties call for networkState2 to complete.
+    profiles[0].resolveLastGetPropertiesPromise();
+    await flushAsync();
+    profiles[1].resolveLastGetPropertiesPromise();
+    await flushAsync();
+
+    // Simulate getESimProfileProperties for networkState1 resolving out of
+    // order.
+    profiles[0].resolveLastGetPropertiesPromise();
+    await flushAsync();
+
+    // Verify that full title is displayed correctly even if promise from
+    // previous network resolves out of order.
     assertEquals(
-        listItem.i18n('networkListItemTitle', 'Cellular', 'provider1'),
-        title.textContent.trim());
+        listItem.i18n('networkListItemTitle', 'Cellular', 'provider2'),
+        getTitle());
   });
 
   test('Network title is escaped', async () => {
