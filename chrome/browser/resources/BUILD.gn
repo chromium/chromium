@@ -165,6 +165,7 @@ if (enable_js_type_check) {
       deps += [
         "explore_sites_internals:closure_compile",
         "feed_internals:closure_compile",
+        "internals/lens:closure_compile",
         "internals/notifications:closure_compile",
         "internals/query_tiles:closure_compile",
         "offline_pages:closure_compile",
