@@ -9,6 +9,8 @@
 
 goog.provide('PointerHandler');
 
+goog.require('constants');
+goog.require('AutomationTreeWalker');
 goog.require('BaseAutomationHandler');
 
 const AutomationEvent = chrome.automation.AutomationEvent;
@@ -29,20 +31,31 @@ PointerHandler = class extends BaseAutomationHandler {
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
     /** @private {!AutomationNode|undefined} */
     this.lastValidNodeBeforePointerInvalidation_;
+    /** @private {number} */
+    this.expectingHoverCount_ = 0;
     /** @private {boolean} */
-    this.isExpectingHover_ = false;
+    this.isChromebox_ = false;
+    /** @private {!Date} */
+    this.lastHoverRequested_ = new Date();
 
     chrome.automation.getDesktop((desktop) => {
       this.node_ = desktop;
       this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove);
 
-      // This is needed for ARC++ which sends back hovers when we send mouse
-      // moves.
+      // This is needed for ARC++ and Lacros. They send mouse move and hit test
+      // respectively. Each responds with hover.
       this.addListener_(EventType.HOVER, (evt) => {
-        if (!this.isExpectingHover_) {
+        if (this.expectingHoverCount_ === 0) {
           return;
         }
-        this.isExpectingHover_ = false;
+
+        // Stop honoring expectingHoverCount_ if it comes far after its
+        // corresponding requested hit test.
+        if (new Date() - this.lastHoverRequested_ > 500) {
+          this.expectingHoverCount_ = 0;
+        }
+
+        this.expectingHoverCount_--;
         this.handleHitTestResult(evt.target);
         this.runHitTest();
       });
@@ -55,6 +68,11 @@ PointerHandler = class extends BaseAutomationHandler {
     if (localStorage['speakTextUnderMouse'] === String(true)) {
       chrome.accessibilityPrivate.enableMouseEvents(true);
     }
+
+    chrome.chromeosInfoPrivate.get(['deviceType'], (result) => {
+      this.isChromebox_ = result['deviceType'] ===
+          chrome.chromeosInfoPrivate.DeviceType.CHROMEBOX;
+    });
   }
 
   /**
@@ -73,19 +91,20 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    if (isTouch) {
+    if (isTouch && this.isChromebox_) {
       // TODO(accessibility): hit testing seems to be broken in some cases e.g.
       // on the main CFM UI. Synthesize mouse moves with the touch
       // accessibility flag for now for touch-based user gestures. Eliminate
       // this branch once hit testing is fixed.
       this.synthesizeMouseMove();
-    } else {
-      // Otherwise, use hit testing.
-      this.node_.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
-        this.handleHitTestResult(target);
-        this.runHitTest();
-      });
+      return;
     }
+
+    this.node_.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
+      this.handleHitTestResult(target);
+      this.runHitTest();
+    });
+
     this.hasPendingEvents_ = false;
   }
 
@@ -127,7 +146,8 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    this.isExpectingHover_ = true;
+    this.expectingHoverCount_++;
+    this.lastHoverRequested_ = new Date();
     EventGenerator.sendMouseMove(
         this.mouseX_, this.mouseY_, true /* touchAccessibility */);
   }
@@ -143,13 +163,31 @@ PointerHandler = class extends BaseAutomationHandler {
 
     let target = result;
 
-    // If the target is in an ExoSurface, which hosts remote content, trigger a
-    // mouse move. This only occurs when we programmatically hit test content
-    // within ARC++ for now. Mouse moves automatically trigger Android to send
-    // hover events back.
+    // The target is in an ExoSurface, which hosts remote content.
     if (target.role === RoleType.WINDOW &&
         target.className.indexOf('ExoSurface') === 0) {
-      this.synthesizeMouseMove();
+      // We first search for a node containing an appId, which indicates Lacros.
+      // Do so by restricting the search to stop at roots.
+      const walker = new AutomationTreeWalker(target, constants.Dir.FORWARD, {
+        skipInitialSubtree: false,
+        root: (node) => target.root !== node.root,
+        visit: (node) => node.appId
+      });
+      const appNode = walker.next().node;
+      if (appNode) {
+        // This means we've gotten the app, which is technically in a different
+        // tree so hit tests will be delivered to it properly and come back in
+        // our hover event handler.
+        // TODO: switch to hitTestWithReply once OnActionResult gets hooked up
+        // from Lacros.
+        appNode.hitTest(this.mouseX_, this.mouseY_, EventType.HOVER);
+        this.expectingHoverCount_++;
+        this.lastHoverRequested_ = new Date();
+      } else {
+        // Otherwise, we're in ARC++, which still requires a synthesized mouse
+        // event.
+        this.synthesizeMouseMove();
+      }
       return;
     }
 

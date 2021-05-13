@@ -23,6 +23,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/views/accessibility/accessibility_alert_window.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_event_manager.h"
@@ -30,12 +31,12 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
-#include "ui/wm/core/coordinate_conversion.h"
 #endif
 
 // static
@@ -297,10 +298,19 @@ void AutomationManagerAura::SendPendingEvents() {
 
 void AutomationManagerAura::PerformHitTest(
     const ui::AXActionData& original_action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::AXActionData action = original_action;
-  aura::Window* root_window =
-      ash::window_util::GetRootWindowAt(action.target_point);
+  // Get the display nearest the point.
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(action.target_point);
+
+  aura::Window* root_window = nullptr;
+  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+    if (display.id() == host->GetDisplayId()) {
+      root_window = host->window();
+      break;
+    }
+  }
+
   if (!root_window)
     return;
 
@@ -351,9 +361,8 @@ void AutomationManagerAura::PerformHitTest(
     views::View* root_view = widget->GetRootView();
     views::View* hit_view =
         root_view->GetEventHandlerForPoint(action.target_point);
-    if (hit_view) {
+    if (hit_view)
       obj_to_send_event = cache_->GetOrCreate(hit_view);
-    }
   }
 
   // Otherwise, fire the event directly on the Window.
@@ -363,7 +372,6 @@ void AutomationManagerAura::PerformHitTest(
     PostEvent(obj_to_send_event->GetUniqueId(), action.hit_test_event_to_fire,
               action.request_id);
   }
-#endif
 }
 
 void AutomationManagerAura::OnSerializeFailure(ax::mojom::Event event_type,
