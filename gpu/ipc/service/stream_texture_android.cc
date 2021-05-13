@@ -343,7 +343,8 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   if (use_passthrough) {
     legacy_mailbox_texture =
         std::make_unique<gles2::AbstractTextureImplPassthrough>(
-            GL_TEXTURE_EXTERNAL_OES);
+            GL_TEXTURE_EXTERNAL_OES, GL_RGBA, coded_size.width(),
+            coded_size.height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE);
   } else {
     legacy_mailbox_texture = std::make_unique<gles2::AbstractTextureImpl>(
         GL_TEXTURE_EXTERNAL_OES, GL_RGBA, coded_size.width(),

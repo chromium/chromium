@@ -53,7 +53,14 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 // current context.
 class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
  public:
-  explicit AbstractTextureImplPassthrough(GLenum target);
+  AbstractTextureImplPassthrough(GLenum target,
+                                 GLenum internal_format,
+                                 GLsizei width,
+                                 GLsizei height,
+                                 GLsizei depth,
+                                 GLint border,
+                                 GLenum format,
+                                 GLenum type);
   ~AbstractTextureImplPassthrough() override;
 
   // AbstractTexture implementation.

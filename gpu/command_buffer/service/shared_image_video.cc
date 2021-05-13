@@ -419,7 +419,8 @@ std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
   std::unique_ptr<gles2::AbstractTexture> texture;
   if (passthrough) {
     texture = std::make_unique<gles2::AbstractTextureImplPassthrough>(
-        GL_TEXTURE_EXTERNAL_OES);
+        GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE);
   } else {
     texture = std::make_unique<gles2::AbstractTextureImpl>(
         GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,

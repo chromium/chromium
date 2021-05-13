@@ -94,7 +94,15 @@ void AbstractTextureImpl::NotifyOnContextLost() {
   have_context_ = false;
 }
 
-AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(GLenum target) {
+AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(
+    GLenum target,
+    GLenum internal_format,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLint border,
+    GLenum format,
+    GLenum type) {
   // Create a gles2 Texture.
   GLuint service_id = 0;
   api_ = gl::g_current_gl_context;
@@ -111,7 +119,8 @@ AbstractTextureImplPassthrough::AbstractTextureImplPassthrough(GLenum target) {
 
   glBindTexture(target, prev_texture);
 
-  texture_ = new TexturePassthrough(service_id, target);
+  texture_ = new TexturePassthrough(service_id, target, internal_format, width,
+                                    height, depth, border, format, type);
 }
 
 AbstractTextureImplPassthrough::~AbstractTextureImplPassthrough() {
