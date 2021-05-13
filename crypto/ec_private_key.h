@@ -50,12 +50,6 @@ class CRYPTO_EXPORT ECPrivateKey {
   static std::unique_ptr<ECPrivateKey> CreateFromEncryptedPrivateKeyInfo(
       base::span<const uint8_t> encrypted_private_key_info);
 
-  // Creates a new instance by deriving private key from |secret|, and generates
-  // public key points accordingly. The created key will use the NIST P-256
-  // curve. This can return nullptr if initialization fails.
-  static std::unique_ptr<ECPrivateKey> DeriveFromSecret(
-      base::span<const uint8_t> secret);
-
   // Returns a copy of the object.
   std::unique_ptr<ECPrivateKey> Copy() const;
 
