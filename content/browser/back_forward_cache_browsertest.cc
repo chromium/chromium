@@ -10469,6 +10469,36 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ReloadDoesntAffectCache) {
   ExpectRestored(FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       SubframeNavigationDoesNotRecordMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate from B to C.
+  EXPECT_TRUE(NavigateFrameToURL(rfh_a->child_at(0), url_c));
+  EXPECT_EQ(url_c,
+            rfh_a->child_at(0)->current_frame_host()->GetLastCommittedURL());
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+
+  // 4) Go back from C to B.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(
+      rfh_a->child_at(0)->current_frame_host()->GetLastCommittedURL().DomainIs(
+          "b.com"));
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+
+  // The reason why the frame is not cached in a subframe navigation is not
+  // recorded.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+}
+
 class BackForwardCacheBrowserTestWithFileSystemAPISupported
     : public BackForwardCacheBrowserTest {
  protected:
