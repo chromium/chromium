@@ -5,15 +5,22 @@
 package org.chromium.ui.test.util;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.Callback;
+
 /** Dummy activity to test UI components without Chrome browser initialization and natives. */
 public class DummyUiActivity extends AppCompatActivity {
     private static int sTestTheme;
     private static int sTestLayout;
+
+    private Callback<MotionEvent> mMotionEventCallback;
+    private Callback<KeyEvent> mKeyEventCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,5 +51,33 @@ public class DummyUiActivity extends AppCompatActivity {
      */
     public static void setTestLayout(@LayoutRes int layoutResID) {
         sTestLayout = layoutResID;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (mMotionEventCallback != null) mMotionEventCallback.onResult(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mKeyEventCallback != null) mKeyEventCallback.onResult(event);
+        return super.dispatchKeyEvent(event);
+    }
+
+    /**
+     * Registers a callback for getting a stream of touch events prior to being dispatched to the
+     * view tree.
+     */
+    public void setTouchEventCallback(Callback<MotionEvent> callback) {
+        mMotionEventCallback = callback;
+    }
+
+    /**
+     * Registers a callback for getting a stream of key events prior to being dispatched to the
+     * view tree.
+     */
+    public void setKeyEventCallback(Callback<KeyEvent> callback) {
+        mKeyEventCallback = callback;
     }
 }
