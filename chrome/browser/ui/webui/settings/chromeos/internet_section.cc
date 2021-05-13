@@ -253,11 +253,11 @@ const std::vector<SearchConcept>& GetWifiHiddenSearchConcepts() {
 const std::vector<SearchConcept>& GetCellularSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CELLULAR,
-       mojom::kCellularDetailsSubpagePath,
+       mojom::kCellularNetworksSubpagePath,
        mojom::SearchResultIcon::kCellular,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kCellularDetails},
+       {.subpage = mojom::Subpage::kMobileDataNetworks},
        {IDS_OS_SETTINGS_TAG_CELLULAR_ALT1, IDS_OS_SETTINGS_TAG_CELLULAR_ALT2,
         IDS_OS_SETTINGS_TAG_CELLULAR_ALT3, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CELLULAR_SIM_LOCK,
