@@ -49,11 +49,11 @@ suite('CrComponentsCellularEidDialogTest', function() {
   test('Should render EID QRCode', async function() {
     await init({size: 2, data: [1, 0, 0, 1]});
     const qrCodeCanvas = eidDialog.$$('#qrCodeCanvas');
-    assertEquals(qrCodeCanvas.width, 50);
-    assertEquals(qrCodeCanvas.height, 50);
-    assertDeepEquals(canvasContext.getClearRectCalls(), [[0, 0, 50, 50]]);
+    assertEquals(qrCodeCanvas.width, 10);
+    assertEquals(qrCodeCanvas.height, 10);
+    assertDeepEquals(canvasContext.getClearRectCalls(), [[0, 0, 10, 10]]);
     assertDeepEquals(
-        canvasContext.getFillRectCalls(), [[20, 20, 5, 5], [25, 25, 5, 5]]);
+        canvasContext.getFillRectCalls(), [[0, 0, 5, 5], [5, 5, 5, 5]]);
   });
 
   test('should close EID when done is pressed', async function() {

@@ -10,7 +10,9 @@
   <template>
     <style include="cr-shared-style iron-flex">
       :host {
-        --cr-dialog-width: 324px;
+        --cr-dialog-width: 320px;
+        --cr-dialog-title-slot-padding-bottom: 12px;
+        --cr-dialog-title-font-size: calc(16 / 13 * 100%);
       }
 
       .cellular-network-list-header {
@@ -29,11 +31,12 @@
       }
 
       #qrCodeCanvas {
-        width: 100%;
+        display: block;
+        margin: 20px auto 16px auto;
       }
 
       #eid {
-        margin-top: 15px;
+        margin-top: 16px;
       }
     </style>
     <cr-dialog id="eidDialog" show-on-attach>
