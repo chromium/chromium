@@ -18,7 +18,7 @@
 
 #if defined(USE_X11)
 #include "ui/base/x/x11_idle_query.h"
-#include "ui/base/x/x11_screensaver_window_finder.h"
+#include "ui/base/x/x11_screensaver.h"
 #else
 #include "base/notreached.h"
 #endif
@@ -202,7 +202,7 @@ bool CheckIdleStateIsLocked() {
 #endif
 #if defined(USE_X11)
   // Usually the screensaver is used to lock the screen.
-  return ScreensaverWindowFinder::ScreensaverWindowExists();
+  return IsXScreensaverActive();
 #else
   NOTIMPLEMENTED_LOG_ONCE();
   return false;

@@ -6,7 +6,7 @@
 
 #include "ui/base/linux/linux_desktop.h"
 #include "ui/base/x/x11_idle_query.h"
-#include "ui/base/x/x11_screensaver_window_finder.h"
+#include "ui/base/x/x11_screensaver.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/util/display_util.h"
@@ -111,7 +111,7 @@ void X11ScreenOzone::SetScreenSaverSuspended(bool suspend) {
 
 bool X11ScreenOzone::IsScreenSaverActive() const {
   // Usually the screensaver is used to lock the screen.
-  return ScreensaverWindowFinder::ScreensaverWindowExists();
+  return IsXScreensaverActive();
 }
 
 base::TimeDelta X11ScreenOzone::CalculateIdleTime() const {
