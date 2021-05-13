@@ -42,8 +42,8 @@ import java.util.concurrent.TimeUnit;
 public class WebFeedFollowIntroController {
     static final long INTRO_WAIT_TIME_MS = TimeUnit.SECONDS.toMillis(5);
     // Visit history requirements.
-    static final int DEFAULT_DAILY_VISIT_MIN = 0;
-    static final int DEFAULT_NUM_VISIT_MIN = 0;
+    static final int DEFAULT_DAILY_VISIT_MIN = 3;
+    static final int DEFAULT_NUM_VISIT_MIN = 5;
     static final String PARAM_DAILY_VISIT_MIN = "intro-daily-visit-min";
     static final String PARAM_NUM_VISIT_MIN = "intro-num-visit-min";
     // Time between appearances.
