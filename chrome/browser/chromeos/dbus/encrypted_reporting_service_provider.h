@@ -28,7 +28,9 @@ namespace chromeos {
 class EncryptedReportingServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
-  EncryptedReportingServiceProvider();
+  explicit EncryptedReportingServiceProvider(
+      reporting::GetCloudPolicyClientCallback build_cloud_policy_client_cb =
+          reporting::GetCloudPolicyClientCb());
   EncryptedReportingServiceProvider(
       const EncryptedReportingServiceProvider& other) = delete;
   EncryptedReportingServiceProvider& operator=(
@@ -44,38 +46,54 @@ class EncryptedReportingServiceProvider
   // |policy::CloudPolicyClient| may or may not be ready, so we attempt to get
   // it, and if we fail we repost with a backoff. Until an UploadClient is
   // built, all requests to |RequestUploadEncryptedRecord| will fail.
-  virtual void PostNewCloudPolicyClientRequest();
-  void OnCloudPolicyClientResult(
-      reporting::StatusOr<policy::CloudPolicyClient*> client_result);
-  virtual void BuildUploadClient(policy::CloudPolicyClient* client);
-  void OnUploadClientResult(
-      reporting::StatusOr<std::unique_ptr<reporting::UploadClient>>
-          client_result);
-  void UpdateUploadClient(std::unique_ptr<reporting::UploadClient> client);
+  virtual void BuildUploadClient(
+      policy::CloudPolicyClient* client,
+      reporting::UploadClient::CreatedCallback update_upload_client_cb);
 
-  void RequestUploadEncryptedRecord(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender);
-
+ private:
   // Called from ExportedObject when one of the service methods is exported as a
   // DBus method or failed to be exported.
   void OnExported(const std::string& interface_name,
                   const std::string& method_name,
                   bool success);
 
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  void PostNewCloudPolicyClientRequest();
+  void OnCloudPolicyClientResult(
+      reporting::StatusOr<policy::CloudPolicyClient*> client_result);
+  void UpdateUploadClient(std::unique_ptr<reporting::UploadClient> client);
+  void OnUploadClientResult(
+      reporting::StatusOr<std::unique_ptr<reporting::UploadClient>>
+          client_result);
+  void RequestUploadEncryptedRecord(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
+  // Sequence task runner and checker used during
+  // |PostNewCloudPolicyClientRequest| processing.
+  // It is also used to protect |upload_client_|.
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequenced_task_checker_);
+
+  reporting::GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
   std::atomic<bool> upload_client_request_in_progress_{false};
   const std::unique_ptr<::net::BackoffEntry> backoff_entry_;
   std::unique_ptr<reporting::UploadClient> upload_client_;
-
- private:
   scoped_refptr<reporting::StorageModuleInterface> storage_module_;
 
-  // Keep this last so that all weak pointers will be invalidated at the
+  // Keep these last so that all weak pointers will be invalidated at the
   // beginning of destruction.
+
+  // Weak pointers factory for methods exported by |ExportMethod|.
   base::WeakPtrFactory<EncryptedReportingServiceProvider> weak_ptr_factory_{
       this};
+
+  // Weak pointers factory for methods scheduled on |sequenced_task_runner_|
+  // for internal processing of |PostNewCloudPolicyClientRequest|.
+  // We cannot reuse |weak_ptr_factory_| - weak pointers must all be
+  // dereferenced on a single sequenced task runner, and |weak_ptr_factory| is
+  // unrelated to |sequenced_task_runner_|.
+  base::WeakPtrFactory<EncryptedReportingServiceProvider>
+      internal_weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

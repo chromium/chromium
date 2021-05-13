@@ -32,12 +32,15 @@ class UploadClient {
   using EncryptionKeyAttachedCallback =
       base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
-  static void Create(
-      policy::CloudPolicyClient* cloud_policy_client,
-      ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
-          created_cb);
+  // CreatedCallback gets a result of Upload client creation (unique pointer or
+  // error status).
+  using CreatedCallback =
+      base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>;
+
+  static void Create(policy::CloudPolicyClient* cloud_policy_client,
+                     ReportSuccessfulUploadCallback report_upload_success_cb,
+                     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+                     CreatedCallback created_cb);
 
   virtual ~UploadClient();
   UploadClient(const UploadClient& other) = delete;

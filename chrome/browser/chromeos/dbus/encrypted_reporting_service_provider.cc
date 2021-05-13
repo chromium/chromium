@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind_post_task.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
@@ -42,11 +44,15 @@ void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
 
 }  // namespace
 
-EncryptedReportingServiceProvider::EncryptedReportingServiceProvider()
+EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
+    reporting::GetCloudPolicyClientCallback build_cloud_policy_client_cb)
     : sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits())),
+      build_cloud_policy_client_cb_(build_cloud_policy_client_cb),
       backoff_entry_(reporting::GetBackoffEntry()),
-      storage_module_(MissiveClient::Get()->GetMissiveStorageModule()) {}
+      storage_module_(MissiveClient::Get()->GetMissiveStorageModule()) {
+  DETACH_FROM_SEQUENCE(sequenced_task_checker_);
+}
 
 EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
     default;
@@ -65,7 +71,7 @@ void EncryptedReportingServiceProvider::Start(
       FROM_HERE,
       base::BindOnce(
           &EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          internal_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptedReportingServiceProvider::OnExported(
@@ -78,6 +84,7 @@ void EncryptedReportingServiceProvider::OnExported(
 }
 
 void EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (upload_client_ != nullptr) {
     return;
   }
@@ -89,13 +96,15 @@ void EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest() {
   sequenced_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::OnceCallback<void(
-                 reporting::StatusOr<policy::CloudPolicyClient*>)> callback) {
-            reporting::GetCloudPolicyClientCb().Run(std::move(callback));
+          [](base::WeakPtr<EncryptedReportingServiceProvider> self) {
+            if (!self) {
+              return;  // Provider expired
+            }
+            self->build_cloud_policy_client_cb_.Run(base::BindOnce(
+                &EncryptedReportingServiceProvider::OnCloudPolicyClientResult,
+                self->internal_weak_ptr_factory_.GetWeakPtr()));
           },
-          base::BindOnce(
-              &EncryptedReportingServiceProvider::OnCloudPolicyClientResult,
-              weak_ptr_factory_.GetWeakPtr())),
+          internal_weak_ptr_factory_.GetWeakPtr()),
       backoff_entry_->GetTimeUntilRelease());
 
   // Increase backoff_entry_ for next request.
@@ -104,20 +113,29 @@ void EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest() {
 
 void EncryptedReportingServiceProvider::OnCloudPolicyClientResult(
     reporting::StatusOr<policy::CloudPolicyClient*> client_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (!client_result.ok()) {
     upload_client_request_in_progress_ = false;
     sequenced_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest,
-            weak_ptr_factory_.GetWeakPtr()));
+            internal_weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  BuildUploadClient(client_result.ValueOrDie());
+  BuildUploadClient(
+      client_result.ValueOrDie(),
+      base::BindPostTask(
+          sequenced_task_runner_,
+          base::BindOnce(
+              &EncryptedReportingServiceProvider::OnUploadClientResult,
+              internal_weak_ptr_factory_.GetWeakPtr())));
 }
 
 void EncryptedReportingServiceProvider::BuildUploadClient(
-    policy::CloudPolicyClient* client) {
+    policy::CloudPolicyClient* client,
+    reporting::UploadClient::CreatedCallback update_upload_client_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   reporting::UploadClient::ReportSuccessfulUploadCallback successful_upload_cb =
       base::BindRepeating(&reporting::StorageModuleInterface::ReportSuccess,
                           storage_module_);
@@ -127,12 +145,6 @@ void EncryptedReportingServiceProvider::BuildUploadClient(
           &reporting::StorageModuleInterface::UpdateEncryptionKey,
           storage_module_);
 
-  base::OnceCallback<void(
-      reporting::StatusOr<std::unique_ptr<reporting::UploadClient>>)>
-      update_upload_client_cb = base::BindOnce(
-          &EncryptedReportingServiceProvider::OnUploadClientResult,
-          weak_ptr_factory_.GetWeakPtr());
-
   reporting::UploadClient::Create(client, std::move(successful_upload_cb),
                                   std::move(encryption_key_cb),
                                   std::move(update_upload_client_cb));
@@ -141,26 +153,28 @@ void EncryptedReportingServiceProvider::BuildUploadClient(
 void EncryptedReportingServiceProvider::OnUploadClientResult(
     reporting::StatusOr<std::unique_ptr<reporting::UploadClient>>
         client_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (!client_result.ok()) {
     upload_client_request_in_progress_ = false;
     sequenced_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &EncryptedReportingServiceProvider::PostNewCloudPolicyClientRequest,
-            weak_ptr_factory_.GetWeakPtr()));
+            internal_weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&EncryptedReportingServiceProvider::UpdateUploadClient,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     internal_weak_ptr_factory_.GetWeakPtr(),
                      std::move(client_result.ValueOrDie())));
 }
 
 void EncryptedReportingServiceProvider::UpdateUploadClient(
     std::unique_ptr<reporting::UploadClient> upload_client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   upload_client_ = std::move(upload_client);
-  backoff_entry_->InformOfRequest(/*succeeded*/ true);
+  backoff_entry_->InformOfRequest(/*succeeded=*/true);
   upload_client_request_in_progress_ = false;
 }
 

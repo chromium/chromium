@@ -111,62 +111,27 @@ class TestEncryptedReportingServiceProvider
       policy::CloudPolicyClient* cloud_policy_client,
       ReportSuccessfulUploadCallback report_successful_upload_cb,
       EncryptionKeyAttachedCallback encrypted_key_cb)
-      : cloud_policy_client_(cloud_policy_client),
+      : EncryptedReportingServiceProvider(base::BindRepeating(
+            [](policy::CloudPolicyClient* cloud_policy_client,
+               base::OnceCallback<void(
+                   reporting::StatusOr<policy::CloudPolicyClient*>)> callback) {
+              std::move(callback).Run(cloud_policy_client);
+            },
+            base::Unretained(cloud_policy_client))),
         report_successful_upload_cb_(std::move(report_successful_upload_cb)),
         encrypted_key_cb_(std::move(encrypted_key_cb)) {}
 
-  void Start(scoped_refptr<dbus::ExportedObject> exported_object) override {
-    exported_object_ = exported_object;
-
-    // base::Unretained is safe here because we keep a reference of
-    // exported_object, so it will stay alive until this object dies.
-    exported_object_->ExportMethod(
-        kChromeReportingServiceInterface,
-        kChromeReportingServiceUploadEncryptedRecordMethod,
-        base::BindRepeating(&TestEncryptedReportingServiceProvider::
-                                RequestUploadEncryptedRecord,
-                            base::Unretained(this)),
-        base::BindOnce(&TestEncryptedReportingServiceProvider::OnExported,
-                       base::Unretained(this)));
-
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&TestEncryptedReportingServiceProvider::
-                                      PostNewCloudPolicyClientRequest,
-                                  base::Unretained(this)));
-  }
-
  protected:
-  void PostNewCloudPolicyClientRequest() override {
-    DCHECK(cloud_policy_client_);
-    if (upload_client_ != nullptr) {
-      return;
-    }
-    if (upload_client_request_in_progress_) {
-      return;
-    }
-    upload_client_request_in_progress_ = true;
-
-    OnCloudPolicyClientResult(cloud_policy_client_);
-    backoff_entry_->InformOfRequest(/*succeeded=*/false);
-  }
-
-  void BuildUploadClient(policy::CloudPolicyClient* client) override {
-    base::OnceCallback<void(
-        reporting::StatusOr<std::unique_ptr<reporting::UploadClient>>)>
-        update_upload_client_cb = base::BindOnce(
-            &TestEncryptedReportingServiceProvider::OnUploadClientResult,
-            base::Unretained(this));
+  void BuildUploadClient(policy::CloudPolicyClient* client,
+                         reporting::UploadClient::CreatedCallback
+                             update_upload_client_cb) override {
     reporting::FakeUploadClient::Create(
         client, std::move(report_successful_upload_cb_),
         std::move(encrypted_key_cb_), std::move(update_upload_client_cb));
   }
 
-  policy::CloudPolicyClient* const cloud_policy_client_;
   ReportSuccessfulUploadCallback report_successful_upload_cb_;
   EncryptionKeyAttachedCallback encrypted_key_cb_;
-
- private:
-  scoped_refptr<dbus::ExportedObject> exported_object_;
 };
 
 class EncryptedReportingServiceProviderTest : public ::testing::Test {
@@ -203,9 +168,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     sequencing_information->set_priority(reporting::Priority::SLOW_BATCH);
   }
 
-  void TearDown() override {
-    test_helper_.TearDown();
-  }
+  void TearDown() override { test_helper_.TearDown(); }
 
   void SetupForRequestUploadEncryptedRecord() {
     test_helper_.SetUp(kChromeReportingServiceName,

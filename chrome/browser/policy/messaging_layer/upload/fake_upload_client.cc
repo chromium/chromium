@@ -91,8 +91,7 @@ void FakeUploadClient::Create(
     policy::CloudPolicyClient* cloud_policy_client,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
-        created_cb) {
+    CreatedCallback created_cb) {
   std::move(created_cb)
       .Run(base::WrapUnique<UploadClient>(new FakeUploadClient(
           cloud_policy_client, std::move(report_upload_success_cb),

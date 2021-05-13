@@ -21,16 +21,14 @@ void UploadClient::Create(
     policy::CloudPolicyClient* cloud_policy_client,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
-        created_cb) {
+    CreatedCallback created_cb) {
   auto upload_client = base::WrapUnique(new UploadClient());
   DmServerUploadService::Create(
       std::move(cloud_policy_client), report_upload_success_cb,
       encryption_key_attached_cb,
       base::BindOnce(
           [](std::unique_ptr<UploadClient> upload_client,
-             base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
-                 created_cb,
+             CreatedCallback created_cb,
              StatusOr<std::unique_ptr<DmServerUploadService>> uploader) {
             if (!uploader.ok()) {
               std::move(created_cb).Run(uploader.status());

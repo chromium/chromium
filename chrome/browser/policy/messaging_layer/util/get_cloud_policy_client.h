@@ -14,8 +14,10 @@ namespace reporting {
 using CloudPolicyClientResultCb =
     base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>;
 
-base::RepeatingCallback<void(CloudPolicyClientResultCb)>
-GetCloudPolicyClientCb();
+using GetCloudPolicyClientCallback =
+    base::RepeatingCallback<void(CloudPolicyClientResultCb)>;
+
+GetCloudPolicyClientCallback GetCloudPolicyClientCb();
 
 }  // namespace reporting
 #endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_GET_CLOUD_POLICY_CLIENT_H_
