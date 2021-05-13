@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
@@ -56,8 +57,11 @@ component("idle") {
     sources += [ "idle_fuchsia.cc" ]
   }
 
-  if (is_linux) {
+  if (is_chromecast) {
+    sources += [ "idle_stub.cc" ]
+  } else if (is_linux) {
     sources += [ "idle_linux.cc" ]
+    deps += [ "//dbus" ]
   }
 
   if (use_x11 && !is_chromeos_ash) {

@@ -251,18 +251,38 @@ void ObjectProxy::ConnectToSignal(const std::string& interface_name,
   if (bus_->HasDBusThread()) {
     base::PostTaskAndReplyWithResult(
         bus_->GetDBusTaskRunner(), FROM_HERE,
-        base::BindOnce(&ObjectProxy::ConnectToSignalInternal, this,
+        base::BindOnce(&ObjectProxy::ConnectToSignalAndBlock, this,
                        interface_name, signal_name, signal_callback),
         base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name));
   } else {
     // If the bus doesn't have a dedicated dbus thread we need to call
-    // ConnectToSignalInternal directly otherwise we might miss a signal
+    // ConnectToSignalAndBlock directly otherwise we might miss a signal
     // that is currently queued if we do a PostTask.
     const bool success =
-        ConnectToSignalInternal(interface_name, signal_name, signal_callback);
+        ConnectToSignalAndBlock(interface_name, signal_name, signal_callback);
     std::move(on_connected_callback).Run(interface_name, signal_name, success);
   }
+}
+
+bool ObjectProxy::ConnectToSignalAndBlock(const std::string& interface_name,
+                                          const std::string& signal_name,
+                                          SignalCallback signal_callback) {
+  bus_->AssertOnDBusThread();
+
+  if (!ConnectToNameOwnerChangedSignal())
+    return false;
+
+  const std::string absolute_signal_name =
+      GetAbsoluteMemberName(interface_name, signal_name);
+
+  // Add a match rule so the signal goes through HandleMessage().
+  const std::string match_rule = base::StringPrintf(
+      "type='signal', sender='%s', interface='%s', path='%s'",
+      service_name_.c_str(), interface_name.c_str(),
+      object_path_.value().c_str());
+  return AddMatchRuleWithCallback(match_rule, absolute_signal_name,
+                                  signal_callback);
 }
 
 void ObjectProxy::SetNameOwnerChangedCallback(
@@ -463,26 +483,6 @@ void ObjectProxy::TryConnectToNameOwnerChangedSignal() {
   LOG_IF(WARNING, !success)
       << "Failed to connect to NameOwnerChanged signal for object: "
       << object_path_.value();
-}
-
-bool ObjectProxy::ConnectToSignalInternal(const std::string& interface_name,
-                                          const std::string& signal_name,
-                                          SignalCallback signal_callback) {
-  bus_->AssertOnDBusThread();
-
-  if (!ConnectToNameOwnerChangedSignal())
-    return false;
-
-  const std::string absolute_signal_name =
-      GetAbsoluteMemberName(interface_name, signal_name);
-
-  // Add a match rule so the signal goes through HandleMessage().
-  const std::string match_rule = base::StringPrintf(
-      "type='signal', sender='%s', interface='%s', path='%s'",
-      service_name_.c_str(), interface_name.c_str(),
-      object_path_.value().c_str());
-  return AddMatchRuleWithCallback(match_rule, absolute_signal_name,
-                                  signal_callback);
 }
 
 void ObjectProxy::WaitForServiceToBeAvailableInternal() {
@@ -704,7 +704,7 @@ void ObjectProxy::UpdateNameOwnerAndBlock() {
   // Errors should be suppressed here, as the service may not be yet running
   // when connecting to signals of the service, which is just fine.
   // The ObjectProxy will be notified when the service is launched via
-  // NameOwnerChanged signal. See also comments in ConnectToSignalInternal().
+  // NameOwnerChanged signal. See also comments in ConnectToSignalAndBlock().
   service_name_owner_ =
       bus_->GetServiceOwnerAndBlock(service_name_, Bus::SUPPRESS_ERRORS);
 }
