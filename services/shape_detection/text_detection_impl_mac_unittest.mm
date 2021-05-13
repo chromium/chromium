@@ -67,8 +67,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   // Create a line of Helvetica 16 text, and draw it in the |context|.
   base::scoped_nsobject<NSFont> helvetica([NSFont fontWithName:@"Helvetica"
                                                           size:16]);
-  NSDictionary* attributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:helvetica, kCTFontAttributeName, nil];
+  NSDictionary* attributes = @{(id)kCTFontAttributeName : helvetica};
 
   base::scoped_nsobject<NSAttributedString> info([[NSAttributedString alloc]
       initWithString:@"https://www.chromium.org"

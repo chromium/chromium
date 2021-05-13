@@ -199,7 +199,7 @@ TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesErrored) {
   }
 
   std::unique_ptr<VisionAPIInterface> mock_vision_api =
-      CreateMockVisionAPI([NSArray array]);
+      CreateMockVisionAPI(@[]);
 
   provider_ = CreateBarcodeProviderMac(std::move(mock_vision_api));
   provider_->EnumerateSupportedFormats(base::BindOnce(

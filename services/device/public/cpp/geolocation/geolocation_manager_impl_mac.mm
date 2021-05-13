@@ -16,7 +16,8 @@
   base::WeakPtr<device::GeolocationManagerImpl> _manager;
 }
 
-- (id)initWithManager:(base::WeakPtr<device::GeolocationManagerImpl>)manager;
+- (instancetype)initWithManager:
+    (base::WeakPtr<device::GeolocationManagerImpl>)manager;
 
 // CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager*)manager
@@ -83,7 +84,8 @@ LocationSystemPermissionStatus GeolocationManagerImpl::GetSystemPermission()
 
 @implementation GeolocationManagerDelegate
 
-- (id)initWithManager:(base::WeakPtr<device::GeolocationManagerImpl>)manager {
+- (instancetype)initWithManager:
+    (base::WeakPtr<device::GeolocationManagerImpl>)manager {
   if (self = [super init]) {
     _permissionInitialized = NO;
     _hasPermission = NO;
