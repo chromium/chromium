@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
@@ -130,7 +131,14 @@ HelpAppResult::HelpAppResult(Profile* profile,
   SetPositionPriority(1.0f);
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kChip);
-  SetMetricsType(ash::HELP_APP);
+  // Some chips have different metrics types.
+  if (id == kHelpAppDiscoverResult) {
+    SetMetricsType(ash::HELP_APP_DISCOVER);
+  } else if (id == kHelpAppUpdatesResult) {
+    SetMetricsType(ash::HELP_APP_UPDATES);
+  } else {
+    SetMetricsType(ash::HELP_APP_DEFAULT);
+  }
   SetChipIcon(icon);
 }
 
@@ -150,7 +158,7 @@ HelpAppResult::HelpAppResult(
   SetTitleTags(CalculateTags(query, result->title));
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
-  SetMetricsType(ash::HELP_APP);
+  SetMetricsType(ash::HELP_APP_DEFAULT);
   SetIcon(icon);
   SetDetails(result->main_category);
 }

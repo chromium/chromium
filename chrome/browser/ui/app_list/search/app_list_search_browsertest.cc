@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -177,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   ChromeSearchResult* result = FindResult("help-app://discover");
   ASSERT_TRUE(result);
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Make your own game");
+  EXPECT_EQ(result->metrics_type(), ash::HELP_APP_DISCOVER);
 
   // Open the search result. This should open the help app at the expected url.
   size_t num_browsers = chrome::GetTotalBrowserCount();
@@ -218,6 +220,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "What's new with Chrome OS");
+  EXPECT_EQ(result->metrics_type(), ash::HELP_APP_UPDATES);
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
   EXPECT_EQ(result->display_type(), DisplayType::kChip);
