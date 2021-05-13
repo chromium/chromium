@@ -12,11 +12,9 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_mock_clock_override.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/storage_partition.h"
@@ -24,7 +22,6 @@
 #include "net/cookies/cookie_access_result.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 class SiteDataCountingHelperTest : public testing::Test {
  public:
@@ -76,34 +73,20 @@ class SiteDataCountingHelperTest : public testing::Test {
     run_loop.Run();
   }
 
-  // Creates local storage data with a last-modified time given by the return
-  // value of base::Time::Now().
-  void CreateLocalStorage(const std::vector<std::string>& storage_origins) {
-    storage::mojom::LocalStorageControl* local_storage_control =
-        profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
+  void CreateLocalStorage(
+      base::Time creation_time,
+      const std::vector<base::FilePath::StringPieceType>& storage_origins) {
+    // Note: This test depends on details of how the dom_storage library
+    // stores data in the host file system.
+    base::FilePath storage_path =
+        profile()->GetPath().AppendASCII("Local Storage");
+    base::CreateDirectory(storage_path);
 
-    for (const std::string& origin_str : storage_origins) {
-      url::Origin origin = url::Origin::Create(GURL(origin_str));
-      ASSERT_FALSE(origin.opaque());
-      mojo::Remote<blink::mojom::StorageArea> area;
-      local_storage_control->BindStorageArea(origin,
-                                             area.BindNewPipeAndPassReceiver());
-
-      bool success = false;
-      base::RunLoop put_run_loop;
-      area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, base::nullopt,
-                "source", base::BindLambdaForTesting([&](bool success_in) {
-                  success = success_in;
-                  put_run_loop.Quit();
-                }));
-      put_run_loop.Run();
-      ASSERT_TRUE(success);
-
-      // Flushing causes metadata to be written, so that the last-modified time
-      // is recorded now.
-      base::RunLoop flush_run_loop;
-      local_storage_control->Flush(flush_run_loop.QuitClosure());
-      flush_run_loop.Run();
+    // Write some files.
+    for (const auto& origin : storage_origins) {
+      base::WriteFile(storage_path.Append(origin), NULL, 0);
+      base::TouchFile(storage_path.Append(origin), creation_time,
+                      creation_time);
     }
   }
 
@@ -155,17 +138,14 @@ TEST_F(SiteDataCountingHelperTest, CountCookies) {
 }
 
 TEST_F(SiteDataCountingHelperTest, LocalStorage) {
-  // Override base::Time::Now() to set data "one day ago".
-  base::ScopedMockClockOverride clock_override;
-  CreateLocalStorage({"https://example.com"});
-  clock_override.Advance(base::TimeDelta::FromDays(1));
-
-  // Set more data "now".
-  CreateLocalStorage({"https://bing.com"});
-
   base::Time now = base::Time::Now();
   base::Time last_hour = now - base::TimeDelta::FromHours(1);
+  base::Time last_day = now - base::TimeDelta::FromDays(1);
   base::Time two_days_ago = now - base::TimeDelta::FromDays(2);
+  CreateLocalStorage(last_day,
+                     {FILE_PATH_LITERAL("https_example.com_443.localstorage")});
+  CreateLocalStorage(now,
+                     {FILE_PATH_LITERAL("https_bing.com_443.localstorage")});
 
   EXPECT_EQ(1, CountEntries(base::Time(), last_hour));
   EXPECT_EQ(1, CountEntries(last_hour, base::Time::Max()));
@@ -178,7 +158,9 @@ TEST_F(SiteDataCountingHelperTest, LocalStorage) {
 TEST_F(SiteDataCountingHelperTest, CookiesAndLocalStorage) {
   base::Time now = base::Time::Now();
   CreateCookies(now, {"http://example.com", "https://google.com"});
-  CreateLocalStorage({"https://example.com", "https://bing.com"});
+  CreateLocalStorage(now,
+                     {FILE_PATH_LITERAL("https_example.com_443.localstorage"),
+                      FILE_PATH_LITERAL("https_bing.com_443.localstorage")});
 
   EXPECT_EQ(3, CountEntries(base::Time(), base::Time::Max()));
 }
@@ -186,7 +168,9 @@ TEST_F(SiteDataCountingHelperTest, CookiesAndLocalStorage) {
 TEST_F(SiteDataCountingHelperTest, SameHostDifferentScheme) {
   base::Time now = base::Time::Now();
   CreateCookies(now, {"http://google.com", "https://google.com"});
-  CreateLocalStorage({"https://google.com", "http://google.com"});
+  CreateLocalStorage(now,
+                     {FILE_PATH_LITERAL("https_google.com_443.localstorage"),
+                      FILE_PATH_LITERAL("http_google.com_80.localstorage")});
 
   EXPECT_EQ(1, CountEntries(base::Time(), base::Time::Max()));
 }
