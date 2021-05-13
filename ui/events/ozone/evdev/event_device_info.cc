@@ -498,6 +498,15 @@ bool EventDeviceInfo::IsStylusButtonDevice() const {
   return false;
 }
 
+bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return HasSwEvent(SW_MUTE_DEVICE) && (device_type_ == INPUT_DEVICE_UNKNOWN ||
+                                        device_type_ == INPUT_DEVICE_INTERNAL);
+#else
+  return false;
+#endif
+}
+
 bool IsInKeyboardBlockList(input_id input_id_) {
   for (const auto& blocklist_id : kKeyboardBlocklist) {
     if (input_id_.vendor == blocklist_id.vendor &&

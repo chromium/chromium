@@ -4265,4 +4265,56 @@ TEST_P(CrasAudioHandlerTest, SuspendAllSessionsForInput) {
   ChangeAudioNodes(audio_nodes);
 }
 
+TEST_P(CrasAudioHandlerTest, MicrophoneMuteHwSwitchMutesInput) {
+  // Set up initial input audio devices, with internal mic and mic jack.
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate hw microphone mute switch toggle.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*muted=*/true);
+
+  // Verify the input is muted, OnInputMuteChanged event is fired.
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(1, test_observer_->input_mute_changed_count());
+
+  // Unmuting input while the hw mute switch is on should fail.
+  cras_audio_handler_->SetInputMute(false);
+
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(1, test_observer_->input_mute_changed_count());
+
+  // Verify the input is unmuted if the hw mute switch is toggled again.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*muted=*/false);
+  EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(2, test_observer_->input_mute_changed_count());
+}
+
+TEST_P(CrasAudioHandlerTest, MicrophoneMuteSwitchToggledBeforeHandlerSetup) {
+  // Simulate hw microphone mute switch toggle.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*muted=*/true);
+
+  // Set up initial input audio devices, with internal mic and mic jack.
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Verify the input is muted, OnInputMuteChanged event is fired.
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(0, test_observer_->input_mute_changed_count());
+
+  // Unmuting input while the hw mute switch is on should fail.
+  cras_audio_handler_->SetInputMute(false);
+
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(0, test_observer_->input_mute_changed_count());
+
+  // Verify the input is unmuted if the hw mute switch is toggled again.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*muted=*/false);
+  EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(1, test_observer_->input_mute_changed_count());
+}
+
 }  // namespace ash

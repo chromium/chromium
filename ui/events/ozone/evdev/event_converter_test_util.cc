@@ -62,6 +62,10 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
     event_factory_evdev_->DispatchTouchEvent(params);
   }
 
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {
+    event_factory_evdev_->DispatchMicrophoneMuteSwitchValueChanged(muted);
+  }
+
   void DispatchKeyboardDevicesUpdated(
       const std::vector<InputDevice>& devices) override {
     event_factory_evdev_->DispatchKeyboardDevicesUpdated(devices);

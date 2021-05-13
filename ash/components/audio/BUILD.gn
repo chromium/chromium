@@ -16,6 +16,7 @@ component("audio") {
     "//components/prefs",
     "//media/base:video_facing",
     "//services/media_session/public/mojom",
+    "//ui/events/devices",
   ]
   sources = [
     "audio_device.cc",

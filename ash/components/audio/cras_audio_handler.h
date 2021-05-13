@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/events/devices/microphone_mute_switch_monitor.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -48,6 +49,7 @@ using VoidCrasAudioHandlerCallback = base::OnceCallback<void(bool result)>;
 // browser main thread.
 class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
     : public chromeos::CrasAudioClient::Observer,
+      public ui::MicrophoneMuteSwitchMonitor::Observer,
       public AudioPrefObserver,
       public media::VideoCaptureObserver,
       public media_session::mojom::MediaControllerObserver {
@@ -163,6 +165,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
       const base::Optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
       const base::Optional<media_session::MediaPosition>& position) override;
+
+  // ui::MicrophoneMuteSwitchMonitor::Observer:
+  void OnMicrophoneMuteSwitchValueChanged(bool muted) override;
 
   // Adds an audio observer.
   void AddAudioObserver(AudioObserver* observer);

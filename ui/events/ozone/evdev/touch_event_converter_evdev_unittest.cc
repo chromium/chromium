@@ -159,6 +159,7 @@ class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
     generic.touch = params;
     callback_.Run(generic);
   }
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {}
 
   void DispatchKeyboardDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}

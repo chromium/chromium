@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
@@ -23,7 +24,9 @@
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/switches.h"
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 #include "ui/events/ozone/features.h"
@@ -128,6 +131,14 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
   if (devinfo.IsStylusButtonDevice()) {
     return base::WrapUnique<EventConverterEvdev>(
         new StylusButtonEventConverterEvdev(
+            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kEnableMicrophoneMuteSwitchDeviceSwitch) &&
+      devinfo.IsMicrophoneMuteSwitchDevice()) {
+    return base::WrapUnique<EventConverterEvdev>(
+        new MicrophoneMuteSwitchEventConverterEvdev(
             std::move(fd), params.path, params.id, devinfo, params.dispatcher));
   }
 

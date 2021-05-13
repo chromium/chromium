@@ -61,6 +61,13 @@ bool IsDeviceInList(const AudioDevice& device, const AudioNodeList& node_list) {
   return false;
 }
 
+// Gets the current state of the microphone mute switch. If the switch is on,
+// cras will be kept in the muted state. The switch disables the internal audio
+// input.
+bool IsMicrophoneMuteSwitchOn() {
+  return ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on();
+}
+
 }  // namespace
 
 CrasAudioHandler::AudioObserver::AudioObserver() = default;
@@ -313,6 +320,14 @@ void CrasAudioHandler::MediaSessionPositionChanged(
     return;
 
   CrasAudioClient::Get()->SetPlayerPosition(current_position);
+}
+
+void CrasAudioHandler::OnMicrophoneMuteSwitchValueChanged(bool muted) {
+  input_muted_by_microphone_mute_switch_ = muted;
+  SetInputMute(muted);
+
+  for (auto& observer : observers_)
+    observer.OnInputMutedByMicrophoneMuteSwitchChanged(muted);
 }
 
 void CrasAudioHandler::AddAudioObserver(AudioObserver* observer) {
@@ -641,9 +656,13 @@ void CrasAudioHandler::AdjustOutputVolumeToAudibleLevel() {
 }
 
 void CrasAudioHandler::SetInputMute(bool mute_on) {
+  const bool old_mute_on = input_mute_on_;
   SetInputMuteInternal(mute_on);
-  for (auto& observer : observers_)
-    observer.OnInputMuteChanged(input_mute_on_);
+
+  if (old_mute_on != input_mute_on_) {
+    for (auto& observer : observers_)
+      observer.OnInputMuteChanged(input_mute_on_);
+  }
 }
 
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
@@ -752,6 +771,8 @@ CrasAudioHandler::CrasAudioHandler(
   DCHECK(CrasAudioClient::Get());
   CrasAudioClient::Get()->AddObserver(this);
   audio_pref_handler_->AddAudioPrefObserver(this);
+  ui::MicrophoneMuteSwitchMonitor::Get()->AddObserver(this);
+
   BindMediaControllerObserver();
   InitializeAudioState();
   // Unittest may not have the task runner for the current thread.
@@ -767,6 +788,7 @@ CrasAudioHandler::~CrasAudioHandler() {
   DCHECK(CrasAudioClient::Get());
   CrasAudioClient::Get()->RemoveObserver(this);
   audio_pref_handler_->RemoveAudioPrefObserver(this);
+  ui::MicrophoneMuteSwitchMonitor::Get()->RemoveObserver(this);
 
   DCHECK(g_cras_audio_handler);
   g_cras_audio_handler = nullptr;
@@ -1039,6 +1061,10 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
         base::BindOnce(&CrasAudioHandler::HandleGetDeprioritizeBtWbsMic,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
+  if (input_muted_by_microphone_mute_switch_)
+    SetInputMute(true);
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
@@ -1114,6 +1140,13 @@ void CrasAudioHandler::SetInputNodeGainPercent(uint64_t node_id,
 }
 
 void CrasAudioHandler::SetInputMuteInternal(bool mute_on) {
+  // Do not allow unmuting the device if hardware microphone mute switch is on.
+  // The switch disables internal microphone, and cras audio handler is expected
+  // to keep system wide cras mute on while the switch is toggled (which should
+  // ensure non-internal audio input devices are kept muted).
+  if (!mute_on && input_muted_by_microphone_mute_switch_)
+    return;
+
   input_mute_on_ = mute_on;
   CrasAudioClient::Get()->SetInputMute(mute_on);
 }

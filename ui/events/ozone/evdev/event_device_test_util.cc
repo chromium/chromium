@@ -1068,6 +1068,27 @@ const DeviceCapabilities kDrallionStylus = {
     base::size(kDrallionStylusAxes),
 };
 
+const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.0/PRP0001:00/input/input3/event3",
+    /* name */ "PRP0001:00",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "4000",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.
@@ -1099,6 +1120,11 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   if (!ParseBitfield(capabilities.abs, ABS_CNT, &abs_bits))
     return false;
   devinfo->SetAbsEvents(&abs_bits[0], abs_bits.size());
+
+  std::vector<unsigned long> sw_bits;
+  if (!ParseBitfield(capabilities.sw, SW_CNT, &sw_bits))
+    return false;
+  devinfo->SetSwEvents(&sw_bits[0], sw_bits.size());
 
   std::vector<unsigned long> msc_bits;
   if (!ParseBitfield(capabilities.msc, MSC_CNT, &msc_bits))

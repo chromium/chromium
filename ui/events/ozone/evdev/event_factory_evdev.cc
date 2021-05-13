@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/microphone_mute_switch_monitor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -134,6 +135,14 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchStylusStateChanged,
                        event_factory_evdev_, stylus_state));
+  }
+
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {
+    ui_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged,
+            event_factory_evdev_, muted));
   }
 
   void DispatchGamepadDevicesUpdated(
@@ -431,6 +440,12 @@ void EventFactoryEvdev::DispatchStylusStateChanged(StylusState stylus_state) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchStylusStateChanged");
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnStylusStateChanged(stylus_state);
+}
+
+void EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged(bool muted) {
+  TRACE_EVENT0("evdev",
+               "EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged");
+  MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(muted);
 }
 
 void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(

@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
       const std::vector<InputDevice>& devices);
   void DispatchDeviceListsComplete();
   void DispatchStylusStateChanged(StylusState stylus_state);
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted);
 
   // Gamepad event and gamepad device event. These events are dispatched to
   // GamepadObserver through GamepadProviderOzone.

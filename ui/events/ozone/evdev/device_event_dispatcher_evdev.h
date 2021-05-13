@@ -192,6 +192,7 @@ class COMPONENT_EXPORT(EVDEV) DeviceEventDispatcherEvdev {
   virtual void DispatchScrollEvent(const ScrollEventParams& params) = 0;
   virtual void DispatchTouchEvent(const TouchEventParams& params) = 0;
   virtual void DispatchGamepadEvent(const GamepadEvent& event) = 0;
+  virtual void DispatchMicrophoneMuteSwitchValueChanged(bool muted) = 0;
 
   // Device lifecycle events.
   virtual void DispatchKeyboardDevicesUpdated(
