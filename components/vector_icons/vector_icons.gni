@@ -28,6 +28,8 @@ template("aggregate_vector_icons") {
       defined(invoker.icon_directory),
       "Need icon_directory in $target_name where the icons and templates live.")
 
+  public_deps = [ "//base" ]
+
   action(target_name) {
     visibility = [ ":*" ]
 
