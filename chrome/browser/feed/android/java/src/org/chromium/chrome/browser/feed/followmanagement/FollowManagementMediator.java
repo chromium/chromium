@@ -166,9 +166,12 @@ class FollowManagementMediator {
 
     // When we get the list of followed pages, add them to the recycler view.
     private void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
+        String updatesUnavailable =
+                mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
         for (WebFeedMetadata page : followedWebFeeds) {
             String title = page.title;
             GURL url = page.visitUrl;
+            String status = page.isActive ? "" : updatesUnavailable;
             byte[] id = page.id;
             boolean subscribed = false;
             int subscriptionStatus = page.subscriptionStatus;
@@ -180,7 +183,7 @@ class FollowManagementMediator {
             // TODO(187319361): Once the service is returning proper paths, instead of displaying
             // just the host of the URL, display everything in the URL except the scheme.
             PropertyModel pageModel =
-                    generateListItem(title, url.getHost(), subscribed, clickListener);
+                    generateListItem(title, url.getHost(), status, subscribed, clickListener);
             SimpleRecyclerViewAdapter.ListItem listItem = new SimpleRecyclerViewAdapter.ListItem(
                     FollowManagementItemProperties.DEFAULT_ITEM_TYPE, pageModel);
             mModelList.add(listItem);
@@ -197,11 +200,12 @@ class FollowManagementMediator {
     }
 
     // Generate a list item for the recycler vivew for a followed page.
-    private PropertyModel generateListItem(
-            String title, String url, boolean subscribed, OnClickListener clickListener) {
+    private PropertyModel generateListItem(String title, String url, String status,
+            boolean subscribed, OnClickListener clickListener) {
         return new PropertyModel.Builder(FollowManagementItemProperties.ALL_KEYS)
                 .with(FollowManagementItemProperties.TITLE_KEY, title)
                 .with(FollowManagementItemProperties.URL_KEY, url)
+                .with(FollowManagementItemProperties.STATUS_KEY, status)
                 .with(FollowManagementItemProperties.ON_CLICK_KEY, clickListener)
                 .with(FollowManagementItemProperties.SUBSCRIBED_KEY, subscribed)
                 .build();

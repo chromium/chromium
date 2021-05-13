@@ -20,6 +20,8 @@ public class FollowManagementItemProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> URL_KEY =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> STATUS_KEY =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<OnClickListener> ON_CLICK_KEY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> SUBSCRIBED_KEY =
@@ -30,5 +32,5 @@ public class FollowManagementItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-            TITLE_KEY, URL_KEY, ON_CLICK_KEY, SUBSCRIBED_KEY, ID_KEY, FAVICON_KEY};
+            TITLE_KEY, URL_KEY, STATUS_KEY, ON_CLICK_KEY, SUBSCRIBED_KEY, ID_KEY, FAVICON_KEY};
 }

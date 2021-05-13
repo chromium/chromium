@@ -19,6 +19,8 @@ class FollowManagementItemViewBinder {
             view.setTitle(model.get(FollowManagementItemProperties.TITLE_KEY));
         } else if (FollowManagementItemProperties.URL_KEY == propertyKey) {
             view.setUrl(model.get(FollowManagementItemProperties.URL_KEY));
+        } else if (FollowManagementItemProperties.STATUS_KEY == propertyKey) {
+            view.setStatus(model.get(FollowManagementItemProperties.STATUS_KEY));
         } else if (FollowManagementItemProperties.ON_CLICK_KEY == propertyKey) {
             // Set the click handler on the checkbox, and only the checkbox.  We will assume
             // in the mediator that the view is a checkbox when the click event arrives.

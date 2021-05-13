@@ -36,8 +36,16 @@ found in the LICENSE file.
             android:id="@+id/follow_management_item_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:layout_below="@id/follow_management_item_text" />
+
+        <TextView
+            android:id="@+id/follow_management_item_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:layout_marginBottom="2dp"
+            android:layout_below="@id/follow_management_item_url" />
 
     </RelativeLayout>
 
