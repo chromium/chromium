@@ -829,6 +829,8 @@
       'linux-archive-rel',
       'mac-archive-dbg',
       'mac-archive-rel',
+      'mac-arm64-archive-dbg',
+      'mac-arm64-archive-rel',
     ],
   },
   'chrome_all_tast_tests': {
