@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/material_web_components/build_mwc_app.gni")
+
+assert(is_chromeos, "Sample System Web App is Chrome OS only")
+assert(!is_official_build,
+       "Sample System Web App is only built for unofficial builds")
+
+build_mwc_app("component_playground") {
+  host = "sample-system-web-app"
+  input = rebase_path(".", root_build_dir)
+  js_module_in_files = [ "component_playground.js" ]
+  js_out_files = [ "component_playground.rollup.js" ]
+  out_manifest = "$target_gen_dir/build_manifest.json"
+  deps = []
+}

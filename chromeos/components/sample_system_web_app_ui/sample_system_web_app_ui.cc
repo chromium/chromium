@@ -35,6 +35,12 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
                                   IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_WORKER_JS);
   trusted_source->AddResourcePath("timer.js",
                                   IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_TIMER_JS);
+  trusted_source->AddResourcePath(
+      "component_playground.html",
+      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_COMPONENT_PLAYGROUND_HTML);
+  trusted_source->AddResourcePath(
+      "component_playground.rollup.js",
+      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_COMPONENT_PLAYGROUND_ROLLUP_JS);
 
   // TODO(https://crbug/1169829): Don't simply disable trusted types. Do the
   // right thing.
@@ -57,6 +63,9 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       std::string("frame-src ") + kChromeUIUntrustedSampleSystemWebAppURL + ";";
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
+  trusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types lit-html;");
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, trusted_source.release());
 
