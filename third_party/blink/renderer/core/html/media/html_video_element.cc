@@ -555,6 +555,12 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
                                          video_renderer, dest_rect);
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
+
+  // TODO(crbug.com/1204867): The returned |image| is somehow coupled with the
+  // CanvasResourceProvider in ways that make passing |image| across threads
+  // problematic so long as the provider is still alive.
+  resource_provider_.reset();
+
   return image;
 }
 
