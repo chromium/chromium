@@ -23,49 +23,47 @@
 
 namespace ash {
 
-class LockScreenActionBackgroundView::NoteBackground
-    : public views::InkDropHostView {
+class LockScreenActionBackgroundView::NoteBackground : public views::View {
  public:
   explicit NoteBackground(views::InkDropObserver* observer)
       : observer_(observer) {
     DCHECK(observer);
-    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-
-    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+    ink_drop_.SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+    ink_drop_.SetCreateInkDropCallback(base::BindRepeating(
         [](NoteBackground* host) {
           std::unique_ptr<views::InkDrop> ink_drop =
               views::InkDrop::CreateInkDropWithoutAutoHighlight(
-                  host->ink_drop(), /*highlight_on_hover=*/false);
+                  &host->ink_drop_, /*highlight_on_hover=*/false);
           ink_drop->AddObserver(host->observer_);
           return ink_drop;
         },
         this));
-    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+    ink_drop_.SetCreateRippleCallback(base::BindRepeating(
+        [](NoteBackground* host) -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = base::i18n::IsRTL()
                                         ? host->GetLocalBounds().origin()
                                         : host->GetLocalBounds().top_right();
           auto ink_drop_ripple =
               std::make_unique<views::FloodFillInkDropRipple>(
                   host->size(), gfx::Insets(), center,
-                  host->ink_drop()->GetBaseColor(), 1);
+                  host->ink_drop_.GetBaseColor(), 1);
           ink_drop_ripple->set_use_hide_transform_duration_for_hide_fade_out(
               true);
           ink_drop_ripple->set_duration_factor(1.5);
           return ink_drop_ripple;
         },
         this));
-
-    // TODO(pbos): See if this is a no-op when replaced with
-    // ink_drop()->SetBaseColor(), i.e. that nothing sets it later.
-    ink_drop()->SetBaseColorCallback(
-        base::BindRepeating([]() { return SK_ColorBLACK; }));
+    ink_drop_.SetBaseColor(SK_ColorBLACK);
   }
 
   ~NoteBackground() override = default;
 
+  views::InkDropHost* ink_drop() { return &ink_drop_; }
+
  private:
   views::InkDropObserver* observer_;
+
+  views::InkDropHost ink_drop_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NoteBackground);
 };

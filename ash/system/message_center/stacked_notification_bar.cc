@@ -55,7 +55,7 @@ class StackingBarLabelButton : public views::LabelButton {
     // ConfigureTrayPopupButton configures the InkDrop and these callbacks
     // override that behavior.
     ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
-        [](InkDropHostView* host) {
+        [](Button* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
               gfx::SizeF(host->size()), message_center_style::kInkRippleColor);
           highlight->set_visible_opacity(
@@ -64,7 +64,7 @@ class StackingBarLabelButton : public views::LabelButton {
         },
         this));
     ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(),
               host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),

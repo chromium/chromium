@@ -55,7 +55,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
     ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
     ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
-        [](InkDropHostView* host) {
+        [](Button* host) {
           return TrayPopupUtils::CreateInkDrop(host,
                                                /*highlight_on_hover=*/true);
         },

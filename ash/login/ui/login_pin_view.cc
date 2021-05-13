@@ -84,7 +84,7 @@ int GetViewIdForPinNumber(int number) {
 }
 
 // A base class for pin button in the pin keyboard.
-class BasePinButton : public views::InkDropHostView {
+class BasePinButton : public views::View {
  public:
   BasePinButton(const LoginPalette& palette,
                 const gfx::Size& size,
@@ -143,16 +143,15 @@ class BasePinButton : public views::InkDropHostView {
     palette_ = palette;
   }
 
-  // views::InkDropHostView:
-  void OnPaint(gfx::Canvas* canvas) override {
-    InkDropHostView::OnPaint(canvas);
-  }
+  views::InkDropHost* ink_drop() { return &ink_drop_; }
+
+  // views::View:
   void OnFocus() override {
-    InkDropHostView::OnFocus();
+    View::OnFocus();
     SchedulePaint();
   }
   void OnBlur() override {
-    InkDropHostView::OnBlur();
+    View::OnBlur();
     SchedulePaint();
   }
   void OnEvent(ui::Event* event) override {
@@ -167,7 +166,7 @@ class BasePinButton : public views::InkDropHostView {
       return;
     }
 
-    views::InkDropHostView::OnEvent(event);
+    views::View::OnEvent(event);
   }
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(accessible_name_);
@@ -195,6 +194,8 @@ class BasePinButton : public views::InkDropHostView {
   LoginPalette palette_;
 
  private:
+  views::InkDropHost ink_drop_{this};
+
   const std::u16string accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(BasePinButton);

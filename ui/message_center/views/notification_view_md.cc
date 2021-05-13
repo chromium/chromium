@@ -43,6 +43,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -357,9 +358,9 @@ NotificationInputContainerMD::NotificationInputContainerMD(
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  ink_drop()->SetVisibleOpacity(1);
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
+  ink_drop_.SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  ink_drop_.SetVisibleOpacity(1);
+  ink_drop_.SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) {
         return host->GetNativeTheme()->GetSystemColor(
             ui::NativeTheme::kColorId_NotificationInkDropBase);
@@ -387,9 +388,8 @@ NotificationInputContainerMD::~NotificationInputContainerMD() = default;
 void NotificationInputContainerMD::AnimateBackground(const ui::Event& event) {
   std::unique_ptr<ui::Event> located_event =
       ConvertToBoundedLocatedEvent(event, this);
-  ink_drop()->AnimateToState(
-      views::InkDropState::ACTION_PENDING,
-      ui::LocatedEvent::FromIfValid(located_event.get()));
+  ink_drop_.AnimateToState(views::InkDropState::ACTION_PENDING,
+                           ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationInputContainerMD::AddLayerBeneathView(ui::Layer* layer) {
@@ -411,7 +411,7 @@ void NotificationInputContainerMD::RemoveLayerBeneathView(ui::Layer* layer) {
 }
 
 void NotificationInputContainerMD::OnThemeChanged() {
-  InkDropHostView::OnThemeChanged();
+  View::OnThemeChanged();
   auto* theme = GetNativeTheme();
   SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationActionsRowBackground)));
@@ -424,7 +424,7 @@ void NotificationInputContainerMD::OnThemeChanged() {
 }
 
 void NotificationInputContainerMD::Layout() {
-  views::InkDropHostView::Layout();
+  View::Layout();
   // The animation is needed to run inside of the border.
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
@@ -488,9 +488,9 @@ class InlineSettingsRadioButton : public views::RadioButton {
 
 class NotificationInkDropImpl : public views::InkDropImpl {
  public:
-  NotificationInkDropImpl(views::InkDropHostView* ink_drop_host,
+  NotificationInkDropImpl(views::InkDropHost* ink_drop_host,
                           const gfx::Size& host_size)
-      : views::InkDropImpl(ink_drop_host->ink_drop(), host_size) {
+      : views::InkDropImpl(ink_drop_host, host_size) {
     SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
   }
 
@@ -568,14 +568,15 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  ink_drop()->SetVisibleOpacity(1.0f);
-  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
-      [](InkDropHostView* host) -> std::unique_ptr<views::InkDrop> {
-        return std::make_unique<NotificationInkDropImpl>(host, host->size());
+  ink_drop_.SetVisibleOpacity(1.0f);
+  ink_drop_.SetCreateInkDropCallback(base::BindRepeating(
+      [](NotificationViewMD* host) -> std::unique_ptr<views::InkDrop> {
+        return std::make_unique<NotificationInkDropImpl>(host->ink_drop(),
+                                                         host->size());
       },
       this));
-  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+  ink_drop_.SetCreateRippleCallback(base::BindRepeating(
+      [](NotificationViewMD* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->GetPreferredSize(),
             host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
@@ -583,8 +584,8 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
             host->ink_drop()->GetVisibleOpacity());
       },
       this));
-  ink_drop()->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) {
+  ink_drop_.SetBaseColorCallback(base::BindRepeating(
+      [](NotificationViewMD* host) {
         return host->GetNativeTheme()->GetSystemColor(
             ui::NativeTheme::kColorId_NotificationBackgroundActive);
       },
@@ -675,7 +676,7 @@ NotificationViewMD::~NotificationViewMD() {
 }
 
 void NotificationViewMD::AddLayerBeneathView(ui::Layer* layer) {
-  ink_drop()->GetInkDrop()->AddObserver(this);
+  ink_drop_.GetInkDrop()->AddObserver(this);
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();
     child->layer()->SetFillsBoundsOpaquely(false);
@@ -687,7 +688,7 @@ void NotificationViewMD::RemoveLayerBeneathView(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerBeneathView(layer);
   for (auto* child : GetChildrenForLayerAdjustment())
     child->DestroyLayer();
-  ink_drop()->GetInkDrop()->RemoveObserver(this);
+  ink_drop_.GetInkDrop()->RemoveObserver(this);
 }
 
 void NotificationViewMD::Layout() {
@@ -1477,17 +1478,16 @@ void NotificationViewMD::Activate() {
 }
 
 void NotificationViewMD::AddBackgroundAnimation(const ui::Event& event) {
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  ink_drop_.SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   std::unique_ptr<ui::Event> located_event =
       ConvertToBoundedLocatedEvent(event, this);
-  ink_drop()->AnimateToState(
-      views::InkDropState::ACTION_PENDING,
-      ui::LocatedEvent::FromIfValid(located_event.get()));
+  ink_drop_.AnimateToState(views::InkDropState::ACTION_PENDING,
+                           ui::LocatedEvent::FromIfValid(located_event.get()));
 }
 
 void NotificationViewMD::RemoveBackgroundAnimation() {
-  ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
-  ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr);
+  ink_drop_.SetMode(views::InkDropHost::InkDropMode::OFF);
+  ink_drop_.AnimateToState(views::InkDropState::HIDDEN, nullptr);
 }
 
 std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()

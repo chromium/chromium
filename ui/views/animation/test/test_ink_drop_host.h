@@ -12,9 +12,9 @@
 
 namespace views {
 
-// A non-functional implementation of an InkDropHost that can be used during
-// tests.  Tracks the number of hosted ink drop layers.
-class TestInkDropHost : public InkDropHostView {
+// A non-functional implementation of an View with an ink drop that can be used
+// during tests.  Tracks the number of hosted ink drop layers.
+class TestInkDropHost : public View {
  public:
   TestInkDropHost();
   ~TestInkDropHost() override;
@@ -42,11 +42,15 @@ class TestInkDropHost : public InkDropHostView {
     disable_timers_for_test_ = disable_timers_for_test;
   }
 
-  // InkDropHostView:
+  InkDropHost* ink_drop() { return &ink_drop_; }
+
+  // View:
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
 
  private:
+  InkDropHost ink_drop_{this};
+
   int num_ink_drop_layers_added_ = 0;
   int num_ink_drop_layers_removed_ = 0;
 

@@ -331,7 +331,7 @@ void MessageView::AddedToWidget() {
 }
 
 void MessageView::OnThemeChanged() {
-  InkDropHostView::OnThemeChanged();
+  View::OnThemeChanged();
   UpdateBackgroundPainter();
 }
 

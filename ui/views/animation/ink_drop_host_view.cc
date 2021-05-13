@@ -312,10 +312,4 @@ void InkDropHost::InstallInkDropMask(ui::Layer* ink_drop_layer) {
   ink_drop_layer->SetMaskLayer(ink_drop_mask_->layer());
 }
 
-InkDropHostView::InkDropHostView() = default;
-InkDropHostView::~InkDropHostView() = default;
-
-BEGIN_METADATA(InkDropHostView, View)
-END_METADATA
-
 }  // namespace views

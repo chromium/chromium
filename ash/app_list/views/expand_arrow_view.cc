@@ -147,7 +147,7 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
   views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
   ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+      [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         const AppListColorProvider* color_provider =
             AppListColorProvider::Get();
         return std::make_unique<views::FloodFillInkDropRipple>(

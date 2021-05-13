@@ -31,7 +31,7 @@ LoginButton::LoginButton(PressedCallback callback)
   ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
-      [](InkDropHostView* host) {
+      [](Button* host) {
         return std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()), kInkDropHighlightColor);
       },

@@ -60,7 +60,7 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
   views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
   ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
-      [](InkDropHostView* host) {
+      [](Button* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
         highlight->set_visible_opacity(kInkDropHighlightOpacity);
@@ -68,7 +68,7 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
       },
       this));
   ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+      [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), gfx::Insets(kInkDropInset),
             host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),

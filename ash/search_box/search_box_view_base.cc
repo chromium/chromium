@@ -97,7 +97,7 @@ class SearchBoxImageButton : public views::ImageButton {
     // InkDropState will reset after clicking.
     SetHasInkDropActionOnClick(true);
     ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
-        [](InkDropHostView* host) {
+        [](Button* host) {
           constexpr SkColor ripple_color =
               SkColorSetA(gfx::kGoogleGrey900, 0x12);
           auto highlight = std::make_unique<views::InkDropHighlight>(

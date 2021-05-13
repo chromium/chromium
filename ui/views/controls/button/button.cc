@@ -437,7 +437,7 @@ void Button::OnMouseCaptureLost() {
     SetState(STATE_NORMAL);
   ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr /* event */);
   ink_drop()->GetInkDrop()->SetHovered(false);
-  InkDropHostView::OnMouseCaptureLost();
+  View::OnMouseCaptureLost();
 }
 
 void Button::OnMouseEntered(const ui::MouseEvent& event) {
@@ -494,7 +494,7 @@ void Button::ShowContextMenu(const gfx::Point& p,
     ink_drop()->GetInkDrop()->SetHovered(false);
     ink_drop()->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
   }
-  InkDropHostView::ShowContextMenu(p, source_type);
+  View::ShowContextMenu(p, source_type);
 }
 
 void Button::OnDragDone() {
@@ -506,7 +506,7 @@ void Button::OnDragDone() {
 }
 
 void Button::OnPaint(gfx::Canvas* canvas) {
-  InkDropHostView::OnPaint(canvas);
+  View::OnPaint(canvas);
   PaintButtonContents(canvas);
   Painter::PaintFocusPainter(this, canvas, focus_painter_.get());
 }
@@ -539,7 +539,7 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void Button::VisibilityChanged(View* starting_from, bool visible) {
-  InkDropHostView::VisibilityChanged(starting_from, visible);
+  View::VisibilityChanged(starting_from, visible);
   if (state_ == STATE_DISABLED)
     return;
   SetState(visible && ShouldEnterHoveredState() ? STATE_HOVERED : STATE_NORMAL);
@@ -548,17 +548,17 @@ void Button::VisibilityChanged(View* starting_from, bool visible) {
 void Button::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
   if (!details.is_add && state_ != STATE_DISABLED && details.child == this)
     SetState(STATE_NORMAL);
-  InkDropHostView::ViewHierarchyChanged(details);
+  View::ViewHierarchyChanged(details);
 }
 
 void Button::OnFocus() {
-  InkDropHostView::OnFocus();
+  View::OnFocus();
   if (focus_painter_)
     SchedulePaint();
 }
 
 void Button::OnBlur() {
-  InkDropHostView::OnBlur();
+  View::OnBlur();
   if (IsHotTracked() || state_ == STATE_PRESSED) {
     SetState(STATE_NORMAL);
     if (ink_drop()->GetInkDrop()->GetTargetInkDropState() !=
@@ -690,7 +690,7 @@ void Button::OnEnabledChanged() {
   }
 }
 
-BEGIN_METADATA(Button, InkDropHostView)
+BEGIN_METADATA(Button, View)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)

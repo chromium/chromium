@@ -32,11 +32,11 @@ namespace views {
 namespace test {
 using InkDropMode = InkDropHostTestApi::InkDropMode;
 
-class TestInkDropHostView : public InkDropHostView {
+class TestViewWithInkDrop : public View {
  public:
-  TestInkDropHostView() {
+  TestViewWithInkDrop() {
     ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
-        [](TestInkDropHostView* host) -> std::unique_ptr<InkDrop> {
+        [](TestViewWithInkDrop* host) -> std::unique_ptr<InkDrop> {
           auto ink_drop = std::make_unique<TestInkDrop>();
           host->last_created_inkdrop_ = ink_drop.get();
           return ink_drop;
@@ -45,28 +45,32 @@ class TestInkDropHostView : public InkDropHostView {
     ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
   }
 
-  // Accessors to InkDropHostView internals.
-  ui::EventHandler* GetTargetHandler() { return target_handler(); }
+  TestViewWithInkDrop(const TestViewWithInkDrop&) = delete;
+  TestViewWithInkDrop& operator=(const TestViewWithInkDrop&) = delete;
 
-  int on_ink_drop_created_count() const { return on_ink_drop_created_count_; }
+  // Expose EventTarget::target_handler() for testing.
+  ui::EventHandler* GetTargetHandler() { return target_handler(); }
 
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
 
- private:
-  int on_ink_drop_created_count_ = 0;
-  TestInkDrop* last_created_inkdrop_ = nullptr;
+  InkDropHost* ink_drop() { return &ink_drop_; }
 
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropHostView);
+ private:
+  InkDropHost ink_drop_{this};
+
+  TestInkDrop* last_created_inkdrop_ = nullptr;
 };
 
 class InkDropHostViewTest : public testing::Test {
  public:
   InkDropHostViewTest();
+  InkDropHostViewTest(const InkDropHostViewTest&) = delete;
+  InkDropHostViewTest& operator=(const InkDropHostViewTest&) = delete;
   ~InkDropHostViewTest() override;
 
  protected:
   // Test target.
-  TestInkDropHostView host_view_;
+  TestViewWithInkDrop host_view_;
 
   // Provides internal access to |host_view_| test target.
   InkDropHostTestApi test_api_;
@@ -75,9 +79,6 @@ class InkDropHostViewTest : public testing::Test {
       animation_mode_reset_;
 
   void MouseEventTriggersInkDropHelper(InkDropMode ink_drop_mode);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropHostViewTest);
 };
 
 InkDropHostViewTest::InkDropHostViewTest()
@@ -280,16 +281,22 @@ TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
   EXPECT_TRUE(callback_called);
 }
 
-// A very basic InkDropHostView that only calls SetBaseColor to avoid
-// hitting a NOTREACHED.
-class BasicTestInkDropHostView : public InkDropHostView {
+// A very basic View that hosts an InkDrop.
+class BasicTestViewWithInkDrop : public View {
  public:
-  BasicTestInkDropHostView() {
+  BasicTestViewWithInkDrop() {
+    // Call SetBaseColor to avoid hitting a NOTREACHED() for fetching an
+    // undefined color.
     ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
   }
-  BasicTestInkDropHostView(const BasicTestInkDropHostView&) = delete;
-  BasicTestInkDropHostView& operator=(const BasicTestInkDropHostView&) = delete;
-  ~BasicTestInkDropHostView() override = default;
+  BasicTestViewWithInkDrop(const BasicTestViewWithInkDrop&) = delete;
+  BasicTestViewWithInkDrop& operator=(const BasicTestViewWithInkDrop&) = delete;
+  ~BasicTestViewWithInkDrop() override = default;
+
+  InkDropHost* ink_drop() { return &ink_drop_; }
+
+ private:
+  InkDropHost ink_drop_{this};
 };
 
 // Tests the existence of layer clipping or layer masking when certain path
@@ -316,7 +323,7 @@ class InkDropHostViewClippingTest : public testing::Test {
 
  protected:
   // Test target.
-  BasicTestInkDropHostView host_view_;
+  BasicTestViewWithInkDrop host_view_;
 
   // Provides internal access to |host_view_| test target.
   InkDropHostTestApi host_view_test_api_;

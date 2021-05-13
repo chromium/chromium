@@ -94,22 +94,15 @@ void AssistantOnboardingSuggestionView::ChildPreferredSizeChanged(
 }
 
 void AssistantOnboardingSuggestionView::AddLayerBeneathView(ui::Layer* layer) {
-  // This method is called by InkDropHostView, a base class of Button, to add
-  // ink drop layers beneath |this| view. Unfortunately, this will cause ink
-  // drop layers to also paint below our background and, because our background
-  // is opaque, they will not be visible to the user. To work around this, we
-  // instead add ink drop layers beneath |ink_drop_container_| which *will*
-  // paint above our background.
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
   ink_drop_container_->AddLayerBeneathView(layer);
 }
 
 void AssistantOnboardingSuggestionView::RemoveLayerBeneathView(
     ui::Layer* layer) {
-  // This method is called by InkDropHostView, a base class of Button, to remove
-  // ink drop layers beneath |this| view. Because we instead added ink drop
-  // layers beneath |ink_drop_container_| to work around paint ordering issues,
-  // we inversely need to remove ink drop layers from |ink_drop_container_|
-  // here. See also comments in AddLayerBeneathView().
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
   ink_drop_container_->RemoveLayerBeneathView(layer);
 }
 
@@ -146,12 +139,8 @@ void AssistantOnboardingSuggestionView::InitLayout(
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kCornerRadiusDip);
 
-  // By default, InkDropHostView, a base class of Button, will add ink drop
-  // layers beneath |this| view. Unfortunately, this will cause ink drop layers
-  // to paint below our background and, because our background is opaque, they
-  // will not be visible to the user. To work around this, we will instead be
-  // adding/removing ink drop layers as necessary to/from |ink_drop_container_|
-  // which *will* paint above our background.
+  // This is used as a parent for ink-drop effects to prevent painting them
+  // below the background for `this`.
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
 

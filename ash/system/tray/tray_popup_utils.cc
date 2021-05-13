@@ -287,7 +287,7 @@ views::Separator* TrayPopupUtils::CreateVerticalSeparator() {
 }
 
 std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
-    views::InkDropHostView* host,
+    views::Button* host,
     bool highlight_on_hover,
     bool highlight_on_focus) {
   return views::InkDrop::CreateInkDropForFloodFillRipple(
@@ -296,7 +296,7 @@ std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
 
 std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
     TrayPopupInkDropStyle ink_drop_style,
-    const views::InkDropHostView* host) {
+    const views::Button* host) {
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
   return std::make_unique<views::FloodFillInkDropRipple>(

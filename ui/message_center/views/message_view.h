@@ -19,7 +19,6 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/controls/focus_ring.h"
@@ -42,12 +41,8 @@ class NotificationControlButtonsView;
 
 // An base class for a notification entry. Contains background and other
 // elements shared by derived notification views.
-// TODO(pkasting): This class only subclasses InkDropHostView because the
-// NotificationViewMD subclass needs ink drop functionality.  Rework ink drops
-// to not need to be the base class of views which use them, and move the
-// functionality to the subclass that uses these.
 class MESSAGE_CENTER_EXPORT MessageView
-    : public views::InkDropHostView,
+    : public views::View,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
@@ -117,7 +112,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-  // views::InkDropHostView:
+  // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

@@ -68,7 +68,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
   views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
   ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-      [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+      [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
         const int ripple_radius = host->width() / 2;
         const gfx::Rect bounds(center.x() - ripple_radius,

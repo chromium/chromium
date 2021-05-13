@@ -102,13 +102,6 @@ TEST_F(InstallableInkDropTest, HighlightStates) {
   EXPECT_FALSE(ink_drop.IsHighlightFadingInOrVisible());
 }
 
-TEST_F(InstallableInkDropTest, InstallOnHostView) {
-  InkDropHostView host_view;
-  InstallableInkDrop ink_drop(&host_view);
-
-  EXPECT_TRUE(ink_drop.SupportsGestureEvents());
-}
-
 TEST_F(InstallableInkDropTest, Paint) {
   std::unique_ptr<Widget> widget = CreateTestWidget();
   View* root_view = widget->SetContentsView(own_root_view());

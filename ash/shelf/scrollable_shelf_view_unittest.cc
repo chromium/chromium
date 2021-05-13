@@ -613,8 +613,7 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyActivateIconRippleOnVerySmallDisplay) {
   UpdateDisplay("60x601");
 
   // Activate a shelf icon's ink drop. Verify that no crash happens.
-  views::InkDropHostView* icon = test_api_->GetButton(0);
-  auto* ink_drop = icon->ink_drop()->GetInkDrop();
+  auto* ink_drop = test_api_->GetButton(0)->ink_drop()->GetInkDrop();
   ink_drop->SnapToActivated();
   EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 }

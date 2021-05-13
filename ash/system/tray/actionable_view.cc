@@ -35,8 +35,7 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
   ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
-      [](InkDropHostView* host) { return TrayPopupUtils::CreateInkDrop(host); },
-      this));
+      [](Button* host) { return TrayPopupUtils::CreateInkDrop(host); }, this));
   ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
   ink_drop()->SetCreateRippleCallback(base::BindRepeating(

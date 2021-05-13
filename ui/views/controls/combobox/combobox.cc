@@ -71,7 +71,7 @@ class TransparentButton : public Button {
     InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                        /*highlight_on_hover=*/false);
     ink_drop()->SetCreateRippleCallback(base::BindRepeating(
-        [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
+        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(),
               host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),

@@ -278,34 +278,6 @@ class VIEWS_EXPORT InkDropHost {
   base::RepeatingClosureList highlighted_changed_callbacks_;
 };
 
-// A view that provides InkDropHost functionality.
-// TODO(crbug.com/931964): Remove this type and have child classes create their
-// own ink_drop() implementations. See Button::focus_ring() for instance.
-class VIEWS_EXPORT InkDropHostView : public View {
- public:
-  METADATA_HEADER(InkDropHostView);
-  InkDropHostView();
-  InkDropHostView(const InkDropHostView&) = delete;
-  InkDropHostView& operator=(const InkDropHostView&) = delete;
-  ~InkDropHostView() override;
-
-  // Note that this is called ink_drop() to have most call sites interact with
-  // this as `ink_drop()`. The type for InkDropHost should instead be renamed.
-
-  // TODO(pbos): Consider having "InkDrop" be the public interface for these
-  // effects and have ink_drop() return that.
-  InkDropHost* ink_drop() { return ink_drop_.get(); }
-  const InkDropHost* ink_drop() const { return ink_drop_.get(); }
-
- private:
-  std::unique_ptr<InkDropHost> ink_drop_{std::make_unique<InkDropHost>(this)};
-};
-
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView, View)
-END_VIEW_BUILDER
-
 }  // namespace views
-
-DEFINE_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView)
 
 #endif  // UI_VIEWS_ANIMATION_INK_DROP_HOST_VIEW_H_

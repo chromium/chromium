@@ -116,7 +116,7 @@ class NotificationInputDelegate {
   virtual ~NotificationInputDelegate() = default;
 };
 
-class NotificationInputContainerMD : public views::InkDropHostView,
+class NotificationInputContainerMD : public views::View,
                                      public views::TextfieldController {
  public:
   explicit NotificationInputContainerMD(NotificationInputDelegate* delegate);
@@ -124,7 +124,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
 
   void AnimateBackground(const ui::Event& event);
 
-  // views::InkDropHostView:
+  // views::View:
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
   void OnThemeChanged() override;
@@ -143,6 +143,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
 
   NotificationInputDelegate* const delegate_;
 
+  views::InkDropHost ink_drop_{this};
   views::InkDropContainerView* const ink_drop_container_;
 
   views::Textfield* const textfield_;
@@ -178,6 +179,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   void AddBackgroundAnimation(const ui::Event& event);
   void RemoveBackgroundAnimation();
+
+  views::InkDropHost* ink_drop() { return &ink_drop_; }
 
   // MessageView:
   void AddLayerBeneathView(ui::Layer* layer) override;
@@ -283,6 +286,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   // destroyed when the ink drop is visible.
   std::vector<views::View*> GetChildrenForLayerAdjustment() const;
 
+  views::InkDropHost ink_drop_{this};
   views::InkDropContainerView* const ink_drop_container_;
 
   // View containing close and settings buttons

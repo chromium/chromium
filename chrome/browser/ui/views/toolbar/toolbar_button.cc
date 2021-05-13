@@ -166,7 +166,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
     installable_ink_drop_ = std::make_unique<views::InstallableInkDrop>(this);
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
     ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
-        [](InkDropHostView* host) -> std::unique_ptr<views::InkDrop> {
+        [](Button* host) -> std::unique_ptr<views::InkDrop> {
           // Ensure this doesn't get called when InstallableInkDrops are
           // enabled.
           DCHECK(

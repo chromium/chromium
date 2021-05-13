@@ -20,7 +20,6 @@ class ImageView;
 class InkDrop;
 class InkDropRipple;
 class InkDropHighlight;
-class InkDropHostView;
 class Label;
 class LabelButton;
 class Painter;
@@ -162,7 +161,7 @@ class TrayPopupUtils {
   // All targetable views in the system menu should delegate
   // InkDropHost::CreateInkDrop() calls here.
   static std::unique_ptr<views::InkDrop> CreateInkDrop(
-      views::InkDropHostView* host,
+      views::Button* host,
       bool highlight_on_hover = false,
       bool highlight_on_focus = false);
 
@@ -173,7 +172,7 @@ class TrayPopupUtils {
   // InkDropHost::CreateInkDropRipple() calls here.
   static std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
       TrayPopupInkDropStyle ink_drop_style,
-      const views::InkDropHostView* host);
+      const views::Button* host);
 
   // Creates in InkDropHighlight instance for |host|.
   //
