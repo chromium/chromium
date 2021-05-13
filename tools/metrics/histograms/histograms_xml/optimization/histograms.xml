@@ -337,6 +337,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.ModelExecutor.RunCount.{OptimizationTarget}"
     units="count" expires_after="M94">
+  <obsolete>
+    Removed 2021-May.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

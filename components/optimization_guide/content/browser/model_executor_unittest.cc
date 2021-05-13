@@ -230,13 +230,6 @@ TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       0);
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.RunCount." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-      0, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -297,13 +290,6 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       true, 1);
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.RunCount." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-      1, 1);
 }
 
 TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
@@ -373,14 +359,6 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       1);
-
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.RunCount." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-      2, 1);
 }
 
 TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {

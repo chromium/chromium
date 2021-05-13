@@ -87,11 +87,6 @@ class ModelExecutor {
   ModelExecutor() = default;
   virtual ~ModelExecutor() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.ModelExecutor.RunCount." +
-            GetStringNameForOptimizationTarget(optimization_target_),
-        run_count_);
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
@@ -154,7 +149,6 @@ class ModelExecutor {
       return;
     }
 
-    run_count_++;
     if (last_execution_time_) {
       // The max of this histogram is 3m since only the distribution and count
       // of smaller values is important.
@@ -252,10 +246,6 @@ class ModelExecutor {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
-
-  // Incremented every time the model is run and logged in metrics on
-  // destruction.
-  size_t run_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // The time that the model was last executed. Logged in metrics for the second
   // and following runs.
