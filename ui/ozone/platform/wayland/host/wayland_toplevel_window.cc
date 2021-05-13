@@ -218,7 +218,7 @@ std::string WaylandToplevelWindow::GetWindowUniqueId() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return window_unique_id_;
 #else
-  return std::string();
+  return wm_class_class_;
 #endif
 }
 

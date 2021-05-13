@@ -2611,7 +2611,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   auto* mock_xdg_toplevel = mock_surface->xdg_surface()->xdg_toplevel();
 
   // Only app id must be set now.
-  EXPECT_EQ(std::string(kAppId), mock_xdg_toplevel->app_id());
+  EXPECT_EQ(window->GetWindowUniqueId(), mock_xdg_toplevel->app_id());
   EXPECT_TRUE(mock_xdg_toplevel->title().empty());
   EXPECT_TRUE(mock_xdg_toplevel->min_size().IsEmpty());
   EXPECT_TRUE(mock_xdg_toplevel->max_size().IsEmpty());
@@ -2653,7 +2653,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   // restore them on Show().
   EXPECT_EQ(mock_xdg_toplevel->min_size(), min_size.value());
   EXPECT_EQ(mock_xdg_toplevel->max_size(), max_size.value());
-  EXPECT_EQ(std::string(kAppId), mock_xdg_toplevel->app_id());
+  EXPECT_EQ(window->GetWindowUniqueId(), mock_xdg_toplevel->app_id());
   EXPECT_EQ(mock_xdg_toplevel->title(), base::UTF16ToUTF8(kTitle));
 }
 
