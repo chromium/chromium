@@ -2240,10 +2240,6 @@ const char kSharingPreferVapidName[] =
 const char kSharingPreferVapidDescription[] =
     "Prefer sending Sharing message via FCM WebPush authenticated using VAPID.";
 
-const char kSharingQRCodeGeneratorName[] = "Enable sharing page via QR Code";
-const char kSharingQRCodeGeneratorDescription[] =
-    "Enables right-click UI to share the page's URL via a generated QR Code.";
-
 const char kSharingSendViaSyncName[] =
     "Enable sending Sharing message via Sync";
 const char kSharingSendViaSyncDescription[] =

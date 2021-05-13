@@ -18,16 +18,11 @@ class QRCodeGeneratorBubbleControllerTest : public testing::Test {
 
   ~QRCodeGeneratorBubbleControllerTest() override = default;
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleControllerTest);
 };
 
 TEST_F(QRCodeGeneratorBubbleControllerTest, AllowedURLs) {
-  scoped_feature_list_.InitAndEnableFeature(kSharingQRCodeGenerator);
-
   // Allow valid http/https URLs.
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
       GURL("http://www.example.com")));
@@ -48,18 +43,6 @@ TEST_F(QRCodeGeneratorBubbleControllerTest, AllowedURLs) {
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("")));
   ASSERT_FALSE(
       QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("NotAURL")));
-}
-
-TEST_F(QRCodeGeneratorBubbleControllerTest, UnavailableWithFeatureOff) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingQRCodeGenerator);
-
-  // Normally-available URLs should not be allowed when the feature is off.
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com")));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com")));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc")));
 }
 
 }  // namespace qrcode_generator

@@ -290,12 +290,10 @@ void QRCodeGeneratorBubble::Init() {
   column_set_bottom_error_label->AddColumn(
       views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  // User-facing limit rounded down for readability.
-  int max_url_length = base::GetFieldTrialParamByFeatureAsInt(
-      kSharingQRCodeGenerator, "max_url_length", 250);
+  // User-facing limit rounded down to 250 characters for readability.
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(
-          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, max_url_length),
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, 250),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);

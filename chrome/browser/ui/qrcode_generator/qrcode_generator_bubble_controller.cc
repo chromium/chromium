@@ -21,9 +21,6 @@ QRCodeGeneratorBubbleController::~QRCodeGeneratorBubbleController() {
 
 // static
 bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(kSharingQRCodeGenerator))
-    return false;
-
   if (!url.SchemeIsHTTPOrHTTPS())
     return false;
 

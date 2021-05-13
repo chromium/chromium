@@ -4731,11 +4731,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "sharing-qr-code-generator",
-    "owners": [ "//components/send_tab_to_self/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "sharing-send-via-sync",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 86
