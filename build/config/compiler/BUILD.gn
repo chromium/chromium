@@ -1623,10 +1623,6 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/1050281): Clean up, enable.
           "-Wno-non-c-typedef-for-linkage",
-
-          # TODO(https://crbug.com/1208419): Possibly reenable if the warning
-          # becomes usable again upstream.
-          "-Wno-null-pointer-arithmetic",
         ]
 
         cflags_c += [
