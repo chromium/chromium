@@ -116,6 +116,11 @@ class UILockControllerTest : public test::ExoTestBase {
     return BuildSurface(gfx::Point(0, 0), w, h);
   }
 
+  views::Widget* GetEscNotification(SurfaceTriplet* surface) {
+    return seat_->GetUILockControllerForTesting()->GetEscNotificationForTesting(
+        surface->GetTopLevelWindow());
+  }
+
   bool IsExitPopupVisible(aura::Window* window) {
     FullscreenControlPopup* popup =
         seat_->GetUILockControllerForTesting()->GetExitPopupForTesting(window);
@@ -290,103 +295,104 @@ TEST_F(UILockControllerTest, HoldingEscapeDoesNotMinimizeIfWindowed) {
   EXPECT_FALSE(window_state->IsMinimized());
 }
 
-TEST_F(UILockControllerTest, FullScreenShowsBubble) {
+TEST_F(UILockControllerTest, FullScreenShowsEscNotification) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
 
   EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 }
 
-TEST_F(UILockControllerTest, BubbleClosesAfterDuration) {
+TEST_F(UILockControllerTest, EscNotificationClosesAfterDuration) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
 
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface.GetTopLevelWindow()));
+  EXPECT_FALSE(GetEscNotification(&test_surface));
 }
 
-TEST_F(UILockControllerTest, HoldingEscapeHidesBubble) {
+TEST_F(UILockControllerTest, HoldingEscapeHidesNotification) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
 
   EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
 
   EXPECT_FALSE(test_surface.GetTopLevelWindowState()->IsFullscreen());
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface.GetTopLevelWindow()));
+  EXPECT_FALSE(GetEscNotification(&test_surface));
 }
 
-TEST_F(UILockControllerTest, LosingFullscreenHidesBubble) {
+TEST_F(UILockControllerTest, LosingFullscreenHidesNotification) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
 
   EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 
-  // Have surface loose fullscreen, bubble should now be hidden.
+  // Have surface loose fullscreen, notification should now be hidden.
   test_surface.shell_surface->Minimize();
   test_surface.shell_surface->SetFullscreen(false);
   test_surface.surface->Commit();
 
   EXPECT_FALSE(test_surface.GetTopLevelWindowState()->IsFullscreen());
   EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      seat_->GetUILockControllerForTesting()->GetEscNotificationForTesting(
           test_surface.GetTopLevelWindow()));
 }
 
-TEST_F(UILockControllerTest, BubbleIsReshown) {
+TEST_F(UILockControllerTest, EscNotificationIsReshown) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
 
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 
   // Stop fullscreen.
   test_surface.shell_surface->SetFullscreen(false);
   EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      seat_->GetUILockControllerForTesting()->GetEscNotificationForTesting(
           test_surface.GetTopLevelWindow()));
 
-  // Fullscreen should show bubble since it did not stay visible for duration.
+  // Fullscreen should show notification since it did not stay visible for
+  // duration.
   test_surface.shell_surface->SetFullscreen(true);
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 
-  // After duration, bubble should be removed.
+  // After duration, notification should be removed.
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface.GetTopLevelWindow()));
+  EXPECT_FALSE(GetEscNotification(&test_surface));
 
-  // Bubble is not shown after fullscreen toggle.
+  // Notification is shown after fullscreen toggle.
   test_surface.shell_surface->SetFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
+}
+
+TEST_F(UILockControllerTest, EscNotificationShowsOnSecondaryDisplay) {
+  // Create surface on secondary display.
+  UpdateDisplay("800x800,600x600");
+  SurfaceTriplet test_surface = BuildSurface(gfx::Point(900, 100), 200, 200);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  // Esc notification should be in secondary display.
+  views::Widget* esc_notification = GetEscNotification(&test_surface);
+  EXPECT_TRUE(GetSecondaryDisplay().bounds().Contains(
+      esc_notification->GetWindowBoundsInScreen()));
 }
 
 TEST_F(UILockControllerTest, ExitPopup) {
@@ -398,18 +404,16 @@ TEST_F(UILockControllerTest, ExitPopup) {
   EXPECT_TRUE(window_state->IsFullscreen());
   aura::Window* window = test_surface.GetTopLevelWindow();
   EXPECT_FALSE(IsExitPopupVisible(window));
-  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-      test_surface.GetTopLevelWindow()));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
 
-  // Move mouse above y=3 should not show exit popup while bubble is visible.
+  // Move mouse above y=3 should not show exit popup while notification is
+  // visible.
   GetEventGenerator()->MoveMouseTo(0, 2);
   EXPECT_FALSE(IsExitPopupVisible(window));
 
-  // Wait for bubble to close, now exit popup should show.
+  // Wait for notification to close, now exit popup should show.
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface.GetTopLevelWindow()));
+  EXPECT_FALSE(GetEscNotification(&test_surface));
   GetEventGenerator()->MoveMouseTo(1, 2);
   EXPECT_TRUE(IsExitPopupVisible(window));
 
@@ -466,11 +470,9 @@ TEST_F(UILockControllerTest, OnlyShowWhenActive) {
   test_surface2.surface->Commit();
 
   // Surface2 is active when we make Surface1 fullscreen.
-  // Esc notify bubble, and exit popup should not be shown.
+  // Esc notification, and exit popup should not be shown.
   test_surface1.shell_surface->SetFullscreen(true);
-  EXPECT_FALSE(
-      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
-          test_surface1.GetTopLevelWindow()));
+  EXPECT_FALSE(GetEscNotification(&test_surface1));
   GetEventGenerator()->MoveMouseTo(0, 2);
   EXPECT_FALSE(IsExitPopupVisible(test_surface1.GetTopLevelWindow()));
 }

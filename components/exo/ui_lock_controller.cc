@@ -32,9 +32,9 @@
 
 namespace {
 
-// The Esc hold bubble shows a message to press and hold Esc to exit fullscreen.
-// The bubble will hide after a 4s timeout and will not display again for that
-// window even if it toggles fullscreen.
+// The Esc hold notification shows a message to press and hold Esc to exit
+// fullscreen. It will hide after a 4s timeout but shows again each time the
+// window goes to fullscreen.
 //
 // The exit popup is a circle with an 'X' close icon which exits fullscreen when
 // the user clicks it.
@@ -45,10 +45,10 @@ namespace {
 // * After hiding, there is a cooldown where it will not display again until the
 //   mouse moves below 150px.
 
-// Duration to show the 'Press and hold Esc' bubble.
-constexpr auto kEscNotifyBubbleDuration = base::TimeDelta::FromSeconds(4);
-// Position of Esc notify bubble from top of screen.
-const int kEscNotifyBubbleTopPx = 45;
+// Duration to show the 'Press and hold Esc' notification.
+constexpr auto kEscNotificationDuration = base::TimeDelta::FromSeconds(4);
+// Position of Esc notification from top of screen.
+const int kEscNotificationTopPx = 45;
 // Duration to show the exit 'X' popup.
 constexpr auto kExitPopupDuration = base::TimeDelta::FromSeconds(3);
 // Display the exit popup if mouse is above this height.
@@ -56,8 +56,8 @@ constexpr float kExitPopupDisplayHeight = 3.f;
 // Hide the exit popup if mouse is below this height.
 constexpr float kExitPopupHideHeight = 150.f;
 
-// Create and position Esc notify bubble.
-views::Widget* CreateEscNotifyBubble(aura::Window* parent) {
+// Create and position Esc notification.
+views::Widget* CreateEscNotification(aura::Window* parent) {
   auto content_view = std::make_unique<SubtleNotificationView>();
   std::u16string accelerator = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
   content_view->UpdateContent(l10n_util::GetStringFUTF16(
@@ -66,8 +66,11 @@ views::Widget* CreateEscNotifyBubble(aura::Window* parent) {
   views::Widget* popup = SubtleNotificationView::CreatePopupWidget(
       parent, std::move(content_view));
   popup->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);
-  int x = (parent->bounds().width() - size.width()) / 2;
-  popup->SetBounds(gfx::Rect(gfx::Point(x, kEscNotifyBubbleTopPx), size));
+  gfx::Rect bounds = parent->GetBoundsInScreen();
+  int y = bounds.y() + kEscNotificationTopPx;
+  bounds.ClampToCenteredSize(size);
+  bounds.set_y(y);
+  popup->SetBounds(bounds);
   return popup;
 }
 
@@ -96,7 +99,7 @@ class EscHoldNotifier : public ui::EventHandler,
 
   ~EscHoldNotifier() override { CloseAll(); }
 
-  views::Widget* esc_notify_bubble() { return esc_notify_bubble_; }
+  views::Widget* esc_notification() { return esc_notification_; }
 
   FullscreenControlPopup* exit_popup() { return exit_popup_.get(); }
 
@@ -106,10 +109,10 @@ class EscHoldNotifier : public ui::EventHandler,
     gfx::PointF point = event->location_f();
     aura::Window::ConvertPointToTarget(
         static_cast<aura::Window*>(event->target()), window_, &point);
-    if (!esc_notify_bubble_ && !exit_popup_cooldown_ &&
+    if (!esc_notification_ && !exit_popup_cooldown_ &&
         window_ == exo::WMHelper::GetInstance()->GetActiveWindow() &&
         point.y() <= kExitPopupDisplayHeight) {
-      // Show exit popup if mouse is above 3px, unless esc notify bubble is
+      // Show exit popup if mouse is above 3px, unless esc notification is
       // visible, or during cooldown (popup shown and mouse still at top).
       if (!exit_popup_) {
         exit_popup_ = std::make_unique<FullscreenControlPopup>(
@@ -151,22 +154,19 @@ class EscHoldNotifier : public ui::EventHandler,
       is_handling_events_ = true;
     }
 
-    // Only show Esc notify bubble once per window when window is active.
-    if (esc_notify_bubble_shown_ ||
-        window_ != exo::WMHelper::GetInstance()->GetActiveWindow()) {
+    // Only show Esc notification when window is active.
+    if (window_ != exo::WMHelper::GetInstance()->GetActiveWindow())
       return;
-    }
 
-    if (!esc_notify_bubble_)
-      esc_notify_bubble_ = CreateEscNotifyBubble(window_);
-    esc_notify_bubble_->Show();
+    if (!esc_notification_)
+      esc_notification_ = CreateEscNotification(window_);
+    esc_notification_->Show();
 
-    // Close Esc notify bubble after 4s.
-    esc_notify_bubble_timer_.Start(
-        FROM_HERE, kEscNotifyBubbleDuration,
-        base::BindOnce(&EscHoldNotifier::CloseEscNotifyBubble,
-                       base::Unretained(this),
-                       /*closed_by_timer=*/true));
+    // Close Esc notification after 4s.
+    esc_notification_timer_.Start(
+        FROM_HERE, kEscNotificationDuration,
+        base::BindOnce(&EscHoldNotifier::CloseEscNotification,
+                       base::Unretained(this)));
   }
 
   void CloseAll() {
@@ -174,20 +174,16 @@ class EscHoldNotifier : public ui::EventHandler,
       window_->RemovePreTargetHandler(this);
       is_handling_events_ = false;
     }
-    CloseEscNotifyBubble();
+    CloseEscNotification();
     HideExitPopup();
   }
 
-  void CloseEscNotifyBubble(bool closed_by_timer = false) {
-    if (esc_notify_bubble_) {
-      esc_notify_bubble_->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
-      esc_notify_bubble_ = nullptr;
-      // Esc notify bubble is not reshown after it is closed by the timer.
-      if (closed_by_timer) {
-        esc_notify_bubble_shown_ = true;
-      }
-    }
+  void CloseEscNotification() {
+    if (!esc_notification_)
+      return;
+    esc_notification_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    esc_notification_ = nullptr;
   }
 
   void HideExitPopup(bool animate = false) {
@@ -196,12 +192,11 @@ class EscHoldNotifier : public ui::EventHandler,
   }
 
   aura::Window* window_;
-  views::Widget* esc_notify_bubble_ = nullptr;
+  views::Widget* esc_notification_ = nullptr;
   std::unique_ptr<FullscreenControlPopup> exit_popup_;
   bool is_handling_events_ = false;
-  bool esc_notify_bubble_shown_ = false;
   bool exit_popup_cooldown_ = false;
-  base::OneShotTimer esc_notify_bubble_timer_;
+  base::OneShotTimer esc_notification_timer_;
   base::OneShotTimer exit_popup_timer_;
   base::ScopedObservation<ash::WindowState, ash::WindowStateObserver>
       window_state_observation_{this};
@@ -273,8 +268,9 @@ void UILockController::OnSurfaceFocused(Surface* gained_focus) {
   window->SetProperty(kEscHoldNotifierKey, new EscHoldNotifier(window));
 }
 
-bool UILockController::IsBubbleVisibleForTesting(aura::Window* window) {
-  return window->GetProperty(kEscHoldNotifierKey)->esc_notify_bubble();
+views::Widget* UILockController::GetEscNotificationForTesting(
+    aura::Window* window) {
+  return window->GetProperty(kEscHoldNotifierKey)->esc_notification();
 }
 
 FullscreenControlPopup* UILockController::GetExitPopupForTesting(
