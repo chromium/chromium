@@ -182,8 +182,7 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
     if (pixmap.colorSpace()) {
       if (!pixmap.colorSpace()->isSRGB()) {
         auto skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
-        srgb_skia_image =
-            srgb_skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
+        srgb_skia_image = skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
         if (!srgb_skia_image->peekPixels(&pixmap))
           return "data:,";
         MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
