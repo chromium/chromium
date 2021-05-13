@@ -45,6 +45,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -227,19 +228,19 @@ void AppendYuvToFile(const base::FilePath& path,
       &header, "FRAME W%d H%d\n",
       frame->coded_size().width(),
       frame->coded_size().height());
-  AppendToFile(path, header.data(), header.size());
+  AppendToFile(path, header);
   AppendToFile(path,
-      reinterpret_cast<char*>(frame->data(media::VideoFrame::kYPlane)),
-      frame->stride(media::VideoFrame::kYPlane) *
-          frame->rows(media::VideoFrame::kYPlane));
+               base::make_span(frame->data(media::VideoFrame::kYPlane),
+                               frame->stride(media::VideoFrame::kYPlane) *
+                                   frame->rows(media::VideoFrame::kYPlane)));
   AppendToFile(path,
-      reinterpret_cast<char*>(frame->data(media::VideoFrame::kUPlane)),
-      frame->stride(media::VideoFrame::kUPlane) *
-          frame->rows(media::VideoFrame::kUPlane));
+               base::make_span(frame->data(media::VideoFrame::kUPlane),
+                               frame->stride(media::VideoFrame::kUPlane) *
+                                   frame->rows(media::VideoFrame::kUPlane)));
   AppendToFile(path,
-      reinterpret_cast<char*>(frame->data(media::VideoFrame::kVPlane)),
-      frame->stride(media::VideoFrame::kVPlane) *
-          frame->rows(media::VideoFrame::kVPlane));
+               base::make_span(frame->data(media::VideoFrame::kVPlane),
+                               frame->stride(media::VideoFrame::kVPlane) *
+                                   frame->rows(media::VideoFrame::kVPlane)));
 }
 
 // A container to save output of GotVideoFrame() for computation based
@@ -451,7 +452,7 @@ void RunSimulation(const base::FilePath& source_path,
 
     // Write YUV4MPEG2 header.
     const std::string header("YUV4MPEG2 W1280 H720 F30000:1001 Ip A1:1 C420\n");
-    AppendToFile(yuv_output_path, header.data(), header.size());
+    AppendToFile(yuv_output_path, header);
   }
 
   // Start sending.

@@ -85,8 +85,7 @@ class CertificateWatcherTest : public testing::Test {
     base::FilePath path = temp_dir_.GetPath().AppendASCII(filename);
 
     if (base::PathExists(path)) {
-      EXPECT_TRUE(base::AppendToFile(path, testWriteString.c_str(),
-                                     testWriteString.length()));
+      EXPECT_TRUE(base::AppendToFile(path, testWriteString));
     } else {
       EXPECT_EQ(static_cast<int>(testWriteString.length()),
                 base::WriteFile(path, testWriteString.c_str(),

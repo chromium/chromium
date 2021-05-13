@@ -233,8 +233,7 @@ TEST_F(ContentHashFetcherTest, MissingVerifiedContentsAndCorrupt) {
   // Tamper with a file in the extension.
   base::FilePath script_path = extension_root().AppendASCII("script.js");
   std::string addition = "//hello world";
-  ASSERT_TRUE(
-      base::AppendToFile(script_path, addition.c_str(), addition.size()));
+  ASSERT_TRUE(base::AppendToFile(script_path, addition));
 
   RegisterInterception(fetch_url(), GetResourcePath("verified_contents.json"));
 

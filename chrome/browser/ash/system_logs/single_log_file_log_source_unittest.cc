@@ -71,8 +71,7 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
   }
   bool AppendToFile(const base::FilePath& relative_path,
                     const std::string& input) {
-    return base::AppendToFile(log_dir_.GetPath().Append(relative_path),
-                              input.data(), input.size());
+    return base::AppendToFile(log_dir_.GetPath().Append(relative_path), input);
   }
 
   // Moves source file to destination path, then creates an empty file at the

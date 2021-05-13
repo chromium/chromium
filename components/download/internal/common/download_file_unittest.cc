@@ -239,7 +239,8 @@ class DownloadFileTest : public testing::Test {
       int data_len = strlen(kTestData1);
       while (len > 0) {
         int bytes_to_write = len > data_len ? data_len : len;
-        base::AppendToFile(save_info->file_path, kTestData1, bytes_to_write);
+        base::AppendToFile(save_info->file_path,
+                           base::StringPiece(kTestData1, bytes_to_write));
         len -= bytes_to_write;
       }
     }

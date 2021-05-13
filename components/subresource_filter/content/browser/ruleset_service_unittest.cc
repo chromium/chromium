@@ -876,9 +876,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   mock_publisher()->RunBestEffortUntilIdle();
 
   const std::string kGarbage(10000, '\xff');
-  ASSERT_TRUE(base::AppendToFile(test_ruleset_1().unindexed.path,
-                                 kGarbage.data(),
-                                 static_cast<int>(kGarbage.size())));
+  ASSERT_TRUE(base::AppendToFile(test_ruleset_1().unindexed.path, kGarbage));
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
 

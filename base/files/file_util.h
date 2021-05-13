@@ -471,11 +471,14 @@ BASE_EXPORT bool WriteFileDescriptor(const int fd, const char* data, int size);
 BASE_EXPORT bool AllocateFileRegion(File* file, int64_t offset, size_t size);
 #endif
 
-// Appends |data| to |filename|.  Returns true iff |size| bytes of |data| were
-// written to |filename|.
+// Appends |data| to |filename|.  Returns true iff |data| were written to
+// |filename|.
 BASE_EXPORT bool AppendToFile(const FilePath& filename,
-                              const char* data,
-                              int size);
+                              span<const uint8_t> data);
+
+// AppendToFile() variant that takes a StringPiece so callers don't have to do
+// manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool AppendToFile(const FilePath& filename, StringPiece data);
 
 // Gets the current working directory for the process.
 BASE_EXPORT bool GetCurrentDirectory(FilePath* path);

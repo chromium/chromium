@@ -168,12 +168,9 @@ class WebRtcRtpDumpWriter::FileWorker {
     int bytes_written = -1;
 
     if (base::PathExists(dump_path_)) {
-      bytes_written =
-          base::AppendToFile(dump_path_, reinterpret_cast<const char*>(
-                                             compressed_buffer.data()),
-                             compressed_buffer.size())
-              ? compressed_buffer.size()
-              : -1;
+      bytes_written = base::AppendToFile(dump_path_, compressed_buffer)
+                          ? compressed_buffer.size()
+                          : -1;
     } else {
       bytes_written = base::WriteFile(
           dump_path_,
@@ -238,9 +235,7 @@ class WebRtcRtpDumpWriter::FileWorker {
     memset(&stream_, 0, sizeof(z_stream));
 
     DCHECK(!output_buffer.empty());
-    return base::AppendToFile(
-        dump_path_, reinterpret_cast<const char*>(output_buffer.data()),
-        output_buffer.size());
+    return base::AppendToFile(dump_path_, output_buffer);
   }
 
   const base::FilePath dump_path_;

@@ -166,7 +166,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     std::string extra = "some_extra_function_call();";
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::AppendToFile(scriptfile, extra.data(), extra.size()));
+      ASSERT_TRUE(base::AppendToFile(scriptfile, extra));
     }
     DisableExtension(id);
     job_observer.ExpectJobResult(id, script_relfilepath, Result::FAILURE);
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, VerificationFailureOnNavigate) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath real_path = extension->path().Append(kResource);
     std::string extra = "some_extra_function_call();";
-    ASSERT_TRUE(base::AppendToFile(real_path, extra.data(), extra.size()));
+    ASSERT_TRUE(base::AppendToFile(real_path, extra));
   }
 
   GURL page_url = extension->GetResourceURL("page.html");
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TamperLargeSizedResource) {
     base::FilePath real_path = extension->path().AppendASCII(kResource);
     ASSERT_TRUE(base::PathExists(real_path));
     std::string extra = "some_extra_function_call();";
-    ASSERT_TRUE(base::AppendToFile(real_path, extra.data(), extra.size()));
+    ASSERT_TRUE(base::AppendToFile(real_path, extra));
   }
 
   NavigateToResourceAndExpectExtensionDisabled(

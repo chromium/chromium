@@ -604,8 +604,7 @@ TEST_F(NetExportFileWriterTest, StartClearsFile) {
 
   // Add some junk at the end of the file.
   std::string junk_data("Hello");
-  EXPECT_TRUE(base::AppendToFile(default_log_path(), junk_data.c_str(),
-                                 junk_data.size()));
+  EXPECT_TRUE(base::AppendToFile(default_log_path(), junk_data));
 
   int64_t junk_file_size;
   EXPECT_TRUE(base::GetFileSize(default_log_path(), &junk_file_size));

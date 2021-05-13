@@ -399,13 +399,9 @@ DWORD CopyDataChunkToLocalFile(IStream* stream,
   if (FAILED(hr))
     return 0U;
   DCHECK_GT(bytes_read, 0U);
-  CHECK_LE(bytes_read, buffer.length());
-  int data_len =
-      base::checked_cast<int>(
-          std::min(bytes_read,
-                   base::checked_cast<DWORD>(buffer.length())));
-  return base::AppendToFile(local_path, buffer.c_str(), data_len) ? data_len
-                                                                  : 0;
+  CHECK_LE(bytes_read, buffer.size());
+  buffer.resize(bytes_read);
+  return base::AppendToFile(local_path, buffer) ? buffer.size() : 0;
 }
 
 std::wstring GetObjectIdFromName(IPortableDevice* device,

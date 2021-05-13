@@ -136,7 +136,7 @@ void WriteToFile(const base::FilePath& path, const std::string& content) {
 void AppendToFile(const base::FilePath& path, const std::string& content) {
   DCHECK(!path.empty());
 
-  base::AppendToFile(path, content.c_str(), content.size());
+  base::AppendToFile(path, content);
 }
 
 storage::IsolatedContext* isolated_context() {

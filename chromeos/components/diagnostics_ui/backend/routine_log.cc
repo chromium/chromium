@@ -100,7 +100,7 @@ std::string RoutineLog::GetContents() const {
 }
 
 void RoutineLog::AppendToLog(const std::string& content) {
-  base::AppendToFile(routine_log_file_path_, content.data(), content.size());
+  base::AppendToFile(routine_log_file_path_, content);
 }
 
 void RoutineLog::CreateFile() {

@@ -3048,9 +3048,9 @@ TEST_F(FileUtilTest, AppendToFile) {
   FilePath foobar(data_dir.Append(FILE_PATH_LITERAL("foobar.txt")));
 
   std::string data("hello");
-  EXPECT_FALSE(AppendToFile(foobar, data.c_str(), data.size()));
+  EXPECT_FALSE(AppendToFile(foobar, data));
   EXPECT_TRUE(WriteFile(foobar, data));
-  EXPECT_TRUE(AppendToFile(foobar, data.c_str(), data.size()));
+  EXPECT_TRUE(AppendToFile(foobar, data));
 
   const std::wstring read_content = ReadTextFile(foobar);
   EXPECT_EQ(L"hellohello", read_content);

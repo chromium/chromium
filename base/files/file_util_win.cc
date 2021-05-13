@@ -953,18 +953,25 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
   return -1;
 }
 
-bool AppendToFile(const FilePath& filename, const char* data, int size) {
+bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
+  return AppendToFile(
+      filename,
+      StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
+}
+
+bool AppendToFile(const FilePath& filename, StringPiece data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   win::ScopedHandle file(CreateFile(filename.value().c_str(), FILE_APPEND_DATA,
-                                    0, NULL, OPEN_EXISTING, 0, NULL));
+                                    0, nullptr, OPEN_EXISTING, 0, nullptr));
   if (!file.IsValid()) {
     VPLOG(1) << "CreateFile failed for path " << filename.value();
     return false;
   }
 
   DWORD written;
-  BOOL result = ::WriteFile(file.Get(), data, size, &written, NULL);
-  if (result && static_cast<int>(written) == size)
+  DWORD size = checked_cast<DWORD>(data.size());
+  BOOL result = ::WriteFile(file.Get(), data.data(), size, &written, nullptr);
+  if (result && written == size)
     return true;
 
   if (!result) {

@@ -66,11 +66,11 @@ void TraceToFile::WriteFileHeader() {
 
 void TraceToFile::AppendFileFooter() {
   const char str[] = "]}";
-  AppendToFile(path_, str, static_cast<int>(strlen(str)));
+  AppendToFile(path_, str);
 }
 
 void TraceToFile::TraceOutputCallback(const std::string& data) {
-  bool ret = AppendToFile(path_, data.c_str(), static_cast<int>(data.size()));
+  bool ret = AppendToFile(path_, data);
   DCHECK(ret);
 }
 

@@ -143,8 +143,8 @@ TEST(DataPackTest, LoadFromFileRegion) {
   // by the actual pak file content.
   const uint8_t kPadding[5678] = {0};
   ASSERT_TRUE(base::WriteFile(data_path, kPadding));
-  ASSERT_TRUE(
-      base::AppendToFile(data_path, kSamplePakContentsV4, kSamplePakSizeV4));
+  ASSERT_TRUE(base::AppendToFile(
+      data_path, base::StringPiece(kSamplePakContentsV4, kSamplePakSizeV4)));
 
   base::File file(data_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());

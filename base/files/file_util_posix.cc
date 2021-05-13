@@ -977,7 +977,13 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
 
 #if !defined(OS_NACL_NONSFI)
 
-bool AppendToFile(const FilePath& filename, const char* data, int size) {
+bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
+  return AppendToFile(
+      filename,
+      StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
+}
+
+bool AppendToFile(const FilePath& filename, StringPiece data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   bool ret = true;
   int fd = HANDLE_EINTR(open(filename.value().c_str(), O_WRONLY | O_APPEND));
@@ -987,7 +993,8 @@ bool AppendToFile(const FilePath& filename, const char* data, int size) {
   }
 
   // This call will either write all of the data or return false.
-  if (!WriteFileDescriptor(fd, data, size)) {
+  int size = checked_cast<int>(data.size());
+  if (!WriteFileDescriptor(fd, data.data(), size)) {
     VPLOG(1) << "Error while writing to file " << filename.value();
     ret = false;
   }
