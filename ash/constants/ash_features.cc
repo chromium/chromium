@@ -333,9 +333,6 @@ const base::Feature kExoLockNotification{"ExoLockNotification",
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the next generation file manager.
-const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether to "hide" the legacy video player chrome app. Videos will instead be
 // handled by the media app. See https://crbug.com/1158531.
 const base::Feature kVideoPlayerAppHidden{"VideoPlayerAppHidden",

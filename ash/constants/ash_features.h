@@ -159,7 +159,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVideoPlayerAppHidden;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesNG;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFilesSinglePartitionFormat;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesSWA;

@@ -2589,9 +2589,6 @@ extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 extern const char kFilesAppCopyImageName[];
 extern const char kFilesAppCopyImageDescription[];
 
-extern const char kFilesNGName[];
-extern const char kFilesNGDescription[];
-
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 

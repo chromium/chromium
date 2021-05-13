@@ -4461,10 +4461,6 @@ const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";
 
-const char kFilesNGName[] = "Enable Files App. NG.";
-const char kFilesNGDescription[] =
-    "Enable the next generation UI style of the file manager.";
-
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

@@ -2859,11 +2859,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "files-ng",
-    "owners": [ "adanilo", "noel" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "files-single-partition-format",
     "owners": [ "austinct", "oto" ],
     "expiry_milestone": 90

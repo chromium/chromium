@@ -398,10 +398,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   dialog_params.title =
       !title.empty() ? title
                      : file_manager::util::GetSelectFileDialogTitle(type);
-  if (base::FeatureList::IsEnabled(chromeos::features::kFilesNG)) {
-    dialog_params.title_color = kFilePickerActiveTitleColor;
-    dialog_params.title_inactive_color = kFilePickerInactiveTitleColor;
-  }
+  dialog_params.title_color = kFilePickerActiveTitleColor;
+  dialog_params.title_inactive_color = kFilePickerInactiveTitleColor;
 
   ExtensionDialog* dialog = ExtensionDialog::Show(
       file_manager_url,

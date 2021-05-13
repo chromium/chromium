@@ -593,18 +593,12 @@ INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtensionBrowserTest,
                          SelectFileDialogExtensionBrowserTest,
                          testing::Bool());
 
-// Tests that depend on state of flag on and off.
+// Tests that ash window has correct colors for GM2.
+// TODO(adanilo) factor out the unnecessary override of Setup().
 class SelectFileDialogExtensionFlagTest
     : public BaseSelectFileDialogExtensionBrowserTest,
       public testing::WithParamInterface<bool> {
   void SetUp() override {
-    // Use the GetParam to define the state of the feature flags.
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kFilesNG);
-    } else {
-      feature_list_.InitAndDisableFeature(chromeos::features::kFilesNG);
-    }
-
     BaseSelectFileDialogExtensionBrowserTest::SetUp();
   }
 };
@@ -625,16 +619,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
       dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
 
   constexpr SkColor kFilesNgTitleColor = gfx::kGoogleGrey200;
-  if (GetParam()) {
-    // FilesNG enabled the title should be Google Grey 200.
-    EXPECT_EQ(active_color, kFilesNgTitleColor);
-    // Active and Inactive should have the same color.
-    EXPECT_EQ(active_color, inactive_color);
-  } else {
-    // FilesNG disabled the title should be the original color.
-    EXPECT_NE(active_color, kFilesNgTitleColor);
-    EXPECT_NE(inactive_color, kFilesNgTitleColor);
-  }
+  // FilesNG enabled the title should be Google Grey 200.
+  EXPECT_EQ(active_color, kFilesNgTitleColor);
+  // Active and Inactive should have the same color.
+  EXPECT_EQ(active_color, inactive_color);
 
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
