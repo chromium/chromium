@@ -166,7 +166,7 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_OutputAttachment,
+        WGPUTextureUsage_RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -188,7 +188,7 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
     pass.EndPass();
     wgpu::CommandBuffer commands = encoder.Finish();
 
-    wgpu::Queue queue = dawn_device_.GetDefaultQueue();
+    wgpu::Queue queue = dawn_device_.GetQueue();
     queue.Submit(1, &commands);
   }
 
@@ -361,7 +361,7 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
     }
 
     wgpu::CommandBuffer commands = encoder.Finish();
-    wgpu::Queue queue = dawn_device_.GetDefaultQueue();
+    wgpu::Queue queue = dawn_device_.GetQueue();
     queue.Submit(1, &commands);
 
     // Map the buffer to read back data
