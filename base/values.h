@@ -964,15 +964,16 @@ class BASE_EXPORT ListValue : public Value {
   void Swap(ListValue* other);
 
   // Iteration.
-  // DEPRECATED, use `GetList()::begin()` instead.
-  iterator begin() { return GetList().begin(); }
-  // DEPRECATED, use `GetList()::end()` instead.
-  iterator end() { return GetList().end(); }
-
-  // DEPRECATED, use `GetList()::begin()` instead.
-  const_iterator begin() const { return GetList().begin(); }
-  // DEPRECATED, use `GetList()::end()` instead.
-  const_iterator end() const { return GetList().end(); }
+  //
+  // ListValue no longer supports iteration. Instead, use GetList() to get the
+  // underlying list:
+  //
+  // for (const auto& entry : list_value.GetList()) {
+  //   ...
+  //
+  // for (auto it = list_value.GetList().begin();
+  //      it != list_value.GetList().end(); ++it) {
+  //   ...
 
   // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
