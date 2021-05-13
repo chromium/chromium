@@ -806,15 +806,24 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
   ASSERT_FALSE(download_manager_->GetDownloadByGuid(kGuid));
 }
 
+class DownloadManagerWithExpirationTest : public DownloadManagerTest {
+ public:
+  DownloadManagerWithExpirationTest() {
+    std::map<std::string, std::string> params = {
+        {download::kExpiredDownloadDeleteTimeFinchKey,
+         base::NumberToString(1)}};
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        download::features::kDeleteExpiredDownloads, params);
+  }
+  ~DownloadManagerWithExpirationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies that expired canceled or interrupted downloads are deleted
 // correctly.
-TEST_F(DownloadManagerTest, DeleteExpiredDownload) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::map<std::string, std::string> params = {
-      {download::kExpiredDownloadDeleteTimeFinchKey, base::NumberToString(1)}};
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      download::features::kDeleteExpiredDownloads, params);
-
+TEST_F(DownloadManagerWithExpirationTest, DeleteExpiredDownload) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://example.com/1.zip");
   auto expired_start_time = base::Time::Now() - base::TimeDelta::FromDays(10);
