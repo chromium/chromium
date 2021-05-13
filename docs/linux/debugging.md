@@ -83,6 +83,10 @@ to debug the renderer code. Go to
 https://www.chromium.org/blink/getting-started-with-blink-debugging for more
 information on how this can be done.
 
+For utilities you can use `--utility-startup-dialog` to have all utilities
+prompt, or `--utility-startup-dialog=data_decoder.mojom.DataDecoderService`
+to debug only a particular service type.
+
 #### Choosing which renderers to debug
 
 If you are starting multiple renderers then the above means that multiple gdb's

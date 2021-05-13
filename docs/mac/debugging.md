@@ -173,7 +173,7 @@ these startup-dialog switches for the relevant process type:
 
 * `--renderer-startup-dialog`
 * `--utility-startup-dialog`
-* `--renderer-startup-dialog`
+* `--utility-startup-dialog=data_decoder.mojom.DataDecoderService`
 
 After the process launches, it will print a message like this to standard error:
 

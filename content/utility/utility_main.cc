@@ -103,8 +103,15 @@ int UtilityMain(const MainFunctionParams& parameters) {
   base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
   base::PlatformThread::SetName("CrUtilityMain");
 
-  if (parameters.command_line.HasSwitch(switches::kUtilityStartupDialog))
-    WaitForDebugger("Utility");
+  if (parameters.command_line.HasSwitch(switches::kUtilityStartupDialog)) {
+    auto dialog_match = parameters.command_line.GetSwitchValueASCII(
+        switches::kUtilityStartupDialog);
+    auto sub_type =
+        parameters.command_line.GetSwitchValueASCII(switches::kUtilitySubType);
+    if (dialog_match.empty() || dialog_match == sub_type) {
+      WaitForDebugger(sub_type.empty() ? "Utility" : sub_type);
+    }
+  }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Initializes the sandbox before any threads are created.
