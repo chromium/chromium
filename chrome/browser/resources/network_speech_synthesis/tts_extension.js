@@ -112,6 +112,13 @@ TtsExtension.prototype = {
    * @private
    */
   onSpeak_(utterance, options, callback) {
+    // Ignore the utterance if it is empty. Continue such processing causes no
+    // speech and fails all subsequent calls to process additional utterances.
+    if (utterance.length == 0) {
+      callback({'type': 'end', 'charIndex': 0});
+      return;
+    }
+
     // Truncate the utterance if it's too long. Both Chrome's tts
     // extension api and the web speech api specify 32k as the
     // maximum limit for an utterance.
