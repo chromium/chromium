@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_STATUS_PROVIDER_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_STATUS_PROVIDER_H_
+
+#include "base/callback_helpers.h"
+#include "components/policy/policy_export.h"
+
+namespace base {
+class DictionaryValue;
+}
+
+namespace policy {
+class CloudPolicyClient;
+class CloudPolicyCore;
+class CloudPolicyStore;
+
+// An interface for querying the status of a policy provider.  It surfaces
+// things like last fetch time or status of the backing store, but not the
+// actual policies themselves.
+class POLICY_EXPORT PolicyStatusProvider {
+ public:
+  PolicyStatusProvider();
+  PolicyStatusProvider(const PolicyStatusProvider&) = delete;
+  PolicyStatusProvider& operator=(const PolicyStatusProvider&) = delete;
+  virtual ~PolicyStatusProvider();
+
+  // Sets a callback to invoke upon status changes.
+  virtual void SetStatusChangeCallback(const base::RepeatingClosure& callback);
+
+  // Fills the passed dictionary with metadata about policies.
+  // The passed base::DictionaryValue should be empty.
+  virtual void GetStatus(base::DictionaryValue* dict);
+
+  static void GetStatusFromCore(const CloudPolicyCore* core,
+                                base::DictionaryValue* dict);
+
+ protected:
+  void NotifyStatusChange();
+  static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
+                                                 const CloudPolicyClient*);
+  static std::u16string GetTimeSinceLastRefreshString(base::Time);
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace policy
+
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_STATUS_PROVIDER_H_

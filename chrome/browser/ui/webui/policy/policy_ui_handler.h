@@ -31,12 +31,12 @@
 #include "extensions/browser/extension_registry_observer.h"
 #endif
 
-class PolicyStatusProvider;
 class PrefChangeRegistrar;
 struct GoogleUpdatePoliciesAndState;
 
 namespace policy {
 class PolicyMap;
+class PolicyStatusProvider;
 }
 
 // The JavaScript message handler for the chrome://policy page.
@@ -129,10 +129,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // Providers that supply status dictionaries for user and device policy,
   // respectively. These are created on initialization time as appropriate for
   // the platform (Chrome OS / desktop) and type of policy that is in effect.
-  std::unique_ptr<PolicyStatusProvider> user_status_provider_;
-  std::unique_ptr<PolicyStatusProvider> device_status_provider_;
-  std::unique_ptr<PolicyStatusProvider> machine_status_provider_;
-  std::unique_ptr<PolicyStatusProvider> updater_status_provider_;
+  std::unique_ptr<policy::PolicyStatusProvider> user_status_provider_;
+  std::unique_ptr<policy::PolicyStatusProvider> device_status_provider_;
+  std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
+  std::unique_ptr<policy::PolicyStatusProvider> updater_status_provider_;
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<policy::PolicyMap> updater_policies_;

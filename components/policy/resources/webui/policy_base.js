@@ -152,7 +152,9 @@ StatusBox.prototype = {
       this.setLabelAndShow_('.machine-enrollment-device-id', status.deviceId);
       this.setLabelAndShow_(
           '.machine-enrollment-token', status.enrollmentToken);
-      this.setLabelAndShow_('.machine-enrollment-name', status.machine);
+      if (status.machine) {
+        this.setLabelAndShow_('.machine-enrollment-name', status.machine);
+      }
       this.setLabelAndShow_('.machine-enrollment-domain', status.domain);
     } else if (scope === 'updater') {
       this.querySelector('.legend').textContent =

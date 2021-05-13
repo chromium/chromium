@@ -14,11 +14,14 @@ source_set("policy") {
 
   deps = [
     "//base",
+    "//components/enterprise",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/prefs",
     "//components/resources",
     "//components/strings",
+    "//ios/chrome/browser",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/policy",

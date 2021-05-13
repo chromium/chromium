@@ -41,6 +41,10 @@ source_set("internal") {
     "url_blocklist_policy_handler.h",
     "url_util.cc",
     "url_util.h",
+    "webui/machine_level_user_cloud_policy_status_provider.cc",
+    "webui/machine_level_user_cloud_policy_status_provider.h",
+    "webui/policy_status_provider.cc",
+    "webui/policy_status_provider.h",
   ]
 
   configs += [ "//components/policy:component_implementation" ]

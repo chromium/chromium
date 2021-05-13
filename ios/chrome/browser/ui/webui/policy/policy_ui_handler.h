@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -61,11 +64,16 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // metadata are sent.
   void SendPolicies();
 
+  void SendStatus();
+
   // The callback invoked by PolicyService::RefreshPolicies().
   void OnRefreshPoliciesDone();
 
   // Returns the PolicyService associated with this WebUI's BrowserState.
   policy::PolicyService* GetPolicyService() const;
+
+  // Provider that supply status dictionary for machine policy,
+  std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
 
   // Vends WeakPtrs for this object.
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
