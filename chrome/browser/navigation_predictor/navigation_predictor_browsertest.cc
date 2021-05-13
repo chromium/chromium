@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -295,7 +296,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
 }
 
 // Tests that anchors from iframes are reported.
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
+// TODO(crbug.com/1208143): Test is flaky.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_PageWithIframe DISABLED_PageWithIframe
+#else
+#define MAYBE_PageWithIframe PageWithIframe
+#endif
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MAYBE_PageWithIframe) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
