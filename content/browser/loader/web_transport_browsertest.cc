@@ -64,7 +64,7 @@ class WebTransportSimpleServerWithThread final {
     io_thread_ = std::make_unique<base::Thread>("WebTransport server");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
-    CHECK(io_thread_->StartWithOptions(thread_options));
+    CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
     CHECK(io_thread_->WaitUntilThreadStarted());
 
     base::WaitableEvent event;
