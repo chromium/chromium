@@ -163,7 +163,6 @@ class FakePredictionModelDownloadManager
   FakePredictionModelDownloadManager(
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : PredictionModelDownloadManager(/*download_service=*/nullptr,
-                                       base::FilePath(),
                                        task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 

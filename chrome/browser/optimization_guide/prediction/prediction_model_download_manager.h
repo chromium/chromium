@@ -32,7 +32,6 @@ class PredictionModelDownloadManager {
  public:
   PredictionModelDownloadManager(
       download::DownloadService* download_service,
-      const base::FilePath& models_dir,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -125,7 +124,7 @@ class PredictionModelDownloadManager {
   download::DownloadService* download_service_;
 
   // The directory to store verified models in.
-  base::FilePath models_dir_;
+  base::Optional<base::FilePath> models_dir_;
 
   // Whether the download service is available.
   bool is_available_for_downloads_;

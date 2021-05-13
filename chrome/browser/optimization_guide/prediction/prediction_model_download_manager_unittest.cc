@@ -70,7 +70,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     mock_download_service_ =
         std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
-        mock_download_service_.get(), temp_dir_.GetPath(),
+        mock_download_service_.get(),
         task_environment_.GetMainThreadTaskRunner());
 
     unzip::SetUnzipperLaunchOverrideForTesting(
@@ -533,7 +533,11 @@ TEST_F(PredictionModelDownloadManagerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager."
       "DownloadStatus",
-      PredictionModelDownloadStatus::kFailedModelFileNotFound, 1);
+      PredictionModelDownloadStatus::kFailedModelFileOtherError, 1);
+  // The error code for ReplaceFile varies by platform for this test, only
+  // care that the error code is recorded.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 1);
 }
 
 TEST_F(

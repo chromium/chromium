@@ -588,6 +588,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError"
+    enum="PlatformFileError" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the exact error whenever writing a model file fails at the step
+    where the model is moved from the scratch directory to its final location.
+    Recorded every time a model file is downloaded and being processed for
+    storage.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="OptimizationGuide.PredictionModelEvaluationLatency" units="ms"
     expires_after="M94">
