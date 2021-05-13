@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<link rel="help" href="https://github.com/web-platform-tests/wpt/issues/28805">
+<link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+<p>Test passes if there is a filled green square.</p>
+<div style="display: flex; flex-direction: column; height: 100px; width: max-content; background: green;">
+  <div style="display: flex; height: 50px; flex: 1; width: max-content; min-width: 0; min-height: 0;">
+    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100px' height='100px'></svg>" />
+  </div>
+</div>
