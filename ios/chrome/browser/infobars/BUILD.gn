@@ -19,14 +19,16 @@ source_set("infobars") {
   ]
   deps = [
     ":public",
-    "//base",
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/web",
     "//ui/gfx",
   ]
-  public_deps = [ "//components/infobars/core" ]
+  public_deps = [
+    "//base",
+    "//components/infobars/core",
+  ]
 }
 
 source_set("badge_public") {

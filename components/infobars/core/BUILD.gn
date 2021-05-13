@@ -25,10 +25,12 @@ static_library("core") {
     "simple_alert_infobar_delegate.h",
   ]
 
-  public_deps = [ "//skia" ]
+  public_deps = [
+    "//base",
+    "//skia",
+  ]
 
   deps = [
-    "//base",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/animation",

@@ -1082,6 +1082,7 @@ component("net") {
   public_deps = [
     ":net_export_header",
     ":net_public_deps",
+    "//base",
     "//net/dns",
     "//net/dns:dns_client",
     "//net/dns:host_resolver",

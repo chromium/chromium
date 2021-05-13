@@ -22,8 +22,8 @@ source_set("url_loading") {
     "url_loading_util.h",
     "url_loading_util.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/keyed_service/ios",
     "//components/search_engines",
     "//components/sessions",

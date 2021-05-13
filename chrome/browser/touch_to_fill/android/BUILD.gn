@@ -12,6 +12,8 @@ source_set("android") {
     "touch_to_fill_view_impl.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":jni_headers",
     "//chrome/browser/touch_to_fill:public",

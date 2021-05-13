@@ -150,10 +150,12 @@ if (!is_ios && !is_fuchsia) {
       "file_type_policies.h",
     ]
 
-    public_deps = [ ":download_file_types_proto" ]
+    public_deps = [
+      ":download_file_types_proto",
+      "//base",
+    ]
 
     deps = [
-      "//base",
       "//components/resources:components_resources",
       "//ui/base",
     ]

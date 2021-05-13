@@ -15,9 +15,9 @@ source_set("eg2_test") {
     "showcase_test_case.h",
     "showcase_test_case.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
     ":eg_test_support+eg2",
-    "//base",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]
@@ -33,8 +33,9 @@ source_set("eg_test_support+eg2") {
 
   sources = [ "showcase_test_case_app_interface.h" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//ios/third_party/earl_grey2:test_lib",
     "//ui/base",
 
@@ -54,8 +55,6 @@ source_set("eg_app_support+eg2") {
     "showcase_test_case_app_interface.h",
     "showcase_test_case_app_interface.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/showcase/core",
-  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ios/showcase/core" ]
 }

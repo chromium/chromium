@@ -37,6 +37,7 @@ source_set("vector_icons") {
 
   deps = [
     ":ksv_vector_icons",
+    "//base",
     "//skia",
   ]
 }

@@ -35,6 +35,7 @@ source_set("vector_icons") {
 
   deps = [
     ":app_list_vector_icons",
+    "//base",
     "//skia",
   ]
 }

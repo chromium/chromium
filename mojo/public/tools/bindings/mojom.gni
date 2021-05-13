@@ -1339,6 +1339,7 @@ template("mojom") {
           # mojolpm only uses the no-variant type.
           ":$mojolpm_generator_target_name",
           ":$mojolpm_proto_target_name",
+          "//base",
           "//mojo/public/tools/fuzzers:mojolpm",
         ]
 

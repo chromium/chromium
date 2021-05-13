@@ -10,5 +10,5 @@ cast_source_set("service") {
     "cast_service.h",
   ]
 
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }

@@ -12,8 +12,9 @@ source_set("safety_check") {
     "url_constants.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//net",

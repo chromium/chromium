@@ -28,8 +28,9 @@ static_library("feedback") {
     "tracing_manager.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//build:chromeos_buildflags",
     "//components/feedback/proto",
     "//components/keyed_service/core",

@@ -13,8 +13,8 @@ source_set("device_sharing") {
     "device_sharing_manager_impl.h",
     "device_sharing_manager_impl.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/handoff",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",

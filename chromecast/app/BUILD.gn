@@ -12,9 +12,10 @@ cast_source_set("app") {
     "cast_main_delegate.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":cast_crash_client",
-    "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/browser",

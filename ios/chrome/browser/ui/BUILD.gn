@@ -10,5 +10,5 @@ source_set("feature_flags") {
     "ui_feature_flags.cc",
     "ui_feature_flags.h",
   ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }

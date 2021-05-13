@@ -12,7 +12,7 @@ source_set("emd") {
 
   defines = [ "CHROMIUM_OPENCV" ]
 
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [

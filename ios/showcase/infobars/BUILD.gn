@@ -51,6 +51,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
+    "//base",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/showcase/test:eg2_test",

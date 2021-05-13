@@ -38,8 +38,9 @@ component("core") {
 
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/pref_registry",
     "//components/prefs",
     "//services/tracing/public/cpp:cpp",

@@ -18,8 +18,9 @@ source_set("common") {
     "nearby_share_switches.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/pref_registry",
     "//components/prefs",

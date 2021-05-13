@@ -182,8 +182,9 @@ static_library("sandbox") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//base:base_static",
     "//sandbox:common",
   ]

@@ -10,8 +10,9 @@ source_set("infobars") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",

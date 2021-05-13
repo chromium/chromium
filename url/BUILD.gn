@@ -58,8 +58,9 @@ component("url") {
 
   defines = [ "IS_URL_IMPL" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//base/third_party/dynamic_annotations",
     "//ipc:param_traits",
   ]

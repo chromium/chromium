@@ -12,8 +12,9 @@ source_set("ios") {
     "refcounted_browser_state_keyed_service_factory.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//base/third_party/dynamic_annotations",
     "//components/keyed_service/core",
     "//ios/web",

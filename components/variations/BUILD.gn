@@ -114,13 +114,13 @@ static_library("variations") {
   public_deps = [
     ":variations_features",
     "proto",
+    "//base",
   ]
 
   deps = [
     ":buildflags",
     ":variations_mojom",
     "proto",
-    "//base",
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
