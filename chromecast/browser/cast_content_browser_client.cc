@@ -175,16 +175,14 @@ CastContentBrowserClient::CastContentBrowserClient(
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
   });
 
-  cast_feature_list_creator_->SetExtraDisableFeatures({
-      // TODO(juke): Reenable this after solving casting issue on LAN.
-      blink::features::kMixedContentAutoupgrade,
 #if defined(OS_ANDROID)
-          ::media::kAudioFocusLossSuspendMediaSession,
-          ::media::kRequestSystemAudioFocus,
-          // Disable AAudio improve AV sync performance.
-          ::features::kUseAAudioDriver,
-#endif
+  cast_feature_list_creator_->SetExtraDisableFeatures({
+      ::media::kAudioFocusLossSuspendMediaSession,
+      ::media::kRequestSystemAudioFocus,
+      // Disable AAudio improve AV sync performance.
+      ::features::kUseAAudioDriver,
   });
+#endif
 }
 
 CastContentBrowserClient::~CastContentBrowserClient() {
@@ -533,11 +531,6 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->allow_scripts_to_close_windows = true;
-  // TODO(halliwell): http://crbug.com/391089. This pref defaults to to true
-  // because some content providers such as YouTube use plain http requests
-  // to retrieve media data chunks while running in a https page. This pref
-  // should be disabled once all the content providers are no longer doing that.
-  prefs->allow_running_insecure_content = true;
 
   // Enable 5% margins for WebVTT cues to keep within title-safe area
   prefs->text_track_margin_percentage = 5;

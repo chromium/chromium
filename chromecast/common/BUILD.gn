@@ -43,6 +43,13 @@ cast_source_set("activity_url_filter") {
   ]
 }
 
+cast_source_set("feature_constants") {
+  sources = [
+    "feature_constants.cc",
+    "feature_constants.h",
+  ]
+}
+
 test("cast_common_unittests") {
   testonly = true
 

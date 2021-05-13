@@ -473,10 +473,16 @@ void CastWebContentsImpl::RenderFrameCreated(
                                 frame_host->GetRemoteAssociatedInterfaces());
   }
 
+  // TODO(b/187758538): Merge the two ConfigureFeatures() calls.
   mojo::Remote<chromecast::shell::mojom::FeatureManager> feature_manager_remote;
   frame_host->GetRemoteInterfaces()->GetInterface(
       feature_manager_remote.BindNewPipeAndPassReceiver());
   feature_manager_remote->ConfigureFeatures(GetRendererFeatures());
+  mojo::AssociatedRemote<chromecast::shell::mojom::FeatureManager>
+      feature_manager_associated_remote;
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+      &feature_manager_associated_remote);
+  feature_manager_associated_remote->ConfigureFeatures(GetRendererFeatures());
 
   mojo::AssociatedRemote<components::media_control::mojom::MediaPlaybackOptions>
       media_playback_options;
