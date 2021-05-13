@@ -1538,8 +1538,9 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
+// TODO(crbug.com/1208585): Test is flaky.
 IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
-                       HintsFetcher_SRP_Slow_Connection) {
+                       DISABLED_HintsFetcher_SRP_Slow_Connection) {
   g_browser_process->network_quality_tracker()
       ->ReportEffectiveConnectionTypeForTesting(
           net::EFFECTIVE_CONNECTION_TYPE_2G);
