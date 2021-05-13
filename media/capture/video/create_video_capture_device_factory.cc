@@ -16,7 +16,6 @@
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#include "media/capture/video/linux/video_capture_device_factory_linux.h"
 #elif defined(OS_WIN)
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #elif defined(OS_MAC)
@@ -56,34 +55,13 @@ CreateFakeVideoCaptureDeviceFactory() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::unique_ptr<VideoCaptureDeviceFactory>
-CreateChromeOSVideoCaptureDeviceFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  // On Chrome OS we have to support two use cases:
-  //
-  // 1. For devices that have the camera HAL v3 service running on Chrome OS,
-  //    we use the HAL v3 capture device which VideoCaptureDeviceFactoryChromeOS
-  //    provides.
-  // 2. Existing devices that use UVC cameras need to use the V4L2 capture
-  //    device which VideoCaptureDeviceFacotoryLinux provides; there are also
-  //    some special devices that may never be able to implement a camera HAL
-  //    v3.
-  if (ShouldUseCrosCameraService()) {
-    return std::make_unique<VideoCaptureDeviceFactoryChromeOS>(ui_task_runner);
-  } else {
-    return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 std::unique_ptr<VideoCaptureDeviceFactory>
 CreatePlatformSpecificVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return CreateChromeOSVideoCaptureDeviceFactory(ui_task_runner);
+  return std::make_unique<VideoCaptureDeviceFactoryChromeOS>(ui_task_runner);
 #elif defined(OS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
 #elif defined(OS_MAC)
