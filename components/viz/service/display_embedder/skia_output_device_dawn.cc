@@ -26,7 +26,7 @@ constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::RGBA8Unorm;
 
 constexpr wgpu::TextureUsage kUsage =
-    wgpu::TextureUsage::OutputAttachment | wgpu::TextureUsage::CopySrc;
+    wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
 
 }  // namespace
 

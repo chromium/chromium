@@ -302,7 +302,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 
     webgpu()->AssociateMailbox(
         reservation.deviceId, reservation.deviceGeneration, reservation.id,
-        reservation.generation, WGPUTextureUsage_OutputAttachment,
+        reservation.generation, WGPUTextureUsage_RenderAttachment,
         reinterpret_cast<GLbyte*>(&mailbox));
     wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
@@ -322,7 +322,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     pass.EndPass();
     wgpu::CommandBuffer commands = encoder.Finish();
 
-    wgpu::Queue queue = device.GetDefaultQueue();
+    wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);
@@ -363,7 +363,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
     wgpu::CommandBuffer commands = encoder.Finish();
 
-    wgpu::Queue queue = device.GetDefaultQueue();
+    wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);
@@ -414,7 +414,7 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 
   webgpu()->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
                              reservation.id, reservation.generation,
-                             WGPUTextureUsage_OutputAttachment,
+                             WGPUTextureUsage_RenderAttachment,
                              reinterpret_cast<GLbyte*>(&mailbox));
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 
@@ -472,14 +472,14 @@ TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
       webgpu()->ReserveTexture(device.Get());
   webgpu()->AssociateMailbox(
       reservation_a.deviceId, reservation_a.deviceGeneration, reservation_a.id,
-      reservation_a.generation, WGPUTextureUsage_OutputAttachment,
+      reservation_a.generation, WGPUTextureUsage_RenderAttachment,
       reinterpret_cast<GLbyte*>(&mailbox_a));
 
   gpu::webgpu::ReservedTexture reservation_b =
       webgpu()->ReserveTexture(device.Get());
   webgpu()->AssociateMailbox(
       reservation_b.deviceId, reservation_b.deviceGeneration, reservation_b.id,
-      reservation_b.generation, WGPUTextureUsage_OutputAttachment,
+      reservation_b.generation, WGPUTextureUsage_RenderAttachment,
       reinterpret_cast<GLbyte*>(&mailbox_b));
 
   // Dissociate both mailboxes in the same order.
@@ -525,14 +525,14 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
       webgpu()->ReserveTexture(device_a.Get());
   webgpu()->AssociateMailbox(
       reservation_a.deviceId, reservation_a.deviceGeneration, reservation_a.id,
-      reservation_a.generation, WGPUTextureUsage_OutputAttachment,
+      reservation_a.generation, WGPUTextureUsage_RenderAttachment,
       reinterpret_cast<GLbyte*>(&mailbox_a));
 
   gpu::webgpu::ReservedTexture reservation_b =
       webgpu()->ReserveTexture(device_b.Get());
   webgpu()->AssociateMailbox(
       reservation_b.deviceId, reservation_b.deviceGeneration, reservation_b.id,
-      reservation_b.generation, WGPUTextureUsage_OutputAttachment,
+      reservation_b.generation, WGPUTextureUsage_RenderAttachment,
       reinterpret_cast<GLbyte*>(&mailbox_b));
 
   // Dissociate both mailboxes in the same order.

@@ -171,7 +171,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
     wgpu::CommandBuffer commands = encoder.Finish();
 
-    wgpu::Queue queue = device.GetDefaultQueue();
+    wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);

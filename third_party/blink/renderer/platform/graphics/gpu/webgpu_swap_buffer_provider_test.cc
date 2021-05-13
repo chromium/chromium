@@ -103,7 +103,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
         &provider_alive_, &client_, fake_device_, dawn_control_client_,
-        WGPUTextureUsage_OutputAttachment, WGPUTextureFormat_RGBA8Unorm);
+        WGPUTextureUsage_RenderAttachment, WGPUTextureFormat_RGBA8Unorm);
   }
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;

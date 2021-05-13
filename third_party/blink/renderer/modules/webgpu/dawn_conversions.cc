@@ -61,7 +61,15 @@ WGPUExtent3D AsDawnType(
     GPUDevice* device) {
   DCHECK(webgpu_extent);
 
-  WGPUExtent3D dawn_extent = {1, 1, 1, 1};
+  // Set all extents to their default value of 1.
+  // TODO (crbug.com/1206740): The last member of WGPUExtent3D (depth) is being
+  // removed from Dawn soon, but until it has been removed it must be set to 1
+  // or the correct value, in depthOrArrayLayers, will be ignored. Once depth
+  // has been removed from WGPUExtent3D in Dawn this can be to be updated to
+  // WGPUExtent3D dawn_extent = {1, 1, 1};
+  WGPUExtent3D dawn_extent;
+  uint32_t extent_defaults[4] = {1, 1, 1, 1};
+  memcpy(&dawn_extent, extent_defaults, sizeof(WGPUExtent3D));
 
   if (webgpu_extent->IsUnsignedLongEnforceRangeSequence()) {
     const Vector<uint32_t>& webgpu_extent_sequence =

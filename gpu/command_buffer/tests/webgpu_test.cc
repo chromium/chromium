@@ -158,7 +158,7 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
   // Insert a fence signal and wait for it to be signaled. The guarantees of
   // Dawn are that all previous operations will have been completed and more
   // importantly the callbacks will have been called.
-  wgpu::Queue queue = device.GetDefaultQueue();
+  wgpu::Queue queue = device.GetQueue();
   wgpu::FenceDescriptor fence_desc{nullptr, 0};
   wgpu::Fence fence = queue.CreateFence(&fence_desc);
 

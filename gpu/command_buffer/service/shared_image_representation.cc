@@ -314,7 +314,7 @@ SharedImageRepresentationDawn::BeginScopedAccess(
     return nullptr;
 
   constexpr auto kWriteUsage =
-      WGPUTextureUsage_CopyDst | WGPUTextureUsage_OutputAttachment;
+      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment;
 
   if (usage & kWriteUsage) {
     backing()->OnWriteSucceeded();

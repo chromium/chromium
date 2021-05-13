@@ -56,7 +56,7 @@ TEST_F(WebGPUFenceTest, InitialValue) {
 
   wgpu::Device device = GetNewDevice();
 
-  wgpu::Queue queue = device.GetDefaultQueue();
+  wgpu::Queue queue = device.GetQueue();
   {
     wgpu::FenceDescriptor fence_desc{nullptr, nullptr, 0};
     wgpu::Fence fence = queue.CreateFence(&fence_desc);
@@ -78,7 +78,7 @@ TEST_F(WebGPUFenceTest, GetCompletedValue) {
 
   wgpu::Device device = GetNewDevice();
 
-  wgpu::Queue queue = device.GetDefaultQueue();
+  wgpu::Queue queue = device.GetQueue();
   wgpu::FenceDescriptor fence_desc{nullptr, nullptr, 0};
   wgpu::Fence fence = queue.CreateFence(&fence_desc);
   queue.Signal(fence, 2u);
@@ -96,7 +96,7 @@ TEST_F(WebGPUFenceTest, OnCompletion) {
 
   wgpu::Device device = GetNewDevice();
 
-  wgpu::Queue queue = device.GetDefaultQueue();
+  wgpu::Queue queue = device.GetQueue();
   wgpu::FenceDescriptor fence_desc{nullptr, nullptr, 0};
   wgpu::Fence fence = queue.CreateFence(&fence_desc);
   queue.Signal(fence, 2u);
@@ -117,7 +117,7 @@ TEST_F(WebGPUFenceTest, SignalManyTimes) {
 
   wgpu::Device device = GetNewDevice();
 
-  wgpu::Queue queue = device.GetDefaultQueue();
+  wgpu::Queue queue = device.GetQueue();
   wgpu::FenceDescriptor fence_desc{nullptr, nullptr, 0};
   wgpu::Fence fence = queue.CreateFence(&fence_desc);
 

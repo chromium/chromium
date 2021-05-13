@@ -424,7 +424,7 @@ uint32_t SharedImageBackingD3D::GetAllowedDawnUsages() const {
   DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
   return static_cast<uint32_t>(
       WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
-      WGPUTextureUsage_Sampled | WGPUTextureUsage_OutputAttachment);
+      WGPUTextureUsage_Sampled | WGPUTextureUsage_RenderAttachment);
 }
 
 std::unique_ptr<SharedImageRepresentationDawn>
