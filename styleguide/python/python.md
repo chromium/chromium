@@ -3,6 +3,38 @@
 _For other languages, please see the [Chromium style
 guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
 
+As of 2021-05-12, Chromium is transitioning from Python 2 to Python 3 (follow
+[crbug.com/941669](https://crbug.com/941669) for updates). See
+[//docs/python3_migration.md](../docs/python3_migration.md) for more on
+how to migrate code.
+
+For new (Python 3) code, you can assume Python 3.8 (and that's what the bots
+will use), but we are increasingly seeing people running 3.9 locally as well.
+
+We (often) use a tool called [vpython] to manage Python packages; vpython
+is a wrapper around virtualenv. However, it is not safe to use vpython
+regardless of context, as it can have performance issues. All tests are
+run under vpython, so it is safe there, but you should not use vpython
+during PRESUBMIT checks, gclient runhooks, or during the build unless
+a [//build/OWNER](../../build/OWNERS) has told you that it is okay to do so.
+
+Also, there is some performance overhead to using vpython, so prefer not
+to use vpython unless you need it (to pick up packages not available in the
+source tree).
+
+"shebang lines" (the first line of many unix scripts, like `#!/bin/sh`)
+aren't as useful as you might think in Chromium, because
+most of our python invocations come from other tools like Ninja or
+the swarming infrastructure, and they also don't work on Windows.
+So, don't expect them to help you.
+
+However, if your script is executable, you should still use one, and for
+Python you should use `#!/usr/bin/env/python3` or `#!/usr/bin/env vpython3`
+in order to pick up the right version of Python from your $PATH rather than
+assuming you want the version in `/usr/bin`; this allows you to pick up the
+versions we endorse from
+`depot_tools`.
+
 Chromium follows [PEP-8](https://www.python.org/dev/peps/pep-0008/).
 
 It is also encouraged to follow advice from
@@ -39,7 +71,7 @@ get to decide.
 ### pylint
 [Depot tools](http://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools.html)
 contains a local copy of pylint, appropriately configured.
-* Directories need to opt into pylint presumbit checks via:
+* Directories need to opt into pylint presubmit checks via:
    `input_api.canned_checks.RunPylint()`.
 
 ### YAPF
@@ -74,4 +106,6 @@ YAPF has gotchas. You should review its changes before submitting. Notably:
 * For Chromium-specific bugs, please discuss on `python@chromium.org`.
 
 #### Editor Integration
-See: https://github.com/google/yapf/tree/master/plugins
+See: https://github.com/google/yapf/tree/main/plugins
+
+[vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md
