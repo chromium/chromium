@@ -10,8 +10,7 @@
  * things tests need.
  */
 
-import './app.js';
-
+export {NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 export {ImgElement} from './img.js';

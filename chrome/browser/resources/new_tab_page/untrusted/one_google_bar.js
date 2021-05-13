@@ -7,11 +7,7 @@
  *  - loaded: sent on initial load.
  *  - overlaysUpdated: sent when an overlay is updated. The overlay bounding
  *        rects are included in the |data|.
- *  - activate/deactivate: When an overlay is open, 'activate' is sent to the
- *        to ntp-app so it can layer the OneGoogleBar over the NTP content. When
- *        no overlays are open, 'deactivate' is sent to ntp-app so the NTP
- *        content can be on top. The top bar of the OneGoogleBar is always on
- *        top.
+ *  - click: sent when the OGB was clicked.
  * @param {string} messageType
  * @param {Object} data
  */
@@ -286,6 +282,10 @@ window.addEventListener('blur', e => {
     document.body.click();
   }
 });
+
+window.addEventListener('click', () => {
+  postMessage('click');
+}, /*useCapture=*/ true);
 
 document.addEventListener('DOMContentLoaded', () => {
   // TODO(crbug.com/1039913): remove after OneGoogleBar links are updated.

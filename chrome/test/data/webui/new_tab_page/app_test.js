@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BackgroundSelectionType, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -456,6 +456,57 @@ suite('NewTabPageAppTest', () => {
     // Make sure the promo frame gets notified whether the command was executed.
     const {data: commandExecuted} = await eventToPromise('message', window);
     assertTrue(commandExecuted);
+  });
+
+  suite('click recording', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: true,
+      });
+    });
+
+    [['#content', NtpElement.kBackground],
+     ['ntp-logo', NtpElement.kLogo],
+     ['ntp-realbox', NtpElement.kRealbox],
+     ['ntp-most-visited', NtpElement.kMostVisited],
+     ['ntp-middle-slot-promo', NtpElement.kMiddleSlotPromo],
+     ['ntp-modules', NtpElement.kModule],
+    ].forEach(([selector, element]) => {
+      test(`clicking '${selector}' records click`, () => {
+        // Act.
+        $$(app, selector).click();
+
+        // Assert.
+        assertEquals(1, metrics.count('NewTabPage.Click'));
+        assertEquals(1, metrics.count('NewTabPage.Click', element));
+      });
+    });
+
+    test('clicking customize records click', () => {
+      // Act.
+      $$(app, '#customizeButton').click();
+      $$(app, '#customizeDialogIf').render();
+      $$(app, 'ntp-customize-dialog').click();
+
+      // Assert.
+      assertEquals(2, metrics.count('NewTabPage.Click'));
+      assertEquals(2, metrics.count('NewTabPage.Click', NtpElement.kCustomize));
+    });
+
+    test('clicking OGB records click', () => {
+      // Act.
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {
+          frameType: 'one-google-bar',
+          messageType: 'click',
+        }
+      }));
+
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Click'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.kOneGoogleBar));
+    });
   });
 
   suite('modules', () => {

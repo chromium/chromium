@@ -35,6 +35,30 @@ import {WindowProxy} from './window_proxy.js';
  */
 let CommandData;
 
+/**
+ * Elements on the NTP. This enum must match the numbering for NTPElement in
+ * enums.xml. These values are persisted to logs. Entries should not be
+ * renumbered, removed or reused.
+ * @enum {number}
+ */
+export const NtpElement = {
+  kOther: 0,
+  kBackground: 1,
+  kOneGoogleBar: 2,
+  kLogo: 3,
+  kRealbox: 4,
+  kMostVisited: 5,
+  kMiddleSlotPromo: 6,
+  kModule: 7,
+  kCustomize: 8,
+};
+
+/** @param {NtpElement} element */
+function recordClick(element) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.Click', element, Object.keys(NtpElement).length);
+}
+
 // Adds a <script> tag that holds the lazy loaded code.
 function ensureLazyLoaded() {
   const script = document.createElement('script');
@@ -265,6 +289,8 @@ class AppElement extends mixinBehaviors
       }
     });
     this.eventTracker_.add(window, 'keydown', e => this.onWindowKeydown_(e));
+    this.eventTracker_.add(
+        window, 'click', e => this.onWindowClick_(e), /*capture=*/ true);
     if (this.shouldPrintPerformance_) {
       // It is possible that the background image has already loaded by now.
       // If it has, we request it to re-send the load time so that we can
@@ -701,6 +727,8 @@ class AppElement extends mixinBehaviors
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
           /** @type {!CommandData} */ (data.data), event.source, event.origin);
+    } else if (data.messageType === 'click') {
+      recordClick(NtpElement.kOneGoogleBar);
     }
   }
 
@@ -759,6 +787,41 @@ class AppElement extends mixinBehaviors
       }
       log(entry);
     });
+  }
+
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onWindowClick_(e) {
+    if (e.composedPath() && e.composedPath()[0] === $$(this, '#content')) {
+      recordClick(NtpElement.kBackground);
+      return;
+    }
+    for (const target of e.composedPath()) {
+      switch (target) {
+        case $$(this, 'ntp-logo'):
+          recordClick(NtpElement.kLogo);
+          return;
+        case $$(this, 'ntp-realbox'):
+          recordClick(NtpElement.kRealbox);
+          return;
+        case $$(this, 'ntp-most-visited'):
+          recordClick(NtpElement.kMostVisited);
+          return;
+        case $$(this, 'ntp-middle-slot-promo'):
+          recordClick(NtpElement.kMiddleSlotPromo);
+          return;
+        case $$(this, 'ntp-modules'):
+          recordClick(NtpElement.kModule);
+          return;
+        case $$(this, '#customizeButton'):
+        case $$(this, 'ntp-customize-dialog'):
+          recordClick(NtpElement.kCustomize);
+          return;
+      }
+    }
+    recordClick(NtpElement.kOther);
   }
 }
 

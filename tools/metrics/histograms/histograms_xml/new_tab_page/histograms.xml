@@ -111,6 +111,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2022-01-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the NTP was clicked. Only logged on the 1P NTP. Be aware that
+    this may undercount clicks on nested OGB iframes. Note that even if the user
+    has Google as their default search engine, Incognito and Guest mode NTPs are
+    not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ContentSuggestions.ArticlesListVisible"
     enum="BooleanVisible" expires_after="2021-11-07">
   <owner>freedjm@chromium.org</owner>
