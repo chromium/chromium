@@ -420,7 +420,10 @@ class TastTest(RemoteTest):
       # Use dateutil to parse the timestamps since datetime can't handle
       # nanosecond precision.
       duration = dateutil.parser.parse(end) - dateutil.parser.parse(start)
-      duration_ms = duration.total_seconds() * 1000
+      # If the duration is negative, Tast has likely reported an incorrect
+      # duration. See https://issuetracker.google.com/issues/187973541. Round
+      # up to 0 in that case to avoid confusing RDB.
+      duration_ms = max(duration.total_seconds() * 1000, 0)
       if bool(test['skipReason']):
         result = base_test_result.ResultType.SKIP
       elif errors:
