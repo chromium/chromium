@@ -491,6 +491,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   auto cache = std::make_unique<views::AXAuraObjCache>();
   auto* cache_ptr = cache.get();
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->send_window_state_on_enable_ = false;
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
   AutomationEventWaiter waiter;
   manager->Enable();

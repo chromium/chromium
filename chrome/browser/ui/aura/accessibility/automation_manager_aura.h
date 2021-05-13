@@ -152,6 +152,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
                           extensions::AutomationEventRouterObserver>
       automation_event_router_observer_{this};
 
+  bool send_window_state_on_enable_ = true;
+
   DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };
 
