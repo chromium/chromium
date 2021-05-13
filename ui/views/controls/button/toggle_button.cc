@@ -43,7 +43,10 @@ constexpr int kThumbInset = 2;
 // Class representing the thumb (the circle that slides horizontally).
 class ToggleButton::ThumbView : public View {
  public:
-  ThumbView() { views::InstallEmptyHighlightPathGenerator(this); }
+  ThumbView() {
+    // Make the thumb behave as part of the parent for event handling.
+    SetCanProcessEventsWithinSubtree(false);
+  }
   ThumbView(const ThumbView&) = delete;
   ThumbView& operator=(const ThumbView&) = delete;
   ~ThumbView() override = default;
@@ -67,13 +70,6 @@ class ToggleButton::ThumbView : public View {
 
   base::Optional<SkColor> GetThumbColor(bool is_on) const {
     return is_on ? thumb_on_color_ : thumb_off_color_;
-  }
-
- protected:
-  // views::View:
-  bool GetCanProcessEventsWithinSubtree() const override {
-    // Make the thumb behave as part of the parent for event handling.
-    return false;
   }
 
  private:
@@ -128,10 +124,11 @@ ToggleButton::ToggleButton(PressedCallback callback)
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   thumb_view_ = AddChildView(std::make_unique<ThumbView>());
   ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
-  // TODO(pbos): Update the highlight-path shape so that a FocusRing can be used
-  // on top of it to increase contrast. Disabling it for now addresses a
-  // regression in crbug.com/1031983, but a matching FocusRing would probably be
-  // desirable.
+  // Do not set a clip, allow the ink drop to burst out.
+  // TODO(pbos): Consider an explicit InkDrop API to not use a clip rect / mask.
+  views::InstallEmptyHighlightPathGenerator(this);
+  // TODO(pbos): Update the focus-ring path shape so that one can be used on top
+  // of this control (circling the ThumbView) to increase contrast.
   SetInstallFocusRingOnFocus(false);
   SetHasInkDropActionOnClick(true);
   views::InkDrop::UseInkDropForSquareRipple(ink_drop(),
