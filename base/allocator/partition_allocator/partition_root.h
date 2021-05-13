@@ -1054,7 +1054,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
     PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
-    if (LIKELY(!IsDirectMappedBucket(slot_span->bucket)) {
+    if (LIKELY(!IsDirectMappedBucket(slot_span->bucket))) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If there are no more references to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
