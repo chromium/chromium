@@ -15,6 +15,7 @@
 #include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session_service.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
@@ -74,6 +75,13 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
   MediaSessionInfoPtr session_info_;
 
   DISALLOW_COPY_AND_ASSIGN(MockAudioFocusDelegate);
+};
+
+// A mock WebContentsDelegate which listens to |ActivateContents()| calls.
+class MockWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  // content::WebContentsDelegate:
+  MOCK_METHOD(void, ActivateContents, (content::WebContents*), (override));
 };
 
 }  // anonymous namespace
@@ -720,6 +728,21 @@ TEST_F(MediaSessionImplTest, SessionInfoAudioSink) {
   player_observer_->SetAudioSinkId(player2, "2");
   info = media_session::test::GetMediaSessionInfoSync(GetMediaSession());
   EXPECT_FALSE(info->audio_sink_id.has_value());
+}
+
+TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
+  MockWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  // When the WebContents has a delegate, |Raise()| should activate the
+  // WebContents.
+  EXPECT_CALL(delegate, ActivateContents(web_contents()));
+  GetMediaSession()->Raise();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // When the WebContents does not have a delegate, |Raise()| should not crash.
+  web_contents()->SetDelegate(nullptr);
+  GetMediaSession()->Raise();
 }
 
 }  // namespace content

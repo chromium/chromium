@@ -276,6 +276,9 @@ class MediaSessionImpl : public MediaSession,
   // Hang up a WebRTC session.
   void HangUp() override;
 
+  // Brings the associated tab into focus.
+  void Raise() override;
+
   // Downloads the bitmap version of a MediaImage at least |minimum_size_px|
   // and closest to |desired_size_px|. If the download failed, was too small or
   // the image did not come from the media session then returns a null image.

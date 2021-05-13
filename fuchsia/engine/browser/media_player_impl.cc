@@ -53,6 +53,8 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl does not support toggling camera.
     case MediaSessionAction::kHangUp:
       return {};  // PlayerControl does not support hanging up.
+    case MediaSessionAction::kRaise:
+      return {};  // PlayerControl does not support raising.
   }
 }
 

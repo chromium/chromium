@@ -28,6 +28,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_content_type.h"
@@ -146,6 +147,8 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::kToggleCamera;
     case media_session::mojom::MediaSessionAction::kHangUp:
       return MediaSessionUserAction::kHangUp;
+    case media_session::mojom::MediaSessionAction::kRaise:
+      return MediaSessionUserAction::kRaise;
   }
   NOTREACHED();
   return MediaSessionUserAction::kPlay;
@@ -1153,6 +1156,14 @@ void MediaSessionImpl::ToggleCamera() {
 
 void MediaSessionImpl::HangUp() {
   DidReceiveAction(media_session::mojom::MediaSessionAction::kHangUp);
+}
+
+void MediaSessionImpl::Raise() {
+  content::WebContentsDelegate* delegate = web_contents()->GetDelegate();
+  if (!delegate)
+    return;
+
+  delegate->ActivateContents(web_contents());
 }
 
 void MediaSessionImpl::GetMediaImageBitmap(

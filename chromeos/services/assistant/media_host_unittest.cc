@@ -99,6 +99,7 @@ class MediaControllerMock : public media_session::mojom::MediaController {
   MOCK_METHOD(void, ToggleMicrophone, ());
   MOCK_METHOD(void, ToggleCamera, ());
   MOCK_METHOD(void, HangUp, ());
+  MOCK_METHOD(void, Raise, ());
   void AddObserver(
       mojo::PendingRemote<media_session::mojom::MediaControllerObserver> remote)
       override {

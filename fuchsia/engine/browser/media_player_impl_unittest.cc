@@ -40,6 +40,7 @@ class FakeMediaSession : public content::MediaSession {
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
+  MOCK_METHOD0(Raise, void());
 
   // content::MediaSession APIs faked to implement testing behaviour.
   MOCK_METHOD1(DidReceiveAction,

@@ -197,6 +197,7 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
       NOTREACHED();
       return;
   }
@@ -248,6 +249,7 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
       return base::nullopt;
   }
 }

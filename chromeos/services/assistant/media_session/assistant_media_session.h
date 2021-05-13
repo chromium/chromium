@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  void Raise() override {}
 
   // Requests/abandons audio focus to the AudioFocusManager.
   void RequestAudioFocus(media_session::mojom::AudioFocusType audio_focus_type);

@@ -159,6 +159,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  void Raise() override {}
 
   int toggle_suspend_resume_count() const {
     return toggle_suspend_resume_count_;

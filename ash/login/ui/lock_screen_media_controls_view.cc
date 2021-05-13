@@ -130,6 +130,7 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
       NOTREACHED();
       break;
   }

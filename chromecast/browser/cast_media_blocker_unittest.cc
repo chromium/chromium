@@ -60,6 +60,7 @@ class MockMediaSession : public content::MediaSession {
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
+  MOCK_METHOD0(Raise, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMediaSession);

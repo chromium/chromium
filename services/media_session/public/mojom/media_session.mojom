@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -35,6 +35,7 @@ enum MediaSessionAction {
   [MinVersion=11] kToggleMicrophone,
   [MinVersion=11] kToggleCamera,
   [MinVersion=11] kHangUp,
+  [MinVersion=12] kRaise,
 };
 
 [Stable, Extensible]
@@ -229,7 +230,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 21
+// Next Method ID: 22
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -325,4 +326,8 @@ interface MediaSession {
 
   // Hang up a WebRTC session.
   [MinVersion=11] HangUp@20();
+
+  // Display the source of the MediaSession (e.g. show the tab or the
+  // application).
+  [MinVersion=12] Raise@21();
 };

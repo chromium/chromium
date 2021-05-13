@@ -106,6 +106,7 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
       NOTREACHED();
       break;
   }
@@ -148,6 +149,7 @@ const std::u16string GetAccessibleNameForMediaAction(
     case MediaSessionAction::kToggleMicrophone:
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
+    case MediaSessionAction::kRaise:
       NOTREACHED();
       break;
   }

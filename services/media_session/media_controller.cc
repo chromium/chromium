@@ -320,6 +320,13 @@ void MediaController::HangUp() {
     session_->ipc()->HangUp();
 }
 
+void MediaController::Raise() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_)
+    session_->ipc()->Raise();
+}
+
 void MediaController::SetMediaSession(AudioFocusRequest* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

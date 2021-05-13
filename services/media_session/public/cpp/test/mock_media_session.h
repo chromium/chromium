@@ -167,6 +167,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  void Raise() override {}
 
   void SetIsControllable(bool value);
   void SetPreferStop(bool value) { prefer_stop_ = value; }

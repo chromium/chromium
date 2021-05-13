@@ -55,6 +55,9 @@ void PerformMediaSessionAction(
     case mojom::MediaSessionAction::kHangUp:
       media_controller_remote->HangUp();
       break;
+    case mojom::MediaSessionAction::kRaise:
+      media_controller_remote->Raise();
+      break;
     case mojom::MediaSessionAction::kSkipAd:
     case mojom::MediaSessionAction::kSeekTo:
     case mojom::MediaSessionAction::kScrubTo:
