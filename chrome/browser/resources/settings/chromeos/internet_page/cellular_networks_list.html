@@ -41,8 +41,6 @@
         align-items: center;
         display: flex;
         height: 72px;
-        padding-bottom: 16px;
-        padding-top: 16px;
       }
 
       .esim-list-title {
@@ -102,8 +100,7 @@
     <template is="dom-if" if="[[shouldShowEsimSection_(euicc_,
         cellularDeviceState, cellularDeviceState.*)]]" restamp>
       <div class="cellular-network-list-separator"></div>
-        <div class="cellular-network-list-header esim-list-header
-            flex settings-box-text">
+        <div class="cellular-network-list-header flex settings-box-text">
           <div class="flex-column">
             <div class="flex header-row">
               $i18n{cellularNetworkEsimLabel}
@@ -204,7 +201,7 @@
     <template is="dom-if"
         if="[[shouldShowTetherSection_(multiDevicePageContentData_)]]" restamp>
       <div class="cellular-network-list-separator"></div>
-      <div class="cellular-network-list-header">
+      <div class="cellular-network-list-header settings-box-text">
         $i18n{cellularNetworkTetherLabel}
       </div>
       <template is="dom-if"
