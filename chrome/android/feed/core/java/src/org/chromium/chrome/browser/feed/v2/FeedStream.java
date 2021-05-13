@@ -635,6 +635,10 @@ public class FeedStream implements Stream {
         return FeedStreamJni.get().isActivityLoggingEnabled(mNativeFeedStream, this);
     }
 
+    public void processViewAction(byte[] data) {
+        FeedStreamJni.get().processViewAction(mNativeFeedStream, this, data);
+    }
+
     @Override
     public int[] getExperimentIds() {
         assert ThreadUtils.runningOnUiThread();

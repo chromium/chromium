@@ -37,7 +37,10 @@ public interface FeedActionsHandler {
     /**
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
      * message.
+     *
+     * This is in the process of being removed, replaced by FeedLoggingDependencyProvider.
      */
+    @Deprecated
     default void processViewAction(byte[] data) {}
 
     /**

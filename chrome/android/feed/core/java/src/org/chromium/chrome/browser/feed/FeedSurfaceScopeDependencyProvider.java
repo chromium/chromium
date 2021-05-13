@@ -64,6 +64,48 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
     }
 
     @Override
+    public AutoplayPreference getAutoplayPreference() {
+        assert ThreadUtils.runningOnUiThread();
+        @VideoPreviewsType
+        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
+        switch (videoPreviewsType) {
+            case VideoPreviewsType.NEVER:
+                return AutoplayPreference.AUTOPLAY_DISABLED;
+            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
+                return AutoplayPreference.AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
+            case VideoPreviewsType.WIFI:
+            default:
+                return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
+        }
+    }
+
+    @Override
+    public void reportAutoplayEvent(AutoplayEvent event) {
+        int feedAutoplayEvent;
+        if (event == AutoplayEvent.AUTOPLAY_REQUESTED) {
+            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_REQUESTED;
+        } else if (event == AutoplayEvent.AUTOPLAY_STARTED) {
+            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STARTED;
+        } else if (event == AutoplayEvent.AUTOPLAY_STOPPED) {
+            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STOPPED;
+        } else if (event == AutoplayEvent.AUTOPLAY_ENDED) {
+            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_ENDED;
+        } else if (event == AutoplayEvent.AUTOPLAY_CLICKED) {
+            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_CLICKED;
+            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_VIDEO);
+        } else {
+            Log.wtf(TAG, "Unable to map AutoplayEvent " + event.name());
+            return;
+        }
+        RecordHistogram.recordEnumeratedHistogram("ContentSuggestions.Feed.AutoplayEvent",
+                feedAutoplayEvent, FeedAutoplayEvent.NUM_ENTRIES);
+    }
+
+    /**
+     * FeedLoggingDependencyProvider implementation.
+     */
+
+    @Override
     public String getAccountName() {
         // Don't return account name if there's a signed-out session ID.
         if (!getSignedOutSessionId().isEmpty()) {
@@ -103,41 +145,12 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
         return mFeedStream.getSignedOutSessionId();
     }
 
+    /**
+     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
+     * message.
+     */
     @Override
-    public AutoplayPreference getAutoplayPreference() {
-        assert ThreadUtils.runningOnUiThread();
-        @VideoPreviewsType
-        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
-        switch (videoPreviewsType) {
-            case VideoPreviewsType.NEVER:
-                return AutoplayPreference.AUTOPLAY_DISABLED;
-            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
-                return AutoplayPreference.AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
-            case VideoPreviewsType.WIFI:
-            default:
-                return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
-        }
-    }
-
-    @Override
-    public void reportAutoplayEvent(AutoplayEvent event) {
-        int feedAutoplayEvent;
-        if (event == AutoplayEvent.AUTOPLAY_REQUESTED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_REQUESTED;
-        } else if (event == AutoplayEvent.AUTOPLAY_STARTED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STARTED;
-        } else if (event == AutoplayEvent.AUTOPLAY_STOPPED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_STOPPED;
-        } else if (event == AutoplayEvent.AUTOPLAY_ENDED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_ENDED;
-        } else if (event == AutoplayEvent.AUTOPLAY_CLICKED) {
-            feedAutoplayEvent = FeedAutoplayEvent.AUTOPLAY_CLICKED;
-            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_VIDEO);
-        } else {
-            Log.wtf(TAG, "Unable to map AutoplayEvent " + event.name());
-            return;
-        }
-        RecordHistogram.recordEnumeratedHistogram("ContentSuggestions.Feed.AutoplayEvent",
-                feedAutoplayEvent, FeedAutoplayEvent.NUM_ENTRIES);
+    public void processViewAction(byte[] data) {
+        mFeedStream.processViewAction(data);
     }
 }
