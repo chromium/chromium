@@ -1668,6 +1668,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ActivateForPrerendering();
 
+  void AddPostPrerenderingActivationStep(base::OnceClosure callback);
+
   class CORE_EXPORT PaintPreviewScope {
     STACK_ALLOCATED();
 
@@ -1827,6 +1829,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // pending promises created by |hasTrustToken|.
   void HasTrustTokensAnswererConnectionError();
 
+  void RunPostPrerenderingActivationSteps();
+
   DocumentLifecycle lifecycle_;
 
   bool is_initial_empty_document_;
@@ -1837,6 +1841,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // TODO(bokan): This should eventually be based on the document loading-mode:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/prerendering-state.md#documentprerendering
   bool is_prerendering_;
+
+  // The callback list for post-prerendering activation step.
+  // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
+  Vector<base::OnceClosure> post_prerendering_activation_callbacks_;
 
   bool evaluate_media_queries_on_style_recalc_;
 

@@ -8097,10 +8097,28 @@ void Document::ActivateForPrerendering() {
   if (DocumentLoader* loader = Loader())
     loader->NotifyPrerenderingDocumentActivated();
 
+  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // Step 8.3.4 "Fire an event named prerenderingchange at doc."
   DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+
+  // Step 8.3.5 "For each steps in doc’s post-prerendering activation steps
+  // list:"
+  RunPostPrerenderingActivationSteps();
 
   if (LocalFrame* frame = GetFrame())
     frame->DidActivateForPrerendering();
+}
+
+void Document::AddPostPrerenderingActivationStep(base::OnceClosure callback) {
+  DCHECK(is_prerendering_);
+  post_prerendering_activation_callbacks_.push_back(std::move(callback));
+}
+
+void Document::RunPostPrerenderingActivationSteps() {
+  DCHECK(!is_prerendering_);
+  for (auto& callback : post_prerendering_activation_callbacks_)
+    std::move(callback).Run();
+  post_prerendering_activation_callbacks_.clear();
 }
 
 bool Document::InStyleRecalc() const {

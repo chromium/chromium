@@ -58,6 +58,8 @@ class MediaKeySystemAccessInitializer final
       std::unique_ptr<WebContentDecryptionModuleAccess>) override;
   void RequestNotSupported(const WebString& error_message) override;
 
+  void StartRequestAsync();
+
   void Trace(Visitor* visitor) const override {
     MediaKeySystemAccessInitializerBase::Trace(visitor);
   }
@@ -97,6 +99,21 @@ void MediaKeySystemAccessInitializer::RequestNotSupported(
   resolver_->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, error_message));
   resolver_.Clear();
+}
+
+void MediaKeySystemAccessInitializer::StartRequestAsync() {
+  if (!IsExecutionContextValid() || !DomWindow())
+    return;
+
+  // 6. Asynchronously determine support, and if allowed, create and
+  //    initialize the MediaKeySystemAccess object.
+  DCHECK(!DomWindow()->document()->IsPrerendering());
+
+  MediaKeysController* controller =
+      MediaKeysController::From(DomWindow()->GetFrame()->GetPage());
+  WebEncryptedMediaClient* media_client =
+      controller->EncryptedMediaClient(DomWindow());
+  media_client->RequestMediaKeySystemAccess(WebEncryptedMediaRequest(this));
 }
 
 }  // namespace
@@ -163,6 +180,14 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
       MakeGarbageCollected<MediaKeySystemAccessInitializer>(
           script_state, key_system, supported_configurations);
   ScriptPromise promise = initializer->Promise();
+
+  // Defer to determine support until the prerendering page is activated.
+  if (window->document()->IsPrerendering()) {
+    window->document()->AddPostPrerenderingActivationStep(
+        WTF::Bind(&MediaKeySystemAccessInitializer::StartRequestAsync,
+                  WrapWeakPersistent(initializer)));
+    return promise;
+  }
 
   // 6. Asynchronously determine support, and if allowed, create and
   //    initialize the MediaKeySystemAccess object.

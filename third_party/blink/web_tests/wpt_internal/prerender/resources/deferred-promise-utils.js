@@ -61,6 +61,8 @@ class PrerenderEventCollector {
               this.addEvent(`finished waiting ${promiseName}`);
             },
             (error) => {
+              if (error instanceof Error)
+                error = error.name;
               this.addEvent(`${promiseName} rejected: ${error}`);
             })
         .finally(() => {
