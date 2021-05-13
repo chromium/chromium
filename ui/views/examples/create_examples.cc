@@ -4,6 +4,7 @@
 
 #include "ui/views/examples/create_examples.h"
 
+#include <memory>
 #include <utility>
 
 #include "ui/views/examples/animation_example.h"
@@ -18,6 +19,7 @@
 #include "ui/views/examples/dialog_example.h"
 #include "ui/views/examples/flex_layout_example.h"
 #include "ui/views/examples/label_example.h"
+#include "ui/views/examples/layer_animation_example.h"
 #include "ui/views/examples/link_example.h"
 #include "ui/views/examples/login_bubble_dialog_example.h"
 #include "ui/views/examples/menu_example.h"
@@ -58,6 +60,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<DialogExample>());
   examples.push_back(std::make_unique<FlexLayoutExample>());
   examples.push_back(std::make_unique<LabelExample>());
+  examples.push_back(std::make_unique<LayerAnimationExample>());
   examples.push_back(std::make_unique<LinkExample>());
   examples.push_back(std::make_unique<LoginBubbleDialogExample>());
   examples.push_back(std::make_unique<MenuExample>());
