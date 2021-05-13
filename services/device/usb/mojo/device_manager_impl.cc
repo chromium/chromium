@@ -141,8 +141,7 @@ void DeviceManagerImpl::OpenFileDescriptor(
     LOG(ERROR) << "Was asked to open non-existent USB device: " << guid;
     std::move(callback).Run(base::File());
   } else {
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     auto devpath =
         static_cast<device::UsbDeviceLinux*>(device.get())->device_path();
 
@@ -151,9 +150,11 @@ void DeviceManagerImpl::OpenFileDescriptor(
     chromeos::PermissionBrokerClient::Get()->ClaimDevicePath(
         devpath, drop_privileges_mask, lifeline_fd.GetFD().get(),
         base::BindOnce(&DeviceManagerImpl::OnOpenFileDescriptor,
-                       weak_factory_.GetWeakPtr(), copyable_callback),
+                       weak_factory_.GetWeakPtr(),
+                       std::move(split_callback.first)),
         base::BindOnce(&DeviceManagerImpl::OnOpenFileDescriptorError,
-                       weak_factory_.GetWeakPtr(), copyable_callback));
+                       weak_factory_.GetWeakPtr(),
+                       std::move(split_callback.second)));
   }
 }
 

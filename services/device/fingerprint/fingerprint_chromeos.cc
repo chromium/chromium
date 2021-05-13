@@ -137,9 +137,8 @@ void FingerprintChromeOS::CancelCurrentEnrollSession(
 void FingerprintChromeOS::RequestRecordLabel(
     const std::string& record_path,
     RequestRecordLabelCallback callback) {
-  GetBiodClient()->RequestRecordLabel(
-      dbus::ObjectPath(record_path),
-      base::AdaptCallbackForRepeating(std::move(callback)));
+  GetBiodClient()->RequestRecordLabel(dbus::ObjectPath(record_path),
+                                      std::move(callback));
 }
 
 void FingerprintChromeOS::SetRecordLabel(const std::string& new_label,

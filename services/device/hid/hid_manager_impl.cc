@@ -80,11 +80,11 @@ void HidManagerImpl::Connect(
     mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
     bool allow_protected_reports,
     ConnectCallback callback) {
-  hid_service_->Connect(device_guid, allow_protected_reports,
-                        base::AdaptCallbackForRepeating(base::BindOnce(
-                            &HidManagerImpl::CreateConnection,
-                            weak_factory_.GetWeakPtr(), std::move(callback),
-                            std::move(connection_client), std::move(watcher))));
+  hid_service_->Connect(
+      device_guid, allow_protected_reports,
+      base::BindOnce(&HidManagerImpl::CreateConnection,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(connection_client), std::move(watcher)));
 }
 
 void HidManagerImpl::CreateConnection(

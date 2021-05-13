@@ -378,17 +378,16 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   scoped_refptr<HidDeviceInfo> device_info = map_entry->second;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Adapt |callback| to a repeating callback because the implementation below
-  // requires separate callbacks for success and error. Only one will be called.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   chromeos::PermissionBrokerClient::Get()->OpenPath(
       device_info->device_node(),
       base::BindOnce(
           &HidServiceLinux::OnPathOpenComplete,
           std::make_unique<ConnectParams>(device_info, allow_protected_reports,
-                                          copyable_callback)),
+                                          std::move(split_callback.first))),
       base::BindOnce(&HidServiceLinux::OnPathOpenError,
-                     device_info->device_node(), copyable_callback));
+                     device_info->device_node(),
+                     std::move(split_callback.second)));
 #else
   auto params = std::make_unique<ConnectParams>(
       device_info, allow_protected_reports, std::move(callback));

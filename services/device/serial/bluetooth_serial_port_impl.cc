@@ -67,14 +67,15 @@ void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
 
   BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
   if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     device->ConnectToService(
         GetSerialPortProfileUUID(),
         base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnected,
-                       weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_callback.first)),
         base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnectedError,
-                       weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_callback.second)));
     return;
   }
 
