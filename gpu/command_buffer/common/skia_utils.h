@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SKIA_UTILS_H_
 #define GPU_COMMAND_BUFFER_COMMON_SKIA_UTILS_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "gpu/raster_export.h"
 

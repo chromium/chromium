@@ -5,8 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_REF_COUNTED_MEMORY_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_REF_COUNTED_MEMORY_MOJOM_TRAITS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
 #include "mojo/public/cpp/base/big_buffer.h"

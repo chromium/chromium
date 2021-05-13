@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"

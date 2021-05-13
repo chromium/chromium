@@ -8,10 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <set>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"

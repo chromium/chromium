@@ -5,8 +5,6 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_DXGI_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_DXGI_H_
 
-#include <utility>
-
 #include <d3d11_1.h>
 #include <dxgi.h>
 #include <wrl/client.h>

@@ -5,8 +5,6 @@
 #ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
 #define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"

@@ -5,9 +5,6 @@
 #ifndef GPU_CONFIG_DEVICE_PERF_INFO_H_
 #define GPU_CONFIG_DEVICE_PERF_INFO_H_
 
-#include <string>
-#include <vector>
-
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"

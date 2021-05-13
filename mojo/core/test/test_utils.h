@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include <string>
-
 #include "base/files/scoped_file.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
