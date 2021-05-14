@@ -7,13 +7,13 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -139,8 +139,8 @@ bool IsChromeOs() {
 #endif
 }
 
-std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
-                                                          const GURL& url) {
+const apps::FileHandlers GetFileHandlersForWebApp(Profile* profile,
+                                                  const GURL& url) {
   auto* provider = WebAppProviderBase::GetProviderBase(profile);
   if (!provider)
     return {};
@@ -150,26 +150,37 @@ std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
   if (!app_id)
     return {};
 
-  std::set<std::string> extensions = apps::GetFileExtensionsFromFileHandlers(
-      *registrar.GetAppFileHandlers(*app_id));
-  return std::vector<std::string>(extensions.begin(), extensions.end());
+  return *registrar.GetAppFileHandlers(*app_id);
 }
 
-std::u16string GetFileExtensionsHandledByWebAppDisplayedAsList(
+std::u16string GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
     Profile* profile,
     const GURL& url) {
-  std::vector<std::string> extensions =
-      GetFileExtensionsHandledByWebApp(profile, url);
+  const apps::FileHandlers file_handlers =
+      GetFileHandlersForWebApp(profile, url);
+  std::vector<std::string> associations;
+#if defined(OS_LINUX)
+  std::set<std::string> mime_types_set =
+      apps::GetMimeTypesFromFileHandlers(file_handlers);
+  associations.reserve(mime_types_set.size());
+  associations.insert(associations.end(), mime_types_set.begin(),
+                      mime_types_set.end());
+#else   // !defined(OS_LINUX)
+  std::set<std::string> extensions_set =
+      apps::GetFileExtensionsFromFileHandlers(file_handlers);
+  associations.reserve(extensions_set.size());
 
   // Convert file types from formats like ".txt" to "TXT".
-  std::transform(extensions.begin(), extensions.end(), extensions.begin(),
+  std::transform(extensions_set.begin(), extensions_set.end(),
+                 std::back_inserter(associations),
                  [](const std::string& extension) {
                    return base::ToUpperASCII(extension.substr(1));
                  });
+#endif  // defined(OS_LINUX)
 
   return base::UTF8ToUTF16(base::JoinString(
-      extensions, l10n_util::GetStringUTF8(
-                      IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
+      associations, l10n_util::GetStringUTF8(
+                        IDS_WEB_APP_FILE_HANDLING_EXTENSION_LIST_SEPARATOR)));
 }
 
 }  // namespace web_app

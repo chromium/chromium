@@ -1781,8 +1781,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   InstallWebApp();
 
-  EXPECT_EQ(u"TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
-                        browser()->profile(), GetAppURL()));
+  std::u16string associations_list =
+      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
+          browser()->profile(), GetAppURL());
+#if defined(OS_LINUX)
+  EXPECT_EQ(u"text/plain", associations_list);
+#else
+  EXPECT_EQ(u"TXT", associations_list);
+#endif  // defined(OS_LINUX)
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -1809,8 +1815,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   InstallWebApp();
 
-  EXPECT_EQ(u"MD, TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
-                            browser()->profile(), GetAppURL()));
+  std::u16string associations_list =
+      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
+          browser()->profile(), GetAppURL());
+#if defined(OS_LINUX)
+  EXPECT_EQ(u"text/plain", associations_list);
+#else
+  EXPECT_EQ(u"MD, TXT", associations_list);
+#endif  // defined(OS_LINUX)
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -1844,8 +1856,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   InstallWebApp();
 
-  EXPECT_EQ(u"LONGTYPE, TXT", GetFileExtensionsHandledByWebAppDisplayedAsList(
-                                  browser()->profile(), GetAppURL()));
+  std::u16string associations_list =
+      GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
+          browser()->profile(), GetAppURL());
+#if defined(OS_LINUX)
+  EXPECT_EQ(u"long/type, text/plain", associations_list);
+#else
+  EXPECT_EQ(u"LONGTYPE, TXT", associations_list);
+#endif  // defined(OS_LINUX)
 }
 
 class ManifestUpdateManagerBrowserTestWithShortcutsMenu

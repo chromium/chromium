@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 
 class GURL;
 class Profile;
@@ -71,17 +72,18 @@ std::string GetProfileCategoryForLogging(Profile* profile);
 // Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
 bool IsChromeOs();
 
-// Returns a vector of file extensions of the form ".csv" which are handled by
-// the app for `url`. It is an error to call this with a URL that doesn't
-// correspond to an app in `profile`.
-std::vector<std::string> GetFileExtensionsHandledByWebApp(Profile* profile,
-                                                          const GURL& url);
+// Returns file handlers associated with the app at `url`, in the `profile`.
+const apps::FileHandlers GetFileHandlersForWebApp(Profile* profile,
+                                                  const GURL& url);
 
-// Returns a display-ready string that holds all the file extensions handled by
-// the app for `url`. It is an error to call this with a URL that doesn't
-// correspond to an app in `profile`.
-std::u16string GetFileExtensionsHandledByWebAppDisplayedAsList(Profile* profile,
-                                                               const GURL& url);
+// Returns a display-ready string that holds all file type associations handled
+// by the app at `url`. On Linux, where files are associated via MIME types,
+// this will return MIME types like "text/plain, image/png". On all other
+// platforms, where files are associated via file extensions, this will return
+// capitalized file extensions with the period truncated, like "TXT, PNG".
+std::u16string GetFileTypeAssociationsHandledByWebAppDisplayedAsList(
+    Profile* profile,
+    const GURL& url);
 
 }  // namespace web_app
 

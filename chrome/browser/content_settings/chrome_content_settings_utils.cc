@@ -50,7 +50,8 @@ std::u16string GetPermissionDetailString(Profile* profile,
   if (content_type != ContentSettingsType::FILE_HANDLING || !url.is_valid())
     return {};
 
-  return web_app::GetFileExtensionsHandledByWebAppDisplayedAsList(profile, url);
+  return web_app::GetFileTypeAssociationsHandledByWebAppDisplayedAsList(profile,
+                                                                        url);
 }
 #endif
 
