@@ -33,8 +33,8 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     return;
   }
 
-  soda_installer_initialized_ = true;
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
+    soda_installer_initialized_ = true;
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     speech::SodaInstaller::GetInstance()->InstallSoda(global_prefs);
     speech::SodaInstaller::GetInstance()->InstallLanguage(

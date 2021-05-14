@@ -32,7 +32,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void HandleOpenSystemCaptionsDialog(const base::ListValue* args);
 
   // SodaInstaller::Observer overrides:
-  void OnSodaInstalled() override {}
+  void OnSodaInstalled() override;
   void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
