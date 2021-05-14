@@ -954,12 +954,6 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
 }
 
 bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
-  return AppendToFile(
-      filename,
-      StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
-}
-
-bool AppendToFile(const FilePath& filename, StringPiece data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   win::ScopedHandle file(CreateFile(filename.value().c_str(), FILE_APPEND_DATA,
                                     0, nullptr, OPEN_EXISTING, 0, nullptr));
@@ -983,6 +977,10 @@ bool AppendToFile(const FilePath& filename, StringPiece data) {
              << filename.value();
   }
   return false;
+}
+
+bool AppendToFile(const FilePath& filename, StringPiece data) {
+  return AppendToFile(filename, as_bytes(make_span(data)));
 }
 
 bool GetCurrentDirectory(FilePath* dir) {

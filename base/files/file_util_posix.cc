@@ -890,11 +890,6 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
 }
 
 bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
-  return WriteFileDescriptor(
-      fd, StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
-}
-
-bool WriteFileDescriptor(int fd, StringPiece data) {
   // Allow for partial writes.
   ssize_t bytes_written_total = 0;
   ssize_t size = checked_cast<ssize_t>(data.size());
@@ -907,6 +902,10 @@ bool WriteFileDescriptor(int fd, StringPiece data) {
   }
 
   return true;
+}
+
+bool WriteFileDescriptor(int fd, StringPiece data) {
+  return WriteFileDescriptor(fd, as_bytes(make_span(data)));
 }
 
 bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
@@ -984,12 +983,6 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
 #if !defined(OS_NACL_NONSFI)
 
 bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
-  return AppendToFile(
-      filename,
-      StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
-}
-
-bool AppendToFile(const FilePath& filename, StringPiece data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   bool ret = true;
   int fd = HANDLE_EINTR(open(filename.value().c_str(), O_WRONLY | O_APPEND));
@@ -1010,6 +1003,10 @@ bool AppendToFile(const FilePath& filename, StringPiece data) {
   }
 
   return ret;
+}
+
+bool AppendToFile(const FilePath& filename, StringPiece data) {
+  return AppendToFile(filename, as_bytes(make_span(data)));
 }
 
 bool GetCurrentDirectory(FilePath* dir) {
