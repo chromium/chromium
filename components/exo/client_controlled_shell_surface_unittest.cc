@@ -9,9 +9,12 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
@@ -1636,22 +1639,74 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(64, 64))));
   surface->Attach(desktop_buffer.get());
   surface->SetInputRegion(gfx::Rect(0, 0, 64, 64));
-  shell_surface->SetGeometry(gfx::Rect(0, 0, 64, 64));
+  shell_surface->SetGeometry(gfx::Rect(100, 0, 64, 64));
   shell_surface->SetMaximized();
   surface->SetFrame(SurfaceFrameType::NORMAL);
   surface->Commit();
 
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  ash::Shelf* shelf = ash::Shelf::ForWindow(window);
+  shelf->SetAlignment(ash::ShelfAlignment::kLeft);
+
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  ASSERT_TRUE(work_area.x() != display_bounds.x());
+
   auto* wide_frame = shell_surface->wide_frame_for_test();
   ASSERT_TRUE(wide_frame);
   EXPECT_FALSE(wide_frame->header_view()->in_immersive_mode());
+  EXPECT_EQ(work_area.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(work_area.width(), wide_frame->GetBoundsInScreen().width());
+
+  auto another_window = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
+  another_window->SetFullscreen(true);
+
+  // Make sure that the wide frame stays in maximzied size even if there is
+  // active fullscreen window.
+  EXPECT_EQ(work_area.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(work_area.width(), wide_frame->GetBoundsInScreen().width());
+
+  shell_surface->Activate();
+
+  EXPECT_EQ(work_area.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(work_area.width(), wide_frame->GetBoundsInScreen().width());
+
+  // If the shelf is set to auto hide by a user, use the display bounds.
+  ash::Shelf::ForWindow(window)->SetAutoHideBehavior(
+      ash::ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(display_bounds.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(display_bounds.width(), wide_frame->GetBoundsInScreen().width());
+
+  ash::Shelf::ForWindow(window)->SetAutoHideBehavior(
+      ash::ShelfAutoHideBehavior::kNever);
+  EXPECT_EQ(work_area.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(work_area.width(), wide_frame->GetBoundsInScreen().width());
+
+  shell_surface->SetFullscreen(true);
+  surface->Commit();
+  EXPECT_EQ(display_bounds.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(display_bounds.width(), wide_frame->GetBoundsInScreen().width());
+  EXPECT_EQ(display_bounds,
+            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+
+  // Activating maximized window should not affect the fullscreen shell
+  // surface's wide frame.
+  another_window->Activate();
+  another_window->SetFullscreen(false);
+  EXPECT_EQ(work_area,
+            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
+  EXPECT_EQ(display_bounds.x(), wide_frame->GetBoundsInScreen().x());
+  EXPECT_EQ(display_bounds.width(), wide_frame->GetBoundsInScreen().width());
+
+  another_window->Close();
 
   // Check targeter is still CustomWindowTargeter.
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-
   ASSERT_TRUE(window->parent());
 
   auto* custom_targeter = window->targeter();
-  gfx::Point mouse_location(1, 50);
+  gfx::Point mouse_location(101, 50);
 
   auto* root = window->GetRootWindow();
   aura::WindowTargeter targeter;

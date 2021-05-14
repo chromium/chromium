@@ -16,6 +16,7 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/client_controlled_state.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -66,7 +67,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::ClientControlledShellSurface*)
 namespace exo {
 
 namespace {
-
+using ::ash::screen_util::GetIdealBoundsForMaximizedOrFullscreenOrPinnedState;
 using ::chromeos::WindowStateType;
 
 // Client controlled specific accelerators.
@@ -975,8 +976,11 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
   // Calculate a minimum window visibility required bounds.
   gfx::Rect adjusted_bounds = bounds;
   if (!is_display_move_pending) {
+    const gfx::Rect& restriction = GetWindowState()->IsFullscreen()
+                                       ? target_display.bounds()
+                                       : target_display.work_area();
     ash::ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
-        target_display.work_area(), &adjusted_bounds);
+        restriction, &adjusted_bounds);
     // Collision detection to the bounds set by Android should be applied only
     // to initial bounds. Do not adjust new bounds as it can be obsolete or in
     // transit during animation, which results in incorrect resting postiion.
@@ -1269,15 +1273,15 @@ void ClientControlledShellSurface::OnContentSizeChanged(Surface* surface) {
 void ClientControlledShellSurface::UpdateFrame() {
   if (!widget_)
     return;
-  gfx::Rect work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(widget_->GetNativeWindow())
-          .work_area();
-
   ash::WindowState* window_state = GetWindowState();
-  bool enable_wide_frame = GetFrameView()->GetFrameEnabled() &&
-                           window_state->IsMaximizedOrFullscreenOrPinned() &&
-                           work_area.width() != geometry().width();
+  bool enable_wide_frame = false;
+  if (GetFrameView()->GetFrameEnabled() &&
+      window_state->IsMaximizedOrFullscreenOrPinned()) {
+    gfx::Rect ideal_bounds =
+        GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
+            widget_->GetNativeWindow());
+    enable_wide_frame = ideal_bounds.width() != geometry().width();
+  }
   bool update_frame = state_changed_;
   state_changed_ = false;
   if (enable_wide_frame) {

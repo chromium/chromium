@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check_op.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -130,6 +131,38 @@ gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
   }
 
   return snapped_bounds;
+}
+
+gfx::Rect GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
+    aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  if (window_state->IsMaximized()) {
+    auto* shelf = ash::Shelf::ForWindow(window);
+    if (shelf->auto_hide_behavior() == ash::ShelfAutoHideBehavior::kAlways) {
+      gfx::Rect bounds =
+          ash::screen_util::GetFullscreenWindowBoundsInParent(window);
+      ::wm::ConvertRectToScreen(window->parent(), &bounds);
+      return bounds;
+    }
+    if (shelf->auto_hide_behavior() ==
+        ash::ShelfAutoHideBehavior::kAlwaysHidden) {
+      return display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(const_cast<aura::Window*>(window))
+          .work_area();
+    }
+    auto work_area =
+        ash::WorkAreaInsets::ForWindow(window)->ComputeStableWorkArea();
+    return work_area;
+  }
+  if (window_state->IsFullscreen() || window_state->IsPinned()) {
+    gfx::Rect bounds =
+        ash::screen_util::GetFullscreenWindowBoundsInParent(window);
+    ::wm::ConvertRectToScreen(window->parent(), &bounds);
+    return bounds;
+  }
+  NOTREACHED() << "The window is not maximzied or fullscreen or pinned. state="
+               << window_state->GetStateType();
+  return window->GetBoundsInScreen();
 }
 
 }  // namespace screen_util

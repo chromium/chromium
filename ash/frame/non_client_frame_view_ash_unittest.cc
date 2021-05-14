@@ -737,7 +737,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
                        gfx::Rect(100, 0, 400, 500));
-
+  widget->Maximize();
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
   wide_frame_view->GetWidget()->Show();
@@ -745,27 +745,27 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
   FrameCaptionButtonContainerView::TestApi test_api(
       header_view->caption_button_container());
 
-  EXPECT_STREQ(views::kWindowControlMaximizeIcon.name,
-               test_api.size_button()->icon_definition_for_test()->name);
-  widget->Maximize();
-  header_view->Layout();
   EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
-               test_api.size_button()->icon_definition_for_test()->name);
-
-  widget->Restore();
-  header_view->Layout();
-  EXPECT_STREQ(views::kWindowControlMaximizeIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
 
   widget->SetFullscreen(true);
   header_view->Layout();
   EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
-
-  widget->SetFullscreen(false);
-  header_view->Layout();
-  EXPECT_STREQ(views::kWindowControlMaximizeIcon.name,
-               test_api.size_button()->icon_definition_for_test()->name);
+  {
+    WMEvent event(WM_EVENT_PIN);
+    WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
+    header_view->Layout();
+    EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
+                 test_api.size_button()->icon_definition_for_test()->name);
+  }
+  {
+    WMEvent event(WM_EVENT_TRUSTED_PIN);
+    WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
+    header_view->Layout();
+    EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
+                 test_api.size_button()->icon_definition_for_test()->name);
+  }
 }
 
 namespace {
@@ -857,6 +857,7 @@ TEST_P(NonClientFrameViewAshFrameColorTest, KFrameInactiveColor) {
 TEST_P(NonClientFrameViewAshFrameColorTest, WideFrameInitialColor) {
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  widget->Maximize();
   aura::Window* window = widget->GetNativeWindow();
   SkColor active_color = window->GetProperty(kFrameActiveColorKey);
   SkColor inactive_color = window->GetProperty(kFrameInactiveColorKey);

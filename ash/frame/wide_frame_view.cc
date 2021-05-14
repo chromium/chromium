@@ -7,6 +7,7 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
@@ -64,12 +65,11 @@ gfx::Rect WideFrameView::GetFrameBounds(views::Widget* target) {
       views::GetCaptionButtonLayoutSize(
           views::CaptionButtonLayoutSize::kNonBrowserCaption)
           .height();
-  display::Screen* screen = display::Screen::GetScreen();
   aura::Window* target_window = target->GetNativeWindow();
   gfx::Rect bounds =
-      target->IsFullscreen()
-          ? screen->GetDisplayNearestWindow(target_window).bounds()
-          : screen->GetDisplayNearestWindow(target_window).work_area();
+      screen_util::GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
+          target_window);
+
   bounds.set_height(kFrameHeight);
   return bounds;
 }
@@ -121,6 +121,7 @@ WideFrameView::WideFrameView(views::Widget* target) : target_(target) {
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
   set_owned_by_client();
+  WindowState::Get(window)->set_allow_set_bounds_direct(true);
 
   paint_as_active_subscription_ =
       target_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
@@ -177,6 +178,15 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
   DCHECK(target_);
+
+  // Ignore if this is called when the targe window state is nor proper
+  // state. This can happen when switching the state to other states, in which
+  // case, the wide frame will be removed.
+  if (!WindowState::Get(target_->GetNativeWindow())
+           ->IsMaximizedOrFullscreenOrPinned()) {
+    return;
+  }
+
   GetWidget()->SetBounds(GetFrameBounds(target_));
 }
 
