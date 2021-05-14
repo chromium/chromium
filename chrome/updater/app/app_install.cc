@@ -9,9 +9,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -142,27 +144,18 @@ void AppInstall::WakeCandidate() {
 }
 
 void AppInstall::MaybeInstallApp() {
-  const std::string app_id = []() {
-    // Returns the app id parsed from the tag, if the --tag is specified, or
-    // the switch value of the --app-id command line argument.
-    // Otherwise, returns an empty string.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
-    if (!tag.empty()) {
-      tagging::TagArgs tag_args;
-      tagging::ErrorCode error = tagging::Parse(tag, base::nullopt, &tag_args);
-      if (error == tagging::ErrorCode::kSuccess) {
-        // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-        DCHECK_EQ(tag_args.apps.size(), size_t{1});
-        const std::string& app_id = tag_args.apps.front().app_id;
-        if (!app_id.empty()) {
-          return app_id;
-        }
-      } else {
-        VLOG(1) << "Tag parsing returned " << error << ".";
+  const std::string app_id = [this]() {
+    base::Optional<tagging::TagArgs> tag_args = this->tag_args();
+    if (tag_args && !tag_args->apps.empty()) {
+      // TODO(crbug.com/1128631): support bundles. For now, assume one app.
+      DCHECK_EQ(tag_args->apps.size(), size_t{1});
+      const std::string& app_id = tag_args->apps.front().app_id;
+      if (!app_id.empty()) {
+        return app_id;
       }
     }
-    return command_line->GetSwitchValueASCII(kAppIdSwitch);
+    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        kAppIdSwitch);
   }();
 
   if (app_id.empty()) {

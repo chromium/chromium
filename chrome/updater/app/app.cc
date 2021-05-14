@@ -4,20 +4,42 @@
 
 #include "chrome/updater/app/app.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
 constexpr base::StringPiece App::kThreadPoolName;
 
-App::App() : updater_scope_(GetProcessScope()) {}
+App::App()
+    : process_scope_(GetProcessScope()),
+      tag_args_([]() -> base::Optional<tagging::TagArgs> {
+        base::CommandLine* command_line =
+            base::CommandLine::ForCurrentProcess();
+        const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
+        if (tag.empty())
+          return base::nullopt;
+        tagging::TagArgs tag_args;
+        const tagging::ErrorCode error =
+            tagging::Parse(tag, base::nullopt, &tag_args);
+        VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
+            << "Tag parsing returned " << error << ".";
+        return error == tagging::ErrorCode::kSuccess
+                   ? base::make_optional(tag_args)
+                   : base::nullopt;
+      }()) {}
+
 App::~App() = default;
 
 void App::InitializeThreadPool() {
@@ -52,7 +74,25 @@ void App::Shutdown(int exit_code) {
 }
 
 UpdaterScope App::updater_scope() const {
-  return updater_scope_;
+  // TODO(crbug.com/1208946): handle conflicts between NeedAdmin and --system.
+  if (tag_args_ && !tag_args_->apps.empty() &&
+      tag_args_->apps.front().needs_admin) {
+    // TODO(crbug.com/1128631): support bundles. For now, assume one app.
+    DCHECK_EQ(tag_args_->apps.size(), size_t{1});
+    switch (*tag_args_->apps.front().needs_admin) {
+      case tagging::AppArgs::NeedsAdmin::kYes:
+      case tagging::AppArgs::NeedsAdmin::kPrefers:
+        return UpdaterScope::kSystem;
+      case tagging::AppArgs::NeedsAdmin::kNo:
+        return UpdaterScope::kUser;
+    }
+  }
+
+  return process_scope_;
+}
+
+base::Optional<tagging::TagArgs> App::tag_args() const {
+  return tag_args_;
 }
 
 }  // namespace updater

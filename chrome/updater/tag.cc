@@ -487,17 +487,17 @@ AppArgs::AppArgs(base::StringPiece app_id)
 }
 
 AppArgs::~AppArgs() = default;
-AppArgs::AppArgs(AppArgs& other) = default;
-AppArgs& AppArgs::operator=(AppArgs& other) = default;
-AppArgs::AppArgs(AppArgs&& other) = default;
-AppArgs& AppArgs::operator=(AppArgs&& other) = default;
+AppArgs::AppArgs(const AppArgs&) = default;
+AppArgs& AppArgs::operator=(const AppArgs&) = default;
+AppArgs::AppArgs(AppArgs&&) = default;
+AppArgs& AppArgs::operator=(AppArgs&&) = default;
 
 TagArgs::TagArgs() = default;
 TagArgs::~TagArgs() = default;
-TagArgs::TagArgs(TagArgs& other) = default;
-TagArgs& TagArgs::operator=(TagArgs& other) = default;
-TagArgs::TagArgs(TagArgs&& other) = default;
-TagArgs& TagArgs::operator=(TagArgs&& other) = default;
+TagArgs::TagArgs(const TagArgs&) = default;
+TagArgs& TagArgs::operator=(const TagArgs&) = default;
+TagArgs::TagArgs(TagArgs&&) = default;
+TagArgs& TagArgs::operator=(TagArgs&&) = default;
 
 ErrorCode Parse(base::StringPiece tag,
                 base::Optional<base::StringPiece> app_installer_data_args,

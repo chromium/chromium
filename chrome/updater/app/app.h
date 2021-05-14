@@ -8,7 +8,9 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -52,7 +54,11 @@ class App : public base::RefCountedThreadSafe<App> {
   // will exit with the specified code.
   void Shutdown(int exit_code);
 
+  // The scope in which the updater is running. This is determined from
+  // the command line arguments, including the tag arguments.
   UpdaterScope updater_scope() const;
+
+  base::Optional<tagging::TagArgs> tag_args() const;
 
  private:
   // Allows initialization of the thread pool for specific environments, in
@@ -72,8 +78,11 @@ class App : public base::RefCountedThreadSafe<App> {
   // A callback that quits the main sequence runloop.
   base::OnceCallback<void(int)> quit_;
 
-  // The scope in which the updater is running.
-  UpdaterScope updater_scope_;
+  // Indicates the presence of --system on the command line.
+  const UpdaterScope process_scope_;
+
+  // Contains the tag if a tag is present on the command line.
+  const base::Optional<tagging::TagArgs> tag_args_;
 };
 
 }  // namespace updater

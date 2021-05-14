@@ -39,10 +39,10 @@ struct AppArgs {
   explicit AppArgs(base::StringPiece app_id);
 
   ~AppArgs();
-  AppArgs(AppArgs& other);
-  AppArgs& operator=(AppArgs& other);
-  AppArgs(AppArgs&& other);
-  AppArgs& operator=(AppArgs&& other);
+  AppArgs(const AppArgs&);
+  AppArgs& operator=(const AppArgs&);
+  AppArgs(AppArgs&&);
+  AppArgs& operator=(AppArgs&&);
 
   // An ASCII-encoded lowercase string. Must not be empty.
   std::string app_id;
@@ -76,10 +76,10 @@ struct TagArgs {
 
   TagArgs();
   ~TagArgs();
-  TagArgs(TagArgs& other);
-  TagArgs& operator=(TagArgs& other);
-  TagArgs(TagArgs&& other);
-  TagArgs& operator=(TagArgs&& other);
+  TagArgs(const TagArgs&);
+  TagArgs& operator=(const TagArgs&);
+  TagArgs(TagArgs&&);
+  TagArgs& operator=(TagArgs&&);
 
   std::string bundle_name;
   std::string installation_id;
