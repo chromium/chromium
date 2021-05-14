@@ -3,6 +3,7 @@ All changes to this list should go through Blink's feature review process: http:
 
 accelerometer
 ambient-light-sensor
+attribution-reporting
 autoplay
 camera
 ch-device-memory
@@ -22,7 +23,6 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
-conversion-measurement
 cross-origin-isolated
 direct-sockets
 display-capture

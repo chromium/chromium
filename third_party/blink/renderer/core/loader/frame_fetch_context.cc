@@ -808,12 +808,12 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   }
 
   const char kWellKnownConversionRegsitrationPath[] =
-      "/.well-known/register-conversion";
+      "/.well-known/attribution-reporting/trigger-attribution";
   if (url.GetPath() != kWellKnownConversionRegsitrationPath)
     return false;
 
   if (!document_->domWindow()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kConversionMeasurement)) {
+          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
     ReportAttributionIssue(
         GetFrame(),
         mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
@@ -822,7 +822,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     // TODO(crbug.com/1178400): Remove console message once the issue reported
     //     above is actually shown in DevTools.
     String message =
-        "The 'conversion-measurement' feature policy must be enabled to "
+        "The 'attribution-reporting' feature policy must be enabled to "
         "register a conversion.";
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
@@ -879,12 +879,12 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   conversion->conversion_data = 0UL;
   conversion->event_source_trigger_data = 0UL;
 
-  const char kConversionDataParam[] = "conversion-data";
+  const char kTriggerDataParam[] = "trigger-data";
   URLSearchParams* search_params = URLSearchParams::Create(url.Query());
-  if (search_params->has(kConversionDataParam)) {
+  if (search_params->has(kTriggerDataParam)) {
     bool is_valid_integer = false;
-    uint64_t data = search_params->get(kConversionDataParam)
-                        .ToUInt64Strict(&is_valid_integer);
+    uint64_t data =
+        search_params->get(kTriggerDataParam).ToUInt64Strict(&is_valid_integer);
 
     // Default invalid params to 0.
     conversion->conversion_data = is_valid_integer ? data : 0UL;
@@ -894,7 +894,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
           GetFrame(),
           mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
           base::nullopt, nullptr, devtools_request_id,
-          search_params->get(kConversionDataParam));
+          search_params->get(kTriggerDataParam));
     }
   } else {
     ReportAttributionIssue(

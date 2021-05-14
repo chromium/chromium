@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
   EXPECT_TRUE(ExecJs(shell(), R"(
      let frame = document.getElementById('test_iframe');
-     frame.setAttribute('allow', 'conversion-measurement');)"));
+     frame.setAttribute('allow', 'attribution-reporting');)"));
 
   GURL subframe_url =
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
   EXPECT_TRUE(ExecJs(shell(), R"(
      let frame = document.getElementById('test_iframe');
-     frame.setAttribute('allow', 'conversion-measurement');)"));
+     frame.setAttribute('allow', 'attribution-reporting');)"));
 
   GURL subframe_url =
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     let link = document.getElementById("link");
     link.removeAttribute("registerattributionsource");
-    link.setAttribute("impressiondata", "300");
+    link.setAttribute("attributionsourceeventid", "300");
     link.setAttribute("registerattributionsource", "");)"));
 
   EXPECT_EQ(300UL, host->WaitForNumImpressions(1));

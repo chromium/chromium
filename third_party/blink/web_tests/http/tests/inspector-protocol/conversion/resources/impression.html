@@ -5,11 +5,11 @@
   function createImpressionAnchor(id, url, data, destination, target, reportingOrigin) {
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.setAttribute("impressiondata", data);
-    anchor.setAttribute("conversiondestination", destination);
+    anchor.setAttribute("attributionsourceeventid", data);
+    anchor.setAttribute("attributiondestination", destination);
     anchor.setAttribute("target", target);
     if (reportingOrigin)
-      anchor.setAttribute("reportingOrigin", reportingOrigin);
+      anchor.setAttribute("attributionreportto", reportingOrigin);
     anchor.id = id;
     anchor.textContent = "Adlink";
 

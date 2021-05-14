@@ -99,8 +99,8 @@ enum PermissionsPolicyFeature {
   // Trust Token API redemption and request signing operations
   kTrustTokenRedemption = 72,
 
-  // Controls use of Conversion Measurement API
-  kConversionMeasurement = 73,
+  // Controls use of Attribution Reporting API
+  kAttributionReporting = 73,
 
   // Client Hint for UA platform version.
   kClientHintUAPlatformVersion = 74,

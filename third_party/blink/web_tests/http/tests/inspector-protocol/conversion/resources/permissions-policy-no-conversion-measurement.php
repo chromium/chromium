@@ -1,5 +1,5 @@
 <?php
-Header("Permissions-Policy: conversion-measurement=()");
+Header("Permissions-Policy: attribution-reporting=()");
 ?>
 <!DOCTYPE html>
 <body></body>

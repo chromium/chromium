@@ -135,8 +135,8 @@
       permissions_policy_name: "clipboard-write",
     },
     {
-      name: "ConversionMeasurement",
-      permissions_policy_name: "conversion-measurement",
+      name: "AttributionReporting",
+      permissions_policy_name: "attribution-reporting",
       depends_on: ["ConversionMeasurement"],
     },
     {

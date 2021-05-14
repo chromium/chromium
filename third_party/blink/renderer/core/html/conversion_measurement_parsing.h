@@ -15,7 +15,7 @@ namespace blink {
 
 class ExecutionContext;
 class HTMLAnchorElement;
-class ImpressionParams;
+class AttributionSourceParams;
 
 // Dummy struct to pass un-parsed Attribution Reporting window features into the
 // parsing utilities below.
@@ -40,10 +40,10 @@ base::Optional<WebImpression> GetImpressionFromWindowFeatures(
     const ImpressionFeatures& features);
 
 // Same as GetImpressionForAnchor(), but gets an impression specified by an
-// ImpressionParams dictionary associated with a window.open call.
+// AttributionSourceParams dictionary associated with a window.open call.
 base::Optional<WebImpression> GetImpressionForParams(
     ExecutionContext* execution_context,
-    const ImpressionParams* params);
+    const AttributionSourceParams* params);
 
 }  // namespace blink
 

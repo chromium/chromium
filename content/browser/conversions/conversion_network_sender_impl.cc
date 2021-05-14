@@ -9,11 +9,12 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -22,6 +23,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -72,14 +74,30 @@ void LogMetricsOnReportSend(ConversionReport* report) {
 
 GURL GetReportUrl(const content::ConversionReport& report) {
   url::Replacements<char> replacements;
-  const char kEndpointPath[] = "/.well-known/register-conversion";
+  const char kEndpointPath[] =
+      "/.well-known/attribution-reporting/report-attribution";
   replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  std::string query =
-      base::StrCat({"impression-data=", report.impression.impression_data(),
-                    "&conversion-data=", report.conversion_data});
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
   return report.impression.reporting_origin().GetURL().ReplaceComponents(
       replacements);
+}
+
+std::string GetReportPostBody(const content::ConversionReport& report) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  // The API denotes this id as a string. Note that a uint64_t cannot be put in
+  // a dict as an integer key.
+  dict.SetStringKey("source_event_id", report.impression.impression_data());
+
+  int trigger_data;
+  bool success = base::StringToInt(report.conversion_data, &trigger_data);
+  DCHECK(success);
+  dict.SetIntKey("trigger_data", trigger_data);
+
+  // Write the dict to json;
+  std::string output_json;
+  success = base::JSONWriter::Write(dict, &output_json);
+  DCHECK(success);
+  return output_json;
 }
 
 }  // namespace
@@ -143,6 +161,9 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
   auto it = loaders_in_progress_.insert(loaders_in_progress_.begin(),
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
+
+  std::string report_body = GetReportPostBody(*report);
+  simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in

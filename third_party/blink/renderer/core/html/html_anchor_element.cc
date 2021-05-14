@@ -372,8 +372,8 @@ bool HTMLAnchorElement::IsLiveLink() const {
 }
 
 bool HTMLAnchorElement::HasImpression() const {
-  return hasAttribute(html_names::kImpressiondataAttr) &&
-         hasAttribute(html_names::kConversiondestinationAttr);
+  return hasAttribute(html_names::kAttributionsourceeventidAttr) &&
+         hasAttribute(html_names::kAttributiondestinationAttr);
 }
 
 void HTMLAnchorElement::SendPings(const KURL& destination_url) const {

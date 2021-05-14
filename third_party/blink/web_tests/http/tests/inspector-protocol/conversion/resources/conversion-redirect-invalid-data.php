@@ -1,4 +1,4 @@
 <?php
 header('HTTP/1.1 302 Found');
-header('Location: /.well-known/register-conversion');
+header('Location: /.well-known/attribution-reporting/trigger-attribution');
 ?>

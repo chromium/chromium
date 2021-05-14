@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialSubsetExclusionBrowserTest,
 
   EXPECT_EQ(false, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                           "document.featurePolicy.features().includes('"
-                          "conversion-measurement')"));
+                          "attribution-reporting')"));
 }
 
 class ConversionsOriginTrialNoSubsetExclusionBrowserTest
@@ -117,5 +117,5 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialNoSubsetExclusionBrowserTest,
 
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                          "document.featurePolicy.features().includes('"
-                         "conversion-measurement')"));
+                         "attribution-reporting')"));
 }

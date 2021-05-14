@@ -29,7 +29,8 @@ namespace content {
 namespace {
 
 // Well known path for registering conversions.
-const std::string kWellKnownUrl = ".well-known/register-conversion";
+const std::string kWellKnownUrl =
+    ".well-known/attribution-reporting/trigger-attribution";
 
 }  // namespace
 
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
   EXPECT_TRUE(ExecJs(web_contents(), "createTrackingPixel(\"" + kWellKnownUrl +
-                                         "?conversion-data=100\");"));
+                                         "?trigger-data=100\");"));
 
   ASSERT_NO_FATAL_FAILURE(
       EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank"))));
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
   GURL redirect_url = embedded_test_server()->GetURL(
-      "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
+      "/server-redirect?" + kWellKnownUrl + "trigger-data=200");
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
@@ -211,8 +212,8 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   std::unique_ptr<TestConversionHost> host =
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
-  GURL registration_url = embedded_test_server()->GetURL(
-      "/" + kWellKnownUrl + "?conversion-data=200");
+  GURL registration_url =
+      embedded_test_server()->GetURL("/" + kWellKnownUrl + "?trigger-data=200");
 
   // Create a load observer that will wait for the redirect to complete. If a
   // conversion was registered, this redirect would never complete.
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(
   // a.test/.well-known/...; this conversion registration should not be allowed,
   // a.test did not initiate the redirect to the reporting endpoint.
   GURL redirect_url = https_server()->GetURL(
-      "a.test", "/" + kWellKnownUrl + "?conversion-data=200");
+      "a.test", "/" + kWellKnownUrl + "?trigger-data=200");
   GURL registration_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + redirect_url.spec());
 
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   // Create a url that does the following redirect chain b.test -> a.test ->
   // a.test/.well-known/...; this conversion registration should be allowed.
   GURL well_known_url = https_server()->GetURL(
-      "a.test", "/" + kWellKnownUrl + "?conversion-data=200");
+      "a.test", "/" + kWellKnownUrl + "?trigger-data=200");
   GURL redirect_url = https_server()->GetURL(
       "a.test", "/server-redirect?" + well_known_url.spec());
   GURL registration_url = https_server()->GetURL(
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
   GURL redirect_url = embedded_test_server()->GetURL(
-      "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
+      "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
   GURL redirect_url = https_server()->GetURL(
-      "b.test", "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
+      "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
 
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
@@ -365,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       let frame = document.getElementById('test_iframe');
-      frame.setAttribute('allow', 'conversion-measurement');)"));
+      frame.setAttribute('allow', 'attribution-reporting');)"));
 
   GURL subframe_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
@@ -375,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
   GURL redirect_url = https_server()->GetURL(
-      "b.test", "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
+      "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
 
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
@@ -427,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(
                                                  : embedded_test_server();
     GURL redirect_url = redirect_server->GetURL(
         test_case.redirect_host,
-        "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
+        "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
     ResourceLoadObserver load_observer(shell());
     EXPECT_TRUE(ExecJs(web_contents(),
                        JsReplace("createTrackingPixel($1);", redirect_url)));

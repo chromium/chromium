@@ -1,2 +1,2 @@
 HTTP/1.1 200 OK
-Permissions-Policy: conversion-measurement=()
+Permissions-Policy: attribution-reporting=()

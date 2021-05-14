@@ -35,14 +35,13 @@
 
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 
-    // Conversion Measurement
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString impressionData;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString conversionDestination;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString reportingOrigin;
-    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString impressionExpiry;
+    // Attribution Reporting
+    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourceEventId;
+    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionDestination;
+    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionReportTo;
+    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionExpiry;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute boolean registerAttributionSource;
     [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute DOMString attributionSourcePriority;
-
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLAnchorElement-partial

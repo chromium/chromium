@@ -12,7 +12,7 @@
   session.evaluate(`
     const frame = document.createElement('iframe');
     frame.src = 'https://devtools.test:8443/inspector-protocol/conversion/resources/impression.html';
-    frame.allow = 'conversion-measurement';
+    frame.allow = 'attribution-reporting';
     document.body.appendChild(frame);
   `);
 

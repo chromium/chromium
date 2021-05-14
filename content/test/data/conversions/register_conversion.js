@@ -9,10 +9,11 @@ function registerConversion(data, eventSourceTriggerData) {
 
 function registerConversionForOrigin(data, origin, eventSourceTriggerData) {
   let img = document.createElement("img");
-  img.src = origin +
-      "/server-redirect?.well-known/register-conversion?conversion-data=" +
-      data + (eventSourceTriggerData === undefined ? ""
-              : "&event-source-trigger-data=" + eventSourceTriggerData);
+  img.src = origin + '/server-redirect?.well-known/attribution-reporting' +
+      '/trigger-attribution?trigger-data=' + data +
+      (eventSourceTriggerData === undefined ?
+           '' :
+           '&event-source-trigger-data=' + eventSourceTriggerData);
   img.onerror = function () { document.title = "converted"; };
   document.body.appendChild(img);
 }

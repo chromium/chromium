@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_impression_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_attribution_source_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
@@ -57,7 +57,7 @@ base::Optional<WebImpression> GetImpression(
   }
 
   if (!execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kConversionMeasurement)) {
+          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
     ReportAttributionIssue(
         frame,
         mojom::blink::AttributionReportingIssueType::kPermissionPolicyDisabled,
@@ -66,8 +66,8 @@ base::Optional<WebImpression> GetImpression(
     // TODO(crbug.com/1178400): Remove console message once the issue reported
     //     above is actually shown in DevTools.
     String message =
-        "The 'conversion-measurement' permissions policy must be enabled to "
-        "declare an impression.";
+        "The 'attribution-reporting' permissions policy must be enabled to "
+        "declare an attribution source.";
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, message));
@@ -165,10 +165,10 @@ base::Optional<WebImpression> GetImpression(
 base::Optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element) {
   base::Optional<uint64_t> expiry;
-  if (element->hasAttribute(html_names::kImpressionexpiryAttr)) {
-    expiry =
-        ParseExpiry(element->FastGetAttribute(html_names::kImpressionexpiryAttr)
-                        .GetString());
+  if (element->hasAttribute(html_names::kAttributionexpiryAttr)) {
+    expiry = ParseExpiry(
+        element->FastGetAttribute(html_names::kAttributionexpiryAttr)
+            .GetString());
   }
 
   base::Optional<int64_t> priority;
@@ -178,17 +178,18 @@ base::Optional<WebImpression> GetImpressionForAnchor(
             .GetString());
   }
 
-  DCHECK(element->hasAttribute(html_names::kConversiondestinationAttr));
-  DCHECK(element->hasAttribute(html_names::kImpressiondataAttr));
+  DCHECK(element->hasAttribute(html_names::kAttributiondestinationAttr));
+  DCHECK(element->hasAttribute(html_names::kAttributionsourceeventidAttr));
 
   return GetImpression(
       element->GetExecutionContext(),
-      element->FastGetAttribute(html_names::kImpressiondataAttr).GetString(),
-      element->FastGetAttribute(html_names::kConversiondestinationAttr)
+      element->FastGetAttribute(html_names::kAttributionsourceeventidAttr)
           .GetString(),
-      element->hasAttribute(html_names::kReportingoriginAttr)
+      element->FastGetAttribute(html_names::kAttributiondestinationAttr)
+          .GetString(),
+      element->hasAttribute(html_names::kAttributionreporttoAttr)
           ? base::make_optional(
-                element->FastGetAttribute(html_names::kReportingoriginAttr)
+                element->FastGetAttribute(html_names::kAttributionreporttoAttr)
                     .GetString())
           : base::nullopt,
       expiry, priority, element);
@@ -215,15 +216,15 @@ base::Optional<WebImpression> GetImpressionFromWindowFeatures(
 
 base::Optional<WebImpression> GetImpressionForParams(
     ExecutionContext* execution_context,
-    const ImpressionParams* params) {
+    const AttributionSourceParams* params) {
   return GetImpression(
-      execution_context, params->impressionData(),
-      params->conversionDestination(),
-      params->hasReportingOrigin()
-          ? base::make_optional(params->reportingOrigin())
+      execution_context, params->attributionSourceEventId(),
+      params->attributionDestination(),
+      params->hasAttributionReportTo()
+          ? base::make_optional(params->attributionReportTo())
           : base::nullopt,
-      params->hasImpressionExpiry()
-          ? base::make_optional(params->impressionExpiry())
+      params->hasAttributionExpiry()
+          ? base::make_optional(params->attributionExpiry())
           : base::nullopt,
       params->hasAttributionSourcePriority()
           ? base::make_optional(params->attributionSourcePriority())

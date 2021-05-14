@@ -32566,7 +32566,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="70" label="StorageAccessAPI"/>
   <int value="71" label="ClientHintUAFullVersion"/>
   <int value="72" label="TrustTokenRedemption"/>
-  <int value="73" label="ConversionMeasurement"/>
+  <int value="73" label="AttributionReporting"/>
   <int value="74" label="ClientHintUAPlatformVersion"/>
   <int value="75" label="CrossOriginIsolated"/>
   <int value="76" label="ClipboardRead"/>

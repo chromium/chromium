@@ -11,8 +11,8 @@
 
   await page.loadHTML(`
   <a id="adlink" href="https://a.com"
-  conversiondestination="https://does-not-matter.com"
-  impressiondata="Must be a number, not a string" target="_blank">Impression (ad)
+  attributiondestination="https://does-not-matter.com"
+  attributionsourceeventid="Must be a number, not a string" target="_blank">Impression (ad)
   </a>`);
 
   const issuePromise = dp.Audits.onceIssueAdded();
