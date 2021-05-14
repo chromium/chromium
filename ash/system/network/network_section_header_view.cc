@@ -38,7 +38,6 @@ namespace tray {
 namespace {
 
 const int64_t kBluetoothTimeoutDelaySeconds = 2;
-const int kMobileHeaderExtraMarginRight = 10;
 
 bool IsCellularDeviceInhibited() {
   const DeviceStateProperties* cellular_device =
@@ -133,10 +132,6 @@ const char* NetworkSectionHeaderView::GetClassName() const {
 int NetworkSectionHeaderView::GetHeightForWidth(int width) const {
   // Make row height fixed avoiding layout manager adjustments.
   return GetPreferredSize().height();
-}
-
-bool NetworkSectionHeaderView::IsToggleVisible() {
-  return toggle_ && toggle_->GetVisible();
 }
 
 void NetworkSectionHeaderView::InitializeLayout() {
@@ -369,10 +364,6 @@ void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
   // toggle and the add cellular button.
   container()->AddViewAt(TriView::Container::END, add_esim_button_,
                          /*index=*/0);
-  if (!IsToggleVisible()) {
-    container()->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(0, 0, 0, kMobileHeaderExtraMarginRight)));
-  }
 }
 
 void MobileSectionHeaderView::AddCellularButtonPressed() {
