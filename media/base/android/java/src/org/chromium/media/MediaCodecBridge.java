@@ -478,6 +478,11 @@ class MediaCodecBridge {
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
     private ByteBuffer getInputBuffer(int index) {
+        if (mUseAsyncApi) {
+            synchronized (this) {
+                if (mPendingError) return null;
+            }
+        }
         try {
             return mMediaCodec.getInputBuffer(index);
         } catch (IllegalStateException e) {
