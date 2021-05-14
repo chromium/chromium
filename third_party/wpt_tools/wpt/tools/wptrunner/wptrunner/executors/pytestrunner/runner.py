@@ -43,17 +43,22 @@ def run(path, server_config, session_config, timeout=0, environ=None):
 
     old_environ = os.environ.copy()
     try:
-        os.environ["WD_HOST"] = session_config["host"]
-        os.environ["WD_PORT"] = str(session_config["port"])
-        os.environ["WD_CAPABILITIES"] = json.dumps(session_config["capabilities"])
-        os.environ["WD_SERVER_CONFIG"] = json.dumps(server_config.as_dict_for_wd_env_variable())
-        if environ:
-            os.environ.update(environ)
-
-        harness = HarnessResultRecorder()
-        subtests = SubtestResultRecorder()
-
         with TemporaryDirectory() as cache:
+            os.environ["WD_HOST"] = session_config["host"]
+            os.environ["WD_PORT"] = str(session_config["port"])
+            os.environ["WD_CAPABILITIES"] = json.dumps(session_config["capabilities"])
+
+            config_path = os.path.join(cache, "wd_server_config.json")
+            os.environ["WD_SERVER_CONFIG_FILE"] = config_path
+            with open(config_path, "w") as f:
+                json.dump(server_config.as_dict(), f)
+
+            if environ:
+                os.environ.update(environ)
+
+            harness = HarnessResultRecorder()
+            subtests = SubtestResultRecorder()
+
             try:
                 pytest.main(["--strict",  # turn warnings into errors
                              "-vv",  # show each individual subtest and full failure logs

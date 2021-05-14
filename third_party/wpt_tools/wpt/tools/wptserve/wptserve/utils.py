@@ -162,8 +162,7 @@ def get_port(host=''):
     return port
 
 def http2_compatible():
-    # The HTTP/2.0 server requires OpenSSL 1.0.2+ (and Python 3.6+, but WPT
-    # requires that anyway so we don't check that here.)
+    # The HTTP/2.0 server requires OpenSSL 1.0.2+.
     #
     # For systems using other SSL libraries (e.g. LibreSSL), we assume they
     # have the necessary support.

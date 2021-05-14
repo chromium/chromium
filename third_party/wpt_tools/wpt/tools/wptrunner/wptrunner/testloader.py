@@ -5,7 +5,6 @@ from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
 from queue import Empty
 from collections import defaultdict, deque
-from six import ensure_binary
 
 from . import manifestinclude
 from . import manifestexpected
@@ -102,7 +101,7 @@ class HashChunker(TestChunker):
     def __call__(self, manifest):
         chunk_index = self.chunk_number - 1
         for test_type, test_path, tests in manifest:
-            h = int(hashlib.md5(ensure_binary(test_path)).hexdigest(), 16)
+            h = int(hashlib.md5(test_path.encode()).hexdigest(), 16)
             if h % self.total_chunks == chunk_index:
                 yield test_type, test_path, tests
 
@@ -121,7 +120,7 @@ class DirectoryHashChunker(TestChunker):
                 hash_path = os.path.sep.join(os.path.dirname(test_path).split(os.path.sep, depth)[:depth])
             else:
                 hash_path = os.path.dirname(test_path)
-            h = int(hashlib.md5(ensure_binary(hash_path)).hexdigest(), 16)
+            h = int(hashlib.md5(hash_path.encode()).hexdigest(), 16)
             if h % self.total_chunks == chunk_index:
                 yield test_type, test_path, tests
 

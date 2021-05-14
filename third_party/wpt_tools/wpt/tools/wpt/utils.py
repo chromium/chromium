@@ -15,13 +15,11 @@ MYPY = False
 if MYPY:
     from typing import Any
     from typing import Callable
-    from typing import Dict
 
 logger = logging.getLogger(__name__)
 
 
 class Kwargs(dict):
-    # type: Dict[Any, Any]
     def set_if_none(self,
                     name,            # type: str
                     value,           # type: Any

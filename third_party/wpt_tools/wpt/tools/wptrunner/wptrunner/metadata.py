@@ -1,7 +1,6 @@
 from __future__ import print_function
 import array
 import os
-import sys
 from collections import defaultdict, namedtuple
 
 from mozlog import structuredlog
@@ -327,10 +326,7 @@ def write_new_expected(metadata_path, expected):
         try:
             with open(tmp_path, "wb") as f:
                 f.write(manifest_str.encode("utf8"))
-            if sys.version_info >= (3, 3):
-                os.replace(tmp_path, path)
-            else:
-                os.rename(tmp_path, path)
+            os.replace(tmp_path, path)
         except (Exception, KeyboardInterrupt):
             try:
                 os.unlink(tmp_path)
