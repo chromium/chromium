@@ -6512,6 +6512,172 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 }
 
+// Test BackForwardCache::IsAllowed() with several allowed_websites URL
+// patterns.
+class BackForwardCacheBrowserTestForAllowedWebsitesUrlPatterns
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets the allowed websites for testing, additionally adding the params
+    // used by BackForwardCacheBrowserTest.
+    std::string allowed_websites =
+        "https://a.com/,"
+        "https://b.com/path,"
+        "https://c.com/path/";
+    EnableFeatureAndSetParams(features::kBackForwardCache, "allowed_websites",
+                              allowed_websites);
+
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check if the URLs are allowed when allowed_websites are specified.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForAllowedWebsitesUrlPatterns,
+                       AllowedWebsitesUrlPatterns) {
+  BackForwardCacheImpl& bfcache =
+      web_contents()->GetController().GetBackForwardCache();
+
+  // Doesn't match with any allowed_websites.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.org/")));
+
+  // Exact match with https://a.com/.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.com/")));
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.com")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on port number.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.com:123/")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on query.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.com:123/?x=1")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on scheme.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("http://a.com/")));
+
+  // Match with https://a.com/ since we are checking the prefix on path.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.com/path")));
+
+  // Doesn't match with https://a.com/ since the host doesn't match with a.com.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://prefix.a.com/")));
+
+  // Doesn't match with https://b.com/path since the path prefix doesn't match.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://b.com/")));
+
+  // Exact match with https://b.com/path.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://b.com/path")));
+
+  // Match with https://b.com/path since we are checking the prefix on path.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://b.com/path/")));
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://b.com/path_abc")));
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://b.com/path_abc?x=1")));
+
+  // Doesn't match with https://c.com/path/ since the path prefix doesn't match.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://c.com/path")));
+}
+
+// Test BackForwardCache::IsAllowed() with several blocked_websites URL
+// patterns.
+class BackForwardCacheBrowserTestForBlockedWebsitesUrlPatterns
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets the blocked websites for testing, additionally adding the params
+    // used by BackForwardCacheBrowserTest.
+    std::string blocked_websites =
+        "https://a.com/,"
+        "https://b.com/path,"
+        "https://c.com/path/";
+    EnableFeatureAndSetParams(features::kBackForwardCache, "blocked_websites",
+                              blocked_websites);
+
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check if the URLs are allowed when blocked_websites are specified.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForBlockedWebsitesUrlPatterns,
+                       BlockedWebsitesUrlPatterns) {
+  BackForwardCacheImpl& bfcache =
+      web_contents()->GetController().GetBackForwardCache();
+
+  // Doesn't match with any blocked_websites.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://a.org/")));
+
+  // Exact match with https://a.com/.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com/")));
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on port number.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com:123/")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on query.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com:123/?x=1")));
+
+  // Match with https://a.com/ since we don't take into account the difference
+  // on scheme.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("http://a.com/")));
+
+  // Match with https://a.com/ since we are checking the prefix on path.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com/path")));
+
+  // Doesn't match with https://a.com/ since the host doesn't match with a.com.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://prefix.a.com/")));
+
+  // Doesn't match with https://b.com/path since the path prefix doesn't match.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://b.com/")));
+
+  // Exact match with https://b.com/path.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://b.com/path")));
+
+  // Match with https://b.com/path since we are checking the prefix on path.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://b.com/path/")));
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://b.com/path_abc")));
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://b.com/path_abc?x=1")));
+
+  // Doesn't match with https://c.com/path/ since the path prefix doesn't match.
+  EXPECT_TRUE(bfcache.IsAllowed(GURL("https://c.com/path")));
+}
+
+// Test BackForwardCache::IsAllowed() with several allowed_websites and
+// blocked_websites URL patterns.
+class BackForwardCacheBrowserTestForWebsitesUrlPatterns
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Sets the allowed websites for testing, additionally adding the params
+    // used by BackForwardCacheBrowserTest.
+    std::string allowed_websites = "https://a.com/";
+    EnableFeatureAndSetParams(features::kBackForwardCache, "allowed_websites",
+                              allowed_websites);
+
+    // Sets the blocked websites for testing, additionally adding the params
+    // used by BackForwardCacheBrowserTest.
+    std::string blocked_websites = "https://a.com/";
+    EnableFeatureAndSetParams(features::kBackForwardCache, "blocked_websites",
+                              blocked_websites);
+
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check if the URLs are allowed when allowed_websites and blocked_websites are
+// specified.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForWebsitesUrlPatterns,
+                       WebsitesUrlPatterns) {
+  BackForwardCacheImpl& bfcache =
+      web_contents()->GetController().GetBackForwardCache();
+
+  // https://a.com/ is not allowed since blocked_websites will be prioritized
+  // when the same website is specified in allowed_websites and
+  // blocked_websites.
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com/")));
+  EXPECT_FALSE(bfcache.IsAllowed(GURL("https://a.com")));
+}
+
 // Check that if WebPreferences was changed while a page was bfcached, it will
 // get up-to-date WebPreferences when it was restored.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
