@@ -208,8 +208,8 @@ source_set("unit_tests") {
   sources = [
     "app_list_controller_impl_unittest.cc",
     "app_list_metrics_unittest.cc",
-    "app_list_presenter_delegate_unittest.cc",
     "app_list_presenter_impl_unittest.cc",
+    "app_list_presenter_unittest.cc",
     "app_list_unittest.cc",
     "bubble/app_list_bubble_event_filter_unittest.cc",
     "bubble/app_list_bubble_unittest.cc",
