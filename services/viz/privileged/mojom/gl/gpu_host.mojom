@@ -7,6 +7,7 @@ module viz.mojom;
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
 import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
@@ -58,7 +59,9 @@ interface GpuHost {
   SetChildSurface(gpu.mojom.SurfaceHandle parent,
                   gpu.mojom.SurfaceHandle child);
 
-  StoreShaderToDisk(int32 client_id, string key, string shader);
+  StoreShaderToDisk(int32 client_id,
+                    string key,
+                    mojo_base.mojom.ByteString shader);
 
   RecordLogMessage(int32 severity, string header, string message);
 };

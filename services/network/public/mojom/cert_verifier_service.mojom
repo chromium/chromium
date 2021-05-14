@@ -5,6 +5,7 @@
 module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
@@ -13,8 +14,8 @@ struct RequestParams {
   network.mojom.X509Certificate certificate;
   string hostname;
   int32 flags;
-  string ocsp_response;
-  string sct_list;
+  mojo_base.mojom.ByteString ocsp_response;
+  mojo_base.mojom.ByteString sct_list;
 };
 
 // Temporary config struct--this should eventually be deleted as the network

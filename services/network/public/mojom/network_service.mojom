@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
@@ -272,11 +273,11 @@ interface NetworkService {
 
   // Send the encryption key to the network service to use for AES encryption.
   [EnableIf=is_mac]
-  SetEncryptionKey(string encryption_key);
+  SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
 
   // Send the encryption key to the network service to use for AES encryption.
   [EnableIf=is_win]
-  SetEncryptionKey(string encryption_key);
+  SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
 
   // Notifies |request_initiator_origin_lock| enforcement code that |process_id|
   // is proxying requests on behalf of a plugin from

@@ -11,6 +11,7 @@ mojom_component("base") {
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
+    "byte_string.mojom",
     "file.mojom",
     "file_error.mojom",
     "file_info.mojom",
@@ -62,6 +63,16 @@ mojom_component("base") {
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteString"
+          cpp = "std::string"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_string_mojom_traits.h" ]
+      traits_public_deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
     },
     {
       types = [

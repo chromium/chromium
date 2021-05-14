@@ -25,6 +25,7 @@ import "gpu/ipc/common/memory_stats.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
@@ -125,7 +126,7 @@ interface GpuService {
   // Notify GPU that a shader program was loaded from disk. Key is an
   // SHA-1 hash, and data a binary blob with serialized program info.
   // Note that this method is used only from a trusted process.
-  LoadedShader(int32 client_id, string key, string data);
+  LoadedShader(int32 client_id, string key, mojo_base.mojom.ByteString data);
 
   // Tells GPU to wake up the GPU because we're about to draw.
   WakeUpGpu();

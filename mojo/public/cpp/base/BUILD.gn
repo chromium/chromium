@@ -80,6 +80,8 @@ component("shared_typemap_traits") {
   sources = [
     "big_buffer_mojom_traits.cc",
     "big_buffer_mojom_traits.h",
+    "byte_string_mojom_traits.cc",
+    "byte_string_mojom_traits.h",
     "file_info_mojom_traits.cc",
     "file_info_mojom_traits.h",
     "file_mojom_traits.cc",
@@ -119,6 +121,7 @@ source_set("tests") {
   sources = [
     "big_buffer_unittest.cc",
     "big_string_unittest.cc",
+    "byte_string_unittest.cc",
     "file_path_unittest.cc",
     "file_unittest.cc",
     "memory_allocator_dump_cross_process_uid_unittest.cc",
