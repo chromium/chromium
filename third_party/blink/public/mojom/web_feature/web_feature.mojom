@@ -3222,6 +3222,7 @@ enum WebFeature {
   kV8Screens_Oncurrentscreenchange_AttributeGetter = 3907,
   kV8Screens_Oncurrentscreenchange_AttributeSetter = 3908,
   kRTCOfferAnswerOptionsVoiceActivityDetection = 3909,
+  kMultiColAndListItem = 3910,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

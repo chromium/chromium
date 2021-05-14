@@ -4460,6 +4460,9 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (!specifies_columns)
     return;
 
+  if (IsListItemIncludingNG())
+    UseCounter::Count(GetDocument(), WebFeature::kMultiColAndListItem);
+
   // Ruby elements manage child insertion in a special way, and would mess up
   // insertion of the flow thread. The flow thread needs to be a direct child of
   // the multicol block (|this|).

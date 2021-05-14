@@ -32479,6 +32479,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3907" label="V8Screens_Oncurrentscreenchange_AttributeGetter"/>
   <int value="3908" label="V8Screens_Oncurrentscreenchange_AttributeSetter"/>
   <int value="3909" label="RTCOfferAnswerOptionsVoiceActivityDetection"/>
+  <int value="3910" label="MultiColAndListItem"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
