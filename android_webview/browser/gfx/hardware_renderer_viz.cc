@@ -240,7 +240,7 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
       render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
-                       viz::SurfaceRange(base::nullopt, child_id),
+                       viz::SurfaceRange(absl::nullopt, child_id),
                        SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
 
   viz::CompositorFrame frame;
@@ -415,7 +415,7 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
         ->PessimisticallyResetGrContext();
   }
 
-  base::Optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
+  absl::optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
       allow_surface_control;
 
   auto* overlay_processor = on_viz_->overlay_processor();

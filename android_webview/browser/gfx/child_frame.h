@@ -48,7 +48,7 @@ class ChildFrame {
   scoped_refptr<content::SynchronousCompositor::FrameFuture> frame_future;
   uint32_t layer_tree_frame_sink_id = 0u;
   std::unique_ptr<viz::CompositorFrame> frame;
-  base::Optional<viz::HitTestRegionList> hit_test_region_list;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list;
   // The id of the compositor this |frame| comes from.
   const viz::FrameSinkId frame_sink_id;
   // Local surface id of the frame. Invalid if |frame| is null.

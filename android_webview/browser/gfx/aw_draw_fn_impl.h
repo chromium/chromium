@@ -12,7 +12,7 @@
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace android_webview {
@@ -63,10 +63,10 @@ class AwDrawFnImpl {
   // Vulkan context provider for Vk rendering.
   scoped_refptr<AwVulkanContextProvider> vulkan_context_provider_;
 
-  base::Optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
+  absl::optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
       scoped_secondary_cb_draw_;
 
-  base::Optional<VulkanGLInterop> interop_;
+  absl::optional<VulkanGLInterop> interop_;
 
   DISALLOW_COPY_AND_ASSIGN(AwDrawFnImpl);
 };

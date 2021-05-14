@@ -404,7 +404,7 @@ gfx::ImageSkia AwContentBrowserClient::GetDefaultFavicon() {
 bool AwContentBrowserClient::AllowAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     content::BrowserContext* context) {
   // WebView doesn't have a per-site policy for locally stored data,
   // instead AppCache can be disabled for individual WebViews.
@@ -792,7 +792,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     bool is_main_frame,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
       out_factory->InitWithNewPipeAndPassReceiver();
@@ -802,7 +802,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     // Manages its own lifetime.
     new android_webview::AwProxyingURLLoaderFactory(
         frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
-        true /* intercept_only */, base::nullopt /* security_options */);
+        true /* intercept_only */, absl::nullopt /* security_options */);
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -813,7 +813,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
               new android_webview::AwProxyingURLLoaderFactory(
                   frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
                   true /* intercept_only */,
-                  base::nullopt /* security_options */);
+                  absl::nullopt /* security_options */);
             },
             std::move(receiver), frame_tree_node_id));
   }
@@ -877,7 +877,7 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     const url::Origin& request_initiator,
-    base::Optional<int64_t> navigation_id,
+    absl::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -912,7 +912,7 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
   // Android WebView has one non off-the-record browser context.
   if (frame) {
     auto security_options =
-        base::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
+        absl::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
     security_options->disable_web_security =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kDisableWebSecurity);
@@ -948,7 +948,7 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
                                   content::RenderFrameHost::kNoFrameTreeNodeId,
                                   std::move(proxied_receiver),
                                   std::move(target_factory_remote),
-                                  base::nullopt /* security_options */));
+                                  absl::nullopt /* security_options */));
   }
   return true;
 }

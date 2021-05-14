@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,6 +15,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 struct MutableNetworkTrafficAnnotationTag;
@@ -69,7 +69,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       bool intercept_only,
-      base::Optional<SecurityOptions> security_options);
+      absl::optional<SecurityOptions> security_options);
 
   ~AwProxyingURLLoaderFactory() override;
 
@@ -79,7 +79,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
-      base::Optional<SecurityOptions> security_options);
+      absl::optional<SecurityOptions> security_options);
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -106,7 +106,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // a response, the loader will abort loading.
   bool intercept_only_;
 
-  base::Optional<SecurityOptions> security_options_;
+  absl::optional<SecurityOptions> security_options_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 

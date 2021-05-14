@@ -229,7 +229,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
-      /*low_entropy_source_value=*/base::nullopt);
+      /*low_entropy_source_value=*/absl::nullopt);
 }
 
 void AwFeatureListCreator::CreateLocalState() {

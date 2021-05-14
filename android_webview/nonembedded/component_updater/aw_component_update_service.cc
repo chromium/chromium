@@ -170,13 +170,13 @@ void AwComponentUpdateService::OnUpdateComplete(
   }
 }
 
-base::Optional<update_client::CrxComponent>
+absl::optional<update_client::CrxComponent>
 AwComponentUpdateService::GetComponent(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::GetComponent(components_, id);
 }
 
-std::vector<base::Optional<update_client::CrxComponent>>
+std::vector<absl::optional<update_client::CrxComponent>>
 AwComponentUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

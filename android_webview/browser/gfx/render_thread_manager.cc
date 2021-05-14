@@ -17,12 +17,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -196,7 +196,7 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
 
-  base::Optional<ScopedAppGLStateRestore> state_restore;
+  absl::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
   }
@@ -227,7 +227,7 @@ void RenderThreadManager::RemoveOverlaysOnRT(
 void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore) {
   GpuServiceWebView::GetInstance();
 
-  base::Optional<ScopedAppGLStateRestore> state_restore;
+  absl::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
                           save_restore);

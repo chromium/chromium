@@ -126,7 +126,7 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
     const base::Value* path_value;
     if (!file_entry->Get(kFileEntryPath, &path_value))
       continue;
-    base::Optional<base::FilePath> file_path =
+    absl::optional<base::FilePath> file_path =
         util::ValueToFilePath(*path_value);
     if (!file_path)
       continue;

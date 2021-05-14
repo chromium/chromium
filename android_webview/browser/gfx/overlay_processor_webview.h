@@ -37,14 +37,14 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
 
   void SetOverlaysEnabledByHWUI(bool enabled);
   void RemoveOverlays();
-  base::Optional<gfx::SurfaceControl::Transaction> TakeSurfaceTransactionOnRT();
+  absl::optional<gfx::SurfaceControl::Transaction> TakeSurfaceTransactionOnRT();
 
   // viz::OverlayProcessorSurfaceControl overrides:
   void TakeOverlayCandidates(
       viz::OverlayCandidateList* candidate_list) override;
   void ScheduleOverlays(
       viz::DisplayResourceProvider* resource_provider) override;
-  void AdjustOutputSurfaceOverlay(base::Optional<OutputSurfaceOverlayPlane>*
+  void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
   void CheckOverlaySupport(
       const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*

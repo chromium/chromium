@@ -209,9 +209,9 @@ void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(
   post_submit_tasks_.push_back(std::move(closure));
 }
 
-base::Optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit()
+absl::optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit()
     const {
-  return base::Optional<uint32_t>();
+  return absl::optional<uint32_t>();
 }
 
 bool AwVulkanContextProvider::Initialize(AwDrawFn_InitVkParams* params) {

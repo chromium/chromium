@@ -157,7 +157,7 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
       render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
-                       viz::SurfaceRange(base::nullopt, child_id),
+                       viz::SurfaceRange(absl::nullopt, child_id),
                        SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
   surface_quad->allow_merge = !BackdropFiltersPreventMerge(child_id);
 
@@ -228,7 +228,7 @@ void SurfacesInstance::SetSolidColorRootFrame() {
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                     base::nullopt, are_contents_opaque, 1.f,
+                     absl::nullopt, are_contents_opaque, 1.f,
                      SkBlendMode::kSrcOver, 0);
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

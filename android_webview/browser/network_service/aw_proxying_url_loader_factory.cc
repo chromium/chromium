@@ -21,7 +21,6 @@
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
@@ -37,6 +36,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -63,7 +63,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       bool intercept_only,
-      base::Optional<AwProxyingURLLoaderFactory::SecurityOptions>
+      absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options);
   ~InterceptedRequest() override;
 
@@ -88,7 +88,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -141,7 +141,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // shouldInterceptRequest callback provided a non-null response.
   bool intercept_only_ = false;
 
-  base::Optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
+  absl::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
   // If the |target_loader_| called OnComplete with an error this stores it.
   // That way the destructor can send it to OnReceivedError if safe browsing
@@ -254,7 +254,7 @@ InterceptedRequest::InterceptedRequest(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     bool intercept_only,
-    base::Optional<AwProxyingURLLoaderFactory::SecurityOptions>
+    absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
         security_options)
     : frame_tree_node_id_(frame_tree_node_id),
       request_id_(request_id),
@@ -427,7 +427,7 @@ void InterceptedRequest::ContinueAfterInterceptWithOverride(
           traffic_annotation_,
           std::make_unique<InterceptResponseDelegate>(
               std::move(response), weak_factory_.GetWeakPtr()),
-          base::nullopt);
+          absl::nullopt);
   loader->Start();
 }
 
@@ -572,7 +572,7 @@ void InterceptedRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   if (target_loader_) {
     target_loader_->FollowRedirect(removed_headers, modified_headers,
                                    modified_cors_exempt_headers, new_url);
@@ -710,7 +710,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
-    base::Optional<SecurityOptions> security_options)
+    absl::optional<SecurityOptions> security_options)
     : frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
       security_options_(security_options) {
@@ -735,7 +735,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
-    base::Optional<SecurityOptions> security_options) {
+    absl::optional<SecurityOptions> security_options) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // will manage its own lifetime

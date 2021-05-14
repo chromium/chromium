@@ -63,9 +63,9 @@ class AwComponentUpdateService {
   void OnUpdateComplete(update_client::Callback callback,
                         const base::TimeTicks& start_time,
                         update_client::Error error);
-  base::Optional<update_client::CrxComponent> GetComponent(
+  absl::optional<update_client::CrxComponent> GetComponent(
       const std::string& id) const;
-  std::vector<base::Optional<update_client::CrxComponent>> GetCrxComponents(
+  std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
   void ScheduleUpdatesOfRegisteredComponents(
       UpdateCallback on_finished_updates);
