@@ -20,7 +20,9 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -1746,6 +1748,13 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
               OnV8MemoryMeasurementAvailable(main_process_id(),
                                              expected_process_data1, _))
       .WillOnce(base::test::RunClosure(barrier));
+
+  // If all measurements don't arrive in a reasonable period, cancel the
+  // run loop. This ensures the test will fail with errors from the unfulfilled
+  // EXPECT_CALL statements, as expected, instead of timing out.
+  base::OneShotTimer timeout;
+  timeout.Start(FROM_HERE, TestTimeouts::action_timeout(),
+                run_loop.QuitClosure());
 
   // Now execute all the above tasks.
   run_loop.Run();
