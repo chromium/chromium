@@ -34,15 +34,15 @@ namespace {
 constexpr int kMaxNotificationIconsShown = 2;
 constexpr int kNotificationIconSpacing = 1;
 
-const char kBatteryNotificationId[] = "battery";
-const char kUsbNotificationId[] = "usb-charger";
+const char kBatteryNotificationNotifierId[] = "ash.battery";
+const char kUsbNotificationNotifierId[] = "ash.power";
 
 bool ShouldShowNotification(message_center::Notification* notification) {
   // We don't want to show these notifications since the information is already
   // indicated by another item in tray.
   std::string id = notification->notifier_id().id;
-  if (id == kVmCameraMicNotifierId || id == kBatteryNotificationId ||
-      id == kUsbNotificationId)
+  if (id == kVmCameraMicNotifierId || id == kBatteryNotificationNotifierId ||
+      id == kUsbNotificationNotifierId)
     return false;
 
   // We only show notification icon in the tray if it is either:
