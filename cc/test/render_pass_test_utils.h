@@ -73,7 +73,7 @@ inline viz::SolidColorDrawQuad* AddQuad(RenderPassType* pass,
                                         SkColor color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
   auto* quad =
       pass->template CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);

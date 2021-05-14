@@ -225,7 +225,7 @@ bool CheckIfRRectClipCoversCanvas(const SkCanvas& canvas,
 
 }  // namespace
 
-base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
+absl::optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     const PaintOpBuffer* buffer,
     const gfx::Rect& rect,
     int max_ops_to_analyze,
@@ -289,11 +289,11 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::DrawLine:
       case PaintOpType::DrawOval:
       case PaintOpType::DrawPath:
-        return base::nullopt;
+        return absl::nullopt;
       // TODO(vmpstr): Add more tests on exceeding max_ops_to_analyze.
       case PaintOpType::DrawRRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawRRectOp* rrect_op = static_cast<const DrawRRectOp*>(op);
         CheckIfSolidShape(canvas, rrect_op->rrect, rrect_op->flags, &is_solid,
                           &is_transparent, &color);
@@ -310,7 +310,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       // cover the canvas.
       // TODO(vmpstr): We could investigate handling these.
       case PaintOpType::ClipPath:
-        return base::nullopt;
+        return absl::nullopt;
       case PaintOpType::ClipRRect: {
         const ClipRRectOp* rrect_op = static_cast<const ClipRRectOp*>(op);
         bool does_cover_canvas =
@@ -318,12 +318,12 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         // If the clip covers the full canvas, we can treat it as if there's no
         // clip at all and continue, otherwise this is no longer a solid color.
         if (!does_cover_canvas)
-          return base::nullopt;
+          return absl::nullopt;
         break;
       }
       case PaintOpType::DrawRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawRectOp* rect_op = static_cast<const DrawRectOp*>(op);
         CheckIfSolidShape(canvas, rect_op->rect, rect_op->flags, &is_solid,
                           &is_transparent, &color);
@@ -331,7 +331,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       }
       case PaintOpType::DrawColor: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawColorOp* color_op = static_cast<const DrawColorOp*>(op);
         CheckIfSolidColor(canvas, color_op->color, color_op->mode, &is_solid,
                           &is_transparent, &color);
@@ -344,7 +344,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         // a rect, this is no longer solid color.
         const ClipRectOp* clip_op = static_cast<const ClipRectOp*>(op);
         if (clip_op->op == SkClipOp::kDifference)
-          return base::nullopt;
+          return absl::nullopt;
         op->Raster(&canvas, params);
         break;
       }
@@ -374,7 +374,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     return SK_ColorTRANSPARENT;
   if (is_solid)
     return color;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace cc

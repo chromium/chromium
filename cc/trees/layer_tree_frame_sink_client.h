@@ -9,10 +9,10 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -40,7 +40,7 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   // called during SubmitCompositorFrame().
   // TODO(danakj): Just pass it into SubmitCompositorFrame(), with a
   // LayerTreeSetting to enable it or not.
-  virtual base::Optional<viz::HitTestRegionList> BuildHitTestData() = 0;
+  virtual absl::optional<viz::HitTestRegionList> BuildHitTestData() = 0;
 
   // Returns resources sent to SubmitCompositorFrame to be reused or freed.
   virtual void ReclaimResources(

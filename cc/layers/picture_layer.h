@@ -67,7 +67,7 @@ class CC_EXPORT PictureLayer : public Layer {
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;
-    base::Optional<gfx::Size> directly_composited_image_size = base::nullopt;
+    absl::optional<gfx::Size> directly_composited_image_size = absl::nullopt;
   };
 
   explicit PictureLayer(ContentLayerClient* client);

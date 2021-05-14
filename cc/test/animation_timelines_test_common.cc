@@ -409,7 +409,7 @@ void TestAnimationDelegate::NotifyAnimationTakeover(
 }
 
 void TestAnimationDelegate::NotifyLocalTimeUpdated(
-    base::Optional<base::TimeDelta> local_time) {}
+    absl::optional<base::TimeDelta> local_time) {}
 
 AnimationTimelinesTest::AnimationTimelinesTest()
     : client_(ThreadInstance::MAIN),

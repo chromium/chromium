@@ -312,7 +312,7 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
         std::move(support), std::move(gl), std::move(raster));
   }
 
-  void SetContextCapabilitiesOverride(base::Optional<gpu::Capabilities> caps) {
+  void SetContextCapabilitiesOverride(absl::optional<gpu::Capabilities> caps) {
     capabilities_override_ = caps;
   }
 
@@ -335,7 +335,7 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
                             nullptr /* sii */,
                             true) {}
 
-  base::Optional<gpu::Capabilities> capabilities_override_;
+  absl::optional<gpu::Capabilities> capabilities_override_;
 };
 
 class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
@@ -601,7 +601,7 @@ class GpuImageDecodeCacheTest
   void CompareAllPlanesToMippedVersions(
       GpuImageDecodeCache* cache,
       const DrawImage& draw_image,
-      const base::Optional<uint32_t> transfer_cache_id,
+      const absl::optional<uint32_t> transfer_cache_id,
       bool should_have_mips) {
     for (size_t i = 0; i < kNumYUVPlanes; ++i) {
       sk_sp<SkImage> original_uploaded_plane;
@@ -627,7 +627,7 @@ class GpuImageDecodeCacheTest
   void VerifyUploadedPlaneSizes(
       GpuImageDecodeCache* cache,
       const DrawImage& draw_image,
-      const base::Optional<uint32_t> transfer_cache_id,
+      const absl::optional<uint32_t> transfer_cache_id,
       const SkISize plane_sizes[SkYUVAInfo::kMaxPlanes],
       SkYUVAPixmapInfo::DataType expected_type =
           SkYUVAPixmapInfo::DataType::kUnorm8,
@@ -2701,7 +2701,7 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2768,7 +2768,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2815,7 +2815,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2870,7 +2870,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2910,7 +2910,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -3004,7 +3004,7 @@ TEST_P(GpuImageDecodeCacheTest,
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -3095,7 +3095,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -3306,7 +3306,7 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
         // has it attached.
         DecodedDrawImage serialized_decoded_draw_image =
             cache->GetDecodedImageForDraw(draw_image);
-        const base::Optional<uint32_t> transfer_cache_entry_id =
+        const absl::optional<uint32_t> transfer_cache_entry_id =
             serialized_decoded_draw_image.transfer_cache_entry_id();
         DecodedDrawImage decoded_draw_image =
             EnsureImageBacked(std::move(serialized_decoded_draw_image));

@@ -50,8 +50,8 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   }
 
   const PaintFlags* original_flags_;
-  base::Optional<PaintFlags> modified_flags_;
-  base::Optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
+  absl::optional<PaintFlags> modified_flags_;
+  absl::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
 };
 

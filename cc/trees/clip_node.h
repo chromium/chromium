@@ -6,10 +6,10 @@
 #define CC_TREES_CLIP_NODE_H_
 
 #include "base/containers/stack_container.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/trees/clip_expander.h"
 #include "cc/trees/property_tree.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {
@@ -66,7 +66,7 @@ struct CC_EXPORT ClipNode {
   gfx::RectF cached_accumulated_rect_in_screen_space;
 
   // For nodes that expand, this represents the amount of expansion.
-  base::Optional<ClipExpander> clip_expander;
+  absl::optional<ClipExpander> clip_expander;
 
   // The id of the transform node that defines the clip node's local space.
   int transform_id;

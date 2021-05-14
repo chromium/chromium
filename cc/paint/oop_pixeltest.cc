@@ -155,7 +155,7 @@ class OopPixelTest : public testing::Test,
     viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
         raster_context_provider_.get(), url.possibly_invalid_spec().c_str());
 
-    base::Optional<PlaybackImageProvider::Settings> settings;
+    absl::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;
     PlaybackImageProvider image_provider(

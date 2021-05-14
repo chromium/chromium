@@ -39,10 +39,10 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   SurfaceLayerImpl& operator=(const SurfaceLayerImpl&) = delete;
 
   void SetRange(const viz::SurfaceRange& surface_range,
-                base::Optional<uint32_t> deadline_in_frames);
+                absl::optional<uint32_t> deadline_in_frames);
   const viz::SurfaceRange& range() const { return surface_range_; }
 
-  base::Optional<uint32_t> deadline_in_frames() const {
+  absl::optional<uint32_t> deadline_in_frames() const {
     return deadline_in_frames_;
   }
 
@@ -81,7 +81,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
 
   UpdateSubmissionStateCB update_submission_state_callback_;
   viz::SurfaceRange surface_range_;
-  base::Optional<uint32_t> deadline_in_frames_;
+  absl::optional<uint32_t> deadline_in_frames_;
 
   bool stretch_content_to_fill_bounds_ = false;
   bool surface_hit_testable_ = false;

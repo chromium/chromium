@@ -168,7 +168,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   const FilterOperations& Filters() const;
   const FilterOperations& BackdropFilters() const;
-  base::Optional<gfx::RRectF> BackdropFilterBounds() const;
+  absl::optional<gfx::RRectF> BackdropFilterBounds() const;
   LayerImpl* BackdropMaskLayer() const;
   gfx::Transform SurfaceScale() const;
 

@@ -17,7 +17,7 @@ CompositorCommitData::ScrollUpdateInfo::ScrollUpdateInfo() = default;
 CompositorCommitData::ScrollUpdateInfo::ScrollUpdateInfo(
     ElementId id,
     gfx::ScrollOffset delta,
-    base::Optional<TargetSnapAreaElementIds> snap_target_ids)
+    absl::optional<TargetSnapAreaElementIds> snap_target_ids)
     : element_id(id),
       scroll_delta(delta),
       snap_target_element_ids(snap_target_ids) {}

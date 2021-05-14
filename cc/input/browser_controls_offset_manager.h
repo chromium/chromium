@@ -161,11 +161,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   // Minimum and maximum values |top_controls_min_height_offset_| can take
   // during the current min-height change animation.
-  base::Optional<std::pair<float, float>>
+  absl::optional<std::pair<float, float>>
       top_min_height_offset_animation_range_;
   // Minimum and maximum values |bottom_controls_min_height_offset_| can take
   // during the current min-height change animation.
-  base::Optional<std::pair<float, float>>
+  absl::optional<std::pair<float, float>>
       bottom_min_height_offset_animation_range_;
 
   // Class that holds and manages the state of the controls animations.
@@ -183,14 +183,14 @@ class CC_EXPORT BrowserControlsOffsetManager {
                     int64_t duration,
                     bool jump_to_end_on_reset);
     // Returns the animated value for the given monotonic time tick if the
-    // animation is initialized. Otherwise, returns |base::nullopt|.
-    base::Optional<float> Tick(base::TimeTicks monotonic_time);
+    // animation is initialized. Otherwise, returns |absl::nullopt|.
+    absl::optional<float> Tick(base::TimeTicks monotonic_time);
     // Set the minimum and maximum values the animation can have.
     void SetBounds(float min, float max);
     // Reset the properties. If |skip_to_end_on_reset_| is false, this function
-    // will return |base::nullopt|. Otherwise, it will return the end value
+    // will return |absl::nullopt|. Otherwise, it will return the end value
     // (clamped to min-max).
-    base::Optional<float> Reset();
+    absl::optional<float> Reset();
 
     // Returns the value the animation will end on. This will be the stop_value
     // passed to the constructor clamped by the currently configured bounds.

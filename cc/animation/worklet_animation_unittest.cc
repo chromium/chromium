@@ -63,7 +63,7 @@ class MockScrollTimeline : public ScrollTimeline {
                        0,
                        AnimationIdProvider::NextTimelineId()) {}
   MOCK_CONST_METHOD2(CurrentTime,
-                     base::Optional<base::TimeTicks>(const ScrollTree&, bool));
+                     absl::optional<base::TimeTicks>(const ScrollTree&, bool));
   MOCK_CONST_METHOD2(IsActive, bool(const ScrollTree&, bool));
 
  protected:
@@ -123,7 +123,7 @@ TEST_F(WorkletAnimationTest, LocalTimeIsUsedWhenTicking) {
 TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   AttachWorkletAnimation();
 
-  base::Optional<base::TimeDelta> local_time = base::TimeDelta::FromSecondsD(1);
+  absl::optional<base::TimeDelta> local_time = base::TimeDelta::FromSecondsD(1);
   MutatorOutputState::AnimationState state(worklet_animation_id_);
   state.local_times.push_back(local_time);
   worklet_animation_->SetOutputState(state);
@@ -157,7 +157,7 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   // If local time is set to null value, an animation event with null local
   // time is generated.
   state.local_times.clear();
-  local_time = base::nullopt;
+  local_time = absl::nullopt;
   state.local_times.push_back(local_time);
   worklet_animation_->SetOutputState(state);
   mutator_events = host_->CreateEvents();
@@ -498,7 +498,7 @@ TEST_F(WorkletAnimationTest, SkipUnchangedAnimations) {
   EXPECT_EQ(input->removed_animations.size(), 1u);
 }
 
-base::Optional<base::TimeTicks> FakeIncreasingScrollTimelineTime(Unused,
+absl::optional<base::TimeTicks> FakeIncreasingScrollTimelineTime(Unused,
                                                                  Unused) {
   static base::TimeTicks current_time;
   current_time += base::TimeDelta::FromSecondsD(0.1);

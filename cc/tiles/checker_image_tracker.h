@@ -8,10 +8,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_id.h"
 #include "cc/tiles/image_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace cc {
@@ -198,7 +198,7 @@ class CC_EXPORT CheckerImageTracker {
 
   // The currently outstanding image decode that has been scheduled with the
   // decode service. There can be only one outstanding decode at a time.
-  base::Optional<PaintImage> outstanding_image_decode_;
+  absl::optional<PaintImage> outstanding_image_decode_;
 
   // A map of ImageId to its DecodePolicy.
   std::unordered_map<PaintImage::Id, DecodeState> image_async_decode_state_;

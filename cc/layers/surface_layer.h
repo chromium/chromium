@@ -68,11 +68,11 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   const viz::SurfaceId& surface_id() const { return surface_range_.end(); }
 
-  const base::Optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
+  const absl::optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
     return surface_range_.start();
   }
 
-  base::Optional<uint32_t> deadline_in_frames() const {
+  absl::optional<uint32_t> deadline_in_frames() const {
     return deadline_in_frames_;
   }
 
@@ -88,7 +88,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   bool may_contain_video_ = false;
   viz::SurfaceRange surface_range_;
-  base::Optional<uint32_t> deadline_in_frames_ = 0u;
+  absl::optional<uint32_t> deadline_in_frames_ = 0u;
 
   bool stretch_content_to_fill_bounds_ = false;
 

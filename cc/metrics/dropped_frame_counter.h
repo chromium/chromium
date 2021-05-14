@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "base/containers/ring_buffer.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class TotalFrameCounter;
@@ -123,9 +123,9 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
-  base::Optional<double> sliding_window_max_percent_dropped_After_1_sec_;
-  base::Optional<double> sliding_window_max_percent_dropped_After_2_sec_;
-  base::Optional<double> sliding_window_max_percent_dropped_After_5_sec_;
+  absl::optional<double> sliding_window_max_percent_dropped_After_1_sec_;
+  absl::optional<double> sliding_window_max_percent_dropped_After_2_sec_;
+  absl::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_fcp_received_;
   base::TimeDelta time_max_delta_;
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
@@ -144,7 +144,7 @@ class CC_EXPORT DroppedFrameCounter {
     // The vsync corresponding to the scroll-start.
     viz::BeginFrameId frame_id;
   };
-  base::Optional<ScrollStartInfo> scroll_start_;
+  absl::optional<ScrollStartInfo> scroll_start_;
   std::map<viz::BeginFrameId, ScrollStartInfo> scroll_start_per_frame_;
 };
 

@@ -11,9 +11,9 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -71,7 +71,7 @@ class CC_EXPORT FrameSorter {
   // State of each frame in terms of ack expectation.
   std::map<viz::BeginFrameId, FrameState> frame_states_;
 
-  base::Optional<uint64_t> current_source_id_;
+  absl::optional<uint64_t> current_source_id_;
 };
 
 }  // namespace cc

@@ -123,7 +123,7 @@ void KeyframeEffect::RemoveFromTicking() {
   is_ticking_ = false;
   // Resetting last_tick_time_ here ensures that calling ::UpdateState
   // before ::Animate doesn't start a keyframe model.
-  last_tick_time_ = base::nullopt;
+  last_tick_time_ = absl::nullopt;
   animation_->RemoveFromTicking();
 }
 
@@ -133,7 +133,7 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
 
   // Animate hasn't been called, this happens if an element has been added
   // between the Commit and Draw phases.
-  if (last_tick_time_ == base::nullopt)
+  if (last_tick_time_ == absl::nullopt)
     start_ready_keyframe_models = false;
 
   if (start_ready_keyframe_models)

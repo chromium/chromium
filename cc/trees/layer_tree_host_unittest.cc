@@ -3356,7 +3356,7 @@ class ViewportDeltasAppliedDuringPinch : public LayerTreeHostTest,
   // ScrollCallbacks
   void DidScroll(ElementId element_id,
                  const gfx::ScrollOffset& scroll_offset,
-                 const base::Optional<TargetSnapAreaElementIds>&
+                 const absl::optional<TargetSnapAreaElementIds>&
                      snap_target_ids) override {
     last_scrolled_element_id_ = element_id;
     last_scrolled_offset_ = scroll_offset;
@@ -8927,7 +8927,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     }
   }
 
-  void ExpectMetadata(base::Optional<DelegatedInkBrowserMetadata>
+  void ExpectMetadata(absl::optional<DelegatedInkBrowserMetadata>
                           browser_delegated_ink_metadata,
                       gfx::DelegatedInkMetadata* actual_metadata) {
     if (expected_metadata_.has_value()) {
@@ -8966,7 +8966,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
   }
 
  private:
-  base::Optional<gfx::DelegatedInkMetadata> expected_metadata_;
+  absl::optional<gfx::DelegatedInkMetadata> expected_metadata_;
   FakeContentLayerClient client_;
   scoped_refptr<Layer> layer_;
   bool set_needs_display_ = true;

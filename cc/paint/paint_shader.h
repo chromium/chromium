@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "cc/paint/image_analysis_state.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -235,7 +235,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   SkColor fallback_color_ = SK_ColorTRANSPARENT;
   ScalingBehavior scaling_behavior_ = ScalingBehavior::kRasterAtScale;
 
-  base::Optional<SkMatrix> local_matrix_;
+  absl::optional<SkMatrix> local_matrix_;
   SkPoint center_ = SkPoint::Make(0, 0);
   SkRect tile_ = SkRect::MakeEmpty();
 
@@ -251,7 +251,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   // For decoded PaintRecord shaders, specifies the scale at which the record
   // will be rasterized.
-  base::Optional<gfx::SizeF> tile_scale_;
+  absl::optional<gfx::SizeF> tile_scale_;
 
   std::vector<SkColor> colors_;
   std::vector<SkScalar> positions_;

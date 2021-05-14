@@ -7,12 +7,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/scoped_raster_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPoint3.h"
@@ -151,7 +151,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   friend class viz::SoftwareRenderer;
 
   const Type type_;
-  base::Optional<CropRect> crop_rect_;
+  absl::optional<CropRect> crop_rect_;
   const bool has_discardable_images_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
@@ -692,7 +692,7 @@ class CC_PAINT_EXPORT PaintFlagsPaintFilter final : public PaintFilter {
                         const CropRect* crop_rect);
 
   PaintFlags flags_;
-  base::Optional<ScopedRasterFlags> raster_flags_;
+  absl::optional<ScopedRasterFlags> raster_flags_;
 };
 
 class CC_PAINT_EXPORT MatrixPaintFilter final : public PaintFilter {

@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -30,6 +29,7 @@
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/tiles/tile.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -1303,7 +1303,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
           has_at_raster_images, has_hardware_accelerated_jpeg_candidates,
           has_hardware_accelerated_webp_candidates);
 
-  base::Optional<PlaybackImageProvider::Settings> settings;
+  absl::optional<PlaybackImageProvider::Settings> settings;
   if (!skip_images) {
     settings.emplace();
     settings->images_to_skip = std::move(images_to_skip);

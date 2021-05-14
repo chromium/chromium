@@ -141,7 +141,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
               frame.size_in_pixels().width());
   }
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list =
+  absl::optional<viz::HitTestRegionList> hit_test_region_list =
       client_->BuildHitTestData();
 
   if (show_hit_test_borders && hit_test_region_list)
@@ -158,7 +158,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                                         last_hit_test_data_)) {
       DCHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
                                               viz::HitTestRegionList()));
-      hit_test_region_list = base::nullopt;
+      hit_test_region_list = absl::nullopt;
     } else {
       last_hit_test_data_ = *hit_test_region_list;
     }

@@ -142,8 +142,8 @@ class UkmManagerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(
       ui::EventType type,
-      base::Optional<EventMetrics::ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type) {
+      absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type) {
     base::TimeTicks event_time = AdvanceNowByMs(10);
     AdvanceNowByMs(10);
     std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
@@ -524,7 +524,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
 
 TEST_F(UkmManagerTest, EventLatency) {
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN, base::nullopt,
+      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN, absl::nullopt,
                          ui::ScrollInputType::kWheel),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
                          EventMetrics::ScrollUpdateType::kStarted,

@@ -46,7 +46,7 @@ bool IsMutualVisible(const SnapSearchResult& a, const SnapSearchResult& b) {
 }
 
 void SetOrUpdateResult(const SnapSearchResult& candidate,
-                       base::Optional<SnapSearchResult>* result,
+                       absl::optional<SnapSearchResult>* result,
                        const ElementId& active_element_id) {
   if (result->has_value()) {
     result->value().Union(candidate);
@@ -57,11 +57,11 @@ void SetOrUpdateResult(const SnapSearchResult& candidate,
   }
 }
 
-const base::Optional<SnapSearchResult>& ClosestSearchResult(
+const absl::optional<SnapSearchResult>& ClosestSearchResult(
     const gfx::ScrollOffset reference_point,
     SearchAxis axis,
-    const base::Optional<SnapSearchResult>& a,
-    const base::Optional<SnapSearchResult>& b) {
+    const absl::optional<SnapSearchResult>& a,
+    const absl::optional<SnapSearchResult>& b) {
   if (!a.has_value())
     return b;
   if (!b.has_value())
@@ -166,7 +166,7 @@ bool SnapContainerData::FindSnapPosition(
       strategy.ShouldPrioritizeSnapTargets() &&
       target_snap_area_element_ids_.y != ElementId();
 
-  base::Optional<SnapSearchResult> selected_x, selected_y;
+  absl::optional<SnapSearchResult> selected_x, selected_y;
   if (should_snap_on_x) {
     if (should_prioritize_x_target) {
       // TODO(http://crbug.com/866127): If the target snap area is covering the
@@ -302,18 +302,18 @@ bool SnapContainerData::FindSnapPositionForMutualSnap(
   return found;
 }
 
-base::Optional<SnapSearchResult>
+absl::optional<SnapSearchResult>
 SnapContainerData::GetTargetSnapAreaSearchResult(SearchAxis axis) const {
   ElementId target_id = axis == SearchAxis::kX
                             ? target_snap_area_element_ids_.x
                             : target_snap_area_element_ids_.y;
   if (target_id == ElementId())
-    return base::nullopt;
+    return absl::nullopt;
   for (const SnapAreaData& area : snap_area_list_) {
     if (area.element_id == target_id)
       return GetSnapSearchResult(axis, area);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SnapContainerData::UpdateSnapAreaForTesting(ElementId element_id,
@@ -339,12 +339,12 @@ bool SnapContainerData::SetTargetSnapAreaElementIds(
   return true;
 }
 
-base::Optional<SnapSearchResult> SnapContainerData::FindClosestValidArea(
+absl::optional<SnapSearchResult> SnapContainerData::FindClosestValidArea(
     SearchAxis axis,
     const SnapSelectionStrategy& strategy,
     const SnapSearchResult& cross_axis_snap_result,
     const ElementId& active_element_id) const {
-  base::Optional<SnapSearchResult> result = FindClosestValidAreaInternal(
+  absl::optional<SnapSearchResult> result = FindClosestValidAreaInternal(
       axis, strategy, cross_axis_snap_result, active_element_id);
 
   // For EndAndDirectionStrategy, if there is a snap area with snap-stop:always,
@@ -360,7 +360,7 @@ base::Optional<SnapSearchResult> SnapContainerData::FindClosestValidArea(
             strategy.current_position(),
             strategy.intended_position() - strategy.current_position(),
             strategy.UsingFractionalOffsets(), SnapStopAlwaysFilter::kRequire);
-    base::Optional<SnapSearchResult> must_only_result =
+    absl::optional<SnapSearchResult> must_only_result =
         FindClosestValidAreaInternal(axis, *must_only_strategy,
                                      cross_axis_snap_result, active_element_id,
                                      false);
@@ -386,7 +386,7 @@ base::Optional<SnapSearchResult> SnapContainerData::FindClosestValidArea(
       axis, *relaxed_strategy, cross_axis_snap_result, active_element_id);
 }
 
-base::Optional<SnapSearchResult>
+absl::optional<SnapSearchResult>
 SnapContainerData::FindClosestValidAreaInternal(
     SearchAxis axis,
     const SnapSelectionStrategy& strategy,
@@ -400,10 +400,10 @@ SnapContainerData::FindClosestValidAreaInternal(
              (axis == SearchAxis::kX ? max_position_.y() : max_position_.x()));
 
   // The search result from the snap area that's closest to the search origin.
-  base::Optional<SnapSearchResult> closest;
+  absl::optional<SnapSearchResult> closest;
   // The search result with the intended position if it makes a snap area cover
   // the snapport.
-  base::Optional<SnapSearchResult> covering;
+  absl::optional<SnapSearchResult> covering;
 
   // The valid snap positions immediately before and after the current position.
   float prev = std::numeric_limits<float>::lowest();
@@ -474,10 +474,10 @@ SnapContainerData::FindClosestValidAreaInternal(
   float size = axis == SearchAxis::kX ? rect_.width() : rect_.height();
   if (prev != std::numeric_limits<float>::lowest() &&
       next != std::numeric_limits<float>::max() && next - prev <= size) {
-    covering = base::nullopt;
+    covering = absl::nullopt;
   }
 
-  const base::Optional<SnapSearchResult>& picked =
+  const absl::optional<SnapSearchResult>& picked =
       strategy.PickBestResult(closest, covering);
   return picked;
 }

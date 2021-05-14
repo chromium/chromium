@@ -5,9 +5,9 @@
 #ifndef CC_METRICS_THROUGHPUT_UKM_REPORTER_H_
 #define CC_METRICS_THROUGHPUT_UKM_REPORTER_H_
 
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class UkmManager;
@@ -28,9 +28,9 @@ class CC_EXPORT ThroughputUkmReporter {
   ThroughputUkmReporter(const ThroughputUkmReporter&) = delete;
   ThroughputUkmReporter& operator=(const ThroughputUkmReporter&) = delete;
 
-  void ReportThroughputUkm(const base::Optional<int>& slower_throughput_percent,
-                           const base::Optional<int>& impl_throughput_percent,
-                           const base::Optional<int>& main_throughput_percent,
+  void ReportThroughputUkm(const absl::optional<int>& slower_throughput_percent,
+                           const absl::optional<int>& impl_throughput_percent,
+                           const absl::optional<int>& main_throughput_percent,
                            FrameSequenceTrackerType type);
 
   void ReportAggregateThroughput(AggregationType aggregation_type,

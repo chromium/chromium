@@ -941,7 +941,7 @@ void LayerTreeHost::ApplyViewportChanges(
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::ScrollOffset& delta,
-    const base::Optional<TargetSnapAreaElementIds>& snap_target_ids) {
+    const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   if (IsUsingLayerLists()) {
     auto& scroll_tree = property_trees()->scroll_tree;
     auto new_offset = scroll_tree.current_scroll_offset(id) + delta;

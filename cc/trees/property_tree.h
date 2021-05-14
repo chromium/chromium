@@ -387,7 +387,7 @@ class ScrollCallbacks {
   // Called after the composited scroll offset changed.
   virtual void DidScroll(ElementId scroll_element_id,
                          const gfx::ScrollOffset&,
-                         const base::Optional<TargetSnapAreaElementIds>&) = 0;
+                         const absl::optional<TargetSnapAreaElementIds>&) = 0;
   // Called after the hidden status of composited scrollbars changed. Note that
   // |scroll_element_id| is the element id of the scroll not of the scrollbars.
   virtual void DidChangeScrollbarsHidden(ElementId scroll_element_id,
@@ -505,7 +505,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidScroll(
       ElementId scroll_element_id,
       const gfx::ScrollOffset& scroll_offset,
-      const base::Optional<TargetSnapAreaElementIds>& snap_target_ids);
+      const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden);
 

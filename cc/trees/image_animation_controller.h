@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/paint/discardable_image_map.h"
@@ -21,6 +20,7 @@
 #include "cc/paint/paint_image_generator.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintImage;

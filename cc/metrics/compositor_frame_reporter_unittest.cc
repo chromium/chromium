@@ -74,8 +74,8 @@ class CompositorFrameReporterTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(
       ui::EventType type,
-      base::Optional<EventMetrics::ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type) {
+      absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type) {
     const base::TimeTicks event_time = AdvanceNowByMs(3);
     AdvanceNowByMs(3);
     std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
@@ -277,9 +277,9 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_TOUCH_PRESSED, base::nullopt, base::nullopt),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED, base::nullopt, base::nullopt),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED, base::nullopt, base::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_PRESSED, absl::nullopt, absl::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED, absl::nullopt, absl::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED, absl::nullopt, absl::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
   EventMetrics::List events_metrics(
@@ -354,7 +354,7 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN, base::nullopt,
+      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN, absl::nullopt,
                          ui::ScrollInputType::kWheel),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
                          EventMetrics::ScrollUpdateType::kStarted,
@@ -446,9 +446,9 @@ TEST_F(CompositorFrameReporterTest,
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_TOUCH_PRESSED, base::nullopt, base::nullopt),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED, base::nullopt, base::nullopt),
-      CreateEventMetrics(ui::ET_TOUCH_MOVED, base::nullopt, base::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_PRESSED, absl::nullopt, absl::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED, absl::nullopt, absl::nullopt),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED, absl::nullopt, absl::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
   EventMetrics::List events_metrics(

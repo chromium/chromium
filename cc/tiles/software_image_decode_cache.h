@@ -129,7 +129,7 @@ class CC_EXPORT SoftwareImageDecodeCache
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RemoveBudgetForImage(const CacheKey& key, CacheEntry* entry)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  base::Optional<CacheKey> FindCachedCandidate(const CacheKey& key)
+  absl::optional<CacheKey> FindCachedCandidate(const CacheKey& key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void UnrefImage(const CacheKey& key) EXCLUSIVE_LOCKS_REQUIRED(lock_);

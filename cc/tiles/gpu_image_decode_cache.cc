@@ -843,7 +843,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool is_bitmap_backed,
     bool can_do_hardware_accelerated_decode,
     bool do_hardware_accelerated_decode,
-    base::Optional<SkYUVAPixmapInfo> yuva_info)
+    absl::optional<SkYUVAPixmapInfo> yuva_info)
     : paint_image_id(paint_image_id),
       mode(mode),
       size(size),
@@ -956,7 +956,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
 
   {
     // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
-    base::Optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (context_->GetLock())
       context_lock.emplace(context_);
@@ -1257,7 +1257,7 @@ void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
                "GpuImageDecodeCache::SetShouldAggressivelyFreeResources",
                "agressive_free_resources", aggressively_free_resources);
   if (aggressively_free_resources) {
-    base::Optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (context_->GetLock())
       context_lock.emplace(context_);
@@ -1498,12 +1498,12 @@ void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
 void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::UploadImage");
-  base::Optional<viz::RasterContextProvider::ScopedRasterContextLock>
+  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
       context_lock;
   if (context_->GetLock())
     context_lock.emplace(context_);
 
-  base::Optional<ScopedGrContextAccess> gr_context_access;
+  absl::optional<ScopedGrContextAccess> gr_context_access;
   if (!use_transfer_cache_)
     gr_context_access.emplace(context_);
   base::AutoLock lock(lock_);
@@ -2438,7 +2438,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                       mode != DecodedDataMode::kCpu &&
                       !image_larger_than_max_texture;
 
-  base::Optional<SkYUVAPixmapInfo> optional_yuva_pixmap_info;
+  absl::optional<SkYUVAPixmapInfo> optional_yuva_pixmap_info;
   if (is_yuv) {
     DCHECK(yuva_pixmap_info.isValid());
     if (upload_scale_mip_level > 0) {

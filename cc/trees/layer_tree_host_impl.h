@@ -20,7 +20,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/base/synced_property.h"
@@ -73,6 +72,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -228,7 +228,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     bool has_missing_content = false;
 
     std::vector<viz::SurfaceId> activation_dependencies;
-    base::Optional<uint32_t> deadline_in_frames;
+    absl::optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
     const RenderSurfaceList* render_surface_list = nullptr;
@@ -543,7 +543,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) override;
-  base::Optional<viz::HitTestRegionList> BuildHitTestData() override;
+  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidLoseLayerTreeFrameSink() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
@@ -894,7 +894,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool ScrollAnimationCreateInternal(const ScrollNode& scroll_node,
                                      const gfx::Vector2dF& delta,
                                      base::TimeDelta delayed_by,
-                                     base::Optional<float> autoscroll_velocity);
+                                     absl::optional<float> autoscroll_velocity);
 
   void CleanUpTileManagerResources();
   void CreateTileManagerResources();
@@ -1182,7 +1182,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   viz::LocalSurfaceId last_draw_local_surface_id_;
   base::flat_set<viz::SurfaceRange> last_draw_referenced_surfaces_;
-  base::Optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
+  absl::optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
   viz::ChildLocalSurfaceIdAllocator child_local_surface_id_allocator_;
 
   // Indicates the direction of the last vertical scroll of the root layer.

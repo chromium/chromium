@@ -1117,7 +1117,7 @@ void PictureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
 }
 
 void PictureLayerImpl::SetDirectlyCompositedImageSize(
-    base::Optional<gfx::Size> size) {
+    absl::optional<gfx::Size> size) {
   if (directly_composited_image_size_ == size)
     return;
 
@@ -1463,7 +1463,7 @@ void PictureLayerImpl::RecalculateRasterScales() {
 
     // If we should not directly composite this image, reset values and fall
     // back to normal raster scale calculations below.
-    directly_composited_image_size_ = base::nullopt;
+    directly_composited_image_size_ = absl::nullopt;
     directly_composited_image_initial_raster_scale_ = 0.f;
   }
 

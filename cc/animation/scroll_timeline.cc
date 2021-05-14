@@ -37,7 +37,7 @@ template double ComputeProgress<std::vector<double>>(
     double,
     const std::vector<double>&);
 
-ScrollTimeline::ScrollTimeline(base::Optional<ElementId> scroller_id,
+ScrollTimeline::ScrollTimeline(absl::optional<ElementId> scroller_id,
                                ScrollDirection direction,
                                const std::vector<double> scroll_offsets,
                                double time_range,
@@ -53,7 +53,7 @@ ScrollTimeline::ScrollTimeline(base::Optional<ElementId> scroller_id,
 ScrollTimeline::~ScrollTimeline() = default;
 
 scoped_refptr<ScrollTimeline> ScrollTimeline::Create(
-    base::Optional<ElementId> scroller_id,
+    absl::optional<ElementId> scroller_id,
     ScrollTimeline::ScrollDirection direction,
     const std::vector<double> scroll_offsets,
     double time_range) {
@@ -86,14 +86,14 @@ bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
 }
 
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
-base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
+absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
     const ScrollTree& scroll_tree,
     bool is_active_tree) const {
   // If the timeline is not active return unresolved value by the spec.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
   if (!IsActive(scroll_tree, is_active_tree))
-    return base::nullopt;
+    return absl::nullopt;
 
   ElementId scroller_id =
       is_active_tree ? active_id_.value() : pending_id_.value();
@@ -175,7 +175,7 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
     const std::vector<scoped_refptr<Animation>>& ticking_animations,
     const ScrollTree& scroll_tree,
     bool is_active_tree) {
-  base::Optional<base::TimeTicks> tick_time =
+  absl::optional<base::TimeTicks> tick_time =
       CurrentTime(scroll_tree, is_active_tree);
   if (!tick_time)
     return false;
@@ -204,7 +204,7 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
 }
 
 void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
-    base::Optional<ElementId> pending_id,
+    absl::optional<ElementId> pending_id,
     const std::vector<double> scroll_offsets) {
   if (pending_id_ == pending_id && scroll_offsets_ == scroll_offsets) {
     return;

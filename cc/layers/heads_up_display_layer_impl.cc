@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -50,6 +49,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -241,7 +241,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // https://crbug.com/c/1286950
   auto* raster_context_provider =
       gpu_raster ? layer_tree_frame_sink->worker_context_provider() : nullptr;
-  base::Optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
   bool use_oopr = false;
   if (raster_context_provider) {
     lock.emplace(raster_context_provider);

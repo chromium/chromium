@@ -21,9 +21,9 @@ ThroughputUkmReporter::ThroughputUkmReporter(UkmManager* ukm_manager)
 ThroughputUkmReporter::~ThroughputUkmReporter() = default;
 
 void ThroughputUkmReporter::ReportThroughputUkm(
-    const base::Optional<int>& slower_throughput_percent,
-    const base::Optional<int>& impl_throughput_percent,
-    const base::Optional<int>& main_throughput_percent,
+    const absl::optional<int>& slower_throughput_percent,
+    const absl::optional<int>& impl_throughput_percent,
+    const absl::optional<int>& main_throughput_percent,
     FrameSequenceTrackerType type) {
   // It is possible that when a tab shuts down, the ukm_manager_ owned by the
   // LayerTreeHostImpl is cleared, and yet we try to report to UKM here. In this

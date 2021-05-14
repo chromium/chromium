@@ -1504,7 +1504,7 @@ void ScrollTree::CollectScrollDeltas(
 
     ElementId id = map_entry.first;
 
-    base::Optional<TargetSnapAreaElementIds> snap_target_ids;
+    absl::optional<TargetSnapAreaElementIds> snap_target_ids;
     if (snapped_elements.find(id) != snapped_elements.end()) {
       ScrollNode* scroll_node = FindNodeFromElementId(id);
       if (scroll_node && scroll_node->snap_container_data) {
@@ -1727,7 +1727,7 @@ void ScrollTree::SetScrollCallbacks(base::WeakPtr<ScrollCallbacks> callbacks) {
 void ScrollTree::NotifyDidScroll(
     ElementId scroll_element_id,
     const gfx::ScrollOffset& scroll_offset,
-    const base::Optional<TargetSnapAreaElementIds>& snap_target_ids) {
+    const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   DCHECK(property_trees()->is_main_thread);
   if (callbacks_)
     callbacks_->DidScroll(scroll_element_id, scroll_offset, snap_target_ids);

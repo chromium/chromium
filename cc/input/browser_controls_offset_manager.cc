@@ -497,11 +497,11 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
 
   float old_top_offset = ContentTopOffset();
   float old_bottom_offset = ContentBottomOffset();
-  base::Optional<float> new_top_ratio =
+  absl::optional<float> new_top_ratio =
       top_controls_animation_.Tick(monotonic_time);
   if (!new_top_ratio.has_value())
     new_top_ratio = TopControlsShownRatio();
-  base::Optional<float> new_bottom_ratio =
+  absl::optional<float> new_bottom_ratio =
       bottom_controls_animation_.Tick(monotonic_time);
   if (!new_bottom_ratio.has_value())
     new_bottom_ratio = BottomControlsShownRatio();
@@ -548,9 +548,9 @@ bool BrowserControlsOffsetManager::HasAnimation() {
 
 void BrowserControlsOffsetManager::ResetAnimations() {
   // If the animation doesn't need to jump to the end, Animation::Reset() will
-  // return |base::nullopt|.
-  base::Optional<float> top_ratio = top_controls_animation_.Reset();
-  base::Optional<float> bottom_ratio = bottom_controls_animation_.Reset();
+  // return |absl::nullopt|.
+  absl::optional<float> top_ratio = top_controls_animation_.Reset();
+  absl::optional<float> bottom_ratio = bottom_controls_animation_.Reset();
 
   if (top_ratio.has_value() || bottom_ratio.has_value()) {
     client_->SetCurrentBrowserControlsShownRatio(
@@ -715,10 +715,10 @@ void BrowserControlsOffsetManager::Animation::Initialize(
             std::max(start_value_, stop_value_));
 }
 
-base::Optional<float> BrowserControlsOffsetManager::Animation::Tick(
+absl::optional<float> BrowserControlsOffsetManager::Animation::Tick(
     base::TimeTicks monotonic_time) {
   if (!IsInitialized())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!started_) {
     start_time_ = monotonic_time;
@@ -742,10 +742,10 @@ void BrowserControlsOffsetManager::Animation::SetBounds(float min, float max) {
   max_value_ = max;
 }
 
-base::Optional<float> BrowserControlsOffsetManager::Animation::Reset() {
-  auto ret = jump_to_end_on_reset_ ? base::make_optional(base::ClampToRange(
+absl::optional<float> BrowserControlsOffsetManager::Animation::Reset() {
+  auto ret = jump_to_end_on_reset_ ? absl::make_optional(base::ClampToRange(
                                          stop_value_, min_value_, max_value_))
-                                   : base::nullopt;
+                                   : absl::nullopt;
 
   started_ = false;
   initialized_ = false;

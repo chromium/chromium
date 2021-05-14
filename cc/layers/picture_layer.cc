@@ -152,9 +152,9 @@ bool PictureLayer::Update() {
 
     // Clear out previous directly composited image state - if the layer
     // qualifies we'll set up the state below.
-    picture_layer_inputs_.directly_composited_image_size = base::nullopt;
+    picture_layer_inputs_.directly_composited_image_size = absl::nullopt;
     picture_layer_inputs_.nearest_neighbor = false;
-    base::Optional<DisplayItemList::DirectlyCompositedImageResult> result =
+    absl::optional<DisplayItemList::DirectlyCompositedImageResult> result =
         picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult(
             bounds());
     if (result) {

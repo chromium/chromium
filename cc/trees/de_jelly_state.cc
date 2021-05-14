@@ -41,7 +41,7 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
   // Check to make sure the ToScreen transform of our scroll node is not a
   // complex transform (doesn't work well with de-jelly). Also make sure the
   // scale is not changing.
-  base::Optional<gfx::Transform> previous_scroll_transform =
+  absl::optional<gfx::Transform> previous_scroll_transform =
       new_scroll_node_transform_;
   new_scroll_node_transform_ =
       layer_tree_impl->property_trees()->transform_tree.ToScreen(

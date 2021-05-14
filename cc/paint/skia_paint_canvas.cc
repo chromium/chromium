@@ -267,7 +267,7 @@ void SkiaPaintCanvas::drawImage(const PaintImage& image,
                                 const SkSamplingOptions& sampling,
                                 const PaintFlags* flags) {
   DCHECK(!image.IsPaintWorklet());
-  base::Optional<ScopedRasterFlags> scoped_flags;
+  absl::optional<ScopedRasterFlags> scoped_flags;
   if (flags) {
     scoped_flags.emplace(flags, image_provider_, canvas_->getTotalMatrix(),
                          max_texture_size(), 255u);
@@ -288,7 +288,7 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
                                     const SkSamplingOptions& sampling,
                                     const PaintFlags* flags,
                                     SkCanvas::SrcRectConstraint constraint) {
-  base::Optional<ScopedRasterFlags> scoped_flags;
+  absl::optional<ScopedRasterFlags> scoped_flags;
   if (flags) {
     scoped_flags.emplace(flags, image_provider_, canvas_->getTotalMatrix(),
                          max_texture_size(), 255u);

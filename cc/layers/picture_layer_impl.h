@@ -111,7 +111,7 @@ class CC_EXPORT PictureLayerImpl
     did_checkerboard_quad_ = did_checkerboard_quad;
   }
 
-  void SetDirectlyCompositedImageSize(base::Optional<gfx::Size>);
+  void SetDirectlyCompositedImageSize(absl::optional<gfx::Size>);
 
   size_t GPUMemoryUsageInBytes() const override;
 
@@ -300,7 +300,7 @@ class CC_EXPORT PictureLayerImpl
   // The intrinsic size of the directly composited image. A directly composited
   // image is an image which is the only thing drawn into a layer. In these
   // cases we attempt to raster the image at its intrinsic size.
-  base::Optional<gfx::Size> directly_composited_image_size_;
+  absl::optional<gfx::Size> directly_composited_image_size_;
 
   // The default raster source scale for a directly composited image, the last
   // time raster scales were calculated. This will be the same as

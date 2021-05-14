@@ -56,7 +56,7 @@ class EventsMetricsManagerTest : public testing::Test {
     test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
     base::TimeTicks event_time = test_tick_clock_.NowTicks();
     test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
-    return EventMetrics::CreateForTesting(type, base::nullopt, base::nullopt,
+    return EventMetrics::CreateForTesting(type, absl::nullopt, absl::nullopt,
                                           event_time, &test_tick_clock_);
   }
 

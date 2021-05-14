@@ -124,6 +124,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/events/types/scroll_input_type.h"
@@ -1073,7 +1074,7 @@ static void AppendQuadsToFillScreen(
       target_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), root_target_rect,
                             root_target_rect, gfx::MaskFilterInfo(),
-                            base::nullopt, are_contents_opaque, opacity,
+                            absl::nullopt, are_contents_opaque, opacity,
                             SkBlendMode::kSrcOver, sorting_context_id);
 
   for (gfx::Rect screen_space_rect : fill_region) {
@@ -2953,10 +2954,10 @@ static void PopulateHitTestRegion(viz::HitTestRegion* hit_test_region,
   ALLOW_UNUSED_LOCAL(ok);
 }
 
-base::Optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
+absl::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BuildHitTestData");
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list(absl::in_place);
+  absl::optional<viz::HitTestRegionList> hit_test_region_list(absl::in_place);
   hit_test_region_list->flags = viz::HitTestRegionFlags::kHitTestMine |
                                 viz::HitTestRegionFlags::kHitTestMouse |
                                 viz::HitTestRegionFlags::kHitTestTouch;
@@ -3858,14 +3859,14 @@ bool LayerTreeHostImpl::ScrollAnimationCreate(const ScrollNode& scroll_node,
                                               const gfx::Vector2dF& delta,
                                               base::TimeDelta delayed_by) {
   return ScrollAnimationCreateInternal(scroll_node, delta, delayed_by,
-                                       base::nullopt);
+                                       absl::nullopt);
 }
 
 bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
     const ScrollNode& scroll_node,
     const gfx::Vector2dF& delta,
     base::TimeDelta delayed_by,
-    base::Optional<float> autoscroll_velocity) {
+    absl::optional<float> autoscroll_velocity) {
   ScrollTree& scroll_tree = active_tree_->property_trees()->scroll_tree;
 
   const float kEpsilon = 0.1f;

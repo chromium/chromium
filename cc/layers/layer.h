@@ -316,9 +316,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // For layer tree mode only.
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
   void ClearBackdropFilterBounds();
-  base::Optional<gfx::RRectF> backdrop_filter_bounds() const {
+  absl::optional<gfx::RRectF> backdrop_filter_bounds() const {
     return layer_tree_inputs() ? layer_tree_inputs()->backdrop_filter_bounds
-                               : base::nullopt;
+                               : absl::nullopt;
   }
 
   // For layer tree mode only.
@@ -920,7 +920,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     FilterOperations filters;
     FilterOperations backdrop_filters;
-    base::Optional<gfx::RRectF> backdrop_filter_bounds;
+    absl::optional<gfx::RRectF> backdrop_filter_bounds;
     float backdrop_filter_quality = 1.0f;
 
     int mirror_count = 0;

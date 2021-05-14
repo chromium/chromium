@@ -20,7 +20,6 @@
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_canvas.h"
@@ -29,6 +28,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -130,7 +130,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
-  base::Optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
 };
 
 class CC_PAINT_EXPORT PaintOp {
@@ -1298,8 +1298,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
    private:
     bool using_offsets_ = false;
-    base::Optional<OffsetIterator> offset_iter_;
-    base::Optional<Iterator> iter_;
+    absl::optional<OffsetIterator> offset_iter_;
+    absl::optional<Iterator> iter_;
   };
 
   class CC_PAINT_EXPORT PlaybackFoldingIterator {

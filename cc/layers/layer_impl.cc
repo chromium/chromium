@@ -140,7 +140,7 @@ void LayerImpl::SetScrollTreeIndex(int index) {
 void LayerImpl::PopulateSharedQuadState(viz::SharedQuadState* state,
                                         bool contents_opaque) const {
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
-  base::Optional<gfx::Rect> clip_rect;
+  absl::optional<gfx::Rect> clip_rect;
   if (draw_properties_.is_clipped) {
     clip_rect = draw_properties_.clip_rect;
   }
@@ -178,7 +178,7 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
       GetScaledDrawTransform(layer_to_content_scale);
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
-  base::Optional<gfx::Rect> clip_rect;
+  absl::optional<gfx::Rect> clip_rect;
   if (draw_properties().is_clipped) {
     clip_rect = draw_properties().clip_rect;
   }

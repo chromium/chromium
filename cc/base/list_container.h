@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "cc/base/list_container_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -134,7 +134,7 @@ class ListContainer {
   Iterator InsertBeforeAndInvalidateAllPointers(
       Iterator at,
       size_t count,
-      const base::Optional<DerivedElementType> source = base::nullopt) {
+      const absl::optional<DerivedElementType> source = absl::nullopt) {
     helper_.InsertBeforeAndInvalidateAllPointers(&at, count);
     Iterator result = at;
     for (size_t i = 0; i < count; ++i) {

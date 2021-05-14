@@ -77,7 +77,7 @@ struct CC_EXPORT EffectNode {
 
   FilterOperations filters;
   FilterOperations backdrop_filters;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds;
   float backdrop_filter_quality;
   gfx::PointF filters_origin;
 

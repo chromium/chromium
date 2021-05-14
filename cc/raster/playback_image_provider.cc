@@ -22,7 +22,7 @@ void UnrefImageFromCache(DrawImage draw_image,
 PlaybackImageProvider::PlaybackImageProvider(
     ImageDecodeCache* cache,
     const gfx::ColorSpace& target_color_space,
-    base::Optional<Settings>&& settings)
+    absl::optional<Settings>&& settings)
     : cache_(cache),
       target_color_space_(target_color_space),
       settings_(std::move(settings)) {

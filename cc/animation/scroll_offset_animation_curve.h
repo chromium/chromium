@@ -124,17 +124,17 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   ScrollOffsetAnimationCurve(
       const gfx::ScrollOffset& target_value,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior = base::nullopt);
+      absl::optional<DurationBehavior> duration_behavior = absl::nullopt);
   ScrollOffsetAnimationCurve(
       const gfx::ScrollOffset& target_value,
       std::unique_ptr<gfx::TimingFunction> timing_function,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior);
+      absl::optional<DurationBehavior> duration_behavior);
 
   base::TimeDelta SegmentDuration(
       const gfx::Vector2dF& delta,
       base::TimeDelta delayed_by,
-      base::Optional<double> velocity = base::nullopt);
+      absl::optional<double> velocity = absl::nullopt);
 
   base::TimeDelta EaseInOutBoundedSegmentDuration(
       const gfx::Vector2dF& new_delta,
@@ -155,11 +155,11 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   AnimationType animation_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.
-  base::Optional<DurationBehavior> duration_behavior_;
+  absl::optional<DurationBehavior> duration_behavior_;
 
   bool has_set_initial_value_;
 
-  static base::Optional<double> animation_duration_for_testing_;
+  static absl::optional<double> animation_duration_for_testing_;
 
   Target* target_ = nullptr;
 };

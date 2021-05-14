@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -95,6 +94,7 @@
 #include "media/base/media.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -767,9 +767,9 @@ class LayerTreeHostImplTest : public testing::Test,
     return overflow;
   }
 
-  base::Optional<SnapContainerData> GetSnapContainerData(LayerImpl* layer) {
+  absl::optional<SnapContainerData> GetSnapContainerData(LayerImpl* layer) {
     return GetScrollNode(layer) ? GetScrollNode(layer)->snap_container_data
-                                : base::nullopt;
+                                : absl::nullopt;
   }
 
   void ClearLayersAndPropertyTrees(LayerTreeImpl* layer_tree_impl) {
@@ -16570,13 +16570,13 @@ class TestRenderFrameMetadataObserver : public RenderFrameMetadataObserver {
     last_metadata_ = render_frame_metadata;
   }
 
-  const base::Optional<RenderFrameMetadata>& last_metadata() const {
+  const absl::optional<RenderFrameMetadata>& last_metadata() const {
     return last_metadata_;
   }
 
  private:
   bool increment_counter_;
-  base::Optional<RenderFrameMetadata> last_metadata_;
+  absl::optional<RenderFrameMetadata> last_metadata_;
 };
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
@@ -16946,10 +16946,10 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
                                              base::UnguessableToken::Create());
   viz::FrameSinkId frame_sink_id(2, 0);
   viz::SurfaceId child_surface_id(frame_sink_id, child_local_surface_id);
-  surface_child1->SetRange(viz::SurfaceRange(base::nullopt, child_surface_id),
-                           base::nullopt);
-  surface_child2->SetRange(viz::SurfaceRange(base::nullopt, child_surface_id),
-                           base::nullopt);
+  surface_child1->SetRange(viz::SurfaceRange(absl::nullopt, child_surface_id),
+                           absl::nullopt);
+  surface_child2->SetRange(viz::SurfaceRange(absl::nullopt, child_surface_id),
+                           absl::nullopt);
 
   CopyProperties(root, intermediate_layer);
   intermediate_layer->SetOffsetToTransformParent(gfx::Vector2dF(200, 300));
@@ -16970,7 +16970,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list =
+  absl::optional<viz::HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
   // Generating HitTestRegionList should have been enabled for this test.
   ASSERT_TRUE(hit_test_region_list);
@@ -17046,13 +17046,13 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, PointerEvents) {
                                              base::UnguessableToken::Create());
   viz::FrameSinkId frame_sink_id(2, 0);
   viz::SurfaceId child_surface_id(frame_sink_id, child_local_surface_id);
-  surface_child1->SetRange(viz::SurfaceRange(base::nullopt, child_surface_id),
-                           base::nullopt);
+  surface_child1->SetRange(viz::SurfaceRange(absl::nullopt, child_surface_id),
+                           absl::nullopt);
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 
   UpdateDrawProperties(host_impl_->active_tree());
-  base::Optional<viz::HitTestRegionList> hit_test_region_list =
+  absl::optional<viz::HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
   // Generating HitTestRegionList should have been enabled for this test.
   ASSERT_TRUE(hit_test_region_list);
@@ -17103,8 +17103,8 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
                                              base::UnguessableToken::Create());
   viz::FrameSinkId frame_sink_id(2, 0);
   viz::SurfaceId child_surface_id(frame_sink_id, child_local_surface_id);
-  surface_child->SetRange(viz::SurfaceRange(base::nullopt, child_surface_id),
-                          base::nullopt);
+  surface_child->SetRange(viz::SurfaceRange(absl::nullopt, child_surface_id),
+                          absl::nullopt);
 
   CopyProperties(root, surface_child);
 
@@ -17120,7 +17120,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 
   UpdateDrawProperties(host_impl_->active_tree());
-  base::Optional<viz::HitTestRegionList> hit_test_region_list =
+  absl::optional<viz::HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
   // Generating HitTestRegionList should have been enabled for this test.
   ASSERT_TRUE(hit_test_region_list);
@@ -17174,8 +17174,8 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
                                              base::UnguessableToken::Create());
   viz::FrameSinkId frame_sink_id(2, 0);
   viz::SurfaceId child_surface_id(frame_sink_id, child_local_surface_id);
-  surface_child1->SetRange(viz::SurfaceRange(base::nullopt, child_surface_id),
-                           base::nullopt);
+  surface_child1->SetRange(viz::SurfaceRange(absl::nullopt, child_surface_id),
+                           absl::nullopt);
 
   auto* surface_child2 = AddLayer<SurfaceLayerImpl>(host_impl_->active_tree());
 
@@ -17186,13 +17186,13 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
   surface_child2->SetHasPointerEventsNone(false);
   CopyProperties(root, surface_child2);
 
-  surface_child2->SetRange(viz::SurfaceRange(base::nullopt, viz::SurfaceId()),
-                           base::nullopt);
+  surface_child2->SetRange(viz::SurfaceRange(absl::nullopt, viz::SurfaceId()),
+                           absl::nullopt);
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 
   UpdateDrawProperties(host_impl_->active_tree());
-  base::Optional<viz::HitTestRegionList> hit_test_region_list =
+  absl::optional<viz::HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
   // Generating HitTestRegionList should have been enabled for this test.
   ASSERT_TRUE(hit_test_region_list);

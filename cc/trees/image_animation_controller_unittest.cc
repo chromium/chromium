@@ -66,7 +66,7 @@ class DelayTrackingTaskRunner : public base::SingleThreadTaskRunner {
  private:
   ~DelayTrackingTaskRunner() override = default;
 
-  base::Optional<base::TimeDelta> last_delay_;
+  absl::optional<base::TimeDelta> last_delay_;
   base::SingleThreadTaskRunner* task_runner_;
 };
 

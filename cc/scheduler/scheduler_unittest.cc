@@ -296,7 +296,7 @@ class FakeSchedulerClient : public SchedulerClient,
   std::vector<const char*> actions_;
   TestScheduler* scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
-  base::Optional<FrameSkippedReason> last_frame_skipped_reason_;
+  absl::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
 
 enum BeginFrameSourceType {
@@ -334,7 +334,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   void RunTasksWhile(base::RepeatingCallback<bool()> condition) {
     run_condition_ = condition;
     FastForwardUntilNoTasksRemain();
-    run_condition_ = base::nullopt;
+    run_condition_ = absl::nullopt;
     // We've moved all the pending tasks away to break the execution loop,
     // now we should restore them.
     while (!tasks_to_requeue_.empty()) {
@@ -360,7 +360,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   ~SchedulerTestTaskRunner() override = default;  // Ref-counted.
 
   size_t task_count_ = 0u;
-  base::Optional<base::RepeatingCallback<bool()>> run_condition_;
+  absl::optional<base::RepeatingCallback<bool()>> run_condition_;
   base::circular_deque<base::TestPendingTask> tasks_to_requeue_;
 };
 

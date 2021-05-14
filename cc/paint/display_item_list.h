@@ -143,7 +143,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // rasterized at the intrinsic size of the image), return the intrinsic size
   // of the image and whether or not to use nearest neighbor filtering when
   // scaling the layer.
-  base::Optional<DirectlyCompositedImageResult>
+  absl::optional<DirectlyCompositedImageResult>
   GetDirectlyCompositedImageResult(gfx::Size containing_layer_bounds) const;
 
   int NumSlowPaths() const { return paint_op_buffer_.numSlowPaths(); }

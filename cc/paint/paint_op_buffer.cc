@@ -1766,7 +1766,7 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
                               const PlaybackParams& params) {
   // See PaintOp::kUnsetRect
   bool unset = op->bounds.left() == SK_ScalarInfinity;
-  base::Optional<SkPaint> paint;
+  absl::optional<SkPaint> paint;
   if (op->alpha != 0xFF) {
     paint.emplace();
     paint->setAlpha(op->alpha);

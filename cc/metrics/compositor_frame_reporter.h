@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -23,6 +22,7 @@
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -216,7 +216,7 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start() const { return swap_start_; }
 
    private:
-    base::Optional<std::pair<base::TimeTicks, base::TimeTicks>>
+    absl::optional<std::pair<base::TimeTicks, base::TimeTicks>>
         list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
 
     bool buffer_ready_available_ = false;
@@ -405,9 +405,9 @@ class CC_EXPORT CompositorFrameReporter {
 
   // The timestamp of when the frame was marked as not having produced a frame
   // (through a call to DidNotProduceFrame()).
-  base::Optional<base::TimeTicks> did_not_produce_frame_time_;
-  base::Optional<FrameSkippedReason> frame_skip_reason_;
-  base::Optional<base::TimeTicks> main_frame_abort_time_;
+  absl::optional<base::TimeTicks> did_not_produce_frame_time_;
+  absl::optional<FrameSkippedReason> frame_skip_reason_;
+  absl::optional<base::TimeTicks> main_frame_abort_time_;
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 

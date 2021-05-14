@@ -500,7 +500,7 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
   }
 
   {
-    base::Optional<base::ElapsedTimer> timer;
+    absl::optional<base::ElapsedTimer> timer;
     if (measure_raster_metric)
       timer.emplace();
     if (enable_oop_rasterization_) {

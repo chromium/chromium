@@ -6,12 +6,12 @@
 #define CC_ANIMATION_SCROLL_TIMELINE_H_
 
 #include <vector>
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -35,14 +35,14 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
     ScrollRight,
   };
 
-  ScrollTimeline(base::Optional<ElementId> scroller_id,
+  ScrollTimeline(absl::optional<ElementId> scroller_id,
                  ScrollDirection direction,
                  const std::vector<double> scroll_offsets,
                  double time_range,
                  int animation_timeline_id);
 
   static scoped_refptr<ScrollTimeline> Create(
-      base::Optional<ElementId> scroller_id,
+      absl::optional<ElementId> scroller_id,
       ScrollDirection direction,
       const std::vector<double> scroll_offsets,
       double time_range);
@@ -57,15 +57,15 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
                         bool is_active_tree) const;
 
   // Calculate the current time of the ScrollTimeline. This is either a
-  // base::TimeTicks value or base::nullopt if the current time is unresolved.
+  // base::TimeTicks value or absl::nullopt if the current time is unresolved.
   // The internal calculations are performed using doubles and the result is
   // converted to base::TimeTicks. This limits the precision to 1us.
-  virtual base::Optional<base::TimeTicks> CurrentTime(
+  virtual absl::optional<base::TimeTicks> CurrentTime(
       const ScrollTree& scroll_tree,
       bool is_active_tree) const;
 
   void UpdateScrollerIdAndScrollOffsets(
-      base::Optional<ElementId> scroller_id,
+      absl::optional<ElementId> scroller_id,
       const std::vector<double> scroll_offsets);
 
   void PushPropertiesTo(AnimationTimeline* impl_timeline) override;
@@ -76,17 +76,17 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
       const ScrollTree& scroll_tree,
       bool is_active_tree) override;
 
-  base::Optional<ElementId> GetActiveIdForTest() const { return active_id_; }
-  base::Optional<ElementId> GetPendingIdForTest() const { return pending_id_; }
+  absl::optional<ElementId> GetActiveIdForTest() const { return active_id_; }
+  absl::optional<ElementId> GetPendingIdForTest() const { return pending_id_; }
   ScrollDirection GetDirectionForTest() const { return direction_; }
-  base::Optional<double> GetStartScrollOffsetForTest() const {
+  absl::optional<double> GetStartScrollOffsetForTest() const {
     if (scroll_offsets_.empty())
-      return base::nullopt;
+      return absl::nullopt;
     return scroll_offsets_[0];
   }
-  base::Optional<double> GetEndScrollOffsetForTest() const {
+  absl::optional<double> GetEndScrollOffsetForTest() const {
     if (scroll_offsets_.empty())
-      return base::nullopt;
+      return absl::nullopt;
     return scroll_offsets_[1];
   }
   double GetTimeRangeForTest() const { return time_range_; }
@@ -100,8 +100,8 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   // The scroller which this ScrollTimeline is based on. The same underlying
   // scroll source may have different ids in the pending and active tree (see
   // http://crbug.com/847588).
-  base::Optional<ElementId> active_id_;
-  base::Optional<ElementId> pending_id_;
+  absl::optional<ElementId> active_id_;
+  absl::optional<ElementId> pending_id_;
 
   // The direction of the ScrollTimeline indicates which axis of the scroller
   // it should base its current time on, and where the origin point is.

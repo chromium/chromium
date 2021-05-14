@@ -89,7 +89,7 @@ class LayerTreeHostScrollTest : public LayerTreeTest, public ScrollCallbacks {
   // ScrollCallbacks
   void DidScroll(ElementId element_id,
                  const gfx::ScrollOffset& scroll_offset,
-                 const base::Optional<TargetSnapAreaElementIds>&
+                 const absl::optional<TargetSnapAreaElementIds>&
                      snap_target_ids) override {
     // Simulates cc client (e.g Blink) behavior when handling impl-side scrolls.
     SetScrollOffsetFromImplSide(layer_tree_host()->LayerByElementId(element_id),
@@ -623,7 +623,7 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 
   void DidScroll(ElementId element_id,
                  const gfx::ScrollOffset& offset,
-                 const base::Optional<TargetSnapAreaElementIds>&
+                 const absl::optional<TargetSnapAreaElementIds>&
                      snap_target_ids) override {
     LayerTreeHostScrollTest::DidScroll(element_id, offset, snap_target_ids);
     if (element_id == expected_scroll_layer_->element_id()) {
@@ -1842,7 +1842,7 @@ class LayerTreeHostScrollTestLayerStructureChange
 
   void DidScroll(ElementId element_id,
                  const gfx::ScrollOffset&,
-                 const base::Optional<TargetSnapAreaElementIds>&) override {
+                 const absl::optional<TargetSnapAreaElementIds>&) override {
     if (scroll_destroy_whole_tree_) {
       layer_tree_host()->SetRootLayer(nullptr);
       layer_tree_host()->property_trees()->clear();

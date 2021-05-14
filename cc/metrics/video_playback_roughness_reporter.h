@@ -8,11 +8,11 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -111,10 +111,10 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
     FrameInfo();
     FrameInfo(const FrameInfo&);
     TokenType token = 0;
-    base::Optional<base::TimeTicks> decode_time;
-    base::Optional<base::TimeTicks> presentation_time;
-    base::Optional<base::TimeDelta> actual_duration;
-    base::Optional<base::TimeDelta> intended_duration;
+    absl::optional<base::TimeTicks> decode_time;
+    absl::optional<base::TimeTicks> presentation_time;
+    absl::optional<base::TimeDelta> actual_duration;
+    absl::optional<base::TimeDelta> intended_duration;
     int refresh_rate_hz = 60;
     gfx::Size size;
   };

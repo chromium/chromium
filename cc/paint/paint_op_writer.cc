@@ -307,7 +307,7 @@ void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image) {
     return;
   }
 
-  base::Optional<uint32_t> id = decoded_draw_image.transfer_cache_entry_id();
+  absl::optional<uint32_t> id = decoded_draw_image.transfer_cache_entry_id();
   // In the case of a decode failure, id may not be set. Send an invalid ID.
   WriteImage(id.value_or(kInvalidImageTransferCacheEntryId),
              decoded_draw_image.transfer_cache_entry_needs_mips());

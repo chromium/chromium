@@ -343,11 +343,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   base::TimeDelta last_frame_interval_;
 
   gfx::RenderingPipeline* const main_thread_pipeline_;
-  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
+  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
       main_thread_pipeline_active_;
 
   gfx::RenderingPipeline* const compositor_thread_pipeline_;
-  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
+  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
       compositor_thread_pipeline_active_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;

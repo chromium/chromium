@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -20,6 +19,7 @@
 #include "cc/test/test_paint_worklet_input.h"
 #include "cc/tiles/image_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 namespace {

@@ -61,7 +61,7 @@ struct CC_EXPORT ScrollNode {
 
   OverscrollBehavior overscroll_behavior;
 
-  base::Optional<SnapContainerData> snap_container_data;
+  absl::optional<SnapContainerData> snap_container_data;
 
   bool is_composited : 1;
 

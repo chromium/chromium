@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
 
@@ -90,15 +90,15 @@ class CC_EXPORT EventMetrics {
   // Otherwise, returns nullptr.
   static std::unique_ptr<EventMetrics> Create(
       ui::EventType type,
-      base::Optional<ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type,
       base::TimeTicks timestamp);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   static std::unique_ptr<EventMetrics> CreateForTesting(
       ui::EventType type,
-      base::Optional<ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type,
       base::TimeTicks timestamp,
       const base::TickClock* tick_clock);
 
@@ -110,8 +110,8 @@ class CC_EXPORT EventMetrics {
   // new event is not an interesting one, return value would be nullptr.
   static std::unique_ptr<EventMetrics> CreateFromExisting(
       ui::EventType type,
-      base::Optional<ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type,
       DispatchStage last_dispatch_stage,
       const EventMetrics* existing);
 
@@ -125,7 +125,7 @@ class CC_EXPORT EventMetrics {
   // Returns a string representing event type.
   const char* GetTypeName() const;
 
-  const base::Optional<ScrollType>& scroll_type() const { return scroll_type_; }
+  const absl::optional<ScrollType>& scroll_type() const { return scroll_type_; }
 
   // Returns a string representing input type for a scroll event. Should only be
   // called for scroll events.
@@ -152,13 +152,13 @@ class CC_EXPORT EventMetrics {
  private:
   static std::unique_ptr<EventMetrics> CreateInternal(
       ui::EventType type,
-      base::Optional<ScrollUpdateType> scroll_update_type,
-      base::Optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollUpdateType> scroll_update_type,
+      absl::optional<ui::ScrollInputType> scroll_input_type,
       base::TimeTicks timestamp,
       const base::TickClock* tick_clock);
 
   EventMetrics(EventType type,
-               base::Optional<ScrollType> scroll_type,
+               absl::optional<ScrollType> scroll_type,
                base::TimeTicks timestamp,
                const base::TickClock* tick_clock);
 
@@ -166,7 +166,7 @@ class CC_EXPORT EventMetrics {
 
   // Only available for scroll events and represents the type of input device
   // for the event.
-  base::Optional<ScrollType> scroll_type_;
+  absl::optional<ScrollType> scroll_type_;
 
   const base::TickClock* const tick_clock_;
 
