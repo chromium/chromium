@@ -145,7 +145,7 @@ file_manager::EventRouter* GetEventRouterByProfileId(void* profile_id) {
 void NotifyCopyProgress(
     void* profile_id,
     storage::FileSystemOperationRunner::OperationID operation_id,
-    storage::FileSystemOperation::CopyProgressType type,
+    storage::FileSystemOperation::CopyOrMoveProgressType type,
     const FileSystemURL& source_url,
     const FileSystemURL& destination_url,
     int64_t size) {
@@ -163,7 +163,7 @@ void NotifyCopyProgress(
 void OnCopyProgress(
     void* profile_id,
     storage::FileSystemOperationRunner::OperationID* operation_id,
-    storage::FileSystemOperation::CopyProgressType type,
+    storage::FileSystemOperation::CopyOrMoveProgressType type,
     const FileSystemURL& source_url,
     const FileSystemURL& destination_url,
     int64_t size) {

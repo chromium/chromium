@@ -357,7 +357,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
       url(), swap_url,
       storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyProgressCallback());
+      storage::FileSystemOperation::CopyOrMoveProgressCallback());
 }
 
 void FileSystemAccessFileHandleImpl::DidCopySwapFile(

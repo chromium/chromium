@@ -100,7 +100,7 @@ void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
   file_system_context->operation_runner()->Move(
       src_path, dest_path, option,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyProgressCallback(),
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       std::move(callback));
 }
 
@@ -326,7 +326,7 @@ int32_t PepperInternalFileRefBackend::Rename(
     GetFileSystemContext()->operation_runner()->Move(
         GetFileSystemURL(), new_url, option,
         storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        storage::FileSystemOperation::CopyProgressCallback(),
+        storage::FileSystemOperation::CopyOrMoveProgressCallback(),
         base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
                        weak_factory_.GetWeakPtr(), reply_context,
                        PpapiPluginMsg_FileRef_RenameReply()));

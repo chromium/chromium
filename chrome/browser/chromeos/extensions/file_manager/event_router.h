@@ -98,7 +98,7 @@ class EventRouter
 
   // Called when a copy task progress is updated.
   void OnCopyProgress(int copy_id,
-                      storage::FileSystemOperation::CopyProgressType type,
+                      storage::FileSystemOperation::CopyOrMoveProgressType type,
                       const GURL& source_url,
                       const GURL& destination_url,
                       int64_t size);

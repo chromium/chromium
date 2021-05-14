@@ -99,7 +99,7 @@ void FileSystemOperationImpl::Copy(
     const FileSystemURL& dest_url,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationCopy));
   DCHECK(!recursive_operation_delegate_);
@@ -118,7 +118,7 @@ void FileSystemOperationImpl::Move(
     const FileSystemURL& dest_url,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationMove));
   DCHECK(!recursive_operation_delegate_);

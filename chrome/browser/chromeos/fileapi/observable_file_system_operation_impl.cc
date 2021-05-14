@@ -135,7 +135,7 @@ void ObservableFileSystemOperationImpl::Copy(
     const storage::FileSystemURL& dst,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Copy(
       src, dst, option, error_behavior, progress_callback,
@@ -164,7 +164,7 @@ void ObservableFileSystemOperationImpl::Move(
     const storage::FileSystemURL& dst,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Move(
       src, dst, option, error_behavior, progress_callback,

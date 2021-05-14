@@ -284,7 +284,7 @@ class FileSystemOperationImplTest : public testing::Test {
     update_observer_.Enable();
     operation_runner()->Move(
         src, dest, option, storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        storage::FileSystemOperation::CopyProgressCallback(),
+        storage::FileSystemOperation::CopyOrMoveProgressCallback(),
         RecordStatusCallback(run_loop.QuitClosure(), &status));
     run_loop.Run();
     update_observer_.Disable();
@@ -299,7 +299,7 @@ class FileSystemOperationImplTest : public testing::Test {
     update_observer_.Enable();
     operation_runner()->Copy(
         src, dest, option, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        FileSystemOperation::CopyProgressCallback(),
+        FileSystemOperation::CopyOrMoveProgressCallback(),
         RecordStatusCallback(run_loop.QuitClosure(), &status));
     run_loop.Run();
     update_observer_.Disable();

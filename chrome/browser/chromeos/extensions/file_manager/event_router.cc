@@ -180,16 +180,16 @@ MountErrorToMountCompletedStatus(chromeos::MountError error) {
 }
 
 file_manager_private::CopyProgressStatusType
-CopyProgressTypeToCopyProgressStatusType(
-    storage::FileSystemOperation::CopyProgressType type) {
+CopyOrMoveProgressTypeToCopyProgressStatusType(
+    storage::FileSystemOperation::CopyOrMoveProgressType type) {
   switch (type) {
-    case storage::FileSystemOperation::BEGIN_COPY_ENTRY:
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kBegin:
       return file_manager_private::COPY_PROGRESS_STATUS_TYPE_BEGIN_COPY_ENTRY;
-    case storage::FileSystemOperation::END_COPY_ENTRY:
-      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_END_COPY_ENTRY;
-    case storage::FileSystemOperation::PROGRESS:
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kProgress:
       return file_manager_private::COPY_PROGRESS_STATUS_TYPE_PROGRESS;
-    case storage::FileSystemOperation::ERROR_COPY_ENTRY:
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndCopy:
+      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_END_COPY_ENTRY;
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kError:
       return file_manager_private::COPY_PROGRESS_STATUS_TYPE_ERROR;
   }
   NOTREACHED();
@@ -632,28 +632,28 @@ void EventRouter::OnCopyCompleted(int copy_id,
 
 void EventRouter::OnCopyProgress(
     int copy_id,
-    storage::FileSystemOperation::CopyProgressType type,
+    storage::FileSystemOperation::CopyOrMoveProgressType type,
     const GURL& source_url,
     const GURL& destination_url,
     int64_t size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   file_manager_private::CopyProgressStatus status;
-  status.type = CopyProgressTypeToCopyProgressStatusType(type);
+  status.type = CopyOrMoveProgressTypeToCopyProgressStatusType(type);
   status.source_url = std::make_unique<std::string>(source_url.spec());
-  if (type == storage::FileSystemOperation::END_COPY_ENTRY ||
-      type == storage::FileSystemOperation::ERROR_COPY_ENTRY)
+  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kEndCopy ||
+      type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
     status.destination_url =
         std::make_unique<std::string>(destination_url.spec());
-  if (type == storage::FileSystemOperation::ERROR_COPY_ENTRY)
+  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
     status.error = std::make_unique<std::string>(
         FileErrorToErrorName(base::File::FILE_ERROR_FAILED));
-  if (type == storage::FileSystemOperation::PROGRESS)
+  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kProgress)
     status.size = std::make_unique<double>(size);
 
   // Discard error progress since current JS code cannot handle this properly.
   // TODO(yawano): Remove this after JS side is implemented correctly.
-  if (type == storage::FileSystemOperation::ERROR_COPY_ENTRY)
+  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
     return;
 
   // Should not skip events other than TYPE_PROGRESS.

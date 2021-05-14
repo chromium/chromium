@@ -109,16 +109,16 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
   };
 };
 
-// Records CopyProgressCallback invocations.
+// Records CopyOrMoveProgressCallback invocations.
 struct ProgressRecord {
-  FileSystemOperation::CopyProgressType type;
+  FileSystemOperation::CopyOrMoveProgressType type;
   FileSystemURL source_url;
   FileSystemURL dest_url;
   int64_t size;
 };
 
 void RecordProgressCallback(std::vector<ProgressRecord>* records,
-                            FileSystemOperation::CopyProgressType type,
+                            FileSystemOperation::CopyOrMoveProgressType type,
                             const FileSystemURL& source_url,
                             const FileSystemURL& dest_url,
                             int64_t size) {
@@ -259,7 +259,8 @@ class CopyOrMoveOperationTestHelper {
   base::File::Error CopyWithProgress(
       const FileSystemURL& src,
       const FileSystemURL& dest,
-      const AsyncFileTestHelper::CopyProgressCallback& progress_callback) {
+      const AsyncFileTestHelper::CopyOrMoveProgressCallback&
+          progress_callback) {
     return AsyncFileTestHelper::CopyWithProgress(file_system_context_.get(),
                                                  src, dest, progress_callback);
   }
@@ -515,7 +516,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyDirectory) {
   // Copy it.
   ASSERT_EQ(base::File::FILE_OK,
             helper.CopyWithProgress(
-                src, dest, AsyncFileTestHelper::CopyProgressCallback()));
+                src, dest, AsyncFileTestHelper::CopyOrMoveProgressCallback()));
 
   // Verify.
   ASSERT_TRUE(helper.DirectoryExists(src));
@@ -661,9 +662,11 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, ProgressCallback) {
     ASSERT_NE(end_index, records.size());
     ASSERT_NE(begin_index, end_index);
 
-    EXPECT_EQ(FileSystemOperation::BEGIN_COPY_ENTRY, records[begin_index].type);
+    EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
+              records[begin_index].type);
     EXPECT_FALSE(records[begin_index].dest_url.is_valid());
-    EXPECT_EQ(FileSystemOperation::END_COPY_ENTRY, records[end_index].type);
+    EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndCopy,
+              records[end_index].type);
     EXPECT_EQ(dest_url, records[end_index].dest_url);
 
     if (test_case.is_directory) {
@@ -674,7 +677,8 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, ProgressCallback) {
       int64_t current_size = 0;
       for (size_t j = begin_index + 1; j < end_index; ++j) {
         if (records[j].source_url == src_url) {
-          EXPECT_EQ(FileSystemOperation::PROGRESS, records[j].type);
+          EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kProgress,
+                    records[j].type);
           EXPECT_FALSE(records[j].dest_url.is_valid());
           EXPECT_GE(records[j].size, current_size);
           current_size = records[j].size;

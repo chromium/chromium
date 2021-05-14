@@ -124,7 +124,7 @@ void SyncableFileSystemOperation::Copy(
     const FileSystemURL& dest_url,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
@@ -148,7 +148,7 @@ void SyncableFileSystemOperation::Move(
     const FileSystemURL& dest_url,
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {

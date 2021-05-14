@@ -273,12 +273,12 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
     return;
   }
 
-  operation_runner()->Move(src_url, dest_url,
-                           storage::FileSystemOperation::OPTION_NONE,
-                           FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                           storage::FileSystemOperation::CopyProgressCallback(),
-                           base::BindOnce(&FileSystemManagerImpl::DidFinish,
-                                          GetWeakPtr(), std::move(callback)));
+  operation_runner()->Move(
+      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+      base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::Copy(const GURL& src_path,
@@ -300,12 +300,12 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
     return;
   }
 
-  operation_runner()->Copy(src_url, dest_url,
-                           storage::FileSystemOperation::OPTION_NONE,
-                           FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                           storage::FileSystemOperation::CopyProgressCallback(),
-                           base::BindOnce(&FileSystemManagerImpl::DidFinish,
-                                          GetWeakPtr(), std::move(callback)));
+  operation_runner()->Copy(
+      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyOrMoveProgressCallback(),
+      base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::Remove(const GURL& path,
