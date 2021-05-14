@@ -11,16 +11,16 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import '../localized_link/localized_link.m.js';
+import '../localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 import './os_powerwash_dialog_esim_item.js';
 
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Router} from '../../router.js';
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.m.js';
 
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';

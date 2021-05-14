@@ -54,7 +54,7 @@ function getEmptyPrinter_() {
 import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '../localized_link/localized_link.m.js';
+import '../localized_link/localized_link.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import './cups_add_print_server_dialog.js';
 import './cups_add_printer_manually_dialog.js';

@@ -22,7 +22,7 @@ import './cups_edit_printer_dialog.js';
 import './cups_printer_shared_css.js';
 import './cups_saved_printers.js';
 import './cups_nearby_printers.js';
-import '../localized_link/localized_link.m.js';
+import '../localized_link/localized_link.js';
 import '../../icons.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';

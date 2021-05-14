@@ -3,36 +3,22 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
-  deps = [ ":localized_link.m" ]
+  deps = [ ":localized_link" ]
 }
 
-js_library("localized_link.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/localized_link/localized_link.m.js" ]
+js_library("localized_link") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":localized_link_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [ ":localized_link_module" ]
-}
-
-polymer_modulizer("localized_link") {
-  js_file = "localized_link.js"
-  html_file = "localized_link.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports =
-      os_settings_auto_imports +
-      [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]
+html_to_js("web_components") {
+  js_files = [ "localized_link.js" ]
 }

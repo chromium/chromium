@@ -62,7 +62,7 @@ js_library("multidevice_feature_item.m") {
     "..:os_route.m",
     "..:route_origin_behavior.m",
     "../..:router",
-    "../localized_link:localized_link.m",
+    "../localized_link:localized_link",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -92,7 +92,7 @@ js_library("multidevice_page.m") {
     "../..:router",
     "../../controls:password_prompt_dialog",
     "../../prefs:prefs_behavior",
-    "../localized_link:localized_link.m",
+    "../localized_link:localized_link",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

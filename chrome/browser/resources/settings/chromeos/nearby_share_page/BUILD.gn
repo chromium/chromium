@@ -85,7 +85,7 @@ js_library("nearby_share_device_name_dialog.m") {
 js_library("nearby_share_high_visibility_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_high_visibility_page.m.js" ]
   deps = [
-    "../localized_link:localized_link.m",
+    "../localized_link:localized_link",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",

@@ -20,7 +20,13 @@
  * string with a link and sometimes returns a normal string.
  */
 
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-localized-link',
 
   properties: {
