@@ -8,18 +8,21 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.background.UpdateRequestResult;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -35,9 +38,15 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Unit tests for {@link RequestCoordinatorBridge}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class RequestCoordinatorBridgeTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final int TIMEOUT_MS = 5000;
 
@@ -55,8 +64,6 @@ public class RequestCoordinatorBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Ensure we start in an offline state.
             NetworkChangeNotifier.forceConnectivityState(false);
@@ -69,6 +76,12 @@ public class RequestCoordinatorBridgeTest {
                 () -> { mProfile = Profile.getLastUsedRegularProfile(); });
 
         initializeBridgeForProfile();
+
+        List<Long> requestsToRemove = new ArrayList<>();
+        for (SavePageRequest savePageRequest : OfflineTestUtil.getRequestsInQueue()) {
+            requestsToRemove.add(Long.valueOf(savePageRequest.getRequestId()));
+        }
+        removeRequestsFromQueue(requestsToRemove);
     }
 
     @Test

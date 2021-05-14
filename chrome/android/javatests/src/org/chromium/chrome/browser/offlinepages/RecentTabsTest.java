@@ -11,10 +11,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -33,9 +36,15 @@ import java.util.concurrent.Callable;
 /** Integration tests for the Last 1 feature of Offline Pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class RecentTabsTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
@@ -46,7 +55,6 @@ public class RecentTabsTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Ensure we start in an offline state.
             NetworkChangeNotifier.forceConnectivityState(false);
@@ -70,7 +78,7 @@ public class RecentTabsTest {
     @MediumTest
     public void testLastNPageSavedWhenTabSwitched() throws Exception {
         // The tab of interest.
-        Tab tab = mActivityTestRule.loadUrlInNewTab(mTestPage);
+        Tab tab = sActivityTestRule.loadUrlInNewTab(mTestPage);
 
         final ClientId firstTabClientId =
                 new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
@@ -83,7 +91,7 @@ public class RecentTabsTest {
         // so we can definitely snapshot after onload (which is what |loadUrlInNewTab| waits for).
 
         // Switch to a new tab to cause the WebContents hidden event.
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        sActivityTestRule.loadUrlInNewTab("about:blank");
 
         waitForPageWithClientId(firstTabClientId);
     }
@@ -99,12 +107,12 @@ public class RecentTabsTest {
     @MediumTest
     public void testLastNClosingTabIsNotSaved() throws Exception {
         // Create the tab of interest.
-        final Tab tab = mActivityTestRule.loadUrlInNewTab(mTestPage);
+        final Tab tab = sActivityTestRule.loadUrlInNewTab(mTestPage);
         final ClientId firstTabClientId =
                 new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
 
         // The tab should be foreground and so no snapshot should exist.
-        TabModelSelector tabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = sActivityTestRule.getActivity().getTabModelSelector();
         Assert.assertEquals(tabModelSelector.getCurrentTab(), tab);
         Assert.assertFalse(tab.isHidden());
         Assert.assertNull(OfflineTestUtil.getPageByClientId(firstTabClientId));
@@ -140,7 +148,7 @@ public class RecentTabsTest {
         Assert.assertEquals(tabModelSelector.getCurrentTab(), tab);
 
         // Finally switch to a new tab and check that a snapshot is created.
-        Tab newTab = mActivityTestRule.loadUrlInNewTab("about:blank");
+        Tab newTab = sActivityTestRule.loadUrlInNewTab("about:blank");
         Assert.assertEquals(tabModelSelector.getCurrentTab(), newTab);
         Assert.assertTrue(tab.isHidden());
         waitForPageWithClientId(firstTabClientId);
