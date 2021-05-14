@@ -375,7 +375,6 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   }
 
   ChildrenChanged(owner);
-  owner->UpdateChildrenIfNecessary();
 }
 
 bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
