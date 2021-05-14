@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
@@ -33,7 +34,7 @@ struct Badge {
   bool operator!=(const Badge& other) const { return !(other == *this); }
 
   const gfx::VectorIcon* icon = nullptr;
-  SkColor color = SK_AlphaTRANSPARENT;
+  SkColor color = gfx::kPlaceholderColor;
 };
 
 // Struct to pass a collection of badges to NetworkIconImageSource.
