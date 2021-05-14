@@ -6,12 +6,15 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings.js';
 
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior} from '../settings.js';
+
+import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
 Polymer({
   is: 'privacy-sandbox-app',
@@ -28,16 +31,27 @@ Polymer({
       type: Boolean,
       value: () => loadTimeData.getBoolean('privacySandboxSettings2Enabled'),
     },
+
+    /** @private */
+    flocId_: String,
   },
 
   /** @private {?MetricsBrowserProxy} */
   metricsBrowserProxy_: null,
+
+  /** @private {?PrivacySandboxBrowserProxy} */
+  privacySandboxBrowserProxy_: null,
 
   /** @override */
   ready() {
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
     chrome.metricsPrivate.recordSparseHashable(
         'WebUI.Settings.PathVisited', '/privacySandbox');
+
+    this.privacySandboxBrowserProxy_ =
+        PrivacySandboxBrowserProxyImpl.getInstance();
+    this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
+    addWebUIListener('floc-id-changed', id => this.flocId_ = id);
 
     // Make the required policy strings available at the window level. This is
     // expected by cr-elements related to policy.
@@ -68,6 +82,11 @@ Polymer({
         'Settings.PrivacySandbox.OpenExplainer');
     OpenWindowProxyImpl.getInstance().openURL(
         loadTimeData.getString('privacySandboxURL'));
+  },
+
+  /** @private */
+  onResetFlocClick_: function() {
+    this.privacySandboxBrowserProxy_.resetFlocId();
   },
 
   /**

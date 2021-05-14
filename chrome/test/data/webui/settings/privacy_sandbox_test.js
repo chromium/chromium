@@ -4,10 +4,13 @@
 
 import 'chrome://settings/privacy_sandbox/app.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 import {flushTasks, isChildVisible} from '../test_util.m.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -112,6 +115,12 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
   /** @type {!PrivacySandboxAppElement} */
   let page;
 
+  /**
+   * @implements {PrivacySandboxBrowserProxy}
+   * @extends {TestBrowserProxy}
+   */
+  let testPrivacySandboxBrowserProxy;
+
   suiteSetup(function() {
     loadTimeData.overrideValues({
       privacySandboxSettings2Enabled: true,
@@ -120,6 +129,14 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
   setup(function() {
     document.body.innerHTML = '';
+
+    testPrivacySandboxBrowserProxy =
+        TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);
+    PrivacySandboxBrowserProxyImpl.instance_ = testPrivacySandboxBrowserProxy;
+
+    testPrivacySandboxBrowserProxy.setResultFor(
+        'getFlocId', Promise.resolve('test-id'));
+
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
@@ -129,5 +146,19 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
   test('flocCardVisibility', function() {
     assertTrue(isChildVisible(page, '#flocCard'));
+  });
+
+  test('flocId', async function() {
+    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
+    assertEquals('test-id', page.$$('#flocId').textContent);
+
+    webUIListenerCallback('floc-id-changed', 'new-test-id');
+    await flushTasks();
+    assertEquals('new-test-id', page.$$('#flocId').textContent);
+  });
+
+  test('resetFlocId', function() {
+    page.$$('#resetFlocIdButton').click();
+    return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
   });
 });

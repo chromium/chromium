@@ -110,7 +110,7 @@
     </div>
   </div>
   <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
-    <div class="card" id="flocCard">
+    <div id="flocCard" class="card">
       <settings-toggle-button class="hr"
           pref="{{prefs.privacy_sandbox.floc_enabled}}"
           label="$i18n{privacySandboxPageFlocHeading}">
@@ -121,7 +121,7 @@
       <div class="cr-row continuation">
         <div class="label-wrapper">
           <div>$i18n{privacySandboxPageFlocCohort}</div>
-          <div class="cr-secondary-text">123 abc</div>
+          <div id="flocId" class="cr-secondary-text">[[flocId_]]</div>
         </div>
       </div>
       <div class="cr-row continuation">
@@ -134,7 +134,8 @@
       <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
     </div>
     <div class="cr-row continuation box-last">
-      <cr-button class="cr-button" role="button">
+      <cr-button id="resetFlocIdButton" class="cr-button" role="button"
+          on-click="onResetFlocClick_">
         $i18n{privacySandboxPageFlocResetCohort}
       </cr-button>
     </div>
