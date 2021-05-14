@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
@@ -207,7 +208,11 @@ StackTrace::StackTrace(const void* const* trace, size_t count) {
 
 // static
 bool StackTrace::WillSymbolizeToStreamForTesting() {
-#if defined(__UCLIBC__) || defined(_AIX)
+#if BUILDFLAG(SYMBOL_LEVEL) == 0
+  // Symbols are not expected to be reliable when gn args specifies
+  // symbol_level=0.
+  return false;
+#elif defined(__UCLIBC__) || defined(_AIX)
   // StackTrace::OutputToStream() is not implemented under uclibc, nor AIX.
   // See https://crbug.com/706728
   return false;
