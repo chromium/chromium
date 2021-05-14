@@ -1098,8 +1098,10 @@ void SocketGetJoinedGroupsFunction::Work() {
   }
 
   std::unique_ptr<base::ListValue> values(new base::ListValue());
-  values->AppendStrings((std::vector<std::string>&)static_cast<UDPSocket*>(
-                            socket)->GetJoinedGroups());
+  auto* udp_socket = static_cast<UDPSocket*>(socket);
+  for (const std::string& group : udp_socket->GetJoinedGroups()) {
+    values->Append(group);
+  }
   SetResult(std::move(values));
 }
 
