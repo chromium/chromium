@@ -95,6 +95,9 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
     return false;
   }
 
+  framerate_control_ =
+      std::make_unique<V4L2FrameRateControl>(device_, task_runner_);
+
   return true;
 }
 
@@ -291,6 +294,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
           break;
         }
 
+        framerate_control_->AttachToVideoFrame(video_frame);
         ret = std::move(*buffer).QueueDMABuf(std::move(video_frame));
         break;
       }

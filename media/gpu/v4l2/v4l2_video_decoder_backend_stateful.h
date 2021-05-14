@@ -14,6 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 
 namespace media {
@@ -150,6 +151,10 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // This flag is set on the first decode request, and reset after a successful
   // flush or reset.
   bool has_pending_requests_ = false;
+
+  // The venus driver is the only implementation that requires the client
+  // to inform the driver of the framerate.
+  std::unique_ptr<V4L2FrameRateControl> framerate_control_;
 
   base::WeakPtr<V4L2StatefulVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatefulVideoDecoderBackend> weak_this_factory_{
