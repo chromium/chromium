@@ -2490,6 +2490,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/1209223 external/wpt/css/css-images/image-set/webkit-image-set.tentative.html [ Failure ]
+crbug.com/1209223 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/canvas-aspect-ratio.html [ Failure ]
+crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Crash ]
