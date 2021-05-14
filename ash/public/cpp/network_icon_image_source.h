@@ -33,15 +33,16 @@ struct Badge {
   bool operator!=(const Badge& other) const { return !(other == *this); }
 
   const gfx::VectorIcon* icon = nullptr;
-  SkColor color;
+  SkColor color = SK_AlphaTRANSPARENT;
 };
 
 // Struct to pass a collection of badges to NetworkIconImageSource.
 struct Badges {
-  Badge top_left = {};
-  Badge center = {};
-  Badge bottom_left = {};
-  Badge bottom_right = {};
+  Badge top_left;
+  Badge center;
+  Badge center_left;
+  Badge bottom_left;
+  Badge bottom_right;
 };
 
 // Provides an image source for assembling a network icons.

@@ -393,7 +393,7 @@ void NetworkIconImpl::GetBadges(const NetworkStateProperties* network,
   } else if (type == NetworkType::kCellular) {
     // technology_badge_ is set in UpdateCellularState.
     if (is_connected && network->type_state->get_cellular()->roaming) {
-      badges->bottom_right = {&kNetworkBadgeRoamingIcon, icon_color};
+      badges->center_left = {&kNetworkBadgeRoamingIcon, icon_color};
     }
   }
   // Only show technology badge when connected.
