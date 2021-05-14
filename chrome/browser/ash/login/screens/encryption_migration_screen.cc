@@ -43,6 +43,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace ash {
 namespace {
 
 // Path to the mount point to check the available space.
@@ -126,7 +127,7 @@ enum class RemoveCryptohomeResult {
 
 bool IsTestingUI() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kTestEncryptionMigrationUI);
+      switches::kTestEncryptionMigrationUI);
 }
 
 // Wrapper functions for histogram macros to avoid duplication of expanded code.
@@ -222,20 +223,18 @@ void RecordRemoveCryptohomeResultFailure(bool resume, bool arc_kiosk) {
 
 // Chooses the value for the MigrationUIFirstScreen UMA stat. Not used for ARC
 // kiosk.
-FirstScreen GetFirstScreenForMode(chromeos::EncryptionMigrationMode mode) {
+FirstScreen GetFirstScreenForMode(EncryptionMigrationMode mode) {
   switch (mode) {
-    case chromeos::EncryptionMigrationMode::ASK_USER:
+    case EncryptionMigrationMode::ASK_USER:
       return FirstScreen::FIRST_SCREEN_READY;
-    case chromeos::EncryptionMigrationMode::START_MIGRATION:
+    case EncryptionMigrationMode::START_MIGRATION:
       return FirstScreen::FIRST_SCREEN_START_AUTOMATICALLY;
-    case chromeos::EncryptionMigrationMode::RESUME_MIGRATION:
+    case EncryptionMigrationMode::RESUME_MIGRATION:
       return FirstScreen::FIRST_SCREEN_RESUME;
   }
 }
 
 }  // namespace
-
-namespace chromeos {
 
 EncryptionMigrationScreen::EncryptionMigrationScreen(
     EncryptionMigrationScreenView* view)
@@ -680,4 +679,4 @@ void EncryptionMigrationScreen::MaybeStopForcingMigration() {
     view_->SetIsResuming(false);
 }
 
-}  // namespace chromeos
+}  // namespace ash

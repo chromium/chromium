@@ -10,9 +10,10 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // The OOBE screen dedicated to gesture navigation education.
 class GestureNavigationScreen : public BaseScreen {
@@ -73,6 +74,12 @@ class GestureNavigationScreen : public BaseScreen {
   bool was_shown_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::GestureNavigationScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GESTURE_NAVIGATION_SCREEN_H_

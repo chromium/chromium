@@ -11,11 +11,12 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+namespace ash {
 namespace {
-constexpr char kUserActionContinue[] = "continue";
-}  // namespace
 
-namespace chromeos {
+constexpr char kUserActionContinue[] = "continue";
+
+}  // namespace
 
 std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
   switch (result) {
@@ -81,4 +82,4 @@ void FamilyLinkNoticeScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

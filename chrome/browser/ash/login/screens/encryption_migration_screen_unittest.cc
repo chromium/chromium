@@ -28,14 +28,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+namespace {
+
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::WithArgs;
-
-namespace chromeos {
-namespace {
 
 // Fake WakeLock implementation, required by EncryptionMigrationScreen.
 class FakeWakeLock : public device::mojom::WakeLock {
@@ -187,4 +187,4 @@ class EncryptionMigrationScreenTest : public testing::Test {
 
 }  // namespace
 
-}  // namespace chromeos
+}  // namespace ash

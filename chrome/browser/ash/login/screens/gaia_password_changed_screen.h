@@ -9,11 +9,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
-
-class GaiaPasswordChangedView;
+namespace ash {
 
 // Controller for the tpm error screen.
 class GaiaPasswordChangedScreen : public BaseScreen {
@@ -73,6 +73,12 @@ class GaiaPasswordChangedScreen : public BaseScreen {
   base::WeakPtrFactory<GaiaPasswordChangedScreen> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::GaiaPasswordChangedScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GAIA_PASSWORD_CHANGED_SCREEN_H_

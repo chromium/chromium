@@ -18,18 +18,14 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chromeos/dbus/update_engine_client.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
-class ScopedGuestButtonBlocker;
-}
-
-namespace chromeos {
-
 class ErrorScreen;
-class ResetView;
 class ScopedGuestButtonBlocker;
 
 // Representation independent class that controls screen showing reset to users.
@@ -98,13 +94,19 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // Callback used to check whether a TPM firnware update is available.
   TpmFirmwareUpdateAvailabilityChecker tpm_firmware_update_checker_;
 
-  std::unique_ptr<ash::ScopedGuestButtonBlocker> scoped_guest_button_blocker_;
+  std::unique_ptr<ScopedGuestButtonBlocker> scoped_guest_button_blocker_;
 
   base::WeakPtrFactory<ResetScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResetScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ResetScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RESET_SCREEN_H_

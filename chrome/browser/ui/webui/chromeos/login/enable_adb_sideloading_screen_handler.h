@@ -9,9 +9,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class EnableAdbSideloadingScreen;
+}
+
+namespace chromeos {
 
 // Interface between enable adb sideloading screen and its representation.
 class EnableAdbSideloadingScreenView {
@@ -28,7 +30,7 @@ class EnableAdbSideloadingScreenView {
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void Bind(EnableAdbSideloadingScreen* screen) = 0;
+  virtual void Bind(ash::EnableAdbSideloadingScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void SetScreenState(UIState value) = 0;
 };
@@ -46,7 +48,7 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
   // EnableAdbSideloadingScreenView implementation:
   void Show() override;
   void Hide() override;
-  void Bind(EnableAdbSideloadingScreen* delegate) override;
+  void Bind(ash::EnableAdbSideloadingScreen* delegate) override;
   void Unbind() override;
   void SetScreenState(UIState value) override;
 
@@ -56,7 +58,7 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
   void Initialize() override;
 
  private:
-  EnableAdbSideloadingScreen* screen_ = nullptr;
+  ash::EnableAdbSideloadingScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -65,5 +67,11 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EnableAdbSideloadingScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_ADB_SIDELOADING_SCREEN_HANDLER_H_

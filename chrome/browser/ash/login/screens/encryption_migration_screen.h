@@ -14,6 +14,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -24,11 +26,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
-
-class EncryptionMigrationScreenView;
-class LoginFeedback;
-class UserContext;
+namespace ash {
 
 class EncryptionMigrationScreen : public BaseScreen,
                                   public PowerManagerClient::Observer,
@@ -171,6 +169,12 @@ class EncryptionMigrationScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EncryptionMigrationScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ENCRYPTION_MIGRATION_SCREEN_H_

@@ -20,7 +20,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kUserActionAcceptButtonClicked[] = "accept-button";
@@ -176,8 +176,8 @@ void EulaScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-bool EulaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+bool EulaScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kStartEnrollment) {
     context()->enrollment_triggered_early = true;
     return true;
   }
@@ -199,4 +199,4 @@ void EulaScreen::ShowSecuritySettingsDialog() {
     view_->ShowSecuritySettingsDialog();
 }
 
-}  // namespace chromeos
+}  // namespace ash

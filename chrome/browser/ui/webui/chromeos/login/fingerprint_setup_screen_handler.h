@@ -9,9 +9,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 class FingerprintSetupScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between FingerprintSetupScreen and its
 // WebUI representation.
@@ -22,7 +24,7 @@ class FingerprintSetupScreenView {
   virtual ~FingerprintSetupScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(FingerprintSetupScreen* screen) = 0;
+  virtual void Bind(ash::FingerprintSetupScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -54,7 +56,7 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // FingerprintSetupScreenView:
-  void Bind(FingerprintSetupScreen* screen) override;
+  void Bind(ash::FingerprintSetupScreen* screen) override;
   void Show() override;
   void Hide() override;
   void EnableAddAnotherFinger(bool enable) override;
@@ -66,11 +68,17 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
   void Initialize() override;
 
  private:
-  FingerprintSetupScreen* screen_ = nullptr;
+  ash::FingerprintSetupScreen* screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintSetupScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FingerprintSetupScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_FINGERPRINT_SETUP_SCREEN_HANDLER_H_

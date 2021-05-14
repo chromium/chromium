@@ -17,7 +17,7 @@
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kUserActionSetupDone[] = "setup-done";
@@ -213,4 +213,4 @@ void FingerprintSetupScreen::OnCancelCurrentEnrollSession(bool success) {
     LOG(ERROR) << "Failed to cancel current fingerprint enroll session.";
 }
 
-}  // namespace chromeos
+}  // namespace ash

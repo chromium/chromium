@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class ErrorScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between ErrorScreen and its actual
 // representation. Owned by ErrorScreen.
@@ -28,7 +30,7 @@ class ErrorScreenView {
   virtual void Hide() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(ErrorScreen* screen) = 0;
+  virtual void Bind(ash::ErrorScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -76,7 +78,7 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   // ErrorScreenView:
   void Show() override;
   void Hide() override;
-  void Bind(ErrorScreen* screen) override;
+  void Bind(ash::ErrorScreen* screen) override;
   void Unbind() override;
   void ShowOobeScreen(OobeScreenId screen) override;
   void SetErrorStateCode(NetworkError::ErrorState error_state) override;
@@ -98,7 +100,7 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void HandleHideCaptivePortal();
 
   // Non-owning ptr.
-  ErrorScreen* screen_ = nullptr;
+  ash::ErrorScreen* screen_ = nullptr;
 
   // Should the screen be shown right after initialization?
   bool show_on_init_ = false;

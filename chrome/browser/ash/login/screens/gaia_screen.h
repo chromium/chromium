@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 
-namespace chromeos {
-
-class GaiaView;
+namespace ash {
 
 // This class represents GAIA screen: login screen that is responsible for
 // GAIA-based sign-in.
@@ -49,7 +49,7 @@ class GaiaScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   GaiaView* view_ = nullptr;
 
@@ -58,6 +58,12 @@ class GaiaScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(GaiaScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::GaiaScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GAIA_SCREEN_H_

@@ -15,11 +15,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::ElementsAre;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::ElementsAre;
 
 const test::UIPath kFingerprintScreen = {"fingerprint-setup"};
 const test::UIPath kStartPage = {"fingerprint-setup", "setupFingerprint"};
@@ -224,4 +223,4 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupCancel) {
                   static_cast<int>(UserAction::kSkipButtonClickedOnStart), 1)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

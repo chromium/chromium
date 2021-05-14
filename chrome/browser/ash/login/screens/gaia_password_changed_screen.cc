@@ -10,9 +10,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 constexpr const char kUserActionCancelLogin[] = "cancel";
 constexpr const char kUserActionResyncData[] = "resync";
 
@@ -99,4 +99,4 @@ void GaiaPasswordChangedScreen::OnCookiesCleared() {
   exit_callback_.Run(Result::CANCEL);
 }
 
-}  // namespace chromeos
+}  // namespace ash

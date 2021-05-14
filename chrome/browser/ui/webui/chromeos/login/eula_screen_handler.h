@@ -11,13 +11,15 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
 
+namespace ash {
+class EulaScreen;
+}
+
 namespace base {
 class DictionaryValue;
 }
 
 namespace chromeos {
-
-class EulaScreen;
 class HelpAppLauncher;
 
 // Interface between eula screen and its representation, either WebUI
@@ -31,7 +33,7 @@ class EulaView {
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void Bind(EulaScreen* screen) = 0;
+  virtual void Bind(ash::EulaScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void ShowStatsUsageLearnMore() = 0;
   virtual void ShowAdditionalTosDialog() = 0;
@@ -50,7 +52,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   // EulaView implementation:
   void Show() override;
   void Hide() override;
-  void Bind(EulaScreen* screen) override;
+  void Bind(ash::EulaScreen* screen) override;
   void Unbind() override;
   void ShowStatsUsageLearnMore() override;
   void ShowAdditionalTosDialog() override;
@@ -69,7 +71,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
 
   void UpdateTpmDesc(::login::SecureModuleUsed secure_module_used);
 
-  EulaScreen* screen_ = nullptr;
+  ash::EulaScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -83,5 +85,11 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EulaView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_

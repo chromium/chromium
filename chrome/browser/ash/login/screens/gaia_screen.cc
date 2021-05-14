@@ -12,13 +12,14 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
+namespace ash {
 namespace {
+
 constexpr char kUserActionBack[] = "back";
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 // static
 std::string GaiaScreen::GetResultString(Result result) {
@@ -100,16 +101,16 @@ void GaiaScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-bool GaiaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+bool GaiaScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kStartEnrollment) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
     return true;
   }
-  if (action == ash::LoginAcceleratorAction::kEnableConsumerKiosk) {
+  if (action == LoginAcceleratorAction::kEnableConsumerKiosk) {
     exit_callback_.Run(Result::START_CONSUMER_KIOSK);
     return true;
   }
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -26,6 +26,10 @@
 
 class AccountId;
 
+namespace ash {
+class GaiaScreen;
+}
+
 namespace base {
 class DictionaryValue;
 class ElapsedTimer;
@@ -39,7 +43,6 @@ namespace chromeos {
 
 class SigninScreenHandler;
 class PublicSamlUrlFetcher;
-class GaiaScreen;
 
 class GaiaView {
  public:
@@ -67,7 +70,7 @@ class GaiaView {
   virtual void Show() = 0;
   virtual void Hide() = 0;
   // Binds `screen` to the view.
-  virtual void Bind(GaiaScreen* screen) = 0;
+  virtual void Bind(ash::GaiaScreen* screen) = 0;
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
@@ -119,7 +122,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
-  void Bind(GaiaScreen* screen) override;
+  void Bind(ash::GaiaScreen* screen) override;
   void Unbind() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
   void ShowSigninScreenForTest(const std::string& username,

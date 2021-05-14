@@ -26,6 +26,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
 namespace {
 
 // Possible ui-states for device-blocks.
@@ -58,17 +59,14 @@ bool DeviceIsKeyboard(device::BluetoothDeviceType device_type) {
          device_type == device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO;
 }
 
-chromeos::HIDDetectionScreen::InputDeviceManagerBinder&
+HIDDetectionScreen::InputDeviceManagerBinder&
 GetInputDeviceManagerBinderOverride() {
-  static base::NoDestructor<
-      chromeos::HIDDetectionScreen::InputDeviceManagerBinder>
+  static base::NoDestructor<HIDDetectionScreen::InputDeviceManagerBinder>
       binder;
   return *binder;
 }
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 std::string HIDDetectionScreen::GetResultString(Result result) {
@@ -167,9 +165,9 @@ bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
     return true;
   }
 
-  if (chromeos::StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
+  if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableHIDDetectionOnOOBEForTesting)) {
+          switches::kDisableHIDDetectionOnOOBEForTesting)) {
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;
   }
@@ -693,4 +691,4 @@ void HIDDetectionScreen::SetAdapterInitialPoweredForTesting(bool powered) {
   adapter_initially_powered_ = std::make_unique<bool>(powered);
 }
 
-}  // namespace chromeos
+}  // namespace ash

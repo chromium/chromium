@@ -14,8 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionExitPressed[] = "exit";
@@ -63,9 +62,9 @@ void GestureNavigationScreen::GesturePageChange(const std::string& new_page) {
 bool GestureNavigationScreen::MaybeSkip(WizardContext* context) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      !ash::features::IsHideShelfControlsInTabletModeEnabled() ||
+      !features::IsHideShelfControlsInTabletModeEnabled() ||
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled) ||
+          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled) ||
       accessibility_manager->IsSpokenFeedbackEnabled() ||
       accessibility_manager->IsAutoclickEnabled() ||
       accessibility_manager->IsSwitchAccessEnabled()) {
@@ -75,8 +74,8 @@ bool GestureNavigationScreen::MaybeSkip(WizardContext* context) {
 
   // Skip the screen if the device is not in tablet mode, unless tablet mode
   // first user run is forced on the device.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
-      !chromeos::switches::ShouldOobeUseTabletModeFirstRun()) {
+  if (!TabletMode::Get()->InTabletMode() &&
+      !switches::ShouldOobeUseTabletModeFirstRun()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -101,7 +100,7 @@ void GestureNavigationScreen::OnUserAction(const std::string& action_id) {
     // Make sure the user does not see a notification about the new gestures
     // since they have already gone through this gesture education screen.
     ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-        ash::prefs::kGestureEducationNotificationShown, true);
+        prefs::kGestureEducationNotificationShown, true);
 
     RecordPageShownTimeMetrics();
     was_shown_ = true;
@@ -124,4 +123,4 @@ void GestureNavigationScreen::RecordPageShownTimeMetrics() {
                           page_times_[kGestureBackPage]);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -35,12 +35,8 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace reset = ::ash::reset;
 
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionResetRestartPressed[] = "restart-pressed";
@@ -202,7 +198,7 @@ void ResetScreen::ShowImpl() {
   // reset screen is shown.
   if (!scoped_guest_button_blocker_) {
     scoped_guest_button_blocker_ =
-        ash::LoginScreen::Get()->GetScopedGuestButtonBlocker();
+        LoginScreen::Get()->GetScopedGuestButtonBlocker();
   }
 
   reset::DialogViewType dialog_type =
@@ -465,4 +461,4 @@ void ResetScreen::OnTPMFirmwareUpdateAvailableCheck(
     view_->SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode::kPowerwash);
 }
 
-}  // namespace chromeos
+}  // namespace ash

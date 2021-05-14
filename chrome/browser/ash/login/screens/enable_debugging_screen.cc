@@ -19,14 +19,15 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
 namespace {
+
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionDone[] = "done";
 constexpr char kUserActionLearnMore[] = "learnMore";
 constexpr char kUserActionRemoveRootFSProtection[] = "removeRootFSProtection";
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 EnableDebuggingScreen::EnableDebuggingScreen(
     EnableDebuggingScreenView* view,
@@ -211,4 +212,4 @@ void EnableDebuggingScreen::UpdateUIState(
   view_->UpdateUIState(state);
 }
 
-}  // namespace chromeos
+}  // namespace ash

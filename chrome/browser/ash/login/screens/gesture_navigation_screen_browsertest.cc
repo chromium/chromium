@@ -24,13 +24,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 enum class TestMode { kTablet, kClamshellWithForcedTabletFirstRun };
-
-}  // namespace
 
 class GestureNavigationScreenTest
     : public OobeBaseTest,
@@ -38,7 +35,7 @@ class GestureNavigationScreenTest
  public:
   GestureNavigationScreenTest() {
     feature_list_.InitAndEnableFeature(
-        ash::features::kHideShelfControlsInTabletMode);
+        features::kHideShelfControlsInTabletMode);
   }
   ~GestureNavigationScreenTest() override = default;
 
@@ -49,7 +46,7 @@ class GestureNavigationScreenTest
     OobeBaseTest::SetUpCommandLine(command_line);
   }
   void SetUpOnMainThread() override {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(StartInTabletMode());
+    ShellTestApi().SetTabletModeEnabledForTest(StartInTabletMode());
 
     GestureNavigationScreen* gesture_screen =
         static_cast<GestureNavigationScreen*>(
@@ -181,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, FlowTest) {
 
 // Ensure the flow is skipped when in clamshell mode.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, ScreenSkippedInClamshell) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ShellTestApi().SetTabletModeEnabledForTest(false);
 
   ShowGestureNavigationScreen();
 
@@ -246,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
                        ScreenSkippedWithShelfNavButtonsInTabletModeEnabled) {
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
 
   ShowGestureNavigationScreen();
 
@@ -295,4 +292,5 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, PageShownMetricsTest) {
       "OOBE.StepCompletionTime.Gesture-navigation", 1);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

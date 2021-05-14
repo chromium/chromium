@@ -15,6 +15,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
@@ -32,8 +34,6 @@ class WebUIDataSource;
 }
 
 namespace chromeos {
-
-class ErrorScreen;
 class NetworkStateInformer;
 class OobeDisplayChooser;
 class SigninScreenHandler;

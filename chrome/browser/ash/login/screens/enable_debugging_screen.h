@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Representation independent class that controls screen showing enable
 // debugging screen to users.
@@ -68,6 +68,12 @@ class EnableDebuggingScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EnableDebuggingScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ENABLE_DEBUGGING_SCREEN_H_

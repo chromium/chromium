@@ -27,11 +27,10 @@
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
-using ::testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::_;
 
 const test::UIPath kHidContinueButton = {"hid-detection",
                                          "hid-continue-button"};
@@ -333,4 +332,4 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebaseTest, TouchscreenDetected) {
   test::OobeJS().ExpectEnabledPath(kHidContinueButton);
 }
 
-}  // namespace chromeos
+}  // namespace ash

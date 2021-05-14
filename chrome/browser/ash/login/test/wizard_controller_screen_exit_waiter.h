@@ -51,4 +51,10 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::WizardControllerExitWaiter;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_

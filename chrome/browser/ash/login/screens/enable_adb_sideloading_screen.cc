@@ -13,8 +13,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionCancelPressed[] = "cancel-pressed";
@@ -174,4 +173,4 @@ void EnableAdbSideloadingScreen::OnViewDestroyed(
     view_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

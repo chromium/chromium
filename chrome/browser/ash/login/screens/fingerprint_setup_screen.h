@@ -10,14 +10,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
-namespace chromeos {
-
-class FingerprintSetupScreenView;
+namespace ash {
 
 // Controls fingerprint setup. The screen can be shown during OOBE. It allows
 // user to enroll fingerprint on the device.
@@ -96,6 +95,12 @@ class FingerprintSetupScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(FingerprintSetupScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::FingerprintSetupScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_FINGERPRINT_SETUP_SCREEN_H_

@@ -313,4 +313,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::DebugDaemonClient;
+}
+
 #endif  // CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_

@@ -7,9 +7,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class GestureNavigationScreen;
+}
+
+namespace chromeos {
 
 // Interface between gesture navigation screen and its representation.
 class GestureNavigationScreenView {
@@ -18,7 +20,7 @@ class GestureNavigationScreenView {
 
   virtual ~GestureNavigationScreenView() {}
 
-  virtual void Bind(GestureNavigationScreen* screen) = 0;
+  virtual void Bind(ash::GestureNavigationScreen* screen) = 0;
   virtual void Show() = 0;
   virtual void Hide() = 0;
 };
@@ -38,7 +40,7 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
       const GestureNavigationScreenHandler&) = delete;
 
   // GestureNavigationScreenView:
-  void Bind(GestureNavigationScreen* screen) override;
+  void Bind(ash::GestureNavigationScreen* screen) override;
   void Show() override;
   void Hide() override;
 
@@ -53,12 +55,18 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
   // changed.
   void HandleGesturePageChange(const std::string& new_page);
 
-  GestureNavigationScreen* screen_ = nullptr;
+  ash::GestureNavigationScreen* screen_ = nullptr;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::GestureNavigationScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_GESTURE_NAVIGATION_SCREEN_HANDLER_H_

@@ -55,4 +55,10 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::LocaleSwitchView;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_LOCALE_SWITCH_SCREEN_HANDLER_H_

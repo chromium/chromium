@@ -71,6 +71,8 @@ void UpdateAvailable(base::OnceCallback<void(bool)> completion,
 namespace ash {
 namespace tpm_firmware_update {
 using ::chromeos::tpm_firmware_update::DecodeSettingsProto;
+using ::chromeos::tpm_firmware_update::GetAvailableUpdateModes;
+using ::chromeos::tpm_firmware_update::Mode;
 }  // namespace tpm_firmware_update
 }  // namespace ash
 

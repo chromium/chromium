@@ -21,7 +21,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 constexpr StaticOobeScreenId EduCoexistenceLoginScreen::kScreenId;
@@ -101,4 +101,4 @@ void EduCoexistenceLoginScreen::WebDialogViewBoundsChanged(
   dialog_delegate_->UpdateDialogBounds(bounds);
 }
 
-}  // namespace chromeos
+}  // namespace ash

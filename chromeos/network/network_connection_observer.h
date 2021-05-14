@@ -44,4 +44,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::NetworkConnectionObserver;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_OBSERVER_H_

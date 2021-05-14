@@ -28,8 +28,7 @@
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 SystemWebDialogDelegate* GetInlineLoginDialog() {
@@ -193,4 +192,4 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
       "OOBE.StepCompletionTimeByExitReason.Edu-coexistence-login.Done", 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

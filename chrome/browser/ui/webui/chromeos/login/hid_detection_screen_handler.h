@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
-
+namespace ash {
 class HIDDetectionScreen;
+}
+
+namespace chromeos {
 
 // Interface between HID detection screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
@@ -27,7 +29,7 @@ class HIDDetectionView {
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void Bind(HIDDetectionScreen* screen) = 0;
+  virtual void Bind(ash::HIDDetectionScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void SetKeyboardState(const std::string& value) = 0;
   virtual void SetMouseState(const std::string& value) = 0;
@@ -53,7 +55,7 @@ class HIDDetectionScreenHandler
   // HIDDetectionView implementation:
   void Show() override;
   void Hide() override;
-  void Bind(HIDDetectionScreen* screen) override;
+  void Bind(ash::HIDDetectionScreen* screen) override;
   void Unbind() override;
   void SetKeyboardState(const std::string& value) override;
   void SetMouseState(const std::string& value) override;
@@ -110,7 +112,7 @@ class HIDDetectionScreenHandler
   std::string keyboard_device_label_;
   bool continue_button_enabled_ = false;
 
-  HIDDetectionScreen* screen_ = nullptr;
+  ash::HIDDetectionScreen* screen_ = nullptr;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
@@ -119,5 +121,12 @@ class HIDDetectionScreenHandler
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::HIDDetectionScreenHandler;
+using ::chromeos::HIDDetectionView;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_HID_DETECTION_SCREEN_HANDLER_H_

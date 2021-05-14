@@ -7,18 +7,19 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace chromeos {
-
-class WizardContext;
-class ScreenManager;
+namespace ash {
 
 // OOBE screen to add EDU account as a secondary account when the user is a
 // supervised user.
@@ -54,13 +55,19 @@ class EduCoexistenceLoginScreen : public BaseScreen,
   void WebDialogViewBoundsChanged(const gfx::Rect& bounds) override;
 
   ScreenExitCallback exit_callback_;
-  std::unique_ptr<InlineLoginDialogChromeOSOnboarding::Delegate>
+  std::unique_ptr<chromeos::InlineLoginDialogChromeOSOnboarding::Delegate>
       dialog_delegate_;
 
   base::ScopedObservation<LoginDisplayHost, LoginDisplayHost::Observer>
       observed_login_display_host_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EduCoexistenceLoginScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_EDU_COEXISTENCE_LOGIN_SCREEN_H_

@@ -11,11 +11,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
-class EulaView;
+namespace ash {
 
 // Representation independent class that controls OOBE screen showing EULA
 // to users.
@@ -75,7 +75,7 @@ class EulaScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // EulaView:
   void ShowStatsUsageLearnMore();
@@ -99,6 +99,12 @@ class EulaScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(EulaScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EulaScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_EULA_SCREEN_H_

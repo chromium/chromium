@@ -48,8 +48,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
@@ -430,4 +429,4 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   guest_login_performer_->LoginOffTheRecord();
 }
 
-}  // namespace chromeos
+}  // namespace ash

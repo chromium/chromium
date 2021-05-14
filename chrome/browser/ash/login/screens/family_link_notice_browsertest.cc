@@ -23,8 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath kFamilyLinkDialog = {"family-link-notice",
@@ -204,4 +203,4 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest, ManagedAccount) {
   ExpectHelpAppPrefValue(false);
 }
 
-}  // namespace chromeos
+}  // namespace ash
