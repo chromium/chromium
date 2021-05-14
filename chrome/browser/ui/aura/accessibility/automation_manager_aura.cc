@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -307,11 +308,13 @@ void AutomationManagerAura::PerformHitTest(
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(action.target_point);
 
+  // Require a window in |display|; prefer it also be focused.
   aura::Window* root_window = nullptr;
   for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
     if (display.id() == host->GetDisplayId()) {
       root_window = host->window();
-      break;
+      if (aura::client::GetFocusClient(root_window)->GetFocusedWindow())
+        break;
     }
   }
 
