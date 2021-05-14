@@ -253,3 +253,8 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
   // true when the probability is supposed to be 0 (i.e.: always false).
   return base::RandDouble() < probability;
 }
+
+bool PrefetchProxyAllowAllDomains() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      "isolated-prerender-allow-all-domains");
+}

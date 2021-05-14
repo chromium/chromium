@@ -1162,7 +1162,8 @@ void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
   // For IP-private prefetches, using the Google proxy needs to be restricted to
   // first party sites until we understand the benefit and determine interest
   // from other sites.
-  if (!IsGoogleDomainUrl(source_document_url, google_util::DISALLOW_SUBDOMAIN,
+  if (!PrefetchProxyAllowAllDomains() &&
+      !IsGoogleDomainUrl(source_document_url, google_util::ALLOW_SUBDOMAIN,
                          google_util::ALLOW_NON_STANDARD_PORTS)) {
     return;
   }

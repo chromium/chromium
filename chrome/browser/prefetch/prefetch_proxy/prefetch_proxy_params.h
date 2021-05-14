@@ -105,4 +105,8 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta();
 // sending the decoy request is expensive from a data use perspective.
 bool PrefetchProxySendDecoyRequestForIneligiblePrefetch();
 
+// Returns true if any domain can issue private prefetches using the Google
+// proxy. Normally, this is restricted to Google domains.
+bool PrefetchProxyAllowAllDomains();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_
