@@ -483,6 +483,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
+    units="Recyclable resources" expires_after="2021-11-06">
+  <owner>magchen@chromium.org</owner>
+  <owner>enga@chromium.org</owner>
+  <summary>
+    The maximum number of total unused recyclable WebGPU resources since last
+    clean-up. Logged in the WebGPU recyclable resouce clean-up timer function.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesInKB" units="KB"
+    expires_after="2021-11-06">
+  <owner>magchen@chromium.org</owner>
+  <owner>enga@chromium.org</owner>
+  <summary>
+    The maximum size of total unused recyclable WebGPU resources in KB since
+    last clean-up. Logged in the WebGPU recyclable resouce clean-up timer
+    function.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.WebGPUStaleResourceCount"
+    units="recyclable resources" expires_after="2021-11-06">
+  <owner>magchen@chromium.org</owner>
+  <owner>enga@chromium.org</owner>
+  <summary>
+    The number of stale recyclable WebGPU canvas resources released and logged
+    in the WebGPU recyclable resouce clean-up timer function.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.WillReadFrequently"
     enum="BooleanWillReadFrequently" expires_after="2021-01-31">
   <owner>fserb@chromium.org</owner>

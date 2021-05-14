@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
+#include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,18 +95,23 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     auto webgpu = std::make_unique<MockWebGPUInterface>();
     webgpu_ = webgpu.get();
 
+    Platform::SetMainThreadTaskRunnerForTesting();
+
     auto provider = std::make_unique<WebGraphicsContext3DProviderForTests>(
         std::move(webgpu));
     sii_ = provider->SharedImageInterface();
 
-    dawn_control_client_ =
-        base::MakeRefCounted<DawnControlClientHolder>(std::move(provider));
+    dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
+        std::move(provider), base::ThreadTaskRunnerHandle::Get());
 
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
         &provider_alive_, &client_, fake_device_, dawn_control_client_,
         WGPUTextureUsage_RenderAttachment, WGPUTextureFormat_RGBA8Unorm);
   }
 
+  void TearDown() override { Platform::UnsetMainThreadTaskRunnerForTesting(); }
+
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   MockWebGPUInterface* webgpu_;
   viz::TestSharedImageInterface* sii_;

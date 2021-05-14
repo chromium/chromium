@@ -193,7 +193,8 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
       // Make a new DawnControlClientHolder with the context provider we just
       // made and set the lost context callback
       dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
-          std::move(context_provider));
+          std::move(context_provider),
+          execution_context->GetTaskRunner(TaskType::kWebGPU));
       dawn_control_client_->SetLostContextCallback();
     }
   }

@@ -11,12 +11,13 @@
 namespace blink {
 
 DawnControlClientHolder::DawnControlClientHolder(
-    std::unique_ptr<WebGraphicsContext3DProvider> context_provider)
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : context_provider_(std::make_unique<WebGraphicsContext3DProviderWrapper>(
           std::move(context_provider))),
       interface_(GetContextProvider()->WebGPUInterface()),
       procs_(interface_->GetProcs()),
-      recyclable_resource_cache_(interface_) {}
+      recyclable_resource_cache_(interface_, task_runner) {}
 
 void DawnControlClientHolder::SetLostContextCallback() {
   GetContextProvider()->SetLostContextCallback(WTF::BindRepeating(

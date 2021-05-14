@@ -368,8 +368,8 @@ class WebGPUMailboxTextureTest : public testing::Test {
     auto provider = std::make_unique<WebGraphicsContext3DProviderForTests>(
         std::move(webgpu));
 
-    dawn_control_client_ =
-        base::MakeRefCounted<DawnControlClientHolder>(std::move(provider));
+    dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
+        std::move(provider), base::ThreadTaskRunnerHandle::Get());
 
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContext(test_context_provider_.get());

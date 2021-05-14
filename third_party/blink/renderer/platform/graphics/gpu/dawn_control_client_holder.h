@@ -30,7 +30,8 @@ class PLATFORM_EXPORT DawnControlClientHolder
     : public RefCounted<DawnControlClientHolder> {
  public:
   DawnControlClientHolder(
-      std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
+      std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void Destroy();
 
