@@ -1590,11 +1590,11 @@ bool VaapiWrapper::IsVppResolutionAllowed(const gfx::Size& size) {
                                                     VAProfileNone);
   if (!profile_info)
     return false;
-  return gfx::Rect(profile_info->min_resolution.width(),
-                   profile_info->min_resolution.height(),
-                   profile_info->max_resolution.width(),
-                   profile_info->max_resolution.height())
-      .Contains(size.width(), size.height());
+
+  return size.width() >= profile_info->min_resolution.width() &&
+         size.width() <= profile_info->max_resolution.width() &&
+         size.height() >= profile_info->min_resolution.height() &&
+         size.height() <= profile_info->max_resolution.height();
 }
 
 // static
