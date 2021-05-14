@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,6 +64,16 @@ SearchHandler::SearchHandler(
   DCHECK(index_remote_.is_bound());
 
   search_tag_registry_->AddObserver(this);
+
+  // Set the search params to make fuzzy and prefix matching stricter.
+  // This reduces the number of irrelevant search results.
+  index_remote_->SetSearchParams(
+      {
+          /*relevance_threshold=*/0.32,  // Same as default.
+          /*prefix_threshold=*/0.8,
+          /*fuzzy_threshold=*/0.85,
+      },
+      base::OnceCallback<void()>());
 }
 
 SearchHandler::~SearchHandler() {

@@ -45,8 +45,8 @@ constexpr char kHelpAppDiscoverResult[] = "help-app://discover";
 constexpr char kHelpAppUpdatesResult[] = "help-app://updates";
 constexpr float kScoreEps = 1e-5f;
 
-constexpr size_t kMinQueryLength = 5u;
-constexpr float kMinScore = 0.35f;
+constexpr size_t kMinQueryLength = 3u;
+constexpr float kMinScore = 0.4f;
 constexpr size_t kNumRequestedResults = 5u;
 constexpr size_t kMaxShownResults = 2u;
 

@@ -150,14 +150,14 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
       /*id=*/"test-id-less",
       /*title=*/u"Title 1",
       /*main_category=*/u"Help",
-      /*tags=*/std::vector<std::u16string>{u"less relevance"},
+      /*tags=*/std::vector<std::u16string>{u"less relevant concept"},
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   mojom::SearchConceptPtr new_concept_2 = mojom::SearchConcept::New(
       /*id=*/"test-id-more",
       /*title=*/u"Title 2",
       /*main_category=*/u"Help",
-      /*tags=*/std::vector<std::u16string>{u"more relevant tag", u"Tag 2"},
+      /*tags=*/std::vector<std::u16string>{u"more relevant tag", u"Tag"},
       /*url_path_with_parameters=*/"help",
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
