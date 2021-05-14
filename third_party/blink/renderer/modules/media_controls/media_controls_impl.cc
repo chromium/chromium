@@ -971,6 +971,9 @@ void MediaControlsImpl::Hide() {
   if (loading_panel_)
     loading_panel_->OnControlsHidden();
 
+  // Hide any popup menus.
+  HidePopupMenu();
+
   // Cancel scrubbing if necessary.
   if (is_scrubbing_) {
     is_paused_for_scrubbing_ = false;
