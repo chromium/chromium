@@ -29,7 +29,9 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
+namespace ash {
 namespace {
+
 constexpr char kUserActionSelectNetworkButtonClicked[] = "select-network";
 constexpr char kUserActionUpdateButtonClicked[] = "update";
 constexpr char kUserActionAcceptUpdateOverCellular[] = "update-accept-cellular";
@@ -41,9 +43,8 @@ constexpr char kUserActionConfirmDeleteUsersData[] = "confirm-delete-users";
 // its login page before error message appears.
 constexpr const base::TimeDelta kDelayErrorMessage =
     base::TimeDelta::FromSeconds(10);
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
                                            ErrorScreen* error_screen,
@@ -79,7 +80,7 @@ void UpdateRequiredScreen::OnViewDestroyed(UpdateRequiredView* view) {
 }
 
 void UpdateRequiredScreen::ShowImpl() {
-  ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  LoginScreen::Get()->SetAllowLoginAsGuest(false);
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDisplayDomain(),
@@ -255,7 +256,7 @@ void UpdateRequiredScreen::StopObservingNetworkState() {
 }
 
 void UpdateRequiredScreen::OnSelectNetworkButtonClicked() {
-  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble();
+  SystemTray::Get()->ShowNetworkDetailedViewBubble();
 }
 
 void UpdateRequiredScreen::OnUpdateButtonClicked() {
@@ -441,4 +442,4 @@ void UpdateRequiredScreen::OnUserRemoved(const AccountId& account_id) {
 
 void UpdateRequiredScreen::OnBeforeUserRemoved(const AccountId& account_id) {}
 
-}  // namespace chromeos
+}  // namespace ash

@@ -26,8 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionAcceptUpdateOverCellular[] =
@@ -514,4 +513,4 @@ void UpdateScreen::OnErrorScreenHidden() {
   Show(context());
 }
 
-}  // namespace chromeos
+}  // namespace ash

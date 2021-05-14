@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_arc_terms_of_service_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockArcTermsOfServiceScreen::MockArcTermsOfServiceScreen(
     ArcTermsOfServiceScreenView* view,
@@ -37,4 +37,4 @@ void MockArcTermsOfServiceScreenView::RemoveObserver(
   MockRemoveObserver(observer);
 }
 
-}  // namespace chromeos
+}  // namespace ash

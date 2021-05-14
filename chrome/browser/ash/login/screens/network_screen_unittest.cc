@@ -19,11 +19,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 class NetworkScreenUnitTest : public testing::Test {
  public:
@@ -115,4 +115,4 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   EXPECT_EQ(1, network_screen_->continue_attempts_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

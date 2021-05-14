@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_enable_adb_sideloading_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -38,4 +38,4 @@ void MockEnableAdbSideloadingScreenView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

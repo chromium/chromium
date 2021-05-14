@@ -15,8 +15,10 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // This screen handles OOBE locale switch for the post-login screens.
 class LocaleSwitchScreen : public BaseScreen,
@@ -72,6 +74,12 @@ class LocaleSwitchScreen : public BaseScreen,
   base::WeakPtrFactory<LocaleSwitchScreen> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::LocaleSwitchScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCALE_SWITCH_SCREEN_H_

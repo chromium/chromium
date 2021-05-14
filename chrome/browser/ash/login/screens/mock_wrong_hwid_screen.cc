@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_wrong_hwid_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockWrongHWIDScreen::MockWrongHWIDScreen(
     WrongHWIDScreenView* view,
@@ -34,4 +34,4 @@ void MockWrongHWIDScreenView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -13,7 +13,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
+namespace {
 
 class WrongHWIDScreenTest : public OobeBaseTest {
  public:
@@ -32,4 +33,5 @@ IN_PROC_BROWSER_TEST_F(WrongHWIDScreenTest, BasicFlow) {
   OobeScreenExitWaiter(WrongHWIDScreenView::kScreenId).Wait();
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

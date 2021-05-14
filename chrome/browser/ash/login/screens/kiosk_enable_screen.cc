@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kClose[] = "close";
@@ -90,4 +90,4 @@ void KioskEnableScreen::OnEnableConsumerKioskAutoLaunch(bool success) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

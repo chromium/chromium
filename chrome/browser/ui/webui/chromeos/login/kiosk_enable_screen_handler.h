@@ -11,9 +11,11 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class KioskEnableScreen;
+}
+
+namespace chromeos {
 
 // Interface between enable kiosk screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
@@ -24,7 +26,7 @@ class KioskEnableScreenView {
   virtual ~KioskEnableScreenView() {}
 
   virtual void Show() = 0;
-  virtual void SetScreen(KioskEnableScreen* screen) = 0;
+  virtual void SetScreen(ash::KioskEnableScreen* screen) = 0;
   virtual void ShowKioskEnabled(bool success) = 0;
 };
 
@@ -39,7 +41,7 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
 
   // KioskEnableScreenView:
   void Show() override;
-  void SetScreen(KioskEnableScreen* screen) override;
+  void SetScreen(ash::KioskEnableScreen* screen) override;
   void ShowKioskEnabled(bool success) override;
 
   // BaseScreenHandler implementation:
@@ -48,7 +50,7 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
   void Initialize() override;
 
  private:
-  KioskEnableScreen* screen_ = nullptr;
+  ash::KioskEnableScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -57,5 +59,11 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::KioskEnableScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_ENABLE_SCREEN_HANDLER_H_

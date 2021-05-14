@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockWrongHWIDScreen : public WrongHWIDScreen {
  public:
@@ -40,6 +40,13 @@ class MockWrongHWIDScreenView : public WrongHWIDScreenView {
   WrongHWIDScreen* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockWrongHWIDScreen;
+using ::ash::MockWrongHWIDScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_WRONG_HWID_SCREEN_H_

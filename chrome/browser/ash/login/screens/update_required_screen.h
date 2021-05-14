@@ -13,19 +13,20 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "components/user_manager/remove_user_delegate.h"
 
 namespace base {
 class Clock;
 }  // namespace base
 
-namespace chromeos {
-
-class ErrorScreensHistogramHelper;
-class UpdateRequiredView;
+namespace ash {
 
 // Controller for the update required screen.
 class UpdateRequiredScreen : public BaseScreen,
@@ -152,6 +153,12 @@ class UpdateRequiredScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::UpdateRequiredScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_UPDATE_REQUIRED_SCREEN_H_

@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockEulaScreen : public EulaScreen {
  public:
@@ -43,6 +43,13 @@ class MockEulaView : public EulaView {
   EulaScreen* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockEulaScreen;
+using ::ash::MockEulaView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_EULA_SCREEN_H_

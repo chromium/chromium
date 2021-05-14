@@ -105,4 +105,11 @@ class ScopedRequestCallbackSetter {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::MarketingBackendConnector;
+using ::chromeos::ScopedRequestCallbackSetter;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_MARKETING_BACKEND_CONNECTOR_H_

@@ -26,11 +26,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 class UpdateScreenUnitTest : public testing::Test {
  public:
@@ -202,4 +202,4 @@ TEST_F(UpdateScreenUnitTest, HandleCriticalUpdateError) {
   EXPECT_EQ(UpdateScreen::Result::UPDATE_ERROR, last_screen_result_.value());
 }
 
-}  // namespace chromeos
+}  // namespace ash

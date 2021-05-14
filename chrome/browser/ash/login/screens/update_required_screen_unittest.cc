@@ -30,11 +30,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
+namespace ash {
+namespace {
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): remove after migrated to ash::
+using ::chromeos::FakeUpdateRequiredScreenHandler;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 class UpdateRequiredScreenUnitTest : public testing::Test {
  public:
@@ -213,4 +216,5 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
             UpdateRequiredView::UPDATE_COMPLETED_NEED_REBOOT);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

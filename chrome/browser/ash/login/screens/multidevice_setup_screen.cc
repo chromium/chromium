@@ -15,8 +15,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kAcceptedSetupUserAction[] = "setup-accepted";
@@ -72,7 +71,8 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* /*context*/) {
     return true;
   }
   if (setup_client_->GetHostStatus().first !=
-      multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
+      chromeos::multidevice_setup::mojom::HostStatus::
+          kEligibleHostExistsButNoHostSet) {
     VLOG(1) << "Skipping MultiDevice setup screen; host status: "
             << setup_client_->GetHostStatus().first;
     exit_callback_.Run(Result::NOT_APPLICABLE);
@@ -118,4 +118,4 @@ void MultiDeviceSetupScreen::RecordMultiDeviceSetupOOBEUserChoiceHistogram(
   UMA_HISTOGRAM_ENUMERATION("MultiDeviceSetup.OOBE.UserChoice", value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

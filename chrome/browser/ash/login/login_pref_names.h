@@ -34,6 +34,8 @@ extern const char kSamlPasswordSyncToken[];
 // source migration is finished.
 namespace ash {
 namespace prefs {
+using ::chromeos::prefs::kOobeMarketingOptInChoice;
+using ::chromeos::prefs::kOobeMarketingOptInScreenFinished;
 using ::chromeos::prefs::kOobeOnboardingTime;
 }
 }  // namespace ash

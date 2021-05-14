@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_eula_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::AtLeast;
 using ::testing::_;
@@ -38,4 +38,4 @@ void MockEulaView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

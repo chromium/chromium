@@ -11,10 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 
-namespace chromeos {
-
-class WrongHWIDScreenView;
+namespace ash {
 
 // Representation independent class that controls screen showing warning about
 // malformed HWID to users.
@@ -51,6 +51,12 @@ class WrongHWIDScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(WrongHWIDScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::WrongHWIDScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_WRONG_HWID_SCREEN_H_

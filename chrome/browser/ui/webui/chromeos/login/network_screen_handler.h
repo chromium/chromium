@@ -10,9 +10,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class NetworkScreen;
+}
+
+namespace chromeos {
 
 // Interface of network screen. Owned by NetworkScreen.
 class NetworkScreenView {
@@ -28,7 +30,7 @@ class NetworkScreenView {
   virtual void Hide() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(NetworkScreen* screen) = 0;
+  virtual void Bind(ash::NetworkScreen* screen) = 0;
 
   // Unbinds model from the view.
   virtual void Unbind() = 0;
@@ -57,7 +59,7 @@ class NetworkScreenHandler : public NetworkScreenView,
   // NetworkScreenView:
   void Show() override;
   void Hide() override;
-  void Bind(NetworkScreen* screen) override;
+  void Bind(ash::NetworkScreen* screen) override;
   void Unbind() override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
@@ -69,7 +71,7 @@ class NetworkScreenHandler : public NetworkScreenView,
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
   void Initialize() override;
 
-  NetworkScreen* screen_ = nullptr;
+  ash::NetworkScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -78,5 +80,11 @@ class NetworkScreenHandler : public NetworkScreenView,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::NetworkScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_NETWORK_SCREEN_HANDLER_H_

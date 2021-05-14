@@ -38,8 +38,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const size_t kMaxGeolocationResponseLength = 8;
@@ -141,14 +140,14 @@ void MarketingOptInScreen::ShowImpl() {
           ->was_shown());
 
   view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
 
   // Observe the a11y shelf navigation buttons pref so the setting toggle in the
   // screen can be updated if the pref value changes.
   active_user_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   active_user_pref_change_registrar_->Init(prefs);
   active_user_pref_change_registrar_->Add(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
       base::BindRepeating(
           &MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged,
           base::Unretained(this)));
@@ -192,7 +191,7 @@ void MarketingOptInScreen::SetA11yButtonVisibilityForTest(bool shown) {
 void MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged() {
   view_->UpdateA11yShelfNavigationButtonToggle(
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
 }
 
 bool MarketingOptInScreen::IsCurrentUserManaged() {
@@ -279,4 +278,4 @@ bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

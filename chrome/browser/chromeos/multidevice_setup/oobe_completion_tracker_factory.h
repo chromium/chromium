@@ -41,4 +41,12 @@ class OobeCompletionTrackerFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::OobeCompletionTrackerFactory;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_OOBE_COMPLETION_TRACKER_FACTORY_H_

@@ -9,9 +9,11 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class MarketingOptInScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between MarketingOptInScreen and its
 // WebUI representation.
@@ -22,7 +24,7 @@ class MarketingOptInScreenView {
   virtual ~MarketingOptInScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(MarketingOptInScreen* screen) = 0;
+  virtual void Bind(ash::MarketingOptInScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show(bool opt_in_visible,
@@ -55,7 +57,7 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // MarketingOptInScreenView:
-  void Bind(MarketingOptInScreen* screen) override;
+  void Bind(ash::MarketingOptInScreen* screen) override;
   void Show(bool opt_in_visible,
             bool opt_in_default_state,
             bool legal_footer_visible) override;
@@ -73,7 +75,7 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
   void HandleOnGetStarted(bool chromebook_email_opt_in);
   void HandleSetA11yNavigationButtonsEnabled(bool enabled);
 
-  MarketingOptInScreen* screen_ = nullptr;
+  ash::MarketingOptInScreen* screen_ = nullptr;
 
   // Timer to record user changed value for the accessibility setting to turn
   // shelf navigation buttons on in tablet mode. The metric is recorded with 10
@@ -85,5 +87,11 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::MarketingOptInScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MARKETING_OPT_IN_SCREEN_HANDLER_H_

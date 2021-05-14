@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_welcome_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockWelcomeScreen::MockWelcomeScreen(
     WelcomeView* view,
@@ -34,4 +34,4 @@ void MockWelcomeView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

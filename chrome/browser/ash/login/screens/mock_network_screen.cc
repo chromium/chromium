@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_network_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::AtLeast;
 using ::testing::_;
@@ -38,4 +38,4 @@ void MockNetworkScreenView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

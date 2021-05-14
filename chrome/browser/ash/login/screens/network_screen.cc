@@ -18,6 +18,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kConnectionTimeout = base::TimeDelta::FromSeconds(40);
@@ -27,8 +28,6 @@ constexpr char kUserActionContinueButtonClicked[] = "continue";
 constexpr char kUserActionOfflineDemoSetup[] = "offline-demo-setup";
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 std::string NetworkScreen::GetResultString(Result result) {
@@ -103,8 +102,8 @@ void NetworkScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-bool NetworkScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+bool NetworkScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kStartEnrollment) {
     context()->enrollment_triggered_early = true;
     return true;
   }
@@ -233,4 +232,4 @@ void NetworkScreen::OnOfflineDemoModeSetupSelected() {
   exit_callback_.Run(Result::OFFLINE_DEMO_SETUP);
 }
 
-}  // namespace chromeos
+}  // namespace ash

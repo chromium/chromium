@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
 
+namespace ash {
+
 using ::testing::AtLeast;
 using ::testing::_;
-
-namespace chromeos {
 
 MockUpdateScreen::MockUpdateScreen(
     UpdateView* view,
@@ -40,4 +40,4 @@ void MockUpdateView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

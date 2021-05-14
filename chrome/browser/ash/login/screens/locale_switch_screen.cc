@@ -20,8 +20,7 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kLocaleWaitTimeout = base::TimeDelta::FromSeconds(5);
@@ -198,4 +197,4 @@ void LocaleSwitchScreen::OnTimeout() {
   exit_callback_.Run(Result::LOCALE_FETCH_TIMEOUT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

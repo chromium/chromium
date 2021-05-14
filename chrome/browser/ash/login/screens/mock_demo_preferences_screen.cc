@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_demo_preferences_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockDemoPreferencesScreen::MockDemoPreferencesScreen(
     DemoPreferencesScreenView* view,
@@ -29,4 +29,4 @@ void MockDemoPreferencesScreenView::Bind(DemoPreferencesScreen* screen) {
   MockBind(screen);
 }
 
-}  // namespace chromeos
+}  // namespace ash

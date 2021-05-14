@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockNetworkScreen : public NetworkScreen {
  public:
@@ -49,6 +49,13 @@ class MockNetworkScreenView : public NetworkScreenView {
   DISALLOW_COPY_AND_ASSIGN(MockNetworkScreenView);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockNetworkScreen;
+using ::ash::MockNetworkScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_NETWORK_SCREEN_H_

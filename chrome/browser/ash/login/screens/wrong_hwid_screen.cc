@@ -7,11 +7,12 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 
+namespace ash {
 namespace {
-constexpr char kUserActionSkip[] = "skip-screen";
-}  // namespace
 
-namespace chromeos {
+constexpr char kUserActionSkip[] = "skip-screen";
+
+}  // namespace
 
 WrongHWIDScreen::WrongHWIDScreen(WrongHWIDScreenView* view,
                                  const base::RepeatingClosure& exit_callback)
@@ -58,4 +59,4 @@ void WrongHWIDScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

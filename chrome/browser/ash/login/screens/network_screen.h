@@ -13,16 +13,14 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/network/network_state_handler_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 
-namespace chromeos {
-
-class NetworkScreenView;
-
-namespace login {
-class NetworkStateHelper;
-}  // namespace login
+namespace ash {
 
 // Controls network selection screen shown during OOBE.
 class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
@@ -64,7 +62,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
@@ -139,12 +137,12 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   DISALLOW_COPY_AND_ASSIGN(NetworkScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::NetworkScreenView;
+namespace chromeos {
+using ::ash::NetworkScreen;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_SCREEN_H_

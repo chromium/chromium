@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockDemoPreferencesScreen : public DemoPreferencesScreen {
  public:
@@ -47,6 +47,13 @@ class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
   DISALLOW_COPY_AND_ASSIGN(MockDemoPreferencesScreenView);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockDemoPreferencesScreen;
+using ::ash::MockDemoPreferencesScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_DEMO_PREFERENCES_SCREEN_H_

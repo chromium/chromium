@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 
+namespace ash {
+
 using ::testing::AtLeast;
 using ::testing::_;
-
-namespace chromeos {
 
 MockErrorScreen::MockErrorScreen(ErrorScreenView* view) : ErrorScreen(view) {}
 
@@ -49,4 +49,4 @@ void MockErrorScreenView::Unbind() {
   MockUnbind();
 }
 
-}  // namespace chromeos
+}  // namespace ash

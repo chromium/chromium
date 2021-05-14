@@ -13,11 +13,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
-
-class MarketingOptInScreenView;
+namespace ash {
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
@@ -141,6 +141,12 @@ class MarketingOptInScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MarketingOptInScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MARKETING_OPT_IN_SCREEN_H_

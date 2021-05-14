@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_enable_debugging_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockEnableDebuggingScreen::MockEnableDebuggingScreen(
     EnableDebuggingScreenView* view,
@@ -29,4 +29,4 @@ void MockEnableDebuggingScreenView::SetDelegate(EnableDebuggingScreen* screen) {
   MockSetDelegate(screen_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,12 +9,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class UpdateRequiredScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between UpdateRequiredScreen and its
 // WebUI representation.
@@ -43,7 +44,7 @@ class UpdateRequiredView {
   virtual void Hide() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(UpdateRequiredScreen* screen) = 0;
+  virtual void Bind(ash::UpdateRequiredScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -80,7 +81,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
  private:
   void Show() override;
   void Hide() override;
-  void Bind(UpdateRequiredScreen* screen) override;
+  void Bind(ash::UpdateRequiredScreen* screen) override;
   void Unbind() override;
 
   void SetIsConnected(bool connected) override;
@@ -100,7 +101,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
 
-  UpdateRequiredScreen* screen_ = nullptr;
+  ash::UpdateRequiredScreen* screen_ = nullptr;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
@@ -112,5 +113,11 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UpdateRequiredView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_UPDATE_REQUIRED_SCREEN_HANDLER_H_

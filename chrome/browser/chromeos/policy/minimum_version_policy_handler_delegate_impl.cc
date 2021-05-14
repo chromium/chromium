@@ -7,6 +7,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -86,8 +87,7 @@ void MinimumVersionPolicyHandlerDelegateImpl::
       WizardController::default_controller();
   if (!wizard_controller)
     return;
-  chromeos::UpdateRequiredScreen* screen =
-      wizard_controller->GetScreen<chromeos::UpdateRequiredScreen>();
+  auto* screen = wizard_controller->GetScreen<ash::UpdateRequiredScreen>();
   if (screen->is_hidden())
     return;
   screen->Exit();

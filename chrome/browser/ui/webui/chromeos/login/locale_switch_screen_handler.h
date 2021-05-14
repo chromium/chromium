@@ -9,9 +9,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 
-namespace chromeos {
-
+namespace ash {
 class LocaleSwitchScreen;
+}
+
+namespace chromeos {
 
 class LocaleSwitchView {
  public:
@@ -23,7 +25,7 @@ class LocaleSwitchView {
   LocaleSwitchView(const LocaleSwitchView&) = delete;
   LocaleSwitchView& operator=(const LocaleSwitchView&) = delete;
 
-  virtual void Bind(LocaleSwitchScreen* screen) = 0;
+  virtual void Bind(ash::LocaleSwitchScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void UpdateStrings() = 0;
 };
@@ -39,7 +41,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
   ~LocaleSwitchScreenHandler() override;
 
   // LocaleSwitchView:
-  void Bind(LocaleSwitchScreen* screen) override;
+  void Bind(ash::LocaleSwitchScreen* screen) override;
   void Unbind() override;
   void UpdateStrings() override;
 
@@ -49,7 +51,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
   void Initialize() override;
 
  private:
-  LocaleSwitchScreen* screen_ = nullptr;
+  ash::LocaleSwitchScreen* screen_ = nullptr;
   CoreOobeView* core_oobe_view_ = nullptr;
 };
 

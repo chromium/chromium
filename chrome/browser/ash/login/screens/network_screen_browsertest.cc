@@ -30,13 +30,13 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/views/controls/button/button.h"
 
+namespace ash {
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using views::Button;
-
-namespace chromeos {
+using ::views::Button;
 
 class NetworkScreenTest : public InProcessBrowserTest {
  public:
@@ -144,4 +144,4 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, Timeout) {
   // view_->ClearErrors();
 }
 
-}  // namespace chromeos
+}  // namespace ash

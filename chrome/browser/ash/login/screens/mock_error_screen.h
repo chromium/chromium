@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockErrorScreen : public ErrorScreen {
  public:
@@ -56,6 +56,6 @@ class MockErrorScreenView : public ErrorScreenView {
   ErrorScreen* screen_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ERROR_SCREEN_H_

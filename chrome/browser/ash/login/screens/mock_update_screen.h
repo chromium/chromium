@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockUpdateScreen : public UpdateScreen {
  public:
@@ -57,6 +57,13 @@ class MockUpdateView : public UpdateView {
   UpdateScreen* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockUpdateScreen;
+using ::ash::MockUpdateView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_

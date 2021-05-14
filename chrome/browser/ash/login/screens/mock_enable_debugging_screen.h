@@ -10,7 +10,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockEnableDebuggingScreen : public EnableDebuggingScreen {
  public:
@@ -41,6 +41,13 @@ class MockEnableDebuggingScreenView : public EnableDebuggingScreenView {
   EnableDebuggingScreen* screen_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockEnableDebuggingScreen;
+using ::ash::MockEnableDebuggingScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ENABLE_DEBUGGING_SCREEN_H_

@@ -11,10 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 
-namespace chromeos {
-
-class KioskAutolaunchScreenView;
+namespace ash {
 
 // Representation independent class that controls screen showing auto launch
 // warning to users.
@@ -48,6 +48,12 @@ class KioskAutolaunchScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::KioskAutolaunchScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_KIOSK_AUTOLAUNCH_SCREEN_H_

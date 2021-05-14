@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/mock_demo_setup_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockDemoSetupScreen::MockDemoSetupScreen(
     DemoSetupScreenView* view,
@@ -29,4 +29,4 @@ void MockDemoSetupScreenView::Bind(DemoSetupScreen* screen) {
   MockBind(screen);
 }
 
-}  // namespace chromeos
+}  // namespace ash

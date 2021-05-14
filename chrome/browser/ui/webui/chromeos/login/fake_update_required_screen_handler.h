@@ -9,13 +9,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 
 namespace chromeos {
-
-class UpdateRequiredScreen;
 
 class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
  public:
@@ -27,7 +24,7 @@ class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
  private:
   void Show() override {}
   void Hide() override {}
-  void Bind(UpdateRequiredScreen* screen) override {}
+  void Bind(ash::UpdateRequiredScreen* screen) override {}
   void Unbind() override {}
 
   void SetIsConnected(bool connected) override {}

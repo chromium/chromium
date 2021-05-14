@@ -39,8 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kStubWifiGuid[] = "wlan0";
@@ -102,8 +101,6 @@ chromeos::OobeUI* GetOobeUI() {
   auto* host = chromeos::LoginDisplayHost::default_host();
   return host ? host->GetOobeUI() : nullptr;
 }
-
-}  // namespace
 
 // TODO(https://crbug.com/1161276) Merge BetterUpdateScreenTest into
 // UpdateScreenTest.
@@ -1032,4 +1029,5 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateOverCellularShown) {
   test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockDemoSetupScreen : public DemoSetupScreen {
  public:
@@ -46,6 +46,13 @@ class MockDemoSetupScreenView : public DemoSetupScreenView {
   DemoSetupScreen* screen_ = nullptr;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockDemoSetupScreen;
+using ::ash::MockDemoSetupScreenView;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_

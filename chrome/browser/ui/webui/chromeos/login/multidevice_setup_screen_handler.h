@@ -8,9 +8,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class MultiDeviceSetupScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between MultiDeviceSetupScreen and its
 // WebUI representation.
@@ -20,7 +22,7 @@ class MultiDeviceSetupScreenView {
 
   virtual ~MultiDeviceSetupScreenView() = default;
 
-  virtual void Bind(MultiDeviceSetupScreen* screen) = 0;
+  virtual void Bind(ash::MultiDeviceSetupScreen* screen) = 0;
   virtual void Show() = 0;
   virtual void Hide() = 0;
 };
@@ -40,7 +42,7 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
 
   // MultiDeviceSetupScreenView:
-  void Bind(MultiDeviceSetupScreen* screen) override;
+  void Bind(ash::MultiDeviceSetupScreen* screen) override;
   void Show() override;
   void Hide() override;
 
@@ -52,5 +54,11 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::MultiDeviceSetupScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_

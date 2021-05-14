@@ -15,20 +15,22 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/wizard_context.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace base {
 class TickClock;
 }
 
-namespace chromeos {
-
-class ErrorScreensHistogramHelper;
-class UpdateView;
-class WizardContext;
+namespace ash {
 
 // Controller for the update screen.
 //
@@ -229,6 +231,12 @@ class UpdateScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(UpdateScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::UpdateScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_UPDATE_SCREEN_H_
