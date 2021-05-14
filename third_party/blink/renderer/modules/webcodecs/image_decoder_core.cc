@@ -158,8 +158,8 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
 
   // Due to implementation limitations YUV support for some formats is only
   // known once all data is received. Animated images are never supported.
-  if (decoder_->CanDecodeToYUV() && !have_completed_rgb_decode_) {
-    DCHECK_EQ(frame_index, 0u);
+  if (decoder_->CanDecodeToYUV() && !have_completed_rgb_decode_ &&
+      frame_index == 0u) {
     if (!have_completed_yuv_decode_) {
       MaybeDecodeToYuv();
       if (decoder_->Failed()) {

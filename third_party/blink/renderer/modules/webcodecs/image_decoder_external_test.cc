@@ -571,6 +571,69 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_EQ(frame->displayHeight(), 159u);
 }
 
+TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/avif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+
+  auto data = ReadFile("images/resources/avif/red-limited-range-420-8bpc.avif");
+
+  Persistent<TestUnderlyingSource> underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
+  Persistent<ReadableStream> stream =
+      ReadableStream::CreateWithCountQueueingStrategy(v8_scope.GetScriptState(),
+                                                      underlying_source, 0);
+
+  auto* init = MakeGarbageCollected<ImageDecoderInit>();
+  init->setType(kImageType);
+  init->setData(
+      ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+
+  Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
+      v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  EXPECT_EQ(decoder->type(), kImageType);
+
+  // Append all data, but don't mark the stream as complete yet.
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
+  underlying_source->Enqueue(ScriptValue(
+      v8_scope.GetIsolate(), ToV8(DOMUint8Array::Create(data_ptr, data->size()),
+                                  v8_scope.GetScriptState())));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Attempt to decode a frame greater than the first.
+  auto bad_promise = decoder->decode(MakeOptions(1, true));
+  base::RunLoop().RunUntilIdle();
+
+  // Mark the stream as complete.
+  underlying_source->Close();
+
+  // Now that all data is in we see only 1 frame and request should be rejected.
+  {
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), bad_promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
+
+  {
+    auto promise = decoder->decode();
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->timestamp(), base::nullopt);
+    EXPECT_EQ(frame->duration(), base::nullopt);
+    EXPECT_EQ(frame->displayWidth(), 3u);
+    EXPECT_EQ(frame->displayHeight(), 3u);
+  }
+}
+
 TEST_F(ImageDecoderTest, DecodePartialImage) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/png";
