@@ -97,8 +97,11 @@ void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
               storage::FileSystemOperationRunner::CopyOrMoveOption option,
               storage::FileSystemOperationRunner::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  file_system_context->operation_runner()->Move(src_path, dest_path, option,
-                                                std::move(callback));
+  file_system_context->operation_runner()->Move(
+      src_path, dest_path, option,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyProgressCallback(),
+      std::move(callback));
 }
 
 void CallGetMetadata(
@@ -322,6 +325,8 @@ int32_t PepperInternalFileRefBackend::Rename(
   } else {
     GetFileSystemContext()->operation_runner()->Move(
         GetFileSystemURL(), new_url, option,
+        storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+        storage::FileSystemOperation::CopyProgressCallback(),
         base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
                        weak_factory_.GetWeakPtr(), reply_context,
                        PpapiPluginMsg_FileRef_RenameReply()));

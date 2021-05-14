@@ -547,11 +547,11 @@ void CannedSyncableFileSystem::DoCopy(const FileSystemURL& src_url,
                                       StatusCallback callback) {
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_TRUE(is_filesystem_opened_);
-  operation_runner()->Copy(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
-      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperationRunner::CopyProgressCallback(),
-      std::move(callback));
+  operation_runner()->Copy(src_url, dest_url,
+                           storage::FileSystemOperation::OPTION_NONE,
+                           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                           storage::FileSystemOperation::CopyProgressCallback(),
+                           std::move(callback));
 }
 
 void CannedSyncableFileSystem::DoMove(const FileSystemURL& src_url,
@@ -561,6 +561,8 @@ void CannedSyncableFileSystem::DoMove(const FileSystemURL& src_url,
   EXPECT_TRUE(is_filesystem_opened_);
   operation_runner()->Move(src_url, dest_url,
                            storage::FileSystemOperation::OPTION_NONE,
+                           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                           storage::FileSystemOperation::CopyProgressCallback(),
                            std::move(callback));
 }
 

@@ -143,10 +143,13 @@ void SyncableFileSystemOperation::Copy(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::Move(const FileSystemURL& src_url,
-                                       const FileSystemURL& dest_url,
-                                       CopyOrMoveOption option,
-                                       StatusCallback callback) {
+void SyncableFileSystemOperation::Move(
+    const FileSystemURL& src_url,
+    const FileSystemURL& dest_url,
+    CopyOrMoveOption option,
+    ErrorBehavior error_behavior,
+    const CopyProgressCallback& progress_callback,
+    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
@@ -160,7 +163,7 @@ void SyncableFileSystemOperation::Move(const FileSystemURL& src_url,
       weak_factory_.GetWeakPtr(),
       base::BindOnce(
           &FileSystemOperation::Move, base::Unretained(impl_.get()), src_url,
-          dest_url, option,
+          dest_url, option, error_behavior, progress_callback,
           base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }

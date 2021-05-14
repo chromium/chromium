@@ -137,8 +137,11 @@ base::File::Error AsyncFileTestHelper::Move(FileSystemContext* context,
                                             const FileSystemURL& dest) {
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
-  context->operation_runner()->Move(src, dest, FileSystemOperation::OPTION_NONE,
-                                    AssignAndQuitCallback(&run_loop, &result));
+  context->operation_runner()->Move(
+      src, dest, FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyProgressCallback(),
+      AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;
 }

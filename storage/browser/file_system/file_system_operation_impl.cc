@@ -113,16 +113,19 @@ void FileSystemOperationImpl::Copy(
   recursive_operation_delegate_->RunRecursively();
 }
 
-void FileSystemOperationImpl::Move(const FileSystemURL& src_url,
-                                   const FileSystemURL& dest_url,
-                                   CopyOrMoveOption option,
-                                   StatusCallback callback) {
+void FileSystemOperationImpl::Move(
+    const FileSystemURL& src_url,
+    const FileSystemURL& dest_url,
+    CopyOrMoveOption option,
+    ErrorBehavior error_behavior,
+    const CopyProgressCallback& progress_callback,
+    StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationMove));
   DCHECK(!recursive_operation_delegate_);
   recursive_operation_delegate_ = std::make_unique<CopyOrMoveOperationDelegate>(
       file_system_context(), src_url, dest_url,
-      CopyOrMoveOperationDelegate::OPERATION_MOVE, option, ERROR_BEHAVIOR_ABORT,
-      FileSystemOperation::CopyProgressCallback(),
+      CopyOrMoveOperationDelegate::OPERATION_MOVE, option, error_behavior,
+      progress_callback,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
   recursive_operation_delegate_->RunRecursively();

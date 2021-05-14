@@ -48,6 +48,8 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
   void Move(const storage::FileSystemURL& src_url,
             const storage::FileSystemURL& dest_url,
             CopyOrMoveOption option,
+            ErrorBehavior error_behavior,
+            const CopyProgressCallback& progress_callback,
             StatusCallback callback) override;
   void DirectoryExists(const storage::FileSystemURL& url,
                        StatusCallback callback) override;

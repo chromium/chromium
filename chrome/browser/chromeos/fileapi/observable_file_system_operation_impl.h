@@ -44,6 +44,8 @@ class ObservableFileSystemOperationImpl
   void Move(const storage::FileSystemURL& src,
             const storage::FileSystemURL& dst,
             CopyOrMoveOption option,
+            ErrorBehavior error_behavior,
+            const CopyProgressCallback& progress_callback,
             StatusCallback callback) override;
   void MoveFileLocal(const storage::FileSystemURL& src,
                      const storage::FileSystemURL& dst,

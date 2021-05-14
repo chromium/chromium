@@ -220,6 +220,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
     ASSERT_TRUE(test_files_ready);
     operation_runner()->Move(
         move_src_, move_dest_, storage::FileSystemOperation::OPTION_NONE,
+        storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+        storage::FileSystemOperation::CopyProgressCallback(),
         base::BindOnce(&MediaFileValidatorTest::OnMoveResult,
                        base::Unretained(this), expected_result));
   }

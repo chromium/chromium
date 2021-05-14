@@ -123,7 +123,7 @@ class FileSystemOperation {
   // fails some of the operations.
   enum ErrorBehavior { ERROR_BEHAVIOR_ABORT, ERROR_BEHAVIOR_SKIP };
 
-  // Used for progress update callback for Copy().
+  // Used for progress update callback for Copy() and Move().
   //
   // BEGIN_COPY_ENTRY is fired for each copy creation beginning (for both
   // file and directory).
@@ -179,12 +179,9 @@ class FileSystemOperation {
   // progres callback invocation, the progress callback may NOT invoked for the
   // copy.
   //
-  // Note for future extension. Currently this callback is only supported on
-  // Copy(). We can extend this to Move(), because Move() is sometimes
-  // implemented as "copy then delete."
-  // In more precise, Move() usually can be implemented either 1) by updating
-  // the metadata of resource (e.g. root of moving directory tree), or 2) by
-  // copying directory tree and them removing the source tree.
+  // Note that Move() can be implemented either
+  // 1) by updating the metadata of resource (e.g. root of moving directory
+  // tree) or 2) by copying directory tree and them removing the source tree.
   // For 1)'s case, we can simply add BEGIN_MOVE_ENTRY and END_MOVE_ENTRY
   // for root directory.
   // For 2)'s case, we can add BEGIN_DELETE_ENTRY and END_DELETE_ENTRY for each
@@ -290,6 +287,11 @@ class FileSystemOperation {
   // or directory is created at |dest_path| as needed.
   // |option| specifies the minor behavior of Copy(). See CopyOrMoveOption's
   // comment for details.
+  // |error_behavior| specifies whether this continues operation after it
+  // failed an operation or not.
+  // |progress_callback| is periodically called to report the progress
+  // update. See also the comment of CopyProgressCallback. This callback is
+  // optional.
   //
   // For recursive case this internally creates new FileSystemOperations and
   // calls:
@@ -304,6 +306,8 @@ class FileSystemOperation {
   virtual void Move(const FileSystemURL& src_path,
                     const FileSystemURL& dest_path,
                     CopyOrMoveOption option,
+                    ErrorBehavior error_behavior,
+                    const CopyProgressCallback& progress_callback,
                     StatusCallback callback) = 0;
 
   // Checks if a directory is present at |path|.
