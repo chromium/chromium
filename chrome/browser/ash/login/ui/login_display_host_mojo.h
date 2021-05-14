@@ -32,12 +32,10 @@ class View;
 }  // namespace views
 
 namespace chromeos {
-
 class ExistingUserController;
 class LoginDisplayMojo;
 class OobeUIDialogDelegate;
 class UserBoardViewMojo;
-class UserSelectionScreen;
 class MojoSystemInfoDispatcher;
 
 // A LoginDisplayHost instance that sends requests to the views-based signin

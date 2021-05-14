@@ -14,9 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
-
-class ArcTermsOfServiceScreenView;
+namespace ash {
 
 class ArcTermsOfServiceScreen : public BaseScreen,
                                 public ArcTermsOfServiceScreenViewObserver {
@@ -79,12 +77,12 @@ class ArcTermsOfServiceScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::ArcTermsOfServiceScreen;
+namespace chromeos {
+using ::ash ::ArcTermsOfServiceScreen;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ARC_TERMS_OF_SERVICE_SCREEN_H_

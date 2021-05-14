@@ -15,7 +15,9 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
 namespace {
+
 constexpr char kUserActionCancel[] = "cancel";
 
 // Possible error states of the Active Directory password change screen. Must be
@@ -26,9 +28,8 @@ enum class ActiveDirectoryPasswordChangeErrorState {
   WRONG_OLD_PASSWORD = 1,
   NEW_PASSWORD_REJECTED = 2,
 };
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 ActiveDirectoryPasswordChangeScreen::ActiveDirectoryPasswordChangeScreen(
     ActiveDirectoryPasswordChangeView* view,
@@ -139,4 +140,4 @@ void ActiveDirectoryPasswordChangeScreen::OnAuthFinished(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,9 +8,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class DeviceDisabledScreen;
+}
+
+namespace chromeos {
 
 // Interface between the device disabled screen and its representation.
 class DeviceDisabledScreenView {
@@ -23,7 +25,7 @@ class DeviceDisabledScreenView {
                     const std::string& domain,
                     const std::string& message) = 0;
   virtual void Hide() = 0;
-  virtual void Bind(DeviceDisabledScreen* screen) = 0;
+  virtual void Bind(ash::DeviceDisabledScreen* screen) = 0;
   virtual void UpdateMessage(const std::string& message) = 0;
 };
 
@@ -41,7 +43,7 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
             const std::string& domain,
             const std::string& message) override;
   void Hide() override;
-  void Bind(DeviceDisabledScreen* screen) override;
+  void Bind(ash::DeviceDisabledScreen* screen) override;
   void UpdateMessage(const std::string& message) override;
 
   // BaseScreenHandler:
@@ -53,7 +55,7 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
-  DeviceDisabledScreen* screen_ = nullptr;
+  ash::DeviceDisabledScreen* screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisabledScreenHandler);
 };

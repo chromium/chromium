@@ -95,8 +95,10 @@ void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
 // TODO(https://crbug.com/1164001): remove when ch/br/ui/webui/chromeos is moved
 // to ash.
 namespace ash {
+using ::chromeos::FindMostRelevantLocale;
 using ::chromeos::GetUILanguageList;
 using ::chromeos::kMostRelevantLanguagesDivider;
+using ::chromeos::ResolveUILanguageList;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_L10N_UTIL_H_

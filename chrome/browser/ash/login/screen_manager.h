@@ -12,10 +12,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace chromeos {
-
-class BaseScreen;
 
 // Class that manages creation and ownership of screens.
 class ScreenManager {

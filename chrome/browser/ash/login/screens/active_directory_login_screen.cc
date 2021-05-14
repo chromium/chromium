@@ -19,6 +19,7 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
 namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
@@ -36,8 +37,6 @@ chromeos::SigninError GetSigninError(authpolicy::ErrorType error) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 ActiveDirectoryLoginScreen::ActiveDirectoryLoginScreen(
     ActiveDirectoryLoginView* view,
@@ -93,8 +92,8 @@ void ActiveDirectoryLoginScreen::OnUserAction(const std::string& action_id) {
 }
 
 bool ActiveDirectoryLoginScreen::HandleAccelerator(
-    ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kCancelScreenAction) {
+    LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kCancelScreenAction) {
     HandleCancel();
     return true;
   }
@@ -192,4 +191,4 @@ void ActiveDirectoryLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

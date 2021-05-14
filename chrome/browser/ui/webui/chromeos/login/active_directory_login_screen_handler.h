@@ -9,9 +9,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class ActiveDirectoryLoginScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between ActiveDirectoryLoginScreen and its
 // WebUI representation.
@@ -25,7 +27,7 @@ class ActiveDirectoryLoginView {
   virtual void Show() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(ActiveDirectoryLoginScreen* screen) = 0;
+  virtual void Bind(ash::ActiveDirectoryLoginScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -58,7 +60,7 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
 
   // ActiveDirectoryLoginView:
   void Show() override;
-  void Bind(ActiveDirectoryLoginScreen* screen) override;
+  void Bind(ash::ActiveDirectoryLoginScreen* screen) override;
   void Unbind() override;
   void Reset() override;
   void SetErrorState(const std::string& username, int errorState) override;
@@ -69,12 +71,18 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
 
-  ActiveDirectoryLoginScreen* screen_ = nullptr;
+  ash::ActiveDirectoryLoginScreen* screen_ = nullptr;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ActiveDirectoryLoginView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ACTIVE_DIRECTORY_LOGIN_SCREEN_HANDLER_H_

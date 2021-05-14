@@ -17,9 +17,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
+namespace ash {
 class AssistantOptInFlowScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between AssistantOptInFlowScreen
 // and its WebUI representation.
@@ -29,7 +31,7 @@ class AssistantOptInFlowScreenView {
 
   virtual ~AssistantOptInFlowScreenView() = default;
 
-  virtual void Bind(AssistantOptInFlowScreen* screen) = 0;
+  virtual void Bind(ash::AssistantOptInFlowScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void Show() = 0;
   virtual void Hide() = 0;
@@ -67,7 +69,7 @@ class AssistantOptInFlowScreenHandler
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
 
   // AssistantOptInFlowScreenView:
-  void Bind(AssistantOptInFlowScreen* screen) override;
+  void Bind(ash::AssistantOptInFlowScreen* screen) override;
   void Unbind() override;
   void Show() override;
   void Hide() override;
@@ -134,7 +136,7 @@ class AssistantOptInFlowScreenHandler
   // Power related
   bool DeviceHasBattery();
 
-  AssistantOptInFlowScreen* screen_ = nullptr;
+  ash::AssistantOptInFlowScreen* screen_ = nullptr;
 
   base::OnceClosure on_initialized_;
 
@@ -177,5 +179,11 @@ class AssistantOptInFlowScreenHandler
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AssistantOptInFlowScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ASSISTANT_OPTIN_FLOW_SCREEN_HANDLER_H_

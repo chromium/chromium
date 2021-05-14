@@ -25,9 +25,9 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 constexpr char kUser1Email[] = "test-user1@gmail.com";
 constexpr char kGaia1ID[] = "111111";
 
@@ -46,8 +46,6 @@ const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
 const test::UIPath kErrorMessageOfflineSigninLink = {
     "error-message", "error-offline-login-link"};
-
-}  // namespace
 
 class UserSelectionScreenTest : public LoginManagerTest {
  public:
@@ -75,7 +73,7 @@ class UserSelectionScreenTest : public LoginManagerTest {
 IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   const auto& users = login_manager_mixin_.users();
   // No banner for the first user since default is no migration.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsWarningBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsWarningBubbleShown());
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
@@ -84,12 +82,12 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
       true);
 
   // Focus the 2nd user pod (consumer).
-  ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[1].account_id));
+  ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
 
   // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should be shown for the 2nd user (consumer).
-    return ash::LoginScreenTestApi::IsWarningBubbleShown();
+    return LoginScreenTestApi::IsWarningBubbleShown();
   })).Wait();
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
@@ -99,12 +97,12 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
       false);
   histogram_tester = std::make_unique<base::HistogramTester>();
   // Focus the 3rd user pod (consumer).
-  ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[2].account_id));
+  ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[2].account_id));
 
   // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should be shown for the 3rd user (consumer).
-    return !ash::LoginScreenTestApi::IsWarningBubbleShown();
+    return !LoginScreenTestApi::IsWarningBubbleShown();
   })).Wait();
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
@@ -115,12 +113,12 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Focus to the 4th user pod (enterprise).
-  ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[3].account_id));
+  ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[3].account_id));
 
   // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should not be shown for the enterprise user.
-    return !ash::LoginScreenTestApi::IsWarningBubbleShown();
+    return !LoginScreenTestApi::IsWarningBubbleShown();
   })).Wait();
 
   // Not recorded for enterprise.
@@ -165,14 +163,12 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
 IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
                        IsOnlineLoginEnforced) {
   const auto& users = login_manager_mixin_.users();
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(users[0].account_id));
-  EXPECT_FALSE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(users[1].account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(users[0].account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(users[0].account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsForcedOnlineSignin(users[1].account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(users[0].account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
@@ -202,11 +198,11 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
 
  protected:
   void OpenGaiaDialog(const AccountId& account_id) {
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
-    EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+    EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
     OobeScreenWaiter(GaiaView::kScreenId).Wait();
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
   const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
@@ -259,4 +255,5 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

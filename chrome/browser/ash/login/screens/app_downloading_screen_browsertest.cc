@@ -31,8 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kAppDownloadingId[] = "app-downloading";
@@ -42,8 +41,6 @@ const test::UIPath kTitlePlural = {kAppDownloadingId, "title-plural"};
 const test::UIPath kTitleSingular = {kAppDownloadingId, "title-singular"};
 const test::UIPath kContinueSetupButton = {kAppDownloadingId,
                                            "continue-setup-button"};
-
-}  // namespace
 
 class AppDownloadingScreenTest : public OobeBaseTest {
  public:
@@ -178,4 +175,5 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
   WaitForScreenExit();
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

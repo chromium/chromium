@@ -272,6 +272,7 @@ namespace test {
 using ::chromeos::test::CreateOobeScreenWaiter;
 using ::chromeos::test::ExecuteOobeJS;
 using ::chromeos::test::GetOobeElementPath;
+using ::chromeos::test::JSChecker;
 using ::chromeos::test::OobeJS;
 using ::chromeos::test::UIPath;
 }  // namespace test

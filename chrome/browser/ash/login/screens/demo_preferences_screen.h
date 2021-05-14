@@ -11,11 +11,11 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
-
-class DemoPreferencesScreenView;
+namespace ash {
 
 // Controls demo mode preferences. The screen can be shown during OOBE. It
 // allows user to choose preferences for retail demo mode.
@@ -75,6 +75,12 @@ class DemoPreferencesScreen
   DISALLOW_COPY_AND_ASSIGN(DemoPreferencesScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DemoPreferencesScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_DEMO_PREFERENCES_SCREEN_H_

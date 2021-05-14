@@ -1643,7 +1643,7 @@ class ArcSessionOobeOptInNegotiatorTest
 
   void Hide() override {}
 
-  void Bind(chromeos::ArcTermsOfServiceScreen* screen) override {}
+  void Bind(ash::ArcTermsOfServiceScreen* screen) override {}
 
   base::ObserverList<chromeos::ArcTermsOfServiceScreenViewObserver>::Unchecked
       observer_list_;

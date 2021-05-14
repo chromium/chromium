@@ -12,8 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // The ChromeVox hint idle duration is 20s. We set this to 25s, since it's safer
@@ -29,8 +28,6 @@ class MockDetectorObserver : public ChromeVoxHintDetector::Observer {
 
   MOCK_METHOD(void, OnShouldGiveChromeVoxHint, (), (override));
 };
-
-}  // namespace
 
 class ChromeVoxHintDetectorTest : public testing::Test {
  protected:
@@ -153,4 +150,5 @@ TEST_F(ChromeVoxHintDetectorTest, NoHintWithDisablingSwitchInDevMode) {
   runner_->FastForwardBy(kFullIdleDuration);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

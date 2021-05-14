@@ -45,13 +45,16 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
+namespace ash {
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): remove when migrated to ash::
+namespace assistant = ::chromeos::assistant;
 
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kTestUser[] = "test-user1@gmail.com";
 
@@ -354,8 +357,6 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
   DISALLOW_COPY_AND_ASSIGN(ScopedAssistantSettings);
 };
 
-}  // namespace
-
 class AssistantOptInFlowTest : public OobeBaseTest {
  public:
   AssistantOptInFlowTest() {
@@ -505,7 +506,7 @@ class AssistantOptInFlowNewLayoutDisabledTest : public AssistantOptInFlowTest {
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   SetUpAssistantScreensForTest();
@@ -541,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, DisableScreenContext) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   SetUpAssistantScreensForTest();
@@ -584,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantStateUpdateAfterShow) {
   screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -618,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RetryOnWebviewLoadFail) {
 
   ShowAssistantOptInFlowScreen();
 
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
@@ -657,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RejectValueProp) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -689,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
       ScopedAssistantSettings::CONSENT_UI_FLAG_ASK_EMAIL_OPT_IN);
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   SetUpAssistantScreensForTest();
@@ -735,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
       ScopedAssistantSettings::CONSENT_UI_FLAG_ASK_EMAIL_OPT_IN);
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   SetUpAssistantScreensForTest();
@@ -782,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SkipShowingValueProp) {
       ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL);
 
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -820,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
       ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_THIRD_PARTY_DISCLOSURE);
 
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -858,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SpeakerIdEnrollment) {
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -929,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -978,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
   SetUpAssistantScreensForTest();
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
 
   ShowAssistantOptInFlowScreen();
@@ -1032,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, WAADisabledByPolicy) {
   assistant_settings_->set_consent_ui_flags(
       ScopedAssistantSettings::CONSENT_UI_FLAG_WAA_DISABLED_BY_POLICY);
 
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
   SetUpAssistantScreensForTest();
   ShowAssistantOptInFlowScreen();
@@ -1056,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantDisabledByPolicy) {
   assistant_settings_->set_consent_ui_flags(
       ScopedAssistantSettings::CONSENT_UI_FLAG_ASSISTANT_DISABLED_BY_POLICY);
 
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
   SetUpAssistantScreensForTest();
   ShowAssistantOptInFlowScreen();
@@ -1078,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantDisabledByPolicy) {
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantSkippedNoLib) {
   auto force_lib_assistant_disabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(false);
-  ash::AssistantState::Get()->NotifyStatusChanged(
+  AssistantState::Get()->NotifyStatusChanged(
       chromeos::assistant::AssistantStatus::READY);
   SetUpAssistantScreensForTest();
   ShowAssistantOptInFlowScreen();
@@ -1093,4 +1094,5 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantSkippedNoLib) {
                                      0);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

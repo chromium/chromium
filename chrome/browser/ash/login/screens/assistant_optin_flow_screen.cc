@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 #include "chromeos/assistant/buildflags.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kFlowFinished[] = "flow-finished";
@@ -100,4 +100,4 @@ void AssistantOptInFlowScreen::OnUserAction(const std::string& action_id) {
     BaseScreen::OnUserAction(action_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

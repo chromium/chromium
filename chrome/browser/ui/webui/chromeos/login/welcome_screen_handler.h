@@ -12,14 +12,16 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
+namespace ash {
+class WelcomeScreen;
+}
+
 namespace base {
 class ListValue;
 }
 
 namespace chromeos {
-
 class CoreOobeView;
-class WelcomeScreen;
 
 // Interface for WelcomeScreenHandler.
 class WelcomeView {
@@ -35,7 +37,7 @@ class WelcomeView {
   virtual void Hide() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(WelcomeScreen* screen) = 0;
+  virtual void Bind(ash::WelcomeScreen* screen) = 0;
 
   // Unbinds model from the view.
   virtual void Unbind() = 0;
@@ -69,7 +71,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   // WelcomeView:
   void Show() override;
   void Hide() override;
-  void Bind(WelcomeScreen* screen) override;
+  void Bind(ash::WelcomeScreen* screen) override;
   void Unbind() override;
   void ReloadLocalizedContent() override;
   void SetInputMethodId(const std::string& input_method_id) override;
@@ -112,7 +114,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   static std::unique_ptr<base::ListValue> GetTimezoneList();
 
   CoreOobeView* core_oobe_view_ = nullptr;
-  WelcomeScreen* screen_ = nullptr;
+  ash::WelcomeScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;

@@ -33,7 +33,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     DisplayedScreen display_type)
@@ -199,4 +199,4 @@ void ChromeUserSelectionScreen::SetPublicSessionShowFullManagementDisclosure(
       show_full_management_disclosure);
 }
 
-}  // namespace chromeos
+}  // namespace ash

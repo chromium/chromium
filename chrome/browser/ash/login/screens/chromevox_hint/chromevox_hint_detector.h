@@ -8,13 +8,14 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/chromeos/idle_detector.h"
 
 namespace base {
 class TickClock;
 }  // namespace base
 
-namespace chromeos {
-class IdleDetector;
+namespace ash {
 
 // Helper for ChromeVox hint idle detection.
 class ChromeVoxHintDetector {
@@ -50,6 +51,6 @@ class ChromeVoxHintDetector {
   base::WeakPtrFactory<ChromeVoxHintDetector> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_CHROMEVOX_HINT_CHROMEVOX_HINT_DETECTOR_H_

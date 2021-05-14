@@ -19,7 +19,7 @@
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kUserActionAcceptButtonClicked[] = "accept";
@@ -189,4 +189,4 @@ void ArcTermsOfServiceScreen::OnViewDestroyed(
   view_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

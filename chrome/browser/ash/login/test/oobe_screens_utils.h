@@ -61,6 +61,7 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
 // source migration is finished.
 namespace ash {
 namespace test {
+using ::chromeos::test::LanguageReloadObserver;
 using ::chromeos::test::SkipToEnrollmentOnRecovery;
 using ::chromeos::test::TapEulaAccept;
 using ::chromeos::test::TapWelcomeNext;

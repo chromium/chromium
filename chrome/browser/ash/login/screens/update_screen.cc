@@ -94,7 +94,7 @@ std::string UpdateScreen::GetResultString(Result result) {
     case Result::UPDATE_ERROR:
       return "UpdateError";
     case Result::UPDATE_SKIPPED:
-      return chromeos::BaseScreen::kNotApplicable;
+      return BaseScreen::kNotApplicable;
   }
 }
 

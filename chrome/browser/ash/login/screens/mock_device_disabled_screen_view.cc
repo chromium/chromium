@@ -10,7 +10,7 @@ using ::testing::AtLeast;
 using ::testing::AtMost;
 using ::testing::NotNull;
 
-namespace chromeos {
+namespace ash {
 
 MockDeviceDisabledScreenView::MockDeviceDisabledScreenView()
     : screen_(nullptr) {
@@ -28,4 +28,4 @@ void MockDeviceDisabledScreenView::Bind(DeviceDisabledScreen* screen) {
   MockBind(screen);
 }
 
-}  // namespace chromeos
+}  // namespace ash

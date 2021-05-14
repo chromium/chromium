@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 
-namespace chromeos {
-
-class DemoSetupScreenView;
+namespace ash {
 
 // Controls demo mode setup. The screen can be shown during OOBE. It allows
 // user to setup retail demo mode on the device.
@@ -67,12 +67,12 @@ class DemoSetupScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(DemoSetupScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::DemoSetupScreen;
+namespace chromeos {
+using ::ash::DemoSetupScreen;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_DEMO_SETUP_SCREEN_H_

@@ -8,9 +8,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class AppDownloadingScreen;
+}
+
+namespace chromeos {
 
 class AppDownloadingScreenView {
  public:
@@ -19,7 +21,7 @@ class AppDownloadingScreenView {
   virtual ~AppDownloadingScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(AppDownloadingScreen* screen) = 0;
+  virtual void Bind(ash::AppDownloadingScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -43,7 +45,7 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // AppDownloadingScreenView:
-  void Bind(AppDownloadingScreen* screen) override;
+  void Bind(ash::AppDownloadingScreen* screen) override;
   void Show() override;
   void Hide() override;
 
@@ -51,11 +53,17 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void Initialize() override;
 
-  AppDownloadingScreen* screen_ = nullptr;
+  ash::AppDownloadingScreen* screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AppDownloadingScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AppDownloadingScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_APP_DOWNLOADING_SCREEN_HANDLER_H_

@@ -17,7 +17,7 @@ constexpr char kUserActionPowerwash[] = "powerwash";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 std::string DemoSetupScreen::GetResultString(Result result) {
@@ -104,4 +104,4 @@ void DemoSetupScreen::OnViewDestroyed(DemoSetupScreenView* view) {
     view_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

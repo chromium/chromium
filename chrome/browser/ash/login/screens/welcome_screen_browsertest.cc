@@ -45,7 +45,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove when migrated to ash::
+namespace extension_ime_util = ::chromeos::extension_ime_util;
 
 namespace {
 
@@ -152,7 +155,7 @@ class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
   // WelcomeScreenBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    command_line->AppendSwitch(switches::kSystemDevMode);
   }
 };
 
@@ -646,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
   test::SpeechMonitor monitor;
   GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(
@@ -795,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, SkipToLoginForTesting) {
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, StatusTray) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   ASSERT_FALSE(IdleDetectionCancelledForTesting());
-  ash::SystemTrayTestApi::Create()->ShowBubble();
+  SystemTrayTestApi::Create()->ShowBubble();
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
 }
 
@@ -877,4 +880,4 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   WaitForSpokenSuccessMetric();
 }
 
-}  // namespace chromeos
+}  // namespace ash

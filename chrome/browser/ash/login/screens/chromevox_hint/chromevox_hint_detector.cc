@@ -12,12 +12,13 @@
 #include "chrome/browser/chromeos/idle_detector.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 // Amount of time the user has to be idle for before giving the ChromeVox hint.
 const base::TimeDelta kChromeVoxHintIdleDuration =
     base::TimeDelta::FromSeconds(20);
+
 }  // namespace
 
 ChromeVoxHintDetector::ChromeVoxHintDetector(const base::TickClock* clock,
@@ -31,7 +32,7 @@ ChromeVoxHintDetector::~ChromeVoxHintDetector() {}
 
 void ChromeVoxHintDetector::StartIdleDetection() {
   if (!features::IsOobeChromeVoxHintEnabled() ||
-      chromeos::switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
+      switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
     return;
   }
 
@@ -39,7 +40,7 @@ void ChromeVoxHintDetector::StartIdleDetection() {
   // the hint when flashing.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSystemDevMode) &&
-      !chromeos::switches::IsOOBEChromeVoxHintEnabledForDevMode()) {
+      !switches::IsOOBEChromeVoxHintEnabledForDevMode()) {
     return;
   }
 
@@ -62,4 +63,4 @@ void ChromeVoxHintDetector::OnIdle() {
   observer_->OnShouldGiveChromeVoxHint();
 }
 
-}  // namespace chromeos
+}  // namespace ash

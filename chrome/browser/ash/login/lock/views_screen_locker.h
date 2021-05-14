@@ -10,13 +10,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chromeos {
 
 class UserBoardViewMojo;
-class UserSelectionScreen;
 class MojoSystemInfoDispatcher;
 
 // ViewsScreenLocker acts like LoginScreenClientImpl::Delegate which handles

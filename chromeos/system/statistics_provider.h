@@ -187,6 +187,7 @@ namespace system {
 using ::chromeos::system::kActivateDateKey;
 using ::chromeos::system::kBlockDevModeKey;
 using ::chromeos::system::kCheckEnrollmentKey;
+using ::chromeos::system::kOemKeyboardDrivenOobeKey;
 using ::chromeos::system::kSerialNumberKeyForTest;
 using ::chromeos::system::StatisticsProvider;
 }  // namespace system

@@ -13,8 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserActionContinue[] = "continue-setup";
@@ -137,4 +136,4 @@ void DemoPreferencesScreen::UpdateInputMethod(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

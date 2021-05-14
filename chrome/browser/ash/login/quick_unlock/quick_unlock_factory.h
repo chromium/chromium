@@ -55,4 +55,12 @@ class QuickUnlockFactory : public BrowserContextKeyedServiceFactory {
 }  // namespace quick_unlock
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace quick_unlock {
+using ::chromeos::quick_unlock::QuickUnlockFactory;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_FACTORY_H_

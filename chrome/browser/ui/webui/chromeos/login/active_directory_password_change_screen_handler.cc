@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 
+#include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"

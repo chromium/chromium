@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class ActiveDirectoryPasswordChangeScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between
 // ActiveDirectoryPasswordChangeScreen and its WebUI representation.
@@ -27,7 +28,7 @@ class ActiveDirectoryPasswordChangeView {
   virtual void Show(const std::string& username, int error) = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(ActiveDirectoryPasswordChangeScreen* screen) = 0;
+  virtual void Bind(ash::ActiveDirectoryPasswordChangeScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -57,7 +58,7 @@ class ActiveDirectoryPasswordChangeScreenHandler
 
   // ActiveDirectoryPasswordChangeView:
   void Show(const std::string& username, int error) override;
-  void Bind(ActiveDirectoryPasswordChangeScreen* screen) override;
+  void Bind(ash::ActiveDirectoryPasswordChangeScreen* screen) override;
   void Unbind() override;
   void ShowSignInError(const std::string& error_text) override;
 
@@ -66,11 +67,17 @@ class ActiveDirectoryPasswordChangeScreenHandler
   void HandleComplete(const std::string& old_password,
                       const std::string& new_password);
 
-  ActiveDirectoryPasswordChangeScreen* screen_ = nullptr;
+  ash::ActiveDirectoryPasswordChangeScreen* screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPasswordChangeScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ActiveDirectoryPasswordChangeView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ACTIVE_DIRECTORY_PASSWORD_CHANGE_SCREEN_HANDLER_H_

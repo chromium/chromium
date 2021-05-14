@@ -20,13 +20,14 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
-
-class InputEventsBlocker;
-class WelcomeView;
+namespace ash {
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,
@@ -120,7 +121,7 @@ class WelcomeScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // ChromeVoxHintDetector::Observer:
   void OnShouldGiveChromeVoxHint() override;
@@ -158,9 +159,9 @@ class WelcomeScreen : public BaseScreen,
   // Callback when the system timezone settings is changed.
   void OnSystemTimezoneChanged();
 
-  // Notifies locale change via ash::LocaleUpdateController.
+  // Notifies locale change via LocaleUpdateController.
   void NotifyLocaleChange();
-  void OnLocaleChangeResult(ash::LocaleNotificationResult result);
+  void OnLocaleChangeResult(LocaleNotificationResult result);
 
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
@@ -187,6 +188,12 @@ class WelcomeScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(WelcomeScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::WelcomeScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_WELCOME_SCREEN_H_

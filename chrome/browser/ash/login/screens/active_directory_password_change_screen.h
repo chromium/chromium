@@ -11,15 +11,16 @@
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/key.h"
 
 namespace authpolicy {
 class ActiveDirectoryAccountInfo;
 }
 
-namespace chromeos {
-
-class ActiveDirectoryPasswordChangeView;
-class Key;
+namespace ash {
 
 // Controller for the active directory password change screen.
 class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
@@ -76,6 +77,12 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
   base::WeakPtrFactory<ActiveDirectoryPasswordChangeScreen> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ActiveDirectoryPasswordChangeScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ACTIVE_DIRECTORY_PASSWORD_CHANGE_SCREEN_H_

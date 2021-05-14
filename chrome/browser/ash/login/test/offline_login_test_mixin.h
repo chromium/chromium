@@ -60,4 +60,11 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::OfflineLoginTestMixin;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_

@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr char BaseScreen::kNotApplicable[];
 
@@ -50,7 +50,7 @@ void BaseScreen::HandleUserAction(const std::string& action_id) {
   OnUserAction(action_id);
 }
 
-bool BaseScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
+bool BaseScreen::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
 
@@ -58,4 +58,4 @@ void BaseScreen::OnUserAction(const std::string& action_id) {
   LOG(WARNING) << "Unhandled user action: action_id=" << action_id;
 }
 
-}  // namespace chromeos
+}  // namespace ash

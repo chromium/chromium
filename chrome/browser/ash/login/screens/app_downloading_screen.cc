@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // When user clicks "Continue setup", this will be sent to chrome to indicate
@@ -49,4 +49,4 @@ void AppDownloadingScreen::OnUserAction(const std::string& action_id) {
   BaseScreen::OnUserAction(action_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

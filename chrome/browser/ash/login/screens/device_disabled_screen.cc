@@ -11,12 +11,13 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 system::DeviceDisablingManager* DeviceDisablingManager() {
   return g_browser_process->platform_part()->device_disabling_manager();
 }
+
 }  // namespace
 
 DeviceDisabledScreen::DeviceDisabledScreen(DeviceDisabledScreenView* view)
@@ -61,4 +62,4 @@ void DeviceDisabledScreen::OnDisabledMessageChanged(
     view_->UpdateMessage(disabled_message);
 }
 
-}  // namespace chromeos
+}  // namespace ash

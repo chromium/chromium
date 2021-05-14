@@ -12,11 +12,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "components/login/base_screen_handler_utils.h"
 
-namespace chromeos {
-
-class WizardContext;
+namespace ash {
 
 // Base class for the all OOBE/login/before-session screens.
 // Screens are identified by ID, screen and it's JS counterpart must have same
@@ -46,7 +46,7 @@ class BaseScreen {
   void HandleUserAction(const std::string& action_id);
 
   // Returns `true` if `action` was handled by the screen.
-  virtual bool HandleAccelerator(ash::LoginAcceleratorAction action);
+  virtual bool HandleAccelerator(LoginAcceleratorAction action);
 
   // Returns the identifier of the screen.
   OobeScreenId screen_id() const { return screen_id_; }
@@ -81,7 +81,13 @@ class BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(BaseScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::BaseScreen;
+}
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.

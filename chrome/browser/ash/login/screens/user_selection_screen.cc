@@ -68,8 +68,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kWakeLockReason[] = "TPMLockedIssue";
@@ -124,21 +123,20 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
 }
 
 // Determines the initial fingerprint state for the given user.
-ash::FingerprintState GetInitialFingerprintState(
-    const user_manager::User* user) {
+FingerprintState GetInitialFingerprintState(const user_manager::User* user) {
   // User must be logged in.
   if (!user->is_logged_in())
-    return ash::FingerprintState::UNAVAILABLE;
+    return FingerprintState::UNAVAILABLE;
 
   // Quick unlock storage must be available.
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(user);
   if (!quick_unlock_storage)
-    return ash::FingerprintState::UNAVAILABLE;
+    return FingerprintState::UNAVAILABLE;
 
   // Fingerprint is not registered for this account.
   if (!quick_unlock_storage->fingerprint_storage()->HasRecord())
-    return ash::FingerprintState::UNAVAILABLE;
+    return FingerprintState::UNAVAILABLE;
 
   // Fingerprint unlock attempts should not be exceeded, as the lock screen has
   // not been displayed yet.
@@ -147,14 +145,14 @@ ash::FingerprintState GetInitialFingerprintState(
 
   // It has been too long since the last authentication.
   if (!quick_unlock_storage->HasStrongAuth())
-    return ash::FingerprintState::DISABLED_FROM_TIMEOUT;
+    return FingerprintState::DISABLED_FROM_TIMEOUT;
 
   // Auth is available.
   if (quick_unlock_storage->IsFingerprintAuthenticationAvailable())
-    return ash::FingerprintState::AVAILABLE_DEFAULT;
+    return FingerprintState::AVAILABLE_DEFAULT;
 
   // Default to unavailabe.
-  return ash::FingerprintState::UNAVAILABLE;
+  return FingerprintState::UNAVAILABLE;
 }
 
 // Returns true if dircrypto migration check should be performed.
@@ -213,7 +211,7 @@ bool CanRemoveUser(const user_manager::User* user) {
 
 void GetMultiProfilePolicy(const user_manager::User* user,
                            bool* out_is_allowed,
-                           ash::MultiProfileUserBehavior* out_policy) {
+                           MultiProfileUserBehavior* out_policy) {
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   MultiProfileUserController* multi_profile_user_controller =
       ChromeUserManager::Get()->GetMultiProfileUserController();
@@ -530,9 +528,9 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
 }
 
 // static
-ash::UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
+UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
     const user_manager::User& user) {
-  ash::UserAvatar avatar;
+  UserAvatar avatar;
   avatar.image = user.GetImage();
   if (avatar.image.isNull()) {
     avatar.image = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -639,9 +637,7 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
   if (token_handle_util_->HasToken(account_id)) {
     token_handle_util_->CheckToken(
         account_id,
-        chromeos::ProfileHelper::Get()
-            ->GetSigninProfile()
-            ->GetURLLoaderFactory(),
+        ProfileHelper::Get()->GetSigninProfile()->GetURLLoaderFactory(),
         base::BindOnce(&UserSelectionScreen::OnUserStatusChecked,
                        weak_factory_.GetWeakPtr()));
   }
@@ -857,9 +853,9 @@ void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {
   service->AttemptAuth(account_id);
 }
 
-std::vector<ash::LoginUserInfo>
+std::vector<LoginUserInfo>
 UserSelectionScreen::UpdateAndReturnUserListForAsh() {
-  std::vector<ash::LoginUserInfo> user_info_list;
+  std::vector<LoginUserInfo> user_info_list;
 
   const AccountId owner = GetOwnerAccountId();
   const bool is_signin_to_add = IsSigninToAdd();
@@ -880,7 +876,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
                    : proximity_auth::mojom::AuthType::OFFLINE_PASSWORD);
     user_auth_type_map_[account_id] = initial_auth_type;
 
-    ash::LoginUserInfo user_info;
+    LoginUserInfo user_info;
     user_info.basic_user_info.type = user->GetType();
     user_info.basic_user_info.account_id = user->GetAccountId();
 
@@ -1005,4 +1001,4 @@ EasyUnlockService* UserSelectionScreen::GetEasyUnlockServiceForUser(
   return EasyUnlockService::Get(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash
