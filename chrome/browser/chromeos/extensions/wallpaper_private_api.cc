@@ -671,9 +671,11 @@ WallpaperPrivateGetOfflineWallpaperListFunction::Run() {
 
 void WallpaperPrivateGetOfflineWallpaperListFunction::
     OnOfflineWallpaperListReturned(const std::vector<std::string>& url_list) {
-  auto results = std::make_unique<base::ListValue>();
-  results->AppendStrings(url_list);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(results))));
+  base::Value results(base::Value::Type::LIST);
+  for (const std::string& url : url_list) {
+    results.Append(url);
+  }
+  Respond(OneArgument(std::move(results)));
 }
 
 ExtensionFunction::ResponseAction
