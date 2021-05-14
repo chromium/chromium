@@ -50,7 +50,7 @@ class MODULES_EXPORT VideoEncoderTraits {
   using Init = VideoEncoderInit;
   using Config = VideoEncoderConfig;
   using InternalConfig = ParsedConfig;
-  using Frame = VideoFrame;
+  using Input = VideoFrame;
   using EncodeOptions = VideoEncoderEncodeOptions;
   using OutputChunk = EncodedVideoChunk;
   using OutputCallback = V8EncodedVideoChunkOutputCallback;

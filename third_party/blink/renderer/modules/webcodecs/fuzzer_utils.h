@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
@@ -60,8 +60,8 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
 
-AudioFrame* MakeAudioFrame(ScriptState* script_state,
-                           const wc_fuzzer::AudioFrameInit& proto);
+AudioData* MakeAudioData(ScriptState* script_state,
+                         const wc_fuzzer::AudioDataInit& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

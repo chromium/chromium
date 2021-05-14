@@ -71,9 +71,9 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   static const int kSampleRate = 8000;
   static const int kNumFrames = 10;
 
-  // Pushes a frame into |track|. |timestamp| is the reference time at the
+  // Pushes data into |track|. |timestamp| is the reference time at the
   // beginning of the audio data to be pushed into |track|.
-  void PushFrame(
+  void PushData(
       MediaStreamTrack* track,
       const base::Optional<base::TimeDelta>& timestamp = base::nullopt) {
     auto data = media::AudioBuffer::CreateEmptyBuffer(
@@ -91,7 +91,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       AudioFrameFlowsThroughStreamAndCloses) {
+       AudioDataFlowsThroughStreamAndCloses) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* track = CreateTrack(v8_scope.GetExecutionContext());
@@ -106,7 +106,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   ScriptPromiseTester read_tester(script_state,
                                   reader->read(script_state, exception_state));
   EXPECT_FALSE(read_tester.IsFulfilled());
-  PushFrame(track);
+  PushData(track);
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsFulfilled());
 
@@ -156,7 +156,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink, OnData(_, _))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    PushFrame(track, timestamp);
+    PushData(track, timestamp);
     sink_loop.Run();
   };
 
@@ -215,7 +215,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink, OnData(_, _))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    PushFrame(track);
+    PushData(track);
     sink_loop.Run();
   };
 

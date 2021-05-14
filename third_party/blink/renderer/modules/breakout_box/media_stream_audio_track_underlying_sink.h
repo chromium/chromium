@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 namespace blink {
 

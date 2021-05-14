@@ -9,16 +9,16 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("webcodecs") {
   sources = [
+    "audio_data.cc",
+    "audio_data.h",
+    "audio_data_attachment.cc",
+    "audio_data_attachment.h",
     "audio_decoder.cc",
     "audio_decoder.h",
     "audio_decoder_broker.cc",
     "audio_decoder_broker.h",
     "audio_encoder.cc",
     "audio_encoder.h",
-    "audio_frame.cc",
-    "audio_frame.h",
-    "audio_frame_attachment.cc",
-    "audio_frame_attachment.h",
     "codec_config_eval.h",
     "codec_logger.cc",
     "codec_logger.h",
@@ -84,8 +84,8 @@ blink_modules_sources("webcodecs") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
-    "audio_frame_test.cc",
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",

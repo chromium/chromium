@@ -35,7 +35,7 @@ function join_buffers(buffers) {
 promise_test(async t => {
   let sample_rate = 48000;
   let total_duration_s = 1;
-  let frame_count = 10;
+  let data_count = 10;
   let outputs = [];
   let init = {
     error: e => {
@@ -59,18 +59,18 @@ promise_test(async t => {
   encoder.configure(config);
 
   let timestamp_us = 0;
-  let frame_duration_s = total_duration_s / frame_count;
-  let frame_length = frame_duration_s * config.sampleRate;
-  for (let i = 0; i < frame_count; i++) {
-    let frame = make_audio_frame(timestamp_us, config.numberOfChannels,
-      config.sampleRate, frame_length);
-    encoder.encode(frame);
-    frame.close();
-    timestamp_us += frame_duration_s * 1_000_000;
+  let data_duration_s = total_duration_s / data_count;
+  let data_length = data_duration_s * config.sampleRate;
+  for (let i = 0; i < data_count; i++) {
+    let data = make_audio_data(timestamp_us, config.numberOfChannels,
+      config.sampleRate, data_length);
+    encoder.encode(data);
+    data.close();
+    timestamp_us += data_duration_s * 1_000_000;
   }
   await encoder.flush();
   encoder.close();
-  assert_greater_than_equal(outputs.length, frame_count);
+  assert_greater_than_equal(outputs.length, data_count);
   assert_equals(outputs[0].timestamp, 0, "first chunk timestamp");
   for (chunk of outputs) {
     assert_greater_than(chunk.data.byteLength, 0);
@@ -81,7 +81,7 @@ promise_test(async t => {
 promise_test(async t => {
   let sample_rate = 48000;
   let total_duration_s = 1;
-  let frame_count = 10;
+  let data_count = 10;
   let outputs = [];
   let init = {
     error: e => {
@@ -105,10 +105,10 @@ promise_test(async t => {
   encoder.configure(config);
 
   let timestamp_us = -10000;
-  let frame = make_audio_frame(
+  let data = make_audio_data(
       timestamp_us, config.numberOfChannels, config.sampleRate, 10000);
-  encoder.encode(frame);
-  frame.close();
+  encoder.encode(data);
+  data.close();
   await encoder.flush();
   encoder.close();
   assert_greater_than_equal(outputs.length, 1);
@@ -119,7 +119,7 @@ promise_test(async t => {
   }
 }, 'Encode audio with negative timestamp');
 
-async function checkEncodingError(config, good_frames, bad_frame) {
+async function checkEncodingError(config, good_data, bad_data) {
   let error = null;
   let outputs = 0;
   let init = {
@@ -138,9 +138,9 @@ async function checkEncodingError(config, good_frames, bad_frame) {
   config = support.config;
 
   encoder.configure(config);
-  for (let frame of good_frames) {
-    encoder.encode(frame);
-    frame.close();
+  for (let data of good_data) {
+    encoder.encode(data);
+    data.close();
   }
   await encoder.flush();
 
@@ -148,7 +148,7 @@ async function checkEncodingError(config, good_frames, bad_frame) {
                  + " numberOfChannels: " + config.numberOfChannels;
   assert_equals(error, null, txt_config);
   assert_greater_than(outputs, 0);
-  encoder.encode(bad_frame);
+  encoder.encode(bad_data);
   await encoder.flush().catch(() => {});
   assert_not_equals(error, null, txt_config);
 }
@@ -165,15 +165,15 @@ function channelNumberVariationTests() {
 
     let ts = 0;
     let length = sample_rate / 10;
-    let frame1 = make_audio_frame(ts, channels, sample_rate, length);
+    let data1 = make_audio_data(ts, channels, sample_rate, length);
 
-    ts += Math.floor(frame1.buffer.duration / 1000000);
-    let frame2 = make_audio_frame(ts, channels, sample_rate, length);
-    ts += Math.floor(frame2.buffer.duration / 1000000);
+    ts += Math.floor(data1.buffer.duration / 1000000);
+    let data2 = make_audio_data(ts, channels, sample_rate, length);
+    ts += Math.floor(data2.buffer.duration / 1000000);
 
-    let bad_frame = make_audio_frame(ts, channels + 1, sample_rate, length);
+    let bad_data = make_audio_data(ts, channels + 1, sample_rate, length);
     promise_test(async t =>
-      checkEncodingError(config, [frame1, frame2], bad_frame),
+      checkEncodingError(config, [data1, data2], bad_data),
       "Channel number variation: " + channels);
   }
 }
@@ -191,15 +191,15 @@ function sampleRateVariationTests() {
 
     let ts = 0;
     let length = sample_rate / 10;
-    let frame1 = make_audio_frame(ts, channels, sample_rate, length);
+    let data1 = make_audio_data(ts, channels, sample_rate, length);
 
-    ts += Math.floor(frame1.buffer.duration / 1000000);
-    let frame2 = make_audio_frame(ts, channels, sample_rate, length);
-    ts += Math.floor(frame2.buffer.duration / 1000000);
+    ts += Math.floor(data1.buffer.duration / 1000000);
+    let data2 = make_audio_data(ts, channels, sample_rate, length);
+    ts += Math.floor(data2.buffer.duration / 1000000);
 
-    let bad_frame = make_audio_frame(ts, channels, sample_rate + 333, length);
+    let bad_data = make_audio_data(ts, channels, sample_rate + 333, length);
     promise_test(async t =>
-      checkEncodingError(config, [frame1, frame2], bad_frame),
+      checkEncodingError(config, [data1, data2], bad_data),
       "Sample rate variation: " + sample_rate);
   }
 }
@@ -208,14 +208,14 @@ sampleRateVariationTests();
 promise_test(async t => {
   let sample_rate = 48000;
   let total_duration_s = 1;
-  let frame_count = 10;
-  let input_frames = [];
-  let output_frames = [];
+  let data_count = 10;
+  let input_data = [];
+  let output_data = [];
 
   let decoder_init = {
     error: t.unreached_func("Decode error"),
-    output: frame => {
-      output_frames.push(frame);
+    output: data => {
+      output_data.push(data);
     }
   };
   let decoder = new AudioDecoder(decoder_init);
@@ -240,14 +240,14 @@ promise_test(async t => {
   encoder.configure(config);
 
   let timestamp_us = 0;
-  const frame_duration_s = total_duration_s / frame_count;
-  const frame_length = frame_duration_s * config.sampleRate;
-  for (let i = 0; i < frame_count; i++) {
-    let frame = make_audio_frame(timestamp_us, config.numberOfChannels,
-      config.sampleRate, frame_length);
-    input_frames.push(frame);
-    encoder.encode(frame);
-    timestamp_us += frame_duration_s * 1_000_000;
+  const data_duration_s = total_duration_s / data_count;
+  const data_length = data_duration_s * config.sampleRate;
+  for (let i = 0; i < data_count; i++) {
+    let data = make_audio_data(timestamp_us, config.numberOfChannels,
+      config.sampleRate, data_length);
+    input_data.push(data);
+    encoder.encode(data);
+    timestamp_us += data_duration_s * 1_000_000;
   }
   await encoder.flush();
   encoder.close();
@@ -255,8 +255,8 @@ promise_test(async t => {
   decoder.close();
 
 
-  let total_input = join_buffers(input_frames.map(f => f.buffer));
-  let total_output = join_buffers(output_frames.map(f => f.buffer));
+  let total_input = join_buffers(input_data.map(f => f.buffer));
+  let total_output = join_buffers(output_data.map(f => f.buffer));
   assert_equals(total_output.numberOfChannels, 2);
   assert_equals(total_output.sampleRate, sample_rate);
 
@@ -311,12 +311,12 @@ promise_test(async t => {
   let encoder = new AudioEncoder(init);
   encoder.configure(encoder_config);
 
-  let long_frame = make_audio_frame(0, encoder_config.numberOfChannels,
+  let large_data = make_audio_data(0, encoder_config.numberOfChannels,
     encoder_config.sampleRate, encoder_config.sampleRate);
-  encoder.encode(long_frame);
+  encoder.encode(large_data);
   await encoder.flush();
 
-  // Long frame produced more than one output, and we've got decoder_config
+  // Large data produced more than one output, and we've got decoder_config
   assert_greater_than(output_count, 1);
   assert_not_equals(decoder_config, null);
   assert_equals(decoder_config.codec, encoder_config.codec);
@@ -334,7 +334,7 @@ promise_test(async t => {
   output_count = 0;
   encoder_config.bitrate = 256000;
   encoder.configure(encoder_config);
-  encoder.encode(long_frame);
+  encoder.encode(large_data);
   await encoder.flush();
 
   // After reconfiguring encoder should produce decoder config again

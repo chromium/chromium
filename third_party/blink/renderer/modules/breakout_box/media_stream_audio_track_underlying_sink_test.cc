@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
@@ -60,20 +60,20 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
     pushable_audio_source_->ConnectToTrack(media_stream_component_);
   }
 
-  ScriptValue CreateAudioFrame(ScriptState* script_state,
-                               AudioFrame** audio_frame_out = nullptr) {
+  ScriptValue CreateAudioData(ScriptState* script_state,
+                              AudioData** audio_data_out = nullptr) {
     const scoped_refptr<media::AudioBuffer> media_buffer =
         media::AudioBuffer::CreateEmptyBuffer(
             media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
             /*channel_count=*/2,
             /*sample_rate=*/44100,
             /*frame_count=*/500, base::TimeDelta());
-    AudioFrame* audio_frame =
-        MakeGarbageCollected<AudioFrame>(std::move(media_buffer));
-    if (audio_frame_out)
-      *audio_frame_out = audio_frame;
+    AudioData* audio_data =
+        MakeGarbageCollected<AudioData>(std::move(media_buffer));
+    if (audio_data_out)
+      *audio_data_out = audio_data;
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8(audio_frame, script_state->GetContext()->Global(),
+                       ToV8(audio_data, script_state->GetContext()->Global(),
                             script_state->GetIsolate()));
   }
 
@@ -107,16 +107,16 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
   NonThrowableExceptionState exception_state;
   auto* writer = writable_stream->getWriter(script_state, exception_state);
 
-  AudioFrame* audio_frame = nullptr;
-  auto audio_frame_chunk = CreateAudioFrame(script_state, &audio_frame);
-  EXPECT_NE(audio_frame, nullptr);
-  EXPECT_NE(audio_frame->buffer(), nullptr);
+  AudioData* audio_data = nullptr;
+  auto audio_data_chunk = CreateAudioData(script_state, &audio_data);
+  EXPECT_NE(audio_data, nullptr);
+  EXPECT_NE(audio_data->buffer(), nullptr);
   ScriptPromiseTester write_tester(
       script_state,
-      writer->write(script_state, audio_frame_chunk, exception_state));
-  // |audio_frame| should be invalidated after sending it to the sink.
+      writer->write(script_state, audio_data_chunk, exception_state));
+  // |audio_data| should be invalidated after sending it to the sink.
   write_tester.WaitUntilSettled();
-  EXPECT_EQ(audio_frame->buffer(), nullptr);
+  EXPECT_EQ(audio_data->buffer(), nullptr);
   write_loop.Run();
 
   writer->releaseLock(script_state);
@@ -126,7 +126,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
 
   // Writing to the sink after the stream closes should fail.
   DummyExceptionStateForTesting dummy_exception_state;
-  underlying_sink->write(script_state, CreateAudioFrame(script_state), nullptr,
+  underlying_sink->write(script_state, CreateAudioData(script_state), nullptr,
                          dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
@@ -142,7 +142,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   auto* sink = CreateUnderlyingSink(script_state);
   ScriptValue v8_integer = ScriptValue::From(script_state, 0);
 
-  // Writing something that is not an AudioFrame to the sink should fail.
+  // Writing something that is not an AudioData to the sink should fail.
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
@@ -154,11 +154,11 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidDataFails) {
               nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 
-  // Writing a closed AudioFrame to the sink should fail.
+  // Writing a closed AudioData to the sink should fail.
   dummy_exception_state.ClearException();
-  AudioFrame* audio_frame = nullptr;
-  auto chunk = CreateAudioFrame(script_state, &audio_frame);
-  audio_frame->close();
+  AudioData* audio_data = nullptr;
+  auto chunk = CreateAudioData(script_state, &audio_data);
+  audio_data->close();
   EXPECT_FALSE(dummy_exception_state.HadException());
   sink->write(script_state, chunk, nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
@@ -178,7 +178,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
 
   // Writing to the sink after the stream closes should fail.
   DummyExceptionStateForTesting dummy_exception_state;
-  underlying_sink->write(script_state, CreateAudioFrame(script_state), nullptr,
+  underlying_sink->write(script_state, CreateAudioData(script_state), nullptr,
                          dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),

@@ -14,10 +14,10 @@
 #include "media/base/mime_util.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_support.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
@@ -203,11 +203,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0);
 
-  auto* frame = request->frame.Release();
+  auto* audio_data = request->input.Release();
 
-  auto data = frame->data();
+  auto data = audio_data->data();
 
-  // The frame shouldn't be closed at this point.
+  // The data shouldn't be closed at this point.
   DCHECK(data);
 
   auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
@@ -230,7 +230,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
     HandleError(logger_->MakeException(
         "Input audio buffer is incompatible with codec parameters", error));
-    frame->close();
+    audio_data->close();
     return;
   }
 
@@ -244,7 +244,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, WrapCrossThreadWeakPersistent(this), reset_count_)));
 
-  frame->close();
+  audio_data->close();
 }
 
 void AudioEncoder::ProcessReconfigure(Request* request) {

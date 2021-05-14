@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_ATTACHMENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_ATTACHMENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_ATTACHMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_ATTACHMENT_H_
 
 #include "base/optional.h"
 #include "media/base/audio_buffer.h"
@@ -12,15 +12,15 @@
 
 namespace blink {
 
-// Used to serialize audio frames.
-class MODULES_EXPORT AudioFrameAttachment
+// Used to serialize AudioData.
+class MODULES_EXPORT AudioDataAttachment
     : public SerializedScriptValue::Attachment {
  public:
   using AudioBufferVector = Vector<scoped_refptr<media::AudioBuffer>>;
 
   static const void* const kAttachmentKey;
-  AudioFrameAttachment() = default;
-  ~AudioFrameAttachment() override = default;
+  AudioDataAttachment() = default;
+  ~AudioDataAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
     return !audio_buffers_.IsEmpty();
@@ -38,4 +38,4 @@ class MODULES_EXPORT AudioFrameAttachment
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_ATTACHMENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_ATTACHMENT_H_

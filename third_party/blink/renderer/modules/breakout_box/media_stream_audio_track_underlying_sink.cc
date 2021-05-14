@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -31,15 +31,15 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
-  AudioFrame* audio_frame = V8AudioFrame::ToImplWithTypeCheck(
+  AudioData* audio_data = V8AudioData::ToImplWithTypeCheck(
       script_state->GetIsolate(), chunk.V8Value());
-  if (!audio_frame) {
-    exception_state.ThrowTypeError("Null audio frame.");
+  if (!audio_data) {
+    exception_state.ThrowTypeError("Null audio data.");
     return ScriptPromise();
   }
 
-  if (!audio_frame->data()) {
-    exception_state.ThrowTypeError("Empty or closed audio frame.");
+  if (!audio_data->data()) {
+    exception_state.ThrowTypeError("Empty or closed audio data.");
     return ScriptPromise();
   }
 
@@ -51,8 +51,8 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  pushable_source->PushAudioData(audio_frame->data());
-  audio_frame->close();
+  pushable_source->PushAudioData(audio_data->data());
+  audio_data->close();
 
   return ScriptPromise::CastUndefined(script_state);
 }

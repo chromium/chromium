@@ -15,7 +15,7 @@ MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     MediaStreamComponent* track,
     ScriptWrappable* media_stream_track_processor,
     wtf_size_t max_queue_size)
-    : AudioFrameQueueUnderlyingSource(script_state, max_queue_size),
+    : AudioDataQueueUnderlyingSource(script_state, max_queue_size),
       media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
@@ -43,14 +43,14 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
 }
 
 void MediaStreamAudioTrackUnderlyingSource::ContextDestroyed() {
-  AudioFrameQueueUnderlyingSource::ContextDestroyed();
+  AudioDataQueueUnderlyingSource::ContextDestroyed();
   DisconnectFromTrack();
 }
 
 void MediaStreamAudioTrackUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(media_stream_track_processor_);
   visitor->Trace(track_);
-  AudioFrameQueueUnderlyingSource::Trace(visitor);
+  AudioDataQueueUnderlyingSource::Trace(visitor);
 }
 
 void MediaStreamAudioTrackUnderlyingSource::OnData(

@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -47,15 +47,15 @@ ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
                           script_state->GetIsolate()));
 }
 
-ScriptValue CreateAudioFrameChunk(ScriptState* script_state) {
-  AudioFrame* audio_frame =
-      MakeGarbageCollected<AudioFrame>(media::AudioBuffer::CreateEmptyBuffer(
+ScriptValue CreateAudioDataChunk(ScriptState* script_state) {
+  AudioData* audio_data =
+      MakeGarbageCollected<AudioData>(media::AudioBuffer::CreateEmptyBuffer(
           media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
           /*channel_count=*/2,
           /*sample_rate=*/44100,
           /*frame_count=*/500, base::TimeDelta()));
   return ScriptValue(script_state->GetIsolate(),
-                     ToV8(audio_frame, script_state->GetContext()->Global(),
+                     ToV8(audio_data, script_state->GetContext()->Global(),
                           script_state->GetIsolate()));
 }
 
@@ -112,7 +112,7 @@ TEST_F(MediaStreamTrackGeneratorTest, VideoFramesAreWritten) {
   EXPECT_TRUE(generator->Ended());
 }
 
-TEST_F(MediaStreamTrackGeneratorTest, AudioFramesAreWritten) {
+TEST_F(MediaStreamTrackGeneratorTest, AudioDataAreWritten) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
@@ -133,7 +133,7 @@ TEST_F(MediaStreamTrackGeneratorTest, AudioFramesAreWritten) {
                      ->getWriter(script_state, exception_state);
   ScriptPromiseTester write_tester(
       script_state,
-      writer->write(script_state, CreateAudioFrameChunk(script_state),
+      writer->write(script_state, CreateAudioDataChunk(script_state),
                     exception_state));
   EXPECT_FALSE(write_tester.IsFulfilled());
   write_tester.WaitUntilSettled();

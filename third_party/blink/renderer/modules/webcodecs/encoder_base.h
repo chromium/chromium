@@ -33,7 +33,7 @@ class MODULES_EXPORT EncoderBase
   using InitType = typename Traits::Init;
   using ConfigType = typename Traits::Config;
   using InternalConfigType = typename Traits::InternalConfig;
-  using FrameType = typename Traits::Frame;
+  using InputType = typename Traits::Input;
   using EncodeOptionsType = typename Traits::EncodeOptions;
   using OutputChunkType = typename Traits::OutputChunk;
   using OutputCallbackType = typename Traits::OutputCallback;
@@ -47,7 +47,7 @@ class MODULES_EXPORT EncoderBase
 
   void configure(const ConfigType*, ExceptionState&);
 
-  void encode(FrameType* frame,
+  void encode(InputType* input,
               const EncodeOptionsType* opts,
               ExceptionState& exception_state);
 
@@ -84,7 +84,7 @@ class MODULES_EXPORT EncoderBase
     Type type;
     // Current value of EncoderBase.reset_count_ when request was created.
     uint32_t reset_count = 0;
-    Member<FrameType> frame;                     // used by kEncode
+    Member<InputType> input;                     // used by kEncode
     Member<const EncodeOptionsType> encodeOpts;  // used by kEncode
     Member<ScriptPromiseResolver> resolver;      // used by kFlush
   };

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -297,7 +297,7 @@ ScriptWrappable*
 FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>::MakeBlinkFrame(
     scoped_refptr<media::AudioBuffer> media_frame) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  return MakeGarbageCollected<AudioFrame>(std::move(media_frame));
+  return MakeGarbageCollected<AudioData>(std::move(media_frame));
 }
 
 template class MODULES_TEMPLATE_EXPORT

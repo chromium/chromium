@@ -1,4 +1,4 @@
-function make_audio_frame(timestamp, channels, sampleRate, length) {
+function make_audio_data(timestamp, channels, sampleRate, length) {
   let buffer = new AudioBuffer({
     length: length,
     numberOfChannels: channels,
@@ -15,7 +15,7 @@ function make_audio_frame(timestamp, channels, sampleRate, length) {
     }
   }
 
-  return new AudioFrame({
+  return new AudioData({
     timestamp: timestamp,
     buffer: buffer
   });

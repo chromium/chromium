@@ -108,7 +108,7 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
 }
 
 template <typename Traits>
-void EncoderBase<Traits>::encode(FrameType* frame,
+void EncoderBase<Traits>::encode(InputType* input,
                                  const EncodeOptionsType* opts,
                                  ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -121,22 +121,22 @@ void EncoderBase<Traits>::encode(FrameType* frame,
 
   DCHECK(active_config_);
 
-  // This will fail if |frame| is already closed.
-  auto* internal_frame = frame->clone(exception_state);
+  // This will fail if |input| is already closed.
+  auto* internal_input = input->clone(exception_state);
 
-  if (!internal_frame) {
-    // Remove exceptions relating to cloning closed frames.
+  if (!internal_input) {
+    // Remove exceptions relating to cloning closed input.
     exception_state.ClearException();
 
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Cannot encode closed frame.");
+                                      "Cannot encode closed input.");
     return;
   }
 
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
   request->type = Request::Type::kEncode;
-  request->frame = internal_frame;
+  request->input = internal_input;
   request->encodeOpts = opts;
   ++requested_encodes_;
   EnqueueRequest(request);
@@ -195,8 +195,8 @@ void EncoderBase<Traits>::ResetInternal() {
     DCHECK(pending_req);
     if (pending_req->resolver)
       pending_req->resolver.Release()->Resolve();
-    if (pending_req->frame)
-      pending_req->frame.Release()->close();
+    if (pending_req->input)
+      pending_req->input.Release()->close();
   }
   stall_request_processing_ = false;
 }
@@ -322,7 +322,7 @@ void EncoderBase<Traits>::Trace(Visitor* visitor) const {
 
 template <typename Traits>
 void EncoderBase<Traits>::Request::Trace(Visitor* visitor) const {
-  visitor->Trace(frame);
+  visitor->Trace(input);
   visitor->Trace(encodeOpts);
   visitor->Trace(resolver);
 }

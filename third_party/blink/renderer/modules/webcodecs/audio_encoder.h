@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -41,7 +41,7 @@ class MODULES_EXPORT AudioEncoderTraits {
   using Init = AudioEncoderInit;
   using Config = AudioEncoderConfig;
   using InternalConfig = ParsedConfig;
-  using Frame = AudioFrame;
+  using Input = AudioData;
   using EncodeOptions = AudioEncoderEncodeOptions;
   using OutputChunk = EncodedAudioChunk;
   using OutputCallback = V8EncodedAudioChunkOutputCallback;
@@ -63,8 +63,8 @@ class MODULES_EXPORT AudioEncoder final
   AudioEncoder(ScriptState*, const AudioEncoderInit*, ExceptionState&);
   ~AudioEncoder() override;
 
-  void encode(AudioFrame* frame, ExceptionState& exception_state) {
-    return Base::encode(frame, nullptr, exception_state);
+  void encode(AudioData* data, ExceptionState& exception_state) {
+    return Base::encode(data, nullptr, exception_state);
   }
 
   static ScriptPromise isConfigSupported(ScriptState*,

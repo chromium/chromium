@@ -32,21 +32,21 @@ class MediaLog;
 
 namespace blink {
 
+class AudioData;
 class AudioDecoderConfig;
-class AudioFrame;
 class EncodedAudioChunk;
 class ExceptionState;
 class AudioDecoderInit;
 class ScriptPromise;
-class V8AudioFrameOutputCallback;
+class V8AudioDataOutputCallback;
 
 class MODULES_EXPORT AudioDecoderTraits {
  public:
   using InitType = AudioDecoderInit;
-  using OutputType = AudioFrame;
+  using OutputType = AudioData;
   using MediaOutputType = media::AudioBuffer;
   using MediaDecoderType = media::AudioDecoder;
-  using OutputCallbackType = V8AudioFrameOutputCallback;
+  using OutputCallbackType = V8AudioDataOutputCallback;
   using ConfigType = AudioDecoderConfig;
   using MediaConfigType = media::AudioDecoderConfig;
   using InputType = EncodedAudioChunk;

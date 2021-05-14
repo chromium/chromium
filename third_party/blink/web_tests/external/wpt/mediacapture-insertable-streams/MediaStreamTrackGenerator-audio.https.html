@@ -15,7 +15,7 @@
   <script src=/resources/testharnessreport.js></script>
   <script>
 
-    function makeAudioFrame(timestamp) {
+    function makeAudioData(timestamp) {
       const sampleRate = 3000;
       const buffer = new AudioBuffer({
         length: sampleRate / 10, // 100ms
@@ -30,7 +30,7 @@
         array[i] = Math.sin(t);
       }
 
-      return new AudioFrame({
+      return new AudioData({
         timestamp: timestamp,
         buffer: buffer
       });
@@ -40,7 +40,7 @@
       const generator = new MediaStreamTrackGenerator("audio");
 
       const writer = generator.writable.getWriter();
-      await writer.write(makeAudioFrame(1));
+      await writer.write(makeAudioData(1));
 
       assert_equals(generator.kind, "audio");
       assert_equals(generator.readyState, "live");
@@ -58,8 +58,8 @@
       t.add_cleanup(() => generator.stop());
 
       const writer = generator.writable.getWriter();
-      const frame = makeAudioFrame(1);
-      await writer.write(frame);
+      const data = makeAudioData(1);
+      await writer.write(data);
 
       assert_equals(generator.kind, "audio");
       assert_equals(generator.readyState, "live");
@@ -96,10 +96,10 @@
       t.add_cleanup(() => generator.stop());
 
       const writer = generator.writable.getWriter();
-      const frame = makeAudioFrame(1);
+      const data = makeAudioData(1);
 
-      writer.write(frame).then(t.step_func(() => assert_unreached("Write should reject")), t.step_func(f => assert_true(f instanceof TypeError, "write rejects with a TypeError")));
-    }, "Mismatched frame and generator kind throws on write.");
+      writer.write(data).then(t.step_func(() => assert_unreached("Write should reject")), t.step_func(f => assert_true(f instanceof TypeError, "write rejects with a TypeError")));
+    }, "Mismatched data and generator kind throws on write.");
 
     promise_test(async t => {
       const generator = new MediaStreamTrackGenerator("audio");
@@ -110,7 +110,7 @@
       await audioElement.play();
 
       const writer = generator.writable.getWriter();
-      await writer.write(makeAudioFrame(1));
+      await writer.write(makeAudioData(1));
 
       // Wait for audio playout to actually happen.
       await t.step_wait(() => audioElement.currentTime > 0, "audioElement played out generated track");

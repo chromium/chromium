@@ -92,12 +92,12 @@ DEFINE_TEXT_PROTO_FUZZER(
             break;
           }
           case wc_fuzzer::AudioEncoderApiInvocation::kEncode: {
-            AudioFrame* frame =
-                MakeAudioFrame(script_state, invocation.encode().frame());
-            if (!frame)
+            AudioData* data =
+                MakeAudioData(script_state, invocation.encode().data());
+            if (!data)
               return;
 
-            audio_encoder->encode(frame, IGNORE_EXCEPTION_FOR_TESTING);
+            audio_encoder->encode(data, IGNORE_EXCEPTION_FOR_TESTING);
             break;
           }
           case wc_fuzzer::AudioEncoderApiInvocation::kFlush: {

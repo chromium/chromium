@@ -165,7 +165,7 @@ TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
   EXPECT_EQ(mock_video_sink.last_frame(), frame);
 }
 
-TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
+TEST_F(MediaStreamTrackProcessorTest, AudioDataAreExposed) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -191,7 +191,7 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
           ->GetDefaultReaderForTesting(script_state, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  // Deliver a frame.
+  // Deliver data.
   base::RunLoop sink_loop;
   EXPECT_CALL(mock_audio_sink, OnData(_, _))
       .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));

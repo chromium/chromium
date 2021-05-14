@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 
 namespace blink {
 
 // static
-AudioFrame* AudioFrame::Create(AudioFrameInit* init,
-                               ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioFrame>(init);
+AudioData* AudioData::Create(AudioDataInit* init,
+                             ExceptionState& exception_state) {
+  return MakeGarbageCollected<AudioData>(init);
 }
 
-AudioFrame::AudioFrame(AudioFrameInit* init)
+AudioData::AudioData(AudioDataInit* init)
     : timestamp_(init->timestamp()), buffer_(init->buffer()) {
   std::vector<const uint8_t*> wrapped_channels(buffer_->numberOfChannels());
   for (unsigned ch = 0; ch < buffer_->numberOfChannels(); ++ch) {
@@ -32,30 +32,30 @@ AudioFrame::AudioFrame(AudioFrameInit* init)
       wrapped_channels.data(), base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
-AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
+AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)
     : data_(std::move(buffer)),
       timestamp_(data_->timestamp().InMicroseconds()) {}
 
-AudioFrame* AudioFrame::clone(ExceptionState& exception_state) {
+AudioData* AudioData::clone(ExceptionState& exception_state) {
   if (!data_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot clone closed AudioFrame.");
+                                      "Cannot clone closed AudioData.");
     return nullptr;
   }
 
-  return MakeGarbageCollected<AudioFrame>(data_);
+  return MakeGarbageCollected<AudioData>(data_);
 }
 
-void AudioFrame::close() {
+void AudioData::close() {
   data_.reset();
   buffer_.Clear();
 }
 
-int64_t AudioFrame::timestamp() const {
+int64_t AudioData::timestamp() const {
   return timestamp_;
 }
 
-void AudioFrame::CopyDataToBuffer() {
+void AudioData::CopyDataToBuffer() {
   DCHECK(!buffer_);
 
   // |this| might have been closed already.
@@ -77,14 +77,14 @@ void AudioFrame::CopyDataToBuffer() {
   data_->ReadAllFrames(wrapped_channels);
 }
 
-AudioBuffer* AudioFrame::buffer() {
+AudioBuffer* AudioData::buffer() {
   if (!buffer_)
     CopyDataToBuffer();
 
   return buffer_;
 }
 
-void AudioFrame::Trace(Visitor* visitor) const {
+void AudioData::Trace(Visitor* visitor) const {
   visitor->Trace(buffer_);
   ScriptWrappable::Trace(visitor);
 }

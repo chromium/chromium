@@ -90,7 +90,7 @@ message VideoFrameBitmapInit {
   optional bytes rgb_bitmap = 4;
 }
 
-message AudioFrameInit {
+message AudioDataInit {
   optional uint64 timestamp = 1;
 
   optional uint32 length = 2;
@@ -107,7 +107,7 @@ message EncodeVideo {
 }
 
 message EncodeAudio {
-  optional AudioFrameInit frame = 1;
+  optional AudioDataInit data = 1;
 }
 
 message DecodeVideo {

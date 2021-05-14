@@ -71,7 +71,7 @@ AudioDecoderInit* DecoderTemplateTest<AudioDecoder>::CreateInit(
     MockFunction* output_callback,
     MockFunction* error_callback) {
   auto* init = MakeGarbageCollected<AudioDecoderInit>();
-  init->setOutput(V8AudioFrameOutputCallback::Create(output_callback->Bind()));
+  init->setOutput(V8AudioDataOutputCallback::Create(output_callback->Bind()));
   init->setError(V8WebCodecsErrorCallback::Create(error_callback->Bind()));
   return init;
 }

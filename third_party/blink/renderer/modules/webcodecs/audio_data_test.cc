@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
+
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,7 +23,7 @@ constexpr int kFrames = 20;
 constexpr int kSampleRate = 8000;
 }  // namespace
 
-class AudioFrameTest : public testing::Test {
+class AudioDataTest : public testing::Test {
  protected:
   AudioBuffer* CreateDefaultAudioBuffer() {
     auto* audio_buffer =
@@ -36,15 +37,15 @@ class AudioFrameTest : public testing::Test {
     return audio_buffer;
   }
 
-  AudioFrameInit* CreateDefaultAudioFrameInit(AudioBuffer* buffer) {
-    auto* audio_frame_init = AudioFrameInit::Create();
-    audio_frame_init->setBuffer(buffer);
-    audio_frame_init->setTimestamp(kTimestampInMicroSeconds);
-    return audio_frame_init;
+  AudioDataInit* CreateDefaultAudioDataInit(AudioBuffer* buffer) {
+    auto* audio_data_init = AudioDataInit::Create();
+    audio_data_init->setBuffer(buffer);
+    audio_data_init->setTimestamp(kTimestampInMicroSeconds);
+    return audio_data_init;
   }
 };
 
-TEST_F(AudioFrameTest, ConstructFromMediaBuffer) {
+TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
   const media::ChannelLayout channel_layout =
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);
@@ -57,7 +58,7 @@ TEST_F(AudioFrameTest, ConstructFromMediaBuffer) {
                                       channel_layout, channels, kSampleRate,
                                       kStart, kIncrement, kFrames, timestamp);
 
-  auto* frame = MakeGarbageCollected<AudioFrame>(media_buffer);
+  auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
   EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
 
@@ -87,12 +88,12 @@ TEST_F(AudioFrameTest, ConstructFromMediaBuffer) {
   EXPECT_EQ(frame->data(), media_buffer);
 }
 
-TEST_F(AudioFrameTest, ConstructFromAudioFrameInit) {
+TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   auto* audio_buffer = CreateDefaultAudioBuffer();
 
-  auto* audio_frame_init = CreateDefaultAudioFrameInit(audio_buffer);
+  auto* audio_data_init = CreateDefaultAudioDataInit(audio_buffer);
 
-  auto* frame = MakeGarbageCollected<AudioFrame>(audio_frame_init);
+  auto* frame = MakeGarbageCollected<AudioData>(audio_data_init);
 
   EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
   EXPECT_EQ(frame->buffer(), audio_buffer);

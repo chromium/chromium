@@ -308,6 +308,13 @@ interface AudioContext : BaseAudioContext
     method getOutputTimestamp
     method resume
     method suspend
+interface AudioData
+    attribute @@toStringTag
+    getter buffer
+    getter timestamp
+    method clone
+    method close
+    method constructor
 interface AudioDecoder
     static method isConfigSupported
     attribute @@toStringTag
@@ -334,13 +341,6 @@ interface AudioEncoder
     method encode
     method flush
     method reset
-interface AudioFrame
-    attribute @@toStringTag
-    getter buffer
-    getter timestamp
-    method clone
-    method close
-    method constructor
 interface AudioListener
     attribute @@toStringTag
     getter forwardX

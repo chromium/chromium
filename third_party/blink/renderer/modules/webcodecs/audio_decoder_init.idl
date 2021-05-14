@@ -5,6 +5,6 @@
 // https://github.com/WICG/web-codecs
 
 dictionary AudioDecoderInit {
-  required AudioFrameOutputCallback output;
+  required AudioDataOutputCallback output;
   required WebCodecsErrorCallback error;
 };

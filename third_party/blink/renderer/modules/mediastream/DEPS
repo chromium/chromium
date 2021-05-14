@@ -46,9 +46,6 @@ include_rules = [
     "+third_party/blink/renderer/modules/mediastream",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/peerconnection",
-    "+third_party/blink/renderer/modules/webcodecs/audio_frame.h",
-    "+third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h",
-    "+third_party/blink/renderer/modules/webcodecs/video_frame.h",
     "+third_party/blink/renderer/modules/webrtc",
     "+ui/gfx/geometry/size.h",
 ]

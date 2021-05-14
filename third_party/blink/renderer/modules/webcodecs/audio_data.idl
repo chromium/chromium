@@ -6,11 +6,11 @@
 [
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
-] interface AudioFrame {
-  [RaisesException] constructor(AudioFrameInit init);
+] interface AudioData {
+  [RaisesException] constructor(AudioDataInit init);
 
-  // Creates a AudioFrame, which needs to be independently closed.
-  [RaisesException] AudioFrame clone();
+  // Creates identical AudioData, which needs to be independently closed.
+  [RaisesException] AudioData clone();
 
   void close();
 

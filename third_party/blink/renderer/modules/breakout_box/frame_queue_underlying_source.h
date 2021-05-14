@@ -140,7 +140,7 @@ extern template class MODULES_EXTERN_TEMPLATE_EXPORT
 
 using VideoFrameQueueUnderlyingSource =
     FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
-using AudioFrameQueueUnderlyingSource =
+using AudioDataQueueUnderlyingSource =
     FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 
 }  // namespace blink

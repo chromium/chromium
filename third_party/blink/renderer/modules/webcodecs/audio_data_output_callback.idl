@@ -4,7 +4,5 @@
 
 // https://github.com/WICG/web-codecs
 
-dictionary AudioFrameInit {
-  required long long timestamp;  // microseconds
-  required AudioBuffer buffer;
-};
+[RuntimeEnabled=WebCodecs]
+callback AudioDataOutputCallback = void(AudioData output);

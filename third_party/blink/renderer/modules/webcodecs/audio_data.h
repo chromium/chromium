@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
 
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -13,24 +13,24 @@
 namespace blink {
 
 class ExceptionState;
-class AudioFrameInit;
+class AudioDataInit;
 
-class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
+class MODULES_EXPORT AudioData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioFrame* Create(AudioFrameInit*, ExceptionState&);
+  static AudioData* Create(AudioDataInit*, ExceptionState&);
 
   // Internal constructor for creating from media::AudioDecoder output.
-  explicit AudioFrame(scoped_refptr<media::AudioBuffer>);
+  explicit AudioData(scoped_refptr<media::AudioBuffer>);
 
-  // audio_frame.idl implementation.
-  explicit AudioFrame(AudioFrameInit*);
+  // audio_data.idl implementation.
+  explicit AudioData(AudioDataInit*);
 
   // Creates a clone of |this|, taking on a new reference on |data_|. The cloned
   // frame will not be closed when |this| is, and its lifetime should be
   // independently managed.
-  AudioFrame* clone(ExceptionState&);
+  AudioData* clone(ExceptionState&);
 
   void close();
   int64_t timestamp() const;
@@ -52,4 +52,4 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_FRAME_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_

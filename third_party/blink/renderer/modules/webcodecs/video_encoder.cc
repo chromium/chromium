@@ -503,7 +503,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
     self->ProcessRequests();
   };
 
-  scoped_refptr<media::VideoFrame> frame = request->frame->frame();
+  scoped_refptr<media::VideoFrame> frame = request->input->frame();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
@@ -552,7 +552,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
                              WrapCrossThreadPersistent(request))));
 
   // We passed a copy of frame() above, so this should be safe to close here.
-  request->frame->close();
+  request->input->close();
 }
 
 void VideoEncoder::ProcessConfigure(Request* request) {

@@ -17,26 +17,24 @@
     readonly attribute long encodeQueueSize;
 
     // Enqueues a control message to configure the audio encoder for encoding
-    // audio frames as described by config.
+    // audio data as described by config.
     [RaisesException]
     void configure(AudioEncoderConfig config);
 
-    // Enqueues a request to encode a frame.
+    // Enqueues a request to encode data.
     // Results of the encoding (EncodedAudioChunk) are returned via
     // the output callback provided in configure().
     [RaisesException]
-    void encode(AudioFrame frame);
+    void encode(AudioData data);
 
-
-    // Enqueues a request to produce outputs for all already encoded frames.
-    // Resolved after emitting outputs for all previously encoded frames.
+    // Enqueues a request to produce outputs for all already encoded data.
+    // Resolved after emitting outputs for all previously encoded data.
     [RaisesException]
     Promise<void> flush();
 
     // Discard all pending work and current encoder configuration.
     //
     // Output for earlier encoding requests will not be emitted.
-    // The next encoded frame will be a keyframe.
     // Requires configure() to be call to set configuration once again.
     [RaisesException]
     void reset();

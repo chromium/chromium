@@ -51,7 +51,7 @@ extern template class MODULES_EXTERN_TEMPLATE_EXPORT
 
 using VideoFrameQueueTransferOptimizer =
     FrameQueueTransferringOptimizer<scoped_refptr<media::VideoFrame>>;
-using AudioFrameQueueTransferOptimizer =
+using AudioDataQueueTransferOptimizer =
     FrameQueueTransferringOptimizer<scoped_refptr<media::AudioBuffer>>;
 
 }  // namespace blink

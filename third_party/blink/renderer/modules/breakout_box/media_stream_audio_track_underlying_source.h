@@ -16,7 +16,7 @@ namespace blink {
 class MediaStreamComponent;
 
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
-    : public AudioFrameQueueUnderlyingSource,
+    : public AudioDataQueueUnderlyingSource,
       public WebMediaStreamAudioSink {
   USING_PRE_FINALIZER(MediaStreamAudioTrackUnderlyingSource,
                       DisconnectFromTrack);
