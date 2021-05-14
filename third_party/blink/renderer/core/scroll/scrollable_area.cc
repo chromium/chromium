@@ -272,10 +272,18 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
+
+  recordreplay::Assert("ScrollableArea::SetScrollOffset #1.1 %s %s %s",
+                       offset.ToString().Utf8().c_str(),
+                       clamped_offset.ToString().Utf8().c_str(),
+                       GetScrollOffset().ToString().Utf8().c_str());
+
   if (clamped_offset == GetScrollOffset()) {
     recordreplay::Assert("ScrollableArea::SetScrollOffset #2");
     return;
   }
+
+  recordreplay::Assert("ScrollableArea::SetScrollOffset #3");
 
   TRACE_EVENT2("blink", "ScrollableArea::SetScrollOffset", "cur_x",
                GetScrollOffset().Width(), "cur_y", GetScrollOffset().Height());
