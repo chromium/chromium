@@ -176,8 +176,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
 
-  is_visible_ = true;
-
   controller_->UpdateLauncherContainer(display_id);
 
   // App list needs to know the new shelf layout in order to calculate its
@@ -248,7 +246,6 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   if (view_->GetWidget()->IsActive())
     view_->GetWidget()->Deactivate();
 
-  is_visible_ = false;
   event_filter_.reset();
   controller_->ViewClosing();
 
@@ -465,7 +462,7 @@ void AppListPresenterImpl::OnVisibilityWillChange(bool visible,
 }
 
 void AppListPresenterImpl::OnClosed() {
-  if (!is_visible_)
+  if (!is_target_visibility_show_)
     shelf_observation_.RemoveAllObservations();
   controller_->ViewClosed();
 }
