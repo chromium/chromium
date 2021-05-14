@@ -72,9 +72,6 @@ struct App {
   // operations will be restricted.
   OptionalBool resize_locked;
 
-  // If true, this app is used as a preferred app for its given intent filters.
-  OptionalBool preferred_app;
-
   // When adding new fields, also update the Merge method and other helpers in
   // components/services/app_service/public/cpp/app_update.*
 };

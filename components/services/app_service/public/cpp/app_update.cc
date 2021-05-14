@@ -131,9 +131,6 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->resize_locked != apps::mojom::OptionalBool::kUnknown) {
     state->resize_locked = delta->resize_locked;
   }
-  if (delta->preferred_app != apps::mojom::OptionalBool::kUnknown) {
-    state->preferred_app = delta->preferred_app;
-  }
 
   // When adding new fields to the App Mojo type, this function should also be
   // updated.
@@ -543,22 +540,6 @@ bool AppUpdate::ResizeLockedChanged() const {
   return delta_ &&
          (delta_->resize_locked != apps::mojom::OptionalBool::kUnknown) &&
          (!state_ || (delta_->resize_locked != state_->resize_locked));
-}
-
-apps::mojom::OptionalBool AppUpdate::PreferredApp() const {
-  if (delta_ &&
-      (delta_->preferred_app != apps::mojom::OptionalBool::kUnknown)) {
-    return delta_->preferred_app;
-  }
-  if (state_)
-    return state_->preferred_app;
-  return apps::mojom::OptionalBool::kUnknown;
-}
-
-bool AppUpdate::PreferredAppChanged() const {
-  return delta_ &&
-         (delta_->preferred_app != apps::mojom::OptionalBool::kUnknown) &&
-         (!state_ || (delta_->preferred_app != state_->preferred_app));
 }
 
 const ::AccountId& AppUpdate::AccountId() const {
