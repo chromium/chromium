@@ -2532,7 +2532,7 @@
       },
       'Linux Viz': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -2765,7 +2765,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-bionic',
         ],
       },
       'fuchsia-fyi-arm64-rel': {
@@ -2778,7 +2778,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-bionic',
         ],
       },
       'fuchsia-fyi-x64-dbg': {
@@ -2967,13 +2967,13 @@
           'gtest_tests': 'chromium_linux_gtests',
         },
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
           'x86-64',
         ],
       },
       'linux-blink-animation-use-time-delta': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -3031,7 +3031,7 @@
       'linux-chromeos-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'gn_all',
@@ -3043,7 +3043,7 @@
       'linux-chromeos-js-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'js_code_coverage_browser_tests'
@@ -3059,7 +3059,7 @@
       },
       'linux-chromium-tests-staging-tests': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
@@ -3069,7 +3069,7 @@
       'linux-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
@@ -3087,7 +3087,7 @@
       },
       'linux-fieldtrial-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
