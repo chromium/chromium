@@ -692,7 +692,7 @@ export class Camera extends View {
         }
         const factory = this.modes_.getModeFactory(mode);
         try {
-          factory.prepareDevice(constraints, captureR);
+          await factory.prepareDevice(constraints, captureR);
 
           // Sets 2500 ms delay between screen resumed and open camera preview.
           // TODO(b/173679752): Removes this workaround after fix delay on
@@ -709,6 +709,8 @@ export class Camera extends View {
           this.facingMode_ = await this.options_.updateValues(stream);
           factory.setPreviewStream(stream);
           factory.setFacing(this.facingMode_);
+          await factory.setupExtraStreams(constraints, captureR);
+
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, factory, stream, this.facingMode_, deviceId, captureR);

@@ -180,7 +180,16 @@ export class ModeFactory {
    * @return {!Promise}
    * @abstract
    */
-  prepareDevice(constraints, resolution) {}
+  async prepareDevice(constraints, resolution) {}
+
+  /**
+   * Setups required extra streams for the mdoe.
+   * @param {!MediaStreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} resolution Capture resolution
+   * @return {!Promise}
+   */
+  async setupExtraStreams(constraints, resolution) {}
 
   /**
    * @return {!ModeBase}

@@ -507,7 +507,12 @@ export class VideoFactory extends ModeFactory {
       }
       await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
     }
+  }
 
+  /**
+   * @override
+   */
+  async setupExtraStreams(constraints, resolution) {
     const captureConstraints = {
       audio: constraints.audio,
       video: {
