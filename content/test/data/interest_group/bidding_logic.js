@@ -5,7 +5,8 @@
 function generateBid(
   interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
   browserSignals) {
-  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+  const ad = interestGroup.ads[0];
+  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
 }
 
 function reportWin(

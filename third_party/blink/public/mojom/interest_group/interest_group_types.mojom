@@ -60,10 +60,16 @@ union InterestGroupBuyers {
 //
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
 struct AuctionAdConfig {
-  // `seller` must match the the current frame URL's origin.
+  // The entity running the ad auction. Unlike for interest groups, `seller`
+  // *doesn't* need to match the the current frame URL's origin since the
+  // `decision_logic_url` determines the behavior of the auction. This allows
+  // the publisher page embedding the ad to call runAdAuction() directly if it
+  // desires, rather than requiring the runAdAuction() call to be made inside a
+  // seller-hosted iframe -- the decision logic has to be hosted by the seller
+  // though, even though signals from the page can come from the publisher. The
+  // seller and publisher could be different entities, or the same entity.
   url.mojom.Origin seller;
-  // `decision_logic_url`'s origin must match the the current frame URL's
-  // origin.
+  // `decision_logic_url`'s origin must match the the seller's origin.
   url.mojom.Url decision_logic_url;
   InterestGroupBuyers? interest_group_buyers;
   // Opaque JSON data, passed as object to auction worklet.
