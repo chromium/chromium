@@ -285,10 +285,7 @@ bool ScrollableShelfContainerView::DoesIntersectRect(
     const gfx::Rect& rect) const {
   // This view's layer is clipped. So the view should only handle the events
   // within the area after cilp.
-
-  // Note that |rect| is not mirrored under RTL while |visible_space_| has been
-  // mirrored.
-  gfx::RectF bounds(GetMirroredRect(scrollable_shelf_view_->visible_space()));
+  gfx::RectF bounds(scrollable_shelf_view_->visible_space());
   views::View::ConvertRectToTarget(scrollable_shelf_view_, this, &bounds);
   return ToEnclosedRect(bounds).Contains(rect);
 }

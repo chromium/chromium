@@ -149,6 +149,31 @@ class ScrollableShelfViewTest : public AshTestBase {
     }
   }
 
+  // Verifies that a tappable app icon should have the correct button state when
+  // it is under mouse hover.
+  void VerifyTappableAppIconsUnderMouseHover() {
+    // Ensure that the mouse does not hover any app icon.
+    GetEventGenerator()->MoveMouseTo(
+        GetPrimaryDisplay().bounds().CenterPoint());
+
+    for (int i = scrollable_shelf_view_->first_tappable_app_index();
+         i <= scrollable_shelf_view_->last_tappable_app_index(); ++i) {
+      const auto* shelf_app_icon = test_api_->GetButton(i);
+      const gfx::Rect app_icon_screen_bounds =
+          shelf_app_icon->GetBoundsInScreen();
+      const gfx::Point app_icon_screen_center(
+          app_icon_screen_bounds.CenterPoint());
+
+      // `shelf_app_icon` is not hovered.
+      ASSERT_EQ(views::Button::STATE_NORMAL, shelf_app_icon->GetState());
+
+      // Move the mouse to `app_icon_screen_center` and verify that
+      // `shelf_app_icon` is under mouse hover.
+      GetEventGenerator()->MoveMouseTo(app_icon_screen_center);
+      EXPECT_EQ(views::Button::STATE_HOVERED, shelf_app_icon->GetState());
+    }
+  }
+
   void AddAppShortcutsUntilRightArrowIsShown() {
     ASSERT_FALSE(scrollable_shelf_view_->right_arrow()->GetVisible());
 
@@ -633,6 +658,8 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
                   scrollable_shelf_constants::kDistanceToArrowButton,
               first_tappable_view->GetBoundsInScreen().x());
   }
+
+  VerifyTappableAppIconsUnderMouseHover();
 }
 
 // Verifies that the scrollable shelf without overflow has the correct layout in
@@ -670,6 +697,8 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIInTabletWithoutOverflow) {
         hotseat_background.right() - scrollable_shelf_constants::kEndPadding,
         last_tappable_icon_bounds.right());
   }
+
+  VerifyTappableAppIconsUnderMouseHover();
 }
 
 // Verifies that activating a shelf icon's ripple ring does not bring crash
