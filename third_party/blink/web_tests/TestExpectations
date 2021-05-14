@@ -6881,3 +6881,23 @@ crbug.com/1095540 [ Linux Debug ] virtual/compositor-threaded-percent-based-scro
 # Sheriff 2021-05-13
 crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Pass Failure ]
 crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Pass Failure ]
+
+# For SkiaRenderer on MacOS
+crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
+crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure ]
+crbug.com/1208173 [ Mac ] animations/missing-values-last-keyframe.html [ Failure ]
+crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
+crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
+crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
+crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
+crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
+crbug.com/1208173 [ Mac ] virtual/synchronous_html_parser/svg/filters/feDisplacementMap.svg [ Failure ]
+crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
+
