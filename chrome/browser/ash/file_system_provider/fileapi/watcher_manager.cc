@@ -15,7 +15,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 namespace {
@@ -111,4 +111,4 @@ void WatcherManager::RemoveWatcher(const storage::FileSystemURL& url,
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

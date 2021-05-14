@@ -25,7 +25,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace internal {
 namespace {
@@ -486,4 +486,4 @@ void ProviderAsyncFileUtil::CreateSnapshotFile(
 
 }  // namespace internal
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

@@ -22,7 +22,7 @@ class FileStreamWriter;
 class WatcherManager;
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Delegate implementation of the some methods in chromeos::FileSystemBackend
@@ -58,6 +58,6 @@ class BackendDelegate : public chromeos::FileSystemBackendDelegate {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_BACKEND_DELEGATE_H_

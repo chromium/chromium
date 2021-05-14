@@ -11,7 +11,7 @@ namespace storage {
 class FileSystemURL;
 }  // namespace storage
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Exposes entry watching capability to fileapi.
@@ -31,6 +31,6 @@ class WatcherManager : public storage::WatcherManager {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_WATCHER_MANAGER_H_

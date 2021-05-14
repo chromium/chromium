@@ -17,7 +17,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Wraps the file stream writer implementation with an intermediate buffer.
@@ -94,6 +94,6 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_BUFFERING_FILE_STREAM_WRITER_H_

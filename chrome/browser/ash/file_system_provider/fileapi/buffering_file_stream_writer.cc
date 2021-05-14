@@ -11,7 +11,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 BufferingFileStreamWriter::BufferingFileStreamWriter(
@@ -176,4 +176,4 @@ void BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

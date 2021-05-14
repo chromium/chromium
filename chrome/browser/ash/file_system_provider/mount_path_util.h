@@ -79,4 +79,13 @@ class LocalPathParser {
 }  // namespace file_system_provider
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace file_system_provider {
+namespace util {
+using ::chromeos::file_system_provider::util::FileSystemURLParser;
+}  // namespace util
+}  // namespace file_system_provider
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_MOUNT_PATH_UTIL_H_

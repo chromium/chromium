@@ -12,7 +12,7 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_system_backend.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 BufferingFileStreamReader::BufferingFileStreamReader(
@@ -135,4 +135,4 @@ void BufferingFileStreamReader::OnReadCompleted(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

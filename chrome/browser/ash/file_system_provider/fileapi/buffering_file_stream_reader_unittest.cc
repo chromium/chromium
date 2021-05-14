@@ -22,7 +22,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -367,4 +367,4 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, GetLength) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

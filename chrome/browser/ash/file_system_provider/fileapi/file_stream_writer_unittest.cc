@@ -34,7 +34,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -241,4 +241,4 @@ TEST_F(FileSystemProviderFileStreamWriter, Write_Append) {
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

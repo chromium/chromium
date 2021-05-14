@@ -19,7 +19,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace {
 
@@ -93,4 +93,4 @@ void BackendDelegate::GetRedirectURLForContents(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

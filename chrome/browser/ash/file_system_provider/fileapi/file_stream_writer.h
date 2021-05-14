@@ -15,7 +15,7 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Implements a streamed file writer. It is lazily initialized by the first call
@@ -84,6 +84,6 @@ class FileStreamWriter : public storage::FileStreamWriter {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_FILE_STREAM_WRITER_H_

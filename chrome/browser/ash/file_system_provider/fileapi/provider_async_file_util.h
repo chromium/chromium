@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // TODO(mtomasz): Remove this namespace.
@@ -107,6 +107,6 @@ class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
 
 }  // namespace internal
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_PROVIDER_ASYNC_FILE_UTIL_H_

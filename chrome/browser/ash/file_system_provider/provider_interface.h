@@ -18,8 +18,8 @@ class Profile;
 namespace chromeos {
 namespace file_system_provider {
 
+// TODO(https://crbug.com/1164001): forward declare ProviderId when moved ash
 class ProvidedFileSystemInterface;
-class ProviderId;
 
 struct Capabilities {
   Capabilities(bool configurable,

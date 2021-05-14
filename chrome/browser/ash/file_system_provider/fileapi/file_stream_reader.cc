@@ -25,7 +25,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Converts net::CompletionOnceCallback to net::Int64CompletionOnceCallback.
@@ -451,4 +451,4 @@ void FileStreamReader::OnGetMetadataForGetLengthReceived(
 }
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

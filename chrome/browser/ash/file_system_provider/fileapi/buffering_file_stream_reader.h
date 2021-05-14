@@ -19,7 +19,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 
 // Wraps the file stream reader implementation with a prefetching buffer.
@@ -76,6 +76,6 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
 };
 
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FILEAPI_BUFFERING_FILE_STREAM_READER_H_
