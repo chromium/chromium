@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"

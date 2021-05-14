@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"

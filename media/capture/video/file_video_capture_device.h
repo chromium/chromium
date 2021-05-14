@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"

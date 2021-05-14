@@ -9,28 +9,22 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/containers/queue.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/small_map.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
-#include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
@@ -42,6 +36,10 @@ class SequencedTaskRunner;
 }
 
 namespace mojo {
+
+class AsyncFlusher;
+class MessageHeaderValidator;
+class PendingFlush;
 
 namespace internal {
 

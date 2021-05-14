@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"

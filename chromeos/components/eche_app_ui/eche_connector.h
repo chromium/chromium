@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_CONNECTOR_H_
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_CONNECTOR_H_
 
+#include "base/containers/queue.h"
 #include "chromeos/components/eche_app_ui/eche_feature_status_provider.h"
 #include "chromeos/components/eche_app_ui/feature_status_provider.h"
 

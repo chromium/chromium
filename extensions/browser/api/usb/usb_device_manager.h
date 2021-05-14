@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
