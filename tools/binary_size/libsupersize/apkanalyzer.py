@@ -11,7 +11,6 @@ import collections
 import logging
 import os
 import posixpath
-import re
 import subprocess
 import zipfile
 
@@ -20,7 +19,7 @@ import path_util
 
 
 _TOTAL_NODE_NAME = '<TOTAL>'
-_OUTLINED_PREFIX = '$$Outlined$'
+_DEX_PATH_COMPONENT = 'prebuilt'
 
 
 def _ParseJarInfoFile(file_name):
@@ -151,64 +150,40 @@ class LambdaNormalizer:
     self._lambda_by_class_counter = collections.defaultdict(int)
     self._lambda_name_to_nested_number = {}
 
-  def _GetLambdaName(self, class_path, base_name, prefix=''):
-    lambda_number = self._lambda_name_to_nested_number.get(class_path)
-    if lambda_number is None:
-      # First time we've seen this lambda, increment nested class count.
-      lambda_number = self._lambda_by_class_counter[base_name]
-      self._lambda_name_to_nested_number[class_path] = lambda_number
-      self._lambda_by_class_counter[base_name] = lambda_number + 1
-    return prefix + base_name + '$$Lambda$' + str(lambda_number)
-
-  def Normalize(self, class_path, full_name):
+  def Normalize(self, package, name):
     # Make d8 desugared lambdas look the same as Desugar ones.
+    # D8 lambda: org.-$$Lambda$Promise$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
+    #     D8 lambdas may also have no .dex suffix.
     # Desugar lambda: org.Promise$Nested1$$Lambda$0
     # 1) Need to prefix with proper class name so that they will show as nested.
     # 2) Need to suffix with number so that they diff better.
     # Original name will be kept as "object_path".
-    # See tests for a more comprehensive list of what d8 currently generates.
+    lambda_start_idx = package.find('-$$Lambda$')
+    class_path = package
+    if lambda_start_idx != -1:
+      dex_suffix_idx = package.find('.dex')
+      if dex_suffix_idx == -1:
+        lambda_end_idx = len(package)
+      else:
+        lambda_end_idx = dex_suffix_idx + len('.dex')
+      old_lambda_name = package[lambda_start_idx:lambda_end_idx]
+      class_path = package.replace('-$$Lambda$', '')
+      base_name = _TruncateFrom(class_path, '$', rfind=True)
+      # Map all methods of the lambda class to the same nested number.
+      lambda_number = self._lambda_name_to_nested_number.get(class_path)
+      if lambda_number is None:
+        # First time we've seen this lambda, increment nested class count.
+        lambda_number = self._lambda_by_class_counter[base_name]
+        self._lambda_name_to_nested_number[class_path] = lambda_number
+        self._lambda_by_class_counter[base_name] = lambda_number + 1
+
+      new_lambda_name = '{}$$Lambda${}'.format(base_name[lambda_start_idx:],
+                                               lambda_number)
+      name = name.replace(old_lambda_name, new_lambda_name)
 
     # Map nested classes to outer class.
     outer_class = _TruncateFrom(class_path, '$')
-
-    if 'Lambda' not in class_path:
-      return outer_class, full_name
-
-    # Example: package.AnimatedProgressBar$$InternalSyntheticLambda$3$81073ff6$0
-    match = re.fullmatch(
-        r'(.+)\$\$InternalSyntheticLambda\$\d+\$[0-9a-f]+\$\d+', class_path)
-    if match:
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group(1))
-      return outer_class, full_name.replace(class_path, new_name)
-    # Example: AnimatedProgressBar$$ExternalSyntheticLambda0
-    match = re.fullmatch(r'(.+)\$\$ExternalSyntheticLambda\d+', class_path)
-    if match:
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group(1),
-                                     prefix=_OUTLINED_PREFIX)
-      return outer_class, full_name.replace(class_path, new_name)
-    # Example: package.FirebaseInstallationsRegistrar$$Lambda$1
-    match = re.fullmatch(r'(.+)\$\$Lambda\$\d+', class_path)
-    if match:
-      # Although these are already valid names, re-number them to avoid name
-      # collisions with renamed InternalSyntheticLambdas.
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group(1))
-      return outer_class, full_name.replace(class_path, new_name)
-    # Example: org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk
-    match = re.fullmatch(
-        r'(?P<package>.+)-\$\$Lambda\$(?P<class>[^$]+)(?P<nested>.*)\$[^$]+',
-        class_path)
-    if match:
-      package_name = match.group('package')
-      class_name = match.group('class')
-      nested_classes = match.group('nested')
-      base_name = package_name + class_name + nested_classes
-      new_name = self._GetLambdaName(class_path=class_path, base_name=base_name)
-      outer_class = package_name + class_name
-      return outer_class, full_name.replace(class_path, new_name)
-    assert False, 'No valid match for lambda ' + class_path
+    return outer_class, name
 
 
 # Visible for testing.
@@ -235,14 +210,7 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
       outer_class, name = lambda_normalizer.Normalize(old_package, name)
 
   source_path = source_map.get(outer_class, '')
-  # Create a special meta-directory for outlined lambdas to easily monitor their
-  # total size and spot regressions.
-  if name.startswith(_OUTLINED_PREFIX):
-    object_path = posixpath.join(models.APK_PREFIX_PATH, 'Outlined',
-                                 *old_package.split('.'))
-  else:
-    object_path = posixpath.join(models.APK_PREFIX_PATH,
-                                 *old_package.split('.'))
+  object_path = posixpath.join(models.APK_PREFIX_PATH, *old_package.split('.'))
   if name.endswith(')'):
     section_name = models.SECTION_DEX_METHOD
   else:
