@@ -42,6 +42,18 @@ content::GetServiceSandboxType<audio::mojom::AudioService>() {
              : sandbox::policy::SandboxType::kNoSandbox;
 }
 
+// data_decoder::mojom::DataDecoderService
+namespace data_decoder {
+namespace mojom {
+class DataDecoderService;
+}
+}  // namespace data_decoder
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<data_decoder::mojom::DataDecoderService>() {
+  return sandbox::policy::SandboxType::kService;
+}
+
 // media::mojom::CdmService
 namespace media {
 namespace mojom {
