@@ -90,7 +90,6 @@ class CORE_EXPORT ListMarker {
                             StringBuilder*,
                             MarkerTextFormat) const;
   void UpdateMarkerText(LayoutObject&);
-  void UpdateMarkerText(LayoutObject&, LayoutText*);
 
   void ListStyleTypeChanged(LayoutObject&);
   void OrdinalValueChanged(LayoutObject&);
