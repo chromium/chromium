@@ -6786,7 +6786,7 @@
             ]
         }
     ],
-    "SafeBrowsingVisualCsdModel": [
+    "SafeBrowsingVisualCsdModelVariation9": [
         {
             "platforms": [
                 "chromeos",
@@ -6797,9 +6797,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210208",
+                    "name": "Enabled",
                     "params": {
-                        "ModelNum": "8"
+                        "ModelNum": "9"
                     },
                     "enable_features": [
                         "ClientSideDetectionModel"
