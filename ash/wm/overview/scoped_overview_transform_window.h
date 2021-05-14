@@ -13,7 +13,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"

@@ -15,11 +15,11 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_samples_observer.h"
 #include "ash/ash_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -85,8 +85,8 @@ class ASH_EXPORT AccelerometerProviderMojo
     // location information. It'll be passed to |samples_observer| as an
     // argument after all information is collected.
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
-    base::Optional<AccelerometerSource> location;
-    base::Optional<float> scale;
+    absl::optional<AccelerometerSource> location;
+    absl::optional<float> scale;
     std::unique_ptr<AccelerometerSamplesObserver> samples_observer;
   };
 
@@ -153,7 +153,7 @@ class ASH_EXPORT AccelerometerProviderMojo
   void OnAccelerometerRemoteDisconnect(int32_t id);
   void GetAttributesCallback(
       int32_t id,
-      const std::vector<base::Optional<std::string>>& values);
+      const std::vector<absl::optional<std::string>>& values);
 
   // Ignores the accelerometer as the attributes are not expected.
   void IgnoreAccelerometer(int32_t id);

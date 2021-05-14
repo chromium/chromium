@@ -18,8 +18,8 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -135,13 +135,13 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
 
   float scale = gfx::Tween::FloatValueBetween(progress, 1.0f, kTargetHomeScale);
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
-      scale, 1.0f /*opacity*/, base::nullopt /*animation_info*/,
+      scale, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
       base::NullCallback());
 }
 
 void SwipeHomeToOverviewController::EndDrag(
     const gfx::PointF& location_in_screen,
-    base::Optional<float> velocity_y) {
+    absl::optional<float> velocity_y) {
   if (state_ != State::kTrackingDrag) {
     state_ = State::kFinished;
     return;
@@ -222,7 +222,7 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   // Note that this is needed even if the gesture ended up in a fling, as early
   // gesture handling might have updated the launcher scale.
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
-      1.0f /*scale*/, 1.0f /*opacity*/, base::nullopt /*animation_info*/,
+      1.0f /*scale*/, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
       base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
 
   // No need to keep blur disabled for the drag - note that blur might remain

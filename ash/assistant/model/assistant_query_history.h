@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -25,11 +25,11 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
 
     // Fetches the next query. If current is already the last query, or there is
     // no query in history, returns nullopt.
-    base::Optional<std::string> Next();
+    absl::optional<std::string> Next();
 
     // Fetches the previous query. If current is already the first query, return
     // the first query. If there is no query in history, returns nullopt.
-    base::Optional<std::string> Prev();
+    absl::optional<std::string> Prev();
 
     // Resets to the last query. It also makes current iterator valid again if
     // new queries are added to the underlying AssistantQueryHistory.

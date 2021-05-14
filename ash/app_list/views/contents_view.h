@@ -308,8 +308,8 @@ class ASH_EXPORT ContentsView : public views::View,
   // state (either using UpdateYPositionAndOpacity() or AnimateToViewState()).
   // Used primarily to determine the initial search box position when animating
   // to a new app list view state.
-  base::Optional<AppListState> target_page_for_last_view_state_update_;
-  base::Optional<AppListViewState> last_target_view_state_;
+  absl::optional<AppListState> target_page_for_last_view_state_update_;
+  absl::optional<AppListViewState> last_target_view_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentsView);
 };

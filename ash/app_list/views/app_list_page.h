@@ -8,7 +8,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -55,14 +55,14 @@ class ASH_EXPORT AppListPage : public views::View {
   // ContentsView to calculate the search box widget bounds that
   // should be used on this page.
   //
-  // If this returns base::nullopt, the ContentsView will use default
+  // If this returns absl::nullopt, the ContentsView will use default
   // y value for the search box origin.
-  // The default implementation return base::nullopt.
+  // The default implementation return absl::nullopt.
   //
   // NOTE: The search box will be horizontally centered in the app list contents
   // bounds, if a different behavior is required, this method should be changed
   // to return an origin point instead of just Y coordinate.
-  virtual base::Optional<int> GetSearchBoxTop(
+  virtual absl::optional<int> GetSearchBoxTop(
       AppListViewState view_state) const;
 
   // Should update the app list page opacity for the current state. Called when

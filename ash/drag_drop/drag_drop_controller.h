@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window_observer.h"
@@ -130,7 +130,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   aura::client::DragUpdateInfo current_drag_info_;
 
   // Used when processing a Chrome tab drag from a WebUI tab strip.
-  base::Optional<TabDragDropDelegate> tab_drag_drop_delegate_;
+  absl::optional<TabDragDropDelegate> tab_drag_drop_delegate_;
 
   // Window that is currently under the drag cursor.
   aura::Window* drag_window_ = nullptr;

@@ -104,7 +104,7 @@ class SimpleGridLayout : public views::LayoutManagerBase {
   }
 
  private:
-  mutable base::Optional<gfx::Size> cached_child_preferred_size_;
+  mutable absl::optional<gfx::Size> cached_child_preferred_size_;
 
   const int column_count_;
   const int column_spacing_;

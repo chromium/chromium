@@ -965,7 +965,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // overview + applist case.
   Shell* shell = Shell::Get();
   if (!shell->tablet_mode_controller()->InTabletMode() &&
-      shell->app_list_controller()->IsVisible(base::nullopt)) {
+      shell->app_list_controller()->IsVisible(absl::nullopt)) {
     return;
   }
 

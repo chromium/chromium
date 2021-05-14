@@ -388,8 +388,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       snap_position = GetSnapPosition(previous_window_dragging_state_);
 
     gfx::Rect preview_area_bounds;
-    base::Optional<SplitviewAnimationType> left_highlight_animation_type;
-    base::Optional<SplitviewAnimationType> right_highlight_animation_type;
+    absl::optional<SplitviewAnimationType> left_highlight_animation_type;
+    absl::optional<SplitviewAnimationType> right_highlight_animation_type;
     if (GetSnapPosition(window_dragging_state_) != SplitViewController::NONE ||
         drag_ending_in_snap) {
       // Get the preview area bounds from the split view controller.

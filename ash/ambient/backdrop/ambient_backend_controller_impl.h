@@ -14,8 +14,8 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -107,7 +107,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       std::unique_ptr<std::string> response);
 
   void OnSettingsFetched(base::RepeatingClosure on_done,
-                         const base::Optional<ash::AmbientSettings>& settings);
+                         const absl::optional<ash::AmbientSettings>& settings);
 
   void OnAlbumsFetched(base::RepeatingClosure on_done,
                        ash::PersonalAlbums personal_albums);
@@ -115,8 +115,8 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void OnSettingsAndAlbumsFetched(OnSettingsAndAlbumsFetchedCallback callback);
 
   // Temporary store for FetchSettingsAndAlbums() when |GetSettingsCallback|
-  // called. |settings_| will be base::nullopt if server returns with error.
-  base::Optional<ash::AmbientSettings> settings_;
+  // called. |settings_| will be absl::nullopt if server returns with error.
+  absl::optional<ash::AmbientSettings> settings_;
 
   // Temporary store for FetchSettingsAndAlbums() when
   // |OnPersonalAlbumsFetchedCallback| called. |personal_albums_| will contains

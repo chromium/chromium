@@ -119,7 +119,7 @@ class ExpandArrowHighlightPathGenerator : public views::HighlightPathGenerator {
       const ExpandArrowHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(gfx::RectF(GetCircleBounds()), kInkDropRadius);
   }
 };

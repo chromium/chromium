@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -73,7 +73,7 @@ void MaximizeIfSnapped(aura::Window* window);
 gfx::Rect GetGridBoundsInScreen(aura::Window* target_root);
 gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
-    base::Optional<SplitViewDragIndicators::WindowDraggingState>
+    absl::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
     bool divider_changed,
     bool account_for_hotseat);
@@ -81,7 +81,7 @@ gfx::Rect GetGridBoundsInScreen(
 // Gets the bounds of a window if it were to be snapped or about to be snapped
 // in splitview. Returns nothing if we are not in tablet mode, or if we aren't
 // in splitview, or if we aren't showing a splitview preview.
-base::Optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio();
+absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio();
 
 // Check if kNewOverviewLayout is enabled for tablet mode.
 bool ShouldUseTabletModeGridLayout();

@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -35,8 +35,8 @@ ASH_PUBLIC_EXPORT bool IsPreviewsEnabled(PrefService* prefs);
 ASH_PUBLIC_EXPORT void SetPreviewsEnabled(PrefService* prefs, bool enabled);
 
 // Returns the time when a holding space item was first added. Note that if the
-// time of first add is unmarked, `base::nullopt` is returned.
-ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAdd(
+// time of first add is unmarked, `absl::nullopt` is returned.
+ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstAdd(
     PrefService* prefs);
 
 // Marks the time when the first holding space item was added. If the time of
@@ -44,8 +44,8 @@ ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAdd(
 ASH_PUBLIC_EXPORT bool MarkTimeOfFirstAdd(PrefService* prefs);
 
 // Returns the time when holding space first became available. Note that if the
-// time of first availability is unmarked, `base::nullopt` is returned.
-ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAvailability(
+// time of first availability is unmarked, `absl::nullopt` is returned.
+ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstAvailability(
     PrefService* prefs);
 
 // Marks time when holding space first became available. If the time of first
@@ -53,8 +53,8 @@ ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAvailability(
 ASH_PUBLIC_EXPORT bool MarkTimeOfFirstAvailability(PrefService* prefs);
 
 // Returns the time when holding space was first entered. Note that if the time
-// of first entry is unmarked, `base::nullopt` is returned.
-ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstEntry(
+// of first entry is unmarked, `absl::nullopt` is returned.
+ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstEntry(
     PrefService* prefs);
 
 // Marks time when holding space was first entered. If the time of first entry
@@ -62,8 +62,8 @@ ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstEntry(
 ASH_PUBLIC_EXPORT bool MarkTimeOfFirstEntry(PrefService* prefs);
 
 // Returns the time when the first pin to holding space occurred. Note that if
-// the time of first pin is unmarked, `base::nullopt` is returned.
-ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstPin(
+// the time of first pin is unmarked, `absl::nullopt` is returned.
+ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstPin(
     PrefService* prefs);
 
 // Marks time of when the first pin to holding space occurred. If time of first
@@ -72,8 +72,8 @@ ASH_PUBLIC_EXPORT bool MarkTimeOfFirstPin(PrefService* prefs);
 
 // Returns the time when the Files app chip in the holding space pinned files
 // section placeholder was first pressed. Note that if the time of first press
-// is unmarked, `base::nullopt` is returned.
-ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstFilesAppChipPress(
+// is unmarked, `absl::nullopt` is returned.
+ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstFilesAppChipPress(
     PrefService* prefs);
 
 // Marks the time when the Files app chip in the holding space pinned files

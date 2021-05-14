@@ -25,8 +25,8 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -704,10 +704,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 
   // Tracks the icon move animation.
-  base::Optional<ui::ThroughputTracker> move_animation_tracker_;
+  absl::optional<ui::ThroughputTracker> move_animation_tracker_;
 
   // Tracks the icon fade-out animation.
-  base::Optional<ui::ThroughputTracker> fade_out_animation_tracker_;
+  absl::optional<ui::ThroughputTracker> fade_out_animation_tracker_;
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;

@@ -23,7 +23,7 @@ class ASH_PUBLIC_EXPORT AndroidIntentHelper {
 
   // Get the intent that can be used to launch an Android activity specified by
   // the |app_info|.
-  virtual base::Optional<std::string> GetAndroidAppLaunchIntent(
+  virtual absl::optional<std::string> GetAndroidAppLaunchIntent(
       const chromeos::assistant::AndroidAppInfo& app_info) = 0;
 
  protected:

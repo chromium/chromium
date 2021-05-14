@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 
 namespace aura {
@@ -192,7 +192,7 @@ class ASH_EXPORT ScreenRotationAnimator {
   std::unique_ptr<ui::LayerTreeOwner> new_layer_tree_owner_;
   std::unique_ptr<ui::LayerTreeOwner> mask_layer_tree_owner_;
   std::unique_ptr<ScreenRotationRequest> last_pending_request_;
-  base::Optional<ScreenRotationRequest> current_async_rotation_request_;
+  absl::optional<ScreenRotationRequest> current_async_rotation_request_;
   display::Display::Rotation target_rotation_ = display::Display::ROTATE_0;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_mode_;
   base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_{this};

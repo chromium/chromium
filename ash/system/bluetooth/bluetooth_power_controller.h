@@ -142,7 +142,7 @@ class ASH_EXPORT BluetoothPowerController
   // If not empty this indicates the pending target bluetooth power to be set.
   // This needs to be tracked so that we can combine multiple pending power
   // change requests.
-  base::Optional<bool> pending_bluetooth_power_target_;
+  absl::optional<bool> pending_bluetooth_power_target_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 

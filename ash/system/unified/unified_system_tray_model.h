@@ -82,7 +82,7 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // Returns empty if it's not manually expanded/collapsed. Otherwise, the value
   // is true if the notification is manually expanded, and false if it's
   // manually collapsed.
-  base::Optional<bool> GetNotificationExpanded(
+  absl::optional<bool> GetNotificationExpanded(
       const std::string& notification_id) const;
 
   // Sets a notification of |notification_id| is manually |expanded|.

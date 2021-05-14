@@ -371,7 +371,7 @@ void SaveCustomWallpaper(const std::string& wallpaper_files_id,
 // Checks if kiosk app is running. Note: it returns false either when there's
 // no active user (e.g. at login screen), or the active user is not kiosk.
 bool IsInKioskMode() {
-  base::Optional<user_manager::UserType> active_user_type =
+  absl::optional<user_manager::UserType> active_user_type =
       Shell::Get()->session_controller()->GetUserType();
   // |active_user_type| is empty when there's no active user.
   return active_user_type &&
@@ -501,9 +501,9 @@ bool GetWallpaperInfo(const AccountId& account_id,
   // Use temporary variables to keep |info| untouched in the error case.
   const std::string* location = info_dict->FindStringPath(
       WallpaperControllerImpl::kNewWallpaperLocationNodeName);
-  base::Optional<int> layout = info_dict->FindIntPath(
+  absl::optional<int> layout = info_dict->FindIntPath(
       WallpaperControllerImpl::kNewWallpaperLayoutNodeName);
-  base::Optional<int> type = info_dict->FindIntPath(
+  absl::optional<int> type = info_dict->FindIntPath(
       WallpaperControllerImpl::kNewWallpaperTypeNodeName);
   const std::string* date_string = info_dict->FindStringPath(
       WallpaperControllerImpl::kNewWallpaperDateNodeName);
@@ -2078,7 +2078,7 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
 
   // Fetch the color cache if it exists.
   if (!current_wallpaper_->wallpaper_info().location.empty()) {
-    base::Optional<std::vector<SkColor>> cached_colors =
+    absl::optional<std::vector<SkColor>> cached_colors =
         GetCachedColors(current_wallpaper_->wallpaper_info().location);
     if (cached_colors.has_value()) {
       SetProminentColors(cached_colors.value());
@@ -2123,9 +2123,9 @@ void WallpaperControllerImpl::CacheProminentColors(
                                                    std::move(wallpaper_colors));
 }
 
-base::Optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
+absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
     const std::string& current_location) const {
-  base::Optional<std::vector<SkColor>> cached_colors_out;
+  absl::optional<std::vector<SkColor>> cached_colors_out;
   const base::ListValue* prominent_colors = nullptr;
   if (!local_state_ ||
       !local_state_->GetDictionary(prefs::kWallpaperColors)

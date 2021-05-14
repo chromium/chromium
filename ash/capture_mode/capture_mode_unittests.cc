@@ -126,10 +126,10 @@ const message_center::Notification* GetPreviewNotification() {
   return nullptr;
 }
 
-void ClickNotification(base::Optional<int> button_index) {
+void ClickNotification(absl::optional<int> button_index) {
   const message_center::Notification* notification = GetPreviewNotification();
   DCHECK(notification);
-  notification->delegate()->Click(button_index, base::nullopt);
+  notification->delegate()->Click(button_index, absl::nullopt);
 }
 
 // Moves the mouse and updates the cursor's display manually to imitate what a
@@ -354,7 +354,7 @@ class CaptureModeTest : public AshTestBase {
     return widget ? widget->GetNativeWindow() : nullptr;
   }
 
-  base::Optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
+  absl::optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     auto& magnifier =
@@ -365,7 +365,7 @@ class CaptureModeTest : public AshTestBase {
           ->GetWindowBoundsInScreen()
           .CenterPoint();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   CaptureModeController* StartCaptureSession(CaptureModeSource source,
@@ -847,7 +847,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   // visible yet.
   gfx::Rect capture_region{200, 200, 400, 400};
   SelectRegion(capture_region);
-  EXPECT_EQ(base::nullopt, GetMagnifierGlassCenterPoint());
+  EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
 
   auto check_magnifier_shows_properly = [this](const gfx::Point& origin,
                                                const gfx::Point& destination,
@@ -857,11 +857,11 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
     // If not |should_show_magnifier|, check that the magnifying glass never
     // shows. Should always be not visible when mouse button is released.
     auto* event_generator = GetEventGenerator();
-    base::Optional<gfx::Point> expected_origin =
-        should_show_magnifier ? base::make_optional(origin) : base::nullopt;
-    base::Optional<gfx::Point> expected_destination =
-        should_show_magnifier ? base::make_optional(destination)
-                              : base::nullopt;
+    absl::optional<gfx::Point> expected_origin =
+        should_show_magnifier ? absl::make_optional(origin) : absl::nullopt;
+    absl::optional<gfx::Point> expected_destination =
+        should_show_magnifier ? absl::make_optional(destination)
+                              : absl::nullopt;
 
     auto* cursor_manager = Shell::Get()->cursor_manager();
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
@@ -884,7 +884,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
 
     // Release left button.
     event_generator->ReleaseLeftButton();
-    EXPECT_EQ(base::nullopt, GetMagnifierGlassCenterPoint());
+    EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
   };
 
@@ -3272,7 +3272,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Click on the notification body. This should take us to the files app.
-  ClickNotification(base::nullopt);
+  ClickNotification(absl::nullopt);
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kFiles, 1);

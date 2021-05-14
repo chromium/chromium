@@ -248,7 +248,7 @@ void RecordingEncoderMuxer::EncodeVideoImpl(
 
 void RecordingEncoderMuxer::OnVideoEncoderOutput(
     media::VideoEncoderOutput output,
-    base::Optional<media::VideoEncoder::CodecDescription> codec_description) {
+    absl::optional<media::VideoEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   media::WebmMuxer::VideoParameters params(video_visible_rect_sizes_.front(),
@@ -267,7 +267,7 @@ void RecordingEncoderMuxer::OnVideoEncoderOutput(
 
 void RecordingEncoderMuxer::OnAudioEncoded(
     media::EncodedAudioBuffer encoded_audio,
-    base::Optional<media::AudioEncoder::CodecDescription> codec_description) {
+    absl::optional<media::AudioEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 

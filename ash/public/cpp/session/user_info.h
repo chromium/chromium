@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {

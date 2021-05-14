@@ -27,7 +27,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -330,7 +330,7 @@ void AppListPresenterImpl::ProcessMouseWheelOffset(
 void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,
-    base::Optional<TabletModeAnimationTransition> transition,
+    absl::optional<TabletModeAnimationTransition> transition,
     UpdateHomeLauncherAnimationSettingsCallback callback) {
   if (!view_)
     return;
@@ -351,7 +351,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     view_->ResetTransitionMetricsReporter();
   }
 
-  base::Optional<ui::ScopedLayerAnimationSettings> settings;
+  absl::optional<ui::ScopedLayerAnimationSettings> settings;
   if (!callback.is_null()) {
     settings.emplace(layer->GetAnimator());
     callback.Run(&settings.value());
@@ -372,7 +372,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
   // reported for transform animation only.
   layer->SetOpacity(opacity);
 
-  base::Optional<ui::AnimationThroughputReporter> reporter;
+  absl::optional<ui::AnimationThroughputReporter> reporter;
   if (settings.has_value() && transition.has_value()) {
     view_->OnTabletModeAnimationTransitionNotified(*transition);
     reporter.emplace(settings->GetAnimator(),

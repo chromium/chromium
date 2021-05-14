@@ -104,8 +104,8 @@ void AssistantSuggestionsControllerImpl::OnAssistantControllerDestroying() {
 void AssistantSuggestionsControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (IsConversationStartersV2Enabled()) {
     // When Assistant is starting a session, we update our cache of conversation
     // starters so that they are as fresh as possible. Note that we may need to

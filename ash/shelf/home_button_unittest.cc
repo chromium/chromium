@@ -126,7 +126,7 @@ class HomeButtonAnimationTest : public AshTestBase {
   }
 
  private:
-  base::Optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  absl::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -259,7 +259,7 @@ void AssistantAshTestBase::ClickOnAndWait(
   base::RunLoop().RunUntilIdle();
 }
 
-base::Optional<chromeos::assistant::AssistantInteractionMetadata>
+absl::optional<chromeos::assistant::AssistantInteractionMetadata>
 AssistantAshTestBase::current_interaction() {
   return assistant_service()->current_interaction();
 }

@@ -47,7 +47,7 @@ class PowerTrayView : public TrayItemView,
 
   std::u16string accessible_name_;
   std::u16string tooltip_;
-  base::Optional<PowerStatus::BatteryImageInfo> info_;
+  absl::optional<PowerStatus::BatteryImageInfo> info_;
   session_manager::SessionState icon_session_state_color_ =
       session_manager::SessionState::UNKNOWN;
   ScopedSessionObserver session_observer_{this};

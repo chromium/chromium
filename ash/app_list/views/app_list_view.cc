@@ -286,14 +286,14 @@ class AppListView::StateAnimationMetricsReporter {
 
  private:
   static void RecordMetricsInTablet(
-      base::Optional<TabletModeAnimationTransition> transition,
+      absl::optional<TabletModeAnimationTransition> transition,
       int value);
   static void RecordMetricsInClamshell(
-      base::Optional<AppListViewState> target_state,
+      absl::optional<AppListViewState> target_state,
       int value);
 
-  base::Optional<AppListViewState> target_state_;
-  base::Optional<TabletModeAnimationTransition> tablet_transition_;
+  absl::optional<AppListViewState> target_state_;
+  absl::optional<TabletModeAnimationTransition> tablet_transition_;
 };
 
 void AppListView::StateAnimationMetricsReporter::Reset() {
@@ -303,7 +303,7 @@ void AppListView::StateAnimationMetricsReporter::Reset() {
 
 // static
 void AppListView::StateAnimationMetricsReporter::RecordMetricsInTablet(
-    base::Optional<TabletModeAnimationTransition> tablet_transition,
+    absl::optional<TabletModeAnimationTransition> tablet_transition,
     int value) {
   UMA_HISTOGRAM_PERCENTAGE("Apps.StateTransition.AnimationSmoothness", value);
 
@@ -362,7 +362,7 @@ void AppListView::StateAnimationMetricsReporter::RecordMetricsInTablet(
 
 // static
 void AppListView::StateAnimationMetricsReporter::RecordMetricsInClamshell(
-    base::Optional<AppListViewState> target_state,
+    absl::optional<AppListViewState> target_state,
     int value) {
   UMA_HISTOGRAM_PERCENTAGE("Apps.StateTransition.AnimationSmoothness", value);
 
@@ -485,13 +485,13 @@ class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
     state_ = State::kIdle;
 
     AppListViewState app_list_state = *target_app_list_view_state_;
-    target_app_list_view_state_ = base::nullopt;
+    target_app_list_view_state_ = absl::nullopt;
     view_->OnBoundsAnimationCompleted(app_list_state);
   }
 
   State state_ = State::kIdle;
   AppListView* const view_;
-  base::Optional<AppListViewState> target_app_list_view_state_;
+  absl::optional<AppListViewState> target_app_list_view_state_;
 
   DISALLOW_COPY_AND_ASSIGN(StateTransitionNotifier);
 };
@@ -539,7 +539,7 @@ class AppListBackgroundShieldView : public views::View {
   void UpdateBackgroundRadius(
       AppListViewState state,
       bool shelf_has_rounded_corners,
-      base::Optional<base::TimeTicks> animation_end_timestamp) {
+      absl::optional<base::TimeTicks> animation_end_timestamp) {
     const double target_corner_radius =
         (state == AppListViewState::kClosed && !shelf_has_rounded_corners)
             ? 0
@@ -811,7 +811,7 @@ void AppListView::Show(AppListViewState preferred_state, bool is_side_shelf) {
 
   UMA_HISTOGRAM_TIMES("Apps.AppListCreationTime",
                       base::Time::Now() - time_shown_.value());
-  time_shown_ = base::nullopt;
+  time_shown_ = absl::nullopt;
   RecordFolderMetrics();
 }
 
@@ -1870,7 +1870,7 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
   ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
   animation.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
-  base::Optional<ui::AnimationThroughputReporter> reporter;
+  absl::optional<ui::AnimationThroughputReporter> reporter;
   if (report_animation_throughput) {
     reporter.emplace(
         animation.GetAnimator(),
@@ -2226,7 +2226,7 @@ void AppListView::SetShelfHasRoundedCorners(bool shelf_has_rounded_corners) {
   if (shelf_has_rounded_corners_ == shelf_has_rounded_corners)
     return;
   shelf_has_rounded_corners_ = shelf_has_rounded_corners;
-  base::Optional<base::TimeTicks> animation_end_timestamp;
+  absl::optional<base::TimeTicks> animation_end_timestamp;
   if (GetWidget() && GetWidget()->GetLayer()->GetAnimator()->is_animating()) {
     animation_end_timestamp = animation_end_timestamp_;
   }

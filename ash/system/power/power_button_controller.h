@@ -133,7 +133,7 @@ class ASH_EXPORT PowerButtonController
   // Initializes |screenshot_controller_| according to the tablet mode switch in
   // |result|.
   void OnGetSwitchStates(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> result);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // TODO(minch): Remove this if/when all applicable devices expose a tablet
   // mode switch: https://crbug.com/798646.

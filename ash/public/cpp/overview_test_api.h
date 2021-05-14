@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -61,8 +61,8 @@ class ASH_EXPORT OverviewTestApi {
                             DoneCallback callback);
 
   // Returns overview info for the current overview items if overview is
-  // started. Otherwise, returns base::nullopt;
-  base::Optional<OverviewInfo> GetOverviewInfo() const;
+  // started. Otherwise, returns absl::nullopt;
+  absl::optional<OverviewInfo> GetOverviewInfo() const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OverviewTestApi);

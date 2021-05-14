@@ -168,7 +168,7 @@ class DisplayManagerTest : public AshTestBase,
   void SetSoftwareMirrorMode(bool active) {
     display_manager()->SetMirrorMode(
         active ? display::MirrorMode::kNormal : display::MirrorMode::kOff,
-        base::nullopt);
+        absl::nullopt);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -4209,7 +4209,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   // display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -4221,7 +4221,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   EXPECT_TRUE(display_manager()->mixed_mirror_mode_params());
 
   // Turn off mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_FALSE(display_manager()->mixed_mirror_mode_params());
 }
@@ -4234,7 +4234,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
   // display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -4247,7 +4247,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
 
   // Overwrite mixed mirror mode with default mirror mode (Mirror all
   // displays).
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
   destination_ids = display_manager()->GetMirroringDestinationDisplayIdList();
@@ -4262,7 +4262,7 @@ TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
   display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
 
   // Turn on mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(id_list[0], display_manager()->mirroring_source_id());
   display::DisplayIdList destination_ids =
@@ -4276,7 +4276,7 @@ TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
   // first display to the second display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, id_list[0], dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -4310,7 +4310,7 @@ TEST_F(DisplayManagerTest, MixedMirrorModeRestore) {
   // first display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, internal_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -4366,7 +4366,7 @@ TEST_F(DisplayManagerTest, MirrorModeRestoreAfterResume) {
 
   // Turn on mirror mode.
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
   // Suspend.
@@ -4638,7 +4638,7 @@ TEST_F(DisplayManagerTest, ExitMirrorModeInTabletMode) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
 
   // Exit mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }

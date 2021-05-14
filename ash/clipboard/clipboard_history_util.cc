@@ -40,14 +40,14 @@ constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
 
 }  // namespace
 
-base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data) {
   for (const auto& format : kPrioritizedFormats) {
     if (ContainsFormat(data, format)) {
       return format;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ClipboardHistoryDisplayFormat CalculateDisplayFormat(
@@ -142,7 +142,7 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
 }
 
 bool IsSupported(const ui::ClipboardData& data) {
-  const base::Optional<ui::ClipboardInternalFormat> format =
+  const absl::optional<ui::ClipboardInternalFormat> format =
       CalculateMainFormat(data);
 
   // Empty `data` is not supported.

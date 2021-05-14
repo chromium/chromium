@@ -591,7 +591,7 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
   } else {
     // Record smoothness of the snapping animation if the size of the window
     // changes.
-    base::Optional<ui::AnimationThroughputReporter> reporter;
+    absl::optional<ui::AnimationThroughputReporter> reporter;
     if (window_state->IsSnapped() &&
         bounds_in_parent.size() != window->bounds().size()) {
       reporter.emplace(

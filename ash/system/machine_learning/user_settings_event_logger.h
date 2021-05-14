@@ -112,8 +112,8 @@ class ASH_EXPORT UserSettingsEventLogger
   base::OneShotTimer brightness_timer_;
   // Most up-to-date brightness value. Can be null briefly, before an initial
   // brightness is set upon login.
-  base::Optional<int> brightness_;
-  base::Optional<int> brightness_before_user_change_;
+  absl::optional<int> brightness_;
+  absl::optional<int> brightness_before_user_change_;
   int brightness_after_user_change_;
 
   base::OneShotTimer presenting_timer_;

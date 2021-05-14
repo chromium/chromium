@@ -48,7 +48,7 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   void Stop();
   void HideAll();
   void ResetAnimation();
-  base::Optional<gfx::PointF> OnPointSelect();
+  absl::optional<gfx::PointF> OnPointSelect();
   bool IsPointScanEnabled();
   void SetSpeedDipsPerSecond(int speed_dips_per_second);
 

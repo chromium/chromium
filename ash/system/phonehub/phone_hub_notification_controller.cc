@@ -170,8 +170,8 @@ class PhoneHubNotificationController::NotificationDelegate
       controller_->DismissNotification(phone_hub_id_);
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (!controller_)
       return;
 
@@ -330,7 +330,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
   // Add a notification if tether failed.
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](base::Optional<int> button_index) {
+          base::BindRepeating([](absl::optional<int> button_index) {
             // When clicked, open Tether Settings page if we can open WebUI
             // settings, otherwise do nothing.
             if (TrayPopupUtils::CanOpenWebUISettings()) {

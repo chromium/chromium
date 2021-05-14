@@ -202,7 +202,7 @@ class ArcNotificationContentView
   int bottom_radius_ = 0;
 
   // Current insets of mask layer.
-  base::Optional<gfx::Insets> mask_insets_;
+  absl::optional<gfx::Insets> mask_insets_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
 

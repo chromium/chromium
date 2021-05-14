@@ -10,10 +10,10 @@
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -23,16 +23,16 @@ namespace ash {
 class FakeMicrophoneMuteNotificationDelegate
     : public MicrophoneMuteNotificationDelegate {
  public:
-  base::Optional<std::u16string> GetAppAccessingMicrophone() override {
+  absl::optional<std::u16string> GetAppAccessingMicrophone() override {
     return app_name_;
   }
 
   void SetAppAccessingMicrophone(
-      const base::Optional<std::u16string> app_name) {
+      const absl::optional<std::u16string> app_name) {
     app_name_ = app_name;
   }
 
-  base::Optional<std::u16string> app_name_;
+  absl::optional<std::u16string> app_name_;
 };
 
 class MicrophoneMuteNotificationControllerTest : public AshTestBase {
@@ -77,7 +77,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
         {{"CRAS_CLIENT_TYPE_CHROME", number_of_active_input_streams}});
   }
 
-  void LaunchApp(base::Optional<std::u16string> app_name) {
+  void LaunchApp(absl::optional<std::u16string> app_name) {
     delegate_->SetAppAccessingMicrophone(app_name);
     controller_->OnNumberOfInputStreamsWithPermissionChanged();
   }
@@ -110,7 +110,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest, LaunchAppNotUsingMicrophone) {
   EXPECT_FALSE(GetNotification());
 
   // Launch an app that's not using the mic, should be no notification.
-  LaunchApp(base::nullopt);
+  LaunchApp(absl::nullopt);
   SetNumberOfActiveInputStreams(0);
   EXPECT_FALSE(GetNotification());
 

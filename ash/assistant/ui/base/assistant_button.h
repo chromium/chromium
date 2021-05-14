@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
@@ -50,10 +50,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
     SkColor icon_color = gfx::kGoogleGrey700;
 
     // ID of the localization string for the button's accessible name.
-    base::Optional<int> accessible_name_id;
+    absl::optional<int> accessible_name_id;
 
     // ID of the localization string for the button's tooltip text.
-    base::Optional<int> tooltip_id;
+    absl::optional<int> tooltip_id;
   };
 
   AssistantButton(AssistantButtonListener* listener,

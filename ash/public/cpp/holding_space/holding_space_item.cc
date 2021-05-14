@@ -55,7 +55,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const base::FilePath& file_path,
     const GURL& file_system_url,
-    const base::Optional<float>& progress,
+    const absl::optional<float>& progress,
     ImageResolver image_resolver) {
   DCHECK(!file_system_url.is_empty());
 
@@ -87,7 +87,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
     const base::DictionaryValue& dict,
     ImageResolver image_resolver) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const Type type = static_cast<Type>(dict.FindIntPath(kTypePath).value());
@@ -105,7 +105,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 // serialization versions are supported, care must be taken to handle each.
 const std::string& HoldingSpaceItem::DeserializeId(
     const base::DictionaryValue& dict) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const std::string* id = dict.FindStringPath(kIdPath);
@@ -119,10 +119,10 @@ const std::string& HoldingSpaceItem::DeserializeId(
 // serialization versions are supported, care must be taken to handle each.
 base::FilePath HoldingSpaceItem::DeserializeFilePath(
     const base::DictionaryValue& dict) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const base::Optional<base::FilePath> file_path =
+  const absl::optional<base::FilePath> file_path =
       util::ValueToFilePath(dict.FindPath(kFilePathPath));
   DCHECK(file_path.has_value());
 
@@ -173,7 +173,7 @@ bool HoldingSpaceItem::IsInProgress() const {
   return progress_ != 1.f;
 }
 
-bool HoldingSpaceItem::UpdateProgress(const base::Optional<float>& progress) {
+bool HoldingSpaceItem::UpdateProgress(const absl::optional<float>& progress) {
   // NOTE: Progress can only be updated for in progress items.
   if (progress_ == progress || !IsInProgress())
     return false;
@@ -212,7 +212,7 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const GURL& file_system_url,
                                    const std::u16string& text,
                                    std::unique_ptr<HoldingSpaceImage> image,
-                                   const base::Optional<float>& progress)
+                                   const absl::optional<float>& progress)
     : type_(type),
       id_(id),
       file_path_(file_path),

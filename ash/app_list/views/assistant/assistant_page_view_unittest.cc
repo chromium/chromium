@@ -34,7 +34,7 @@ constexpr int kMinHeightDip = 180;
 
 #define EXPECT_INTERACTION_OF_TYPE(type_)                      \
   ({                                                           \
-    base::Optional<AssistantInteractionMetadata> interaction = \
+    absl::optional<AssistantInteractionMetadata> interaction = \
         current_interaction();                                 \
     ASSERT_TRUE(interaction.has_value());                      \
     EXPECT_EQ(interaction->type, type_);                       \
@@ -42,7 +42,7 @@ constexpr int kMinHeightDip = 180;
 
 #define EXPECT_NO_INTERACTION()                                \
   ({                                                           \
-    base::Optional<AssistantInteractionMetadata> interaction = \
+    absl::optional<AssistantInteractionMetadata> interaction = \
         current_interaction();                                 \
     ASSERT_FALSE(interaction.has_value());                     \
   })

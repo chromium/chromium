@@ -56,7 +56,7 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,
                            ash::mojom::DisplayConfigOperation op,
-                           const base::Optional<gfx::Insets>& delta,
+                           const absl::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override {}
   void TouchCalibration(const std::string& display_id,
                         ash::mojom::DisplayConfigOperation op,

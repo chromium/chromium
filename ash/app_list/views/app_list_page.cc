@@ -29,9 +29,9 @@ gfx::Size AppListPage::GetPreferredSearchBoxSize() const {
   return gfx::Size();
 }
 
-base::Optional<int> AppListPage::GetSearchBoxTop(
+absl::optional<int> AppListPage::GetSearchBoxTop(
     AppListViewState view_state) const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AppListPage::UpdatePageBoundsForState(AppListState state,

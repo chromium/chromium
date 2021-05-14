@@ -453,28 +453,28 @@ void WindowState::UpdateSnappedWidthRatio(const WMEvent* event) {
     // Since |UpdateSnappedWidthRatio()| is called post WMEvent taking effect,
     // |window_|'s bounds is in a correct state for ratio update.
     snapped_width_ratio_ =
-        base::make_optional(GetCurrentSnappedWidthRatio(window_));
+        absl::make_optional(GetCurrentSnappedWidthRatio(window_));
     return;
   }
 
   // |snapped_width_ratio_| under snapped state may change due to bounds event.
   if (event->IsBoundsEvent()) {
     snapped_width_ratio_ =
-        base::make_optional(GetCurrentSnappedWidthRatio(window_));
+        absl::make_optional(GetCurrentSnappedWidthRatio(window_));
   }
 }
 
 void WindowState::SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
-  pre_auto_manage_window_bounds_ = base::make_optional(bounds);
+  pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
 }
 
 void WindowState::SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
-  pre_added_to_workspace_window_bounds_ = base::make_optional(bounds);
+  pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
 }
 
 void WindowState::SetPersistentWindowInfo(
     const PersistentWindowInfo& persistent_window_info) {
-  persistent_window_info_ = base::make_optional(persistent_window_info);
+  persistent_window_info_ = absl::make_optional(persistent_window_info);
 }
 
 void WindowState::ResetPersistentWindowInfo() {

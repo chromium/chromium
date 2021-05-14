@@ -1488,7 +1488,7 @@ TEST_F(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   EnterTabletMode();
   // DisplayConfigurationObserver enables mirror mode when tablet mode is
   // enabled. Disable mirror mode to test multiple displays.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
@@ -6087,8 +6087,8 @@ TEST_F(SplitViewOverviewSessionTest,
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
 }
 
 // Test the split view and overview functionalities in clamshell mode. Split

@@ -282,7 +282,7 @@ class MonitoringWarningView : public NonAccessibleView {
   friend class LoginExpandedPublicAccountView::TestApi;
 
   WarningType warning_type_;
-  base::Optional<std::string> device_manager_;
+  absl::optional<std::string> device_manager_;
   views::ImageView* image_;
   views::Label* label_;
 

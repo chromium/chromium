@@ -34,8 +34,8 @@ void ArcNotificationDelegate::Close(bool by_user) {
 }
 
 void ArcNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   DCHECK(item_);
   item_->Click();
 }

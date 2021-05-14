@@ -106,7 +106,7 @@ class ASH_EXPORT FullRestoreController
   // the MRU tracker list, so we can pass the activation index during that loop
   // instead of building the MRU list again for each window.
   void SaveWindowImpl(WindowState* window_state,
-                      base::Optional<int> activation_index);
+                      absl::optional<int> activation_index);
 
   // Sets a callback for testing that will be read from in
   // `OnWidgetInitialized()`.

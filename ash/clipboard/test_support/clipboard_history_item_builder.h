@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/file_info.h"
 
@@ -87,16 +87,16 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
 
  private:
   // `ui::ClipboardData` formats.
-  base::Optional<std::string> text_;
-  base::Optional<std::string> markup_;
-  base::Optional<std::string> svg_;
-  base::Optional<std::string> rtf_;
+  absl::optional<std::string> text_;
+  absl::optional<std::string> markup_;
+  absl::optional<std::string> svg_;
+  absl::optional<std::string> rtf_;
   std::vector<ui::FileInfo> filenames_;
-  base::Optional<std::string> bookmark_title_;
-  base::Optional<SkBitmap> bitmap_;
-  base::Optional<std::string> custom_format_;
-  base::Optional<std::string> custom_data_;
-  base::Optional<bool> web_smart_paste_;
+  absl::optional<std::string> bookmark_title_;
+  absl::optional<SkBitmap> bitmap_;
+  absl::optional<std::string> custom_format_;
+  absl::optional<std::string> custom_data_;
+  absl::optional<bool> web_smart_paste_;
 };
 
 }  // namespace ash

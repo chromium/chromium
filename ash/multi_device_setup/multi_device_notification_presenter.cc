@@ -188,8 +188,8 @@ void MultiDeviceNotificationPresenter::OnNotificationRemoved(
 
 void MultiDeviceNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (notification_id == kWifiSyncNotificationId) {
     message_center_->RemoveNotification(kWifiSyncNotificationId,
                                         /* by_user */ false);
@@ -200,7 +200,7 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
           PA_LOG(INFO) << "Enabling Wi-Fi Sync.";
           multidevice_setup_remote_->SetFeatureEnabledState(
               chromeos::multidevice_setup::mojom::Feature::kWifiSync,
-              /*enabled=*/true, /*auth_token=*/base::nullopt,
+              /*enabled=*/true, /*auth_token=*/absl::nullopt,
               /*callback=*/base::DoNothing());
           break;
         case 1:  // "Cancel" button

@@ -19,7 +19,7 @@ ash::ArcOverlayManager* singleton = nullptr;
 
 const char* kBillingIdPrefix = "billing_id:";
 
-base::Optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
+absl::optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
   DCHECK(shell_surface_base);
   auto* shell_root_surface = shell_surface_base->root_surface();
@@ -89,7 +89,7 @@ void ArcOverlayManager::OnWindowInitialized(aura::Window* window) {
 
   // See if a potentially valid overlay token is set on the window, to confirm
   // that it is intended to be an overlay window.
-  base::Optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  absl::optional<std::string> token = GetOverlayTokenForArcWindow(window);
   if (!token)
     return;
 
@@ -117,7 +117,7 @@ void ArcOverlayManager::OnWindowVisibilityChanged(aura::Window* window,
   window_observations_.RemoveObservation(window);
 
   // Get the overlay token.
-  base::Optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  absl::optional<std::string> token = GetOverlayTokenForArcWindow(window);
   if (!token)
     return;
 

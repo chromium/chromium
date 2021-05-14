@@ -77,14 +77,14 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
 
  private:
   void SetVisibility(AssistantVisibility visibility,
-                     base::Optional<AssistantEntryPoint> entry_point,
-                     base::Optional<AssistantExitPoint> exit_point);
+                     absl::optional<AssistantEntryPoint> entry_point,
+                     absl::optional<AssistantExitPoint> exit_point);
 
   void NotifyUiModeChanged(bool due_to_interaction);
   void NotifyUiVisibilityChanged(
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point);
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point);
   void NotifyUsableWorkAreaChanged();
 
   AssistantUiMode ui_mode_ = AssistantUiMode::kLauncherEmbeddedUi;

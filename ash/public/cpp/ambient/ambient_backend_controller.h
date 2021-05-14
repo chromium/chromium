@@ -12,7 +12,7 @@
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -43,7 +43,7 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   std::string url;
 
   // Only support portrait image tiling in landscape orientation.
-  base::Optional<std::string> related_image_url;
+  absl::optional<std::string> related_image_url;
 
   AmbientModeTopicType topic_type = AmbientModeTopicType::kOther;
 };
@@ -58,10 +58,10 @@ struct ASH_PUBLIC_EXPORT WeatherInfo {
   ~WeatherInfo();
 
   // The url of the weather condition icon image.
-  base::Optional<std::string> condition_icon_url;
+  absl::optional<std::string> condition_icon_url;
 
   // Weather temperature in Fahrenheit.
-  base::Optional<float> temp_f;
+  absl::optional<float> temp_f;
 
   // If the temperature should be displayed in celsius. Conversion must happen
   // before the value in temp_f is displayed.
@@ -86,7 +86,7 @@ struct ASH_PUBLIC_EXPORT ScreenUpdate {
   // 2. Fatal errors, such as response parsing failure, happened during the
   // process, and a default |ScreenUpdate| instance was returned to indicate
   // the error.
-  base::Optional<WeatherInfo> weather_info;
+  absl::optional<WeatherInfo> weather_info;
 };
 
 // Interface to manage ambient mode backend.
@@ -95,7 +95,7 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   using OnScreenUpdateInfoFetchedCallback =
       base::OnceCallback<void(const ScreenUpdate&)>;
   using GetSettingsCallback =
-      base::OnceCallback<void(const base::Optional<AmbientSettings>& settings)>;
+      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings)>;
   using UpdateSettingsCallback = base::OnceCallback<void(bool success)>;
   using OnSettingPreviewFetchedCallback =
       base::OnceCallback<void(const std::vector<std::string>& preview_urls)>;
@@ -103,10 +103,10 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       base::OnceCallback<void(PersonalAlbums)>;
   // TODO(wutao): Make |settings| move only.
   using OnSettingsAndAlbumsFetchedCallback =
-      base::OnceCallback<void(const base::Optional<AmbientSettings>& settings,
+      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings,
                               PersonalAlbums personal_albums)>;
   using FetchWeatherCallback =
-      base::OnceCallback<void(const base::Optional<WeatherInfo>& weather_info)>;
+      base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
 
   static AmbientBackendController* Get();
 

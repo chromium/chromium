@@ -52,11 +52,11 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   // (hashed) password, and the correct PIN state.
   EXPECT_CALL(*client,
               AuthenticateUserWithPasswordOrPin_(id, password, false, _));
-  base::Optional<bool> callback_result;
+  absl::optional<bool> callback_result;
   base::RunLoop run_loop1;
   controller->AuthenticateUserWithPasswordOrPin(
       id, password, false,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop1.Quit();
       }));
@@ -76,7 +76,7 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   base::RunLoop run_loop2;
   controller->AuthenticateUserWithPasswordOrPin(
       id, pin, true,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop2.Quit();
       }));

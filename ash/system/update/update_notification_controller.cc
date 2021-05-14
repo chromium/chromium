@@ -56,14 +56,14 @@ UpdateNotificationController::~UpdateNotificationController() {
 }
 
 void UpdateNotificationController::GenerateUpdateNotification(
-    base::Optional<bool> slow_boot_file_path_exists) {
+    absl::optional<bool> slow_boot_file_path_exists) {
   if (!ShouldShowUpdate()) {
     message_center::MessageCenter::Get()->RemoveNotification(
         kNotificationId, false /* by_user */);
     return;
   }
 
-  if (slow_boot_file_path_exists != base::nullopt) {
+  if (slow_boot_file_path_exists != absl::nullopt) {
     slow_boot_file_path_exists_ = slow_boot_file_path_exists.value();
   }
 
@@ -184,11 +184,11 @@ void UpdateNotificationController::RestartForUpdate() {
 void UpdateNotificationController::RestartCancelled() {
   confirmation_dialog_ = nullptr;
   // Put the notification back.
-  GenerateUpdateNotification(base::nullopt);
+  GenerateUpdateNotification(absl::nullopt);
 }
 
 void UpdateNotificationController::HandleNotificationClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   DCHECK(ShouldShowUpdate());
 
   if (!button_index) {

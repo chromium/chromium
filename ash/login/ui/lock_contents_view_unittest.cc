@@ -2760,7 +2760,7 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  lock_contents.media_controls_view()->MediaSessionChanged(base::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
   mock_timer->Fire();
   base::RunLoop().RunUntilIdle();
 
@@ -2817,7 +2817,7 @@ TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping.
-  lock_contents.media_controls_view()->MediaSessionChanged(base::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
 
   // Simulate new media session starting within timer delay.
   SimulateMediaSessionChanged(

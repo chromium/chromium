@@ -32,12 +32,12 @@ void AssistantUiModel::SetUiMode(AssistantUiMode ui_mode,
 
 void AssistantUiModel::SetVisible(AssistantEntryPoint entry_point) {
   SetVisibility(AssistantVisibility::kVisible, entry_point,
-                /*exit_point=*/base::nullopt);
+                /*exit_point=*/absl::nullopt);
 }
 
 void AssistantUiModel::SetClosed(AssistantExitPoint exit_point) {
   SetVisibility(AssistantVisibility::kClosed,
-                /*entry_point=*/base::nullopt, exit_point);
+                /*entry_point=*/absl::nullopt, exit_point);
 }
 
 void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
@@ -50,8 +50,8 @@ void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
 
 void AssistantUiModel::SetVisibility(
     AssistantVisibility visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (visibility == visibility_)
     return;
 
@@ -78,8 +78,8 @@ void AssistantUiModel::NotifyUiModeChanged(bool due_to_interaction) {
 
 void AssistantUiModel::NotifyUiVisibilityChanged(
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   for (AssistantUiModelObserver& observer : observers_)
     observer.OnUiVisibilityChanged(visibility_, old_visibility, entry_point,
                                    exit_point);

@@ -13,7 +13,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/shelf_component.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -221,7 +221,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // The set of inputs that impact this widget's layout. The assumption is that
   // this widget needs a relayout if, and only if, one or more of these has
   // changed.
-  base::Optional<LayoutInputs> layout_inputs_;
+  absl::optional<LayoutInputs> layout_inputs_;
 
   gfx::Rect target_bounds_;
 
@@ -232,7 +232,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   HotseatState state_ = HotseatState::kNone;
 
   // Indicates the type of the hotseat state transition in progress.
-  base::Optional<StateTransition> state_transition_in_progress_;
+  absl::optional<StateTransition> state_transition_in_progress_;
 
   Shelf* shelf_ = nullptr;
 

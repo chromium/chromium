@@ -465,7 +465,7 @@ void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
 
 void CaptureModeController::PerformCapture() {
   DCHECK(IsActive());
-  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
   if (!capture_params)
     return;
 
@@ -665,7 +665,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
   EndVideoRecording(reason);
 }
 
-base::Optional<CaptureModeController::CaptureParams>
+absl::optional<CaptureModeController::CaptureParams>
 CaptureModeController::GetCaptureParams() const {
   DCHECK(IsActive());
 
@@ -684,7 +684,7 @@ CaptureModeController::GetCaptureParams() const {
       if (!window) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // window was selected.
-        return base::nullopt;
+        return absl::nullopt;
       }
       // window->bounds() are in root coordinates, but we want to get the
       // capture area in |window|'s coordinates.
@@ -698,7 +698,7 @@ CaptureModeController::GetCaptureParams() const {
       if (user_capture_region_.IsEmpty()) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // region was selected.
-        return base::nullopt;
+        return absl::nullopt;
       }
       // TODO(afakhry): Consider any special handling of display scale changes
       // while video recording is in progress.
@@ -1006,7 +1006,7 @@ void CaptureModeController::ShowPreviewNotification(
 void CaptureModeController::HandleNotificationClicked(
     const base::FilePath& screen_capture_path,
     const CaptureModeType type,
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   if (!button_index.has_value()) {
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
@@ -1101,7 +1101,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   // to start recording.
   capture_mode_session_->set_a11y_alert_on_session_exit(false);
 
-  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
 
   // Acquire the session's layer in order to potentially reuse it for painting
   // a highlight around the region being recorded.

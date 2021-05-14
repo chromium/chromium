@@ -101,7 +101,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     full_restore::WindowInfo* window_info = GetWindowInfo(window);
     if (!window_info)
       return -1;
-    base::Optional<int32_t> activation_index = window_info->activation_index;
+    absl::optional<int32_t> activation_index = window_info->activation_index;
     return activation_index.value_or(-1);
   }
 
@@ -110,7 +110,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
       aura::Window* root_window = Shell::GetPrimaryRootWindow(),
-      base::Optional<int32_t> restore_window_id = base::nullopt,
+      absl::optional<int32_t> restore_window_id = absl::nullopt,
       chromeos::WindowStateType window_state_type =
           chromeos::WindowStateType::kNormal) {
     // Full restore widgets are inactive when created as we do not want to take

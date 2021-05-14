@@ -345,12 +345,12 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
 }
 
 void TrayDetailedView::SetupConnectedScrollListItem(HoverHighlightView* view) {
-  SetupConnectedScrollListItem(view, base::nullopt /* battery_percentage */);
+  SetupConnectedScrollListItem(view, absl::nullopt /* battery_percentage */);
 }
 
 void TrayDetailedView::SetupConnectedScrollListItem(
     HoverHighlightView* view,
-    base::Optional<uint8_t> battery_percentage) {
+    absl::optional<uint8_t> battery_percentage) {
   DCHECK(view->is_populated());
 
   std::u16string status;

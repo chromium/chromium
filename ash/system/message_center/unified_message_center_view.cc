@@ -21,7 +21,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
@@ -89,7 +89,7 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
   // set the default opaque background color.
   scroller_->SetContents(
       std::make_unique<ScrollerContentsView>(message_list_view_));
-  scroller_->SetBackgroundColor(base::nullopt);
+  scroller_->SetBackgroundColor(absl::nullopt);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
   AddChildView(scroller_);

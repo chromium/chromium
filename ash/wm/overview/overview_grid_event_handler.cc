@@ -153,7 +153,7 @@ void OverviewGridEventHandler::OnAnimationStep(base::TimeTicks timestamp) {
                        fling_last_offset_ ? offset.x() - fling_last_offset_->x()
                                           : offset.x()) &&
                    continue_fling;
-  fling_last_offset_ = base::make_optional(offset);
+  fling_last_offset_ = absl::make_optional(offset);
 
   if (!continue_fling)
     EndFling();
@@ -204,7 +204,7 @@ void OverviewGridEventHandler::EndFling() {
   observed_compositor_->RemoveAnimationObserver(this);
   observed_compositor_ = nullptr;
   fling_curve_.reset();
-  fling_last_offset_ = base::nullopt;
+  fling_last_offset_ = absl::nullopt;
   grid_->EndScroll();
 }
 

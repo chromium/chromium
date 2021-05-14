@@ -100,7 +100,7 @@ struct TestContainerParams {
 
   // If set, the container will contain TestResultViewWithActions that
   // have |actions_per_result| actions each.
-  base::Optional<int> actions_per_result;
+  absl::optional<int> actions_per_result;
 };
 
 class TestContainer : public TestContainerDelegateHarness,

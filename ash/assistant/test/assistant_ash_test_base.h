@@ -139,9 +139,9 @@ class AssistantAshTestBase : public AshTestBase {
   void ClickOnAndWait(const views::View* view,
                       bool check_if_view_can_process_events = true);
 
-  // Return the current interaction. Returns |base::nullopt| if no interaction
+  // Return the current interaction. Returns |absl::nullopt| if no interaction
   // is in progress.
-  base::Optional<chromeos::assistant::AssistantInteractionMetadata>
+  absl::optional<chromeos::assistant::AssistantInteractionMetadata>
   current_interaction();
 
   // Create a new App window, and activate it.

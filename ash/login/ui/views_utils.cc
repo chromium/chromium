@@ -176,7 +176,7 @@ gfx::Point CalculateBubblePositionAfterBeforeStrategy(gfx::Rect anchor,
 
 void ConfigureRectFocusRingCircleInkDrop(views::View* view,
                                          views::FocusRing* focus_ring,
-                                         base::Optional<int> radius) {
+                                         absl::optional<int> radius) {
   DCHECK(view);
   DCHECK(focus_ring);
   focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());

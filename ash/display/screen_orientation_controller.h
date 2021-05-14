@@ -17,7 +17,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -283,8 +283,8 @@ class ASH_EXPORT ScreenOrientationController
   OrientationLockType user_locked_orientation_ = OrientationLockType::kAny;
 
   // The currently applied orientation lock that was requested by an app if any.
-  base::Optional<OrientationLockType> current_app_requested_orientation_lock_ =
-      base::nullopt;
+  absl::optional<OrientationLockType> current_app_requested_orientation_lock_ =
+      absl::nullopt;
 
   // The current rotation set by ScreenOrientationController for the internal
   // display.

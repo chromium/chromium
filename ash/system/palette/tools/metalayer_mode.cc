@@ -139,7 +139,7 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
     ToastData toast(
         kToastId,
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING),
-        kToastDurationMs, base::Optional<std::u16string>());
+        kToastDurationMs, absl::optional<std::u16string>());
     Shell::Get()->toast_manager()->Show(toast);
   } else {
     delegate()->RecordPaletteOptionsUsage(

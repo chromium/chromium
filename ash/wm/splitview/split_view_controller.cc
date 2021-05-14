@@ -44,8 +44,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/system/sys_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -360,7 +360,7 @@ class SplitViewController::DividerSnapAnimation
   SplitViewController* split_view_controller_;
   int starting_position_;
   int ending_position_;
-  base::Optional<ui::ThroughputTracker> tracker_;
+  absl::optional<ui::ThroughputTracker> tracker_;
 };
 
 // The controller that observes the window state and performs auto snapping

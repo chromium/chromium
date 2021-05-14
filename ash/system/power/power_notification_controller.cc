@@ -201,7 +201,7 @@ bool PowerNotificationController::UpdateNotificationState() {
 }
 
 bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
-  const base::Optional<base::TimeDelta> remaining_time =
+  const absl::optional<base::TimeDelta> remaining_time =
       PowerStatus::Get()->GetBatteryTimeToEmpty();
 
   // Check that powerd actually provided an estimate. It doesn't if the battery

@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 class GURL;
@@ -30,8 +30,8 @@ class ASH_PUBLIC_EXPORT AssistantWebView : public views::View {
     // desired by its embedded WebContents. Note that, if specified, the
     // WebContents will be bounded by |min_size| and |max_size|.
     bool enable_auto_resize = false;
-    base::Optional<gfx::Size> min_size = base::nullopt;
-    base::Optional<gfx::Size> max_size = base::nullopt;
+    absl::optional<gfx::Size> min_size = absl::nullopt;
+    absl::optional<gfx::Size> max_size = absl::nullopt;
 
     // If enabled, AssistantWebView will suppress navigation attempts of its
     // embedded WebContents. When navigation suppression occurs,

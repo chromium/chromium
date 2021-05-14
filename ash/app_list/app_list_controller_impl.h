@@ -36,10 +36,10 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/model/string_ordinal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/types/display_constants.h"
 
@@ -132,7 +132,7 @@ class ASH_EXPORT AppListControllerImpl
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
   void ShowAppList() override;
   aura::Window* GetWindow() override;
-  bool IsVisible(const base::Optional<int64_t>& display_id) override;
+  bool IsVisible(const absl::optional<int64_t>& display_id) override;
 
   // AppListModelObserver:
   void OnAppListItemAdded(AppListItem* item) override;
@@ -146,9 +146,9 @@ class ASH_EXPORT AppListControllerImpl
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // Methods used in ash:
-  bool GetTargetVisibility(const base::Optional<int64_t>& display_id) const;
+  bool GetTargetVisibility(const absl::optional<int64_t>& display_id) const;
   void Show(int64_t display_id,
-            base::Optional<AppListShowSource> show_source,
+            absl::optional<AppListShowSource> show_source,
             base::TimeTicks event_time_stamp);
   void UpdateYPositionAndOpacity(int y_position_in_screen,
                                  float background_opacity);
@@ -285,8 +285,8 @@ class ASH_EXPORT AppListControllerImpl
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -304,7 +304,7 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
-      base::Optional<HomeLauncherAnimationInfo> animation_info,
+      absl::optional<HomeLauncherAnimationInfo> animation_info,
       UpdateAnimationSettingsCallback callback);
 
   // Disables background blur in home screen UI while the returned
@@ -377,7 +377,7 @@ class ASH_EXPORT AppListControllerImpl
 
   // Updates which container the launcher window should be in.
   void UpdateLauncherContainer(
-      base::Optional<int64_t> display_id = base::nullopt);
+      absl::optional<int64_t> display_id = absl::nullopt);
 
   // Gets the container which should contain the AppList.
   int GetContainerId() const;
@@ -387,7 +387,7 @@ class ASH_EXPORT AppListControllerImpl
 
   // Returns the parent window of the applist for a |display_id|.
   aura::Window* GetContainerForDisplayId(
-      base::Optional<int64_t> display_id = base::nullopt);
+      absl::optional<int64_t> display_id = absl::nullopt);
 
   // Methods for recording the state of the app list before it changes in order
   // to record metrics.
@@ -521,17 +521,17 @@ class ASH_EXPORT AppListControllerImpl
   // The AppListViewState at the moment it was recorded, used to record app
   // launching metrics. This allows an accurate AppListViewState to be recorded
   // before AppListViewState changes.
-  base::Optional<AppListViewState> recorded_app_list_view_state_;
+  absl::optional<AppListViewState> recorded_app_list_view_state_;
 
   // Whether the applist was shown at the moment it was recorded, used to record
   // app launching metrics. This is recorded because AppList visibility can
   // change before the metric is recorded.
-  base::Optional<bool> recorded_app_list_visibility_;
+  absl::optional<bool> recorded_app_list_visibility_;
 
   // ScopedClosureRunner which while in scope keeps background blur in home
   // screen (in particular, apps container suggestion chips background)
   // disabled. Set while home screen transitions are in progress.
-  base::Optional<base::ScopedClosureRunner> home_screen_blur_disabler_;
+  absl::optional<base::ScopedClosureRunner> home_screen_blur_disabler_;
 
   base::ObserverList<AppListControllerObserver> observers_;
 
@@ -546,7 +546,7 @@ class ASH_EXPORT AppListControllerImpl
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether the pref for notification badging is enabled.
-  base::Optional<bool> notification_badging_pref_enabled_;
+  absl::optional<bool> notification_badging_pref_enabled_;
 
   // Whether the wallpaper is being previewed. The home screen should be hidden
   // during wallpaper preview.
@@ -559,11 +559,11 @@ class ASH_EXPORT AppListControllerImpl
   // it can be used to decide how to update home screen when overview mode exit
   // animations are finished (at which point this information will not be
   // available).
-  base::Optional<OverviewEnterExitType> overview_exit_type_;
+  absl::optional<OverviewEnterExitType> overview_exit_type_;
 
   // Responsible for recording smoothness related UMA stats for home screen
   // animations.
-  base::Optional<ui::ThroughputTracker> smoothness_tracker_;
+  absl::optional<ui::ThroughputTracker> smoothness_tracker_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

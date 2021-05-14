@@ -69,7 +69,7 @@ std::unique_ptr<Notification> CreateNotification(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT),
       static_cast<double>(status.GetRoundedBatteryPercent()) / 100.0);
 
-  const base::Optional<base::TimeDelta> time =
+  const absl::optional<base::TimeDelta> time =
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
   std::u16string time_message;

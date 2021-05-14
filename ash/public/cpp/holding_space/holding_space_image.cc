@@ -97,7 +97,7 @@ HoldingSpaceImage::HoldingSpaceImage(
     const gfx::Size& max_size,
     const base::FilePath& backing_file_path,
     AsyncBitmapResolver async_bitmap_resolver,
-    base::Optional<gfx::ImageSkia> file_type_icon)
+    absl::optional<gfx::ImageSkia> file_type_icon)
     : max_size_(max_size),
       backing_file_path_(backing_file_path),
       async_bitmap_resolver_(async_bitmap_resolver),
@@ -206,7 +206,7 @@ void HoldingSpaceImage::OnBitmapLoaded(const base::FilePath& file_path,
 }
 
 gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
-    const base::Optional<gfx::Size>& opt_size,
+    const absl::optional<gfx::Size>& opt_size,
     bool dark_background) const {
   const gfx::Size size = opt_size.value_or(max_size_);
 

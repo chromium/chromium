@@ -168,7 +168,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   // Width and height of test images.
   gfx::Size decoded_size_{10, 20};
   // If set, will replay this image.
-  base::Optional<gfx::ImageSkia> decoded_image_;
+  absl::optional<gfx::ImageSkia> decoded_image_;
 
   std::map<int, PhotoCacheEntry> files_;
 };

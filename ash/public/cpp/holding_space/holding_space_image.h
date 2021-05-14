@@ -10,8 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -37,7 +37,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
       const gfx::Size& max_size,
       const base::FilePath& backing_file_path,
       AsyncBitmapResolver async_bitmap_resolver,
-      base::Optional<gfx::ImageSkia> file_type_icon = base::nullopt);
+      absl::optional<gfx::ImageSkia> file_type_icon = absl::nullopt);
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
@@ -64,7 +64,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // colors to ensure sufficient contrast. Note that the image source may be
   // dynamically updated, so UI classes should observe and react to updates.
   gfx::ImageSkia GetImageSkia(
-      const base::Optional<gfx::Size>& size = base::nullopt,
+      const absl::optional<gfx::Size>& size = absl::nullopt,
       bool dark_background = false) const;
 
   // Creates new image skia for the item, and thus invalidates currently loaded
@@ -105,11 +105,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   const gfx::Size max_size_;
   base::FilePath backing_file_path_;
   AsyncBitmapResolver async_bitmap_resolver_;
-  base::Optional<base::File::Error> async_bitmap_resolver_error_;
+  absl::optional<base::File::Error> async_bitmap_resolver_error_;
 
   gfx::ImageSkia image_skia_;
   gfx::ImageSkia placeholder_;
-  base::Optional<gfx::ImageSkia> file_type_icon_;
+  absl::optional<gfx::ImageSkia> file_type_icon_;
 
   // Timer used to throttle image invalidate requests.
   base::OneShotTimer invalidate_timer_;

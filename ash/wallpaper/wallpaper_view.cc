@@ -139,7 +139,7 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
     small_canvas.DrawImageInt(wallpaper, src.x(), src.y(), src.width(),
                               src.height(), 0, 0, quality_adjusted_rect.width(),
                               quality_adjusted_rect.height(), true);
-    small_image_ = base::make_optional(
+    small_image_ = absl::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
   }
 

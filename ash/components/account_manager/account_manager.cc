@@ -21,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -38,6 +37,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash {
@@ -80,11 +80,11 @@ void RecordInitializationTime(
 }
 
 // Returns `nullopt` if `account_type` is `ACCOUNT_TYPE_UNSPECIFIED`.
-base::Optional<::account_manager::AccountType> FromProtoAccountType(
+absl::optional<::account_manager::AccountType> FromProtoAccountType(
     const account_manager::AccountType& account_type) {
   switch (account_type) {
     case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-      return base::nullopt;
+      return absl::nullopt;
     case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
       static_assert(
           static_cast<int>(account_manager::AccountType::ACCOUNT_TYPE_GAIA) ==
@@ -237,7 +237,7 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
       return;
     }
 
-    base::Optional<std::string> maybe_token =
+    absl::optional<std::string> maybe_token =
         account_manager_->GetRefreshToken(account_key_);
     if (!maybe_token.has_value()) {
       FireOnGetTokenFailure(GoogleServiceAuthError(
@@ -407,7 +407,7 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
 
   bool is_any_account_corrupt = false;
   for (const auto& account : accounts_proto.accounts()) {
-    const base::Optional<::account_manager::AccountType> account_type =
+    const absl::optional<::account_manager::AccountType> account_type =
         FromProtoAccountType(account.account_type());
     if (!account_type.has_value()) {
       LOG(WARNING) << "Ignoring invalid account_type load from disk";
@@ -862,7 +862,7 @@ bool AccountManager::IsEphemeralMode() const {
   return home_dir_.empty();
 }
 
-base::Optional<std::string> AccountManager::GetRefreshToken(
+absl::optional<std::string> AccountManager::GetRefreshToken(
     const ::account_manager::AccountKey& account_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
@@ -872,10 +872,10 @@ base::Optional<std::string> AccountManager::GetRefreshToken(
 
   auto it = accounts_.find(account_key);
   if (it == accounts_.end() || it->second.token.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::make_optional<std::string>(it->second.token);
+  return absl::make_optional<std::string>(it->second.token);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

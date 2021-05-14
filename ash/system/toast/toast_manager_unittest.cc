@@ -76,7 +76,7 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay ? overlay->text_ : std::u16string();
   }
 
-  base::Optional<std::u16string> GetCurrentDismissText() {
+  absl::optional<std::u16string> GetCurrentDismissText() {
     ToastOverlay* overlay = GetCurrentOverlay();
     return overlay ? overlay->dismiss_text_ : std::u16string();
   }
@@ -99,8 +99,8 @@ class ToastManagerImplTest : public AshTestBase {
   std::string ShowToastWithDismiss(
       const std::string& text,
       int32_t duration,
-      const base::Optional<std::string>& dismiss_text) {
-    base::Optional<std::u16string> localized_dismiss;
+      const absl::optional<std::string>& dismiss_text) {
+    absl::optional<std::u16string> localized_dismiss;
     if (dismiss_text.has_value())
       localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
 
@@ -171,7 +171,7 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
 
 // TODO(crbug.com/959781): Test is flaky.
 TEST_F(ToastManagerImplTest, DISABLED_NullMessageHasNoDismissButton) {
-  ShowToastWithDismiss("DUMMY", 10, base::Optional<std::string>());
+  ShowToastWithDismiss("DUMMY", 10, absl::optional<std::string>());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDismissButton());
 }
@@ -276,7 +276,7 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   tablet_mode_controller->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
 
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
 
@@ -304,7 +304,7 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   tablet_mode_controller->SetEnabledForTest(true);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
 
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(700, 100, 200, 200)));

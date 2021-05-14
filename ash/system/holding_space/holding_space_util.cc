@@ -57,8 +57,8 @@ class CirclePainter : public views::Painter {
   }
 
   const SkColor color_;
-  const base::Optional<size_t> fixed_size_;
-  const base::Optional<gfx::InsetsF> insets_;
+  const absl::optional<size_t> fixed_size_;
+  const absl::optional<gfx::InsetsF> insets_;
 };
 
 // LabelWithThemeChangedCallback -----------------------------------------------

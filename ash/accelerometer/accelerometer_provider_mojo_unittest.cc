@@ -50,7 +50,7 @@ class FakeObserver : public AccelerometerReader::Observer {
     update_ = update;
   }
 
-  base::Optional<bool> is_supported_;
+  absl::optional<bool> is_supported_;
   AccelerometerUpdate update_;
 };
 
@@ -78,8 +78,8 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
 
   void AddDevice(int32_t iio_device_id,
                  chromeos::sensors::mojom::DeviceType type,
-                 base::Optional<std::string> scale,
-                 base::Optional<std::string> location) {
+                 absl::optional<std::string> scale,
+                 absl::optional<std::string> location) {
     std::set<chromeos::sensors::mojom::DeviceType> types;
     types.emplace(type);
 
@@ -146,7 +146,7 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
 TEST_F(AccelerometerProviderMojoTest, CheckNoScale) {
   AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
-            chromeos::sensors::mojom::DeviceType::ACCEL, base::nullopt,
+            chromeos::sensors::mojom::DeviceType::ACCEL, absl::nullopt,
             kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
 
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
@@ -167,7 +167,7 @@ TEST_F(AccelerometerProviderMojoTest, CheckNoLocation) {
   AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
             chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kFakeScaleValue), base::nullopt);
+            base::NumberToString(kFakeScaleValue), absl::nullopt);
 
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
@@ -244,7 +244,7 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
             base::NumberToString(kFakeScaleValue),
             kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
   AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
-            base::nullopt, base::nullopt);
+            absl::nullopt, absl::nullopt);
 
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
@@ -326,7 +326,7 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesOfNewDevices) {
 
   // New device: EC Lid Angle Driver.
   AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
-            base::nullopt, base::nullopt);
+            absl::nullopt, absl::nullopt);
 
   TriggerSamples();
 
@@ -384,7 +384,7 @@ TEST_F(AccelerometerProviderMojoTest, NoSamplesFromBaseOnly) {
 
   // New device: EC Lid Angle Driver.
   AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
-            base::nullopt, base::nullopt);
+            absl::nullopt, absl::nullopt);
 
   TriggerSamples();
 
@@ -398,7 +398,7 @@ TEST_F(AccelerometerProviderMojoTest, NoSamplesFromBaseOnly) {
 TEST_F(AccelerometerProviderMojoTest, NoSamplesFromLidAngle) {
   // New device: EC Lid Angle Driver.
   AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
-            base::nullopt, base::nullopt);
+            absl::nullopt, absl::nullopt);
 
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());

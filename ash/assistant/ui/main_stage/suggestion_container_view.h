@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   // The suggestion chip that was pressed by the user. May be |nullptr|.
   const SuggestionChipView* selected_chip() const { return selected_chip_; }

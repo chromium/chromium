@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -28,7 +28,7 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
 
   // Updates bounds, animating if |animation_type| has a value.
   void SetBounds(const gfx::Rect& bounds,
-                 const base::Optional<SplitviewAnimationType>& animation_type);
+                 const absl::optional<SplitviewAnimationType>& animation_type);
 
   // Called to update the opacity of the highlights view on transition from
   // |previous_window_dragging_state| to |window_dragging_state|. If

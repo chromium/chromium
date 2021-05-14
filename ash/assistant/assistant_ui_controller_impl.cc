@@ -21,12 +21,12 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -52,7 +52,7 @@ constexpr char kUnboundServiceToastId[] =
 
 void ShowToast(const std::string& id, int message_id) {
   ToastData toast(id, l10n_util::GetStringUTF16(message_id), kToastDurationMs,
-                  base::nullopt);
+                  absl::nullopt);
   Shell::Get()->toast_manager()->Show(toast);
 }
 
@@ -136,8 +136,8 @@ void AssistantUiControllerImpl::CloseUi(AssistantExitPoint exit_point) {
 }
 
 void AssistantUiControllerImpl::ToggleUi(
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   // When not visible, toggling will show the UI.
   if (model_.visibility() != AssistantVisibility::kVisible) {
     DCHECK(entry_point.has_value());
@@ -204,8 +204,8 @@ void AssistantUiControllerImpl::OnOpeningUrl(const GURL& url,
 void AssistantUiControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (new_visibility == AssistantVisibility::kVisible) {
     // Only record the entry point when Assistant UI becomes visible.
     assistant::util::RecordAssistantEntryPoint(entry_point.value());
@@ -254,7 +254,7 @@ void AssistantUiControllerImpl::OnOverviewModeWillStart() {
 }
 
 void AssistantUiControllerImpl::UpdateUiMode(
-    base::Optional<AssistantUiMode> ui_mode,
+    absl::optional<AssistantUiMode> ui_mode,
     bool due_to_interaction) {
   // If a UI mode is provided, we will use it in lieu of updating UI mode on the
   // basis of interaction/widget visibility state.

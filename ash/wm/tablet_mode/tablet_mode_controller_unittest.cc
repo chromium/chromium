@@ -1461,7 +1461,7 @@ TEST_F(TabletModeControllerTest,
   tablet_mode_controller()->SetEnabledForTest(true);
   app_list_controller->ShowAppList();
 
-  EXPECT_FALSE(app_list_controller->IsVisible(base::nullopt));
+  EXPECT_FALSE(app_list_controller->IsVisible(absl::nullopt));
 }
 
 // Test that if both the active window and the previous window are snapped on

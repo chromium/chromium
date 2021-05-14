@@ -64,7 +64,7 @@ class LoginPasswordViewTest : public LoginTestBase {
   void OnEasyUnlockIconTapped() { easy_unlock_icon_tapped_called_ = true; }
 
   LoginPasswordView* view_ = nullptr;
-  base::Optional<std::u16string> password_;
+  absl::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   bool easy_unlock_icon_hovered_called_ = false;
   bool easy_unlock_icon_tapped_called_ = false;

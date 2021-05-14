@@ -15,10 +15,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -83,7 +83,7 @@ void RemoveNotification(const std::string& notification_id) {
                                                            /*from_user=*/true);
 }
 
-void OnPeripheralLimitedNotificationClicked(base::Optional<int> button_index) {
+void OnPeripheralLimitedNotificationClicked(absl::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowPrivacyAndSecuritySettings();

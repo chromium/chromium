@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -23,8 +23,8 @@ class ASH_PUBLIC_EXPORT ConversationStarter {
   enum Permission : uint32_t { kUnknown = 1u, kRelatedInfo = 2u };
 
   ConversationStarter(const std::string& label,
-                      const base::Optional<GURL>& action_url,
-                      const base::Optional<GURL>& icon_url,
+                      const absl::optional<GURL>& action_url,
+                      const absl::optional<GURL>& icon_url,
                       uint32_t required_permissions);
   ConversationStarter(const ConversationStarter& copy);
   ~ConversationStarter();
@@ -33,14 +33,14 @@ class ASH_PUBLIC_EXPORT ConversationStarter {
   bool RequiresPermission(Permission permission) const;
 
   const std::string& label() const { return label_; }
-  const base::Optional<GURL>& action_url() const { return action_url_; }
-  const base::Optional<GURL>& icon_url() const { return icon_url_; }
+  const absl::optional<GURL>& action_url() const { return action_url_; }
+  const absl::optional<GURL>& icon_url() const { return icon_url_; }
   uint32_t required_permissions() const { return required_permissions_; }
 
  private:
   std::string label_;
-  base::Optional<GURL> action_url_;
-  base::Optional<GURL> icon_url_;
+  absl::optional<GURL> action_url_;
+  absl::optional<GURL> icon_url_;
   uint32_t required_permissions_;
 };
 

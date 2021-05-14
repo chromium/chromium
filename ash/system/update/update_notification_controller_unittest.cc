@@ -13,10 +13,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -391,7 +391,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
   message_center::MessageCenter::Get()
       ->FindVisibleNotificationById(kNotificationId)
       ->delegate()
-      ->Click(/*button_index=*/0, /*reply=*/base::nullopt);
+      ->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
 
   // Controller tried to restart chrome.
   EXPECT_EQ(1, GetSessionControllerClient()->attempt_restart_chrome_count());

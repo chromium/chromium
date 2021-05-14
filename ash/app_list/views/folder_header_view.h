@@ -94,11 +94,11 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   // Used to restore the folder name if the new folder name is longer than the
   // max chars folder length allowed
-  base::Optional<std::u16string> previous_folder_name_;
+  absl::optional<std::u16string> previous_folder_name_;
 
   // Used to restore the cursor position to its last known location when
   // resetting the folder name in textfield
-  base::Optional<size_t> previous_cursor_position_;
+  absl::optional<size_t> previous_cursor_position_;
 
   AppListFolderItem* folder_item_;  // Not owned.
 

@@ -18,12 +18,12 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -354,7 +354,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
   State state() const { return state_; }
   int events_forwarded() const { return events_forwarded_; }
   ui::mojom::DragEventSource source() const { return source_; }
-  base::Optional<gfx::PointF> current_location() const {
+  absl::optional<gfx::PointF> current_location() const {
     return current_location_;
   }
 
@@ -388,7 +388,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
  private:
   State state_ = State::kNotInvoked;
   int events_forwarded_ = 0;
-  base::Optional<gfx::PointF> current_location_;
+  absl::optional<gfx::PointF> current_location_;
   ui::mojom::DragEventSource source_;
 };
 

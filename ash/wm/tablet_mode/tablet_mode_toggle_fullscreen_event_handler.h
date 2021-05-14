@@ -49,7 +49,7 @@ class TabletModeToggleFullscreenEventHandler : public ui::EventHandler,
 
   // Valid if a processable drag is in progress. Contains the event initial
   // location and the window that was active when the drag started.
-  base::Optional<DragData> drag_data_;
+  absl::optional<DragData> drag_data_;
 };
 
 }  // namespace ash

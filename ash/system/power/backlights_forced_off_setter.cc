@@ -118,7 +118,7 @@ void BacklightsForcedOffSetter::GetInitialBacklightsForcedOff() {
 }
 
 void BacklightsForcedOffSetter::OnGotInitialBacklightsForcedOff(
-    base::Optional<bool> is_forced_off) {
+    absl::optional<bool> is_forced_off) {
   if (backlights_forced_off_.has_value() || !is_forced_off.has_value())
     return;
 

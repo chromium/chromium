@@ -40,8 +40,8 @@ class LocaleNotificationDelegate : public message_center::NotificationDelegate {
 
   // message_center::NotificationDelegate overrides:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   base::OnceCallback<void(LocaleNotificationResult)> callback_;
@@ -68,8 +68,8 @@ void LocaleNotificationDelegate::Close(bool by_user) {
 }
 
 void LocaleNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!callback_)
     return;
 

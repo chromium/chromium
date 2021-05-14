@@ -97,7 +97,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Adds connected sub label with the device's battery percentage to the |view|
   // with appropriate style and updates accessibility label.
   void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                    base::Optional<uint8_t> battery_percentage);
+                                    absl::optional<uint8_t> battery_percentage);
 
   // Adds connecting sub label to the |view| with appropriate style and updates
   // accessibility label.

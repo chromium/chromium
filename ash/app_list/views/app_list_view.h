@@ -17,8 +17,8 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget.h"
@@ -522,7 +522,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   AppListBackgroundShieldView* app_list_background_shield_ = nullptr;
 
   // The time the AppListView was requested to be shown. Used for metrics.
-  base::Optional<base::Time> time_shown_;
+  absl::optional<base::Time> time_shown_;
 
   // Whether the shelf is oriented on the side.
   bool is_side_shelf_ = false;

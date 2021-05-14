@@ -447,7 +447,7 @@ void AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect(int32_t id) {
 
 void AccelerometerProviderMojo::GetAttributesCallback(
     int32_t id,
-    const std::vector<base::Optional<std::string>>& values) {
+    const std::vector<absl::optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& accelerometer = accelerometers_[id];

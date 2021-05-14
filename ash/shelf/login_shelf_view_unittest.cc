@@ -810,11 +810,11 @@ TEST_F(LoginShelfViewTest, MouseWheelOnLoginShelf) {
 
     event_generator->MoveMouseWheel(/*delta_x=*/0, 100);
     EXPECT_EQ(shelf_bounds, shelf_widget->GetWindowBoundsInScreen());
-    EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(base::nullopt));
+    EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(absl::nullopt));
 
     event_generator->MoveMouseWheel(/*delta_x=*/0, -100);
     EXPECT_EQ(shelf_bounds, shelf_widget->GetWindowBoundsInScreen());
-    EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(base::nullopt));
+    EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(absl::nullopt));
   };
 
   for (const auto& location : kLocations) {

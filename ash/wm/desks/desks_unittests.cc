@@ -1358,11 +1358,11 @@ TEST_F(DesksTest, AppListStaysOpenInClamshell) {
   // Open the app list.
   auto* app_list_controller = Shell::Get()->app_list_controller();
   app_list_controller->ShowAppList();
-  ASSERT_TRUE(app_list_controller->IsVisible(base::nullopt));
+  ASSERT_TRUE(app_list_controller->IsVisible(absl::nullopt));
 
   // Switch back to desk 1. Test that the app list is still open.
   ActivateDesk(controller->desks()[0].get());
-  EXPECT_TRUE(app_list_controller->IsVisible(base::nullopt));
+  EXPECT_TRUE(app_list_controller->IsVisible(absl::nullopt));
 }
 
 // Tests that the app list correctly loses focus in tablet mode when switching

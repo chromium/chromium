@@ -8,8 +8,8 @@
 #include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
@@ -44,11 +44,11 @@ class LoginPinInputViewTest
   }
 
   void OnPinSubmit(const std::u16string& pin) {
-    submitted_pin_ = base::make_optional(pin);
+    submitted_pin_ = absl::make_optional(pin);
   }
 
   void OnPinChanged(const bool is_empty) {
-    is_empty_ = base::make_optional(is_empty);
+    is_empty_ = absl::make_optional(is_empty);
   }
 
   void PressKeyHelper(ui::KeyboardCode key) {
@@ -77,8 +77,8 @@ class LoginPinInputViewTest
   int length_ = 0;
 
   // Generated during the callback response.
-  base::Optional<std::u16string> submitted_pin_;
-  base::Optional<bool> is_empty_;
+  absl::optional<std::u16string> submitted_pin_;
+  absl::optional<bool> is_empty_;
 };
 
 // Verifies that pressing 'Return' on the PIN input field triggers an

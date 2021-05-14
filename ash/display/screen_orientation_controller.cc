@@ -683,7 +683,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  current_app_requested_orientation_lock_ = base::nullopt;
+  current_app_requested_orientation_lock_ = absl::nullopt;
   if (!display::Display::HasInternalDisplay())
     return;
 
@@ -759,7 +759,7 @@ bool ScreenOrientationController::ApplyLockForWindowIfPossible(
         }
       }
       current_app_requested_orientation_lock_ =
-          base::make_optional<OrientationLockType>(lock_info.orientation_lock);
+          absl::make_optional<OrientationLockType>(lock_info.orientation_lock);
       return true;
     }
   }

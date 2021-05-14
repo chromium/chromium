@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -34,7 +34,7 @@ struct ASH_EXPORT PersistentWindowInfo {
   gfx::Rect display_bounds_in_screen;
 
   // Stores the restore bounds in screen coordinates if they exist.
-  base::Optional<gfx::Rect> restore_bounds_in_screen;
+  absl::optional<gfx::Rect> restore_bounds_in_screen;
 };
 
 }  // namespace ash

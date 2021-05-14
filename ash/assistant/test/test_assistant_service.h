@@ -11,12 +11,12 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -78,7 +78,7 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   void SetInteractionResponse(std::unique_ptr<InteractionResponse> response);
 
   // Returns the current interaction.
-  base::Optional<chromeos::assistant::AssistantInteractionMetadata>
+  absl::optional<chromeos::assistant::AssistantInteractionMetadata>
   current_interaction();
 
   // Assistant overrides:

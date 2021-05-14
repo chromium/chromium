@@ -7,7 +7,7 @@
 
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -38,7 +38,7 @@ class FocusRingLayer : public AccessibilityLayer {
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
-  base::Optional<SkColor> custom_color_;
+  absl::optional<SkColor> custom_color_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusRingLayer);
 };

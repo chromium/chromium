@@ -72,7 +72,7 @@ class AssistantAlarmTimerControllerImpl
  private:
   void PerformAlarmTimerAction(const assistant::util::AlarmTimerAction& action,
                                const std::string& alarm_timer_id,
-                               const base::Optional<base::TimeDelta>& duration);
+                               const absl::optional<base::TimeDelta>& duration);
 
   void ScheduleNextTick(const chromeos::assistant::AssistantTimer& timer);
   void Tick(const std::string& timer_id);

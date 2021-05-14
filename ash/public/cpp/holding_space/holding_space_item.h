@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -66,7 +66,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       Type type,
       const base::FilePath& file_path,
       const GURL& file_system_url,
-      const base::Optional<float>& progress,
+      const absl::optional<float>& progress,
       ImageResolver image_resolver);
 
   // Returns `true` if `type` is a download type, `false` otherwise.
@@ -112,7 +112,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Updates the `progress_` of the item, returning `false` to indicate no-op.
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   // NOTE: Progress can only be updated for in progress items.
-  bool UpdateProgress(const base::Optional<float>& progress);
+  bool UpdateProgress(const absl::optional<float>& progress);
 
   // Invalidates the current holding space image, so fresh image representations
   // are loaded when the image is next needed.
@@ -133,7 +133,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const GURL& file_system_url() const { return file_system_url_; }
 
-  const base::Optional<float>& progress() const { return progress_; }
+  const absl::optional<float>& progress() const { return progress_; }
 
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
@@ -145,7 +145,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                    const GURL& file_system_url,
                    const std::u16string& text,
                    std::unique_ptr<HoldingSpaceImage> image,
-                   const base::Optional<float>& progress);
+                   const absl::optional<float>& progress);
 
   const Type type_;
 
@@ -167,7 +167,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // The progress of the item.
   // If present, the value is >= `0.f` and <= `1.f`.
   // If absent, `progress_` is indeterminate.
-  base::Optional<float> progress_;
+  absl::optional<float> progress_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

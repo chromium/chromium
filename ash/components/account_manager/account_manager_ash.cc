@@ -15,13 +15,13 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -91,7 +91,7 @@ void AccountManagerAsh::GetAccounts(
 void AccountManagerAsh::GetPersistentErrorForAccount(
     mojom::AccountKeyPtr mojo_account_key,
     mojom::AccountManager::GetPersistentErrorForAccountCallback callback) {
-  base::Optional<account_manager::AccountKey> maybe_account_key =
+  absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   DCHECK(maybe_account_key)
       << "Can't unmarshal account of type: " << mojo_account_key->account_type;

@@ -153,7 +153,7 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
 
   // If any of the displays need a new screenshot while scrolling, take the
   // ending desk screenshot for all of them to keep them in sync.
-  base::Optional<int> ending_desk_index;
+  absl::optional<int> ending_desk_index;
   for (const auto& animator : desk_switch_animators_) {
     if (!ending_desk_index)
       ending_desk_index = animator->UpdateSwipeAnimation(scroll_delta_x);

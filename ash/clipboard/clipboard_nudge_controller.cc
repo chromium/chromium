@@ -428,7 +428,7 @@ base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return base::Time();
-  base::Optional<base::Time> last_shown_time =
+  absl::optional<base::Time> last_shown_time =
       util::ValueToTime(dictionary->FindPath(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }

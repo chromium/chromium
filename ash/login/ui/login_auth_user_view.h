@@ -17,8 +17,8 @@
 #include "ash/public/cpp/session/user_info.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -69,7 +69,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // User's pin length to use for autosubmit.
     size_t autosubmit_pin_length = 0;
     // Only present when the TPM is locked.
-    base::Optional<base::TimeDelta> time_until_tpm_unlock = base::nullopt;
+    absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
   };
 
   // Possible states that the input fields (PasswordView & PinInputView)
@@ -193,10 +193,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   void OnAuthSubmit(const std::u16string& password);
   // Called with the result of the request started in |OnAuthSubmit| or
   // |AttemptAuthenticateWithExternalBinary|.
-  void OnAuthComplete(base::Optional<bool> auth_success);
+  void OnAuthComplete(absl::optional<bool> auth_success);
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
-  void OnChallengeResponseAuthComplete(base::Optional<bool> auth_success);
+  void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
 
   // Called when the user view has been tapped. This will run |on_auth_| if tap
   // to unlock is enabled, or run |OnOnlineSignInMessageTap| if the online

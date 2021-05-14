@@ -72,7 +72,7 @@ std::u16string GetDisplaySize(int64_t display_id) {
 }
 
 // Callback to handle a user selecting the notification view.
-void OnNotificationClicked(base::Optional<int> button_index) {
+void OnNotificationClicked(absl::optional<int> button_index) {
   DCHECK(!button_index);
 
   Shell::Get()->metrics()->RecordUserMetricsAction(

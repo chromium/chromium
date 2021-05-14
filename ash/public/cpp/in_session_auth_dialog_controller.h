@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -22,7 +22,7 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // authentication check did not run, otherwise it is true/false if auth
   // succeeded/failed.
   using OnAuthenticateCallback =
-      base::OnceCallback<void(base::Optional<bool> success)>;
+      base::OnceCallback<void(absl::optional<bool> success)>;
   // Callback for overall authentication flow result.
   using FinishCallback = base::OnceCallback<void(bool success)>;
 

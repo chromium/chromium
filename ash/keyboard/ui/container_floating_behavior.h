@@ -10,7 +10,7 @@
 #include "ash/keyboard/ui/container_behavior.h"
 #include "ash/keyboard/ui/drag_descriptor.h"
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -109,7 +109,7 @@ class KEYBOARD_EXPORT ContainerFloatingBehavior : public ContainerBehavior {
   // The area within the keyboard window that must remain on screen during a
   // drag operation. Note that this is relative to the current keyboard window
   // not the screen.
-  base::Optional<gfx::Rect> area_in_window_to_remain_on_screen_;
+  absl::optional<gfx::Rect> area_in_window_to_remain_on_screen_;
 };
 
 }  // namespace keyboard

@@ -7,8 +7,8 @@
 namespace ash {
 
 ConversationStarter::ConversationStarter(const std::string& label,
-                                         const base::Optional<GURL>& action_url,
-                                         const base::Optional<GURL>& icon_url,
+                                         const absl::optional<GURL>& action_url,
+                                         const absl::optional<GURL>& icon_url,
                                          uint32_t required_permissions)
     : label_(label),
       action_url_(action_url),

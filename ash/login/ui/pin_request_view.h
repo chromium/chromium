@@ -48,7 +48,7 @@ struct ASH_EXPORT PinRequest {
   // Whether the help button is displayed.
   bool help_button_enabled = false;
 
-  base::Optional<int> pin_length;
+  absl::optional<int> pin_length;
 
   // When |pin_keyboard_always_enabled| is set, the PIN keyboard is displayed at
   // all times. Otherwise, it is only displayed when the device is in tablet

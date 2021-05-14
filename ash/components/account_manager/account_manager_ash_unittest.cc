@@ -15,7 +15,6 @@
 #include "ash/components/account_manager/account_manager_ui.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -33,6 +32,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -466,7 +466,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
             account_addition_result->status);
   // Check account.
-  base::Optional<account_manager::Account> account =
+  absl::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(account_addition_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -501,7 +501,7 @@ TEST_F(AccountManagerAshTest, ShowAddAccountDialogCanHandleMultipleCalls) {
   EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
             account_addition_result->status);
   // Check account.
-  base::Optional<account_manager::Account> account =
+  absl::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(account_addition_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -527,7 +527,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
             account_addition_result->status);
   // Check account.
-  base::Optional<account_manager::Account> account =
+  absl::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(account_addition_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -545,7 +545,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
             account_addition_result_2->status);
   // Check account.
-  base::Optional<account_manager::Account> account_2 =
+  absl::optional<account_manager::Account> account_2 =
       account_manager::FromMojoAccount(account_addition_result_2->account);
   EXPECT_TRUE(account_2.has_value());
   EXPECT_EQ(kFakeAccount.key, account_2.value().key);

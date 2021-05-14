@@ -58,7 +58,7 @@ void ScreenSecurityNotificationController::CreateNotification(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               [](base::WeakPtr<ScreenSecurityNotificationController> controller,
-                 bool is_capture, base::Optional<int> button_index) {
+                 bool is_capture, absl::optional<int> button_index) {
                 if (!button_index)
                   return;
 

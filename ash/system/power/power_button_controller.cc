@@ -382,7 +382,7 @@ void PowerButtonController::OnLoginStatusChanged(LoginStatus status) {
 }
 
 void PowerButtonController::OnGetSwitchStates(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value())
     return;
 

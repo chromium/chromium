@@ -15,7 +15,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -70,7 +70,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
   void UpdateProgressForItem(const std::string& id,
-                             const base::Optional<float>& progress);
+                             const absl::optional<float>& progress);
 
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true.

@@ -180,7 +180,7 @@ class MediaActionButton : public views::ImageButton {
 
     SetInstallFocusRingOnFocus(true);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
-                                                           base::nullopt);
+                                                           absl::nullopt);
   }
 
   ~MediaActionButton() override = default;
@@ -406,11 +406,11 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 
   // Set child view data to default values initially, until the media controller
   // observers are triggered by a change in media session state.
-  MediaSessionMetadataChanged(base::nullopt);
-  MediaSessionPositionChanged(base::nullopt);
+  MediaSessionMetadataChanged(absl::nullopt);
+  MediaSessionPositionChanged(absl::nullopt);
   MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kSourceIcon, SkBitmap());
-  SetArtwork(base::nullopt);
+  SetArtwork(absl::nullopt);
 
   // |service| can be null in tests.
   media_session::MediaSessionService* service =
@@ -538,7 +538,7 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   if (hide_controls_timer_->IsRunning())
     return;
 
@@ -569,7 +569,7 @@ void LockScreenMediaControlsView::MediaSessionActionsChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionChanged(
-    const base::Optional<base::UnguessableToken>& request_id) {
+    const absl::optional<base::UnguessableToken>& request_id) {
   if (!media_session_id_.has_value()) {
     media_session_id_ = request_id;
     return;
@@ -591,7 +591,7 @@ void LockScreenMediaControlsView::MediaSessionChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   if (hide_controls_timer_->IsRunning())
     return;
 
@@ -633,7 +633,7 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
 
   switch (type) {
     case media_session::mojom::MediaSessionImageType::kArtwork: {
-      base::Optional<gfx::ImageSkia> session_artwork;
+      absl::optional<gfx::ImageSkia> session_artwork;
       if (!converted_bitmap.empty())
         session_artwork = gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
       SetArtwork(session_artwork);
@@ -794,7 +794,7 @@ void LockScreenMediaControlsView::Dismiss() {
 }
 
 void LockScreenMediaControlsView::SetArtwork(
-    base::Optional<gfx::ImageSkia> img) {
+    absl::optional<gfx::ImageSkia> img) {
   if (!img.has_value()) {
     if (!session_artwork_->GetVisible() || hide_artwork_timer_->IsRunning())
       return;

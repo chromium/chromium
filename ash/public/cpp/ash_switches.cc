@@ -148,7 +148,7 @@ const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 const char kSupportsClamshellAutoRotation[] =
     "supports-clamshell-auto-rotation";
 
-base::Optional<base::TimeDelta> ContextualNudgesInterval() {
+absl::optional<base::TimeDelta> ContextualNudgesInterval() {
   int numeric_cooldown_time;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kAshContextualNudgesInterval) &&
@@ -161,9 +161,9 @@ base::Optional<base::TimeDelta> ContextualNudgesInterval() {
     cooldown_time =
         base::ClampToRange(cooldown_time, kAshContextualNudgesMinInterval,
                            kAshContextualNudgesMaxInterval);
-    return base::Optional<base::TimeDelta>(cooldown_time);
+    return absl::optional<base::TimeDelta>(cooldown_time);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ContextualNudgesResetShownCount() {

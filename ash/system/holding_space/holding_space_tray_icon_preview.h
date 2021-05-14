@@ -77,9 +77,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   ui::Layer* layer() { return layer_owner_.layer(); }
 
-  const base::Optional<size_t>& index() const { return index_; }
+  const absl::optional<size_t>& index() const { return index_; }
 
-  const base::Optional<size_t>& pending_index() const { return pending_index_; }
+  const absl::optional<size_t>& pending_index() const { return pending_index_; }
   void set_pending_index(size_t index) { pending_index_ = index; }
 
  private:
@@ -167,11 +167,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   // If set, the preview index within the holding space tray icon. May be unset
   // during icon update transition before the preview is animated in.
-  base::Optional<size_t> index_;
+  absl::optional<size_t> index_;
 
   // If set, the index within the holding space tray icon to which the preview
   // is about to move. Set while the holding space tray icon is updating.
-  base::Optional<size_t> pending_index_;
+  absl::optional<size_t> pending_index_;
 
   // Subscription for changes to the holding space image backing
   // `contents_image_`.

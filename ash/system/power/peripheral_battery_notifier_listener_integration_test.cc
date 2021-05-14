@@ -178,7 +178,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   const PeripheralBatteryNotifier::NotificationInfo& info =
       battery_notifier_->battery_notifications_[kTestBatteryId];
 
-  EXPECT_EQ(base::nullopt, info.level);
+  EXPECT_EQ(absl::nullopt, info.level);
   EXPECT_EQ(GetTestingClock(), info.last_notification_timestamp);
   EXPECT_FALSE(
       message_center_->FindVisibleNotificationById(kTestBatteryNotificationId));
@@ -203,7 +203,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   // Level -1 at time 115, cancel previous notification
   ClockAdvance(base::TimeDelta::FromSeconds(5));
   SendBatteryUpdate(kTestBatteryPath, kTestDeviceName, -1);
-  EXPECT_EQ(base::nullopt, info.level);
+  EXPECT_EQ(absl::nullopt, info.level);
   EXPECT_EQ(GetTestingClock() - base::TimeDelta::FromSeconds(5),
             info.last_notification_timestamp);
   EXPECT_FALSE(
@@ -212,7 +212,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   // Level 50 at time 120, no low-battery notification.
   ClockAdvance(base::TimeDelta::FromSeconds(5));
   SendBatteryUpdate(kTestBatteryPath, kTestDeviceName, 50);
-  EXPECT_EQ(base::nullopt, info.level);
+  EXPECT_EQ(absl::nullopt, info.level);
   EXPECT_EQ(GetTestingClock() - base::TimeDelta::FromSeconds(10),
             info.last_notification_timestamp);
   EXPECT_FALSE(
@@ -536,7 +536,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest,
   // The notification should get canceled.
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       kBluetoothDeviceNotificationId1));
 }
@@ -558,7 +558,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest,
   ClockAdvance(base::TimeDelta::FromSeconds(1));
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       kBluetoothDeviceNotificationId1));
 
@@ -589,7 +589,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest,
   ClockAdvance(base::TimeDelta::FromSeconds(1));
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       kBluetoothDeviceNotificationId1));
 

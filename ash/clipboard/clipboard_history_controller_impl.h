@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 

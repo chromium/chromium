@@ -224,8 +224,8 @@ aura::Window* GetWindowForDragToHomeOrOverview(
 
 // Calculates the type of hotseat gesture which should be recorded in histogram.
 // Returns the null value if no gesture should be recorded.
-base::Optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
-    base::Optional<ShelfWindowDragResult> window_drag_result,
+absl::optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
+    absl::optional<ShelfWindowDragResult> window_drag_result,
     bool transitioned_from_overview_to_home,
     HotseatState old_state,
     HotseatState current_state) {
@@ -245,7 +245,7 @@ base::Optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
     return InAppShelfGestures::kFlingUpToShowHomeScreen;
 
   if (old_state == current_state)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (current_state == HotseatState::kHidden)
     return InAppShelfGestures::kSwipeDownToHide;
@@ -253,7 +253,7 @@ base::Optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
   if (current_state == HotseatState::kExtended)
     return InAppShelfGestures::kSwipeUpToShow;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Forwards gesture events to ShelfLayoutManager to hide the hotseat
@@ -771,7 +771,7 @@ bool ShelfLayoutManager::ProcessGestureEvent(
   }
 
   // Unexpected event. Reset the state and let the event fall through.
-  CancelDrag(base::nullopt);
+  CancelDrag(absl::nullopt);
   return false;
 }
 
@@ -934,7 +934,7 @@ void ShelfLayoutManager::CancelDragOnShelfIfInProgress() {
   if (drag_status_ == kDragInProgress ||
       drag_status_ == kDragAppListInProgress ||
       drag_status_ == kDragHomeToOverviewInProgress) {
-    CancelDrag(base::nullopt);
+    CancelDrag(absl::nullopt);
   }
 }
 
@@ -1478,7 +1478,7 @@ bool ShelfLayoutManager::SetDimmed(bool dimmed) {
       ShelfConfig::Get()->DimAnimationTween();
 
   const bool animate = !dim_animation_duration.is_zero();
-  base::Optional<ui::AnimationThroughputReporter> navigation_widget_reporter;
+  absl::optional<ui::AnimationThroughputReporter> navigation_widget_reporter;
   if (animate) {
     navigation_widget_reporter.emplace(
         GetLayer(shelf_->navigation_widget())->GetAnimator(),
@@ -1870,13 +1870,13 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
   return SHELF_AUTO_HIDE_HIDDEN;
 }
 
-base::Optional<ShelfAutoHideState>
+absl::optional<ShelfAutoHideState>
 ShelfLayoutManager::CalculateAutoHideStateBasedOnCursorLocation() const {
   // No mouse is available in tablet mode. So there is no point to calculate
   // the auto-hide state by the cursor location in this scenario.
   const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
   if (in_tablet_mode)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Do not perform any checks based on the cursor position if the mouse
   // cursor is currently hidden.
@@ -1925,7 +1925,7 @@ ShelfLayoutManager::CalculateAutoHideStateBasedOnCursorLocation() const {
     return SHELF_AUTO_HIDE_SHOWN;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
@@ -2320,7 +2320,7 @@ void ShelfLayoutManager::UpdateDrag(const ui::LocatedEvent& event_in_screen,
 
 void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
   // End the possible window drag before checking the shelf visibility.
-  base::Optional<ShelfWindowDragResult> window_drag_result =
+  absl::optional<ShelfWindowDragResult> window_drag_result =
       MaybeEndWindowDrag(event_in_screen);
   HotseatState old_hotseat_state = hotseat_state();
 
@@ -2340,7 +2340,7 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
 
   // Hotseat gestures are only meaningful in tablet mode.
   if (Shell::Get()->IsInTabletMode()) {
-    base::Optional<InAppShelfGestures> gesture_to_record =
+    absl::optional<InAppShelfGestures> gesture_to_record =
         CalculateHotseatGestureToRecord(window_drag_result,
                                         transitioned_from_overview_to_home,
                                         old_hotseat_state, hotseat_state());
@@ -2364,7 +2364,7 @@ void ShelfLayoutManager::CompleteAppListDrag(
           event_in_screen, launcher_above_shelf_bottom_amount_);
 
   // Keep auto-hide shelf visible if failed to open the app list.
-  base::Optional<Shelf::ScopedAutoHideLock> auto_hide_lock;
+  absl::optional<Shelf::ScopedAutoHideLock> auto_hide_lock;
   if (app_list_state == AppListViewState::kClosed)
     auto_hide_lock.emplace(shelf_);
   Shell::Get()->app_list_controller()->EndDragFromShelf(app_list_state);
@@ -2373,9 +2373,9 @@ void ShelfLayoutManager::CompleteAppListDrag(
 
 void ShelfLayoutManager::CompleteDragHomeToOverview(
     const ui::LocatedEvent& event_in_screen) {
-  base::Optional<float> velocity_y;
+  absl::optional<float> velocity_y;
   if (event_in_screen.type() == ui::ET_SCROLL_FLING_START) {
-    velocity_y = base::make_optional(
+    velocity_y = absl::make_optional(
         event_in_screen.AsGestureEvent()->details().velocity_y());
   }
   DCHECK(swipe_home_to_overview_controller_);
@@ -2386,7 +2386,7 @@ void ShelfLayoutManager::CompleteDragHomeToOverview(
 }
 
 void ShelfLayoutManager::CancelDrag(
-    base::Optional<ShelfWindowDragResult> window_drag_result) {
+    absl::optional<ShelfWindowDragResult> window_drag_result) {
   if (drag_status_ == kDragAppListInProgress) {
     Shell::Get()->app_list_controller()->DismissAppList();
   } else if (drag_status_ == kDragHomeToOverviewInProgress) {
@@ -2629,17 +2629,17 @@ void ShelfLayoutManager::MaybeUpdateWindowDrag(
                                 scroll.y());
 }
 
-base::Optional<ShelfWindowDragResult> ShelfLayoutManager::MaybeEndWindowDrag(
+absl::optional<ShelfWindowDragResult> ShelfLayoutManager::MaybeEndWindowDrag(
     const ui::LocatedEvent& event_in_screen) {
   if (!IsWindowDragInProgress())
-    return base::nullopt;
+    return absl::nullopt;
 
   shelf_widget_->GetDragHandle()->SetWindowDragFromShelfInProgress(false);
 
   DCHECK_EQ(drag_status_, kDragInProgress);
-  base::Optional<float> velocity_y;
+  absl::optional<float> velocity_y;
   if (event_in_screen.type() == ui::ET_SCROLL_FLING_START) {
-    velocity_y = base::make_optional(
+    velocity_y = absl::make_optional(
         event_in_screen.AsGestureEvent()->details().velocity_y());
   }
 
@@ -2701,7 +2701,7 @@ bool ShelfLayoutManager::IsWindowDragInProgress() const {
 
 void ShelfLayoutManager::UpdateVisibilityStateForTrayBubbleChange(
     bool bubble_shown) {
-  base::Optional<base::AutoReset<bool>> reset;
+  absl::optional<base::AutoReset<bool>> reset;
 
   // Hides the hotseat when the hotseat is in kExtended mode and the system tray
   // shows.

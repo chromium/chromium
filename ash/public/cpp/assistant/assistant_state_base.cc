@@ -23,19 +23,19 @@ using chromeos::assistant::prefs::AssistantOnboardingMode;
 #define PRINT_VALUE(value) PrintValue(&result, #value, value())
 
 template <typename T, std::enable_if_t<std::is_enum<T>::value>* = nullptr>
-void PrintValue(std::stringstream* result, const base::Optional<T>& value) {
+void PrintValue(std::stringstream* result, const absl::optional<T>& value) {
   *result << base::NumberToString(static_cast<int>(value.value()));
 }
 
 template <typename T, std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
-void PrintValue(std::stringstream* result, const base::Optional<T>& value) {
+void PrintValue(std::stringstream* result, const absl::optional<T>& value) {
   *result << value.value();
 }
 
 template <typename T>
 void PrintValue(std::stringstream* result,
                 const std::string& name,
-                const base::Optional<T>& value) {
+                const absl::optional<T>& value) {
   *result << std::endl << "  " << name << ": ";
   if (value.has_value())
     PrintValue(result, value);

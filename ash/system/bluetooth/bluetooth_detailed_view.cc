@@ -323,9 +323,9 @@ int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
       case BluetoothDeviceInfo::ConnectionState::kConnected:
         SetupConnectedScrollListItem(
             container, device->battery_info
-                           ? base::make_optional<uint8_t>(
+                           ? absl::make_optional<uint8_t>(
                                  device->battery_info->battery_percentage)
-                           : base::nullopt);
+                           : absl::nullopt);
         break;
     }
     scroll_content()->ReorderChildView(container, child_index++);
@@ -366,13 +366,13 @@ void BluetoothDetailedView::ShowSettings() {
   }
 }
 
-base::Optional<BluetoothAddress>
+absl::optional<BluetoothAddress>
 BluetoothDetailedView::GetFocusedDeviceAddress() const {
   for (const auto& view_and_address : device_map_) {
     if (view_and_address.first->HasFocus())
       return view_and_address.second;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void BluetoothDetailedView::FocusDeviceByAddress(

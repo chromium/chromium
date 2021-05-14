@@ -87,9 +87,9 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
 void TestAccessibilityControllerClient::SetA11yOverrideWindow(
     aura::Window* a11y_override_window) {}
 
-base::Optional<Sound>
+absl::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  return std::exchange(sound_key_, base::nullopt);
+  return std::exchange(sound_key_, absl::nullopt);
 }
 
 }  // namespace ash

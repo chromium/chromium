@@ -11,8 +11,8 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/optional.h"
 #include "components/sync/model/string_ordinal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
@@ -319,12 +319,12 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // A query URL associated with this result. The meaning and treatment of the
   // URL (e.g. displaying inline web contents) is dependent on the result type.
-  base::Optional<GURL> query_url;
+  absl::optional<GURL> query_url;
 
   // An optional id that identifies an equivalent result to this result. Answer
   // card result has this set to remove the equivalent omnibox
   // search-what-you-typed result when there is an answer card for the query.
-  base::Optional<std::string> equivalent_result_id;
+  absl::optional<std::string> equivalent_result_id;
 
   // The icon of this result.
   gfx::ImageSkia icon;

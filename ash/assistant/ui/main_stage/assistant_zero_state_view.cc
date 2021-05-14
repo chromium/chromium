@@ -71,8 +71,8 @@ void AssistantZeroStateView::OnAssistantControllerDestroying() {
 void AssistantZeroStateView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (new_visibility == AssistantVisibility::kClosed)
     UpdateLayout();
 }

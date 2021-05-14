@@ -586,7 +586,7 @@ void AuthDialogContentsView::OnAuthSubmit(const std::u16string& pin) {
 }
 
 // TODO(b/156258540): Clear PIN if auth failed and retry is allowed.
-void AuthDialogContentsView::OnPinAuthComplete(base::Optional<bool> success) {
+void AuthDialogContentsView::OnPinAuthComplete(absl::optional<bool> success) {
   // On success, do nothing, and the dialog will dismiss.
   if (success.has_value() && success.value())
     return;

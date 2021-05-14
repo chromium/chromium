@@ -57,8 +57,8 @@ class BluetoothPairingNotificationDelegate
 
   // message_center::NotificationDelegate overrides.
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   // Buttons that appear in notifications.
@@ -98,8 +98,8 @@ void BluetoothPairingNotificationDelegate::Close(bool by_user) {
 }
 
 void BluetoothPairingNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 
@@ -144,8 +144,8 @@ class BluetoothNotificationController::BluetoothPairedNotificationDelegate
   ~BluetoothPairedNotificationDelegate() override = default;
 
   // message_center::NotificationDelegate:
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (TrayPopupUtils::CanOpenWebUISettings())
       Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
   }

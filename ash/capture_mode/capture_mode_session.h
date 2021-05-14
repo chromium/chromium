@@ -12,7 +12,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -328,7 +328,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Caches the old status of mouse warping while dragging or resizing a
   // captured region.
-  base::Optional<bool> old_mouse_warp_status_;
+  absl::optional<bool> old_mouse_warp_status_;
 
   // Observer to observe the current selected to-be-captured window.
   std::unique_ptr<CaptureWindowObserver> capture_window_observer_;

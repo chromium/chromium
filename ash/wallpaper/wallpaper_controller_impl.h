@@ -510,7 +510,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Gets prominent color cache from the local state pref service. Returns an
   // empty value if the cache is not available.
-  base::Optional<std::vector<SkColor>> GetCachedColors(
+  absl::optional<std::vector<SkColor>> GetCachedColors(
       const std::string& current_location) const;
 
   // The callback when decoding of the always-on-top wallpaper completes.

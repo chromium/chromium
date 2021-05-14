@@ -9,6 +9,7 @@ include_rules = [
   "+mojo/public",
   "+services/audio/public",
   "+services/viz/privileged/mojom/compositing",
+  "+third_party/abseil-cpp/absl",
   "+ui/gfx",
 ]
 

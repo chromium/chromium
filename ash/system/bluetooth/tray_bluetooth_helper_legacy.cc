@@ -64,7 +64,7 @@ void BluetoothSetDiscoveringError() {
 void OnBluetoothDeviceConnect(bool was_device_already_paired) {
   if (was_device_already_paired) {
     device::RecordUserInitiatedReconnectionAttemptResult(
-        base::nullopt /* failure_reason */,
+        absl::nullopt /* failure_reason */,
         device::BluetoothUiSurface::kSystemTray);
   }
 }

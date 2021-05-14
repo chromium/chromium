@@ -9,7 +9,7 @@
 
 #include "ash/shortcut_viewer/ksv_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace keyboard_shortcut_viewer {
@@ -57,7 +57,7 @@ struct KSV_EXPORT KeyboardShortcutItem {
   KeyboardShortcutItem(
       const std::vector<ShortcutCategory>& categories,
       int description_message_id,
-      base::Optional<int> shortcut_message_id,
+      absl::optional<int> shortcut_message_id,
       const std::vector<AcceleratorId>& accelerator_ids = {},
       const std::vector<ui::KeyboardCode>& shortcut_key_codes = {});
   explicit KeyboardShortcutItem(const KeyboardShortcutItem& other);
@@ -73,7 +73,7 @@ struct KSV_EXPORT KeyboardShortcutItem {
   // shortcut.
   // If missing, automatically determine the ID based on the number of
   // `shortcut_key_codes`.
-  base::Optional<int> shortcut_message_id;
+  absl::optional<int> shortcut_message_id;
 
   // Multiple accelerators can be mapped to the same KeyboardShortcutItem.
   // |shortcut_key_codes| could be auto-generated from |accelerator_ids| to

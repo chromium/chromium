@@ -79,7 +79,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     EXPECT_TRUE(notification_);
     EXPECT_EQ(id, notification_->id());
     for (auto& observer : observer_list())
-      observer.OnNotificationClicked(id, base::nullopt, base::nullopt);
+      observer.OnNotificationClicked(id, absl::nullopt, absl::nullopt);
   }
 
   void ClickOnNotificationButton(const std::string& id,
@@ -87,7 +87,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     EXPECT_TRUE(notification_);
     EXPECT_EQ(id, notification_->id());
     for (auto& observer : observer_list())
-      observer.OnNotificationClicked(id, button_index, base::nullopt);
+      observer.OnNotificationClicked(id, button_index, absl::nullopt);
   }
 
  private:

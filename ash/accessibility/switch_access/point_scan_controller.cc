@@ -129,23 +129,23 @@ void PointScanController::ResetAnimation() {
     vertical_line_layer_->SetSubpixelPositionOffset(gfx::Vector2dF(0, 0));
 }
 
-base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
+absl::optional<gfx::PointF> PointScanController::OnPointSelect() {
   switch (state_) {
     case PointScanState::kHorizontalRangeScanning:
       StartHorizontalLineScan();
-      return base::nullopt;
+      return absl::nullopt;
     case PointScanState::kHorizontalScanning:
       StartVerticalRangeScan();
-      return base::nullopt;
+      return absl::nullopt;
     case PointScanState::kVerticalRangeScanning:
       StartVerticalLineScan();
-      return base::nullopt;
+      return absl::nullopt;
     case PointScanState::kVerticalScanning:
       Stop();
       return gfx::PointF(horizontal_line_layer_info_.offset,
                          vertical_line_layer_info_.offset);
     case PointScanState::kOff:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

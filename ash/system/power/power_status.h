@@ -11,10 +11,10 @@
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -157,8 +157,8 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Irrespective of IsBatteryTimeBeingCalculated(), estimates may be
   // unavailable if powerd didn't provide them because the battery current was
   // close to zero (resulting in time estimates approaching infinity).
-  base::Optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
-  base::Optional<base::TimeDelta> GetBatteryTimeToFull() const;
+  absl::optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
+  absl::optional<base::TimeDelta> GetBatteryTimeToFull() const;
 
   // Returns true if line power (including a charger of any type) is connected.
   bool IsLinePowerConnected() const;

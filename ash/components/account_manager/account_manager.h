@@ -18,9 +18,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
@@ -377,7 +377,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
   // Returns the refresh token for `account_key`, if present. `account_key` must
   // be a Gaia account. Assumes that `AccountManager` initialization
   // (`init_state_`) is complete.
-  base::Optional<std::string> GetRefreshToken(
+  absl::optional<std::string> GetRefreshToken(
       const ::account_manager::AccountKey& account_key);
 
   // Returns `url_loader_factory_`. Assumes that `AccountManager` initialization

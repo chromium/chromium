@@ -83,7 +83,7 @@ class UnifiedMessageListView::MessageViewContainer
   // Check if the notification is manually expanded / collapsed before and
   // restores the state.
   void LoadExpandedState(UnifiedSystemTrayModel* model, bool is_latest) {
-    base::Optional<bool> manually_expanded =
+    absl::optional<bool> manually_expanded =
         model->GetNotificationExpanded(GetNotificationId());
     if (manually_expanded.has_value()) {
       message_view_->SetExpanded(manually_expanded.value());

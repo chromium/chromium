@@ -41,14 +41,14 @@ class ASH_EXPORT MicrophoneMuteNotificationController
   // Creates a notification for telling the user they're attempting to use the
   // mic while the mis is muted.
   void GenerateMicrophoneMuteNotification(
-      const base::Optional<std::u16string>& app_name);
+      const absl::optional<std::u16string>& app_name);
 
   // Mic mute notification title.
   std::u16string GetNotificationTitle() const;
 
   // Mic mute notification body.
   std::u16string GetNotificationMessage(
-      const base::Optional<std::u16string>& app_name) const;
+      const absl::optional<std::u16string>& app_name) const;
 
   // Takes down the mic mute notification.
   void RemoveMicrophoneMuteNotification();

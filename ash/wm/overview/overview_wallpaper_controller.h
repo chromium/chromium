@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,7 +40,7 @@ class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
   //   - nullopt: Apply the blur immediately.
   //   - true/false: Animates and applies the blur only if this value matches
   //     whether animations are allowed based on each root window.
-  void UpdateWallpaper(bool should_blur, base::Optional<bool> animate);
+  void UpdateWallpaper(bool should_blur, absl::optional<bool> animate);
 
   // Tracks if the wallpaper blur should be applied.
   bool wallpaper_blurred_ = false;

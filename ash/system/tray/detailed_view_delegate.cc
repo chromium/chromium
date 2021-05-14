@@ -99,8 +99,8 @@ void DetailedViewDelegate::CloseBubble() {
   tray_controller_->CloseBubble();
 }
 
-base::Optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
-  return base::nullopt;
+absl::optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
+  return absl::nullopt;
 }
 
 gfx::Insets DetailedViewDelegate::GetInsetsForDetailedView() const {

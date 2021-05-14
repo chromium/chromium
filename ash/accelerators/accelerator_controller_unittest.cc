@@ -56,7 +56,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,6 +69,7 @@
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -167,7 +167,7 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
   }
   void SetBrightnessPercent(double percent, bool gradual) override {}
   void GetBrightnessPercent(
-      base::OnceCallback<void(base::Optional<double>)> callback) override {
+      base::OnceCallback<void(absl::optional<double>)> callback) override {
     std::move(callback).Run(100.0);
   }
 
@@ -2591,7 +2591,7 @@ struct MediaSessionAcceleratorTestConfig {
 
   // Runs the test with the supplied action enabled and will also send the media
   // session info to the controller.
-  base::Optional<MediaSessionAction> with_action_enabled;
+  absl::optional<MediaSessionAction> with_action_enabled;
 
   // If true then we should expect the action will handle the media keys.
   bool eligible_action = false;
@@ -2645,7 +2645,7 @@ class MediaSessionAcceleratorTest
     SimulatePlaybackState(playback_state);
   }
 
-  void SimulateActionsChanged(base::Optional<MediaSessionAction> action) {
+  void SimulateActionsChanged(absl::optional<MediaSessionAction> action) {
     std::vector<MediaSessionAction> actions;
 
     if (action)
@@ -2875,7 +2875,7 @@ TEST_P(MediaSessionAcceleratorTest,
     EXPECT_EQ(0, controller()->next_track_count());
   }
 
-  SimulateActionsChanged(base::nullopt);
+  SimulateActionsChanged(absl::nullopt);
 
   ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE));
   Shell::Get()->media_controller()->FlushForTesting();

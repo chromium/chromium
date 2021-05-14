@@ -10,7 +10,7 @@
 #include "ash/login_status.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class ToggleButton;
@@ -91,7 +91,7 @@ class BluetoothDetailedView : public TrayDetailedView {
 
   void ShowSettings();
 
-  base::Optional<BluetoothAddress> GetFocusedDeviceAddress() const;
+  absl::optional<BluetoothAddress> GetFocusedDeviceAddress() const;
   void FocusDeviceByAddress(const BluetoothAddress& address) const;
 
   // TrayDetailedView:

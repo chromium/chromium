@@ -59,7 +59,7 @@ class WallpaperView : public WallpaperBaseView,
 
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.
-  base::Optional<gfx::ImageSkia> small_image_;
+  absl::optional<gfx::ImageSkia> small_image_;
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperView);
 };

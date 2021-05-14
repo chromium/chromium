@@ -76,7 +76,7 @@ ASH_EXPORT gfx::Point CalculateBubblePositionBeforeAfterStrategy(
 // radius will be determined by the view's bounds.
 void ConfigureRectFocusRingCircleInkDrop(views::View* view,
                                          views::FocusRing* focus_ring,
-                                         base::Optional<int> radius);
+                                         absl::optional<int> radius);
 
 }  // namespace login_views_utils
 

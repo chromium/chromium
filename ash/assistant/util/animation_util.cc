@@ -116,11 +116,11 @@ void StartLayerAnimationSequence(
     ::ui::LayerAnimator* layer_animator,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer,
-    base::Optional<AnimationSmoothnessCallback> smoothness_callback) {
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   if (observer)
     layer_animation_sequence->AddObserver(observer);
 
-  base::Optional<ui::AnimationThroughputReporter> reporter;
+  absl::optional<ui::AnimationThroughputReporter> reporter;
   if (smoothness_callback) {
     reporter.emplace(layer_animator, ash::metrics_util::ForSmoothness(
                                          smoothness_callback.value()));
@@ -132,7 +132,7 @@ void StartLayerAnimationSequence(
     views::View* view,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer,
-    base::Optional<AnimationSmoothnessCallback> smoothness_callback) {
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   DCHECK(view->layer());
   StartLayerAnimationSequence(view->layer()->GetAnimator(),
                               layer_animation_sequence, observer,

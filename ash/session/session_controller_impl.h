@@ -119,7 +119,7 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Returns the type of the current user, or empty if there is no current user
   // logged in.
-  base::Optional<user_manager::UserType> GetUserType() const;
+  absl::optional<user_manager::UserType> GetUserType() const;
 
   // Returns true if the current user is the primary user in a multi-profile
   // scenario. This always return true if there is only one user logged in.

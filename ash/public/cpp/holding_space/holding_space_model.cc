@@ -98,7 +98,7 @@ void HoldingSpaceModel::UpdateBackingFileForItem(
 
 void HoldingSpaceModel::UpdateProgressForItem(
     const std::string& id,
-    const base::Optional<float>& progress) {
+    const absl::optional<float>& progress) {
   auto item_it = std::find_if(
       items_.begin(), items_.end(),
       [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {

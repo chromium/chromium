@@ -14,8 +14,8 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -44,7 +44,7 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
-  base::Optional<int> GetSearchBoxTop(
+  absl::optional<int> GetSearchBoxTop(
       AppListViewState view_state) const override;
   void UpdatePageOpacityForState(AppListState state,
                                  float search_box_opacity,
@@ -70,8 +70,8 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
  private:
   void InitLayout();

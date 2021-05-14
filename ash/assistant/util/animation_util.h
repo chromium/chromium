@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace base {
@@ -102,8 +102,8 @@ void StartLayerAnimationSequence(
     ::ui::LayerAnimator* layer_animator,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer = nullptr,
-    base::Optional<AnimationSmoothnessCallback> smoothness_callback =
-        base::nullopt);
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback =
+        absl::nullopt);
 
 // Starts the specified |layer_animation_sequence| on the layer of the given
 // |view|. If an optional |observer| is supplied, it will be added to the
@@ -114,8 +114,8 @@ void StartLayerAnimationSequence(
     views::View* view,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer = nullptr,
-    base::Optional<AnimationSmoothnessCallback> animation_smoothness_callback =
-        base::nullopt);
+    absl::optional<AnimationSmoothnessCallback> animation_smoothness_callback =
+        absl::nullopt);
 
 // Starts the specified |layer_animation_sequences| together on the given
 // |layer_animator|. If an optional |observer| is supplied, it will be added

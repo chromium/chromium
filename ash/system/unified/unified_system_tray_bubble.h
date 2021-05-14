@@ -13,8 +13,8 @@
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget_observer.h"
@@ -161,7 +161,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   std::unique_ptr<TimeToClickRecorder> time_to_click_recorder_;
 
   // The time the bubble is created.
-  base::Optional<base::TimeTicks> time_opened_;
+  absl::optional<base::TimeTicks> time_opened_;
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;

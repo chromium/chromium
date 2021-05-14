@@ -23,7 +23,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/check.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -74,7 +74,7 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   // If the home launcher is not shown in tablet mode, ignore events.
-  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible(base::nullopt))
+  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible(absl::nullopt))
     return;
 
   // Don't absorb the first event for the search box while it is open.

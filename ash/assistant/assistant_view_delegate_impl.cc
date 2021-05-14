@@ -102,7 +102,7 @@ void AssistantViewDelegateImpl::OnNotificationButtonPressed(
     const std::string& notification_id,
     int notification_button_index) {
   assistant_controller_->notification_controller()->OnNotificationClicked(
-      notification_id, notification_button_index, /*reply=*/base::nullopt);
+      notification_id, notification_button_index, /*reply=*/absl::nullopt);
 }
 
 void AssistantViewDelegateImpl::OnOnboardingShown() {

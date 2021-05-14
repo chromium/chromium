@@ -11,8 +11,8 @@
 
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace aura {
@@ -71,7 +71,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // If |initial_category| has value, we will initialize the specified category,
   // otherwise all the categories will be intialized.
   void InitCategoriesTabbedPane(
-      base::Optional<ShortcutCategory> initial_category);
+      absl::optional<ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
   void UpdateViewsLayout(bool is_search_box_active);

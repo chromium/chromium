@@ -179,12 +179,12 @@ bool SessionControllerImpl::IsUserPublicAccount() const {
   return active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
 }
 
-base::Optional<user_manager::UserType> SessionControllerImpl::GetUserType()
+absl::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
     const {
   if (!IsActiveUserSessionStarted())
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional(GetUserSession(0)->user_info.type);
+  return absl::make_optional(GetUserSession(0)->user_info.type);
 }
 
 bool SessionControllerImpl::IsUserPrimary() const {

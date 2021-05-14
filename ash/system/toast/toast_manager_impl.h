@@ -47,7 +47,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void ResetSerialForTesting() { serial_ = 0; }
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
-  base::Optional<ToastData> current_toast_data_;
+  absl::optional<ToastData> current_toast_data_;
 
   int serial_ = 0;
   bool locked_;

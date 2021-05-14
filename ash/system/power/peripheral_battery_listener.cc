@@ -15,12 +15,12 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -113,7 +113,7 @@ PeripheralBatteryListener::BatteryInfo::BatteryInfo() = default;
 PeripheralBatteryListener::BatteryInfo::BatteryInfo(
     const std::string& key,
     const std::u16string& name,
-    base::Optional<uint8_t> level,
+    absl::optional<uint8_t> level,
     base::TimeTicks last_update_timestamp,
     PeripheralType type,
     ChargeStatus charge_status,
@@ -182,7 +182,7 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
     type = BatteryInfo::PeripheralType::kOther;
 
   std::string map_key = GetBatteryMapKey(path);
-  base::Optional<uint8_t> opt_level;
+  absl::optional<uint8_t> opt_level;
 
   // 0-level charge events can come through when devices are created,
   // usually on boot; for the stylus, convert the level to 'not present',
@@ -191,7 +191,7 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
       (level == 0 &&
        (type == BatteryInfo::PeripheralType::kStylusViaScreen ||
         type == BatteryInfo::PeripheralType::kStylusViaCharger))) {
-    opt_level = base::nullopt;
+    opt_level = absl::nullopt;
   } else {
     opt_level = level;
   }
@@ -212,7 +212,7 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
 void PeripheralBatteryListener::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
-    base::Optional<uint8_t> new_battery_percentage) {
+    absl::optional<uint8_t> new_battery_percentage) {
   if (new_battery_percentage)
     DCHECK_LE(new_battery_percentage.value(), 100);
 

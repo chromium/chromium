@@ -11,7 +11,7 @@
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tracker.h"
 
 class AccountId;

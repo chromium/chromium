@@ -52,7 +52,7 @@ LoginButton::LoginButton(PressedCallback callback)
 
   SetInstallFocusRingOnFocus(true);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
-                                                         base::nullopt);
+                                                         absl::nullopt);
 }
 
 LoginButton::~LoginButton() = default;

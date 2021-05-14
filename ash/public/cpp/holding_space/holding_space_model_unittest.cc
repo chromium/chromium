@@ -104,7 +104,7 @@ TEST_P(HoldingSpaceModelTest, UpdateProgressForItem) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
-      /*progress=*/base::nullopt,
+      /*progress=*/absl::nullopt,
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -114,7 +114,7 @@ TEST_P(HoldingSpaceModelTest, UpdateProgressForItem) {
   EXPECT_EQ(model().items()[0].get(), item_ptr);
 
   // Verify progress is indeterminate.
-  EXPECT_EQ(item_ptr->progress(), base::nullopt);
+  EXPECT_EQ(item_ptr->progress(), absl::nullopt);
 
   // Update progress to `0.5f`.
   model().UpdateProgressForItem(item_ptr->id(), 0.5f);
@@ -127,9 +127,9 @@ TEST_P(HoldingSpaceModelTest, UpdateProgressForItem) {
   EXPECT_EQ(item_ptr->progress(), 0.5f);
 
   // Update progress to indeterminate.
-  model().UpdateProgressForItem(item_ptr->id(), base::nullopt);
+  model().UpdateProgressForItem(item_ptr->id(), absl::nullopt);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(item_ptr->progress(), base::nullopt);
+  EXPECT_EQ(item_ptr->progress(), absl::nullopt);
 
   // Update progress to complete.
   model().UpdateProgressForItem(item_ptr->id(), 1.f);

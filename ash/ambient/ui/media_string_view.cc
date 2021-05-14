@@ -155,7 +155,7 @@ void MediaStringView::MediaSessionInfoChanged(
 }
 
 void MediaStringView::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   media_session::MediaMetadata session_metadata =
       metadata.value_or(media_session::MediaMetadata());
 

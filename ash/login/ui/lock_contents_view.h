@@ -26,10 +26,10 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -246,10 +246,10 @@ class ASH_EXPORT LockContentsView
     bool disable_auth = false;
     bool show_pin_pad_for_password = false;
     size_t autosubmit_pin_length = 0;
-    base::Optional<EasyUnlockIconOptions> easy_unlock_state = base::nullopt;
+    absl::optional<EasyUnlockIconOptions> easy_unlock_state = absl::nullopt;
     FingerprintState fingerprint_state;
     // When present, indicates that the TPM is locked.
-    base::Optional<base::TimeDelta> time_until_tpm_unlock = base::nullopt;
+    absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(UserState);
@@ -497,7 +497,7 @@ class ASH_EXPORT LockContentsView
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.
-  base::Optional<bool> enable_system_info_enforced_ = base::nullopt;
+  absl::optional<bool> enable_system_info_enforced_ = absl::nullopt;
 
   // Whether the system information is intended to be displayed if possible.
   // (e.g., Alt-V is pressed, particular OS channels)

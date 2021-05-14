@@ -122,7 +122,7 @@ class HoldingSpaceScrollView : public views::ScrollView,
 HoldingSpaceItemViewsSection::HoldingSpaceItemViewsSection(
     HoldingSpaceItemViewDelegate* delegate,
     std::set<HoldingSpaceItem::Type> supported_types,
-    const base::Optional<size_t>& max_count)
+    const absl::optional<size_t>& max_count)
     : delegate_(delegate),
       supported_types_(std::move(supported_types)),
       max_count_(max_count) {}
@@ -155,7 +155,7 @@ void HoldingSpaceItemViewsSection::Init() {
     container_ = AddChildView(CreateContainer());
   } else {
     auto* scroll = AddChildView(std::make_unique<HoldingSpaceScrollView>());
-    scroll->SetBackgroundColor(base::nullopt);
+    scroll->SetBackgroundColor(absl::nullopt);
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
     scroll->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);

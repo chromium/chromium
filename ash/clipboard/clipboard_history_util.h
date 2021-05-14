@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class ImageSkia;
@@ -78,7 +78,7 @@ enum class ClipboardHistoryDisplayFormat {
 
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
-ASH_EXPORT base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+ASH_EXPORT absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data);
 
 // Returns the display format of the specified clipboard `data`. This determines

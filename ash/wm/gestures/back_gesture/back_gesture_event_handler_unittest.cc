@@ -770,7 +770,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 1:
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press and release the second
   // finger.
@@ -783,7 +783,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 2:
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -798,7 +798,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
   wm::ActivateWindow(top_window());
   GetShellDelegate()->SetShouldWaitForTouchAck(
       /*should_wait_for_touch_ack=*/true);
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press and release the second
   // finger.
@@ -811,7 +811,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 4:
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -831,7 +831,7 @@ TEST_F(BackGestureEventHandlerTest, CancelledEventOnSecondFinger) {
   const gfx::Point end_point(200, 100);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -851,7 +851,7 @@ TEST_F(BackGestureEventHandlerTest, CancelledEventOnSecondFinger) {
   Shell::Get()->back_gesture_event_handler()->OnTouchEvent(&event);
 
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   generator->ReleaseTouchId(0);
   // Test that back should still be able to be performed.

@@ -443,7 +443,7 @@ void OverviewItem::AnimateAndCloseWindow(bool up) {
 }
 
 void OverviewItem::CloseWindow() {
-  SetShadowBounds(base::nullopt);
+  SetShadowBounds(absl::nullopt);
 
   gfx::RectF inset_bounds(target_bounds_);
   inset_bounds.Inset(target_bounds_.width() * kPreCloseScale,
@@ -646,7 +646,7 @@ void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
         transform_window_.IsMinimized()
             ? std::make_unique<DragWindowController>(
                   item_widget_->GetNativeWindow(), is_touch_dragging,
-                  base::make_optional(shadow_->content_bounds()))
+                  absl::make_optional(shadow_->content_bounds()))
             : std::make_unique<DragWindowController>(GetWindow(),
                                                      is_touch_dragging);
   }
@@ -658,7 +658,7 @@ void OverviewItem::DestroyPhantomsForDragging() {
 }
 
 void OverviewItem::SetShadowBounds(
-    base::Optional<gfx::RectF> bounds_in_screen) {
+    absl::optional<gfx::RectF> bounds_in_screen) {
   // Shadow is normally turned off during animations and reapplied when they
   // are finished. On destruction, |shadow_| is cleaned up before
   // |transform_window_|, which may call this function, so early exit if
@@ -715,9 +715,9 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
     const gfx::RectF shadow_bounds = unclipped_size_
                                          ? GetWindowTargetBoundsWithInsets()
                                          : GetUnclippedShadowBounds();
-    SetShadowBounds(base::make_optional(shadow_bounds));
+    SetShadowBounds(absl::make_optional(shadow_bounds));
   } else {
-    SetShadowBounds(base::nullopt);
+    SetShadowBounds(absl::nullopt);
   }
 }
 
@@ -1054,7 +1054,7 @@ void OverviewItem::OnItemBoundsAnimationStarted() {
   // performance. The shadow will be added back once the animation is completed.
   // Note that we can't use UpdateRoundedCornersAndShadow() since we don't want
   // to update the rounded corners.
-  SetShadowBounds(base::nullopt);
+  SetShadowBounds(absl::nullopt);
 }
 
 void OverviewItem::OnItemBoundsAnimationEnded() {

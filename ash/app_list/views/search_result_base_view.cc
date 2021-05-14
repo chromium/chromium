@@ -34,7 +34,7 @@ const char* SearchResultBaseView::GetClassName() const {
 }
 
 void SearchResultBaseView::SetSelected(bool selected,
-                                       base::Optional<bool> reverse_tab_order) {
+                                       absl::optional<bool> reverse_tab_order) {
   if (selected_ == selected)
     return;
 
@@ -103,7 +103,7 @@ void SearchResultBaseView::UpdateAccessibleName() {
 void SearchResultBaseView::ClearResult() {
   if (result_)
     result_->RemoveObserver(this);
-  SetSelected(false, base::nullopt);
+  SetSelected(false, absl::nullopt);
   result_ = nullptr;
 }
 

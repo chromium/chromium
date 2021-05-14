@@ -199,7 +199,7 @@ class AppListItemView::IconImageView : public views::ImageView {
   void SetExtendedState(const AppListConfig& config,
                         bool extended,
                         bool animate) {
-    base::Optional<ui::ScopedLayerAnimationSettings> settings;
+    absl::optional<ui::ScopedLayerAnimationSettings> settings;
     if (animate) {
       settings.emplace(layer()->GetAnimator());
       settings->SetTweenType(gfx::Tween::EASE_IN);

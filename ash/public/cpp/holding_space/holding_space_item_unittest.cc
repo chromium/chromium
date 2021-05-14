@@ -96,8 +96,8 @@ TEST_P(HoldingSpaceItemTest, Progress) {
   EXPECT_EQ(holding_space_item->progress(), 0.75f);
 
   // It should be possible to set indeterminate progress.
-  EXPECT_TRUE(holding_space_item->UpdateProgress(base::nullopt));
-  EXPECT_EQ(holding_space_item->progress(), base::nullopt);
+  EXPECT_TRUE(holding_space_item->UpdateProgress(absl::nullopt));
+  EXPECT_EQ(holding_space_item->progress(), absl::nullopt);
 
   // It should be possible to set progress complete.
   EXPECT_TRUE(holding_space_item->UpdateProgress(1.f));

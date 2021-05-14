@@ -99,7 +99,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -153,7 +153,7 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(/*success=*/base::nullopt);
+    std::move(callback).Run(/*success=*/absl::nullopt);
     return;
   }
 
@@ -281,7 +281,7 @@ LoginScreenModel* LoginScreenController::GetModel() {
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
   ToastData toast_data(
       "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      base::Optional<std::u16string>(std::u16string()) /*dismiss_text*/,
+      absl::optional<std::u16string>(std::u16string()) /*dismiss_text*/,
       true /*visible_on_lock_screen*/);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
@@ -455,7 +455,7 @@ void LoginScreenController::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
   authentication_stage_ = AuthenticationStage::kUserCallback;
-  std::move(callback).Run(base::make_optional<bool>(success));
+  std::move(callback).Run(absl::make_optional<bool>(success));
   authentication_stage_ = AuthenticationStage::kIdle;
 
   // During smart card login flow, multiple security token requests can be made.

@@ -61,11 +61,11 @@ void OverviewWallpaperController::Unblur() {
 }
 
 void OverviewWallpaperController::OnTabletModeStarted() {
-  UpdateWallpaper(wallpaper_blurred_, /*animate=*/base::nullopt);
+  UpdateWallpaper(wallpaper_blurred_, /*animate=*/absl::nullopt);
 }
 
 void OverviewWallpaperController::OnTabletModeEnded() {
-  UpdateWallpaper(wallpaper_blurred_, /*animate=*/base::nullopt);
+  UpdateWallpaper(wallpaper_blurred_, /*animate=*/absl::nullopt);
 }
 
 void OverviewWallpaperController::OnTabletControllerDestroyed() {
@@ -74,7 +74,7 @@ void OverviewWallpaperController::OnTabletControllerDestroyed() {
 
 void OverviewWallpaperController::UpdateWallpaper(
     bool should_blur,
-    base::Optional<bool> animate) {
+    absl::optional<bool> animate) {
   if (!IsWallpaperChangeAllowed())
     return;
 

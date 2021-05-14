@@ -51,13 +51,13 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -196,7 +196,7 @@ void FocusFirstOrLastFocusableChild(views::View* root, bool reverse) {
 // |bold_length|: The length of bold text.
 void MakeSectionBold(views::StyledLabel* label,
                      const std::u16string& text,
-                     const base::Optional<int>& bold_start,
+                     const absl::optional<int>& bold_start,
                      int bold_length) {
   auto create_style = [&](bool is_bold) {
     views::StyledLabel::RangeStyleInfo style;
@@ -1119,7 +1119,7 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
   }
 
   state->time_until_tpm_unlock =
-      is_locked ? base::make_optional(time_left) : base::nullopt;
+      is_locked ? absl::make_optional(time_left) : absl::nullopt;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1250,7 +1250,7 @@ void LockContentsView::OnSystemInfoChanged(
   if (enforced) {
     enable_system_info_enforced_ = show;
   } else {
-    enable_system_info_enforced_ = base::nullopt;
+    enable_system_info_enforced_ = absl::nullopt;
     enable_system_info_if_possible_ |= show;
   }
 
@@ -2057,7 +2057,7 @@ void LockContentsView::ShowAuthErrorMessage() {
         u" " + l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT);
   }
 
-  base::Optional<int> bold_start;
+  absl::optional<int> bold_start;
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.

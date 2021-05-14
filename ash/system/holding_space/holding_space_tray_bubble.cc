@@ -296,7 +296,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   mutable views::ProposedLayout target_layout_;   // Layout being animated to.
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
-  base::Optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
+  absl::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
 };
 
 // HoldingSpaceTrayBubble ------------------------------------------------------

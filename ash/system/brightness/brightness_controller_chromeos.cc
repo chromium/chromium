@@ -44,7 +44,7 @@ void BrightnessControllerChromeos::SetBrightnessPercent(double percent,
 }
 
 void BrightnessControllerChromeos::GetBrightnessPercent(
-    base::OnceCallback<void(base::Optional<double>)> callback) {
+    base::OnceCallback<void(absl::optional<double>)> callback) {
   chromeos::PowerManagerClient::Get()->GetScreenBrightnessPercent(
       std::move(callback));
 }

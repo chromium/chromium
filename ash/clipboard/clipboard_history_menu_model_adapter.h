@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
@@ -62,8 +62,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   void Cancel();
 
   // Returns the command of the currently selected menu item. If no menu item is
-  // currently selected, returns |base::nullopt|.
-  base::Optional<int> GetSelectedMenuItemCommand() const;
+  // currently selected, returns |absl::nullopt|.
+  absl::optional<int> GetSelectedMenuItemCommand() const;
 
   // Returns the item mapped by `command_id` in `item_snapshots_`.
   const ClipboardHistoryItem& GetItemFromCommandId(int command_id) const;

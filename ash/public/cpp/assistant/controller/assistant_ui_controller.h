@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_ASSISTANT_CONTROLLER_ASSISTANT_UI_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -39,8 +39,8 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   virtual void ShowUi(chromeos::assistant::AssistantEntryPoint) = 0;
   virtual void CloseUi(chromeos::assistant::AssistantExitPoint) = 0;
   virtual void ToggleUi(
-      base::Optional<chromeos::assistant::AssistantEntryPoint>,
-      base::Optional<chromeos::assistant::AssistantExitPoint>) = 0;
+      absl::optional<chromeos::assistant::AssistantEntryPoint>,
+      absl::optional<chromeos::assistant::AssistantExitPoint>) = 0;
 
  protected:
   AssistantUiController();

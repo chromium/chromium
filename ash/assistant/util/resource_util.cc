@@ -160,9 +160,9 @@ const gfx::VectorIcon& ToVectorIcon(const std::string& name) {
   return ToVectorIcon(ToIconName(name));
 }
 
-base::Optional<std::string> GetParam(const GURL& url, ResourceLinkParam param) {
+absl::optional<std::string> GetParam(const GURL& url, ResourceLinkParam param) {
   if (!url.has_query())
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string param_key = ToString(param);
 
@@ -178,7 +178,7 @@ base::Optional<std::string> GetParam(const GURL& url, ResourceLinkParam param) {
       return ToString(value);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -191,7 +191,7 @@ GURL AppendOrReplaceColorParam(const GURL& resource_link, SkColor color) {
       resource_link, ToString(ResourceLinkParam::kColor), ToString(color));
 }
 
-GURL CreateIconResourceLink(IconName name, base::Optional<SkColor> color) {
+GURL CreateIconResourceLink(IconName name, absl::optional<SkColor> color) {
   GURL icon_resource_link(kResourceLinkPrefix);
   icon_resource_link = net::AppendOrReplaceQueryParameter(
       icon_resource_link, ToString(ResourceLinkParam::kType),

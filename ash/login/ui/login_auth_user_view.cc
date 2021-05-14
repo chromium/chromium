@@ -1585,7 +1585,7 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
                      weak_factory_.GetWeakPtr()));
 }
 
-void LoginAuthUserView::OnAuthComplete(base::Optional<bool> auth_success) {
+void LoginAuthUserView::OnAuthComplete(absl::optional<bool> auth_success) {
   // Clear the password only if auth fails. Make sure to keep the password view
   // disabled even if auth succeededs, as if the user submits a password while
   // animating the next lock screen will not work as expected. See
@@ -1601,7 +1601,7 @@ void LoginAuthUserView::OnAuthComplete(base::Optional<bool> auth_success) {
 }
 
 void LoginAuthUserView::OnChallengeResponseAuthComplete(
-    base::Optional<bool> auth_success) {
+    absl::optional<bool> auth_success) {
   if (!auth_success.has_value() || !auth_success.value()) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);

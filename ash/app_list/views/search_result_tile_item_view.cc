@@ -366,7 +366,7 @@ void SearchResultTileItemView::OnGetContextMenuModel(
                          views::MenuRunner::FIXED_ANCHOR);
   if (!selected()) {
     selected_for_context_menu_ = true;
-    SetSelected(true, base::nullopt);
+    SetSelected(true, absl::nullopt);
   }
 }
 
@@ -376,7 +376,7 @@ void SearchResultTileItemView::OnMenuClosed() {
   context_menu_.reset();
   if (selected_for_context_menu_) {
     selected_for_context_menu_ = false;
-    SetSelected(false, base::nullopt);
+    SetSelected(false, absl::nullopt);
   }
 }
 

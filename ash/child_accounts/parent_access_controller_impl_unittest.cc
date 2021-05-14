@@ -119,7 +119,7 @@ class ParentAccessControllerImplTest : public LoginTestBase {
 
     const std::string all_results_histogram =
         ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
-            base::nullopt);
+            absl::nullopt);
 
     histogram_tester_.ExpectBucketCount(all_results_histogram, result,
                                         bucket_count);

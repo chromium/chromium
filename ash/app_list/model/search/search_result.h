@@ -85,10 +85,10 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   }
   void SetFormattedPrice(const std::u16string& formatted_price);
 
-  const base::Optional<GURL>& query_url() const { return metadata_->query_url; }
+  const absl::optional<GURL>& query_url() const { return metadata_->query_url; }
   void set_query_url(const GURL& url) { metadata_->query_url = url; }
 
-  const base::Optional<std::string>& equivalent_result_id() const {
+  const absl::optional<std::string>& equivalent_result_id() const {
     return metadata_->equivalent_result_id;
   }
   void set_equivalent_result_id(const std::string& equivalent_result_id) {

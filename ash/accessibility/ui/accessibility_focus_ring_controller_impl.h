@@ -16,8 +16,8 @@
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 

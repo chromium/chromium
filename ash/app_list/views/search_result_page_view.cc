@@ -24,8 +24,8 @@
 #include "ash/search_box/search_box_constants.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -197,7 +197,7 @@ SearchResultPageView::SearchResultPageView(SearchModel* search_model)
   scroller->ClipHeightTo(0, 0);
   scroller->SetVerticalScrollBar(
       std::make_unique<ZeroWidthVerticalScrollBar>());
-  scroller->SetBackgroundColor(base::nullopt);
+  scroller->SetBackgroundColor(absl::nullopt);
   AddChildView(std::move(scroller));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -627,7 +627,7 @@ gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
   return size;
 }
 
-base::Optional<int> SearchResultPageView::GetSearchBoxTop(
+absl::optional<int> SearchResultPageView::GetSearchBoxTop(
     AppListViewState view_state) const {
   if (view_state == AppListViewState::kPeeking ||
       view_state == AppListViewState::kHalf) {
@@ -635,9 +635,9 @@ base::Optional<int> SearchResultPageView::GetSearchBoxTop(
         ->GetAppListConfig()
         .search_box_fullscreen_top_padding();
   }
-  // For other view states, return base::nullopt so the ContentsView
+  // For other view states, return absl::nullopt so the ContentsView
   // sets the default search box widget origin.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 views::View* SearchResultPageView::GetFirstFocusableView() {

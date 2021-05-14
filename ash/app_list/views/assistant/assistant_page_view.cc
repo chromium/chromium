@@ -317,7 +317,7 @@ gfx::Size AssistantPageView::GetPreferredSearchBoxSize() const {
   return gfx::Size(kPreferredWidthDip, kSearchBoxHeightDip);
 }
 
-base::Optional<int> AssistantPageView::GetSearchBoxTop(
+absl::optional<int> AssistantPageView::GetSearchBoxTop(
     AppListViewState view_state) const {
   if (view_state == AppListViewState::kPeeking ||
       view_state == AppListViewState::kHalf) {
@@ -325,9 +325,9 @@ base::Optional<int> AssistantPageView::GetSearchBoxTop(
         ->GetAppListConfig()
         .search_box_fullscreen_top_padding();
   }
-  // For other view states, return base::nullopt so the ContentsView
+  // For other view states, return absl::nullopt so the ContentsView
   // sets the default search box widget origin.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 views::View* AssistantPageView::GetFirstFocusableView() {
@@ -403,8 +403,8 @@ void AssistantPageView::OnAssistantControllerDestroying() {
 void AssistantPageView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (!assistant_view_delegate_)
     return;
 

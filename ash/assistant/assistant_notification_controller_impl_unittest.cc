@@ -111,11 +111,11 @@ class AssistantNotificationBuilder {
   }
 
   AssistantNotificationBuilder& WithTimeout(
-      base::Optional<base::TimeDelta> timeout) {
+      absl::optional<base::TimeDelta> timeout) {
     notification_.expiry_time =
         timeout.has_value()
-            ? base::Optional<base::Time>(base::Time::Now() + timeout.value())
-            : base::nullopt;
+            ? absl::optional<base::Time>(base::Time::Now() + timeout.value())
+            : absl::nullopt;
     return *this;
   }
 
@@ -429,7 +429,7 @@ TEST_F(AssistantNotificationControllerTest,
   auto notification_bldr = AssistantNotificationBuilder().WithId("id");
 
   AddOrUpdateNotification(notification_bldr.WithTimeoutMs(kTimeoutMs).Build());
-  AddOrUpdateNotification(notification_bldr.WithTimeout(base::nullopt).Build());
+  AddOrUpdateNotification(notification_bldr.WithTimeout(absl::nullopt).Build());
 
   auto& observer = AddStrictObserverMock();
 

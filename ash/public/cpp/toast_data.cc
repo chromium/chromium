@@ -11,7 +11,7 @@ namespace ash {
 ToastData::ToastData(std::string id,
                      const std::u16string& text,
                      int32_t duration_ms,
-                     const base::Optional<std::u16string>& dismiss_text,
+                     const absl::optional<std::u16string>& dismiss_text,
                      bool visible_on_lock_screen)
     : id(std::move(id)),
       text(text),

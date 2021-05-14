@@ -159,7 +159,7 @@ TEST_F(DisplayHighlightControllerTest, VisibleMixedMode) {
   display::DisplayIdList dst_ids;
 
   dst_ids.emplace_back(id_list[1]);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, id_list[0], dst_ids);
 
   display_manager_ptr->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);

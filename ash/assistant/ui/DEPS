@@ -17,6 +17,7 @@ include_rules = [
   "+chromeos/services/libassistant/public/cpp",
   "+mojo/public/cpp",
   "+net/base",
+  "+third_party/abseil-cpp/absl",
   "+third_party/skia/include/core",
   "+ui",
 ]

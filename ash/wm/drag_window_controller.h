@@ -10,7 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -30,7 +30,7 @@ class ASH_EXPORT DragWindowController {
   DragWindowController(
       aura::Window* window,
       bool is_touch_dragging,
-      const base::Optional<gfx::Rect>& shadow_bounds = base::nullopt);
+      const absl::optional<gfx::Rect>& shadow_bounds = absl::nullopt);
   DragWindowController(const DragWindowController&) = delete;
   DragWindowController& operator=(const DragWindowController&) = delete;
   virtual ~DragWindowController();
@@ -66,7 +66,7 @@ class ASH_EXPORT DragWindowController {
   const bool is_touch_dragging_;
 
   // Used if the drag windows may need their shadows adjusted.
-  const base::Optional<gfx::Rect> shadow_bounds_;
+  const absl::optional<gfx::Rect> shadow_bounds_;
 
   // |window_|'s opacity before the drag. Used to revert opacity after the drag.
   const float old_opacity_;

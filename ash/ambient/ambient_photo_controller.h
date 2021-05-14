@@ -20,11 +20,11 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class ImageSkia;
@@ -43,7 +43,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   using TopicsDownloadCallback =
       base::OnceCallback<void(const std::vector<AmbientModeTopic>& topics)>;
   using WeatherIconDownloadCallback =
-      base::OnceCallback<void(base::Optional<float>, const gfx::ImageSkia&)>;
+      base::OnceCallback<void(absl::optional<float>, const gfx::ImageSkia&)>;
 
   using PhotoDownloadCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 
@@ -137,7 +137,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void OnAllPhotoDecoded(bool from_downloading, const std::string& hash);
 
   void StartDownloadingWeatherConditionIcon(
-      const base::Optional<WeatherInfo>& weather_info);
+      const absl::optional<WeatherInfo>& weather_info);
 
   // Invoked upon completion of the weather icon download, |icon| can be a null
   // image if the download attempt from the url failed.

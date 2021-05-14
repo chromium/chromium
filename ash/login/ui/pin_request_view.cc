@@ -445,7 +445,7 @@ void PinRequestView::OnTabletControllerDestroyed() {
 }
 
 void PinRequestView::SubmitCode() {
-  base::Optional<std::string> code = access_code_view_->GetCode();
+  absl::optional<std::string> code = access_code_view_->GetCode();
   DCHECK(code.has_value());
 
   SubmissionResult result = delegate_->OnPinSubmitted(*code);

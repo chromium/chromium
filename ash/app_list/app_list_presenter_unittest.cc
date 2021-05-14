@@ -3693,8 +3693,8 @@ class AppListPresenterHomeLauncherTest : public AshTestBase {
 
   bool IsAppListVisible() {
     auto* app_list_controller = Shell::Get()->app_list_controller();
-    return app_list_controller->IsVisible(base::nullopt) &&
-           app_list_controller->GetTargetVisibility(base::nullopt);
+    return app_list_controller->IsVisible(absl::nullopt) &&
+           app_list_controller->GetTargetVisibility(absl::nullopt);
   }
 
   void PressAndReleaseKey(ui::KeyboardCode key) {
@@ -4107,7 +4107,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   // Launcher is fullscreen.
   EXPECT_EQ(app_list->GetAppListViewState(),
             AppListViewState::kFullscreenAllApps);
-  EXPECT_TRUE(app_list->IsVisible(base::nullopt));
+  EXPECT_TRUE(app_list->IsVisible(absl::nullopt));
 }
 
 TEST_F(AppListPresenterHomeLauncherTest,
@@ -4125,7 +4125,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
 
   // Launcher is closed.
   EXPECT_EQ(app_list->GetAppListViewState(), AppListViewState::kClosed);
-  EXPECT_FALSE(app_list->IsVisible(base::nullopt));
+  EXPECT_FALSE(app_list->IsVisible(absl::nullopt));
 }
 
 // Tests that mouse-scroll up at fullscreen will dismiss app list.

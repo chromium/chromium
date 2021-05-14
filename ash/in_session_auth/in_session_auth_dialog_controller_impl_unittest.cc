@@ -31,12 +31,12 @@ TEST_F(InSessionAuthDialogControllerImplTest, PinAuthSuccess) {
         std::move(controller_callback).Run(true);
       });
 
-  base::Optional<bool> view_callback_result;
+  absl::optional<bool> view_callback_result;
   controller->AuthenticateUserWithPin(
       pin,
       /* View callback will be executed during controller callback. */
       base::BindLambdaForTesting(
-          [&view_callback_result](base::Optional<bool> did_auth) {
+          [&view_callback_result](absl::optional<bool> did_auth) {
             view_callback_result = did_auth;
           }));
 
@@ -58,12 +58,12 @@ TEST_F(InSessionAuthDialogControllerImplTest, PinAuthFail) {
         std::move(controller_callback).Run(false);
       });
 
-  base::Optional<bool> view_callback_result;
+  absl::optional<bool> view_callback_result;
   controller->AuthenticateUserWithPin(
       pin,
       /* View callback will be executed during controller callback. */
       base::BindLambdaForTesting(
-          [&view_callback_result](base::Optional<bool> did_auth) {
+          [&view_callback_result](absl::optional<bool> did_auth) {
             view_callback_result = did_auth;
           }));
 

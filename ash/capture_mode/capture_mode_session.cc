@@ -220,7 +220,7 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
 // Gets the root window associated |location_in_screen| if given, otherwise gets
 // the root window associated with the CursorManager.
 aura::Window* GetPreferredRootWindow(
-    base::Optional<gfx::Point> location_in_screen = base::nullopt) {
+    absl::optional<gfx::Point> location_in_screen = absl::nullopt) {
   int64_t display_id =
       (location_in_screen
            ? display::Screen::GetScreen()->GetDisplayNearestPoint(

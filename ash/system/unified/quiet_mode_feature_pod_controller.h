@@ -11,7 +11,7 @@
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 
 namespace ash {
@@ -52,7 +52,7 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   FeaturePodButton* button_ = nullptr;
 
-  base::Optional<int> last_disabled_count_;
+  absl::optional<int> last_disabled_count_;
 
   DISALLOW_COPY_AND_ASSIGN(QuietModeFeaturePodController);
 };

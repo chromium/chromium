@@ -139,7 +139,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestBatteryId)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::last_active_update_timestamp, Eq(base::nullopt)),
+                  AFIELD(&BI::last_active_update_timestamp, Eq(absl::nullopt)),
                   AFIELD(&BI::level, Eq(50)),
                   AFIELD(&BI::charge_status, Eq(kTestBatteryStatusOut)))));
 
@@ -154,7 +154,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestBatteryId)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::last_active_update_timestamp, Eq(base::nullopt)),
+                  AFIELD(&BI::last_active_update_timestamp, Eq(absl::nullopt)),
                   AFIELD(&BI::level, Eq(5)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
@@ -168,8 +168,8 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestBatteryId)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::last_active_update_timestamp, Eq(base::nullopt)),
-                  AFIELD(&BI::level, Eq(base::nullopt)))));
+                  AFIELD(&BI::last_active_update_timestamp, Eq(absl::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
       kTestBatteryPath, kTestDeviceName, -1, kTestBatteryStatusIn,
@@ -182,7 +182,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestBatteryId)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::last_active_update_timestamp, Eq(base::nullopt)),
+                  AFIELD(&BI::last_active_update_timestamp, Eq(absl::nullopt)),
                   AFIELD(&BI::level, Eq(50)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
@@ -210,7 +210,7 @@ TEST_F(PeripheralBatteryListenerTest, ActiveUpdates) {
           AllOf(AFIELD(&BI::key, Eq(kTestBatteryId)),
                 AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                 AFIELD(&BI::charge_status, Eq(kTestBatteryStatusOut)),
-                AFIELD(&BI::last_active_update_timestamp, Eq(base::nullopt)))));
+                AFIELD(&BI::last_active_update_timestamp, Eq(absl::nullopt)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
       kTestBatteryPath, kTestDeviceName, 50, kTestBatteryStatusIn,
@@ -435,7 +435,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusNotification) {
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
-                                  AFIELD(&BI::level, Eq(base::nullopt)))));
+                                  AFIELD(&BI::level, Eq(absl::nullopt)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
       kTestStylusBatteryPath, kTestStylusName, -1, kTestStylusBatteryStatusIn,
@@ -642,11 +642,11 @@ TEST_F(PeripheralBatteryListenerTest,
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
-                                  AFIELD(&BI::level, Eq(base::nullopt)))));
+                                  AFIELD(&BI::level, Eq(absl::nullopt)))));
 
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
 }
 
 // Do notify observer if the battery level drops again under the
@@ -679,10 +679,10 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::level, Eq(base::nullopt)))));
+                  AFIELD(&BI::level, Eq(absl::nullopt)))));
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
 
   ClockAdvance(base::TimeDelta::FromSeconds(1));
   EXPECT_CALL(listener_observer_mock,
@@ -726,10 +726,10 @@ TEST_F(PeripheralBatteryListenerTest,
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
-                  AFIELD(&BI::level, Eq(base::nullopt)))));
+                  AFIELD(&BI::level, Eq(absl::nullopt)))));
   battery_listener_->DeviceBatteryChanged(
       mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/base::nullopt);
+      /*new_battery_percentage=*/absl::nullopt);
 
   ClockAdvance(base::TimeDelta::FromSeconds(100));
   EXPECT_CALL(listener_observer_mock,
@@ -1079,7 +1079,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusDiscardsZeros) {
       OnUpdatedBatteryLevel(
           AllOf(AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
                 AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaScreen)),
-                AFIELD(&BI::level, Eq(base::nullopt)),
+                AFIELD(&BI::level, Eq(absl::nullopt)),
                 AFIELD(&BI::charge_status, Eq(kTestStylusBatteryStatusOut)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
@@ -1095,7 +1095,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusDiscardsZeros) {
 
   EXPECT_CALL(
       listener_observer_mock,
-      OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(base::nullopt)))));
+      OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(absl::nullopt)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
       kTestStylusBatteryPath, kTestStylusName, 0, kTestStylusBatteryStatusIn,
@@ -1120,7 +1120,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusChargerDoesNullZeros) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestChargerId)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
-                  AFIELD(&BI::level, Eq(base::nullopt)),
+                  AFIELD(&BI::level, Eq(absl::nullopt)),
                   AFIELD(&BI::charge_status, Eq(kTestBatteryStatusOut)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(

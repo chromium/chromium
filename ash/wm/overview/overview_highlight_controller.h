@@ -10,7 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
@@ -144,7 +144,7 @@ class ASH_EXPORT OverviewHighlightController {
 
   // If an item that is selected is deleted, store its index, so the next
   // traversal can pick up where it left off.
-  base::Optional<int> deleted_index_ = base::nullopt;
+  absl::optional<int> deleted_index_ = absl::nullopt;
 
   // The current view that is being highlighted, if any.
   OverviewHighlightableView* highlighted_view_ = nullptr;

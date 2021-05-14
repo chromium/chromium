@@ -896,7 +896,7 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
   EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   roots = Shell::GetAllRootWindows();
@@ -942,7 +942,7 @@ TEST_F(ScreenOrientationControllerTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   // Now switch mirror mode off so that we can have two displays in tablet mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());

@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {
@@ -42,8 +42,8 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
   virtual void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) {}
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) {}
 
   // Invoked when the usable display work area is changed. Observers should
   // respond to this event by ensuring they are sized/positioned within the

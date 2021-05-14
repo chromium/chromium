@@ -10,8 +10,8 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -165,7 +165,7 @@ FakeAmbientBackendControllerImpl::GetBackupPhotoUrls() const {
 
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     bool success,
-    const base::Optional<AmbientSettings>& settings) {
+    const absl::optional<AmbientSettings>& settings) {
   if (!pending_fetch_settings_albums_callback_)
     return;
 
@@ -174,7 +174,7 @@ void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
         .Run(settings.value_or(CreateFakeSettings()), CreateFakeAlbums());
   } else {
     std::move(pending_fetch_settings_albums_callback_)
-        .Run(/*settings=*/base::nullopt, PersonalAlbums());
+        .Run(/*settings=*/absl::nullopt, PersonalAlbums());
   }
 }
 
@@ -194,7 +194,7 @@ bool FakeAmbientBackendControllerImpl::IsUpdateSettingsPending() const {
 }
 
 void FakeAmbientBackendControllerImpl::SetWeatherInfo(
-    base::Optional<WeatherInfo> info) {
+    absl::optional<WeatherInfo> info) {
   weather_info_ = std::move(info);
 }
 

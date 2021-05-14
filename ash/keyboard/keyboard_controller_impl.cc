@@ -20,10 +20,10 @@
 #include "ash/shell_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/ui_base_features.h"
@@ -55,12 +55,12 @@ const char kSpellCheckEnabledKey[] = "spell_check_enabled";
 // enabled.
 const char kVoiceInputEnabledKey[] = "voice_input_enabled";
 
-base::Optional<display::Display> GetFirstTouchDisplay() {
+absl::optional<display::Display> GetFirstTouchDisplay() {
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (display.touch_support() == display::Display::TouchSupport::AVAILABLE)
       return display;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
@@ -386,7 +386,7 @@ aura::Window* KeyboardControllerImpl::GetContainerForDisplay(
 
 aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
   const display::Screen* screen = display::Screen::GetScreen();
-  const base::Optional<display::Display> first_touch_display =
+  const absl::optional<display::Display> first_touch_display =
       GetFirstTouchDisplay();
   const bool has_touch_display = first_touch_display.has_value();
 

@@ -9,8 +9,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -88,7 +88,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
 
   // Submit the input if its the last field, and complete.
   if (last_field_active && complete) {
-    base::Optional<std::string> user_input = GetCode();
+    absl::optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
     SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
@@ -150,7 +150,7 @@ views::View* LoginPinInputView::TestApi::code_input() {
   return view_->code_input_;
 }
 
-base::Optional<std::string> LoginPinInputView::TestApi::GetCode() {
+absl::optional<std::string> LoginPinInputView::TestApi::GetCode() {
   return view_->code_input_->GetCode();
 }
 

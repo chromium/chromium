@@ -55,7 +55,7 @@ ui::KeyboardCode GetKeyCodeForModifier(ui::EventFlags modifier) {
 // description or they require a special one we explicitly specify. For example,
 // ui::VKEY_COMMAND could return a string "Meta", but we want to display it as
 // "Search" or "Launcher".
-base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
+absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
     ui::KeyboardCode key_code) {
   int msg_id = 0;
   switch (key_code) {
@@ -98,7 +98,7 @@ base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
       // "VKEY_OEM_PLUS", which is "+" and "VKEY_SPACE", which is "Space".
       return u"+ ";
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   return l10n_util::GetStringUTF16(msg_id);
 }
@@ -169,7 +169,7 @@ std::u16string GetStringForCategory(ShortcutCategory category) {
 
 std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
                                         bool remap_positional_key) {
-  const base::Optional<std::u16string> key_label =
+  const absl::optional<std::u16string> key_label =
       GetSpecialStringForKeyboardCode(key_code);
   if (key_label)
     return key_label.value();

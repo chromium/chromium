@@ -530,7 +530,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
 
   void EndDrag(AppsGridView* grid_view, bool cancel) {
     grid_view->EndDrag(cancel);
-    current_drag_location_ = base::nullopt;
+    current_drag_location_ = absl::nullopt;
   }
 
   // Points are in |apps_grid_view_|'s coordinates, and fixed for RTL.
@@ -589,7 +589,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
   }
 
  private:
-  base::Optional<gfx::Point> current_drag_location_;
+  absl::optional<gfx::Point> current_drag_location_;
 };
 
 // Tests suite for app list items drag and drop tests. These tests are

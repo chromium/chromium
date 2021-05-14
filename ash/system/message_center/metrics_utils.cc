@@ -7,7 +7,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -99,7 +99,7 @@ NotificationTypeDetailed GetNotificationTypeForCrosSystemPriority(
     const message_center::Notification& notification) {
   // The warning level is not stored in the notification data, so we need to
   // infer it from the accent color.
-  base::Optional<SkColor> accent_color =
+  absl::optional<SkColor> accent_color =
       notification.rich_notification_data().accent_color;
   message_center::SystemNotificationWarningLevel warning_level =
       message_center::SystemNotificationWarningLevel::NORMAL;
@@ -226,9 +226,9 @@ NotificationTypeDetailed GetNotificationType(
   }
 }
 
-base::Optional<NotificationTypeDetailed> GetNotificationType(
+absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id) {
-  base::Optional<NotificationTypeDetailed> type;
+  absl::optional<NotificationTypeDetailed> type;
   auto* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id);

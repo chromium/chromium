@@ -176,7 +176,7 @@ class ToastOverlayView : public views::View {
   // This object is not owned by the views hierarchy or by the widget.
   ToastOverlayView(ToastOverlay* overlay,
                    const std::u16string& text,
-                   const base::Optional<std::u16string>& dismiss_text,
+                   const absl::optional<std::u16string>& dismiss_text,
                    const bool is_managed) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -260,7 +260,7 @@ class ToastOverlayView : public views::View {
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& text,
-                           base::Optional<std::u16string> dismiss_text,
+                           absl::optional<std::u16string> dismiss_text,
                            bool show_on_lock_screen,
                            bool is_managed)
     : delegate_(delegate),

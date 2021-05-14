@@ -28,7 +28,7 @@
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -702,7 +702,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     // the cycle view is already being animated or just finished animating for
     // mode switch.
     std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-    base::Optional<ui::AnimationThroughputReporter> reporter;
+    absl::optional<ui::AnimationThroughputReporter> reporter;
     if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
         !defer_widget_bounds_update_) {
       settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
@@ -798,7 +798,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     offset.Scale(1 / kFlingScaleDown);
     horizontal_distance_dragged_ +=
         fling_last_offset_ ? offset.x() - fling_last_offset_->x() : offset.x();
-    fling_last_offset_ = base::make_optional(offset);
+    fling_last_offset_ = absl::make_optional(offset);
     Layout();
 
     if (!continue_fling)
@@ -872,7 +872,7 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   // Store the last computed fling offset during a fling. Used to compare to an
   // updated offset and offset the |mirror_container_|.
-  base::Optional<gfx::Vector2dF> fling_last_offset_;
+  absl::optional<gfx::Vector2dF> fling_last_offset_;
 };
 
 WindowCycleList::WindowCycleList(const WindowList& windows)

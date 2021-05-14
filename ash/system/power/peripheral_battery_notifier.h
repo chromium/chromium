@@ -13,9 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -51,12 +51,12 @@ class ASH_EXPORT PeripheralBatteryNotifier
 
   struct NotificationInfo {
     NotificationInfo();
-    NotificationInfo(base::Optional<uint8_t> level,
+    NotificationInfo(absl::optional<uint8_t> level,
                      base::TimeTicks last_notification_timestamp);
     ~NotificationInfo();
     NotificationInfo(const NotificationInfo& info);
     // Battery level within range [0, 100].
-    base::Optional<uint8_t> level;
+    absl::optional<uint8_t> level;
     base::TimeTicks last_notification_timestamp;
     bool ever_notified;
   };

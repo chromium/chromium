@@ -73,8 +73,8 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<std::u16string>& reply) override;
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) override;
 
  private:
   friend class MultiDeviceNotificationPresenterTest;

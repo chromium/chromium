@@ -17,8 +17,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -58,8 +58,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   bool HasShownOnboarding() const override;
   void ShowUi(AssistantEntryPoint entry_point) override;
   void CloseUi(AssistantExitPoint exit_point) override;
-  void ToggleUi(base::Optional<AssistantEntryPoint> entry_point,
-                base::Optional<AssistantExitPoint> exit_point) override;
+  void ToggleUi(absl::optional<AssistantEntryPoint> entry_point,
+                absl::optional<AssistantExitPoint> exit_point) override;
 
   // AssistantInteractionModelObserver:
   void OnInputModalityChanged(InputModality input_modality) override;
@@ -77,8 +77,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   // AssistantViewDelegateObserver:
   void OnOnboardingShown() override;
@@ -93,7 +93,7 @@ class ASH_EXPORT AssistantUiControllerImpl
   // Updates UI mode to |ui_mode| if specified. Otherwise UI mode is updated on
   // the basis of interaction/widget visibility state. If |due_to_interaction|
   // is true, the UI mode changed because of an Assistant interaction.
-  void UpdateUiMode(base::Optional<AssistantUiMode> ui_mode = base::nullopt,
+  void UpdateUiMode(absl::optional<AssistantUiMode> ui_mode = absl::nullopt,
                     bool due_to_interaction = false);
 
   AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.

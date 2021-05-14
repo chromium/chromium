@@ -222,7 +222,7 @@ void AppListMainView::SearchBoxFocusChanged(SearchBoxViewBase* sender) {
       contents_view_->search_result_page_view()->first_result_view();
   if (!first_result_view || !first_result_view->selected())
     return;
-  first_result_view->SetSelected(false, base::nullopt);
+  first_result_view->SetSelected(false, absl::nullopt);
 }
 
 void AppListMainView::AssistantButtonPressed() {

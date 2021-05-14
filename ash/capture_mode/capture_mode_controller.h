@@ -19,13 +19,13 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -175,7 +175,7 @@ class ASH_EXPORT CaptureModeController
   // be performed (i.e. the window to be captured, and the capture bounds). If
   // nothing is to be captured (e.g. when there's no window selected in a
   // kWindow source, or no region is selected in a kRegion source), then a
-  // base::nullopt is returned.
+  // absl::nullopt is returned.
   struct CaptureParams {
     aura::Window* window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
@@ -183,7 +183,7 @@ class ASH_EXPORT CaptureModeController
     // source).
     gfx::Rect bounds;
   };
-  base::Optional<CaptureParams> GetCaptureParams() const;
+  absl::optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
   // begins recording according to the given |capture_params|. It creates an
@@ -253,7 +253,7 @@ class ASH_EXPORT CaptureModeController
                                const CaptureModeType type);
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
-                                 base::Optional<int> button_index);
+                                 absl::optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
   // recording, builds with display index if there are

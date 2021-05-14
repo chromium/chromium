@@ -449,7 +449,7 @@ TEST_F(LockScreenMediaControlsViewTest, ProgressBarVisibility) {
   EXPECT_TRUE(progress_view()->GetVisible());
 
   // Simulate position turning null.
-  media_controls_view_->MediaSessionPositionChanged(base::nullopt);
+  media_controls_view_->MediaSessionPositionChanged(absl::nullopt);
 
   // Verify that the progress is hidden again.
   EXPECT_FALSE(progress_view()->GetVisible());
@@ -1105,7 +1105,7 @@ TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_SessionChanged) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  media_controls_view_->MediaSessionChanged(base::nullopt);
+  media_controls_view_->MediaSessionChanged(absl::nullopt);
   mock_timer->Fire();
 
   SimulateSessionUnlock();

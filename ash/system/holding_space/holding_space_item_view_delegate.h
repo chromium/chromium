@@ -13,8 +13,8 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
@@ -58,8 +58,8 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
    private:
     HoldingSpaceItemViewDelegate* const delegate_;
     std::vector<std::string> selected_item_ids_;
-    base::Optional<std::string> selected_range_start_item_id_;
-    base::Optional<std::string> selected_range_end_item_id_;
+    absl::optional<std::string> selected_range_start_item_id_;
+    absl::optional<std::string> selected_range_end_item_id_;
   };
 
   explicit HoldingSpaceItemViewDelegate(HoldingSpaceTrayBubble* bubble);

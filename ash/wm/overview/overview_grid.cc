@@ -646,9 +646,9 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
     const gfx::Rect grid_bounds = GetGridBoundsInScreen(
         root_window_,
         split_view_drag_indicators_
-            ? base::make_optional(
+            ? absl::make_optional(
                   split_view_drag_indicators_->current_window_dragging_state())
-            : base::nullopt,
+            : absl::nullopt,
         /*divider_changed=*/false,
         /*account_for_hotseat=*/true);
     SetBoundsAndUpdatePositions(grid_bounds, ignored_items, /*animate=*/true);
@@ -714,7 +714,7 @@ void OverviewGrid::RearrangeDuringDrag(
 
   // Update the grid's bounds.
   const gfx::Rect wanted_grid_bounds = GetGridBoundsInScreen(
-      root_window_, base::make_optional(window_dragging_state),
+      root_window_, absl::make_optional(window_dragging_state),
       /*divider_changed=*/false, /*account_for_hotseat=*/true);
   if (bounds_ != wanted_grid_bounds) {
     base::flat_set<OverviewItem*> ignored_items;
@@ -972,7 +972,7 @@ void OverviewGrid::OnSplitViewStateChanged(
 void OverviewGrid::OnSplitViewDividerPositionChanged() {
   SetBoundsAndUpdatePositions(
       GetGridBoundsInScreen(root_window_,
-                            /*window_dragging_state=*/base::nullopt,
+                            /*window_dragging_state=*/absl::nullopt,
                             /*divider_changed=*/true,
                             /*account_for_hotseat=*/true),
       /*ignored_items=*/{}, /*animate=*/false);
@@ -1381,7 +1381,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniView(
     Shell::Get()->toast_manager()->Show(ToastData(
         kMoveVisibleOnAllDesksWindowToastId,
         l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST),
-        kToastDurationMs, base::nullopt));
+        kToastDurationMs, absl::nullopt));
     return false;
   }
 
@@ -1538,10 +1538,10 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
 
   // Get the bounds of the window if there is a snapped window or a window
   // about to be snapped.
-  base::Optional<gfx::RectF> split_view_bounds =
+  absl::optional<gfx::RectF> split_view_bounds =
       GetSplitviewBoundsMaintainingAspectRatio();
   if (!split_view_bounds) {
-    item->set_unclipped_size(base::nullopt);
+    item->set_unclipped_size(absl::nullopt);
     return width;
   }
 
@@ -1580,7 +1580,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
   }
 
   DCHECK(!unclipped_size.IsEmpty());
-  item->set_unclipped_size(base::make_optional(unclipped_size));
+  item->set_unclipped_size(absl::make_optional(unclipped_size));
   return width;
 }
 

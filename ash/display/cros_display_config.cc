@@ -23,9 +23,9 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -167,7 +167,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
   if (info.layout_mode == mojom::DisplayLayoutMode::kNormal) {
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::EXTENDED);
-    display_manager->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
     return mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -176,7 +176,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
       return mojom::DisplayConfigResult::kUnifiedNotEnabledError;
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::UNIFIED);
-    display_manager->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
     return mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -184,7 +184,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
 
   // 'Normal' mirror mode.
   if (!info.mirror_source_id) {
-    display_manager->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
     return mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -206,7 +206,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
     for (const display::Display& display : displays)
       destination_ids.emplace_back(display.id());
   }
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, source.id(), destination_ids);
   const display::MixedMirrorModeParamsErrors error_type =
       display::ValidateParamsForMixedMirrorMode(
@@ -820,7 +820,7 @@ void CrosDisplayConfig::SetUnifiedDesktopEnabled(bool enabled) {
 void CrosDisplayConfig::OverscanCalibration(
     const std::string& display_id,
     mojom::DisplayConfigOperation op,
-    const base::Optional<gfx::Insets>& delta,
+    const absl::optional<gfx::Insets>& delta,
     OverscanCalibrationCallback callback) {
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
@@ -934,7 +934,7 @@ void CrosDisplayConfig::TouchCalibration(const std::string& display_id,
 
   if (op == mojom::DisplayConfigOperation::kReset) {
     Shell::Get()->display_manager()->ClearTouchCalibrationData(display.id(),
-                                                               base::nullopt);
+                                                               absl::nullopt);
     std::move(callback).Run(mojom::DisplayConfigResult::kSuccess);
     return;
   }

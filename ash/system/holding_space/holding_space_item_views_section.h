@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -33,7 +33,7 @@ class HoldingSpaceItemViewsSection : public views::View {
  public:
   HoldingSpaceItemViewsSection(HoldingSpaceItemViewDelegate* delegate,
                                std::set<HoldingSpaceItem::Type> supported_types,
-                               const base::Optional<size_t>& max_count);
+                               const absl::optional<size_t>& max_count);
   HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
       delete;
   HoldingSpaceItemViewsSection& operator=(
@@ -134,7 +134,7 @@ class HoldingSpaceItemViewsSection : public views::View {
 
   HoldingSpaceItemViewDelegate* const delegate_;
   const std::set<HoldingSpaceItem::Type> supported_types_;
-  const base::Optional<size_t> max_count_;
+  const absl::optional<size_t> max_count_;
 
   // Owned by view hierarchy.
   views::View* header_ = nullptr;

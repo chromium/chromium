@@ -272,9 +272,9 @@ TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
   LoadDisplayPreferences();
 
   // requested_power_state_ should be chromeos::DISPLAY_POWER_ALL_ON at boot
-  const base::Optional<chromeos::DisplayPowerState> requested_power_state =
+  const absl::optional<chromeos::DisplayPowerState> requested_power_state =
       display_configurator()->GetRequestedPowerStateForTest();
-  ASSERT_NE(base::nullopt, requested_power_state);
+  ASSERT_NE(absl::nullopt, requested_power_state);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, *requested_power_state);
   // DisplayPowerState should be ignored at boot.
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON,
@@ -902,7 +902,7 @@ TEST_F(DisplayPrefsTest, DontSaveAndRestoreAllOff) {
   local_state()->SetString(prefs::kDisplayPowerState, "all_off");
   display_configurator()->reset_requested_power_state_for_test();
   LoadDisplayPreferences();
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             display_configurator()->GetRequestedPowerStateForTest());
 }
 
@@ -1137,13 +1137,13 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
       displays->GetDictionary(base::NumberToString(unified_id), &new_value));
 
   // Mirror mode should remember if the default mode was unified.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   ASSERT_TRUE(secondary_displays->GetDictionary(
       display::DisplayIdListToString(list), &new_value));
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   ASSERT_TRUE(secondary_displays->GetDictionary(
       display::DisplayIdListToString(list), &new_value));
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
@@ -1209,7 +1209,7 @@ TEST_F(DisplayPrefsTest, RestoreUnifiedMode) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Remove the second display.
@@ -1481,7 +1481,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
   // reconfiguring after the prefs have been loaded. Make sure that the external
   // display mirror configs are not overwritten, and the loaded prefs will be
   // applied.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
 
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
@@ -1507,7 +1507,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   // internal display to the first external display.
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
-  base::Optional<display::MixedMirrorModeParams> mixed_params(
+  absl::optional<display::MixedMirrorModeParams> mixed_params(
       absl::in_place, internal_display_id, dst_ids);
   display_prefs()->StoreDisplayMixedMirrorModeParamsForTest(mixed_params);
   LoadDisplayPreferences();
@@ -1537,7 +1537,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   // the first external display to the second external display)
   dst_ids.clear();
   dst_ids.emplace_back(second_display_id);
-  base::Optional<display::MixedMirrorModeParams> new_mixed_params(
+  absl::optional<display::MixedMirrorModeParams> new_mixed_params(
       absl::in_place, first_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed,
                                    new_mixed_params);
@@ -1558,7 +1558,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
             destination_ids_value->GetList()[0].GetString());
 
   // Turn off mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
 
   // Check the preferences.

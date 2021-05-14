@@ -211,7 +211,7 @@ void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
 
   if (confirm_remove_by_long_press_) {
     confirm_remove_by_long_press_ = false;
-    SetSelected(false, base::nullopt);
+    SetSelected(false, absl::nullopt);
   }
 
   RecordZeroStateSearchResultRemovalHistogram(
@@ -400,7 +400,7 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
       if (actions_view()->IsValidActionIndex(
               OmniBoxZeroStateAction::kRemoveSuggestion)) {
         ScrollRectToVisible(GetLocalBounds());
-        SetSelected(true, base::nullopt);
+        SetSelected(true, absl::nullopt);
         confirm_remove_by_long_press_ = true;
         OnSearchResultActionActivated(
             OmniBoxZeroStateAction::kRemoveSuggestion);

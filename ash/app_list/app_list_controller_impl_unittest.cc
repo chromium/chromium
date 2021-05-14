@@ -797,15 +797,15 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
     // be returned by GetInitialAppListItemScreenBoundsForWindow().
     // If nullopt, GetInitialAppListItemScreenBoundsForWindow() is expected to
     // return the apps grid center rect.
-    base::Optional<GridIndex> grid_position;
+    absl::optional<GridIndex> grid_position;
   } kTestCases[] = {{"fake_id_0", GridIndex(0, 0)},
                     {"fake_id_2", GridIndex(0, 2)},
-                    {"fake_id_in_folder_5", base::nullopt},
+                    {"fake_id_in_folder_5", absl::nullopt},
                     {"fake_id_15", GridIndex(0, 15)},
-                    {"fake_id_in_folder_23", base::nullopt},
-                    {"non_existent", base::nullopt},
-                    {"", base::nullopt},
-                    {"fake_id_22", base::nullopt}};
+                    {"fake_id_in_folder_23", absl::nullopt},
+                    {"non_existent", absl::nullopt},
+                    {"", absl::nullopt},
+                    {"fake_id_22", absl::nullopt}};
 
   // Tests the case app ID property is not set on the window.
   gfx::Rect init_bounds(0, 0, 400, 400);

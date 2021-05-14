@@ -461,7 +461,7 @@ void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
   }
 
   GetDisplayManager()->set_mixed_mirror_mode_params(
-      base::Optional<display::MixedMirrorModeParams>(
+      absl::optional<display::MixedMirrorModeParams>(
           absl::in_place, mirroring_source_id, mirroring_destination_ids));
 }
 
@@ -728,7 +728,7 @@ void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
 // |mixed_mirror_mode_params| is null.
 void StoreDisplayMixedMirrorModeParams(
     PrefService* pref_service,
-    const base::Optional<display::MixedMirrorModeParams>& mixed_params) {
+    const absl::optional<display::MixedMirrorModeParams>& mixed_params) {
   DictionaryPrefUpdate update(pref_service,
                               prefs::kDisplayMixedMirrorModeParams);
   base::DictionaryValue* pref_data = update.Get();
@@ -898,7 +898,7 @@ bool DisplayPrefs::ParseTouchCalibrationStringForTest(
 }
 
 void DisplayPrefs::StoreDisplayMixedMirrorModeParamsForTest(
-    const base::Optional<display::MixedMirrorModeParams>& mixed_params) {
+    const absl::optional<display::MixedMirrorModeParams>& mixed_params) {
   StoreDisplayMixedMirrorModeParams(local_state_, mixed_params);
 }
 

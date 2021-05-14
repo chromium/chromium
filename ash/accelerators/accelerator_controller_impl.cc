@@ -92,13 +92,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -248,7 +248,7 @@ void ShowDeprecatedAcceleratorNotification(const char* const notification_id,
 }
 
 void ShowToast(std::string id, const std::u16string& text) {
-  ToastData toast(id, text, kToastDurationMs, base::nullopt,
+  ToastData toast(id, text, kToastDurationMs, absl::nullopt,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
 }
@@ -509,7 +509,7 @@ bool CanHandleNewIncognitoWindow() {
   // Guest mode does not use incognito windows. The browser may have other
   // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
   // For non-guest mode, consume the key and defer the decision to the browser.
-  base::Optional<user_manager::UserType> user_type =
+  absl::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return user_type && *user_type != user_manager::USER_TYPE_GUEST;
 }

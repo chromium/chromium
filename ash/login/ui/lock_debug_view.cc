@@ -28,10 +28,10 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -614,7 +614,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
   // Clears all in-memory pairing state.
   void ClearDebugPairingState() {
-    pairing_status_ = base::nullopt;
+    pairing_status_ = absl::nullopt;
     base_id_ = kNullBaseId;
     last_used_bases_.clear();
 
@@ -648,7 +648,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
  private:
   // In-memory detachable base pairing state.
-  base::Optional<DetachableBasePairingStatus> pairing_status_;
+  absl::optional<DetachableBasePairingStatus> pairing_status_;
   int base_id_ = kNullBaseId;
   // Maps user account to the last used detachable base ID (base ID being the
   // base's index in kDebugDetachableBases array).
@@ -797,7 +797,7 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
         views::ScrollView::CreateScrollViewWithBorder();
     scroll->SetPreferredSize(gfx::Size(600, height));
     scroll->SetContents(base::WrapUnique(content));
-    scroll->SetBackgroundColor(base::nullopt);
+    scroll->SetBackgroundColor(absl::nullopt);
     scroll->SetVerticalScrollBar(
         std::make_unique<views::OverlayScrollBar>(false));
     scroll->SetHorizontalScrollBar(

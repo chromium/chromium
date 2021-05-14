@@ -133,7 +133,7 @@ LoginMenuView::LoginMenuView(const std::vector<Item>& items,
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   scroller_ = new views::ScrollView();
-  scroller_->SetBackgroundColor(base::nullopt);
+  scroller_->SetBackgroundColor(absl::nullopt);
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->ClipHeightTo(kMenuItemHeightDp, kMenuItemHeightDp * 5);
   AddChildView(scroller_);

@@ -6,7 +6,7 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_GRID_EVENT_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -74,7 +74,7 @@ class OverviewGridEventHandler : public ui::EventHandler,
 
   // Cached value of an earlier offset that determines values to scroll through
   // overview mode by being compared to an updated offset.
-  base::Optional<gfx::Vector2dF> fling_last_offset_;
+  absl::optional<gfx::Vector2dF> fling_last_offset_;
 
   // The compositor we are observing when a fling is underway.
   ui::Compositor* observed_compositor_ = nullptr;

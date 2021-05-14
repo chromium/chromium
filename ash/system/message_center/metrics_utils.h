@@ -65,7 +65,7 @@ NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
 
 // Returns the detailed notification type enum for a notification id.
-base::Optional<NotificationTypeDetailed> GetNotificationType(
+absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id);
 
 // Logs a ClickedBody event.

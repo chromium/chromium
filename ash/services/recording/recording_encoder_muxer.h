@@ -166,12 +166,12 @@ class RecordingEncoderMuxer {
   // which will then by sent to muxer.
   void OnVideoEncoderOutput(
       media::VideoEncoderOutput output,
-      base::Optional<media::VideoEncoder::CodecDescription> codec_description);
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description);
 
   // Called by the audio encoder to provide the |encoded_audio|.
   void OnAudioEncoded(
       media::EncodedAudioBuffer encoded_audio,
-      base::Optional<media::AudioEncoder::CodecDescription> codec_description);
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description);
 
   // Called by the |webm_muxer_| to deliver a muxer output chunk |data|.
   void OnMuxerWrite(base::StringPiece data);

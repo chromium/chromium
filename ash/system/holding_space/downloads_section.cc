@@ -43,7 +43,7 @@ class CallbackPathGenerator : public views::HighlightPathGenerator {
 
  private:
   // views::HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return callback_.Run();
   }
 

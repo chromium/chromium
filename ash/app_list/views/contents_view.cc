@@ -140,7 +140,7 @@ void ContentsView::Init(AppListModel* model) {
 }
 
 void ContentsView::ResetForShow() {
-  target_page_for_last_view_state_update_ = base::nullopt;
+  target_page_for_last_view_state_update_ = absl::nullopt;
   apps_container_view_->ResetForShowApps();
   // SearchBoxView::ResetForShow() before SetActiveState(). It clears the search
   // query internally, which can show the search results page through
@@ -935,7 +935,7 @@ int ContentsView::GetSearchBoxTopForViewState(
     AppListState state,
     AppListViewState view_state) const {
   AppListPage* page = GetPageView(GetPageIndexForState(state));
-  base::Optional<int> value_for_page = page->GetSearchBoxTop(view_state);
+  absl::optional<int> value_for_page = page->GetSearchBoxTop(view_state);
   if (value_for_page.has_value())
     return value_for_page.value();
 

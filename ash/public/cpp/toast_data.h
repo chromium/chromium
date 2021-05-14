@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   ToastData(std::string id,
             const std::u16string& text,
             int32_t duration_ms,
-            const base::Optional<std::u16string>& dismiss_text,
+            const absl::optional<std::u16string>& dismiss_text,
             bool visible_on_lock_screen = false);
   ToastData(const ToastData& other);
   ~ToastData();
@@ -28,7 +28,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::string id;
   std::u16string text;
   int32_t duration_ms;
-  base::Optional<std::u16string> dismiss_text;
+  absl::optional<std::u16string> dismiss_text;
   bool visible_on_lock_screen;
   bool is_managed = false;
 };

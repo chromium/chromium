@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"
 
@@ -77,7 +77,7 @@ class GhostImageView : public views::ImageView,
   gfx::Rect icon_bounds_;
 
   // The number of items within the GhostImageView folder.
-  base::Optional<size_t> num_items_;
+  absl::optional<size_t> num_items_;
 
   // The outline of the dragged item's icon. Used as the ghost image.
   gfx::ImageSkia outline_;

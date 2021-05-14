@@ -70,7 +70,7 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   const bool is_notification_indicator_enabled_;
 
   // Whether the pref for notification badging is enabled.
-  base::Optional<bool> notification_badging_pref_enabled_;
+  absl::optional<bool> notification_badging_pref_enabled_;
 
   // Observes user profile prefs for the shelf.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

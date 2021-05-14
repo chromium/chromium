@@ -135,7 +135,7 @@ class ASH_EXPORT AppListPresenterImpl
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
-      base::Optional<TabletModeAnimationTransition> transition,
+      absl::optional<TabletModeAnimationTransition> transition,
       UpdateHomeLauncherAnimationSettingsCallback callback);
 
   // Shows or hides the Assistant page.

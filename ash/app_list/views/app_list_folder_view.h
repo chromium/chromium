@@ -13,7 +13,6 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
-#include "base/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
@@ -192,7 +191,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   std::unique_ptr<Animation> contents_container_animation_;
 
   // Records smoothness of the folder show/hide animation.
-  base::Optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
+  absl::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
 };
 
 }  // namespace ash

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -25,7 +25,7 @@ class ASH_PUBLIC_EXPORT MicrophoneMuteNotificationDelegate {
   // Empty value, if an app is accessing the mic but no name could be determined
   // Non-empty value, if an app is accessing the mic and a name could be
   // determined
-  virtual base::Optional<std::u16string> GetAppAccessingMicrophone() = 0;
+  virtual absl::optional<std::u16string> GetAppAccessingMicrophone() = 0;
 
  protected:
   MicrophoneMuteNotificationDelegate();

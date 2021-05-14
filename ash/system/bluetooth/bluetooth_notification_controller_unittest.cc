@@ -47,7 +47,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     DCHECK(notification);
-    notification->delegate()->Click(base::nullopt, base::nullopt);
+    notification->delegate()->Click(absl::nullopt, absl::nullopt);
   }
 
  private:

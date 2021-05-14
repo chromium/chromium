@@ -283,7 +283,7 @@ void CrasAudioHandler::MediaSessionInfoChanged(
 }
 
 void CrasAudioHandler::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   if (!metadata || metadata->IsEmpty()) {
     HandleMediaSessionMetadataReset();
     return;
@@ -302,7 +302,7 @@ void CrasAudioHandler::MediaSessionMetadataChanged(
 }
 
 void CrasAudioHandler::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   if (!position)
     return;
 
@@ -1627,7 +1627,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
   }
 }
 
-void CrasAudioHandler::HandleGetNodes(base::Optional<AudioNodeList> node_list) {
+void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
   if (!node_list.has_value()) {
     LOG(ERROR) << "Failed to retrieve audio nodes data";
     return;
@@ -1642,7 +1642,7 @@ void CrasAudioHandler::HandleGetNodes(base::Optional<AudioNodeList> node_list) {
 }
 
 void CrasAudioHandler::HandleGetNumActiveOutputStreams(
-    base::Optional<int> new_output_streams_count) {
+    absl::optional<int> new_output_streams_count) {
   if (!new_output_streams_count.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of active output streams";
     return;
@@ -1660,7 +1660,7 @@ void CrasAudioHandler::HandleGetNumActiveOutputStreams(
 }
 
 void CrasAudioHandler::HandleGetDeprioritizeBtWbsMic(
-    base::Optional<bool> deprioritize_bt_wbs_mic) {
+    absl::optional<bool> deprioritize_bt_wbs_mic) {
   if (!deprioritize_bt_wbs_mic.has_value()) {
     LOG(ERROR) << "Failed to retrieve WBS mic deprioritized flag";
     return;
@@ -1855,7 +1855,7 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
 }
 
 void CrasAudioHandler::HandleGetNumberOfInputStreamsWithPermission(
-    base::Optional<base::flat_map<std::string, uint32_t>> num_input_streams) {
+    absl::optional<base::flat_map<std::string, uint32_t>> num_input_streams) {
   if (!num_input_streams.has_value()) {
     LOG(ERROR) << "Failed to retrieve number of input streams with permission";
     return;
@@ -1874,7 +1874,7 @@ void CrasAudioHandler::GetDefaultOutputBufferSizeInternal() {
 }
 
 void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
-    base::Optional<int> buffer_size) {
+    absl::optional<int> buffer_size) {
   if (!buffer_size.has_value()) {
     LOG(ERROR) << "Failed to retrieve output buffer size";
     return;
@@ -1899,7 +1899,7 @@ void CrasAudioHandler::GetSystemAecSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemAecSupported(
-    base::Optional<bool> system_aec_supported) {
+    absl::optional<bool> system_aec_supported) {
   if (!system_aec_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system aec supported";
     return;
@@ -1923,7 +1923,7 @@ void CrasAudioHandler::GetSystemAecGroupId() {
 }
 
 void CrasAudioHandler::HandleGetSystemAecGroupId(
-    base::Optional<int32_t> system_aec_group_id) {
+    absl::optional<int32_t> system_aec_group_id) {
   if (!system_aec_group_id.has_value()) {
     // If the group Id is not available, set the ID to reflect that.
     system_aec_group_id_ = kSystemAecGroupIdNotAvailable;

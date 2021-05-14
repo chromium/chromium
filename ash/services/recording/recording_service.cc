@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -24,6 +23,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/audio/public/cpp/device_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace recording {

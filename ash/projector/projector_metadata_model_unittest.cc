@@ -32,7 +32,7 @@ constexpr char kSerializedTranscriptTemplate[] = R"({
 
 void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
-  base::Optional<base::Value> expected_value = base::JSONReader::Read(expected);
+  absl::optional<base::Value> expected_value = base::JSONReader::Read(expected);
   ASSERT_TRUE(expected_value);
   std::string expected_serialized_value;
   base::JSONWriter::Write(expected_value.value(), &expected_serialized_value);

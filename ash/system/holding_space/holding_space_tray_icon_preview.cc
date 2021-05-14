@@ -59,7 +59,7 @@ bool ShouldUseSmallPreviews() {
 // Returns the size for previews. If `use_small_previews` is absent it will be
 // determined from the current shelf configuration.
 gfx::Size GetPreviewSize(
-    const base::Optional<bool>& use_small_previews = base::nullopt) {
+    const absl::optional<bool>& use_small_previews = absl::nullopt) {
   return use_small_previews.value_or(ShouldUseSmallPreviews())
              ? gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize,
                          kHoldingSpaceTrayIconSmallPreviewSize)

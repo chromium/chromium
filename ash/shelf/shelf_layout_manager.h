@@ -30,10 +30,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -431,7 +431,7 @@ class ASH_EXPORT ShelfLayoutManager
   ShelfAutoHideState CalculateAutoHideState(
       ShelfVisibilityState visibility_state) const;
 
-  base::Optional<ShelfAutoHideState>
+  absl::optional<ShelfAutoHideState>
   CalculateAutoHideStateBasedOnCursorLocation() const;
 
   // Returns true if |window| is a descendant of the shelf.
@@ -481,7 +481,7 @@ class ASH_EXPORT ShelfLayoutManager
   void CompleteDrag(const ui::LocatedEvent& event_in_screen);
   void CompleteAppListDrag(const ui::LocatedEvent& event_in_screen);
   void CompleteDragHomeToOverview(const ui::LocatedEvent& event_in_screen);
-  void CancelDrag(base::Optional<ShelfWindowDragResult> window_drag_result);
+  void CancelDrag(absl::optional<ShelfWindowDragResult> window_drag_result);
   void CompleteDragWithChangedVisibility();
 
   float GetAppListBackgroundOpacityOnShelfOpacity();
@@ -509,7 +509,7 @@ class ASH_EXPORT ShelfLayoutManager
                                      const gfx::Vector2dF& scroll);
   void MaybeUpdateWindowDrag(const ui::LocatedEvent& event_in_screen,
                              const gfx::Vector2dF& scroll);
-  base::Optional<ShelfWindowDragResult> MaybeEndWindowDrag(
+  absl::optional<ShelfWindowDragResult> MaybeEndWindowDrag(
       const ui::LocatedEvent& event_in_screen);
   // If overview session is active, goes to home screen if the gesture should
   // initiate transition to home. It handles the gesture only if the
@@ -645,7 +645,7 @@ class ASH_EXPORT ShelfLayoutManager
   // visibility update is requested for overview and resets when overview no
   // longer needs it. It is used because OnOverviewModeStarting() and
   // OnOverviewModeStartingAnimationComplete() calls are not balanced.
-  base::Optional<ScopedSuspendWorkAreaUpdate>
+  absl::optional<ScopedSuspendWorkAreaUpdate>
       overview_suspend_work_area_update_;
 
   // The window drag controller that will be used when a window can be dragged

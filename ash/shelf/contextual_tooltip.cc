@@ -76,15 +76,15 @@ base::Time GetLastShownTime(PrefService* prefs, TooltipType type) {
 }
 
 int GetSuccessCount(PrefService* prefs, TooltipType type) {
-  base::Optional<int> success_count =
+  absl::optional<int> success_count =
       prefs->GetDictionary(prefs::kContextualTooltips)
           ->FindIntPath(GetPath(type, kSuccessCount));
   return success_count.value_or(0);
 }
 
-const base::Optional<base::TimeDelta>& GetMinIntervalOverride() {
+const absl::optional<base::TimeDelta>& GetMinIntervalOverride() {
   // Overridden minimum time between showing contextual nudges to the user.
-  static base::Optional<base::TimeDelta> min_interval_override;
+  static absl::optional<base::TimeDelta> min_interval_override;
   if (!min_interval_override) {
     min_interval_override = switches::ContextualNudgesInterval();
   }
@@ -220,7 +220,7 @@ base::TimeDelta GetNudgeTimeout(PrefService* prefs, TooltipType type) {
 }
 
 int GetShownCount(PrefService* prefs, TooltipType type) {
-  base::Optional<int> shown_count =
+  absl::optional<int> shown_count =
       prefs->GetDictionary(prefs::kContextualTooltips)
           ->FindIntPath(GetPath(type, kShownCount));
   return shown_count.value_or(0);

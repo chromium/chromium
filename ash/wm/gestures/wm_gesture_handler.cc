@@ -67,7 +67,7 @@ float GetOffset(float offset) {
 void ShowReverseGestureToast(const char* toast_id, int message_id) {
   Shell::Get()->toast_manager()->Show(
       ToastData(toast_id, l10n_util::GetStringUTF16(message_id),
-                kToastDurationMs.InMilliseconds(), base::nullopt));
+                kToastDurationMs.InMilliseconds(), absl::nullopt));
 }
 
 // When reverse scrolling for touchpad is Off, if the user performs wrong

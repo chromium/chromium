@@ -16,9 +16,9 @@
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -636,7 +636,7 @@ TEST_F(DragWindowResizerTest, DragWindowControllerWithCustomShadowBounds) {
     cursor_manager->SetDisplay(display1);
     window_->SetBoundsInScreen(gfx::Rect(420, 20, 100, 100), display1);
     DragWindowController controller(window_.get(), /*is_touch_dragging=*/false,
-                                    base::make_optional(shadow_bounds));
+                                    absl::make_optional(shadow_bounds));
     // Move to |display0|.
     cursor_manager->SetDisplay(display0);
     window_->SetBoundsInScreen(gfx::Rect(20, 20, 100, 100), display0);
@@ -651,7 +651,7 @@ TEST_F(DragWindowResizerTest, DragWindowControllerWithCustomShadowBounds) {
     // Start on |display0|.
     window_->SetBoundsInScreen(gfx::Rect(20, 20, 100, 100), display0);
     DragWindowController controller(window_.get(), /*is_touch_dragging=*/true,
-                                    base::make_optional(shadow_bounds));
+                                    absl::make_optional(shadow_bounds));
     // Move the window so some is visible on |display1|.
     window_->SetBoundsInScreen(gfx::Rect(380, 20, 100, 100), display0);
     update_controller_and_check_root_and_shadow(&controller, root_windows[1]);

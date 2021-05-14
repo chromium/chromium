@@ -206,7 +206,7 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Used to record Ambient mode engagement metrics.
-  base::Optional<base::Time> start_time_ = base::nullopt;
+  absl::optional<base::Time> start_time_ = absl::nullopt;
 
   base::OneShotTimer delayed_lock_timer_;
 

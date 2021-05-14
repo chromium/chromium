@@ -83,7 +83,7 @@ TEST_F(MirrorWindowControllerTest, DockMode) {
           .SetFirstDisplayAsInternalDisplay();
   EXPECT_EQ(internal_id, internal_display_id);
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -146,7 +146,7 @@ TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
     // Start software mirroring.
     display_manager()->OnNativeDisplaysChanged(display_info_list);
     display_manager()->SetMirrorMode(display::MirrorMode::kNormal,
-                                     base::nullopt);
+                                     absl::nullopt);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(1U, display_manager()->GetNumDisplays());
     EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());

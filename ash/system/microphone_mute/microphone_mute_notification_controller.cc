@@ -37,7 +37,7 @@ void MicrophoneMuteNotificationController::OnInputMuteChanged(bool mute_on) {
 
 void MicrophoneMuteNotificationController::MaybeShowNotification() {
   if (mic_mute_on_) {
-    base::Optional<std::u16string> app_name =
+    absl::optional<std::u16string> app_name =
         MicrophoneMuteNotificationDelegate::Get()->GetAppAccessingMicrophone();
     if (app_name.has_value() || HaveActiveInputStreams()) {
       GenerateMicrophoneMuteNotification(app_name);
@@ -49,7 +49,7 @@ void MicrophoneMuteNotificationController::MaybeShowNotification() {
 }
 
 void MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
-    const base::Optional<std::u16string>& app_name) {
+    const absl::optional<std::u16string>& app_name) {
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
@@ -66,7 +66,7 @@ void MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
 }
 
 std::u16string MicrophoneMuteNotificationController::GetNotificationMessage(
-    const base::Optional<std::u16string>& app_name) const {
+    const absl::optional<std::u16string>& app_name) const {
   return !app_name.value_or(u"").empty()
              ? l10n_util::GetStringFUTF16(
                    IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,

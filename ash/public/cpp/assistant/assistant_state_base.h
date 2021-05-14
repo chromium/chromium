@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -63,49 +63,49 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
     return assistant_status_;
   }
 
-  const base::Optional<bool>& settings_enabled() const {
+  const absl::optional<bool>& settings_enabled() const {
     return settings_enabled_;
   }
 
-  const base::Optional<int>& consent_status() const { return consent_status_; }
+  const absl::optional<int>& consent_status() const { return consent_status_; }
 
-  const base::Optional<bool>& context_enabled() const {
+  const absl::optional<bool>& context_enabled() const {
     return context_enabled_;
   }
 
-  const base::Optional<bool>& hotword_enabled() const {
+  const absl::optional<bool>& hotword_enabled() const {
     return hotword_enabled_;
   }
 
-  const base::Optional<bool>& hotword_always_on() const {
+  const absl::optional<bool>& hotword_always_on() const {
     return hotword_always_on_;
   }
 
-  const base::Optional<bool>& launch_with_mic_open() const {
+  const absl::optional<bool>& launch_with_mic_open() const {
     return launch_with_mic_open_;
   }
 
-  const base::Optional<bool>& notification_enabled() const {
+  const absl::optional<bool>& notification_enabled() const {
     return notification_enabled_;
   }
 
-  const base::Optional<chromeos::assistant::prefs::AssistantOnboardingMode>&
+  const absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>&
   onboarding_mode() const {
     return onboarding_mode_;
   }
 
-  const base::Optional<chromeos::assistant::AssistantAllowedState>&
+  const absl::optional<chromeos::assistant::AssistantAllowedState>&
   allowed_state() const {
     return allowed_state_;
   }
 
-  const base::Optional<std::string>& locale() const { return locale_; }
+  const absl::optional<std::string>& locale() const { return locale_; }
 
-  const base::Optional<bool>& arc_play_store_enabled() const {
+  const absl::optional<bool>& arc_play_store_enabled() const {
     return arc_play_store_enabled_;
   }
 
-  const base::Optional<bool>& locked_full_screen_enabled() const {
+  const absl::optional<bool>& locked_full_screen_enabled() const {
     return locked_full_screen_enabled_;
   }
 
@@ -145,44 +145,44 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   // TODO(b/138679823): Maybe remove Optional for preference values.
   // Whether the Assistant is enabled in system settings. nullopt if the
   // data is not available yet.
-  base::Optional<bool> settings_enabled_;
+  absl::optional<bool> settings_enabled_;
 
   // The status of the user's consent. nullopt if the data is not available yet.
-  base::Optional<int> consent_status_;
+  absl::optional<int> consent_status_;
 
   // Whether screen context is enabled. nullopt if the data is not available
   // yet.
-  base::Optional<bool> context_enabled_;
+  absl::optional<bool> context_enabled_;
 
   // Whether hotword listening is enabled.
-  base::Optional<bool> hotword_enabled_;
+  absl::optional<bool> hotword_enabled_;
 
   // Whether hotword listening is always on/only with power source. nullopt
   // if the data is not available yet.
-  base::Optional<bool> hotword_always_on_;
+  absl::optional<bool> hotword_always_on_;
 
   // Whether the Assistant should launch with mic open;
-  base::Optional<bool> launch_with_mic_open_;
+  absl::optional<bool> launch_with_mic_open_;
 
   // Whether notification is enabled.
-  base::Optional<bool> notification_enabled_;
+  absl::optional<bool> notification_enabled_;
 
   // The mode for the Assistant onboarding experience.
-  base::Optional<chromeos::assistant::prefs::AssistantOnboardingMode>
+  absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>
       onboarding_mode_;
 
   // Whether the Assistant feature is allowed or disallowed for what reason.
   // nullopt if the data is not available yet.
-  base::Optional<chromeos::assistant::AssistantAllowedState> allowed_state_;
+  absl::optional<chromeos::assistant::AssistantAllowedState> allowed_state_;
 
-  base::Optional<std::string> locale_;
+  absl::optional<std::string> locale_;
 
   // Whether play store is enabled. nullopt if the data is not available yet.
-  base::Optional<bool> arc_play_store_enabled_;
+  absl::optional<bool> arc_play_store_enabled_;
 
   // Whether locked full screen state is enabled. nullopt if the data is not
   // available yet.
-  base::Optional<bool> locked_full_screen_enabled_;
+  absl::optional<bool> locked_full_screen_enabled_;
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

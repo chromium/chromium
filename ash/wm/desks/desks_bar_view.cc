@@ -280,7 +280,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);
-  scroll_view_->SetBackgroundColor(base::nullopt);
+  scroll_view_->SetBackgroundColor(absl::nullopt);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);

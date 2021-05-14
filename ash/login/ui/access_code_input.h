@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -34,7 +34,7 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
   virtual void InsertDigit(int value) = 0;
 
   // Returns access code as string.
-  virtual base::Optional<std::string> GetCode() const = 0;
+  virtual absl::optional<std::string> GetCode() const = 0;
 
   // Sets the color of the input text.
   virtual void SetInputColor(SkColor color) = 0;
@@ -80,7 +80,7 @@ class FlexCodeInput : public AccessCodeInput {
   void Backspace() override;
 
   // Returns access code as string if field contains input.
-  base::Optional<std::string> GetCode() const override;
+  absl::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
   void SetInputColor(SkColor color) override;
@@ -183,7 +183,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   void Backspace() override;
 
   // Returns access code as string if all fields contain input.
-  base::Optional<std::string> GetCode() const override;
+  absl::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
   void SetInputColor(SkColor color) override;

@@ -32,7 +32,7 @@ class UnifiedSystemTrayModel::DBusObserver
   ~DBusObserver() override;
 
  private:
-  void HandleInitialBrightness(base::Optional<double> percent);
+  void HandleInitialBrightness(absl::optional<double> percent);
 
   // chromeos::PowerManagerClient::Observer:
   void ScreenBrightnessChanged(
@@ -86,7 +86,7 @@ UnifiedSystemTrayModel::DBusObserver::~DBusObserver() {
 }
 
 void UnifiedSystemTrayModel::DBusObserver::HandleInitialBrightness(
-    base::Optional<double> percent) {
+    absl::optional<double> percent) {
   if (percent.has_value())
     owner_->DisplayBrightnessChanged(percent.value() / 100.,
                                      false /* by_user */);
@@ -175,11 +175,11 @@ bool UnifiedSystemTrayModel::IsExplicitlyExpanded() const {
   return expanded_on_open_ == StateOnOpen::EXPANDED;
 }
 
-base::Optional<bool> UnifiedSystemTrayModel::GetNotificationExpanded(
+absl::optional<bool> UnifiedSystemTrayModel::GetNotificationExpanded(
     const std::string& notification_id) const {
   auto it = notification_changes_.find(notification_id);
-  return it == notification_changes_.end() ? base::Optional<bool>()
-                                           : base::Optional<bool>(it->second);
+  return it == notification_changes_.end() ? absl::optional<bool>()
+                                           : absl::optional<bool>(it->second);
 }
 
 void UnifiedSystemTrayModel::SetTargetNotification(

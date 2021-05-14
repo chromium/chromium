@@ -7,8 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -32,7 +32,7 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
   ~UnifiedMediaControlsView() override = default;
 
   void SetIsPlaying(bool playing);
-  void SetArtwork(base::Optional<gfx::ImageSkia> artwork);
+  void SetArtwork(absl::optional<gfx::ImageSkia> artwork);
   void SetTitle(const std::u16string& title);
   void SetArtist(const std::u16string& artist);
   void UpdateActionButtonAvailability(

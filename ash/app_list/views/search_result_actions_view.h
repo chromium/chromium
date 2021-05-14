@@ -76,7 +76,7 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
   void ChildVisibilityChanged(views::View* child) override;
 
   // If an action is currently selected, the selected action index.
-  base::Optional<int> selected_action_;
+  absl::optional<int> selected_action_;
 
   SearchResultActionsViewDelegate* const delegate_;  // Not owned.
   std::list<base::CallbackListSubscription> subscriptions_;

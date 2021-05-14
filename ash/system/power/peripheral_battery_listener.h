@@ -14,9 +14,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -68,7 +68,7 @@ class ASH_EXPORT PeripheralBatteryListener
     BatteryInfo();
     BatteryInfo(const std::string& key,
                 const std::u16string& name,
-                base::Optional<uint8_t> level,
+                absl::optional<uint8_t> level,
                 base::TimeTicks last_update_timestamp,
                 PeripheralType type,
                 ChargeStatus charge_status,
@@ -84,7 +84,7 @@ class ASH_EXPORT PeripheralBatteryListener
     std::u16string name;
     // Battery level within range [0, 100], or unset. This is changeable.
     // TODO(kenalba): explain when we might have an unset state.
-    base::Optional<uint8_t> level;
+    absl::optional<uint8_t> level;
     // Time of last known update of the battery state; this is changeable,
     // and may be updated even if no other fields are; it gives the time of the
     // last known confirmed reading.
@@ -94,8 +94,8 @@ class ASH_EXPORT PeripheralBatteryListener
     // a peripheral notified the system of status, distinct from a periodic
     // poll or poll on powerd restart. Unset (nullopt) if there has never been
     // an active update.
-    base::Optional<base::TimeTicks> last_active_update_timestamp =
-        base::nullopt;
+    absl::optional<base::TimeTicks> last_active_update_timestamp =
+        absl::nullopt;
 
     // Describes whether battery has been used for stylus-related elements,
     // or anything else. Note that stylus information received through the
@@ -164,7 +164,7 @@ class ASH_EXPORT PeripheralBatteryListener
   void DeviceBatteryChanged(
       device::BluetoothAdapter* adapter,
       device::BluetoothDevice* device,
-      base::Optional<uint8_t> new_battery_percentage) override;
+      absl::optional<uint8_t> new_battery_percentage) override;
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
                                    device::BluetoothDevice* device,
                                    bool is_now_connected) override;

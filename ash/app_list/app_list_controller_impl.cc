@@ -243,11 +243,11 @@ void LogAppListShowSource(AppListShowSource show_source) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListShowSource", show_source);
 }
 
-base::Optional<TabletModeAnimationTransition>
+absl::optional<TabletModeAnimationTransition>
 GetTransitionFromMetricsAnimationInfo(
-    base::Optional<HomeLauncherAnimationInfo> animation_info) {
+    absl::optional<HomeLauncherAnimationInfo> animation_info) {
   if (!animation_info.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   return CalculateAnimationTransitionForMetrics(animation_info->trigger,
                                                 animation_info->showing);
@@ -577,7 +577,7 @@ aura::Window* AppListControllerImpl::GetWindow() {
 }
 
 bool AppListControllerImpl::IsVisible(
-    const base::Optional<int64_t>& display_id) {
+    const absl::optional<int64_t>& display_id) {
   return last_visible_ && (!display_id.has_value() ||
                            display_id.value() == last_visible_display_id_);
 }
@@ -698,14 +698,14 @@ void AppListControllerImpl::OnAppListStateChanged(AppListState new_state,
 // Methods used in Ash
 
 bool AppListControllerImpl::GetTargetVisibility(
-    const base::Optional<int64_t>& display_id) const {
+    const absl::optional<int64_t>& display_id) const {
   return last_target_visible_ &&
          (!display_id.has_value() ||
           display_id.value() == last_visible_display_id_);
 }
 
 void AppListControllerImpl::Show(int64_t display_id,
-                                 base::Optional<AppListShowSource> show_source,
+                                 absl::optional<AppListShowSource> show_source,
                                  base::TimeTicks event_time_stamp) {
   if (show_source.has_value())
     LogAppListShowSource(show_source.value());
@@ -943,7 +943,7 @@ void AppListControllerImpl::OnOverviewModeEnding(OverviewSession* session) {
   // OnOverviewModeEndingAnimationComplete(). Overview however is nullptr by
   // the time the animations are finished, so cache the exit type here.
   overview_exit_type_ =
-      base::make_optional(session->enter_exit_overview_type());
+      absl::make_optional(session->enter_exit_overview_type());
 
   // If the overview is fading out, start the home launcher animation in
   // parallel. Otherwise the transition will be initiated in
@@ -986,13 +986,13 @@ void AppListControllerImpl::OnOverviewModeEndingAnimationComplete(
   // For kFadeOutExit OverviewEnterExitType, the home animation is scheduled in
   // OnOverviewModeEnding(), so there is nothing else to do at this point.
   if (canceled || *overview_exit_type_ == OverviewEnterExitType::kFadeOutExit) {
-    overview_exit_type_ = base::nullopt;
+    overview_exit_type_ = absl::nullopt;
     return;
   }
 
   const bool animate =
       *overview_exit_type_ == OverviewEnterExitType::kFadeOutExit;
-  overview_exit_type_ = base::nullopt;
+  overview_exit_type_ = absl::nullopt;
 
   UpdateForOverviewModeChange(/*show_home_launcher=*/true, animate);
 
@@ -1122,11 +1122,11 @@ void AppListControllerImpl::OnAssistantReady() {
 void AppListControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   switch (new_visibility) {
     case AssistantVisibility::kVisible:
-      if (!IsVisible(base::nullopt)) {
+      if (!IsVisible(absl::nullopt)) {
         Show(GetDisplayIdToShowAppListOn(), kAssistantEntryPoint,
              base::TimeTicks());
       }
@@ -1147,7 +1147,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
       // |ShowEmbeddedAssistantUI(false)|, which will show previous state page
       // in Launcher and make the UI flash.
       if (IsTabletMode()) {
-        base::Optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
+        absl::optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
             set_active_state_animation_disabler;
         // When taking a screenshot by Assistant, we do not want to animate to
         // the final state. Otherwise the screenshot may have tansient state
@@ -1233,7 +1233,7 @@ aura::Window* AppListControllerImpl::GetHomeScreenWindow() const {
 void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,
-    base::Optional<HomeLauncherAnimationInfo> animation_info,
+    absl::optional<HomeLauncherAnimationInfo> animation_info,
     UpdateAnimationSettingsCallback callback) {
   DCHECK(!animation_info.has_value() || !callback.is_null());
 
@@ -1302,8 +1302,8 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
       AppListLaunchedFrom::kLaunchedFromShelf,
       recorded_app_list_view_state_.value_or(GetAppListViewState()),
       IsTabletMode(), recorded_app_list_visibility_.value_or(last_visible_));
-  recorded_app_list_view_state_ = base::nullopt;
-  recorded_app_list_visibility_ = base::nullopt;
+  recorded_app_list_view_state_ = absl::nullopt;
+  recorded_app_list_visibility_ = absl::nullopt;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1863,7 +1863,7 @@ void AppListControllerImpl::ShowHomeScreen() {
 
   // App list is only considered shown for metrics if there are currently no
   // other visible windows shown over the app list after the tablet transition.
-  base::Optional<AppListShowSource> show_source;
+  absl::optional<AppListShowSource> show_source;
   if (!GetTopVisibleWindow())
     show_source = kTabletMode;
 
@@ -1916,7 +1916,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
   if (animate && show_home_launcher) {
     UpdateScaleAndOpacityForHomeLauncher(
         kOverviewFadeAnimationScale,
-        /*opacity=*/0.0f, /*animation_info=*/base::nullopt,
+        /*opacity=*/0.0f, /*animation_info=*/absl::nullopt,
         /*animation_settings_updater=*/base::NullCallback());
   }
 
@@ -1934,11 +1934,11 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
     }
   }
 
-  base::Optional<HomeLauncherAnimationInfo> animation_info =
-      animate ? base::make_optional<HomeLauncherAnimationInfo>(
+  absl::optional<HomeLauncherAnimationInfo> animation_info =
+      animate ? absl::make_optional<HomeLauncherAnimationInfo>(
                     HomeLauncherAnimationTrigger::kOverviewModeFade,
                     show_home_launcher)
-              : base::nullopt;
+              : absl::nullopt;
   UpdateAnimationSettingsCallback animation_settings_updater =
       animate ? base::BindRepeating(&UpdateOverviewSettings,
                                     kOverviewFadeAnimationDuration)
@@ -1952,7 +1952,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
 }
 
 void AppListControllerImpl::UpdateLauncherContainer(
-    base::Optional<int64_t> display_id) {
+    absl::optional<int64_t> display_id) {
   aura::Window* window = presenter_.GetWindow();
   if (!window)
     return;
@@ -1977,7 +1977,7 @@ int AppListControllerImpl::GetContainerId() const {
 }
 
 aura::Window* AppListControllerImpl::GetContainerForDisplayId(
-    base::Optional<int64_t> display_id) {
+    absl::optional<int64_t> display_id) {
   aura::Window* root_window = nullptr;
   if (display_id.has_value()) {
     root_window = Shell::GetRootWindowForDisplayId(display_id.value());
@@ -2019,7 +2019,7 @@ void AppListControllerImpl::Shutdown() {
 }
 
 bool AppListControllerImpl::IsHomeScreenVisible() {
-  return IsTabletMode() && IsVisible(base::nullopt);
+  return IsTabletMode() && IsVisible(absl::nullopt);
 }
 
 gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(

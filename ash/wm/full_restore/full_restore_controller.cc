@@ -75,7 +75,7 @@ aura::Window* GetSiblingToStackBelow(aura::Window* window) {
   // stacked in certain ways by other window manager features so there may be
   // non-restored windows at any point but the windows that have the
   // `full_restore::kActivationIndexKey` should be in relative descending order.
-  base::Optional<int32_t> last_activation_key;
+  absl::optional<int32_t> last_activation_key;
   for (size_t i = 0; i < siblings.size(); ++i) {
     // The current window needs to be stacked, so there is a chance it is
     // initially out of order.
@@ -167,7 +167,7 @@ bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
 }
 
 void FullRestoreController::SaveWindow(WindowState* window_state) {
-  SaveWindowImpl(window_state, /*activation_index=*/base::nullopt);
+  SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
 }
 
 void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
@@ -331,7 +331,7 @@ void FullRestoreController::SaveAllWindows() {
 
 void FullRestoreController::SaveWindowImpl(
     WindowState* window_state,
-    base::Optional<int> activation_index) {
+    absl::optional<int> activation_index) {
   DCHECK(window_state);
   aura::Window* window = window_state->window();
 

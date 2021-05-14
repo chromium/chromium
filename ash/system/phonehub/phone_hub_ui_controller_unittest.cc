@@ -6,13 +6,13 @@
 
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/test/ash_test_base.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/fake_tether_controller.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
@@ -74,7 +74,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
   }
 
   void SetPhoneStatusModel(
-      const base::Optional<chromeos::phonehub::PhoneStatusModel>&
+      const absl::optional<chromeos::phonehub::PhoneStatusModel>&
           phone_status_model) {
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phone_status_model);
@@ -189,7 +189,7 @@ TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
   // Tether status is connected, the feature status is |kEnabledAndConnected|,
   // but there is no phone model. The UiState should still be
   // kTetherConnectionPending.
-  SetPhoneStatusModel(base::nullopt);
+  SetPhoneStatusModel(absl::nullopt);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
             controller_->ui_state());
@@ -234,7 +234,7 @@ TEST_F(PhoneHubUiControllerTest, UnavailableSecondaryUser) {
 TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
   // Since there is no phone model, expect that we stay at the connecting screen
   // even though the feature status is kEnabledAndConnected.
-  SetPhoneStatusModel(base::nullopt);
+  SetPhoneStatusModel(absl::nullopt);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_->ui_state());

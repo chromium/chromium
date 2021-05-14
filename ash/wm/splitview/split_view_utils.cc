@@ -409,13 +409,13 @@ void ShowAppCannotSnapToast() {
   Shell::Get()->toast_manager()->Show(ToastData(
       kAppCannotSnapToastId,
       l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, base::Optional<std::u16string>()));
+      kAppCannotSnapToastDurationMs, absl::optional<std::u16string>()));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(
     aura::Window* root_window,
     const gfx::Point& location_in_screen,
-    const base::Optional<gfx::Point>& initial_location_in_screen,
+    const absl::optional<gfx::Point>& initial_location_in_screen,
     int snap_distance_from_edge,
     int minimum_drag_distance,
     int horizontal_edge_inset,
@@ -501,7 +501,7 @@ SplitViewController::SnapPosition GetSnapPosition(
     return SplitViewController::NONE;
   }
 
-  base::Optional<gfx::Point> initial_location_in_current_screen = base::nullopt;
+  absl::optional<gfx::Point> initial_location_in_current_screen = absl::nullopt;
   if (window->GetRootWindow() == root_window)
     initial_location_in_current_screen = initial_location_in_screen;
 

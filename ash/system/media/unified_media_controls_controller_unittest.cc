@@ -405,7 +405,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Still in normal state since we are within waiting delay time frame.
@@ -419,7 +419,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Hide controls timer expired, controls should be in empty state.
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
   EXPECT_TRUE(IsMediaControlsInEmptyState());
@@ -451,7 +451,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
     EXPECT_TRUE(button->GetEnabled());
 
   // Media controls should be in empty state after getting empty session.
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
 
@@ -503,7 +503,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
   EXPECT_TRUE(artwork_view()->GetVisible());
   EXPECT_EQ(artwork_view()->background(), nullptr);
 
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
 
@@ -541,7 +541,7 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   EXPECT_EQ(artist_label()->GetText(), init_metadata.artist);
   EXPECT_FALSE(artwork_view()->GetVisible());
 
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
 
   // Test that metadata update is ignored when we waiting for new session.
   media_session::MediaMetadata metadata;

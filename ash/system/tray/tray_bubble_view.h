@@ -11,7 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -96,10 +96,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
     // If not provided, the bg color will be derived from the NativeTheme.
-    base::Optional<SkColor> bg_color;
-    base::Optional<int> corner_radius;
-    base::Optional<gfx::Insets> insets;
-    base::Optional<gfx::Insets> margin;
+    absl::optional<SkColor> bg_color;
+    absl::optional<int> corner_radius;
+    absl::optional<gfx::Insets> insets;
+    absl::optional<gfx::Insets> margin;
     bool has_shadow = true;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;
@@ -240,7 +240,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // keyboard.
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
-  base::Optional<StatusAreaWidget::ScopedTrayBubbleCounter>
+  absl::optional<StatusAreaWidget::ScopedTrayBubbleCounter>
       tray_bubble_counter_;
 };
 

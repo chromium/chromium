@@ -269,13 +269,13 @@ TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
   GetEventGenerator()->ReleaseKey(ui::VKEY_V, /*event_flags=*/0);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/base::nullopt));
+      /*display_id=*/absl::nullopt));
 
   // Release VKEY_LWIN(search/launcher), which could trigger the app list.
   GetEventGenerator()->ReleaseKey(ui::VKEY_LWIN, /*event_flags=*/0);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/base::nullopt));
+      /*display_id=*/absl::nullopt));
 }
 
 // Tests that clearing the clipboard clears ClipboardHistory

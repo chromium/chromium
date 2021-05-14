@@ -23,7 +23,7 @@
 namespace ash {
 
 // static private
-base::Optional<AshMessageCenterLockScreenController::Mode>
+absl::optional<AshMessageCenterLockScreenController::Mode>
     AshMessageCenterLockScreenController::overridden_mode_for_testing_;
 
 // static
@@ -68,7 +68,7 @@ AshMessageCenterLockScreenController::GetMode() {
 
 // static, only for testing
 void AshMessageCenterLockScreenController::OverrideModeForTest(
-    base::Optional<AshMessageCenterLockScreenController::Mode> new_mode) {
+    absl::optional<AshMessageCenterLockScreenController::Mode> new_mode) {
   overridden_mode_for_testing_ = new_mode;
 }
 
@@ -142,7 +142,7 @@ void AshMessageCenterLockScreenController::EncourageUserToUnlock(
 
   // TODO(yoshiki): Update UI after the UX finalizes.
   Shell::Get()->toast_manager()->Show(
-      ToastData(kToastId, message, ToastData::kInfiniteDuration, base::nullopt,
+      ToastData(kToastId, message, ToastData::kInfiniteDuration, absl::nullopt,
                 /*visible_on_lock_screen=*/true));
 }
 

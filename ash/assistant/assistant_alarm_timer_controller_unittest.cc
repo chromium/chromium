@@ -79,7 +79,7 @@ class TimerEvent {
     return *this;
   }
 
-  TimerEvent& WithCreationTime(base::Optional<base::Time> creation_time) {
+  TimerEvent& WithCreationTime(absl::optional<base::Time> creation_time) {
     timer_.creation_time = creation_time;
     return *this;
   }
@@ -221,14 +221,14 @@ class ExpectedNotification {
   }
 
  private:
-  base::Optional<GURL> action_url_;
-  base::Optional<std::string> client_id_;
-  base::Optional<bool> is_pinned_;
-  base::Optional<std::string> message_;
-  base::Optional<AssistantNotificationPriority> priority_;
-  base::Optional<bool> remove_on_click_;
-  base::Optional<bool> renotify_;
-  base::Optional<std::string> title_;
+  absl::optional<GURL> action_url_;
+  absl::optional<std::string> client_id_;
+  absl::optional<bool> is_pinned_;
+  absl::optional<std::string> message_;
+  absl::optional<AssistantNotificationPriority> priority_;
+  absl::optional<bool> remove_on_click_;
+  absl::optional<bool> renotify_;
+  absl::optional<std::string> title_;
 };
 
 class ExpectedButton {
@@ -275,9 +275,9 @@ class ExpectedButton {
   }
 
  private:
-  base::Optional<GURL> action_url_;
-  base::Optional<std::string> label_;
-  base::Optional<bool> remove_notification_on_click_;
+  absl::optional<GURL> action_url_;
+  absl::optional<std::string> label_;
+  absl::optional<bool> remove_notification_on_click_;
 };
 
 // ScopedNotificationModelObserver ---------------------------------------------

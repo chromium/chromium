@@ -220,10 +220,10 @@ bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   return true;
 }
 
-base::Optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
+absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
     float scroll_delta_x) {
   if (!starting_desk_screenshot_taken_ || !ending_desk_screenshot_taken_)
-    return base::nullopt;
+    return absl::nullopt;
 
   const float translation_delta_x =
       TouchpadToXTranslation(scroll_delta_x, x_translation_offset_);
@@ -278,7 +278,7 @@ base::Optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
                 -kMinDistanceBeforeScreenshotDp;
 
   if (!going_out_of_bounds)
-    return base::nullopt;
+    return absl::nullopt;
 
   // The upcoming desk we need to show will be an adjacent desk to the desk at
   // the visible desk index based on |moving_left|.
@@ -287,7 +287,7 @@ base::Optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
 
   if (new_desk_index < 0 ||
       new_desk_index >= int{DesksController::Get()->desks().size()}) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return new_desk_index;

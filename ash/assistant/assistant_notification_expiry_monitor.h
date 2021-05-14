@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/assistant/model/assistant_notification_model_observer.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,8 +39,8 @@ class AssistantNotificationExpiryMonitor {
   // (new) expiry time that will expire first.
   void UpdateTimer();
 
-  base::Optional<base::TimeDelta> GetTimerTimeout() const;
-  base::Optional<base::Time> GetTimerEndTime() const;
+  absl::optional<base::TimeDelta> GetTimerTimeout() const;
+  absl::optional<base::Time> GetTimerEndTime() const;
   void RemoveExpiredNotifications();
   std::vector<NotificationId> GetExpiredNotifications() const;
   std::vector<const AssistantNotification*> GetNotifications() const;

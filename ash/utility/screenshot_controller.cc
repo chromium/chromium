@@ -14,7 +14,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window_targeter.h"
@@ -131,7 +131,7 @@ class ScreenshotController::ScreenshotLayer : public ui::LayerOwner,
 
   bool draw_inactive_overlay() const { return draw_inactive_overlay_; }
 
-  const base::Optional<gfx::Point>& start_position() const {
+  const absl::optional<gfx::Point>& start_position() const {
     return start_position_;
   }
 
@@ -299,7 +299,7 @@ class ScreenshotController::ScreenshotLayer : public ui::LayerOwner,
 
   gfx::Point cursor_location_in_root_;
 
-  base::Optional<gfx::Point> start_position_;
+  absl::optional<gfx::Point> start_position_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenshotLayer);
 };

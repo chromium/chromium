@@ -19,10 +19,10 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
@@ -77,7 +77,7 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
   }
 
   void EndDrag(const gfx::PointF& location_in_screen,
-               base::Optional<float> velocity_y) {
+               absl::optional<float> velocity_y) {
     home_to_overview_controller_->EndDrag(location_in_screen, velocity_y);
   }
 

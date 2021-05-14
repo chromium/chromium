@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/button/button.h"
 
@@ -46,7 +46,7 @@ class ASH_EXPORT DetailedViewDelegate {
   virtual void CloseBubble();
 
   // Get the background color of the detailed view.
-  virtual base::Optional<SkColor> GetBackgroundColor();
+  virtual absl::optional<SkColor> GetBackgroundColor();
 
   // Get the padding of the detailed view.
   virtual gfx::Insets GetInsetsForDetailedView() const;
