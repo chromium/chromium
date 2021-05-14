@@ -6439,6 +6439,11 @@ class BackForwardCacheBrowserTestWithBlockedWebsites
 // page.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
                        NavigateFromAllowedPageToDisallowedPage) {
+  // Skip checking the AllSites metrics since BackForwardCacheMetrics stop
+  // recording except BackForwardCache.AllSites.* metrics when the target URL is
+  // disallowed by allowed_websites or blocked_websites.
+  DisableCheckingMetricsForAllSites();
+
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.allowed", "/back_forward_cache/allowed_path.html"));
@@ -6458,7 +6463,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // 3) Check if rfh_a is stored in back-forward cache, since it doesn't match
-  // to the |blocked_websites|, and |allowed_websites| are empty, so it should
+  // to the blocked_websites, and allowed_websites are empty, so it should
   // be stored.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -6467,17 +6472,31 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
+  ExpectRestored(FROM_HERE);
 
   // 5) Check if rfh_b is not stored in back-forward cache, since it matches to
-  // the |blocked_websites|.
+  // the blocked_websites.
   delete_observer_rfh_b.WaitUntilDeleted();
   EXPECT_TRUE(delete_observer_rfh_b.deleted());
+
+  // 6) Go forward to B. B should not restored from the back-forward cache.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Nothing is recorded since B is disallowed.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
 }
 
 // Check the allowed page is bfcached when it's navigated from disallowed
 // page.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
                        NavigateFromDisallowedPageToAllowedPage) {
+  // Skip checking the AllSites metrics since BackForwardCacheMetrics stop
+  // recording except BackForwardCache.AllSites.* metrics when the target URL is
+  // disallowed by allowed_websites or blocked_websites.
+  DisableCheckingMetricsForAllSites();
+
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.blocked", "/back_forward_cache/disallowed_path.html"));
@@ -6497,7 +6516,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // 3) Check if rfh_a is not stored in back-forward cache, since it matches to
-  // the |blocked_websites|.
+  // the blocked_websites.
   delete_observer_rfh_a.WaitUntilDeleted();
   EXPECT_TRUE(delete_observer_rfh_a.deleted());
 
@@ -6505,11 +6524,20 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithBlockedWebsites,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
+  // Nothing is recorded since A is disallowed.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
+
   // 5) Check if rfh_b is stored in back-forward cache, since it doesn't match
-  // to the |blocked_websites|, and |allowed_websites| are empty, so it should
+  // to the blocked_websites, and allowed_websites are empty, so it should
   // be stored.
   EXPECT_FALSE(delete_observer_rfh_b.deleted());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 6) Go forward to url_b which is bfcached.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Test BackForwardCache::IsAllowed() with several allowed_websites URL
