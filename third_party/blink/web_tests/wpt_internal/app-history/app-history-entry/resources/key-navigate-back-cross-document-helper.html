@@ -7,14 +7,14 @@
 window.onload = () => { setTimeout(() => {
   if (location.search == "?go-back") {
     assert_equals(appHistory.entries().length, 2);
-    assert_equals(appHistory.entries()[1], appHistory.current);
+    assert_equals(appHistory.current.index, 1);
     // Step 2: Navigate back.
     history.back();
     return;
   }
   if (top.start_key) {
     assert_equals(appHistory.entries().length, 2);
-    assert_equals(appHistory.entries()[0], appHistory.current);
+    assert_equals(appHistory.current.index, 0);
     // Step 3: Notify parent, which will ensure the same key is used after back navigation.
     top.finish(appHistory.current.key, appHistory.current.id);
     return;

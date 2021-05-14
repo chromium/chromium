@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
@@ -18,6 +19,11 @@ String AppHistoryEntry::key() const {
 
 String AppHistoryEntry::id() const {
   return DomWindow() ? item_->GetAppHistoryId() : String();
+}
+
+int64_t AppHistoryEntry::index() {
+  return DomWindow() ? AppHistory::appHistory(*DomWindow())->GetIndexFor(this)
+                     : -1;
 }
 
 KURL AppHistoryEntry::url() {

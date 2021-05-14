@@ -364,6 +364,13 @@ void AppHistory::CancelOngoingNavigateEvent() {
   ongoing_navigate_event_ = nullptr;
 }
 
+int AppHistory::GetIndexFor(AppHistoryEntry* entry) {
+  const auto& it = keys_to_indices_.find(entry->key());
+  if (it == keys_to_indices_.end() || entry != entries_[it->value])
+    return -1;
+  return it->value;
+}
+
 const AtomicString& AppHistory::InterfaceName() const {
   return event_target_names::kAppHistory;
 }

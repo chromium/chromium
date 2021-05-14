@@ -10,8 +10,7 @@
   readonly attribute DOMString key;
   readonly attribute DOMString id;
   readonly attribute USVString url;
-  // readonly attribute long long index;
-  // readonly attribute boolean finished;
+  readonly attribute long long index;
   readonly attribute boolean sameDocument;
 
   any getState();

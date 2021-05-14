@@ -15,7 +15,7 @@ async_test(t => {
       if (navigated_back) {
         let back_entry = i.contentWindow.appHistory.current;
         assert_equals(i.contentWindow.appHistory.entries().length, 2);
-        assert_equals(back_entry, i.contentWindow.appHistory.entries()[0]);
+        assert_equals(back_entry.index, 0);
         assert_equals(back_entry.getState().data, "value");
         t.done();
       } else {

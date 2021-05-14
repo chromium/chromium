@@ -244,6 +244,7 @@ interface AppHistory : EventTarget
 interface AppHistoryEntry : EventTarget
     attribute @@toStringTag
     getter id
+    getter index
     getter key
     getter sameDocument
     getter url

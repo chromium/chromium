@@ -73,6 +73,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              SerializedScriptValue* = nullptr);
   void CancelOngoingNavigateEvent();
 
+  int GetIndexFor(AppHistoryEntry*);
+
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
