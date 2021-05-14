@@ -16,9 +16,10 @@ const SASetupElement = {
   BLUETOOTH_BUTTON: 'bluetooth',
   EXIT_BUTTON: 'exit',
   NEXT_BUTTON: 'next',
-  PREIVOUS_BUTTON: 'previous',
+  PREVIOUS_BUTTON: 'previous',
   INTRO_CONTENT: 'intro',
   ASSIGN_SELECT_CONTENT: 'assign-select',
+  CHOOSE_SWITCH_COUNT_CONTENT: 'choose-switch-count',
 };
 
 /**
@@ -61,8 +62,15 @@ SASetupPageList[SASetupPageId.INTRO] = {
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
   titleId: 'switchAccessSetupIntroTitle',
   visibleElements: [
-    SASetupElement.EXIT_BUTTON, SASetupElement.PREIVOUS_BUTTON,
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
     SASetupElement.ASSIGN_SELECT_CONTENT
+  ]
+};
+SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
+  titleId: 'switchAccessSetupChooseSwitchCountTitle',
+  visibleElements: [
+    SASetupElement.EXIT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT
   ]
 };
 
@@ -102,7 +110,13 @@ Polymer({
    * @private
    */
   getNextPageId_() {
-    return SASetupPageId.ASSIGN_SELECT;
+    switch (this.currentPageId_) {
+      case SASetupPageId.INTRO:
+        return SASetupPageId.ASSIGN_SELECT;
+      case SASetupPageId.ASSIGN_SELECT:
+      default:
+        return SASetupPageId.CHOOSE_SWITCH_COUNT;
+    }
   },
 
   /**
@@ -111,7 +125,13 @@ Polymer({
    * @private
    */
   getPreviousPageId_() {
-    return SASetupPageId.INTRO;
+    switch (this.currentPageId_) {
+      case SASetupPageId.ASSIGN_SELECT:
+        return SASetupPageId.INTRO;
+      case SASetupPageId.CHOOSE_SWITCH_COUNT:
+      default:
+        return SASetupPageId.ASSIGN_SELECT;
+    }
   },
 
   /** @private */

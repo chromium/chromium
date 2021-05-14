@@ -53,12 +53,27 @@
             url(chrome://os-settings/images/computer_and_bluetooth_switch.svg);
       }
 
+      #choose-switch-count .illustration {
+        background-image:
+          url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
+      }
+
       #button-container {
         padding: 24px;
       }
 
       cr-button {
         margin: 4px;
+      }
+
+      input[type='radio'] + label {
+        padding-inline-start: 20px;
+      }
+
+      .radio-button-description {
+        margin: 0;
+        padding: 0;
+        padding-inline-start: 44px;
       }
 
       #bluetooth {
@@ -80,6 +95,41 @@
           <div class="sa-setup-contents">
             Nothing to see here yet!
           </div>
+        </div>
+        <div id="choose-switch-count" class="flex" hidden>
+          <div class="sa-setup-contents">
+            <input type="radio" aria-labelledby="switch-count-of-1"
+                   name="switch-count" value=1>
+            <label id="switch-count-of-1">
+              <span class="cr-title-text">
+                $i18n{switchAccessSetupChoose1Switch}
+              </span>
+              <div></div>
+            </label>
+            <div></div>
+            <input type="radio" aria-labelledby="switch-count-of-2"
+                   name="switch-count" value=2>
+            <label id="switch-count-of-2">
+              <span class="cr-title-text">
+                $i18n{switchAccessSetupChoose2Switches}
+              </span>
+              <div class="radio-button-description">
+                $i18n{switchAccessSetupChoose2SwitchesDescription}
+              </div>
+            </label>
+            <div></div>
+            <input type="radio" aria-labelledby="switch-count-of-3"
+                   name="switch-count" value=3>
+            <label id="switch-count-of-3">
+              <span class="cr-title-text">
+                $i18n{switchAccessSetupChoose3Switches}
+              </span>
+              <div class="radio-button-description">
+                $i18n{switchAccessSetupChoose3SwitchesDescription}
+              </div>
+            </label>
+          </div>
+          <div class="illustration"></div>
         </div>
       </div>
       <div id="button-container" slot="button-container">
