@@ -5,7 +5,6 @@
 package org.chromium.chrome.features.start_surface;
 
 import static android.os.Build.VERSION_CODES.M;
-import static android.os.Build.VERSION_CODES.N;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -556,11 +555,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testTapMVTilesInSingleSurface() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
-
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -976,10 +970,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
@@ -1061,7 +1051,6 @@ public class StartSurfaceTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    @FlakyTest(message = "https://crbug.com/1185984")
     public void testShow_SingleAsHomepage_BackButtonOnCarouselTabSwitcher() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -1101,10 +1090,6 @@ public class StartSurfaceTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonOnTabSwitcherWithDialogShowing() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         backButtonOnTabSwitcherWithDialogShowingImpl();
     }
 
@@ -1193,8 +1178,6 @@ public class StartSurfaceTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonOnHomepageWithGroupTabsDialog() {
-        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1205218",
-                mUseInstantStart && mImmediateReturn);
         backButtonOnHomepageWithGroupTabsDialogImpl();
     }
 
@@ -1552,8 +1535,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
     public void testShow_SingleAsHomepage_ShowTabsInMRUOrder() {
-        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1207947",
-                mUseInstantStart && mImmediateReturn);
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -1602,13 +1583,8 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
     public void testShow_TabSwitcher_ShowTabsInMRUOrder() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
         tabSwitcher_ShowTabsInMRUOrderImpl();
     }
 
