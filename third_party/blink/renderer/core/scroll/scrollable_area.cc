@@ -999,6 +999,8 @@ bool ScrollableArea::PerformSnapping(
   base::Optional<FloatPoint> snap_point = GetSnapPositionAndSetTarget(strategy);
   if (!snap_point)
     return false;
+  recordreplay::Assert("ScrollableArea::PerformSnapping #1 %s",
+                       snap_point.value().ToString().Utf8().c_str());
   CancelScrollAnimation();
   CancelProgrammaticScrollAnimation();
   SetScrollOffset(ScrollPositionToOffset(snap_point.value()),
