@@ -113,7 +113,8 @@ message WebAppProto {
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are suitable for any purpose (ie. IconPurpose::ANY). See also:
-  // |downloaded_icon_sizes_purpose_maskable|.
+  // |downloaded_icon_sizes_purpose_maskable|,
+  // |downloaded_icon_sizes_purpose_monochrome|.
   repeated int32 downloaded_icon_sizes_purpose_any = 11;
 
   // A list of file handlers.
@@ -197,4 +198,10 @@ message WebAppProto {
   optional int64 last_badging_time = 31;
 
   optional bool file_handler_permission_blocked = 32;
+
+  // A list of icon sizes we successfully downloaded to store on disk for
+  // monochrome icons. (IconPurpose::MONOCHROME). See also:
+  // |downloaded_icon_sizes_purpose_any|,
+  // |downloaded_icon_sizes_purpose_maskable|.
+  repeated int32 downloaded_icon_sizes_purpose_monochrome = 33;
 }

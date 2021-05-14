@@ -23,7 +23,8 @@ message WebAppIconInfo {
     ANY = 1;
     // Designed for masking.
     MASKABLE = 2;
-    // MONOCHROME; is never serialized.
+    // Suitable for monochrome purposes.
+    MONOCHROME = 3;
   }
 
   // The size of the square app icon, in raw pixels.

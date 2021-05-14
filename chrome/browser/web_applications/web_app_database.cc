@@ -256,6 +256,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
        web_app.downloaded_icon_sizes(IconPurpose::MASKABLE)) {
     local_data->add_downloaded_icon_sizes_purpose_maskable(size);
   }
+  for (SquareSizePx size :
+       web_app.downloaded_icon_sizes(IconPurpose::MONOCHROME)) {
+    local_data->add_downloaded_icon_sizes_purpose_monochrome(size);
+  }
 
   local_data->set_is_generated_icon(web_app.is_generated_icon());
 
@@ -559,6 +563,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     icon_sizes_maskable.push_back(size);
   web_app->SetDownloadedIconSizes(
       IconPurpose::MASKABLE, SortedSizesPx(std::move(icon_sizes_maskable)));
+
+  std::vector<SquareSizePx> icon_sizes_monochrome;
+  for (int32_t size : local_data.downloaded_icon_sizes_purpose_monochrome())
+    icon_sizes_monochrome.push_back(size);
+  web_app->SetDownloadedIconSizes(
+      IconPurpose::MONOCHROME, SortedSizesPx(std::move(icon_sizes_monochrome)));
 
   web_app->SetIsGeneratedIcon(local_data.is_generated_icon());
 

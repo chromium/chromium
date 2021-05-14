@@ -24,9 +24,7 @@ const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
     IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
-      FALLTHROUGH;
+      return monochrome;
     case IconPurpose::ANY:
       return any;
     case IconPurpose::MASKABLE:
@@ -42,8 +40,7 @@ void IconBitmaps::SetBitmapsForPurpose(
       any = std::move(bitmaps);
       return;
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
+      monochrome = std::move(bitmaps);
       return;
     case IconPurpose::MASKABLE:
       maskable = std::move(bitmaps);
@@ -52,8 +49,7 @@ void IconBitmaps::SetBitmapsForPurpose(
 }
 
 bool IconBitmaps::empty() const {
-  // TODO (crbug.com/1114638): Check Monochrome if supported.
-  return any.empty() && maskable.empty();
+  return any.empty() && maskable.empty() && monochrome.empty();
 }
 
 // IconSizes
@@ -73,9 +69,7 @@ const std::vector<SquareSizePx>& IconSizes::GetSizesForPurpose(
     IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
-      FALLTHROUGH;
+      return monochrome;
     case IconPurpose::ANY:
       return any;
     case IconPurpose::MASKABLE:
@@ -90,8 +84,7 @@ void IconSizes::SetSizesForPurpose(IconPurpose purpose,
       any = std::move(sizes);
       return;
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
+      monochrome = std::move(sizes);
       return;
     case IconPurpose::MASKABLE:
       maskable = std::move(sizes);
@@ -100,8 +93,7 @@ void IconSizes::SetSizesForPurpose(IconPurpose purpose,
 }
 
 bool IconSizes::empty() const {
-  // TODO (crbug.com/1114638): Check Monochrome if supported.
-  return any.empty() && maskable.empty();
+  return any.empty() && maskable.empty() && monochrome.empty();
 }
 
 // WebApplicationIconInfo
@@ -251,9 +243,10 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
-  // TODO (crbug.com/1114638): Add Monochrome support.
-  return std::tie(icon_sizes1.any, icon_sizes1.maskable) ==
-         std::tie(icon_sizes2.any, icon_sizes2.maskable);
+  return std::tie(icon_sizes1.any, icon_sizes1.maskable,
+                  icon_sizes1.monochrome) == std::tie(icon_sizes2.any,
+                                                      icon_sizes2.maskable,
+                                                      icon_sizes2.monochrome);
 }
 
 bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,

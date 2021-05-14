@@ -57,11 +57,12 @@ bool HaveIconContentsChanged(
 
 bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
                             const IconBitmaps& downloaded_icon_bitmaps) {
-  // TODO (crbug.com/1114638): Check Monochrome icons if supported.
   return HaveIconContentsChanged(disk_icon_bitmaps.any,
                                  downloaded_icon_bitmaps.any) ||
          HaveIconContentsChanged(disk_icon_bitmaps.maskable,
-                                 downloaded_icon_bitmaps.maskable);
+                                 downloaded_icon_bitmaps.maskable) ||
+         HaveIconContentsChanged(disk_icon_bitmaps.monochrome,
+                                 downloaded_icon_bitmaps.monochrome);
 }
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore

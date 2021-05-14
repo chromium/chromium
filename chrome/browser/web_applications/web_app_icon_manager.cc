@@ -20,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -227,18 +228,15 @@ bool WriteDataBlocking(const std::unique_ptr<FileUtilsWrapper>& utils,
     return false;
   }
 
-  if (!WriteIcons(
-          utils.get(),
-          GetAppIconsDirectory(app_temp_dir.GetPath(), IconPurpose::ANY),
-          icon_bitmaps.any)) {
-    return false;
-  }
-  // TODO (crbug.com/1114638): Write Monochrome icons here.
-  if (!WriteIcons(
-          utils.get(),
-          GetAppIconsDirectory(app_temp_dir.GetPath(), IconPurpose::MASKABLE),
-          icon_bitmaps.maskable)) {
-    return false;
+  // Iterates over each icon purpose.
+  for (int p = static_cast<int>(IconPurpose::kMinValue);
+       p <= static_cast<int>(IconPurpose::kMaxValue); ++p) {
+    auto purpose = static_cast<IconPurpose>(p);
+    if (!WriteIcons(utils.get(),
+                    GetAppIconsDirectory(app_temp_dir.GetPath(), purpose),
+                    icon_bitmaps.GetBitmapsForPurpose(purpose))) {
+      return false;
+    }
   }
 
   base::FilePath manifest_resources_directory =

@@ -56,7 +56,9 @@ struct IconBitmaps {
   // See https://www.w3.org/TR/appmanifest/#dfn-maskable-purpose
   std::map<SquareSizePx, SkBitmap> maskable;
 
-  // TODO (crbug.com/1114638): Monochrome support.
+  // Monochrome bitmaps designed for any context, keyed by their square size.
+  // See https://www.w3.org/TR/appmanifest/#purpose-member
+  std::map<SquareSizePx, SkBitmap> monochrome;
 };
 
 // Icon sizes for each IconPurpose.
@@ -82,7 +84,9 @@ struct IconSizes {
   // See https://www.w3.org/TR/appmanifest/#dfn-maskable-purpose
   std::vector<SquareSizePx> maskable;
 
-  // TODO (crbug.com/1114638): Monochrome support.
+  // Sizes of monochrome bitmaps, keyed by their square size.
+  // See https://www.w3.org/TR/appmanifest/#purpose-member
+  std::vector<SquareSizePx> monochrome;
 };
 
 using ShortcutsMenuIconBitmaps = std::vector<IconBitmaps>;
@@ -100,7 +104,6 @@ struct WebApplicationIconInfo {
 
   GURL url;
   base::Optional<SquareSizePx> square_size_px;
-  // TODO (crbug.com/1114638): Support Monochrome.
   IconPurpose purpose = IconPurpose::ANY;
 };
 

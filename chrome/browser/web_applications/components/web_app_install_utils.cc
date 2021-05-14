@@ -249,9 +249,6 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     DCHECK(!icon.purpose.empty());
 
     for (IconPurpose purpose : icon.purpose) {
-      if (purpose != IconPurpose::ANY && purpose != IconPurpose::MASKABLE)
-        continue;
-
       WebApplicationIconInfo info;
 
       if (!icon.sizes.empty()) {
@@ -381,6 +378,7 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
 
   std::vector<WebApplicationIconInfo> icon_infos_any;
   std::vector<WebApplicationIconInfo> icon_infos_maskable;
+  std::vector<WebApplicationIconInfo> icon_infos_monochrome;
   for (WebApplicationIconInfo& icon_info : web_app_info->icon_infos) {
     switch (icon_info.purpose) {
       case IconPurpose::ANY:
@@ -390,18 +388,21 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
         icon_infos_maskable.push_back(icon_info);
         break;
       case IconPurpose::MONOCHROME:
-        // Not used.
+        icon_infos_monochrome.push_back(icon_info);
         break;
     }
   }
 
   std::vector<SkBitmap> square_icons_any;
   std::vector<SkBitmap> square_icons_maskable;
+  std::vector<SkBitmap> square_icons_monochrome;
   if (icons_map) {
     AddSquareIconsFromMapMatchingIconInfos(&square_icons_any, icon_infos_any,
                                            *icons_map);
     AddSquareIconsFromMapMatchingIconInfos(&square_icons_maskable,
                                            icon_infos_maskable, *icons_map);
+    AddSquareIconsFromMapMatchingIconInfos(&square_icons_monochrome,
+                                           icon_infos_monochrome, *icons_map);
     // Fall back to using all icons from |icons_map| if none match icon_infos.
     if (square_icons_any.empty())
       AddSquareIconsFromMap(&square_icons_any, *icons_map);
@@ -412,6 +413,12 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
     // Retain any bitmaps provided as input to the installation.
     if (web_app_info->icon_bitmaps.maskable.count(bitmap.width()) == 0)
       web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
+  }
+
+  for (SkBitmap& bitmap : square_icons_monochrome) {
+    // Retain any bitmaps provided as input to the installation.
+    if (web_app_info->icon_bitmaps.monochrome.count(bitmap.width()) == 0)
+      web_app_info->icon_bitmaps.monochrome[bitmap.width()] = std::move(bitmap);
   }
 
   char16_t icon_letter =

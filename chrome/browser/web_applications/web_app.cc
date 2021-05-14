@@ -48,8 +48,6 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
     case IconPurpose::ANY:
       return downloaded_icon_sizes_any_;
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Download monochrome icons.
-      NOTREACHED();
       return downloaded_icon_sizes_monochrome_;
     case IconPurpose::MASKABLE:
       return downloaded_icon_sizes_maskable_;
@@ -216,8 +214,7 @@ void WebApp::SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes) {
       downloaded_icon_sizes_any_ = std::move(sizes);
       break;
     case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Add monochrome icons support.
-      NOTREACHED();
+      downloaded_icon_sizes_monochrome_ = std::move(sizes);
       break;
     case IconPurpose::MASKABLE:
       downloaded_icon_sizes_maskable_ = std::move(sizes);

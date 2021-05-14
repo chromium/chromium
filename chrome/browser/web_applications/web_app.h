@@ -291,7 +291,6 @@ class WebApp {
   bool is_uninstalling_ = false;
   std::vector<WebApplicationIconInfo> icon_infos_;
   SortedSizesPx downloaded_icon_sizes_any_;
-  // TODO (crbug.com/1114638): Monochrome icons are not currently downloaded.
   SortedSizesPx downloaded_icon_sizes_monochrome_;
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;

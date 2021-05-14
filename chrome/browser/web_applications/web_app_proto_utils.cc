@@ -21,6 +21,8 @@ SyncPurposeToBlinkPurpose(sync_pb::WebAppIconInfo_Purpose purpose) {
       return blink::mojom::ManifestImageResource_Purpose::ANY;
     case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
       return blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+    case sync_pb::WebAppIconInfo_Purpose_MONOCHROME:
+      return blink::mojom::ManifestImageResource_Purpose::MONOCHROME;
   }
 }
 
@@ -30,9 +32,7 @@ sync_pb::WebAppIconInfo_Purpose BlinkPurposeToSyncPurpose(
     case blink::mojom::ManifestImageResource_Purpose::ANY:
       return sync_pb::WebAppIconInfo_Purpose_ANY;
     case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
-      // Monochrome purpose icons are never stored in icon_info.
-      NOTREACHED();
-      return sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED;
+      return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
     case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
       return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
   }

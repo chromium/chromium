@@ -107,16 +107,21 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
+
   const GURL kAppIcon2("fav2.png");
   icon.src = kAppIcon2;
   icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
+
   const GURL kAppIcon3("fav3.png");
   icon.src = kAppIcon3;
+  icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
+
   // Add an icon without purpose ANY (expect to be ignored).
   icon.purpose = {Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
+
   manifest.display_override.push_back(DisplayMode::kMinimalUi);
   manifest.display_override.push_back(DisplayMode::kStandalone);
 
@@ -127,9 +132,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_override[0]);
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info.display_override[1]);
 
-  EXPECT_EQ(2u, web_app_info.icon_infos.size());
+  // We currently duplicate the app icons with multiple Purposes.
+  EXPECT_EQ(5u, web_app_info.icon_infos.size());
   EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
   EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[2].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[3].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
 
   // Check file handlers were updated
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
@@ -175,20 +184,20 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   // Produces 1 icon_info.
   icon.purpose = {Purpose::MASKABLE};
   manifest.icons.push_back(icon);
-  // Not converted to an icon_info (for now).
+  // Produces 1 icon_info.
   icon.purpose = {Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
   WebApplicationInfo web_app_info;
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
-  EXPECT_EQ(3U, web_app_info.icon_infos.size());
+  EXPECT_EQ(4u, web_app_info.icon_infos.size());
   std::map<IconPurpose, int> purpose_to_count;
   for (const auto& icon_info : web_app_info.icon_infos) {
     purpose_to_count[icon_info.purpose]++;
   }
   EXPECT_EQ(1, purpose_to_count[IconPurpose::ANY]);
-  EXPECT_EQ(0, purpose_to_count[IconPurpose::MONOCHROME]);
+  EXPECT_EQ(1, purpose_to_count[IconPurpose::MONOCHROME]);
   EXPECT_EQ(2, purpose_to_count[IconPurpose::MASKABLE]);
 }
 
@@ -372,13 +381,17 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
+
   const GURL kAppIcon2("fav2.png");
   icon.src = kAppIcon2;
   icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
+
   const GURL kAppIcon3("fav3.png");
   icon.src = kAppIcon3;
+  icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
+
   // Add an icon without purpose ANY (expect to be ignored).
   icon.purpose = {Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
@@ -409,9 +422,13 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   EXPECT_EQ(kAppTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
 
-  EXPECT_EQ(2u, web_app_info.icon_infos.size());
+  // We currently duplicate the app icons with multiple Purposes.
+  EXPECT_EQ(5u, web_app_info.icon_infos.size());
   EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
   EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[2].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[3].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
 
   EXPECT_EQ(2u, web_app_info.shortcuts_menu_item_infos.size());
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[0]

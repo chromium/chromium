@@ -234,7 +234,7 @@ description: Description1234
 last_badging_time: 1970-01-12 14:48:29.918 UTC
 last_launch_time: 1970-01-02 16:03:30.110 UTC
 install_time: 1970-01-09 06:11:52.363 UTC
-is_generated_icon: 1
+is_generated_icon: 0
 run_on_os_login_mode: minimized
 icon_infos:
   url: https://example.com/icon1783899413
@@ -244,7 +244,7 @@ icon_infos:
     square_size_px: none
     purpose: ANY
 downloaded_icon_sizes_any: 256
-downloaded_icon_sizes_monochrome:
+downloaded_icon_sizes_monochrome: 256
 downloaded_icon_sizes_maskable:
 shortcuts_menu_item_infos:
   name: shortcut24741963851
@@ -278,53 +278,44 @@ downloaded_shortcuts_menu_icons_sizes:
     any: 232 77
     maskable: 113 154
 file_handlers:
-  action: https://example.com/open-33849121400
+  action: https://example.com/open-13087720410
     accept:
-      mime_type: application/33849121400+foo
-      file_extensions: .33849121400a .33849121400b
+      mime_type: application/13087720410+foo
+      file_extensions: .13087720410a .13087720410b
     accept:
-      mime_type: application/33849121400+bar
-      file_extensions: .33849121400a .33849121400b
-  action: https://example.com/open-33849121401
+      mime_type: application/13087720410+bar
+      file_extensions: .13087720410a .13087720410b
+  action: https://example.com/open-13087720411
     accept:
-      mime_type: application/33849121401+foo
-      file_extensions: .33849121401a .33849121401b
+      mime_type: application/13087720411+foo
+      file_extensions: .13087720411a .13087720411b
     accept:
-      mime_type: application/33849121401+bar
-      file_extensions: .33849121401a .33849121401b
-  action: https://example.com/open-33849121402
+      mime_type: application/13087720411+bar
+      file_extensions: .13087720411a .13087720411b
+  action: https://example.com/open-13087720412
     accept:
-      mime_type: application/33849121402+foo
-      file_extensions: .33849121402a .33849121402b
+      mime_type: application/13087720412+foo
+      file_extensions: .13087720412a .13087720412b
     accept:
-      mime_type: application/33849121402+bar
-      file_extensions: .33849121402a .33849121402b
-  action: https://example.com/open-33849121403
+      mime_type: application/13087720412+bar
+      file_extensions: .13087720412a .13087720412b
+  action: https://example.com/open-13087720413
     accept:
-      mime_type: application/33849121403+foo
-      file_extensions: .33849121403a .33849121403b
+      mime_type: application/13087720413+foo
+      file_extensions: .13087720413a .13087720413b
     accept:
-      mime_type: application/33849121403+bar
-      file_extensions: .33849121403a .33849121403b
-  action: https://example.com/open-33849121404
+      mime_type: application/13087720413+bar
+      file_extensions: .13087720413a .13087720413b
+  action: https://example.com/open-13087720414
     accept:
-      mime_type: application/33849121404+foo
-      file_extensions: .33849121404a .33849121404b
+      mime_type: application/13087720414+foo
+      file_extensions: .13087720414a .13087720414b
     accept:
-      mime_type: application/33849121404+bar
-      file_extensions: .33849121404a .33849121404b
+      mime_type: application/13087720414+bar
+      file_extensions: .13087720414a .13087720414b
 file_handler_permission_blocked:0
 share_target:
-  action: https://example.com/path/target/1210958276
-  method: POST
-  enctype: multipart/form-data
-  title: title1210958276
-  text: text1210958276
-  url: 
-  files:
-    name: files0
-      accept: .extension0
-      accept: type/subtype0
+  nullopt
 additional_search_terms:
   Foo_1234_0
   Foo_1234_1

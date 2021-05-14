@@ -282,12 +282,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     if (random.next_bool())
       icon.square_size_px = size;
 
-    int purpose = random.next_uint(3);
+    int purpose = random.next_uint(4);
     if (purpose == 0)
       icon.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
     if (purpose == 1)
       icon.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
-    // if (purpose == 2), leave purpose unset. Should default to ANY.
+    if (purpose == 2)
+      icon.purpose = blink::mojom::ManifestImageResource_Purpose::MONOCHROME;
+    // if (purpose == 3), leave purpose unset. Should default to ANY.
 
     icon_infos[i] = icon;
   }
@@ -296,6 +298,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetDownloadedIconSizes(IconPurpose::ANY, {size});
   if (random.next_bool())
     app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {size});
+  if (random.next_bool())
+    app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, {size});
   app->SetIsGeneratedIcon(random.next_bool());
 
   app->SetFileHandlers(CreateRandomFileHandlers(random.next_uint()));

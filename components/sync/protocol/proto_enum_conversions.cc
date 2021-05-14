@@ -516,11 +516,12 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {
-  ASSERT_ENUM_BOUNDS(sync_pb::WebAppIconInfo, Purpose, UNSPECIFIED, MASKABLE);
+  ASSERT_ENUM_BOUNDS(sync_pb::WebAppIconInfo, Purpose, UNSPECIFIED, MONOCHROME);
   switch (purpose) {
     ENUM_CASE(sync_pb::WebAppIconInfo, UNSPECIFIED);
     ENUM_CASE(sync_pb::WebAppIconInfo, ANY);
     ENUM_CASE(sync_pb::WebAppIconInfo, MASKABLE);
+    ENUM_CASE(sync_pb::WebAppIconInfo, MONOCHROME);
   }
   NOTREACHED();
   return "";
