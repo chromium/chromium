@@ -1040,6 +1040,7 @@ mojom("mojom_core") {
   component_deps_blink = [
     "//cc/mojom",
     "//services/viz/public/mojom",
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
     "//third_party/blink/renderer/platform",
   ]
 

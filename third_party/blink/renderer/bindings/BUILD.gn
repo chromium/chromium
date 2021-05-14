@@ -176,6 +176,10 @@ template("generate_bindings") {
 
     script = "${bindings_scripts_dir}/generate_bindings.py"
 
+    if (defined(invoker.visibility)) {
+      visibility += invoker.visibility
+    }
+
     if (defined(invoker.pool)) {
       pool = invoker.pool
     }
@@ -204,6 +208,8 @@ template("generate_bindings") {
 }
 
 generate_bindings("generate_bindings_all") {
+  visibility += [ "//third_party/blink/public/mojom/*" ]
+
   targets = [ "enumeration" ]
   outputs = generated_enumeration_sources_in_core +
             generated_enumeration_sources_in_modules +
