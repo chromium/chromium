@@ -90,15 +90,24 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void OnThemeChanged() override;
   void OnShouldShowAnimationChanged(bool should_animate) override;
 
+  // Invoke to cause the holding space tray to recalculate and update its
+  // visibility. Note that this may or may not result in a visibility change
+  // depending on state.
+  void UpdateVisibility();
+
+  // Previews are updated with delay to de-dupe against multiple updates
+  // scheduled in quick succession. Invoke this method to cause scheduled
+  // updates to be run immediately for testing.
+  void FirePreviewsUpdateTimerIfRunningForTesting();
+
+  // Previews are updated with delay to de-dupe against multiple updates
+  // scheduled in quick success. This method allows updates to be scheduled with
+  // zero delay, causing them to instead run immediately, for testing.
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;
   }
 
-  void FirePreviewsUpdateTimerIfRunningForTesting();
-
  private:
-  void UpdateVisibility();
-
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;

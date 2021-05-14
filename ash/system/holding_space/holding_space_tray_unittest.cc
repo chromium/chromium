@@ -1899,6 +1899,61 @@ TEST_F(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
   histogram_tester.ExpectBucketCount(
       "HoldingSpace.FilesAppChip.Action.All",
       holding_space_metrics::FilesAppChipAction::kClick, 1);
+
+  // Because the holding space model contains a download item, the holding space
+  // tray should still be shown. The recent files bubble should be shown but
+  // pinned files child bubble should have been hidden due to destruction of the
+  // pinned files section placeholder which is no longer relevant.
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
+}
+
+// The pinned files section of holding space UI contains a placeholder if the
+// user has never pinned a file. The placeholder contains a Files app chip to
+// take the user to the Files app to pin their first file. Once the user has
+// pressed the Files app chip, the pinned files section placeholder should be
+// permanently hidden.
+TEST_F(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+
+  // The tray button should be shown because the user has previously added an
+  // item to their holding space.
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble. Only the pinned files child bubble should be shown.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+
+  // A chip to open the Files app should exist in the pinned files bubble.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+  views::View* files_app_chip =
+      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
+  ASSERT_TRUE(files_app_chip);
+
+  // Click the chip and expect a call to open the Files app.
+  EXPECT_CALL(*client(), OpenMyFiles);
+  Click(files_app_chip);
+
+  // Because the holding space is completely empty, clicking the Files app chip
+  // should cause the holding space tray and all associated bubbles to hide.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+
+  // Add a download item. This should cause the tray button to show.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
+  MarkTimeOfFirstAdd();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show holding space UI. Because the Files app chip was previously pressed,
+  // the recent files bubble should be shown but the pinned files bubble should
+  // not.
+  test_api()->Show();
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 }
 
 // User should be able to open the Downloads folder in the Files app by pressing

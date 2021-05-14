@@ -21,6 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
+#include "ash/system/holding_space/pinned_files_section.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "base/bind.h"
@@ -484,33 +485,27 @@ void HoldingSpaceTray::OnThemeChanged() {
       gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize, color));
 }
 
-void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
-  if (previews_update_.IsRunning())
-    previews_update_.FireNow();
-}
-
 void HoldingSpaceTray::UpdateVisibility() {
+  // The holding space tray should not be visible if the `model` is not attached
+  // or if the user session is blocked.
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   if (!model || Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     SetVisiblePreferred(false);
     return;
   }
 
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  const bool has_ever_added_item =
-      prefs ? holding_space_prefs::GetTimeOfFirstAdd(prefs).has_value() : false;
-  const bool has_ever_pinned_item =
-      prefs ? holding_space_prefs::GetTimeOfFirstPin(prefs).has_value() : false;
+  // The holding space tray should always be shown if the `model` contains fully
+  // initialized items. Otherwise, it should only be visible if the pinned files
+  // section is going to show a placeholder.
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  SetVisiblePreferred(
+      ModelContainsInitializedItems(model) ||
+      (prefs && PinnedFilesSection::ShouldShowPlaceholder(prefs)));
+}
 
-  // The holding space tray should not be visible in the shelf until the user
-  // has added their first item to holding space. Once an item has been added,
-  // the holding space tray will continue to be visible until the user has
-  // pinned their first file. After the user has pinned their first file, the
-  // holding space tray will only be visible in the shelf if their holding space
-  // contains initialized items.
-  SetVisiblePreferred((has_ever_added_item && !has_ever_pinned_item) ||
-                      ModelContainsInitializedItems(model));
+void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
+  if (previews_update_.IsRunning())
+    previews_update_.FireNow();
 }
 
 std::u16string HoldingSpaceTray::GetAccessibleNameForBubble() {

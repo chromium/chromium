@@ -9,6 +9,8 @@
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 
+class PrefService;
+
 namespace ash {
 
 // Section for pinned files in the `PinnedFilesBubble`.
@@ -19,6 +21,10 @@ class PinnedFilesSection : public HoldingSpaceItemViewsSection {
   PinnedFilesSection& operator=(const PinnedFilesSection& other) = delete;
   ~PinnedFilesSection() override;
 
+  // Returns whether or not the pinned files section should show a placeholder.
+  static bool ShouldShowPlaceholder(PrefService* prefs);
+
+ private:
   // HoldingSpaceItemViewsSection:
   const char* GetClassName() const override;
   gfx::Size GetMinimumSize() const override;
@@ -27,6 +33,9 @@ class PinnedFilesSection : public HoldingSpaceItemViewsSection {
   std::unique_ptr<HoldingSpaceItemView> CreateView(
       const HoldingSpaceItem* item) override;
   std::unique_ptr<views::View> CreatePlaceholder() override;
+
+  // Invoked when the Files app chip in the placeholder is pressed.
+  void OnFilesAppChipPressed(const ui::Event& event);
 };
 
 }  // namespace ash

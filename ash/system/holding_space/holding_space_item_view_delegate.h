@@ -35,6 +35,7 @@ namespace ash {
 class HoldingSpaceItemView;
 class HoldingSpaceTrayBubble;
 
+// TODO(crbug.com/1208036): Rename to `HoldingSpaceViewDelegate`.
 // A delegate for `HoldingSpaceItemView`s which implements context menu,
 // drag-and-drop, and selection functionality. In order to support multiple
 // selections at a time, all `HoldingSpaceItemView`s must share the same
@@ -122,6 +123,10 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // unregister, destroy the returned subscription.
   base::RepeatingClosureList::Subscription AddSelectionUiChangedCallback(
       base::RepeatingClosureList::CallbackType callback);
+
+  // Instructs the associated holding space tray to update its visibility. Note
+  // that this may or may not result in a visibility change depending on state.
+  void UpdateTrayVisibility();
 
  private:
   // views::ContextMenuController:

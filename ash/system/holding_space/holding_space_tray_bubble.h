@@ -42,6 +42,9 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // top-to-bottom, left-to-right order (or mirrored for RTL).
   std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
 
+  // Returns the `holding_space_tray_` associated with this bubble.
+  HoldingSpaceTray* tray() { return holding_space_tray_; }
+
  private:
   class ChildBubbleContainer;
 

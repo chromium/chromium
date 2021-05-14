@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_drag_util.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -401,6 +402,10 @@ base::RepeatingClosureList::Subscription
 HoldingSpaceItemViewDelegate::AddSelectionUiChangedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return selection_ui_changed_callbacks_.Add(std::move(callback));
+}
+
+void HoldingSpaceItemViewDelegate::UpdateTrayVisibility() {
+  bubble_->tray()->UpdateVisibility();
 }
 
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(

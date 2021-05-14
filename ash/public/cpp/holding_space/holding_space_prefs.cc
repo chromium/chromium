@@ -28,17 +28,27 @@ constexpr char kTimeOfFirstAvailability[] =
 // Time preference storing when holding space was first entered.
 constexpr char kTimeOfFirstEntry[] = "ash.holding_space.time_of_first_entry";
 
+// Time preference storing when the Files app chip in the holding space pinned
+// files section placeholder was first pressed.
+constexpr char kTimeOfFirstFilesAppChipPress[] =
+    "ash.holding_space.time_of_first_files_app_chip_press";
+
 // Time preference storing when the first pin to holding space occurred.
 constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 }  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  // Boolean prefs.
   registry->RegisterBooleanPref(kPreviewsEnabled, true);
-  registry->RegisterTimePref(kTimeOfFirstAdd, base::Time::UnixEpoch());
-  registry->RegisterTimePref(kTimeOfFirstAvailability, base::Time::UnixEpoch());
-  registry->RegisterTimePref(kTimeOfFirstEntry, base::Time::UnixEpoch());
-  registry->RegisterTimePref(kTimeOfFirstPin, base::Time::UnixEpoch());
+
+  // Time prefs.
+  const base::Time unix_epoch = base::Time::UnixEpoch();
+  registry->RegisterTimePref(kTimeOfFirstAdd, unix_epoch);
+  registry->RegisterTimePref(kTimeOfFirstAvailability, unix_epoch);
+  registry->RegisterTimePref(kTimeOfFirstEntry, unix_epoch);
+  registry->RegisterTimePref(kTimeOfFirstFilesAppChipPress, unix_epoch);
+  registry->RegisterTimePref(kTimeOfFirstPin, unix_epoch);
 }
 
 void AddPreviewsEnabledChangedCallback(PrefChangeRegistrar* registrar,
@@ -113,6 +123,20 @@ base::Optional<base::Time> GetTimeOfFirstPin(PrefService* prefs) {
 bool MarkTimeOfFirstPin(PrefService* prefs) {
   if (prefs->FindPreference(kTimeOfFirstPin)->IsDefaultValue()) {
     prefs->SetTime(kTimeOfFirstPin, base::Time::Now());
+    return true;
+  }
+  return false;
+}
+
+base::Optional<base::Time> GetTimeOfFirstFilesAppChipPress(PrefService* prefs) {
+  auto* pref = prefs->FindPreference(kTimeOfFirstFilesAppChipPress);
+  return pref->IsDefaultValue() ? base::nullopt
+                                : util::ValueToTime(pref->GetValue());
+}
+
+bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs) {
+  if (prefs->FindPreference(kTimeOfFirstFilesAppChipPress)->IsDefaultValue()) {
+    prefs->SetTime(kTimeOfFirstFilesAppChipPress, base::Time::Now());
     return true;
   }
   return false;
