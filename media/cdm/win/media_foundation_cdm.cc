@@ -15,7 +15,7 @@
 #include "base/win/windows_version.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_promise.h"
-#include "media/base/win/mf_cdm_proxy.h"
+#include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm_session.h"
 
@@ -96,16 +96,14 @@ HRESULT RefreshDecryptor(IMFTransform* decryptor,
   return S_OK;
 }
 
-class CdmProxyImpl
-    : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IMFCdmProxy> {
+class CdmProxyImpl : public MediaFoundationCdmProxy {
  public:
   explicit CdmProxyImpl(ComPtr<IMFContentDecryptionModule> mf_cdm)
       : mf_cdm_(mf_cdm) {}
-  ~CdmProxyImpl() override = default;
 
-  // IMFCdmProxy implementation
+  // MediaFoundationCdmProxy implementation
 
-  STDMETHODIMP GetPMPServer(REFIID riid, LPVOID* object_result) override {
+  HRESULT GetPMPServer(REFIID riid, LPVOID* object_result) override {
     DVLOG_FUNC(1);
     ComPtr<IMFGetService> cdm_services;
     RETURN_IF_FAILED(mf_cdm_.As(&cdm_services));
@@ -114,12 +112,12 @@ class CdmProxyImpl
     return S_OK;
   }
 
-  STDMETHODIMP GetInputTrustAuthority(uint32_t stream_id,
-                                      uint32_t /*stream_count*/,
-                                      const uint8_t* content_init_data,
-                                      uint32_t content_init_data_size,
-                                      REFIID riid,
-                                      IUnknown** object_out) override {
+  HRESULT GetInputTrustAuthority(uint32_t stream_id,
+                                 uint32_t /*stream_count*/,
+                                 const uint8_t* content_init_data,
+                                 uint32_t content_init_data_size,
+                                 REFIID riid,
+                                 IUnknown** object_out) override {
     DVLOG_FUNC(1);
 
     if (input_trust_authorities_.count(stream_id)) {
@@ -148,13 +146,13 @@ class CdmProxyImpl
     return S_OK;
   }
 
-  STDMETHODIMP SetLastKeyId(uint32_t stream_id, REFGUID key_id) override {
+  HRESULT SetLastKeyId(uint32_t stream_id, REFGUID key_id) override {
     DVLOG_FUNC(1);
     last_key_ids_[stream_id] = key_id;
     return S_OK;
   }
 
-  STDMETHODIMP RefreshTrustedInput() override {
+  HRESULT RefreshTrustedInput() override {
     DVLOG_FUNC(1);
 
     // Refresh all decryptors of the last key IDs.
@@ -180,7 +178,7 @@ class CdmProxyImpl
     return S_OK;
   }
 
-  STDMETHODIMP
+  HRESULT
   ProcessContentEnabler(IUnknown* request, IMFAsyncResult* result) override {
     DVLOG_FUNC(1);
     ComPtr<IMFContentEnabler> content_enabler;
@@ -189,6 +187,8 @@ class CdmProxyImpl
   }
 
  private:
+  ~CdmProxyImpl() override = default;
+
   HRESULT GetProtectionSystemId(GUID* protection_system_id) {
     // Typically the CDM should only return one protection system ID. So just
     // use the first one if available.
@@ -403,7 +403,7 @@ bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
   DVLOG_FUNC(1);
 
   if (!cdm_proxy_)
-    cdm_proxy_ = Make<CdmProxyImpl>(mf_cdm_);
+    cdm_proxy_ = base::MakeRefCounted<CdmProxyImpl>(mf_cdm_);
 
   BindToCurrentLoop(std::move(get_mf_cdm_proxy_cb)).Run(cdm_proxy_);
   return true;

@@ -7,17 +7,13 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
-
-#if defined(OS_WIN)
-#include <wrl/client.h>
-struct IMFCdmProxy;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
@@ -33,6 +29,10 @@ class MediaCryptoContext;
 
 #if defined(OS_FUCHSIA)
 class FuchsiaCdmContext;
+#endif
+
+#if defined(OS_WIN)
+class MediaFoundationCdmProxy;
 #endif
 
 // An interface representing the context that a media player needs from a
@@ -101,7 +101,7 @@ class MEDIA_EXPORT CdmContext {
   virtual bool RequiresMediaFoundationRenderer();
 
   using GetMediaFoundationCdmProxyCB =
-      base::OnceCallback<void(Microsoft::WRL::ComPtr<IMFCdmProxy>)>;
+      base::OnceCallback<void(scoped_refptr<MediaFoundationCdmProxy>)>;
   // This allows a CdmContext to expose an IMFTrustedInput instance for use in
   // a Media Foundation rendering pipeline. This method is asynchronous because
   // the underlying MF-based CDM might not have a native session created yet.

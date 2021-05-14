@@ -18,6 +18,8 @@ using Microsoft::WRL::ComPtr;
 MediaFoundationSourceWrapper::MediaFoundationSourceWrapper() = default;
 
 MediaFoundationSourceWrapper::~MediaFoundationSourceWrapper() {
+  DVLOG_FUNC(1);
+
   if (!cdm_proxy_)
     return;
 
@@ -506,13 +508,14 @@ bool MediaFoundationSourceWrapper::HasEncryptedStream() const {
   return false;
 }
 
-void MediaFoundationSourceWrapper::SetCdmProxy(IMFCdmProxy* cdm_proxy) {
+void MediaFoundationSourceWrapper::SetCdmProxy(
+    scoped_refptr<MediaFoundationCdmProxy> cdm_proxy) {
   DVLOG_FUNC(2);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // cdm_proxy_ should never change.
   DCHECK(!cdm_proxy_);
-  cdm_proxy_ = cdm_proxy;
+  cdm_proxy_ = std::move(cdm_proxy);
 
   HRESULT hr = cdm_proxy_->RefreshTrustedInput();
   DLOG_IF(ERROR, FAILED(hr))

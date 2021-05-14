@@ -18,8 +18,13 @@ namespace media {
 
 using Microsoft::WRL::ComPtr;
 
-MediaFoundationProtectionManager::MediaFoundationProtectionManager() = default;
-MediaFoundationProtectionManager::~MediaFoundationProtectionManager() = default;
+MediaFoundationProtectionManager::MediaFoundationProtectionManager() {
+  DVLOG_FUNC(1);
+}
+
+MediaFoundationProtectionManager::~MediaFoundationProtectionManager() {
+  DVLOG_FUNC(1);
+}
 
 HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize() {
   DVLOG_FUNC(1);
@@ -36,11 +41,12 @@ HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize() {
   return S_OK;
 }
 
-HRESULT MediaFoundationProtectionManager::SetCdmProxy(IMFCdmProxy* cdm_proxy) {
+HRESULT MediaFoundationProtectionManager::SetCdmProxy(
+    scoped_refptr<MediaFoundationCdmProxy> cdm_proxy) {
   DVLOG_FUNC(1);
 
   DCHECK(cdm_proxy);
-  cdm_proxy_ = cdm_proxy;
+  cdm_proxy_ = std::move(cdm_proxy);
   ComPtr<ABI::Windows::Media::Protection::IMediaProtectionPMPServer> pmp_server;
   RETURN_IF_FAILED(cdm_proxy_->GetPMPServer(IID_PPV_ARGS(&pmp_server)));
   RETURN_IF_FAILED(SetPMPServer(pmp_server.Get()));

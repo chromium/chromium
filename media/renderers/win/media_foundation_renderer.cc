@@ -326,7 +326,7 @@ void MediaFoundationRenderer::SetLatencyHint(
 }
 
 void MediaFoundationRenderer::OnCdmProxyReceived(
-    ComPtr<IMFCdmProxy> cdm_proxy) {
+    scoped_refptr<MediaFoundationCdmProxy> cdm_proxy) {
   DVLOG_FUNC(1);
 
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
@@ -337,8 +337,8 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
 
   waiting_for_mf_cdm_ = false;
 
-  content_protection_manager_->SetCdmProxy(cdm_proxy.Get());
-  mf_source_->SetCdmProxy(cdm_proxy.Get());
+  content_protection_manager_->SetCdmProxy(cdm_proxy);
+  mf_source_->SetCdmProxy(cdm_proxy);
   HRESULT hr = SetSourceOnMediaEngine();
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set source on media engine: " << PrintHr(hr);

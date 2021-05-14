@@ -54,7 +54,7 @@ source_set("hresult_status_helper") {
 }
 
 source_set("mf_cdm_proxy") {
-  sources = [ "mf_cdm_proxy.h" ]
+  sources = [ "media_foundation_cdm_proxy.h" ]
   deps = [ "//base" ]
 }
 

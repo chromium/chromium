@@ -10,7 +10,8 @@
 #include <windows.media.protection.h>
 #include <wrl.h>
 
-#include "media/base/win/mf_cdm_proxy.h"
+#include "base/memory/scoped_refptr.h"
+#include "media/base/win/media_foundation_cdm_proxy.h"
 
 namespace media {
 
@@ -33,7 +34,7 @@ class MediaFoundationProtectionManager
   ~MediaFoundationProtectionManager() override;
 
   HRESULT RuntimeClassInitialize();
-  HRESULT SetCdmProxy(IMFCdmProxy* cdm_proxy);
+  HRESULT SetCdmProxy(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
 
   // IMFContentProtectionManager.
   IFACEMETHODIMP BeginEnableContent(IMFActivate* enabler_activate,
@@ -65,7 +66,8 @@ class MediaFoundationProtectionManager
  protected:
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::Collections::IPropertySet>
       property_set_;
-  Microsoft::WRL::ComPtr<IMFCdmProxy> cdm_proxy_;
+
+  scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
 
   HRESULT SetPMPServer(
       ABI::Windows::Media::Protection::IMediaProtectionPMPServer* pmp_server);
