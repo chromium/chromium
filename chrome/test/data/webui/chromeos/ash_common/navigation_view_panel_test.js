@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -58,5 +59,31 @@ export function navigationViewPanelTestSuite() {
     await waitAfterNextRender(viewElement);
     assertTrue(dummyElement2.hidden);
     assertFalse(dummyElement1.hidden);
+  });
+
+  test('defaultPage', async () => {
+    const dummyPage1 = 'dummy-page1';
+    const dummyPage2 = 'dummy-page2';
+
+    viewElement.addSelector('dummyPage1', dummyPage1);
+    viewElement.addSelector('dummyPage2', dummyPage2);
+
+    assertFalse(viewElement.shadowRoot.querySelector(`#${dummyPage1}`).hidden);
+    assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
+  });
+
+  test('defaultCollapsiblePage', async () => {
+    const dummyPage1 = 'dummy-page1';
+    const dummyPage2 = 'dummy-page2';
+    const subPage = 'sub-page1';
+
+    let subItem =
+        /** @type {SelectorItem} */ ({'name': 'subItem', 'pageIs': subPage});
+
+    viewElement.addSelector('dummyPage1', dummyPage1, [subItem]);
+    viewElement.addSelector('dummyPage2', dummyPage2);
+
+    assertFalse(viewElement.shadowRoot.querySelector(`#${subPage}`).hidden);
+    assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
   });
 }

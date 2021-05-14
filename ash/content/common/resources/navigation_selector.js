@@ -58,6 +58,7 @@ export class NavigationSelectorElement extends PolymerElement {
       selectedItem: {
         type: Object,
         value: null,
+        observer: 'updateCurrentSelection_',
         notify: true,
       },
 
@@ -77,7 +78,6 @@ export class NavigationSelectorElement extends PolymerElement {
    */
   onSelected_(e) {
     this.selectedItem = e.model.item.selectorItem;
-    this.updateCurrentSelection_();
   }
 
   /**
@@ -86,7 +86,6 @@ export class NavigationSelectorElement extends PolymerElement {
    */
   onNestedSelected_(e) {
     this.selectedItem = e.model.item;
-    this.updateCurrentSelection_();
   }
 
   /** @private */

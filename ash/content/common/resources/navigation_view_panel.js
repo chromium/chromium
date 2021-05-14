@@ -61,6 +61,16 @@ export class NavigationViewPanelElement extends PolymerElement {
     });
 
     this.push('menuItems_', menuItem);
+    // Set the initial default page, if the first entry is a collapsible entry
+    // the initial page is the first sub menu item. Otherwise, the first entry
+    // is the first menu item.
+    if (!this.selectedItem) {
+      if (property.isCollapsible) {
+        this.selectedItem = property.subMenuItems[0];
+      } else {
+        this.selectedItem = item;
+      }
+    }
   }
 
   /** @private */
