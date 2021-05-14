@@ -5,6 +5,7 @@
 #include "pdf/pdf_view_web_plugin.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "cc/paint/paint_canvas.h"
@@ -14,6 +15,7 @@
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -65,6 +67,10 @@ SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
   expected_bitmap.eraseColor(kDefaultColor);
   expected_bitmap.erase(paint_color, gfx::RectToSkIRect(expected_clipped_area));
   return expected_bitmap;
+}
+
+MATCHER_P(EqualsWebString, selected_string, "") {
+  return arg.Utf8() == selected_string;
 }
 
 class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
@@ -280,6 +286,31 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
     TestPaintSnapshots(params.device_scale, params.window_rect,
                        params.paint_rect);
   }
+}
+
+TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
+  ASSERT_FALSE(plugin_->HasSelection());
+  ASSERT_TRUE(plugin_->SelectionAsText().IsEmpty());
+  ASSERT_TRUE(plugin_->SelectionAsMarkup().IsEmpty());
+
+  testing::InSequence s;
+  static constexpr char kSelectedText[] = "1234";
+  EXPECT_CALL(*wrapper_ptr_,
+              TextSelectionChanged(EqualsWebString(kSelectedText), 0,
+                                   gfx::Range(0, 4)));
+
+  plugin_->SetSelectedText(kSelectedText);
+  EXPECT_TRUE(plugin_->HasSelection());
+  EXPECT_EQ(kSelectedText, plugin_->SelectionAsText().Utf8());
+  EXPECT_EQ(kSelectedText, plugin_->SelectionAsMarkup().Utf8());
+
+  static constexpr char kEmptyText[] = "";
+  EXPECT_CALL(*wrapper_ptr_, TextSelectionChanged(EqualsWebString(kEmptyText),
+                                                  0, gfx::Range(0, 0)));
+  plugin_->SetSelectedText(kEmptyText);
+  EXPECT_FALSE(plugin_->HasSelection());
+  EXPECT_TRUE(plugin_->SelectionAsText().IsEmpty());
+  EXPECT_TRUE(plugin_->SelectionAsMarkup().IsEmpty());
 }
 
 TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
