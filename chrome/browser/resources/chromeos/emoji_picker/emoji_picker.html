@@ -65,7 +65,7 @@
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
-  #tabs emoji-group-button:nth-child(11) {
+  #tabs emoji-group-button:nth-child(14) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
@@ -175,6 +175,12 @@
       </template>
       <!--Fake group button to increase maximum scrolling, need an icon to
         render as invisible-->
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
+      </emoji-group-button>
+      <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
+      </emoji-group-button>
       <emoji-group-button class="fake" icon="[[emojiGroupTabs[0].icon]]"
         tabindex="-1">
       </emoji-group-button>

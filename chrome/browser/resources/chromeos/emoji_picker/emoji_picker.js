@@ -277,8 +277,8 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onRightChevronClick() {
-    this.$.tabs.scrollLeft = GROUP_ICON_SIZE * 6;
-    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 3].groupId);
+    this.$.tabs.scrollLeft = GROUP_ICON_SIZE * 8;
+    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 1].groupId);
     this.groupTabsMoving = true;
     this.$.bar.style.left = EMOJI_GROUP_SIZE_PX;
   }
@@ -398,7 +398,7 @@ export class EmojiPicker extends PolymerElement {
           GROUP_ICON_SIZE * index) {
         // 5 = We want the seventh icon to be first. Then -1 for chevron, -1 for
         // 1 based indexing.
-        tabscrollLeft = GROUP_ICON_SIZE * (5);
+        tabscrollLeft = GROUP_ICON_SIZE * (7);
       }
 
       if (updateTabsScroll) {
