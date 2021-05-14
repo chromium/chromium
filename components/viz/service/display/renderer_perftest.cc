@@ -259,6 +259,7 @@ class RendererPerfTest : public VizPerfTest {
 #endif
 
     auto* gpu_service = TestGpuServiceHolder::GetInstance()->gpu_service();
+    auto* task_executor = TestGpuServiceHolder::GetInstance()->task_executor();
 
     gpu_memory_buffer_manager_ =
         std::make_unique<InProcessGpuMemoryBufferManager>(
@@ -285,7 +286,7 @@ class RendererPerfTest : public VizPerfTest {
         display_controller;
     if (renderer_settings_.use_skia_renderer) {
       auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-          gpu_service, gpu::kNullSurfaceHandle);
+          gpu_service, task_executor, gpu::kNullSurfaceHandle);
       display_controller =
           std::make_unique<DisplayCompositorMemoryAndTaskController>(
               std::move(skia_deps));

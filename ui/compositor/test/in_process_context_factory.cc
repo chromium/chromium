@@ -327,6 +327,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (renderer_settings_.use_skia_renderer) {
     auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
         viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
         gpu::kNullSurfaceHandle);
     display_dependency =
         std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(

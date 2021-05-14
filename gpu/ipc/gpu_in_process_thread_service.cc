@@ -53,7 +53,28 @@ bool GpuInProcessThreadService::ShouldCreateMemoryTracker() const {
 
 std::unique_ptr<SingleTaskSequence>
 GpuInProcessThreadService::CreateSequence() {
-  return std::make_unique<SchedulerSequence>(scheduler_);
+  // Create the SingleTaskSequence on the gpu thread. This is important since
+  // the sequences are now run on the thread it was created on.
+  std::unique_ptr<SingleTaskSequence> sequence;
+  if (task_runner_->BelongsToCurrentThread()) {
+    sequence = std::make_unique<SchedulerSequence>(scheduler_);
+  } else {
+    base::WaitableEvent completion;
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuInProcessThreadService::CreateSequenceOnThread,
+                       base::Unretained(this), &sequence, &completion));
+    completion.Wait();
+  }
+  return sequence;
+}
+
+void GpuInProcessThreadService::CreateSequenceOnThread(
+    std::unique_ptr<SingleTaskSequence>* sequence,
+    base::WaitableEvent* completion) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  *sequence = std::make_unique<SchedulerSequence>(scheduler_);
+  completion->Signal();
 }
 
 void GpuInProcessThreadService::ScheduleOutOfOrderTask(base::OnceClosure task) {

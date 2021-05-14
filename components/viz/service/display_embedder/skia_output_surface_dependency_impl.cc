@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/service/image_transport_surface.h"
@@ -21,8 +22,10 @@ namespace viz {
 
 SkiaOutputSurfaceDependencyImpl::SkiaOutputSurfaceDependencyImpl(
     GpuServiceImpl* gpu_service_impl,
+    gpu::CommandBufferTaskExecutor* gpu_task_executor,
     gpu::SurfaceHandle surface_handle)
     : gpu_service_impl_(gpu_service_impl),
+      gpu_task_executor_(gpu_task_executor),
       surface_handle_(surface_handle),
       client_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
@@ -30,8 +33,8 @@ SkiaOutputSurfaceDependencyImpl::~SkiaOutputSurfaceDependencyImpl() = default;
 
 std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyImpl::CreateSequence() {
-  return std::make_unique<gpu::SchedulerSequence>(
-      gpu_service_impl_->GetGpuScheduler());
+  // Using the |gpu_task_executor_| to create sequence on the gpu main thread.
+  return gpu_task_executor_->CreateSequence();
 }
 
 gpu::SharedImageManager*

@@ -74,9 +74,7 @@ GpuChannelTestCommon::GpuChannelTestCommon(
           base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
       sync_point_manager_(new SyncPointManager()),
       shared_image_manager_(new SharedImageManager(false /* thread_safe */)),
-      scheduler_(new Scheduler(task_environment_.GetMainThreadTaskRunner(),
-                               sync_point_manager_.get(),
-                               GpuPreferences())),
+      scheduler_(new Scheduler(sync_point_manager_.get(), GpuPreferences())),
       channel_manager_delegate_(
           new TestGpuChannelManagerDelegate(scheduler_.get())) {
   // We need GL bindings to actually initialize command buffers.

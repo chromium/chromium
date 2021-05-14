@@ -132,6 +132,7 @@ std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
 LayerTreePixelTest::CreateDisplayControllerOnThread() {
   auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
       viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
+      viz::TestGpuServiceHolder::GetInstance()->task_executor(),
       gpu::kNullSurfaceHandle);
   return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
       std::move(skia_deps));
