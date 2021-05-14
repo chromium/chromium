@@ -37,11 +37,10 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -50,29 +49,23 @@
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
-#include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
-#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/policy_container.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
@@ -86,7 +79,6 @@
 #if defined(OS_MAC)
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
 #endif
-#include "ui/gfx/range/range.h"
 #include "ui/gfx/transform.h"
 
 namespace base {
@@ -95,13 +87,8 @@ class SingleThreadTaskRunner;
 
 namespace gfx {
 class Point;
-}
-
-#if defined(OS_MAC)
-namespace gfx {
 class Range;
 }
-#endif
 
 namespace blink {
 
@@ -118,7 +105,6 @@ class EventHandlerRegistry;
 class FloatSize;
 class FrameConsole;
 class FrameOverlay;
-// class FrameScheduler;
 class FrameSelection;
 class FrameWidget;
 class InputMethodController;
@@ -137,7 +123,10 @@ class BackgroundColorPaintImageGenerator;
 class Node;
 class NodeTraversal;
 class PerformanceMonitor;
+class PolicyContainer;
 class PluginData;
+class RawSystemClipboard;
+class SystemClipboard;
 class SmoothScrollSequencer;
 class SpellChecker;
 class TextFragmentHandler;
