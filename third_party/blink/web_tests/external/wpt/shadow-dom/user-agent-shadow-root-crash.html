@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
+<meta charset="utf-8">
+<link rel="help" href="https://crbug.com/1205246">
+<meta name="assert" content="The renderer should not crash.">
 
-<title>Test: the shadow roots for UserAgent should not crash</title>
+This test passes if it does not crash.
 
-<!-- This is a minified version of the clusterfuzz test case at https://crbug.com/1205246-->
 <details> sample1
 <marquee dir="auto">marquee1</marquee>
 <marquee dir="auto">marquee2</marquee>
@@ -16,7 +16,3 @@
 <marquee dir="auto">marquee8</marquee>
 <marquee dir="auto">marquee9</marquee>
 </details>
-
-<script>
-test(() => {}, "Don't crash during recalculating user agent's shadow roots");
-</script>
