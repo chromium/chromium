@@ -253,6 +253,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.Length.{Attribute}" units="bytes"
+    expires_after="2021-11-13">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    The length in bytes of a cookie's {Attribute}. This is recorded upon parsing
+    a cookie from a string, regardless of whether the cookie is ultimately
+    included. When a cookie has multiple instances of the attribute, the final
+    one is taken. When a cookie does not have the attribute, 0 is recorded.
+  </summary>
+  <token key="Attribute">
+    <variant name="Domain" summary="Domain attribute"/>
+    <variant name="NameAndValue" summary="name and value"/>
+    <variant name="Path" summary="Path attribute"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
     expires_after="2021-10-17">
   <owner>morlovich@chromium.org</owner>
