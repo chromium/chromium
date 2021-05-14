@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -329,8 +328,6 @@ ClientId RecentTabHelperTest::NewDownloadClientId() {
 
 // Checks the test setup.
 TEST_F(RecentTabHelperTest, RecentTabHelperInstanceExists) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.Init();
   EXPECT_NE(nullptr, recent_tab_helper());
 }
 
@@ -737,28 +734,6 @@ TEST_F(RecentTabHelperTest, NoCaptureOnErrorPage) {
                                                      123L, "");
   RunUntilIdle();
   ASSERT_EQ(0U, GetAllPages().size());
-  histogram_tester()->ExpectTotalCount("OfflinePages.LastN.IsSavingSamePage",
-                                       0);
-}
-
-// Checks that last_n snapshots are not created if the feature is disabled.
-// Download requests should still work.
-TEST_F(RecentTabHelperTest, LastNFeatureNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kOffliningRecentPagesFeature);
-  NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
-  FastForwardSnapshotController();
-  recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
-  RunUntilIdle();
-  // No page should be captured.
-  ASSERT_EQ(0U, GetAllPages().size());
-
-  recent_tab_helper()->ObserveAndDownloadCurrentPage(NewDownloadClientId(),
-                                                     123L, "");
-  RunUntilIdle();
-  // No page should be captured.
-  ASSERT_EQ(1U, GetAllPages().size());
   histogram_tester()->ExpectTotalCount("OfflinePages.LastN.IsSavingSamePage",
                                        0);
 }

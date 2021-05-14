@@ -3808,11 +3808,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "offlining-recent-pages",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "omnibox-adaptive-suggestions-count",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

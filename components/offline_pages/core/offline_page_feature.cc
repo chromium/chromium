@@ -20,9 +20,6 @@ const char kOfflinePagesUseTestingSnapshotDelay[] =
 
 namespace offline_pages {
 
-const base::Feature kOffliningRecentPagesFeature{
-    "OfflineRecentPages", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kOfflinePagesCTFeature{"OfflinePagesCT",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -54,10 +51,6 @@ const base::Feature kOfflinePagesNetworkStateLikelyUnknown{
     "OfflinePagesNetworkStateLikelyUnknown", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";
-
-bool IsOffliningRecentPagesEnabled() {
-  return base::FeatureList::IsEnabled(kOffliningRecentPagesFeature);
-}
 
 bool IsOfflinePagesCTEnabled() {
   return base::FeatureList::IsEnabled(kOfflinePagesCTFeature);

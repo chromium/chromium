@@ -3178,12 +3178,6 @@ const char kOfflinePagesLivePageSharingDescription[] =
     "Enables to share current loaded page as offline page by saving as MHTML "
     "first.";
 
-const char kOffliningRecentPagesName[] =
-    "Enable offlining of recently visited pages";
-const char kOffliningRecentPagesDescription[] =
-    "Enable storing recently visited pages locally for offline use. Requires "
-    "Offline Pages to be enabled.";
-
 const char kAndroidPartnerCustomizationPhenotypeName[] =
     "Use homepage and bookmarks from partner customization";
 const char kAndroidPartnerCustomizationPhenotypeDescription[] =

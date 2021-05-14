@@ -1844,9 +1844,6 @@ extern const char kOfflinePagesPrefetchingDescription[];
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 
-extern const char kOffliningRecentPagesName[];
-extern const char kOffliningRecentPagesDescription[];
-
 extern const char kPageInfoDiscoverabilityName[];
 extern const char kPageInfoDiscoverabilityDescription[];
 

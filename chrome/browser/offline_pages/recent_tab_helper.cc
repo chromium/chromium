@@ -264,9 +264,8 @@ void RecentTabHelper::DidFinishNavigation(
   // - Running on low end devices.
   // - Viewing POST content for privacy considerations.
   // - Disabled by flag.
-  last_n_listen_to_tab_hidden_ = can_save && !delegate_->IsLowEndDevice() &&
-                                 !navigation_handle->IsPost() &&
-                                 IsOffliningRecentPagesEnabled();
+  last_n_listen_to_tab_hidden_ =
+      can_save && !delegate_->IsLowEndDevice() && !navigation_handle->IsPost();
   DVLOG_IF(1, can_save && !last_n_listen_to_tab_hidden_)
       << " - Page can not be saved by last_n";
 }
@@ -304,9 +303,6 @@ void RecentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 void RecentTabHelper::WebContentsWasHidden() {
-  if (!IsOffliningRecentPagesEnabled())
-    return;
-
   // Do not save a snapshots if any of these are true:
   // - Last_n is not listening to tab hidden events.
   // - A last_n snapshot is currently being saved.
