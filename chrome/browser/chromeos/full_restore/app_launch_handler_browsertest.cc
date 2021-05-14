@@ -1230,6 +1230,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   auto shell_surface =
       exo_test_helper.CreateClientControlledShellSurface(surface.get());
   shell_surface->SetApplicationId(kRestoreWindowAppId);
+  shell_surface->SetGeometry(gfx::Rect(gfx::Size(256, 256)));
   auto surface_buffer = std::make_unique<exo::Buffer>(
       exo_test_helper.CreateGpuMemoryBuffer(gfx::Size(256, 256)));
   surface->Attach(surface_buffer.get());
@@ -1243,6 +1244,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   int32_t* index = arc_window->GetProperty(::full_restore::kActivationIndexKey);
   ASSERT_TRUE(index);
   EXPECT_EQ(kActivationIndex, *index);
+
+  // Check if it's also left-snapped.
+  EXPECT_EQ(kWindowStateType,
+            ash::WindowState::Get(arc_window)->GetStateType());
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kRestoreTaskId);

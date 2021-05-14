@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/full_restore/full_restore_info.h"
@@ -108,6 +109,11 @@ class ASH_EXPORT FullRestoreController
   void SaveWindowImpl(WindowState* window_state,
                       base::Optional<int> activation_index);
 
+  // Retrieves the saved `WindowInfo` of `window` and restores its
+  // `WindowStateType`. Also creates a post task to clear `window`s
+  // `full_restore::kLaunchedFromFullRestoreKey`.
+  void RestoreStateTypeAndClearLaunchedKey(aura::Window* window);
+
   // Sets a callback for testing that will be read from in
   // `OnWidgetInitialized()`.
   void SetReadWindowCallbackForTesting(ReadWindowCallback callback);
@@ -122,6 +128,10 @@ class ASH_EXPORT FullRestoreController
 
   // True whenever we are stacking windows to match saved activation order.
   bool is_stacking_ = false;
+
+  // The set of windows that have had their widgets initialized and will be
+  // shown later.
+  base::flat_set<aura::Window*> to_be_shown_windows_;
 
   ScopedSessionObserver scoped_session_observer_{this};
 
