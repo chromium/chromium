@@ -2765,7 +2765,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-bionic',
+          'linux-xenial',
         ],
       },
       'fuchsia-fyi-arm64-rel': {
@@ -2778,7 +2778,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-bionic',
+          'linux-xenial',
         ],
       },
       'fuchsia-fyi-x64-dbg': {
