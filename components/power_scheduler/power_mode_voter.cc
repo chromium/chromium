@@ -91,6 +91,10 @@ void FrameProductionPowerModeVoter::OnFrameSkipped(bool frame_completed,
   voter_->VoteFor(PowerMode::kNopAnimation);
 }
 
+void FrameProductionPowerModeVoter::OnFrameTimeout() {
+  voter_->VoteFor(PowerMode::kNopAnimation);
+}
+
 DebouncedPowerModeVoter::DebouncedPowerModeVoter(const char* name,
                                                  base::TimeDelta timeout)
     : voter_(PowerModeArbiter::GetInstance()->NewVoter(name)),

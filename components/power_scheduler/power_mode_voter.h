@@ -95,6 +95,9 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   // be true if the frame was not completed because the main thread's frame
   // production was not finished on time for the deadline.
   void OnFrameSkipped(bool frame_completed, bool waiting_on_main);
+  // Should be called when BeginFrame was not followed by a draw within a set
+  // timeframe.
+  void OnFrameTimeout();
 
  private:
   // 10 Frames: 166ms on 60fps, 111ms on 90fps, 83ms on 120fps. This should be a

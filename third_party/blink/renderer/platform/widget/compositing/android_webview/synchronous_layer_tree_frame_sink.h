@@ -226,7 +226,12 @@ class SynchronousLayerTreeFrameSink
   bool needs_begin_frames_ = false;
   const bool use_zero_copy_sw_draw_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+  // Marks the beginning of the period between BeginFrame() and
+  // SubmitCompositorFrame(). Used for detecting no-op animations when this time
+  // period exceeds a given timeout.
+  base::TimeTicks nop_animation_timeout_start_;
+
+  power_scheduler::FrameProductionPowerModeVoter power_mode_voter_;
 
   DISALLOW_COPY_AND_ASSIGN(SynchronousLayerTreeFrameSink);
 };

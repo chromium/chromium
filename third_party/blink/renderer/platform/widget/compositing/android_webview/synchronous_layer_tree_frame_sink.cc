@@ -164,9 +164,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
       use_zero_copy_sw_draw_(
           Platform::Current()
               ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation")) {
+      power_mode_voter_("PowerModeVoter.Animation") {
   DCHECK(registry_);
   DETACH_FROM_THREAD(thread_checker_);
   memory_policy_.priority_cutoff_when_visible =
@@ -399,6 +397,13 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
       submit_frame = std::move(frame);
     }
   }
+
+  power_mode_voter_.OnFrameProduced();
+
+  // Reset the timestamp to null so that the next BeginFrame marks the time when
+  // it is called.
+  nop_animation_timeout_start_ = base::TimeTicks();
+
   // NOTE: submit_frame will be empty if viz_frame_submission_enabled_ enabled,
   // but it won't be used upstream
   // Because OnDraw can synchronously override the viewport without going
@@ -416,8 +421,7 @@ void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
     const viz::BeginFrameAck& ack,
     cc::FrameSkippedReason reason) {
   // We do not call CompositorFrameSink::DidNotProduceFrame here because
-  // submission of frame depends on DemandDraw calls. DidNotProduceFrame will be
-  // called there or during OnBeginFrame as fallback.
+  // submission of frame depends on DemandDraw calls.
 }
 
 void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
@@ -604,13 +608,11 @@ void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     if (needs_begin_frames) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
                                         this);
-      animation_power_mode_voter_->VoteFor(
-          power_scheduler::PowerMode::kAnimation);
+      nop_animation_timeout_start_ = base::TimeTicks::Now();
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
-      animation_power_mode_voter_->ResetVoteAfterTimeout(
-          power_scheduler::PowerModeVoter::kAnimationTimeout);
     }
+    power_mode_voter_.OnNeedsBeginFramesChanged(needs_begin_frames);
   }
   needs_begin_frames_ = needs_begin_frames;
   if (sync_client_) {
@@ -630,8 +632,25 @@ void SynchronousLayerTreeFrameSink::DidPresentCompositorFrame(
 
 void SynchronousLayerTreeFrameSink::BeginFrame(
     const viz::BeginFrameArgs& args) {
-  if (external_begin_frame_source_)
-    external_begin_frame_source_->OnBeginFrame(args);
+  if (!external_begin_frame_source_)
+    return;
+
+  if (!nop_animation_timeout_start_.is_null()) {
+    if ((base::TimeTicks::Now() - nop_animation_timeout_start_) >
+        power_scheduler::PowerModeVoter::kAnimationTimeout) {
+      // BeginFrame was not followed by SubmitCompositorFrame within the
+      // expected time, so the frame was likely skipped.
+      power_mode_voter_.OnFrameTimeout();
+
+      // Update the timestamp to start a new measurement.
+      nop_animation_timeout_start_ = base::TimeTicks::Now();
+    }
+  } else {
+    // Mark the time when BeginFrame was called after a previous
+    // SubmitCompositorFrame.
+    nop_animation_timeout_start_ = base::TimeTicks::Now();
+  }
+  external_begin_frame_source_->OnBeginFrame(args);
 }
 
 void SynchronousLayerTreeFrameSink::SetBeginFrameSourcePaused(bool paused) {
