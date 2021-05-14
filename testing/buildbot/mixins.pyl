@@ -788,11 +788,13 @@
       ],
     },
   },
+  # mac_x64 is used as a prefered OS dimension for mac platform instead of any
+  # mac OS version. It selects the most representative dimension on Swarming.
   'mac_x64': {
     'swarming': {
       'dimension_sets': [
          {
-           'os': 'Mac',
+           'os': 'Mac-10.15',
            'cpu': 'x86-64',
          },
       ],
