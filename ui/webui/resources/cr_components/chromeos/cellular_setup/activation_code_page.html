@@ -31,6 +31,10 @@
         transition-duration: 150ms;
       }
 
+      :host(:not([expanded_])) #esimQrCodeDetection:focus-within {
+        background-color: var(--google-grey-refresh-300);
+      }
+
       :host cr-button {
         --ripple-opacity: 0;
       }
@@ -50,7 +54,7 @@
         width: 20px;
       }
 
-      cr-button {
+      cr-button:not(:focus) {
         border: none;
         box-shadow: none;
       }
