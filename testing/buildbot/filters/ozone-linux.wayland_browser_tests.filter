@@ -21,7 +21,6 @@
 
 # Fail on the bot, pass locally.
 -DesktopCaptureApiTest.ChooseDesktopMedia
--IconLoaderBrowserTest.LoadGroup
 
 # TODO(https://crbug.com/1084469): fix these tests.
 
@@ -45,9 +44,7 @@
 -All/HostedOrWebAppTest.OpenLinkInNewTab/HostedApp
 -All/HostedOrWebAppTest.OpenLinkInNewTab/WebApp
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
--CustomTabBarViewBrowserTest.RightClickMenuShowsCopyUrl
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
 -RemoteCopyBrowserTest.TextThenImageUrl
--WebAppBrowserTest.CopyURL
 -BrowserNavigatorTest.SwitchToTabLatestWindow
