@@ -34,7 +34,7 @@ class CleanExitBeacon {
   ~CleanExitBeacon();
 
   // Returns the original value of the beacon.
-  bool exited_cleanly() const { return initial_value_; }
+  bool exited_cleanly() const { return did_previous_session_exit_cleanly_; }
 
   // Returns the original value of the last live timestamp.
   base::Time browser_last_live_timestamp() const {
@@ -55,7 +55,7 @@ class CleanExitBeacon {
 
  private:
   PrefService* const local_state_;
-  const bool initial_value_;
+  const bool did_previous_session_exit_cleanly_;
 
   // This is the value of the last live timestamp from local state at the
   // time of construction. It notes a timestamp from the previous browser

@@ -307,26 +307,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.Crashes" units="crashes"
-    expires_after="2021-10-25">
+    expires_after="2022-05-09">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The number of consecutive crashes observed by the VariationsService, without
-    a single intervening successful seed fetch. Recorded during Chrome startup,
-    when the VariationsService is created.
+    The number of consecutive crashes observed by the VariationsService without
+    a single intervening successful seed fetch. Recorded during Chrome startup
+    when the MetricsStateManager's CleanExitBeacon is created.
+
+    Prior to M92, this was recorded when the SafeSeedManager was created.
   </summary>
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.FetchFailures" units="failures"
-    expires_after="2021-08-22">
+    expires_after="2022-05-09">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The number of consecutive failed attempts to fetch a new seed by the
-    VariationsService. Recorded during Chrome startup, when the
-    VariationsService is created.
+    VariationsService. Recorded during Chrome startup when the SafeSeedManager
+    is created.
   </summary>
 </histogram>
 

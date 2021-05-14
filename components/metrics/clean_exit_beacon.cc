@@ -5,10 +5,13 @@
 #include "components/metrics/clean_exit_beacon.h"
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/pref_names.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -19,16 +22,51 @@
 #endif
 
 namespace metrics {
+namespace {
+
+// Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
+// false. Also, emits the crash streak to a histogram.
+void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
+                               PrefService* local_state) {
+  // Increment the crash streak if the previous session crashed. Note that the
+  // streak is not cleared if the previous run didn’t crash. Instead, it’s
+  // incremented on each crash until Chrome is able to successfully fetch a new
+  // seed. This way, a seed update that mostly destabilizes Chrome still results
+  // in a fallback to safe mode.
+  //
+  // The crash streak is incremented here rather than in a variations-related
+  // class for two reasons. First, the crash streak depends on the value of
+  // kStabilityExitedCleanly. Second, if kVariationsCrashStreak were updated in
+  // another function, any crash between CleanExitBeacon() and that function
+  // would cause the crash streak to not be to incremented. A consequence of
+  // failing to increment the crash streak is that variations safe mode might
+  // undercount or be completely unaware of repeated crashes early on in
+  // startup.
+  int num_crashes =
+      local_state->GetInteger(variations::prefs::kVariationsCrashStreak);
+  if (!did_previous_session_exit_cleanly) {
+    ++num_crashes;
+    local_state->SetInteger(variations::prefs::kVariationsCrashStreak,
+                            num_crashes);
+  }
+  base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
+                           base::ClampToRange(num_crashes, 0, 100));
+}
+
+}  // namespace
 
 CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
                                  PrefService* local_state)
     : local_state_(local_state),
-      initial_value_(local_state->GetBoolean(prefs::kStabilityExitedCleanly)),
+      did_previous_session_exit_cleanly_(
+          local_state->GetBoolean(prefs::kStabilityExitedCleanly)),
       initial_browser_last_live_timestamp_(
           local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
       backup_registry_key_(backup_registry_key) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
+
+  MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_, local_state_);
 
 #if defined(OS_WIN)
   // An enumeration of all possible permutations of the the beacon state in the
@@ -50,21 +88,24 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
       regkey.ReadValueDW(
           base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(), &value) ==
           ERROR_SUCCESS) {
-    if (value)
-      consistency = initial_value_ ? CLEAN_CLEAN : CLEAN_DIRTY;
-    else
-      consistency = initial_value_ ? DIRTY_CLEAN : DIRTY_DIRTY;
+    if (value) {
+      consistency =
+          did_previous_session_exit_cleanly_ ? CLEAN_CLEAN : CLEAN_DIRTY;
+    } else {
+      consistency =
+          did_previous_session_exit_cleanly_ ? DIRTY_CLEAN : DIRTY_DIRTY;
+    }
   } else {
-    consistency = initial_value_ ? MISSING_CLEAN : MISSING_DIRTY;
+    consistency =
+        did_previous_session_exit_cleanly_ ? MISSING_CLEAN : MISSING_DIRTY;
   }
 
   UMA_HISTOGRAM_ENUMERATION(
       "UMA.CleanExitBeaconConsistency", consistency, NUM_CONSISTENCY_ENUMS);
-#endif
+#endif  // defined(OS_WIN)
 }
 
-CleanExitBeacon::~CleanExitBeacon() {
-}
+CleanExitBeacon::~CleanExitBeacon() = default;
 
 void CleanExitBeacon::WriteBeaconValue(bool value) {
   UpdateLastLiveTimestamp();
@@ -77,7 +118,7 @@ void CleanExitBeacon::WriteBeaconValue(bool value) {
     regkey.WriteValue(base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(),
                       value ? 1u : 0u);
   }
-#endif
+#endif  // defined(OS_WIN)
 }
 
 void CleanExitBeacon::UpdateLastLiveTimestamp() {
@@ -91,6 +132,12 @@ void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterTimePref(prefs::kStabilityBrowserLastLiveTimeStamp,
                              base::Time(), PrefRegistry::LOSSY_PREF);
+
+  // This variations-safe-mode-related pref is registered here rather than in
+  // SafeSeedManager::RegisterPrefs() because the CleanExitBeacon is
+  // responsible for incrementing this value. (See the comments in
+  // MaybeIncrementCrashStreak() for more details.)
+  registry->RegisterIntegerPref(variations::prefs::kVariationsCrashStreak, 0);
 }
 
 // static

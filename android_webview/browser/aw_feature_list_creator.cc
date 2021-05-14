@@ -216,8 +216,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // downloading and disseminating seeds is handled by the WebView service,
   // which itself doesn't support variations; therefore a bad seed shouldn't be
   // able to break seed downloads. See https://crbug.com/801771 for more info.
-  variations::SafeSeedManager ignored_safe_seed_manager(true,
-                                                        local_state_.get());
+  variations::SafeSeedManager ignored_safe_seed_manager(local_state_.get());
 
   // Populate FieldTrialList. Since low_entropy_provider is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low

@@ -359,8 +359,7 @@ VariationsService::VariationsService(
       disable_deltas_for_next_request_(false),
       resource_request_allowed_notifier_(std::move(notifier)),
       request_count_(0),
-      safe_seed_manager_(state_manager->clean_exit_beacon()->exited_cleanly(),
-                         local_state),
+      safe_seed_manager_(local_state),
       field_trial_creator_(local_state,
                            client_.get(),
                            std::make_unique<VariationsSeedStore>(

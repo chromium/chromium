@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
@@ -109,7 +110,10 @@ void ExpectDefaultActiveState(const FakeSeedStore& seed_store) {
 
 class SafeSeedManagerTest : public testing::Test {
  public:
-  SafeSeedManagerTest() { SafeSeedManager::RegisterPrefs(prefs_.registry()); }
+  SafeSeedManagerTest() {
+    metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
+    SafeSeedManager::RegisterPrefs(prefs_.registry());
+  }
   ~SafeSeedManagerTest() override = default;
 
  protected:
@@ -117,7 +121,7 @@ class SafeSeedManagerTest : public testing::Test {
 };
 
 TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_FirstCallSavesSafeSeed) {
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   SetDefaultActiveState(&safe_seed_manager);
 
   FakeSeedStore seed_store(&prefs_);
@@ -127,7 +131,7 @@ TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_FirstCallSavesSafeSeed) {
 }
 
 TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_RepeatedCallsRetainSafeSeed) {
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   SetDefaultActiveState(&safe_seed_manager);
 
   FakeSeedStore seed_store(&prefs_);
@@ -140,7 +144,7 @@ TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_RepeatedCallsRetainSafeSeed) {
 
 TEST_F(SafeSeedManagerTest,
        RecordSuccessfulFetch_NoActiveState_DoesntSaveSafeSeed) {
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   // Omit setting any active state.
 
   FakeSeedStore seed_store(&prefs_);
@@ -155,57 +159,29 @@ TEST_F(SafeSeedManagerTest,
   EXPECT_EQ(base::Time(), seed_store.fetch_time());
 }
 
-TEST_F(SafeSeedManagerTest, StreakMetrics_NoPrefs) {
+TEST_F(SafeSeedManagerTest, FetchFailureMetrics_DefaultPrefs) {
   base::HistogramTester histogram_tester;
-  SafeSeedManager safe_seed_manager(true, &prefs_);
-  histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
-                                      1);
+  SafeSeedManager safe_seed_manager(&prefs_);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.Streak.FetchFailures", 0, 1);
 }
 
-TEST_F(SafeSeedManagerTest, StreakMetrics_NoCrashes_NoFetchFailures) {
-  prefs_.SetInteger(prefs::kVariationsCrashStreak, 0);
+TEST_F(SafeSeedManagerTest, FetchFailureMetrics_NoFailures) {
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
   base::HistogramTester histogram_tester;
-  SafeSeedManager safe_seed_manager(true, &prefs_);
-  histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
-                                      1);
+  SafeSeedManager safe_seed_manager(&prefs_);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.Streak.FetchFailures", 0, 1);
 }
 
-TEST_F(SafeSeedManagerTest, StreakMetrics_SomeCrashes_SomeFetchFailures) {
-  prefs_.SetInteger(prefs::kVariationsCrashStreak, 1);
+TEST_F(SafeSeedManagerTest, FetchFailureMetrics_SomeFailures) {
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 2);
 
   base::HistogramTester histogram_tester;
-  SafeSeedManager safe_seed_manager(true, &prefs_);
-  histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
-                                      1);
+  SafeSeedManager safe_seed_manager(&prefs_);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.Streak.FetchFailures", 2, 1);
-}
-
-TEST_F(SafeSeedManagerTest, StreakMetrics_CrashIncrementsCrashStreak) {
-  prefs_.SetInteger(prefs::kVariationsCrashStreak, 1);
-
-  base::HistogramTester histogram_tester;
-  SafeSeedManager safe_seed_manager(false, &prefs_);
-
-  EXPECT_EQ(2, prefs_.GetInteger(prefs::kVariationsCrashStreak));
-  histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 2,
-                                      1);
-}
-
-TEST_F(SafeSeedManagerTest, StreakMetrics_CrashIncrementsCrashStreak_NoPrefs) {
-  base::HistogramTester histogram_tester;
-  SafeSeedManager safe_seed_manager(false, &prefs_);
-
-  EXPECT_EQ(1, prefs_.GetInteger(prefs::kVariationsCrashStreak));
-  histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
-                                      1);
 }
 
 TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_OverriddenByCommandlineFlag) {
@@ -215,7 +191,7 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_OverriddenByCommandlineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ::switches::kForceFieldTrials, "SomeFieldTrial");
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_FALSE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
@@ -223,14 +199,14 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_NoCrashes_NoFetchFailures) {
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 0);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_FALSE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
 TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_NoPrefs) {
   // Don't explicitly set either of the prefs. The implicit/default values
   // should be zero.
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_FALSE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
@@ -238,7 +214,7 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_FewCrashes_FewFetchFailures) {
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 2);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 2);
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_FALSE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
@@ -246,7 +222,7 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_ManyCrashes_NoFetchFailures) {
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 3);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_TRUE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
@@ -254,7 +230,7 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_NoCrashes_ManyFetchFailures) {
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 0);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 50);
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_TRUE(safe_seed_manager.ShouldRunInSafeMode());
 }
 
@@ -262,7 +238,7 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_ManyCrashes_ManyFetchFailures) {
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 3);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 50);
 
-  SafeSeedManager safe_seed_manager(true, &prefs_);
+  SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_TRUE(safe_seed_manager.ShouldRunInSafeMode());
 }
 

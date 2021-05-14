@@ -22,13 +22,12 @@ class VariationsSeedStore;
 // The primary class that encapsulates state for managing the safe seed.
 class SafeSeedManager {
  public:
-  // Creates a SafeSeedManager instance, and updates safe mode prefs for
-  // bookkeeping.
-  SafeSeedManager(bool did_previous_session_exit_cleanly,
-                  PrefService* local_state);
+  // Creates a SafeSeedManager instance and updates a safe mode pref,
+  // kVariationsFailedToFetchSeedStreak, for bookkeeping.
+  explicit SafeSeedManager(PrefService* local_state);
   virtual ~SafeSeedManager();
 
-  // Register safe mode prefs in Local State.
+  // Registers safe mode prefs in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Returns true iff the client should use the safe seed for variations state.
@@ -83,8 +82,8 @@ class SafeSeedManager {
   // The active seed state must never be set more than once.
   bool has_set_active_seed_state_ = false;
 
-  // The pref service used to store persist the variations seed. Weak reference;
-  // must outlive |this| instance.
+  // The pref service used to persist the variations seed. Weak reference; must
+  // outlive |this| instance.
   PrefService* local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeSeedManager);

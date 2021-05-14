@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
@@ -128,7 +129,7 @@ class TestPlatformFieldTrials : public PlatformFieldTrials {
 class MockSafeSeedManager : public SafeSeedManager {
  public:
   explicit MockSafeSeedManager(PrefService* local_state)
-      : SafeSeedManager(true, local_state) {}
+      : SafeSeedManager(local_state) {}
   ~MockSafeSeedManager() override = default;
 
   MOCK_CONST_METHOD0(ShouldRunInSafeMode, bool());
@@ -269,6 +270,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 class FieldTrialCreatorTest : public ::testing::Test {
  protected:
   FieldTrialCreatorTest() {
+    metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
     VariationsService::RegisterPrefs(prefs_.registry());
     global_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }

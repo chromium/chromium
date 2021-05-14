@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/client_filterable_state.h"
@@ -64,24 +65,10 @@ constexpr int kCrashStreakThreshold = 3;
 // to find a better balance here.
 constexpr int kFetchFailureStreakThreshold = 25;
 
-SafeSeedManager::SafeSeedManager(bool did_previous_session_exit_cleanly,
-                                 PrefService* local_state)
+SafeSeedManager::SafeSeedManager(PrefService* local_state)
     : local_state_(local_state) {
-  // Increment the crash streak if the previous session crashed.
-  // Note that the streak is not cleared if the previous run didn’t crash.
-  // Instead, it’s incremented on each crash until Chrome is able to
-  // successfully fetch a new seed. This way, a seed update that mostly
-  // destabilizes Chrome will still result in a fallback to safe mode.
-  int num_crashes = local_state->GetInteger(prefs::kVariationsCrashStreak);
-  if (!did_previous_session_exit_cleanly) {
-    ++num_crashes;
-    local_state->SetInteger(prefs::kVariationsCrashStreak, num_crashes);
-  }
-
   int num_failed_fetches =
-      local_state->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);
-  base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
-                           base::ClampToRange(num_crashes, 0, 100));
+      local_state_->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);
   base::UmaHistogramSparse("Variations.SafeMode.Streak.FetchFailures",
                            base::ClampToRange(num_failed_fetches, 0, 100));
 }
@@ -90,8 +77,14 @@ SafeSeedManager::~SafeSeedManager() = default;
 
 // static
 void SafeSeedManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  // Prefs tracking failures along the way to fetching a seed.
-  registry->RegisterIntegerPref(prefs::kVariationsCrashStreak, 0);
+  // Verify that the crash streak pref has already been registered.
+  DCHECK(
+      registry->defaults()->GetValue(prefs::kVariationsCrashStreak, nullptr));
+
+  // Registers one of two prefs used for tracking variations-seed-related
+  // failures. The other pref, kVariationsCrashStreak, is registered in
+  // CleanExitBeacon::RegisterPrefs(). See components/metrics/
+  // clean_exit_beacon.cc for more details.
   registry->RegisterIntegerPref(prefs::kVariationsFailedToFetchSeedStreak, 0);
 }
 
