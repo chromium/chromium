@@ -3832,9 +3832,6 @@ void AXNodeObject::InsertChild(AXObject* child,
         << "Owned elements must be in tree: " << child->ToString(true, true)
         << "\nRecompute included in tree: "
         << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
-    // Child is ignored and not in the tree.
-    // Recompute the child's children now as we skip over the ignored object.
-    child->SetNeedsToUpdateChildren();
 
     // Get the ignored child's children and add to children of ancestor
     // included in tree. This will recurse if necessary, skipping levels of
@@ -3846,8 +3843,13 @@ void AXNodeObject::InsertChild(AXObject* child,
       // If the child was owned, it will be added elsewhere as a direct
       // child of the object owning it.
       if (!AXObjectCache().IsAriaOwned(children[i])) {
-        DCHECK(!children[i]->IsDetached()) << "Cannot add a detached child: "
-                                           << children[i]->ToString(true, true);
+        SANITIZER_CHECK(!children[i]->IsDetached())
+            << "Cannot add a detached child: "
+            << "\n* Child: " << children[i]->ToString(true, true)
+            << "\n* Parent: " << child->ToString(true, true)
+            << "\n* Grandparent: " << ToString(true, true)
+            << "\n* Included ancestor: "
+            << child->ParentObjectIncludedInTree()->ToString(true, true);
         children_.insert(new_index++, children[i]);
       }
     }

@@ -4224,7 +4224,7 @@ void AXObject::ClearChildren() const {
   // Loop through AXObject children.
 #if defined(AX_FAIL_FAST_BUILD)
   CHECK(!is_adding_children_)
-      << "Should not attempt to simultaneosly add and clear children on: "
+      << "Should not attempt to simultaneously add and clear children on: "
       << ToString(true, true);
 #endif
 
