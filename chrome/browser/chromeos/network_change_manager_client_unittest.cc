@@ -189,7 +189,9 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
         base::SplitString(default_network_state.dns_servers, ",",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     base::ListValue dns_servers_value;
-    dns_servers_value.AppendStrings(dns_servers);
+    for (const std::string& server : dns_servers)
+      dns_servers_value.Append(server);
+
     ipv4_properties.SetKey(shill::kNameServersProperty,
                            std::move(dns_servers_value));
     default_network_.IPConfigPropertiesChanged(ipv4_properties);
