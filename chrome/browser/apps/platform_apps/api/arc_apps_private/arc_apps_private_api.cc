@@ -37,22 +37,22 @@ ArcAppsPrivateAPI::~ArcAppsPrivateAPI() = default;
 
 void ArcAppsPrivateAPI::Shutdown() {
   extensions::EventRouter::Get(context_)->UnregisterObserver(this);
-  scoped_prefs_observer_.RemoveAll();
+  scoped_prefs_observation_.Reset();
 }
 
 void ArcAppsPrivateAPI::OnListenerAdded(
     const extensions::EventListenerInfo& details) {
   DCHECK_EQ(details.event_name, api::arc_apps_private::OnInstalled::kEventName);
   auto* prefs = ArcAppListPrefs::Get(Profile::FromBrowserContext(context_));
-  if (prefs && !scoped_prefs_observer_.IsObserving(prefs))
-    scoped_prefs_observer_.Add(prefs);
+  if (prefs && !scoped_prefs_observation_.IsObservingSource(prefs))
+    scoped_prefs_observation_.Observe(prefs);
 }
 
 void ArcAppsPrivateAPI::OnListenerRemoved(
     const extensions::EventListenerInfo& details) {
   if (!extensions::EventRouter::Get(context_)->HasEventListener(
           api::arc_apps_private::OnInstalled::kEventName)) {
-    scoped_prefs_observer_.RemoveAll();
+    scoped_prefs_observation_.Reset();
   }
 }
 
