@@ -1,5 +1,9 @@
 # These tests cannot work on Wayland because the platform does not allow clients
 # to position top level windows, activate them, and set focus.
+-All/HostedOrWebAppTest.CtrlClickLink/HostedApp
+-All/HostedOrWebAppTest.CtrlClickLink/WebApp
+-All/HostedOrWebAppTest.OpenLinkInNewTab/HostedApp
+-All/HostedOrWebAppTest.OpenLinkInNewTab/WebApp
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
 -AutomationManagerAuraBrowserTest.EventFromAction
@@ -39,10 +43,6 @@
 # are created.
 # TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
 # the problems.
--All/HostedOrWebAppTest.CtrlClickLink/HostedApp
--All/HostedOrWebAppTest.CtrlClickLink/WebApp
--All/HostedOrWebAppTest.OpenLinkInNewTab/HostedApp
--All/HostedOrWebAppTest.OpenLinkInNewTab/WebApp
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
