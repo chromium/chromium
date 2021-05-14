@@ -124,7 +124,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Returns the PermissionController associated with this context. There's
   // always a PermissionController instance for each BrowserContext.
-  static PermissionController* GetPermissionController(BrowserContext* self);
+  PermissionController* GetPermissionController();
 
   // Returns a StoragePartition for the given SiteInstance. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
@@ -223,8 +223,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void SetDownloadManagerForTesting(
       std::unique_ptr<DownloadManager> download_manager);
 
-  static void SetPermissionControllerForTesting(
-      BrowserContext* self,
+  void SetPermissionControllerForTesting(
       std::unique_ptr<PermissionController> permission_controller);
 
   // The list of CORS exemptions.  This list needs to be 1) replicated when

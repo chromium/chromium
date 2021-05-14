@@ -122,11 +122,9 @@ BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover() {
   return impl()->GetBrowsingDataRemover();
 }
 
-// static
-PermissionController* BrowserContext::GetPermissionController(
-    BrowserContext* self) {
+PermissionController* BrowserContext::GetPermissionController() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return self->impl()->GetPermissionController();
+  return impl()->GetPermissionController();
 }
 
 StoragePartition* BrowserContext::GetStoragePartition(
@@ -304,13 +302,11 @@ void BrowserContext::SetDownloadManagerForTesting(
   impl()->SetDownloadManagerForTesting(std::move(download_manager));  // IN-TEST
 }
 
-// static
 void BrowserContext::SetPermissionControllerForTesting(
-    BrowserContext* self,
     std::unique_ptr<PermissionController> permission_controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(permission_controller);
-  self->impl()->SetPermissionControllerForTesting(  // IN-TEST
+  impl()->SetPermissionControllerForTesting(  // IN-TEST
       std::move(permission_controller));
 }
 

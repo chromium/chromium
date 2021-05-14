@@ -108,9 +108,10 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
     navigation_simulator->Commit();
     embedded_rfh = navigation_simulator->GetFinalRenderFrameHost();
 
-    BrowserContext::SetPermissionControllerForTesting(
-        embedded_rfh->GetProcess()->GetBrowserContext(),
-        std::make_unique<PermissionControllerImpl>(browser_context_.get()));
+    embedded_rfh->GetProcess()
+        ->GetBrowserContext()
+        ->SetPermissionControllerForTesting(
+            std::make_unique<PermissionControllerImpl>(browser_context_.get()));
     service_ =
         std::make_unique<GeolocationServiceImpl>(context_.get(), embedded_rfh);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());

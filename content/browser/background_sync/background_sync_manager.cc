@@ -129,7 +129,7 @@ SyncAndNotificationPermissions GetBackgroundSyncPermission(
     return {PermissionStatus::DENIED, PermissionStatus::DENIED};
 
   PermissionController* permission_controller =
-      BrowserContext::GetPermissionController(browser_context);
+      browser_context->GetPermissionController();
   DCHECK(permission_controller);
 
   // The requesting origin always matches the embedding origin.

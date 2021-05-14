@@ -123,7 +123,7 @@ PermissionControllerImpl::PermissionControllerImpl(
 PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(
     BrowserContext* browser_context) {
   return static_cast<PermissionControllerImpl*>(
-      BrowserContext::GetPermissionController(browser_context));
+      browser_context->GetPermissionController());
 }
 
 struct PermissionControllerImpl::Subscription {

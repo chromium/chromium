@@ -205,14 +205,14 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatusFromType(
 
   GURL requesting_origin(origin_.GetURL());
   if (context_->render_frame_host()) {
-    return BrowserContext::GetPermissionController(browser_context)
+    return browser_context->GetPermissionController()
         ->GetPermissionStatusForFrame(type, context_->render_frame_host(),
                                       requesting_origin);
   }
 
   DCHECK(context_->GetEmbeddingOrigin().is_empty());
-  return BrowserContext::GetPermissionController(browser_context)
-      ->GetPermissionStatus(type, requesting_origin, requesting_origin);
+  return browser_context->GetPermissionController()->GetPermissionStatus(
+      type, requesting_origin, requesting_origin);
 }
 
 void PermissionServiceImpl::ResetPermissionStatus(PermissionType type) {

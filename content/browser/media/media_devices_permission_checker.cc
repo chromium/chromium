@@ -170,8 +170,8 @@ bool MediaDevicesPermissionChecker::HasPanTiltZoomPermissionGrantedOnUIThread(
   if (!web_contents)
     return false;
 
-  auto* permission_controller = BrowserContext::GetPermissionController(
-      web_contents->GetBrowserContext());
+  auto* permission_controller =
+      web_contents->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
 
   const GURL& origin = web_contents->GetLastCommittedURL();

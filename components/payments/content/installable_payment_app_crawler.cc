@@ -166,8 +166,7 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
     return;
 
   content::PermissionController* permission_controller =
-      content::BrowserContext::GetPermissionController(
-          rfh->GetBrowserContext());
+      rfh->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
 
   for (const auto& web_app_manifest_url : default_applications) {

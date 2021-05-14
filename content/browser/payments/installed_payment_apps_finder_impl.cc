@@ -91,7 +91,7 @@ void InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PermissionController* permission_controller =
-      BrowserContext::GetPermissionController(browser_context_);
+      browser_context_->GetPermissionController();
   DCHECK(permission_controller);
 
   PaymentApps permitted_apps;

@@ -134,7 +134,7 @@ void IdleManagerImpl::AddMonitor(
 
 bool IdleManagerImpl::HasPermission(const url::Origin& origin) {
   PermissionController* permission_controller =
-      BrowserContext::GetPermissionController(browser_context_);
+      browser_context_->GetPermissionController();
   DCHECK(permission_controller);
   PermissionStatus status = permission_controller->GetPermissionStatus(
       PermissionType::IDLE_DETECTION, origin.GetURL(), origin.GetURL());

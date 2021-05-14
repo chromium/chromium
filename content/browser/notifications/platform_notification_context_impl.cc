@@ -358,7 +358,7 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   }
 
   content::PermissionController* controller =
-      BrowserContext::GetPermissionController(browser_context_);
+      browser_context_->GetPermissionController();
   if (!controller) {
     std::move(callback).Run(/* success= */ false, /* deleted_count= */ 0);
     return;

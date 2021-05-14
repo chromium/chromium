@@ -1845,7 +1845,7 @@ void StoragePartitionImpl::OnCanSendReportingReports(
     OnCanSendReportingReportsCallback callback) {
   DCHECK(initialized_);
   PermissionController* permission_controller =
-      BrowserContext::GetPermissionController(browser_context_);
+      browser_context_->GetPermissionController();
   DCHECK(permission_controller);
 
   std::vector<url::Origin> origins_out;
@@ -1866,7 +1866,7 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
     OnCanSendDomainReliabilityUploadCallback callback) {
   DCHECK(initialized_);
   PermissionController* permission_controller =
-      BrowserContext::GetPermissionController(browser_context_);
+      browser_context_->GetPermissionController();
   std::move(callback).Run(
       permission_controller->GetPermissionStatus(
           content::PermissionType::BACKGROUND_SYNC, origin, origin) ==

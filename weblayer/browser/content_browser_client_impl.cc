@@ -1152,7 +1152,7 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
   DCHECK(browser_context);
 
   content::PermissionController* permission_controller =
-      content::BrowserContext::GetPermissionController(browser_context);
+      browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
       permission_controller->GetPermissionStatusForFrame(
           content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host,
