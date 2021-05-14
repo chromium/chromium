@@ -712,9 +712,7 @@ CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
           request_site,
           force_ignore_top_frame_party
               ? base::nullopt
-              : base::make_optional(isolation_info.network_isolation_key()
-                                        .GetTopFrameSite()
-                                        .value()),
+              : isolation_info.network_isolation_key().GetTopFrameSite(),
           isolation_info.party_context().value())) {
     return CookieOptions::SamePartyCookieContextType::kSameParty;
   }
