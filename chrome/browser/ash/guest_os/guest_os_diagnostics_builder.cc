@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/optional.h"
+#include "base/check_op.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 
 namespace guest_os {
@@ -26,36 +26,56 @@ mojom::DiagnosticsPtr DiagnosticsBuilder::Build() {
 }
 
 DiagnosticsBuilder::EntryBuilder::EntryBuilder(const std::string& requirement)
-    : entry{mojom::DiagnosticEntry::New(requirement,
-                                        Status::kPass,
-                                        base::nullopt)} {}
+    : entry_{mojom::DiagnosticEntry::New(requirement,
+                                         Status::kPass,
+                                         /*explanation=*/nullptr)} {}
 DiagnosticsBuilder::EntryBuilder::EntryBuilder(EntryBuilder&&) = default;
 DiagnosticsBuilder::EntryBuilder::~EntryBuilder() = default;
 
 void DiagnosticsBuilder::EntryBuilder::SetNotApplicable() {
-  entry->status = Status::kNotApplicable;
+  DCHECK_EQ(entry_->status, Status::kPass)
+      << "SetNotApplicable() should only be called on a builder in the initial "
+         "state";
+  entry_->status = Status::kNotApplicable;
 }
 
-void DiagnosticsBuilder::EntryBuilder::SetFail(const std::string& explanation) {
-  SetFail(explanation, /*top_error_message=*/explanation);
-}
-
-void DiagnosticsBuilder::EntryBuilder::SetFail(
+DiagnosticsBuilder::EntryBuilder& DiagnosticsBuilder::EntryBuilder::SetFail(
     const std::string& explanation,
-    const std::string& top_error_message,
     const base::Optional<std::string>& learn_more_link) {
-  entry->status = Status::kFail;
-  entry->explanation = explanation;
+  DCHECK_EQ(entry_->status, Status::kPass)
+      << "SetFail() should only be called on a builder in the initial state";
 
-  top_error =
-      mojom::DiagnosticTopError::New(top_error_message, learn_more_link);
+  entry_->status = Status::kFail;
+  entry_->explanation =
+      mojom::DiagnosticMessage::New(explanation, learn_more_link);
+
+  return *this;
+}
+
+void DiagnosticsBuilder::EntryBuilder::OverrideTopError(
+    const std::string& error,
+    const base::Optional<std::string>& learn_more_link) {
+  DCHECK_EQ(entry_->status, Status::kFail);
+
+  overridden_top_error_ = mojom::DiagnosticMessage::New(error, learn_more_link);
 }
 
 void DiagnosticsBuilder::AddEntry(EntryBuilder entry_builder) {
-  diagnostics_->entries.push_back(std::move(entry_builder.entry));
-  if (diagnostics_->top_error.is_null()) {
-    diagnostics_->top_error = std::move(entry_builder.top_error);
+  // Note that `entry_builder.overridden_top_error_` might be moved inside this
+  // block.
+  if (!diagnostics_->top_error &&
+      entry_builder.entry_->status == Status::kFail) {
+    // Need to update the diagnostics's top error.
+    if (entry_builder.overridden_top_error_) {
+      diagnostics_->top_error = std::move(entry_builder.overridden_top_error_);
+    } else {
+      // No overridden top error. Let's use the "explanation".
+      DCHECK(entry_builder.entry_->explanation);
+      diagnostics_->top_error = entry_builder.entry_->explanation.Clone();
+    }
   }
+
+  diagnostics_->entries.push_back(std::move(entry_builder.entry_));
 }
 
 }  // namespace guest_os

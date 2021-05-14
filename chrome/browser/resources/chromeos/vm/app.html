@@ -76,7 +76,15 @@
             <td class$="[[statusToClass(item.status)]]">
               [[statusToString(item.status)]]
             </td>
-            <td>[[item.explanation]]</td>
+            <td>
+              <template is="dom-if" if="[[item.explanation]]">
+                [[item.explanation.message]]
+                <a href$="[[item.explanation.learnMoreLink]]"
+                   hidden$="[[!item.explanation.learnMoreLink]]">
+                  $i18n{learnMoreLabel}
+                </a>
+              </template>
+            </td>
           </tr>
         </dom-repeat>
       </tbody>

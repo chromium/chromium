@@ -31,18 +31,20 @@ class DiagnosticsBuilder {
     // Set the status to N/A.
     void SetNotApplicable();
 
-    // Set the status to fail. The top error message is also set to explanation.
-    void SetFail(const std::string& explanation);
-
-    // Set the status to fail.
-    void SetFail(
+    // Set the status to fail. By default, the associated top error is assumed
+    // to be the same as the explanation. You can call `OverrideTopError()` to
+    // change it. Also see `DiagnosticsBuilder::AddEntry()` for how the top
+    // error is applied.
+    EntryBuilder& SetFail(
         const std::string& explanation,
-        const std::string& top_error_message,
+        const base::Optional<std::string>& learn_more_link = base::nullopt);
+    void OverrideTopError(
+        const std::string& error,
         const base::Optional<std::string>& learn_more_link = base::nullopt);
 
    private:
-    mojom::DiagnosticEntryPtr entry;
-    mojom::DiagnosticTopErrorPtr top_error;
+    mojom::DiagnosticEntryPtr entry_;
+    mojom::DiagnosticMessagePtr overridden_top_error_;
   };
 
   // Add a new entry. If the top error hasn't been set, the top error inside the

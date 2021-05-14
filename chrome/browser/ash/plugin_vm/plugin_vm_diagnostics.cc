@@ -123,8 +123,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     {
       EntryBuilder entry(
           l10n_util::GetStringUTF8(IDS_VM_STATUS_PAGE_POLICIES_REQUIREMENT));
-      const std::string standard_top_error =
-          l10n_util::GetStringUTF8(IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR);
+      bool set_standard_top_error = true;
+
       switch (is_allowed_diagnostics.policy_configured) {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
@@ -136,52 +136,50 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
               image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
           if (!url || !GURL(url->GetString()).is_valid()) {
             entry.SetFail(l10n_util::GetStringUTF8(
-                              IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION),
-                          standard_top_error);
+                IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION));
           } else if (!hash || hash->GetString().empty()) {
             entry.SetFail(l10n_util::GetStringUTF8(
-                              IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION),
-                          standard_top_error);
+                IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION));
+          } else {
+            set_standard_top_error = false;
           }
         } break;
         case PolicyConfigured::kErrorUnableToCheckPolicy:
-          entry.SetFail(
-              l10n_util::GetStringUTF8(
-                  IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION),
-              standard_top_error);
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION));
           break;
         case PolicyConfigured::kErrorNotEnterpriseEnrolled:
-          entry.SetFail(l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION),
-                        /*top_error_message=*/l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR));
+          entry
+              .SetFail(l10n_util::GetStringUTF8(
+                  IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION))
+              .OverrideTopError(l10n_util::GetStringUTF8(
+                  IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR));
+          set_standard_top_error = false;
           break;
         case PolicyConfigured::kErrorUserNotAffiliated:
           entry.SetFail(l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION),
-                        standard_top_error);
+              IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION));
           break;
         case PolicyConfigured::kErrorUnableToCheckDevicePolicy:
-          entry.SetFail(
-              l10n_util::GetStringUTF8(
-                  IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION),
-              standard_top_error);
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION));
           break;
         case PolicyConfigured::kErrorNotAllowedByDevicePolicy:
           entry.SetFail(l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION),
-                        standard_top_error);
+              IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION));
           break;
         case PolicyConfigured::kErrorNotAllowedByUserPolicy:
           entry.SetFail(l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION),
-                        standard_top_error);
+              IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION));
           break;
         case PolicyConfigured::kErrorLicenseNotSetUp:
           entry.SetFail(l10n_util::GetStringUTF8(
-                            IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION),
-                        standard_top_error);
+              IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION));
           break;
+      }
+      if (set_standard_top_error) {
+        entry.OverrideTopError(l10n_util::GetStringUTF8(
+            IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR));
       }
       builder_.AddEntry(std::move(entry));
     }
@@ -220,11 +218,10 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         entry.SetFail(l10n_util::GetStringUTF8(
             IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION));
       } else if (!HasDefaultVm(response->images())) {
-        entry.SetFail(GetMissingDefaultVmExplanation(response->images()),
-                      /*top_error_message=*/
-                      l10n_util::GetStringFUTF8(
-                          IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
-                          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+        entry.SetFail(GetMissingDefaultVmExplanation(response->images()))
+            .OverrideTopError(l10n_util::GetStringFUTF8(
+                IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
+                l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
       } else {
         // Everything is good. Do nothing.
       }
