@@ -1418,8 +1418,6 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface_BackButtonDeleteBlankTab() {
-        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1070553",
-                           mUseInstantStart && mImmediateReturn);
         // clang-format on
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

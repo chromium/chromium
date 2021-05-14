@@ -72,6 +72,9 @@ public final class ReturnToChromeExperimentsUtil {
 
         @Override
         public void onUrlFocusChange(boolean hasFocus) {
+            // Filter out focus events that happen when the tab itself in not the current tab.
+            if (mActivityTabProvider.get() != mNewTab) return;
+
             if (hasFocus) {
                 // It is possible that unfocusing event happens before the Omnibox
                 // first gets focused, use this flag to skip the cases.
@@ -81,7 +84,7 @@ public final class ReturnToChromeExperimentsUtil {
 
             if (!hasFocus && mIsOmniboxFocused) {
                 if (mNewTab.getUrl().isEmpty()) {
-                    if (mEmptyTabCloseCallback != null && mNewTab == mActivityTabProvider.get()) {
+                    if (mEmptyTabCloseCallback != null) {
                         mEmptyTabCloseCallback.run();
                     }
                     // Closes the Tab after any necessary transition is done. This
