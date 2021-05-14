@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Network.h"
 
 namespace blink {
 
@@ -47,6 +50,68 @@ void AuditsIssue::ReportQuirksModeIssue(ExecutionContext* execution_context,
           .setCode(protocol::Audits::InspectorIssueCodeEnum::QuirksModeIssue)
           .setDetails(std::move(details))
           .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
+    RendererCorsIssueCode code) {
+  switch (code) {
+    case RendererCorsIssueCode::kCorsDisabledScheme:
+      return protocol::Network::CorsErrorEnum::CorsDisabledScheme;
+    case RendererCorsIssueCode::kNoCorsRedirectModeNotFollow:
+      return protocol::Network::CorsErrorEnum::NoCorsRedirectModeNotFollow;
+    case RendererCorsIssueCode::kDisallowedByMode:
+      return protocol::Network::CorsErrorEnum::DisallowedByMode;
+  }
+}
+
+std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
+    const SourceLocation& location) {
+  auto protocol_location = protocol::Audits::SourceCodeLocation::create()
+                               .setUrl(location.Url())
+                               .setLineNumber(location.LineNumber() - 1)
+                               .setColumnNumber(location.ColumnNumber())
+                               .build();
+  protocol_location->setScriptId(WTF::String::Number(location.ScriptId()));
+  return protocol_location;
+}
+
+void AuditsIssue::ReportCorsIssue(ExecutionContext* execution_context,
+                                  int64_t identifier,
+                                  RendererCorsIssueCode code,
+                                  String url,
+                                  String initiator_origin,
+                                  String failedParameter) {
+  String devtools_request_id =
+      IdentifiersFactory::SubresourceRequestId(identifier);
+  std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
+      protocol::Audits::AffectedRequest::create()
+          .setRequestId(devtools_request_id)
+          .setUrl(url)
+          .build();
+  auto protocol_cors_error_status =
+      protocol::Network::CorsErrorStatus::create()
+          .setCorsError(RendererCorsIssueCodeToProtocol(code))
+          .setFailedParameter(failedParameter)
+          .build();
+  auto cors_issue_details =
+      protocol::Audits::CorsIssueDetails::create()
+          .setIsWarning(false)
+          .setRequest(std::move(affected_request))
+          .setCorsErrorStatus(std::move(protocol_cors_error_status))
+          .build();
+  cors_issue_details->setInitiatorOrigin(initiator_origin);
+  auto location = SourceLocation::Capture(execution_context);
+  if (location) {
+    cors_issue_details->setLocation(CreateProtocolLocation(*location));
+  }
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setCorsIssueDetails(std::move(cors_issue_details))
+                     .build();
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::CorsIssue)
+                   .setDetails(std::move(details))
+                   .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 

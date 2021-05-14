@@ -711,6 +711,7 @@ experimental domain Audits
       Network.CorsErrorStatus corsErrorStatus
       boolean isWarning
       AffectedRequest request
+      optional SourceCodeLocation location
       optional string initiatorOrigin
       optional Network.IPAddressSpace resourceIPAddressSpace
       optional Network.ClientSecurityState clientSecurityState
@@ -4771,6 +4772,7 @@ domain Network
       HeaderDisallowedByPreflightResponse
       RedirectContainsCredentials
       InsecurePrivateNetwork
+      NoCorsRedirectModeNotFollow
 
   type CorsErrorStatus extends object
     properties

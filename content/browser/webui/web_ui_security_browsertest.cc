@@ -724,10 +724,11 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
     EXPECT_EQ("Failed to fetch",
               PerformFetch(shell(), chrome_url, FetchMode::CORS));
     console_observer.Wait();
-    EXPECT_EQ(console_observer.GetMessageAt(0),
-              base::StringPrintf("Fetch API cannot load %s. URL scheme must be "
-                                 "\"http\" or \"https\" for CORS request.",
-                                 chrome_url.spec().c_str()));
+    EXPECT_EQ(
+        console_observer.GetMessageAt(0),
+        base::StringPrintf(
+            "Fetch API cannot load %s. URL scheme \"chrome\" is not supported.",
+            chrome_url.spec().c_str()));
   }
 
   {

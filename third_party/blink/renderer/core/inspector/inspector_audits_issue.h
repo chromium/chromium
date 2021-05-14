@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 
+namespace WTF {
+class String;
+}
+
 namespace blink {
 
 class ExecutionContext;
@@ -18,6 +22,12 @@ namespace Audits {
 class InspectorIssue;
 }
 }  // namespace protocol
+
+enum class RendererCorsIssueCode {
+  kDisallowedByMode,
+  kCorsDisabledScheme,
+  kNoCorsRedirectModeNotFollow,
+};
 
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
 // protocol class.
@@ -51,6 +61,13 @@ class CORE_EXPORT AuditsIssue {
                                     String url,
                                     String frame_id,
                                     String loader_id);
+
+  static void ReportCorsIssue(ExecutionContext* execution_context,
+                              int64_t identifier,
+                              RendererCorsIssueCode code,
+                              WTF::String url,
+                              WTF::String initiator_origin,
+                              WTF::String failedParameter);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

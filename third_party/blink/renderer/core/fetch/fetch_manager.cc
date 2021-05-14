@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -254,6 +256,8 @@ class FetchManager::Loader final
  private:
   void PerformSchemeFetch();
   void PerformNetworkError(const String& message);
+  void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
+                                       int64_t identifier);
   void PerformHTTPFetch();
   void PerformDataFetch();
   // If |dom_exception| is provided, throws the specified DOMException instead
@@ -555,12 +559,9 @@ void FetchManager::Loader::Start() {
 
   // "- |request|'s mode is |same-origin|"
   if (fetch_request_data_->Mode() == RequestMode::kSameOrigin) {
-    // "A network error."
-    PerformNetworkError("Fetch API cannot load " +
-                        fetch_request_data_->Url().GetString() +
-                        ". Request mode is \"same-origin\" but the URL\'s "
-                        "origin is not same as the request origin " +
-                        fetch_request_data_->Origin()->ToString() + ".");
+    // This error is so early that there isn't an identifier yet, generate one.
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kDisallowedByMode,
+                                    CreateUniqueIdentifier());
     return;
   }
 
@@ -569,10 +570,11 @@ void FetchManager::Loader::Start() {
     // "If |request|'s redirect mode is not |follow|, then return a network
     // error.
     if (fetch_request_data_->Redirect() != RedirectMode::kFollow) {
-      PerformNetworkError("Fetch API cannot load " +
-                          fetch_request_data_->Url().GetString() +
-                          ". Request mode is \"no-cors\" but the redirect mode "
-                          "is not \"follow\".");
+      // This error is so early that there isn't an identifier yet, generate
+      // one.
+      FileIssueAndPerformNetworkError(
+          RendererCorsIssueCode::kNoCorsRedirectModeNotFollow,
+          CreateUniqueIdentifier());
       return;
     }
 
@@ -590,10 +592,9 @@ void FetchManager::Loader::Start() {
   // to SchemeRegistry::registerURLSchemeAsSupportingFetchAPI.
   if (!SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
           fetch_request_data_->Url().Protocol())) {
-    // "A network error."
-    PerformNetworkError(
-        "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-        ". URL scheme must be \"http\" or \"https\" for CORS request.");
+    // This error is so early that there isn't an identifier yet, generate one.
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme,
+                                    CreateUniqueIdentifier());
     return;
   }
 
@@ -651,10 +652,49 @@ void FetchManager::Loader::PerformSchemeFetch() {
     PerformDataFetch();
   } else {
     // FIXME: implement other protocols.
-    PerformNetworkError(
-        "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-        ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
-        "\" is not supported.");
+    // This error is so early that there isn't an identifier yet, generate one.
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme,
+                                    CreateUniqueIdentifier());
+  }
+}
+
+void FetchManager::Loader::FileIssueAndPerformNetworkError(
+    RendererCorsIssueCode network_error,
+    int64_t identifier) {
+  switch (network_error) {
+    case RendererCorsIssueCode::kCorsDisabledScheme:
+      AuditsIssue::ReportCorsIssue(GetExecutionContext(), identifier,
+                                   network_error,
+                                   fetch_request_data_->Url().GetString(),
+                                   fetch_request_data_->Origin()->ToString(),
+                                   fetch_request_data_->Url().Protocol());
+      PerformNetworkError(
+          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
+          ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
+          "\" is not supported.");
+      break;
+    case RendererCorsIssueCode::kDisallowedByMode:
+      AuditsIssue::ReportCorsIssue(
+          GetExecutionContext(), identifier, network_error,
+          fetch_request_data_->Url().GetString(),
+          fetch_request_data_->Origin()->ToString(), WTF::g_empty_string);
+      PerformNetworkError("Fetch API cannot load " +
+                          fetch_request_data_->Url().GetString() +
+                          ". Request mode is \"same-origin\" but the URL\'s "
+                          "origin is not same as the request origin " +
+                          fetch_request_data_->Origin()->ToString() + ".");
+
+      break;
+    case RendererCorsIssueCode::kNoCorsRedirectModeNotFollow:
+      AuditsIssue::ReportCorsIssue(
+          GetExecutionContext(), identifier, network_error,
+          fetch_request_data_->Url().GetString(),
+          fetch_request_data_->Origin()->ToString(), WTF::g_empty_string);
+      PerformNetworkError("Fetch API cannot load " +
+                          fetch_request_data_->Url().GetString() +
+                          ". Request mode is \"no-cors\" but the redirect mode "
+                          "is not \"follow\".");
+      break;
   }
 }
 
