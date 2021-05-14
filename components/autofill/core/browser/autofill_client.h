@@ -527,6 +527,12 @@ class AutofillClient : public RiskDataLoader {
   virtual void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer);
 
+  // Shows the manual fallback bubble and displya card information in
+  // |credit_card| and |cvc|.
+  virtual void ShowVirtualCardManualFallbackBubble(
+      const CreditCard* credit_card,
+      const std::u16string& cvc);
+
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();
 

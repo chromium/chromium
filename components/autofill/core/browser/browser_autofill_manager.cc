@@ -1459,8 +1459,9 @@ void BrowserAutofillManager::OnCreditCardFetched(bool did_succeed,
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(credit_card_form_, credit_card_field_,
-                             &form_structure, &autofill_field))
+                             &form_structure, &autofill_field)) {
     return;
+  }
 
   // The originally selected masked card is |credit_card_|. So we must log
   // |credit_card_| as opposed to |credit_card| to correctly indicate that the
@@ -1469,6 +1470,13 @@ void BrowserAutofillManager::OnCreditCardFetched(bool did_succeed,
       credit_card_, *form_structure, *autofill_field, sync_state_);
 
   DCHECK(credit_card);
+
+  // If synced down card is a virtual card, show a manual fallback bubble for
+  // it in addition to filling the card.
+  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
+    client()->ShowVirtualCardManualFallbackBubble(credit_card, cvc);
+  }
+
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,
                      credit_card_field_, *credit_card, cvc);
   if (credit_card->record_type() == CreditCard::FULL_SERVER_CARD) {

@@ -1875,6 +1875,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         num_unmasked_cards += 1;
         num_disused_unmasked_cards += disused_delta;
         break;
+      case CreditCard::VIRTUAL_CARD:
+        // This card type is not persisted in Chrome.
+        break;
     }
   }
 

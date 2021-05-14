@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
@@ -680,6 +681,19 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
   controller->ShowOfferNotificationIfApplicable(offer, card);
+#endif
+}
+
+void ChromeAutofillClient::ShowVirtualCardManualFallbackBubble(
+    const CreditCard* credit_card,
+    const std::u16string& cvc) {
+#if !defined(OS_ANDROID)  // Desktop only
+  VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
+      web_contents());
+  VirtualCardManualFallbackBubbleControllerImpl* controller =
+      VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
+          web_contents());
+  controller->ShowBubble(credit_card, cvc);
 #endif
 }
 

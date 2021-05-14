@@ -52,6 +52,10 @@ class CreditCard : public AutofillDataModel {
     // A card from the Wallet server with full information store locally. This
     // card is not locally editable.
     FULL_SERVER_CARD,
+
+    // A card generated from a server card by the card issuer. This card is not
+    // persisted in Chrome.
+    VIRTUAL_CARD,
   };
 
   // The status of this card. Only used for server cards.
