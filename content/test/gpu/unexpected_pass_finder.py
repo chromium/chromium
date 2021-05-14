@@ -217,7 +217,8 @@ def main():
   if stale_message:
     print(stale_message)
   if affected_urls:
-    result_output.OutputAffectedUrls(affected_urls)
+    orphaned_urls = expectations.FindOrphanedBugs(affected_urls)
+    result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
 
 
 if __name__ == '__main__':

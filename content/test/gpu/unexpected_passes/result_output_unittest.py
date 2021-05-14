@@ -463,7 +463,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                                 self._file_handle)
 
 
-class OutputUrlsForCommandLineUnittest(fake_filesystem_unittest.TestCase):
+class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False)
@@ -477,13 +477,17 @@ class OutputUrlsForCommandLineUnittest(fake_filesystem_unittest.TestCase):
         'http://crbug.com/2345',
         'crbug.com/3456',
     ]
-    result_output._OutputUrlsForCommandLine(urls, self._file_handle)
+    orphaned_urls = ['https://crbug.com/1234', 'crbug.com/3456']
+    result_output._OutputAffectedUrls(urls, orphaned_urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs: '
                                   'https://crbug.com/1234 '
                                   'https://crbug.com/angleproject/1234 '
                                   'http://crbug.com/2345 '
+                                  'https://crbug.com/3456\n'
+                                  'Closable bugs: '
+                                  'https://crbug.com/1234 '
                                   'https://crbug.com/3456\n'))
 
 
@@ -499,7 +503,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/1234',
         'https://crbug.com/angleproject/2345',
     ]
-    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
@@ -515,7 +519,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/5',
         'crbug.com/6',
     ]
-    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
@@ -528,7 +532,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/averylongprojectthatwillgooverthelinelength/1',
         'crbug.com/averylongprojectthatwillgooverthelinelength/2',
     ]
-    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(),
@@ -543,10 +547,10 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/2',
     ]
     with open(self._filepath, 'w') as f:
-      result_output._OutputUrlsForClDescription(urls, f)
+      result_output._OutputUrlsForClDescription(urls, [], f)
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: %s:1, 2\n' % project_name))
+                                  'Bug: 2, %s:1\n' % project_name))
 
     project_name += 'a'
     urls = [
@@ -554,10 +558,10 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/2',
     ]
     with open(self._filepath, 'w') as f:
-      result_output._OutputUrlsForClDescription(urls, f)
+      result_output._OutputUrlsForClDescription(urls, [], f)
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: %s:1\nBug: 2\n' % project_name))
+                                  'Bug: 2\nBug: %s:1\n' % project_name))
 
   def testSingleBugOverLineLimit(self):
     """Tests the behavior when a single bug by itself is over the line limit."""
@@ -566,12 +570,45 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
         'crbug.com/%s/1' % project_name,
         'crbug.com/2',
     ]
-    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: %s:1\n'
-                                  'Bug: 2\n' % project_name))
+                                  'Bug: 2\n'
+                                  'Bug: %s:1\n' % project_name))
+
+  def testOrphanedBugs(self):
+    """Tests that orphaned bugs are output properly alongside affected ones."""
+    urls = [
+        'crbug.com/1',
+        'crbug.com/2',
+        'crbug.com/3',
+    ]
+    orphaned_urls = ['crbug.com/2']
+    result_output._OutputUrlsForClDescription(urls, orphaned_urls,
+                                              self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
+                                  'Bug: 1, 3\n'
+                                  'Fixed: 2\n'))
+
+  def testOnlyOrphanedBugs(self):
+    """Tests output when all affected bugs are orphaned bugs."""
+    urls = [
+        'crbug.com/1',
+        'crbug.com/2',
+    ]
+    orphaned_urls = [
+        'crbug.com/1',
+        'crbug.com/2',
+    ]
+    result_output._OutputUrlsForClDescription(urls, orphaned_urls,
+                                              self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
+                                  'Fixed: 1, 2\n'))
 
 
 def _Dedent(s):

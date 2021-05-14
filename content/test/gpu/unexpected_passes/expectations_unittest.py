@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import collections
 import copy
+import os
 import tempfile
 import unittest
 
@@ -1241,6 +1242,41 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
     self.assertEqual(modified_urls, set())
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+
+class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
+  def CreateFile(self, *args, **kwargs):
+    # TODO(crbug.com/1156806): Remove this and just use fs.create_file() when
+    # Catapult is updated to a newer version of pyfakefs that is compatible with
+    # Chromium's version.
+    if hasattr(self.fs, 'create_file'):
+      self.fs.create_file(*args, **kwargs)
+    else:
+      self.fs.CreateFile(*args, **kwargs)
+
+  def setUp(self):
+    expectations_dir = os.path.realpath(
+        os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
+                     'test_expectations'))
+    # Make sure our fake expectations are where the real ones actually are.
+    self.assertTrue(os.path.exists(expectations_dir))
+    self.setUpPyfakefs()
+
+    real_contents = 'crbug.com/1\ncrbug.com/2'
+    skipped_contents = 'crbug.com/4'
+    self.CreateFile(os.path.join(expectations_dir, 'real_expectations.txt'),
+                    contents=real_contents)
+    self.CreateFile(os.path.join(expectations_dir, 'fake.txt'),
+                    contents=skipped_contents)
+
+  def testNoOrphanedBugs(self):
+    bugs = ['crbug.com/1', 'crbug.com/2']
+    self.assertEqual(expectations.FindOrphanedBugs(bugs), set())
+
+  def testOrphanedBugs(self):
+    bugs = ['crbug.com/1', 'crbug.com/3', 'crbug.com/4']
+    self.assertEqual(expectations.FindOrphanedBugs(bugs),
+                     set(['crbug.com/3', 'crbug.com/4']))
 
 
 if __name__ == '__main__':

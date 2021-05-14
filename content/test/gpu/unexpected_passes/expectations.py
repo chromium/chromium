@@ -8,6 +8,7 @@ from __future__ import print_function
 import collections
 import copy
 import logging
+import os
 import sys
 
 import validate_tag_consistency
@@ -554,3 +555,32 @@ def _AddResultToMap(result, builder, test_expectation_map):
 
 def _GetDisableReasonFromComment(line):
   return line.split(FINDER_DISABLE_COMMENT, 1)[1].strip()
+
+
+def FindOrphanedBugs(affected_urls):
+  """Finds cases where expectations for bugs no longer exist.
+
+  Args:
+    affected_urls: An iterable of affected bug URLs, as returned by functions
+        such as RemoveExpectationsFromFile.
+
+  Returns:
+    A set containing a subset of |affected_urls| who no longer have any
+    associated expectations in any expectation files.
+  """
+  expectations_dir = os.path.realpath(
+      os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
+                   'test_expectations'))
+  seen_bugs = set()
+
+  for expectation_file in os.listdir(expectations_dir):
+    if not expectation_file.endswith('_expectations.txt'):
+      continue
+    with open(os.path.join(expectations_dir, expectation_file)) as infile:
+      contents = infile.read()
+    for url in affected_urls:
+      if url in seen_bugs:
+        continue
+      if url in contents:
+        seen_bugs.add(url)
+  return set(affected_urls) - seen_bugs
