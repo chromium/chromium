@@ -97,13 +97,11 @@ void NativeWebContentsModalDialogManagerViews::Show() {
         widget->GetNativeWindow()->parent());
   }
 #endif
-  // |host_| may be null during tab drag on Views/Win32.
-  //
-  // TODO(https://crbug.com/1119431): This null check may be out of date.
+  // |host_| may be null during tab drag.
   if (host_)
     constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
   widget->Show();
-  if (host_->ShouldActivateDialog())
+  if (host_ && host_->ShouldActivateDialog())
     Focus();
 
 #if defined(USE_AURA)
