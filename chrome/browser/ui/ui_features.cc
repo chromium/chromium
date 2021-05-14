@@ -213,4 +213,9 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_MAC)
+const base::Feature kViewsFirstRunDialog{"ViewsFirstRunDialog",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features

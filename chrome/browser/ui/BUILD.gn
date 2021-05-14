@@ -3135,8 +3135,8 @@ static_library("ui") {
       "cocoa/confirm_quit_panel_controller.mm",
       "cocoa/dock_icon.h",
       "cocoa/dock_icon.mm",
-      "cocoa/first_run_dialog.h",
-      "cocoa/first_run_dialog.mm",
+      "cocoa/first_run_dialog_cocoa.h",
+      "cocoa/first_run_dialog_cocoa.mm",
       "cocoa/first_run_dialog_controller.h",
       "cocoa/first_run_dialog_controller.mm",
       "cocoa/fullscreen/fullscreen_menubar_tracker.h",
@@ -3409,11 +3409,17 @@ static_library("ui") {
     }
   }
 
+  if (is_linux || is_chromeos_lacros || is_mac) {
+    # The first run dialog shows only on Linux and macOS.
+    sources += [
+      "views/first_run_dialog.cc",
+      "views/first_run_dialog.h",
+    ]
+  }
+
   if (is_linux || is_chromeos_lacros) {
     sources += [
       "views/apps/chrome_app_window_client_views_linux.cc",
-      "views/first_run_dialog.cc",
-      "views/first_run_dialog.h",
       "views/frame/browser_desktop_window_tree_host.h",
       "views/frame/desktop_browser_frame_aura_linux.cc",
       "views/frame/desktop_browser_frame_aura_linux.h",

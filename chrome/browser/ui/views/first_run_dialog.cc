@@ -8,11 +8,14 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -20,9 +23,6 @@
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/aura/env.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -33,16 +33,29 @@
 
 namespace {
 
+#if !defined(OS_MAC)
 void InitCrashReporterIfEnabled(bool enabled) {
   if (!crash_reporter::IsCrashpadEnabled() && enabled)
     breakpad::InitCrashReporter(std::string());
 }
+#endif
 
 }  // namespace
 
 namespace first_run {
 
 void ShowFirstRunDialog(Profile* profile) {
+#if defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog))
+    ShowFirstRunDialogViews(profile);
+  else
+    ShowFirstRunDialogCocoa(profile);
+#else
+  ShowFirstRunDialogViews(profile);
+#endif
+}
+
+void ShowFirstRunDialogViews(Profile* profile) {
   FirstRunDialog::Show(profile);
 }
 
@@ -106,9 +119,13 @@ void FirstRunDialog::Done() {
 bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
 
+#if defined(OS_MAC)
+  ChangeMetricsReportingState(report_crashes_->GetChecked());
+#else
   ChangeMetricsReportingStateWithReply(
       report_crashes_->GetChecked(),
       base::BindOnce(&InitCrashReporterIfEnabled));
+#endif
 
   if (make_default_->GetChecked())
     shell_integration::SetAsDefaultBrowser();

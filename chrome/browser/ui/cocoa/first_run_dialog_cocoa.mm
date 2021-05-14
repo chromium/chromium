@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/cocoa/first_run_dialog.h"
+#import "chrome/browser/ui/cocoa/first_run_dialog_cocoa.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -48,9 +48,8 @@ class FirstRunShowBridge : public base::RefCounted<FirstRunShowBridge> {
   FirstRunDialogController* controller_;
 };
 
-FirstRunShowBridge::FirstRunShowBridge(
-    FirstRunDialogController* controller) : controller_(controller) {
-}
+FirstRunShowBridge::FirstRunShowBridge(FirstRunDialogController* controller)
+    : controller_(controller) {}
 
 void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
   // Proceeding past the modal dialog requires user interaction. Allow nested
@@ -95,7 +94,7 @@ bool StatsCheckboxDefault() {
 
 namespace first_run {
 
-void ShowFirstRunDialog(Profile* profile) {
+void ShowFirstRunDialogCocoa(Profile* profile) {
   ShowFirstRunModal(profile);
 }
 

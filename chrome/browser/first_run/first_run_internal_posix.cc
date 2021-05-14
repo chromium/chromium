@@ -56,7 +56,6 @@ bool ShouldShowFirstRunDialog() {
     return g_forced_show_dialog_state == ForcedShowDialogState::kForceShown;
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // On non-official builds, only --force-first-run-dialog will show the dialog.
   return false;
 #else
   base::FilePath local_state_path;

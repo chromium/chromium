@@ -144,6 +144,11 @@ extern const base::Feature kWebUIFeedback;
 extern const base::Feature kHiddenNetworkWarning;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Cocoa to views migration.
+#if defined(OS_MAC)
+extern const base::Feature kViewsFirstRunDialog;
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
