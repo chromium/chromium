@@ -1600,9 +1600,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3266,9 +3263,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -4729,7 +4723,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter"
         ],
         "merge": {
           "args": [],
@@ -5131,7 +5125,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter"
         ],
         "merge": {
           "args": [],
