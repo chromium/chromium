@@ -24,6 +24,7 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
@@ -221,18 +222,10 @@ void WaylandEventSource::OnPointerFrameEvent() {
     DispatchEvent(&event);
     recent_pointer_frames_.clear();
   } else {
-    if (current_pointer_frame_.axis_source == WL_POINTER_AXIS_SOURCE_WHEEL) {
-      MouseWheelEvent event(
-          gfx::Vector2d(current_pointer_frame_.dx, current_pointer_frame_.dy),
-          pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
-      DispatchEvent(&event);
-    } else {
-      ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
-                        EventTimeForNow(), flags, current_pointer_frame_.dx,
-                        current_pointer_frame_.dy, current_pointer_frame_.dx,
-                        current_pointer_frame_.dy, kGestureScrollFingerCount);
-      DispatchEvent(&event);
-    }
+    MouseWheelEvent event(
+        gfx::Vector2d(current_pointer_frame_.dx, current_pointer_frame_.dy),
+        pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
+    DispatchEvent(&event);
 
     if (recent_pointer_frames_.size() + 1 > kRecentPointerFrameMaxSize)
       recent_pointer_frames_.pop_back();
