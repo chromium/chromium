@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_INTERNAL_H_
 
 #include <array>
+#include <mutex>
 #include <unordered_map>
 
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
