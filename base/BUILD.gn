@@ -2355,11 +2355,13 @@ component("base") {
       "tracing/tracing_tls.h",
     ]
 
-    public_deps += [ "//third_party/perfetto:libperfetto" ]
+    public_deps += [
+      "//base/tracing/protos:chrome_track_event_zero",
+      "//third_party/perfetto:libperfetto",
+    ]
 
     deps += [
       "//base/tracing/protos:chrome_track_event",
-      "//base/tracing/protos:chrome_track_event_zero",
       "//third_party/perfetto/include/perfetto/protozero",
     ]
 

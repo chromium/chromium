@@ -34,7 +34,8 @@ message ChromeTaskAnnotator {
 }
 
 message ChromeBrowserContext {
-  optional fixed64 ptr = 1;
+  reserved 1;
+  optional string id = 2;
 }
 
 message ChromeProfileDestroyer {
@@ -135,6 +136,50 @@ message ChromeHashedPerformanceMark {
   optional string mark = 4;
 }
 
+// Information about RenderProcessHost.
+message RenderProcessHost {
+  // Unique Id to identify the RenderProcessHost. This is the browser-side,
+  // persistent id for this RenderProcessHost that stays constant even across OS
+  // layer processes managed by this RenderProcessHost.
+  optional uint32 id = 1;
+  // See ProcessLock::ToString().
+  optional string process_lock = 2;
+  // The PID of the child process.
+  optional int32 child_process_id = 3;
+
+  // Details about the associated browser context.
+  optional ChromeBrowserContext browser_context = 4;
+}
+
+message RenderProcessHostListener {
+  // Routing ID of the listener to the RenderProcessHost, recorded when a new ID
+  // is added or when an ID is removed.
+  optional uint32 routing_id = 1;
+}
+
+message RenderProcessHostCleanup {
+  // Number of IPC listeners registered to the host when Cleanup() was called.
+  optional uint32 listener_count = 1;
+  // Number of "keep alive" references active in the RenderProcessHost, recorded
+  // when Cleanup() was called.
+  optional uint32 keep_alive_ref_count = 2;
+}
+
+message ChildProcessLauncherPriority {
+  // True if the new priority set to background.
+  optional bool is_backgrounded = 1;
+  // True if the renderer proecss has pending views.
+  optional bool has_pending_views = 2;
+
+  // Importance of the child process in Android.
+  enum Importance {
+    IMPORTANCE_NORMAL = 1;
+    IMPORTANCE_MODERATE = 2;
+    IMPORTANCE_IMPORTANT = 3;
+  }
+  optional Importance importance = 3;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
   // Next ID: 1012
@@ -165,5 +210,12 @@ message ChromeTrackEvent {
     optional FrameTreeNodeInfo frame_tree_node_info = 1010;
 
     optional ChromeHashedPerformanceMark chrome_hashed_performance_mark = 1011;
+
+    optional RenderProcessHost render_process_host = 1012;
+    optional RenderProcessHostCleanup render_process_host_cleanup = 1013;
+    optional RenderProcessHostListener render_process_host_listener_changed =
+        1014;
+    optional ChildProcessLauncherPriority child_process_launcher_priority =
+        1015;
   }
 }

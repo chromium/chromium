@@ -23,6 +23,7 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 #if defined(OS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
@@ -31,6 +32,14 @@
 namespace base {
 class CommandLine;
 }
+
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class ChildProcessLauncherPriority;
+}
+}  // namespace protos
+}  // namespace perfetto
 
 namespace content {
 
@@ -87,6 +96,10 @@ struct ChildProcessLauncherPriority {
   bool operator!=(const ChildProcessLauncherPriority& other) const {
     return !(*this == other);
   }
+
+  void WriteIntoTrace(
+      perfetto::TracedProto<
+          perfetto::protos::pbzero::ChildProcessLauncherPriority> proto);
 
   // Prefer |is_background()| to inspecting these fields individually (to ensure
   // all logic uses the same notion of "backgrounded").
