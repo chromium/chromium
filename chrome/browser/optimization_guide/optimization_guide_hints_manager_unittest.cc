@@ -2512,6 +2512,10 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
         optimization_guide::RaceNavigationFetchAttemptStatus::
             kRaceNavigationFetchURL,
         1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsManager."
+        "PageNavigationHintsReturnedBeforeDataFlushed",
+        true, 1);
     RunUntilIdle();
   }
 
@@ -2538,6 +2542,10 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
     EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
               optimization_guide::RaceNavigationFetchAttemptStatus::
                   kRaceNavigationFetchNotAttempted);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.HintsManager."
+        "PageNavigationHintsReturnedBeforeDataFlushed",
+        0);
   }
 }
 

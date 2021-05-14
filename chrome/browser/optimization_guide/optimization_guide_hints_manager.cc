@@ -762,6 +762,10 @@ void OptimizationGuideHintsManager::OnFetchedPageNavigationHintsStored(
   if (navigation_data_weak_ptr) {
     navigation_data_weak_ptr->set_hints_fetch_end(base::TimeTicks::Now());
   }
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.HintsManager."
+      "PageNavigationHintsReturnedBeforeDataFlushed",
+      navigation_data_weak_ptr.MaybeValid());
 
   if (navigation_url) {
     CleanUpFetcherForNavigation(*navigation_url);

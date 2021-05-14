@@ -9357,6 +9357,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Completed"/>
 </enum>
 
+<enum name="BooleanStored">
+  <int value="0" label="Not Stored"/>
+  <int value="1" label="Stored"/>
+</enum>
+
 <enum name="BooleanStreamed">
   <int value="0" label="Not streamed"/>
   <int value="1" label="Streamed"/>
