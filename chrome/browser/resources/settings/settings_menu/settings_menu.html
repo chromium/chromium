@@ -111,12 +111,14 @@
             <iron-icon icon="settings:assignment"></iron-icon>
             $i18n{autofillPageTitle}
           </a>
-          <a role="menuitem" href="/safetyCheck"
-              hidden="[[!pageVisibility.safetyCheck]]"
-              id="safetyCheck">
-            <iron-icon icon="settings20:safety-check"></iron-icon>
-            $i18n{safetyCheckSectionTitle}
-          </a>
+          <template is="dom-if" if="[[!enableLandingPageRedesign_]]">
+            <a role="menuitem" href="/safetyCheck"
+                hidden="[[!pageVisibility.safetyCheck]]"
+                id="safetyCheck">
+              <iron-icon icon="settings20:safety-check"></iron-icon>
+              $i18n{safetyCheckSectionTitle}
+            </a>
+          </template>
           <a role="menuitem" href="/privacy"
               hidden="[[!pageVisibility.privacy]]">
             <iron-icon icon="cr:security"></iron-icon>

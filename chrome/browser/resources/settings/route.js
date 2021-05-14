@@ -143,7 +143,11 @@ function createBrowserSettingsRoutes() {
     r.PRIVACY = r.BASIC.createSection('/privacy', 'privacy');
     addPrivacyChildRoutes(r);
 
-    r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
+    if (loadTimeData.getBoolean('enableLandingPageRedesign')) {
+      r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
+    } else {
+      r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
+    }
   }
 
   // <if expr="not chromeos and not lacros">

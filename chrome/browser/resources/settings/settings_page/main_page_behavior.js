@@ -199,6 +199,41 @@ import {MinimumRoutes, Route, Router} from '../router.js';
     },
 
     /**
+     * Finds the settings-section instances corresponding to the given route. If
+     * the section is lazily loaded it force-renders it.
+     * Note: If the section resides within "advanced" settings, a
+     * 'hide-container' event is fired (necessary to avoid flashing). Callers
+     * are responsible for firing a 'show-container' event.
+     * @param {!Route} route
+     * @return {!Promise<!Array<!SettingsSectionElement>>}
+     * @private
+     */
+    ensureSectionsForRoute_(route) {
+      const sections = this.querySettingsSections_(route.section);
+      if (sections.length > 0) {
+        return Promise.resolve(sections);
+      }
+
+      // The function to use to wait for <dom-if>s to render.
+      const waitFn = beforeNextRender.bind(null, this);
+
+      return new Promise(resolve => {
+        if (this.shouldExpandAdvanced_(route)) {
+          this.fire('hide-container');
+          waitFn(() => {
+            this.$$('#advancedPageTemplate').get().then(() => {
+              resolve(this.querySettingsSections_(route.section));
+            });
+          });
+        } else {
+          waitFn(() => {
+            resolve(this.querySettingsSections_(route.section));
+          });
+        }
+      });
+    },
+
+    /**
      * @param {!Route} route
      * @private
      */
@@ -255,19 +290,23 @@ import {MinimumRoutes, Route, Router} from '../router.js';
     },
 
     /**
-     * Shows the section corresponding to |newRoute| and hides the previously
-     * |active| section (if any).
+     * Shows the section(s) corresponding to |newRoute| and hides the previously
+     * |active| section(s), if any.
      * @param {!Route} newRoute
      */
-    switchToSection_(newRoute) {
-      this.ensureSectionForRoute_(newRoute).then(section => {
+    switchToSections_(newRoute) {
+      this.ensureSectionsForRoute_(newRoute).then(sections => {
         // Clear any previously |active| section.
-        const oldSection = this.$$(`settings-section[active]`);
-        if (oldSection) {
-          oldSection.toggleAttribute('active', false);
+        const oldSections =
+            this.shadowRoot.querySelectorAll(`settings-section[active]`);
+        for (const s of oldSections) {
+          s.toggleAttribute('active', false);
         }
 
-        section.toggleAttribute('active', true);
+        for (const s of sections) {
+          s.toggleAttribute('active', true);
+        }
+
         this.fire('show-container');
       });
     },
@@ -431,13 +470,13 @@ import {MinimumRoutes, Route, Router} from '../router.js';
     processTransitionRedesign_(oldRoute, newRoute, oldState, newState) {
       if (oldState === RouteState.TOP_LEVEL) {
         if (newState === RouteState.SECTION) {
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
         } else if (newState === RouteState.SUBPAGE) {
           this.enterSubpage_(newRoute);
         } else if (newState === RouteState.TOP_LEVEL) {
           // Case when navigating from '/?search=foo' to '/' (clearing search
           // results).
-          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+          this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
         }
         // Nothing to do here for the case of RouteState.DIALOG.
         return;
@@ -445,12 +484,12 @@ import {MinimumRoutes, Route, Router} from '../router.js';
 
       if (oldState === RouteState.SECTION) {
         if (newState === RouteState.SECTION) {
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
         } else if (newState === RouteState.SUBPAGE) {
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
           this.enterSubpage_(newRoute);
         } else if (newState === RouteState.TOP_LEVEL) {
-          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+          this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
           this.scroller.scrollTop = 0;
         }
         // Nothing to do here for the case of RouteState.DIALOG.
@@ -460,7 +499,7 @@ import {MinimumRoutes, Route, Router} from '../router.js';
       if (oldState === RouteState.SUBPAGE) {
         if (newState === RouteState.SECTION) {
           this.enterMainPage_(/** @type {!Route} */ (oldRoute));
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
         } else if (newState === RouteState.SUBPAGE) {
           // Handle case where the two subpages belong to
           // different sections, but are linked to each other. For example
@@ -488,12 +527,12 @@ import {MinimumRoutes, Route, Router} from '../router.js';
 
       if (oldState === RouteState.INITIAL) {
         if ([RouteState.SECTION, RouteState.DIALOG].includes(newState)) {
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
         } else if (newState === RouteState.SUBPAGE) {
-          this.switchToSection_(newRoute);
+          this.switchToSections_(newRoute);
           this.enterSubpage_(newRoute);
         } else if (newState === RouteState.TOP_LEVEL) {
-          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+          this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
         }
         return;
       }
@@ -515,4 +554,24 @@ import {MinimumRoutes, Route, Router} from '../router.js';
       return /** @type {?SettingsSectionElement} */ (
           this.$$(`settings-section[section="${section}"]`));
     },
+
+    /*
+     * @param {string} sectionName Section name of the element to get.
+     * @return {!Array<!SettingsSectionElement>}
+     */
+    querySettingsSections_(sectionName) {
+      const result = [];
+      const section = this.getSection(sectionName);
+
+      if (section) {
+        result.push(section);
+      }
+
+      const extraSections = this.shadowRoot.querySelectorAll(
+          `settings-section[nest-under-section="${sectionName}"]`);
+      if (extraSections.length > 0) {
+        result.push(...extraSections);
+      }
+      return result;
+    }
   };
