@@ -44,6 +44,14 @@ class ZipWriter {
                                            FileAccessor* file_accessor);
   ~ZipWriter();
 
+  // Sets the optional progress callback. The callback is called once for each
+  // time |period|. The final callback is always called when the ZIP operation
+  // completes.
+  void SetProgressCallback(ProgressCallback callback, base::TimeDelta period) {
+    progress_callback_ = std::move(callback);
+    progress_period_ = std::move(period);
+  }
+
   // Writes the files at |paths| to the ZIP file and closes this ZIP file.
   // The file paths must be relative to |root_dir| specified in the
   // Create method.
@@ -55,6 +63,10 @@ class ZipWriter {
   ZipWriter(zipFile zip_file,
             const base::FilePath& root_dir,
             FileAccessor* file_accessor);
+
+  // Regularly called during processing to check whether zipping should continue
+  // or should be cancelled.
+  bool ShouldContinue();
 
   // Adds the files at |paths| to the ZIP file. These FilePaths must be relative
   // to |root_dir| specified in the Create method.
@@ -90,6 +102,18 @@ class ZipWriter {
 
   // Abstraction over file access methods used to read files.
   FileAccessor* file_accessor_;
+
+  // Progress stats.
+  Progress progress_;
+
+  // Optional progress callback.
+  ProgressCallback progress_callback_;
+
+  // Optional progress reporting period.
+  base::TimeDelta progress_period_;
+
+  // Next time to report progress.
+  base::TimeTicks next_progress_report_time_ = base::TimeTicks::Now();
 
   DISALLOW_COPY_AND_ASSIGN(ZipWriter);
 };

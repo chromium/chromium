@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_ZLIB_GOOGLE_ZIP_H_
 #define THIRD_PARTY_ZLIB_GOOGLE_ZIP_H_
 
+#include <cstdint>
+#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -50,6 +52,30 @@ class FileAccessor {
   virtual base::Time GetLastModifiedTime(const base::FilePath& path) = 0;
 };
 
+// Progress of a ZIP creation operation.
+struct Progress {
+  // Total number of bytes read from files getting zipped so far.
+  std::int64_t bytes = 0;
+
+  // Number of file entries added to the ZIP so far.
+  // A file entry is added after its bytes have been processed.
+  int files = 0;
+
+  // Number of directory entries added to the ZIP so far.
+  // A directory entry is added before items in it.
+  int directories = 0;
+};
+
+// Prints Progress to output stream.
+std::ostream& operator<<(std::ostream& out, const Progress& progress);
+
+// Callback reporting the progress of a ZIP creation operation.
+//
+// This callback returns a boolean indicating whether the ZIP creation operation
+// should continue. If it returns false once, then the ZIP creation operation is
+// immediately cancelled and the callback won't be called again.
+using ProgressCallback = base::RepeatingCallback<bool(const Progress&)>;
+
 using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 
 using Paths = base::span<const base::FilePath>;
@@ -80,6 +106,13 @@ struct ZipParams {
   // Filter used to exclude files from the ZIP file. Only effective when
   // |src_files| is empty.
   FilterCallback filter_callback;
+
+  // Optional progress reporting callback.
+  ProgressCallback progress_callback;
+
+  // Progress reporting period. The final callback is always called when the ZIP
+  // creation operation completes.
+  base::TimeDelta progress_period;
 
   // Whether hidden files should be included in the ZIP file. Only effective
   // when |src_files| is empty.

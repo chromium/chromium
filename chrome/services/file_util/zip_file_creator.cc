@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "components/services/filesystem/public/mojom/types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/zlib/google/zip.h"
@@ -181,6 +182,12 @@ void ZipFileCreator::CreateZipFile(
       .src_dir = source_dir,
       .dest_fd = zip_file.GetPlatformFile(),
       .src_files = source_relative_paths,
+      .progress_callback =
+          base::BindRepeating([](const zip::Progress& progress) {
+            VLOG(1) << "ZIP progress: " << progress;
+            return true;
+          }),
+      .progress_period = base::TimeDelta::FromMilliseconds(500),
       .file_accessor = &file_accessor,
   });
   std::move(callback).Run(success);

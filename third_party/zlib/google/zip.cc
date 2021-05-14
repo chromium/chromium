@@ -100,6 +100,11 @@ class DirectFileAccessor : public FileAccessor {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, const Progress& progress) {
+  return out << progress.bytes << " bytes, " << progress.files << " files, "
+             << progress.directories << " dirs";
+}
+
 bool Zip(const ZipParams& params) {
   DirectFileAccessor default_accessor(params.src_dir);
   FileAccessor* const file_accessor = params.file_accessor ?: &default_accessor;
@@ -161,6 +166,9 @@ bool Zip(const ZipParams& params) {
     if (!zip_writer)
       return false;
   }
+
+  zip_writer->SetProgressCallback(params.progress_callback,
+                                  params.progress_period);
 
   return zip_writer->WriteEntries(files_to_add);
 }
