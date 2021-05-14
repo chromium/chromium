@@ -11,10 +11,6 @@
 #include "media/base/media_switches.h"
 #include "sandbox/policy/sandbox_type.h"
 
-#if defined(OS_MAC)
-#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
-#endif  // defined(OS_MAC)
-
 // This file maps service classes to sandbox types.  Services which
 // require a non-utility sandbox can be added here.  See
 // ServiceProcessHost::Launch() for how these templates are consumed.
@@ -184,7 +180,14 @@ content::GetServiceSandboxType<recording::mojom::RecordingService>() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// mac_notifications::mojom::MacNotificationProvider
 #if defined(OS_MAC)
+namespace mac_notifications {
+namespace mojom {
+class MacNotificationProvider;
+}  // namespace mojom
+}  // namespace mac_notifications
+
 template <>
 inline sandbox::policy::SandboxType content::GetServiceSandboxType<
     mac_notifications::mojom::MacNotificationProvider>() {
