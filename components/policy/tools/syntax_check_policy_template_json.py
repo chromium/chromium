@@ -1896,7 +1896,7 @@ class PolicyTemplateChecker(object):
           'bypass this validation by adding "BYPASS_POLICY_COMPATIBILITY_CHECK='
           '<justification>" to your changelist description. If you believe '
           'that this validation is a bug, please file a crbug against '
-          '"Enterprise>CloudPolicy" and add a link to the bug as '
+          '"Enterprise" and add a link to the bug as '
           'justification. Otherwise, please provide an explanation for the '
           'change. For more information please refer to: '
           'https://bit.ly/33qr3ZV.')

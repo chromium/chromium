@@ -1,5 +1,5 @@
 monorail {
-  component: "Enterprise>CloudPolicy"
+  component: "Enterprise"
 }
 
-team_email: "chromium-reviews@chromium.org"
+team_email: "chromium-enterprise@chromium.org"
