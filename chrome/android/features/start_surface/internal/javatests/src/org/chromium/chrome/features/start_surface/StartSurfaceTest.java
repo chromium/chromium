@@ -1322,7 +1322,6 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
-    @DisabledTest(message="https://crbug.com/1170553, https://crbug.com/1205410")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true" +
             "/exclude_mv_tiles/true/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurfaceV2() {
@@ -1384,7 +1383,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-        onView(allOf(withId(R.id.search_box_text), isDisplayed()))
+        onViewWaiting(allOf(withId(R.id.search_box_text), isDisplayed()))
                 .perform(replaceText("about:blank"));
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         waitForView(withId(R.id.primary_tasks_surface_view), VIEW_GONE);
