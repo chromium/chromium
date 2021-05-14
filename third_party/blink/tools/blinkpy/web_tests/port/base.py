@@ -847,6 +847,22 @@ class Port(object):
         text = self._filesystem.read_binary_file(baseline_path)
         return text.replace(b'\r\n', b'\n')
 
+    def expected_subtest_failure(self, test_name):
+        baseline = self.expected_text(test_name)
+        if baseline:
+            baseline = baseline.decode('utf8', 'replace')
+            if re.search(r"^(FAIL|NOTRUN|TIMEOUT)", baseline, re.MULTILINE):
+                return True
+        return False
+
+    def expected_harness_error(self, test_name):
+        baseline = self.expected_text(test_name)
+        if baseline:
+            baseline = baseline.decode('utf8', 'replace')
+            if re.search(r"^Harness Error\.", baseline, re.MULTILINE):
+                return True
+        return False
+
     def reference_files(self, test_name):
         """Returns a list of expectation (== or !=) and filename pairs"""
 

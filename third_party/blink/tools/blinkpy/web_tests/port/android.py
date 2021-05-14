@@ -99,6 +99,10 @@ PRODUCTS_TO_EXPECTATION_FILE_PATHS = {
 ANDROID_DISABLED_TESTS = os.path.join(
     ANDROID_WEB_TESTS_DIR, 'AndroidWPTNeverFixTests')
 
+# List of test cases to be run by wptrunner
+WPT_SMOKE_TESTS_FILE = os.path.join(
+    ANDROID_WEB_TESTS_DIR, 'WPTSmokeTestCases')
+
 _friendly_browser_names = {
     'weblayershell': 'weblayer',
     'systemwebviewshell': 'webview',

@@ -39,12 +39,13 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
     NEVER_FIX_MARKER_COMMENT = '# Add untriaged disabled tests in this block'
     UMBRELLA_BUG = 'crbug.com/1050754'
 
-    def __init__(self, host, args=None):
-        super(AndroidWPTExpectationsUpdater, self).__init__(host, args)
+    def __init__(self, host, args=None, wpt_manifests=None):
+        super(AndroidWPTExpectationsUpdater, self).__init__(host, args, wpt_manifests)
         self._never_fix_expectations = TestExpectations(
             self.port, {
                 ANDROID_DISABLED_TESTS:
                 host.filesystem.read_text_file(ANDROID_DISABLED_TESTS)})
+        self._baseline_expectations = TestExpectations(self.port)
 
     def expectations_files(self):
         # We need to put all the Android expectation files in
@@ -154,6 +155,17 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                     test=test, reason=self.UMBRELLA_BUG,
                     results={ResultType.Skip}, tags=tags, raw_tags=tags)
 
+    def _get_expectations_from_baseline(self, test_name):
+        exps_test_name = 'external/wpt/%s' % test_name
+        expectation_line = self._baseline_expectations.get_expectations(
+            exps_test_name)
+        results_from_expectation = expectation_line.results
+        if expectation_line.is_default_pass:
+            # Expectation is default pass, also check baseline expectation
+            if self.port.expected_subtest_failure(test_name):
+                results_from_expectation = set([ResultType.Failure])
+        return results_from_expectation
+
     def write_to_test_expectations(self, test_to_results):
         """Each expectations file is browser specific, and currently only
         runs on pie. Therefore we do not need any configuration specifiers
@@ -166,6 +178,9 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
         Returns:
             Dictionary mapping test names to lists of expectation strings.
         """
+        browser_to_product = {
+            browser: product
+            for product, browser in PRODUCTS_TO_BROWSER_TAGS.items()}
         browser_to_exp_path = {
             browser: PRODUCTS_TO_EXPECTATION_FILE_PATHS[product]
             for product, browser in PRODUCTS_TO_BROWSER_TAGS.items()}
@@ -186,6 +201,7 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                 ANDROID_DISABLED_TESTS,
                 reduce(lambda x, y: x + y, neverfix_tests.values()))
 
+        exp_lines_dict_by_product = defaultdict(dict)
         for results_test_name, platform_results in test_to_results.items():
             exps_test_name = 'external/wpt/%s' % results_test_name
             for configs, test_results in platform_results.items():
@@ -206,15 +222,24 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                             r for r in test_results.actual.split()
                             if r not in test_results.expected.split()}
 
-                        if exps_test_name not in untriaged_exps[path]:
-                            untriaged_exps[path].setdefault(
-                                exps_test_name, []).append(Expectation(
-                                    test=exps_test_name, reason=self.UMBRELLA_BUG,
-                                    results=unexpected_results))
-                        else:
-                            exp = untriaged_exps[path][exps_test_name][0]
-                            exp.add_expectations(
-                                unexpected_results, reason=self.UMBRELLA_BUG)
+                        # as we are using override expectations for Android
+                        # side, do not create override expectations if it is a
+                        # subset of default expectations or baseline
+                        default_expectation = \
+                            self._get_expectations_from_baseline(results_test_name)
+                        if unexpected_results.issubset(default_expectation):
+                            continue
+
+                        # Test expectations for modified test cases are already
+                        # deleted, so all tests should be new test
+                        expectation = Expectation(
+                            test=exps_test_name, reason=self.UMBRELLA_BUG,
+                            results=unexpected_results)
+                        product = browser_to_product[config.browser]
+                        exp_lines_dict_by_product[product][exps_test_name] = \
+                            expectation.to_string()
+                        untriaged_exps[path].setdefault(
+                            exps_test_name, []).append(expectation)
 
         for path in untriaged_exps:
             marker_lineno = self._get_marker_line_number(
@@ -240,9 +265,9 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
         self._test_expectations.commit_changes()
         self._never_fix_expectations.commit_changes()
 
-        # TODO(rmhasan): Return dictionary mapping test names to lists of
-        # test expectation strings.
-        return {}
+        # returns dictionary mapping product to dictionary that maps test names
+        # to test expectation strings.
+        return exp_lines_dict_by_product
 
     def _is_wpt_test(self, _):
         """On Android we use the wpt executable. The test results do not include

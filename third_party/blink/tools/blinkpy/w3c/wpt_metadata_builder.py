@@ -258,9 +258,8 @@ class WPTMetadataBuilder(object):
             if self.process_baselines:
                 test_baseline = self.port.expected_text(test_name)
                 if test_baseline:
-                    self._handle_test_with_baseline(
-                        test_name, test_baseline.decode('utf8', 'replace'),
-                        tests_needing_metadata)
+                    self._handle_test_with_baseline(test_name,
+                                                    tests_needing_metadata)
 
             # Next check for expectations, which could overwrite baselines
             expectation_line = self.expectations.get_expectations(test_name)
@@ -330,13 +329,12 @@ class WPTMetadataBuilder(object):
         return test_name in status_dict and (
             status_dict[test_name] & SKIP_TEST)
 
-    def _handle_test_with_baseline(self, test_name, test_baseline,
-                                   status_dict):
+    def _handle_test_with_baseline(self, test_name, status_dict):
         """Handles a single test baseline and updates |status_dict|."""
         status_bitmap = 0
-        if re.search(r"^(FAIL|NOTRUN|TIMEOUT)", test_baseline, re.MULTILINE):
+        if self.port.expected_subtest_failure(test_name):
             status_bitmap |= SUBTEST_FAIL
-        if re.search(r"^Harness Error\.", test_baseline, re.MULTILINE):
+        if self.port.expected_harness_error(test_name):
             status_bitmap |= HARNESS_ERROR
         if status_bitmap > 0:
             status_dict[test_name] |= status_bitmap
