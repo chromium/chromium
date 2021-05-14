@@ -9,11 +9,15 @@
 #include "base/one_shot_event.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/web_apps_utils.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "url/gurl.h"
 
 namespace apps {
 
@@ -74,6 +78,8 @@ void WebAppsPublisherHost::Init() {
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
   registrar_observation_.Observe(&registrar());
+  content_settings_observation_.Observe(
+      HostContentSettingsMapFactory::GetForProfile(profile_));
 }
 
 web_app::WebAppRegistrar& WebAppsPublisherHost::registrar() const {
@@ -97,7 +103,6 @@ void WebAppsPublisherHost::OnReady() {
   remote_publisher_->OnApps(std::move(apps));
 }
 
-// crosapi::mojom::AppController:
 void WebAppsPublisherHost::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
@@ -112,7 +117,6 @@ void WebAppsPublisherHost::Uninstall(
                              clear_site_data, report_abuse);
 }
 
-// web_app::AppRegistrarObserver:
 void WebAppsPublisherHost::OnWebAppInstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
@@ -172,6 +176,28 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
 
   Publish(
       apps_util::ConvertLaunchedWebApp(web_app, apps::mojom::AppType::kWeb));
+}
+
+void WebAppsPublisherHost::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // If content_type is not one of the supported permissions, do nothing.
+  if (!apps_util::IsSupportedWebAppPermissionType(content_type)) {
+    return;
+  }
+
+  for (const web_app::WebApp& web_app : registrar().GetApps()) {
+    if (primary_pattern.Matches(web_app.start_url())) {
+      apps::mojom::AppPtr app = apps::mojom::App::New();
+      app->app_type = apps::mojom::AppType::kWeb;
+      app->app_id = web_app.app_id();
+      apps_util::PopulateWebAppPermissions(profile_, &web_app,
+                                           &app->permissions);
+
+      Publish(std::move(app));
+    }
+  }
 }
 
 const web_app::WebApp* WebAppsPublisherHost::GetWebApp(
