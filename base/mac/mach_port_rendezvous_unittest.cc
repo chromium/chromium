@@ -14,6 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace base {
@@ -148,6 +150,18 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
       child, TestTimeouts::action_timeout(), &exit_code));
 
   EXPECT_EQ(42, exit_code);
+
+  // There is no way to synchronize the test code with the asynchronous
+  // delivery of the dispatch process-exit notification. Loop for a short
+  // while for it to be delivered.
+  auto start = TimeTicks::Now();
+  do {
+    if (client_data().size() == 0)
+      break;
+    // Sleep is fine because dispatch will process the notification on one of
+    // its workers.
+    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+  } while ((TimeTicks::Now() - start) < TestTimeouts::action_timeout());
 
   EXPECT_EQ(0u, client_data().size());
 }
