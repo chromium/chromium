@@ -101,7 +101,7 @@ interface FrameSinkManager {
   // This function should only be used synchronously for destroying root
   // CompositorFrameSinks to ensure the GL context/surface is destroyed before
   // the platform window.
-  [Sync]
+  [Sync, NoInterrupt]
   DestroyCompositorFrameSink(FrameSinkId frame_sink_id) => ();
 
   // Set up a BeginFrame relationship between two FrameSinkIds. In this case,

@@ -42,6 +42,7 @@ struct RootCompositorFrameSinkData {
   mojom::RootCompositorFrameSinkParamsPtr BuildParams(
       const FrameSinkId& frame_sink_id) {
     auto params = mojom::RootCompositorFrameSinkParams::New();
+    params->gpu_compositing = false;
     params->frame_sink_id = frame_sink_id;
     params->widget = gpu::kNullSurfaceHandle;
     params->compositor_frame_sink =
