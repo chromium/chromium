@@ -78,6 +78,8 @@ class SubresourceRedirectObserver
   explicit SubresourceRedirectObserver(content::WebContents* web_contents);
 
   // content::WebContentsObserver.
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -111,6 +113,10 @@ class SubresourceRedirectObserver
   // present in this page. This is not an issue since most pages tend to have at
   // least one public image even though they are fully private.
   bool is_mainframe_https_image_compression_applied_ = false;
+
+  // Whether login is allowed for the current navigation. Updated when the
+  // navigation is ready to be committed.
+  bool is_allowed_by_login_state_ = false;
 
   content::WebContentsFrameReceiverSet<mojom::SubresourceRedirectService>
       receivers_;

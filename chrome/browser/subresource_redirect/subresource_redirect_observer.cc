@@ -72,14 +72,7 @@ void UpdateRobotsRules(
 
 ImageCompressionAppliedDocument::ImageCompressionAppliedDocument(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {
-  DCHECK(
-      login_detection::LoginDetectionKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
-          ->GetPersistentLoginDetection(
-              render_frame_host->GetLastCommittedURL()) ==
-      login_detection::LoginDetectionType::kNoLogin);
-}
+    : render_frame_host_(render_frame_host) {}
 
 ImageCompressionAppliedDocument::~ImageCompressionAppliedDocument() = default;
 
@@ -135,6 +128,37 @@ SubresourceRedirectObserver::SubresourceRedirectObserver(
 
 SubresourceRedirectObserver::~SubresourceRedirectObserver() = default;
 
+void SubresourceRedirectObserver::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK(navigation_handle);
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->GetRenderFrameHost()) {
+    return;
+  }
+  if (!IsLiteModeEnabled(web_contents()))
+    return;
+  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
+    return;
+
+  // Send the login state when robots rules fetching is enabled for image and
+  // src-video compression.
+  if (!ShouldEnableRobotsRulesFetching())
+    return;
+
+  mojo::AssociatedRemote<mojom::SubresourceRedirectHintsReceiver>
+      hints_receiver;
+  navigation_handle->GetRenderFrameHost()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&hints_receiver);
+  // Save the logged-in state based on which DidFinishNavigation() will create
+  // ImageCompressionAppliedDocument. Note that checking for logged-in state
+  // here in ReadyToCommitNavigation() instead of in DidFinishNavigation()
+  // misses some corner cases. For example, first time OAuth logins to a site
+  // are treated as not logged-in.
+  is_allowed_by_login_state_ = IsAllowedForCurrentLoginState(navigation_handle);
+  hints_receiver->SetLoggedInState(!is_allowed_by_login_state_);
+}
+
 void SubresourceRedirectObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle);
@@ -166,30 +190,21 @@ void SubresourceRedirectObserver::DidFinishNavigation(
                                               navigation_handle)) {
     return;
   }
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
 
   // Handle login robots based compression mode.
   if (ShouldEnableRobotsRulesFetching()) {
-    mojo::AssociatedRemote<mojom::SubresourceRedirectHintsReceiver>
-        hints_receiver;
-    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        &hints_receiver);
-    bool is_compression_allowed =
-        IsAllowedForCurrentLoginState(navigation_handle);
-    hints_receiver->SetLoggedInState(!is_compression_allowed);
     if (ShouldEnableLoginRobotsCheckedImageCompression() &&
         navigation_handle->IsInMainFrame()) {
-      is_mainframe_https_image_compression_applied_ = is_compression_allowed;
+      is_mainframe_https_image_compression_applied_ =
+          is_allowed_by_login_state_;
     }
 
-    if (!is_compression_allowed)
-      return;
-
-    // Create the ImageCompressionAppliedDocument only when compression is
-    // allowed.
-    ImageCompressionAppliedDocument::GetOrCreateForCurrentDocument(
-        navigation_handle->GetRenderFrameHost());
+    if (is_allowed_by_login_state_) {
+      // Create the ImageCompressionAppliedDocument only when compression is
+      // allowed.
+      ImageCompressionAppliedDocument::CreateForCurrentDocument(
+          navigation_handle->GetRenderFrameHost());
+    }
     return;
   }
 
@@ -201,6 +216,8 @@ void SubresourceRedirectObserver::DidFinishNavigation(
   if (!optimization_guide_decider)
     return;
 
+  content::RenderFrameHost* render_frame_host =
+      navigation_handle->GetRenderFrameHost();
   optimization_guide_decider->CanApplyOptimizationAsync(
       navigation_handle, optimization_guide::proto::COMPRESS_PUBLIC_IMAGES,
       base::BindOnce(

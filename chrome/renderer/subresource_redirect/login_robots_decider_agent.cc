@@ -59,6 +59,7 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     ShouldRedirectDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
+  DCHECK_NE(redirect_result_, SubresourceRedirectResult::kUnknown);
   DCHECK(url.is_valid());
   num_should_redirect_checks_++;
 
@@ -117,7 +118,17 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PublicResourceDeciderAgent::ReadyToCommitNavigation(document_loader);
-  redirect_result_ = SubresourceRedirectResult::kUnknown;
+  if (is_pending_navigation_loggged_in_) {
+    redirect_result_ = *is_pending_navigation_loggged_in_
+                           ? SubresourceRedirectResult::kIneligibleLoginDetected
+                           : SubresourceRedirectResult::kRedirectable;
+    // Clear the logged-in state so it won't be reused for subsequent
+    // navigations.
+    is_pending_navigation_loggged_in_ = base::nullopt;
+  } else {
+    // Logged-in state was not sent for the current navigation.
+    redirect_result_ = SubresourceRedirectResult::kUnknown;
+  }
   num_should_redirect_checks_ = 0;
   // Invalidate the previous requests that were started by previous navigation,
   // for the current frame.
@@ -125,10 +136,12 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
 }
 
 void LoginRobotsDeciderAgent::SetLoggedInState(bool is_logged_in) {
+  // Logged-in state is sent when a new navigation is about to commit in the
+  // browser process. Save this state until the navigation is committed in the
+  // renderer process.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  redirect_result_ = is_logged_in
-                         ? SubresourceRedirectResult::kIneligibleLoginDetected
-                         : SubresourceRedirectResult::kRedirectable;
+  DCHECK(!is_pending_navigation_loggged_in_);
+  is_pending_navigation_loggged_in_ = is_logged_in;
 }
 
 void LoginRobotsDeciderAgent::RecordMetricsOnLoadFinished(

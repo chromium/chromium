@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
@@ -90,6 +91,18 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
     login_robots_decider_agent_->SetLoggedInState(is_logged_in);
   }
 
+  void ReadyToCommitNavigation() {
+    login_robots_decider_agent_->ReadyToCommitNavigation(nullptr);
+  }
+
+  SubresourceRedirectResult decider_agent_redirect_result() {
+    return login_robots_decider_agent_->redirect_result_;
+  }
+
+  base::Optional<bool> is_pending_navigation_loggged_in() {
+    return login_robots_decider_agent_->is_pending_navigation_loggged_in_;
+  }
+
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -109,6 +122,11 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestAllowDisallowSingleOrigin) {
   SetLoggedInState(false);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
                                        {kRuleTypeDisallow, "/private"}});
   EXPECT_TRUE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
@@ -122,6 +140,11 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestHTTPRulesAreSeparate) {
   SetLoggedInState(false);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
                                        {kRuleTypeDisallow, "/private"}});
   EXPECT_FALSE(ShouldRedirectSubresource("http://foo.com/public.jpg"));
@@ -136,6 +159,11 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest, TestURLWithArguments) {
   SetLoggedInState(false);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
   SetUpRobotsRules("https://foo.com",
                    {{kRuleTypeAllow, "/*.jpg$"},
                     {kRuleTypeDisallow, "/*.png?*arg_disallowed"},
@@ -161,6 +189,11 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest, TestURLWithArguments) {
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestRulesAreCaseSensitive) {
   SetLoggedInState(false);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/allowed"},
                                        {kRuleTypeAllow, "/CamelCase"},
                                        {kRuleTypeAllow, "/CAPITALIZE"},
@@ -176,10 +209,45 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestDisabledWhenLoggedIn) {
   SetLoggedInState(true);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kIneligibleLoginDetected,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
                                        {kRuleTypeDisallow, "/private"}});
   EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
   EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/private.jpg"));
+}
+
+// Test that when logged-in state is sent after the navigation commit, it does
+// not take effect.
+TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
+       TestLoggedinStateIgnoredWhenSentOutOfOrder) {
+  SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
+                                       {kRuleTypeDisallow, "/private"}});
+  ReadyToCommitNavigation();
+  SetLoggedInState(false);
+  EXPECT_EQ(SubresourceRedirectResult::kUnknown,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(*is_pending_navigation_loggged_in());
+  EXPECT_DCHECK_DEATH(ShouldRedirectSubresource("https://foo.com/public.jpg"));
+}
+
+TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
+       TestClearedOnNavigation) {
+  SetLoggedInState(false);
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+
+  // When a navigation starts the state should be cleared.
+  ReadyToCommitNavigation();
+  EXPECT_EQ(SubresourceRedirectResult::kUnknown,
+            decider_agent_redirect_result());
+  EXPECT_FALSE(is_pending_navigation_loggged_in().has_value());
+  EXPECT_DCHECK_DEATH(ShouldRedirectSubresource("https://foo.com/public.jpg"));
 }
 
 }  // namespace subresource_redirect

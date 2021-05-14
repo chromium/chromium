@@ -157,6 +157,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
 
   void SetLoggedInState(bool is_logged_in) {
     login_robots_decider_agent_->SetLoggedInState(is_logged_in);
+    login_robots_decider_agent_->ReadyToCommitNavigation(nullptr);
   }
 
  protected:

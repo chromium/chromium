@@ -68,6 +68,15 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   // fetch timeout for the first k subresources.
   size_t num_should_redirect_checks_ = 0;
 
+  // Saves whether the upcoming navigation is logged-in. This is updated via the
+  // SetLoggedInState() mojo which is sent just before the navigation is
+  // committed in the browser process, and used in ReadyToCommitNavigation()
+  // when the navigation is committed in the renderer process. Value of
+  // base::nullopt means logged-in state hasn't arrived from the browser. This
+  // value should be reset after each navigation commit, so that it won't get
+  // accidentally reused for subsequent navigations.
+  base::Optional<bool> is_pending_navigation_loggged_in_;
+
   THREAD_CHECKER(thread_checker_);
 
   // Used to get a weak pointer to |this|.
