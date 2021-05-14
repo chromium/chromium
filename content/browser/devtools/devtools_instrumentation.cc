@@ -39,7 +39,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/http/http_request_headers.h"
 #include "net/proxy_resolution/proxy_config.h"
-#include "net/quic/quic_transport_error.h"
+#include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -965,7 +965,7 @@ void BuildAndReportBrowserInitiatedIssue(
 void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame,
     const GURL& url,
-    const base::Optional<net::QuicTransportError>& error) {
+    const base::Optional<net::WebTransportError>& error) {
   FrameTreeNode* ftn = frame->frame_tree_node();
   if (!ftn)
     return;
@@ -973,7 +973,7 @@ void OnWebTransportHandshakeFailed(
       "Failed to establish a connection to %s", url.spec().c_str());
   if (error) {
     text += ": ";
-    text += net::QuicTransportErrorToString(*error);
+    text += net::WebTransportErrorToString(*error);
   }
   text += ".";
   auto entry = protocol::Log::LogEntry::Create()

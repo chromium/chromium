@@ -123,7 +123,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   }
 
   void OnHandshakeFailed(
-      const base::Optional<net::QuicTransportError>& error) override {
+      const base::Optional<net::WebTransportError>& error) override {
     has_seen_handshake_failure_ = true;
     receiver_.reset();
     std::move(callback_).Run();

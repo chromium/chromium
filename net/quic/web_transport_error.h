@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUIC_QUIC_TRANSPORT_ERROR_H_
-#define NET_QUIC_QUIC_TRANSPORT_ERROR_H_
+#ifndef NET_QUIC_WEB_TRANSPORT_ERROR_H_
+#define NET_QUIC_WEB_TRANSPORT_ERROR_H_
 
 #include <ostream>
 #include <string>
@@ -15,13 +15,12 @@
 
 namespace net {
 
-// TODO(crbug.com/1193409): rename this class to WebTransportError.
-struct NET_EXPORT QuicTransportError {
-  QuicTransportError() = default;
-  QuicTransportError(int net_error,
-                     quic::QuicErrorCode quic_error,
-                     base::StringPiece details,
-                     bool safe_to_report_details)
+struct NET_EXPORT WebTransportError {
+  WebTransportError() = default;
+  WebTransportError(int net_error,
+                    quic::QuicErrorCode quic_error,
+                    base::StringPiece details,
+                    bool safe_to_report_details)
       : net_error(net_error),
         quic_error(quic_error),
         details(details),
@@ -37,18 +36,18 @@ struct NET_EXPORT QuicTransportError {
   // Human-readable error summary.
   std::string details;
 
-  // QuicTransport requires that the connection errors have to be
-  // undistinguishable until the peer is confirmed to be a QuicTransport
-  // endpoint.  See https://wicg.github.io/web-transport/#protocol-security
+  // WebTransport requires that the connection errors have to be
+  // undistinguishable until the peer is confirmed to be a WebTransport
+  // endpoint.  See https://w3c.github.io/webtransport/#protocol-security
   bool safe_to_report_details = false;
 };
 
 NET_EXPORT
-std::string QuicTransportErrorToString(const QuicTransportError& error);
+std::string WebTransportErrorToString(const WebTransportError& error);
 
 NET_EXPORT
-std::ostream& operator<<(std::ostream& os, const QuicTransportError& error);
+std::ostream& operator<<(std::ostream& os, const WebTransportError& error);
 
 }  // namespace net
 
-#endif  // NET_QUIC_QUIC_TRANSPORT_ERROR_H_
+#endif  // NET_QUIC_WEB_TRANSPORT_ERROR_H_

@@ -97,7 +97,7 @@ mojom("mojom_ip_address") {
       types = [
         {
           mojom = "network.mojom.WebTransportError"
-          cpp = "::net::QuicTransportError"
+          cpp = "::net::WebTransportError"
         },
       ]
       traits_headers =

@@ -100,7 +100,7 @@ void QuicTransportClient::Connect() {
   DoLoop(OK);
 }
 
-const QuicTransportError& QuicTransportClient::error() const {
+const WebTransportError& QuicTransportClient::error() const {
   return error_;
 }
 

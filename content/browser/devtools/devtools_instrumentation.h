@@ -35,7 +35,7 @@ struct UserAgentMetadata;
 namespace net {
 class SSLInfo;
 class X509Certificate;
-struct QuicTransportError;
+struct WebTransportError;
 }  // namespace net
 
 namespace download {
@@ -209,7 +209,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
 void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
-    const base::Optional<net::QuicTransportError>& error);
+    const base::Optional<net::WebTransportError>& error);
 
 // Adds a debug error message from a worklet to the devtools console.
 void LogWorkletError(RenderFrameHostImpl* frame_host, const std::string& error);

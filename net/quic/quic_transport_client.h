@@ -14,8 +14,8 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_event_logger.h"
-#include "net/quic/quic_transport_error.h"
 #include "net/quic/web_transport_client.h"
+#include "net/quic/web_transport_error.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quic/core/quic_config.h"
@@ -58,7 +58,7 @@ class NET_EXPORT QuicTransportClient
   ~QuicTransportClient() override;
 
   WebTransportState state() const { return state_; }
-  const QuicTransportError& error() const override;
+  const WebTransportError& error() const override;
 
   // Connect() is an asynchronous operation.  Once the operation is finished,
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
@@ -172,7 +172,7 @@ class NET_EXPORT QuicTransportClient
 
   WebTransportState state_ = NEW;
   ConnectState next_connect_state_ = CONNECT_STATE_NONE;
-  QuicTransportError error_;
+  WebTransportError error_;
   bool retried_with_new_version_ = false;
 
   ProxyInfo proxy_info_;

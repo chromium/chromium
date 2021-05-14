@@ -23,10 +23,10 @@ class FailedWebTransportClient : public WebTransportClient {
   void Connect() override { visitor_->OnConnectionFailed(); }
 
   quic::WebTransportSession* session() override { return nullptr; }
-  const QuicTransportError& error() const override { return error_; }
+  const WebTransportError& error() const override { return error_; }
 
  private:
-  QuicTransportError error_;
+  WebTransportError error_;
   WebTransportClientVisitor* visitor_;
 };
 }  // namespace

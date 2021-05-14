@@ -8,8 +8,8 @@ namespace mojo {
 
 bool StructTraits<
     network::mojom::WebTransportErrorDataView,
-    net::QuicTransportError>::Read(network::mojom::WebTransportErrorDataView in,
-                                   net::QuicTransportError* out) {
+    net::WebTransportError>::Read(network::mojom::WebTransportErrorDataView in,
+                                  net::WebTransportError* out) {
   if (in.net_error() > 0) {
     return false;
   }
@@ -21,7 +21,7 @@ bool StructTraits<
     return false;
   }
 
-  *out = net::QuicTransportError(
+  *out = net::WebTransportError(
       in.net_error(), static_cast<quic::QuicErrorCode>(in.quic_error()),
       std::move(details), in.safe_to_report_details());
   return true;

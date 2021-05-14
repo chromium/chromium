@@ -217,7 +217,7 @@ void DedicatedWebTransportHttp3Client::Connect() {
   DoLoop(OK);
 }
 
-const QuicTransportError& DedicatedWebTransportHttp3Client::error() const {
+const WebTransportError& DedicatedWebTransportHttp3Client::error() const {
   return error_;
 }
 

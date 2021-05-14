@@ -10,7 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/network_isolation_key.h"
-#include "net/quic/quic_transport_error.h"
+#include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quic/quic_transport/web_transport_fingerprint_proof_verifier.h"
@@ -101,7 +101,7 @@ class NET_EXPORT WebTransportClient {
 
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;
-  virtual const QuicTransportError& error() const = 0;
+  virtual const WebTransportError& error() const = 0;
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/quic_transport_error.h"
+#include "net/quic/web_transport_error.h"
 
 #include "base/strings/strcat.h"
 
 namespace net {
 
-std::string QuicTransportErrorToString(const QuicTransportError& error) {
+std::string WebTransportErrorToString(const WebTransportError& error) {
   std::string message =
       ExtendedErrorToString(error.net_error, error.quic_error);
   if (error.details == message)
@@ -16,8 +16,8 @@ std::string QuicTransportErrorToString(const QuicTransportError& error) {
   return base::StrCat({message, " (", error.details, ")"});
 }
 
-std::ostream& operator<<(std::ostream& os, const QuicTransportError& error) {
-  os << QuicTransportErrorToString(error);
+std::ostream& operator<<(std::ostream& os, const WebTransportError& error) {
+  os << WebTransportErrorToString(error);
   return os;
 }
 
