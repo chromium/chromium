@@ -11,13 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/presentation_request.h"
 
 class MediaNotificationService;
-
-namespace media_router {
-class StartPresentationContext;
-}  // namespace media_router
 
 class PresentationRequestNotificationItem final
     : public media_message_center::MediaNotificationItem {
