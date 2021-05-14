@@ -106,6 +106,15 @@ void RestoreData::ModifyWindowInfo(const std::string& app_id,
     app_restore_data->ModifyWindowInfo(window_info);
 }
 
+void RestoreData::ModifyThemeColor(const std::string& app_id,
+                                   int32_t window_id,
+                                   uint32_t primary_color,
+                                   uint32_t status_bar_color) {
+  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  if (app_restore_data)
+    app_restore_data->ModifyThemeColor(primary_color, status_bar_color);
+}
+
 void RestoreData::SetNextRestoreWindowIdForChromeApp(
     const std::string& app_id) {
   auto it = app_id_to_launch_list_.find(app_id);

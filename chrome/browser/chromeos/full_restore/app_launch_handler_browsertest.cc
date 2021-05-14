@@ -849,6 +849,14 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
                               info->name, info->intent_uri, session_id);
   }
 
+  void UpdateThemeColor(int32_t task_id,
+                        uint32_t primary_color,
+                        uint32_t status_bar_color) {
+    auto empty_icon = arc::mojom::RawIconPngData::New();
+    app_host()->OnTaskDescriptionChanged(task_id, "", std::move(empty_icon),
+                                         primary_color, status_bar_color);
+  }
+
   void SetProfile() {
     ::full_restore::FullRestoreSaveHandler::GetInstance()
         ->SetPrimaryProfilePath(profile()->GetPath());
@@ -866,8 +874,7 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
   void Restore() {
     test_full_restore_info_observer_.Reset();
 
-    auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
-    app_launch_handler->SetShouldRestore();
+    app_launch_handler()->SetShouldRestore();
     content::RunAllTasksUntilIdle();
   }
 
@@ -925,9 +932,35 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
     }
   }
 
+  void VerifyThemeColor(const std::string& app_id,
+                        int32_t task_id,
+                        uint32_t primary_color,
+                        uint32_t status_bar_color) {
+    const auto& app_id_to_launch_list =
+        app_launch_handler()->restore_data_->app_id_to_launch_list();
+
+    auto it = app_id_to_launch_list.find(app_id);
+    EXPECT_TRUE(it != app_id_to_launch_list.end());
+
+    auto data_it = it->second.find(task_id);
+    EXPECT_TRUE(data_it != it->second.end());
+
+    EXPECT_TRUE(data_it->second->primary_color.has_value());
+    EXPECT_EQ(primary_color, data_it->second->primary_color.value());
+
+    EXPECT_TRUE(data_it->second->status_bar_color.has_value());
+    EXPECT_EQ(status_bar_color, data_it->second->status_bar_color.value());
+  }
+
   ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
 
   arc::mojom::AppHost* app_host() { return app_prefs(); }
+
+  AppLaunchHandler* app_launch_handler() {
+    if (!app_launch_handler_)
+      app_launch_handler_ = std::make_unique<AppLaunchHandler>(profile());
+    return app_launch_handler_.get();
+  }
 
   TestFullRestoreInfoObserver* test_full_restore_info_observer() {
     return &test_full_restore_info_observer_;
@@ -943,6 +976,7 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
   }
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
+  std::unique_ptr<AppLaunchHandler> app_launch_handler_;
   TestFullRestoreInfoObserver test_full_restore_info_observer_;
 };
 
@@ -1218,6 +1252,58 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 
   // Remove the added desks.
   RemoveInactiveDesks();
+
+  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
+      test_full_restore_info_observer());
+  StopInstance();
+}
+
+// Test restoration when the ARC window is created before OnTaskCreated is
+// called.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+                       ArcAppThemeColorUpdate) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id);
+
+  // Create the window for app1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId = 100;
+  uint32_t kPrimaryColor = 0xFFFFFFFF;
+  uint32_t kStatusBarColor = 0xFF000000;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  VerifyWindowProperty(window, kTaskId, /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Simulate creating the task.
+  CreateTask(app_id, kTaskId, session_id);
+
+  UpdateThemeColor(kTaskId, kPrimaryColor, kStatusBarColor);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/0);
+
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  ASSERT_TRUE(app_launch_handler());
+  content::RunAllTasksUntilIdle();
+
+  VerifyThemeColor(app_id, kTaskId, kPrimaryColor, kStatusBarColor);
+
+  widget->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId);
 
   ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
       test_full_restore_info_observer());

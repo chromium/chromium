@@ -1841,15 +1841,19 @@ void ArcAppListPrefs::OnTaskDescriptionUpdated(
   icon->icon_png_data =
       std::vector<uint8_t>(icon_png_data.begin(), icon_png_data.end());
   for (auto& observer : observer_list_)
-    observer.OnTaskDescriptionChanged(task_id, label, *icon);
+    observer.OnTaskDescriptionChanged(task_id, label, *icon, 0, 0);
 }
 
 void ArcAppListPrefs::OnTaskDescriptionChanged(
     int32_t task_id,
     const std::string& label,
-    arc::mojom::RawIconPngDataPtr icon) {
-  for (auto& observer : observer_list_)
-    observer.OnTaskDescriptionChanged(task_id, label, *icon);
+    arc::mojom::RawIconPngDataPtr icon,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
+  for (auto& observer : observer_list_) {
+    observer.OnTaskDescriptionChanged(task_id, label, *icon, primary_color,
+                                      status_bar_color);
+  }
 }
 
 void ArcAppListPrefs::OnTaskDestroyed(int32_t task_id) {

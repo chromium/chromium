@@ -92,6 +92,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
                         int32_t window_id,
                         const WindowInfo& window_info);
 
+  // Modifies the window's theme colors for the window with |window_id| of the
+  // app with |app_id|,
+  void ModifyThemeColor(const std::string& app_id,
+                        int32_t window_id,
+                        uint32_t primary_color,
+                        uint32_t status_bar_color);
+
   // Modifies |chrome_app_id_to_current_window_id_| to set the next restore
   // window id for the given |app_id|.
   //

@@ -119,6 +119,17 @@ void ArcSaveHandler::OnTaskDestroyed(int32_t task_id) {
   task_id_to_app_id_.erase(task_id);
 }
 
+void ArcSaveHandler::OnTaskThemeColorUpdated(int32_t task_id,
+                                             uint32_t primary_color,
+                                             uint32_t status_bar_color) {
+  auto it = task_id_to_app_id_.find(task_id);
+  if (it == task_id_to_app_id_.end())
+    return;
+
+  FullRestoreSaveHandler::GetInstance()->ModifyThemeColor(
+      profile_path_, it->second, task_id, primary_color, status_bar_color);
+}
+
 int32_t ArcSaveHandler::GetArcSessionId() {
   if (session_id_ >= kArcSessionIdOffsetForRestoredLaunching) {
     LOG(WARNING) << "ARC session id is too large: " << session_id_;

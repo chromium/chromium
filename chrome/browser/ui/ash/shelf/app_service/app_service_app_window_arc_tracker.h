@@ -71,10 +71,11 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                      const std::string& activity,
                      const std::string& intent,
                      int32_t session_id) override;
-  void OnTaskDescriptionChanged(
-      int32_t task_id,
-      const std::string& label,
-      const arc::mojom::RawIconPngData& icon) override;
+  void OnTaskDescriptionChanged(int32_t task_id,
+                                const std::string& label,
+                                const arc::mojom::RawIconPngData& icon,
+                                uint32_t primary_color,
+                                uint32_t status_bar_color) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
 

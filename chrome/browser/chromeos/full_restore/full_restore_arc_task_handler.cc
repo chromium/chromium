@@ -46,6 +46,16 @@ void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
   ::full_restore::OnTaskDestroyed(task_id);
 }
 
+void FullRestoreArcTaskHandler::OnTaskDescriptionChanged(
+    int32_t task_id,
+    const std::string& label,
+    const arc::mojom::RawIconPngData& icon,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
+  ::full_restore::OnTaskThemeColorUpdated(task_id, primary_color,
+                                          status_bar_color);
+}
+
 void FullRestoreArcTaskHandler::OnAppConnectionReady() {
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (window_handler_)

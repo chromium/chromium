@@ -369,7 +369,11 @@ interface AppHost {
 
   // Sends task label and icon.
   [MinVersion=46] OnTaskDescriptionChanged@18(
-      int32 task_id, string label, RawIconPngData icon);
+      int32 task_id,
+      string label,
+      RawIconPngData icon,
+      [MinVersion=49] uint32 primary_color,
+      [MinVersion=49] uint32 status_bar_color);
 
   // Notifies that task has been destroyed.
   [MinVersion=4] OnTaskDestroyed@5(int32 task_id);

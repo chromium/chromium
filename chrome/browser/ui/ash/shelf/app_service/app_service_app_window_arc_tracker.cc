@@ -171,7 +171,9 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
 void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
     int32_t task_id,
     const std::string& label,
-    const arc::mojom::RawIconPngData& icon) {
+    const arc::mojom::RawIconPngData& icon,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;

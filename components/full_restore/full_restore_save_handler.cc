@@ -203,6 +203,16 @@ void FullRestoreSaveHandler::OnTaskDestroyed(int32_t task_id) {
     arc_save_handler_->OnTaskDestroyed(task_id);
 }
 
+void FullRestoreSaveHandler::OnTaskThemeColorUpdated(
+    int32_t task_id,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
+  if (arc_save_handler_) {
+    arc_save_handler_->OnTaskThemeColorUpdated(task_id, primary_color,
+                                               status_bar_color);
+  }
+}
+
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
   if (save_running_.find(profile_path) != save_running_.end())
     return;
@@ -256,6 +266,24 @@ void FullRestoreSaveHandler::ModifyWindowInfo(
 
   profile_path_to_restore_data_[profile_path].ModifyWindowInfo(
       app_id, window_id, window_info);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::ModifyThemeColor(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t window_id,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  profile_path_to_restore_data_[profile_path].ModifyThemeColor(
+      app_id, window_id, primary_color, status_bar_color);
 
   pending_save_profile_paths_.insert(profile_path);
 

@@ -722,7 +722,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
   app_host()->OnTaskDescriptionChanged(
       1, kTestWindowTitles[1],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */));
+                                           false /* app_icon */),
+      0, 0);
   WaitForDecompressTask();
   ash::ShelfItemDelegate* delegate1 = GetShelfItemDelegate(shelf_id1);
 
@@ -737,7 +738,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
   app_host()->OnTaskDescriptionChanged(
       2, kTestWindowTitles[2],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */));
+                                           false /* app_icon */),
+      0, 0);
 
   WaitForDecompressTask();
   ASSERT_EQ(delegate1, GetShelfItemDelegate(shelf_id1));
@@ -754,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
     app_host()->OnTaskDescriptionChanged(
         task_id, kTestWindowTitles[task_id],
         arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                             false /* app_icon */));
+                                             false /* app_icon */),
+        0, 0);
   }
 
   WaitForDecompressTask();
@@ -771,7 +774,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
   app_host()->OnTaskDescriptionChanged(
       6, kTestWindowTitles[6],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */));
+                                           false /* app_icon */),
+      0, 0);
   ash::ShelfItemDelegate* delegate2 = GetShelfItemDelegate(shelf_id2);
 
   WaitForDecompressTask();
@@ -787,7 +791,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
   app_host()->OnTaskDescriptionChanged(
       7, kTestWindowTitles[7],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
-                                           false /* app_icon */));
+                                           false /* app_icon */),
+      0, 0);
 
   WaitForDecompressTask();
   ASSERT_EQ(delegate2, GetShelfItemDelegate(shelf_id2));

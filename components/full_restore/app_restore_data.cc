@@ -33,6 +33,8 @@ constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kMinimumSizeKey[] = "min_size";
 constexpr char kMaximumSizeKey[] = "max_size";
+constexpr char kPrimaryColorKey[] = "primary_color";
+constexpr char kStatusBarColorKey[] = "status_bar_color";
 
 // Converts |size| to base::Value, e.g. { 100, 300 }.
 base::Value ConvertSizeToValue(const gfx::Size& size) {
@@ -52,6 +54,11 @@ base::Value ConvertRectToValue(const gfx::Rect& rect) {
   return rect_list;
 }
 
+// Converts |uint32_t| to base::Value in string, e.g 123 to "123".
+base::Value ConvertUintToValue(uint32_t number) {
+  return base::Value(base::NumberToString(number));
+}
+
 // Gets bool value from base::DictionaryValue, e.g. { "key": true } returns
 // true.
 base::Optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
@@ -63,6 +70,18 @@ base::Optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
 base::Optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
                                             const std::string& key_name) {
   return dict.HasKey(key_name) ? dict.FindIntKey(key_name) : base::nullopt;
+}
+
+// Gets uint32_t value from base::DictionaryValue, e.g. { "key": "123" } returns
+// 123.
+base::Optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
+                                              const std::string& key_name) {
+  uint32_t result = 0;
+  if (!dict.HasKey(key_name) ||
+      !base::StringToUint(dict.FindStringKey(key_name)->c_str(), &result)) {
+    return base::nullopt;
+  }
+  return result;
 }
 
 // Gets display id from base::DictionaryValue, e.g. { "display_id": "22000000" }
@@ -184,6 +203,8 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
   maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
   minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
+  primary_color = GetUIntValueFromDict(*data_dict, kPrimaryColorKey);
+  status_bar_color = GetUIntValueFromDict(*data_dict, kStatusBarColorKey);
 
   if (data_dict->HasKey(kIntentKey)) {
     intent = apps_util::ConvertValueToIntent(
@@ -253,6 +274,12 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (minimum_size.has_value())
     data->minimum_size = minimum_size.value();
+
+  if (primary_color.has_value())
+    data->primary_color = primary_color.value();
+
+  if (status_bar_color.has_value())
+    data->status_bar_color = status_bar_color.value();
 
   return data;
 }
@@ -325,6 +352,16 @@ base::Value AppRestoreData::ConvertToValue() const {
                             ConvertSizeToValue(minimum_size.value()));
   }
 
+  if (primary_color.has_value()) {
+    launch_info_dict.SetKey(kPrimaryColorKey,
+                            ConvertUintToValue(primary_color.value()));
+  }
+
+  if (status_bar_color.has_value()) {
+    launch_info_dict.SetKey(kStatusBarColorKey,
+                            ConvertUintToValue(status_bar_color.value()));
+  }
+
   return launch_info_dict;
 }
 
@@ -356,6 +393,12 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
   }
 }
 
+void AppRestoreData::ModifyThemeColor(uint32_t window_primary_color,
+                                      uint32_t window_status_bar_color) {
+  primary_color = window_primary_color;
+  status_bar_color = window_status_bar_color;
+}
+
 void AppRestoreData::ClearWindowInfo() {
   activation_index.reset();
   desk_id.reset();
@@ -365,6 +408,8 @@ void AppRestoreData::ClearWindowInfo() {
   window_state_type.reset();
   minimum_size.reset();
   maximum_size.reset();
+  primary_color.reset();
+  status_bar_color.reset();
 }
 
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {

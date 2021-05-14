@@ -127,6 +127,12 @@ void OnTaskCreated(const std::string& app_id,
 COMPONENT_EXPORT(FULL_RESTORE)
 void OnTaskDestroyed(int32_t task_id);
 
+// Invoked when the task theme colors are updated for an ARC app.
+COMPONENT_EXPORT(FULL_RESTORE)
+void OnTaskThemeColorUpdated(int32_t task_id,
+                             uint32_t primary_color,
+                             uint32_t status_bar_color);
+
 }  // namespace full_restore
 
 #endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_UTILS_H_

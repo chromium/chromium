@@ -79,6 +79,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // Invoked when the task is destroyed for an ARC app.
   void OnTaskDestroyed(int32_t task_id);
 
+  // Invoked when the task theme color is updated for an ARC app.
+  void OnTaskThemeColorUpdated(int32_t task_id,
+                               uint32_t primary_color,
+                               uint32_t status_bar_color);
+
   // Flushes the full restore file in |profile_path| with the current restore
   // data.
   void Flush(const base::FilePath& profile_path);
@@ -94,6 +99,14 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
                         const std::string& app_id,
                         int32_t window_id,
                         const WindowInfo& window_info);
+
+  // Saves |primary_color| and |status_bar_color| to |profile_path| for |app_id|
+  // and |window_id|.
+  void ModifyThemeColor(const base::FilePath& profile_path,
+                        const std::string& app_id,
+                        int32_t window_id,
+                        uint32_t primary_color,
+                        uint32_t status_bar_color);
 
   // Removes app launching and app windows for an app with the given |app_id|
   // from |file_path_to_restore_data_| for |profile_path| .

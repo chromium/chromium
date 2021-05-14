@@ -74,6 +74,12 @@ constexpr gfx::Size kMaxSize1(600, 800);
 constexpr gfx::Size kMinSize1(100, 50);
 constexpr gfx::Size kMinSize2(88, 128);
 
+constexpr uint32_t kPrimaryColor1(0xFFFFFFFF);
+constexpr uint32_t kPrimaryColor2(0xFF000000);
+
+constexpr uint32_t kStatusBarColor1(0xFF00FF00);
+constexpr uint32_t kStatusBarColor2(0xFF000000);
+
 }  // namespace
 
 // Unit tests for restore data.
@@ -162,6 +168,13 @@ class RestoreDataTest : public testing::Test {
     restore_data().ModifyWindowInfo(kAppId2, kWindowId3, window_info3);
   }
 
+  void ModifyThemeColors() {
+    restore_data().ModifyThemeColor(kAppId1, kWindowId1, kPrimaryColor1,
+                                    kStatusBarColor1);
+    restore_data().ModifyThemeColor(kAppId1, kWindowId2, kPrimaryColor2,
+                                    kStatusBarColor2);
+  }
+
   void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
                             apps::mojom::LaunchContainer container,
                             WindowOpenDisposition disposition,
@@ -175,7 +188,9 @@ class RestoreDataTest : public testing::Test {
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type,
                             base::Optional<gfx::Size> max_size,
-                            base::Optional<gfx::Size> min_size) {
+                            base::Optional<gfx::Size> min_size,
+                            uint32_t primary_color,
+                            uint32_t status_bar_color) {
     EXPECT_TRUE(data->container.has_value());
     EXPECT_EQ(static_cast<int>(container), data->container.value());
 
@@ -232,6 +247,20 @@ class RestoreDataTest : public testing::Test {
     } else {
       EXPECT_FALSE(data->minimum_size.has_value());
     }
+
+    if (primary_color) {
+      EXPECT_TRUE(data->primary_color.has_value());
+      EXPECT_EQ(primary_color, data->primary_color.value());
+    } else {
+      EXPECT_FALSE(data->primary_color.has_value());
+    }
+
+    if (status_bar_color) {
+      EXPECT_TRUE(data->status_bar_color.has_value());
+      EXPECT_EQ(status_bar_color, data->status_bar_color.value());
+    } else {
+      EXPECT_FALSE(data->status_bar_color.has_value());
+    }
   }
 
   void VerifyRestoreData(const RestoreData& restore_data) {
@@ -254,7 +283,8 @@ class RestoreDataTest : public testing::Test {
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
         kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1, kRestoreBounds1,
-        kCurrentBounds1, kWindowStateType1, kMaxSize1, kMinSize1);
+        kCurrentBounds1, kWindowStateType1, kMaxSize1, kMinSize1,
+        kPrimaryColor1, kStatusBarColor1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -265,7 +295,8 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kRestoreBounds2,
-        kCurrentBounds2, kWindowStateType2, base::nullopt, kMinSize2);
+        kCurrentBounds2, kWindowStateType2, base::nullopt, kMinSize2,
+        kPrimaryColor2, kStatusBarColor2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -281,7 +312,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kRestoreBounds3,
-        kCurrentBounds3, kWindowStateType3, base::nullopt, base::nullopt);
+        kCurrentBounds3, kWindowStateType3, base::nullopt, base::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -307,12 +338,14 @@ TEST_F(RestoreDataTest, AddNullAppLaunchInfo) {
 TEST_F(RestoreDataTest, AddAppLaunchInfos) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
+  ModifyThemeColors();
   VerifyRestoreData(restore_data());
 }
 
 TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
+  ModifyThemeColors();
   VerifyRestoreData(restore_data());
 
   EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId1, kWindowId1));
@@ -371,6 +404,7 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
 TEST_F(RestoreDataTest, RemoveWindowInfo) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
+  ModifyThemeColors();
   VerifyRestoreData(restore_data());
 
   // Remove kAppId1.
@@ -390,6 +424,7 @@ TEST_F(RestoreDataTest, RemoveWindowInfo) {
 TEST_F(RestoreDataTest, RemoveApp) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
+  ModifyThemeColors();
   VerifyRestoreData(restore_data());
 
   // Remove kAppId1.
@@ -413,6 +448,7 @@ TEST_F(RestoreDataTest, RemoveApp) {
 TEST_F(RestoreDataTest, Convert) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
+  ModifyThemeColors();
   std::unique_ptr<base::Value> value =
       std::make_unique<base::Value>(restore_data().ConvertToValue());
   std::unique_ptr<RestoreData> restore_data =

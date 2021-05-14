@@ -194,7 +194,9 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnTaskDescriptionChanged(
         int32_t task_id,
         const std::string& label,
-        const arc::mojom::RawIconPngData& icon) {}
+        const arc::mojom::RawIconPngData& icon,
+        uint32_t primary_color,
+        uint32_t status_bar_color) {}
     // Notifies that task has been destroyed.
     virtual void OnTaskDestroyed(int32_t task_id) {}
     // Notifies that task has been activated and moved to the front.
@@ -450,7 +452,9 @@ class ArcAppListPrefs : public KeyedService,
       const std::vector<uint8_t>& icon_png_data) override;
   void OnTaskDescriptionChanged(int32_t task_id,
                                 const std::string& label,
-                                arc::mojom::RawIconPngDataPtr icon) override;
+                                arc::mojom::RawIconPngDataPtr icon,
+                                uint32_t primary_color,
+                                uint32_t status_bar_color) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
   void OnNotificationsEnabledChanged(const std::string& package_name,

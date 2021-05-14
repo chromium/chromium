@@ -104,4 +104,11 @@ void OnTaskDestroyed(int32_t task_id) {
   FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(task_id);
 }
 
+void OnTaskThemeColorUpdated(int32_t task_id,
+                             uint32_t primary_color,
+                             uint32_t status_bar_color) {
+  FullRestoreSaveHandler::GetInstance()->OnTaskThemeColorUpdated(
+      task_id, primary_color, status_bar_color);
+}
+
 }  // namespace full_restore

@@ -168,7 +168,7 @@ void FakeAppInstance::SendTaskDescription(
     const std::string& icon_png_data_as_string) {
   arc::mojom::RawIconPngDataPtr icon = arc::mojom::RawIconPngData::New();
   FillRawIconPngData(icon_png_data_as_string, icon.get());
-  app_host_->OnTaskDescriptionChanged(taskId, label, std::move(icon));
+  app_host_->OnTaskDescriptionChanged(taskId, label, std::move(icon), 0, 0);
 }
 
 void FakeAppInstance::SendTaskDestroyed(int32_t taskId) {

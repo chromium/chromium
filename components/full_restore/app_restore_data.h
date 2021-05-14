@@ -60,6 +60,10 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Modifies the window's information based on |window_info|.
   void ModifyWindowInfo(const WindowInfo& window_info);
 
+  // Modifies the window's theme colors.
+  void ModifyThemeColor(uint32_t window_primary_color,
+                        uint32_t window_status_bar_color);
+
   // Clears the window's information.
   void ClearWindowInfo();
 
@@ -89,6 +93,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Extra ARC window's information.
   base::Optional<gfx::Size> minimum_size;
   base::Optional<gfx::Size> maximum_size;
+  base::Optional<uint32_t> primary_color;
+  base::Optional<uint32_t> status_bar_color;
 };
 
 }  // namespace full_restore

@@ -53,6 +53,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   void SetForceLaunchBrowserForTesting();
 
  private:
+  friend class AppLaunchHandlerArcAppBrowserTest;
+
   void OnGetRestoreData(
       std::unique_ptr<::full_restore::RestoreData> restore_data);
 

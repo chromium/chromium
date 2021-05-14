@@ -58,6 +58,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // Invoked when the task is destroyed for an ARC app.
   void OnTaskDestroyed(int32_t task_id);
 
+  // Invoked when the task theme color is updated for an ARC app.
+  void OnTaskThemeColorUpdated(int32_t task_id,
+                               uint32_t primary_color,
+                               uint32_t status_bar_color);
+
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
 
