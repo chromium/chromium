@@ -135,12 +135,11 @@ generate_jni("jni_headers") {
 android_library("download_java_tests") {
   testonly = true
 
-  # TODO(xingliu): Move tests in javatests/ into java/.
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
+    "java/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadSettingsTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
   ]
 
   deps = [
