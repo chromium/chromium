@@ -256,158 +256,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
       << message_;
 }
 
-#if defined(USE_AURA)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "desktop.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "initial_focus.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "focus_web.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "focus_iframe.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "hit_test_iframe.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
-  AutomationManagerAura::GetInstance()->Enable();
-  // Trigger the shelf subtree to be computed.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
-                                                            {});
-
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "focus_views.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
-                                .page_url = "get_next_text_match.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/webview", .launch_as_platform_app = true}))
-      << message_;
-}
-#endif
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "iframenav.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
-  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/tabs",
-                                .page_url = "desktop_not_requested.html"}))
-      << message_;
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
-  AutomationManagerAura::GetInstance()->Enable();
-  // Trigger the shelf subtree to be computed.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
-                                                            {});
-
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "actions.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
-  ash::ShellTestApi shell_test_api;
-  // Create two displays, both 800x800px, next to each other. The primary
-  // display has top left corner at (0, 0), and the secondary display has
-  // top left corner at (801, 0).
-  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
-  // Ensure it worked. By default InProcessBrowserTest uses just one display.
-  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
-  display::test::DisplayManagerTestApi display_manager_test_api(
-      shell_test_api.display_manager());
-  // The browser will open in the primary display.
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
-  ash::ShellTestApi shell_test_api;
-  // Create two displays, both 800x800px, next to each other. The primary
-  // display has top left corner at (0, 0), and the secondary display has
-  // top left corner at (801, 0).
-  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
-  // Ensure it worked. By default InProcessBrowserTest uses just one display.
-  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
-  display::test::DisplayManagerTestApi display_manager_test_api(
-      shell_test_api.display_manager());
-
-  display::Screen* screen = display::Screen::GetScreen();
-  int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
-  screen->SetDisplayForNewWindows(display2);
-  // Run the test in the browser in the non-primary display.
-  // Open a browser on the secondary display, which is default for new windows.
-  CreateBrowser(browser()->profile());
-  // Close the browser which was already opened on the primary display.
-  CloseBrowserSynchronously(browser());
-  // Sets browser() to return the one created above, instead of the one which
-  // was closed.
-  SelectFirstBrowser();
-  // The test will run in browser().
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "automation/tests/desktop", .page_url = "load_tabs.html"}))
-      << message_;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#else   // !defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
-  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
-
-                                .page_url = "desktop_not_supported.html"}))
-      << message_;
-}
-#endif  // defined(USE_AURA)
-
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, CloseTab) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest(
@@ -523,7 +371,157 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
       << message_;
 }
 
+#if defined(USE_AURA)
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "iframenav.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
+  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/tabs",
+                                .page_url = "desktop_not_requested.html"}))
+      << message_;
+}
+#endif  // defined(USE_AURA)
+
+#if !defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
+  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
+
+                                .page_url = "desktop_not_supported.html"}))
+      << message_;
+}
+#endif  // !defined(USE_AURA)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "desktop.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "initial_focus.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "focus_web.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "focus_iframe.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test_iframe.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
+  AutomationManagerAura::GetInstance()->Enable();
+  // Trigger the shelf subtree to be computed.
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
+                                                            {});
+
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "focus_views.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/desktop",
+                                .page_url = "get_next_text_match.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/webview", .launch_as_platform_app = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
+  AutomationManagerAura::GetInstance()->Enable();
+  // Trigger the shelf subtree to be computed.
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
+                                                            {});
+
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "actions.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
+  ash::ShellTestApi shell_test_api;
+  // Create two displays, both 800x800px, next to each other. The primary
+  // display has top left corner at (0, 0), and the secondary display has
+  // top left corner at (801, 0).
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+  // Ensure it worked. By default InProcessBrowserTest uses just one display.
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+  // The browser will open in the primary display.
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
+  ash::ShellTestApi shell_test_api;
+  // Create two displays, both 800x800px, next to each other. The primary
+  // display has top left corner at (0, 0), and the secondary display has
+  // top left corner at (801, 0).
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+  // Ensure it worked. By default InProcessBrowserTest uses just one display.
+  ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      shell_test_api.display_manager());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
+  screen->SetDisplayForNewWindows(display2);
+  // Run the test in the browser in the non-primary display.
+  // Open a browser on the secondary display, which is default for new windows.
+  CreateBrowser(browser()->profile());
+  // Close the browser which was already opened on the primary display.
+  CloseBrowserSynchronously(browser());
+  // Sets browser() to return the one created above, instead of the one which
+  // was closed.
+  SelectFirstBrowser();
+  // The test will run in browser().
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "hit_test.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/desktop", .page_url = "load_tabs.html"}))
+      << message_;
+}
 
 class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
  protected:
@@ -561,13 +559,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(http://crbug.com/1162238): flaky on ChromeOS.
-#define MAYBE_TextareaAppendPerf DISABLED_TextareaAppendPerf
-#else
-#define MAYBE_TextareaAppendPerf TextareaAppendPerf
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TextareaAppendPerf) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
   StartEmbeddedTestServer();
 
   {
@@ -633,7 +626,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TextareaAppendPerf) {
   // the time spent in the renderer code.
   ASSERT_LT(automation_total_dur, renderer_total_dur * 2);
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
