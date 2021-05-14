@@ -213,8 +213,7 @@ mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
     mojo::PendingAssociatedRemote<mojom::EventRouter>
         pending_event_router_remote;
     message_filter_->GetRemoteAssociatedInterface(&pending_event_router_remote);
-    event_router_remote_ = mojo::SharedAssociatedRemote<mojom::EventRouter>(
-        std::move(pending_event_router_remote));
+    event_router_remote_.Bind(std::move(pending_event_router_remote));
   }
   return event_router_remote_.get();
 }

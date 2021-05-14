@@ -17,7 +17,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sync_message_filter.h"
-#include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace base {
 class ListValue;
@@ -144,7 +144,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  mojo::SharedAssociatedRemote<mojom::EventRouter> event_router_remote_;
+  mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerThreadDispatcher);
 };
