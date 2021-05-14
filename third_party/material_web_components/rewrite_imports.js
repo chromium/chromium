@@ -11,13 +11,8 @@
 const path = require('path');
 const resolve = require('resolve');
 const fs = require('fs');
-const { ArgumentParser } = require('argparse');
 
-const parser = new ArgumentParser();
-parser.add_argument('--basedir');
-parser.add_argument('files', { nargs: '+' })
-const args = parser.parse_args();
-const inputFiles = args.files;
+const inputFiles = process.argv.slice(2);
 for (const inputFile of inputFiles) {
   const inputDir = path.dirname(inputFile);
   const data =
@@ -31,7 +26,7 @@ for (const inputFile of inputFiles) {
     const match = line.match(importRegex);
     if (match) {
       const importPath = match[2];
-      let resolved = resolve.sync(importPath, {basedir: args.basedir || inputDir});
+      let resolved = resolve.sync(importPath, {basedir: inputDir});
       resolved = path.relative(inputDir, resolved);
 
       // Resolves to the module version of tslib since resolve.sync only

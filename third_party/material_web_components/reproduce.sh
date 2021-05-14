@@ -28,13 +28,11 @@ check_npm_dep() {
   if [ $? -ne 0 ]; then
     echo >&2 "This script requires $1."
     echo >&2 "Have you tried sudo npm install -g $1?"
-    echo >&2 "You will also need to set your NODE_PATH"
     exit 1
   fi
 }
 
 check_npm_dep "resolve"
-check_npm_dep "argparse"
 
 pushd "$(dirname "$0")" > /dev/null
 
@@ -43,7 +41,6 @@ rm -rf node_modules
 npm install --only=prod
 
 rsync -c --delete --delete-excluded -r -v --prune-empty-dirs \
-    --include-from="rsync_include.txt" \
     --exclude-from="rsync_exclude.txt" \
     "node_modules/" \
     "components-chromium/node_modules/"
