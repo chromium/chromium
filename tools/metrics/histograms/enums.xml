@@ -48119,6 +48119,7 @@ from previous Chrome versions.
   <int value="1079032226" label="ParallelDownloading:enabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>
   <int value="1082054180" label="PersistentWindowBounds:disabled"/>
+  <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
   <int value="1084365949" label="ReleaseNotesNotification:disabled"/>
@@ -48888,6 +48889,7 @@ from previous Chrome versions.
   <int value="1736698988" label="FsNosymfollow:disabled"/>
   <int value="1738520473" label="SystemTrayMicGainSetting:disabled"/>
   <int value="1739456903" label="PWAFullCodeCache:enabled"/>
+  <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
   <int value="1741855651"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:disabled"/>
   <int value="1742398600"

@@ -7218,6 +7218,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kEnableInputInDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+    {"link-doctor-deprecation-android",
+     flag_descriptions::kLinkDoctorDeprecationAndroidName,
+     flag_descriptions::kLinkDoctorDeprecationAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kLinkDoctorDeprecationAndroid)}
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

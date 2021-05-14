@@ -3387,6 +3387,14 @@
     "expiry_milestone": 94
   },
   {
+    "name": "link-doctor-deprecation-android",
+    "owners": [
+      "andzaytsev@google.com",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 97
+  },
+  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all

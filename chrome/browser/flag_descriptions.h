@@ -865,6 +865,9 @@ extern const char kLegacyTLSEnforcedDescription[];
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 
+extern const char kLinkDoctorDeprecationAndroidName[];
+extern const char kLinkDoctorDeprecationAndroidDescription[];
+
 extern const char kLiteVideoName[];
 extern const char kLiteVideoDescription[];
 

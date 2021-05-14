@@ -76,7 +76,7 @@ public class GoogleServicesSettings
 
     private ChromeSwitchPreference mAllowSignin;
     private ChromeSwitchPreference mSearchSuggestions;
-    private ChromeSwitchPreference mNavigationError;
+    private @Nullable ChromeSwitchPreference mNavigationError;
     private ChromeSwitchPreference mUsageAndCrashReporting;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
     private @Nullable ChromeSwitchPreference mAutofillAssistant;
@@ -97,9 +97,15 @@ public class GoogleServicesSettings
         mSearchSuggestions.setOnPreferenceChangeListener(this);
         mSearchSuggestions.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
-        mNavigationError = (ChromeSwitchPreference) findPreference(PREF_NAVIGATION_ERROR);
-        mNavigationError.setOnPreferenceChangeListener(this);
-        mNavigationError.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        // Remove the deprecated Link Doctor toggle if the appropriate flag is on.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_DOCTOR_DEPRECATION_ANDROID)) {
+            removePreference(getPreferenceScreen(), findPreference(PREF_NAVIGATION_ERROR));
+            assert mNavigationError == null;
+        } else {
+            mNavigationError = (ChromeSwitchPreference) findPreference(PREF_NAVIGATION_ERROR);
+            mNavigationError.setOnPreferenceChangeListener(this);
+            mNavigationError.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
 
         // If the metrics-settings-android flag is not enabled, remove the corresponding element.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.METRICS_SETTINGS_ANDROID)) {
@@ -221,7 +227,10 @@ public class GoogleServicesSettings
     private void updatePreferences() {
         mAllowSignin.setChecked(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED));
         mSearchSuggestions.setChecked(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED));
-        mNavigationError.setChecked(mPrefService.getBoolean(Pref.ALTERNATE_ERROR_PAGES_ENABLED));
+        if (mNavigationError != null) {
+            mNavigationError.setChecked(
+                    mPrefService.getBoolean(Pref.ALTERNATE_ERROR_PAGES_ENABLED));
+        }
 
         mUsageAndCrashReporting.setChecked(
                 mPrivacyPrefManager.isUsageAndCrashReportingPermittedByUser());
