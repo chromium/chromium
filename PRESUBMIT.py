@@ -2910,7 +2910,7 @@ def CheckSecurityOwners(input_api, output_api):
     try:
       with open(owners_file) as f:
         lines = set(f.read().splitlines())
-        for entry in patterns.itervalues():
+        for entry in patterns.values():
           entry['rules'] = [rule for rule in entry['rules'] if rule not in lines
                            ]
     except IOError:
