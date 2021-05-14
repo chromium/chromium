@@ -74,7 +74,7 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
 class TracingHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    tracing_handler_ = std::make_unique<TracingHandler>(nullptr, nullptr);
+    tracing_handler_ = std::make_unique<TracingHandler>(nullptr);
   }
 
   void TearDown() override { tracing_handler_.reset(); }
