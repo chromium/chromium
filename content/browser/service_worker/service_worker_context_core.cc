@@ -868,13 +868,12 @@ void ServiceWorkerContextCore::CheckHasServiceWorker(
                      AsWeakPtr(), std::move(callback)));
 }
 
-// TODO(crbug.com/1199077): Update this to actually use `key` when
-// ServiceWorkerOfflineCapabilityChecker implements StorageKey.
 void ServiceWorkerContextCore::CheckOfflineCapability(
     const GURL& url,
     const storage::StorageKey& key,
     ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
-  auto checker = std::make_unique<ServiceWorkerOfflineCapabilityChecker>(url);
+  auto checker =
+      std::make_unique<ServiceWorkerOfflineCapabilityChecker>(url, key);
   ServiceWorkerOfflineCapabilityChecker* checker_rawptr = checker.get();
   checker_rawptr->Start(
       registry(),

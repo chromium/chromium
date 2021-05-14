@@ -21,8 +21,9 @@
 namespace content {
 
 ServiceWorkerOfflineCapabilityChecker::ServiceWorkerOfflineCapabilityChecker(
-    const GURL& url)
-    : url_(url) {
+    const GURL& url,
+    const storage::StorageKey& key)
+    : url_(url), key_(key) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 }
 
@@ -34,7 +35,7 @@ void ServiceWorkerOfflineCapabilityChecker::Start(
     ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
   callback_ = std::move(callback);
   registry->FindRegistrationForClientUrl(
-      url_, storage::StorageKey(url::Origin::Create(url_)),
+      url_, key_,
       base::BindOnce(
           &ServiceWorkerOfflineCapabilityChecker::DidFindRegistration,
           // We can use base::Unretained(this) because |this| is expected

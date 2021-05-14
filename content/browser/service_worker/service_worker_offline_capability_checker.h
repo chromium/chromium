@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_OFFLINE_CAPABILITY_CHECKER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -26,7 +27,9 @@ class ServiceWorkerVersion;
 // |this| must outlive |callback_|.
 class ServiceWorkerOfflineCapabilityChecker {
  public:
-  explicit ServiceWorkerOfflineCapabilityChecker(const GURL& url);
+  explicit ServiceWorkerOfflineCapabilityChecker(
+      const GURL& url,
+      const storage::StorageKey& key);
   ~ServiceWorkerOfflineCapabilityChecker();
 
   ServiceWorkerOfflineCapabilityChecker(
@@ -58,6 +61,7 @@ class ServiceWorkerOfflineCapabilityChecker {
       scoped_refptr<ServiceWorkerVersion> worker);
 
   const GURL url_;
+  const storage::StorageKey key_;
   ServiceWorkerContext::CheckOfflineCapabilityCallback callback_;
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
 };
