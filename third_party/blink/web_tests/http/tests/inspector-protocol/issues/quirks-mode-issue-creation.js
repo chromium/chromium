@@ -3,18 +3,20 @@
 
   await dp.Audits.enable();
 
+  let expectedIssues = 3;
   dp.Audits.onIssueAdded(issue => {
     testRunner.log(issue.params, "Inspector issue: ", ['documentNodeId', 'frameId', 'loaderId']);
+    if (--expectedIssues === 0) {
+      testRunner.completeTest();
+    }
   });
-
-  await page.navigate('../resources/quirks-mode.html');
 
   // Test that going to a no-quirks page does not report QuirksMode issues.
   await page.navigate('../resources/inspector-protocol-page.html');
 
+  await page.navigate('../resources/quirks-mode.html');
+
   await page.navigate('../resources/limited-quirks-mode.html');
 
   await page.navigate('../resources/quirks-mode-in-iframe.html');
-
-  testRunner.completeTest();
 });
