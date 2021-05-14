@@ -159,13 +159,14 @@
     },'An invoking element that was not used to invoke the popup should NOT be part of the ancestor chain');
 
     popup1.show();
-    popup2.show();
+    popup2.show(); // Popup1 is an ancestral element for popup2.
     assert_true(popup1.open);
     assert_true(popup2.open);
     const drag_actions = new test_driver.Actions();
-    await drag_actions.pointerMove(0,0,{origin: popup1})
+    // Drag *from* popup2 *to* popup1 (its ancestor).
+    await drag_actions.pointerMove(0,0,{origin: popup2})
       .pointerDown({button: drag_actions.ButtonType.LEFT})
-      .pointerMove(0,0,{origin: popup2})
+      .pointerMove(0,0,{origin: popup1})
       .pointerUp({button: drag_actions.ButtonType.LEFT})
       .send();
     test(t => {
