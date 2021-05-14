@@ -35,10 +35,6 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
 }
 
-namespace agent_interference_recorder_test {
-class AgentInterferenceRecorderTest;
-}
-
 namespace task_queue_throttler_unittest {
 class TaskQueueThrottlerTest;
 }
@@ -431,10 +427,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return queue_traits_.prioritisation_type;
   }
 
-  void OnTaskReady(const void* frame_scheduler,
-                   const base::sequence_manager::Task& task,
-                   base::sequence_manager::LazyNow* lazy_now);
-
   void OnTaskStarted(const base::sequence_manager::Task& task,
                      const TaskQueue::TaskTiming& task_timing);
 
@@ -526,7 +518,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
-  friend class agent_interference_recorder_test::AgentInterferenceRecorderTest;
   friend class blink::scheduler::task_queue_throttler_unittest::
       TaskQueueThrottlerTest;
 
