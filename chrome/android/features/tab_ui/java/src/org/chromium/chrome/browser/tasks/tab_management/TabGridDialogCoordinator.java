@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,8 +51,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ViewGroup containerView, TabSwitcherMediator.ResetHandler resetHandler,
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ScrimCoordinator scrimCoordinator, ViewGroup rootView) {
+            Supplier<ShareDelegate> shareDelegateSupplier, ScrimCoordinator scrimCoordinator,
+            ViewGroup rootView) {
         mComponentName = animationSourceViewProvider == null ? "TabGridDialogFromStrip"
                                                              : "TabGridDialogInSwitcher";
 

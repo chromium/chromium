@@ -736,7 +736,10 @@ public class RootUiCoordinator
                     mActivity::isInOverviewMode, mActivity.getModalDialogManagerSupplier(),
                     mActivity.getStatusBarColorController(),
                     /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
-                    mStartSurfaceParentTabSupplier);
+                    mStartSurfaceParentTabSupplier, mBottomSheetController,
+                    mActivity::isWarmOnResume, mActivity.getTabContentManager(),
+                    /* tabCreatorManager= */ mActivity, mActivity.getOverviewModeBehaviorSupplier(),
+                    mActivity.getSnackbarManager());
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

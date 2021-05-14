@@ -19,7 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -105,7 +105,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
     private final TabSwitcherMediator.ResetHandler mTabSwitcherResetHandler;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
-    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final Runnable mScrimClickRunnable;
     private final String mComponentName;
 
@@ -122,8 +122,8 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager,
             TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
             AnimationSourceViewProvider animationSourceViewProvider,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            SnackbarManager snackbarManager, String componentName) {
+            Supplier<ShareDelegate> shareDelegateSupplier, SnackbarManager snackbarManager,
+            String componentName) {
         mContext = context;
         mModel = model;
         mTabModelSelector = tabModelSelector;

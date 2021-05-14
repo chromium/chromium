@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -18,9 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -147,42 +146,46 @@ public class TabSwitcherCoordinator
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private PriceTrackingDialogCoordinator mPriceTrackingDialogCoordinator;
 
-    public TabSwitcherCoordinator(Context context, ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            BrowserControlsStateProvider browserControls, TabCreatorManager tabCreatorManager,
-            MenuOrKeyboardActionController menuOrKeyboardActionController, ViewGroup container,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            ScrimCoordinator scrimCoordinator, @TabListCoordinator.TabListMode int mode,
-            ViewGroup rootView) {
+    /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
+    public TabSwitcherCoordinator(@NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull BrowserControlsStateProvider browserControls,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull ViewGroup container, @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator scrimCoordinator, @TabListCoordinator.TabListMode int mode,
+            @NonNull ViewGroup rootView) {
         mMode = mode;
         mTabModelSelector = tabModelSelector;
         mContainer = container;
-        mCoordinatorView = ((ChromeTabbedActivity) context).findViewById(R.id.coordinator);
+        mCoordinatorView = activity.findViewById(R.id.coordinator);
         mTabCreatorManager = tabCreatorManager;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mRootView = rootView;
 
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
-        mMediator = new TabSwitcherMediator(context, this, containerViewModel, tabModelSelector,
+        mMediator = new TabSwitcherMediator(activity, this, containerViewModel, tabModelSelector,
                 browserControls, container, tabContentManager, this, this,
                 multiWindowModeStateDispatcher, mode);
 
         mMultiThumbnailCardProvider =
-                new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector);
+                new MultiThumbnailCardProvider(activity, tabContentManager, tabModelSelector);
 
         PseudoTab.TitleProvider titleProvider = tab -> {
             int numRelatedTabs = PseudoTab.getRelatedTabs(tab, tabModelSelector).size();
             if (numRelatedTabs == 1) return tab.getTitle();
-            return context.getResources().getQuantityString(
+            return activity.getResources().getQuantityString(
                     R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
         };
 
-        mTabListCoordinator =
-                new TabListCoordinator(mode, context, tabModelSelector, mMultiThumbnailCardProvider,
-                        titleProvider, true, mMediator, null, TabProperties.UiType.CLOSABLE, null,
-                        this, container, true, COMPONENT_NAME, mRootView);
+        mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
+                mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
+                TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
+                mRootView);
         mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                 mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
@@ -219,7 +222,7 @@ public class TabSwitcherCoordinator
         }
 
         mMessageCardProviderCoordinator = new MessageCardProviderCoordinator(
-                context, tabModelSelector::isIncognitoSelected, (identifier) -> {
+                activity, tabModelSelector::isIncognitoSelected, (identifier) -> {
                     if (identifier == MessageService.MessageType.PRICE_MESSAGE) {
                         mTabListCoordinator.removeSpecialListItem(
                                 TabProperties.UiType.LARGE_MESSAGE, identifier);
@@ -231,7 +234,7 @@ public class TabSwitcherCoordinator
                 });
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
-            mTabGridDialogCoordinator = new TabGridDialogCoordinator(context, tabModelSelector,
+            mTabGridDialogCoordinator = new TabGridDialogCoordinator(activity, tabModelSelector,
                     tabContentManager, tabCreatorManager, mCoordinatorView, this, mMediator,
                     this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
                     scrimCoordinator, rootView);

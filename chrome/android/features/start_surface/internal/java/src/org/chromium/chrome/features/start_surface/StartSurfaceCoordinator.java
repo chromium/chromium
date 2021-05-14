@@ -22,12 +22,15 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
@@ -38,6 +41,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
@@ -70,10 +74,14 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final BrowserControlsManager mBrowserControlsManager;
     private final SnackbarManager mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
-    private final OmniboxStub mOmniboxStub;
+    private final Supplier<OmniboxStub> mOmniboxStubSupplier;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final TabCreatorManager mTabCreatorManager;
+    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
     @Nullable
@@ -165,16 +173,21 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param parentTabSupplier Supplies the current parent {@link Tab}.
      * @param hadWarmStart Whether the application had a warm start.
      * @param windowAndroid The current {@link WindowAndroid}.
-     * @param containerView The container {@link ViewGroup} for this ui.
+     * @param containerView The container {@link ViewGroup} for this ui, also the root view for
+     *         StartSurface.
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param browserControlsManager Manages the browser controls.
      * @param snackbarManager Manages the snackbar.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
-     * @param omniboxStub Handles user interaction with the stubbed Omnibox.
+     * @param omniboxStubSupplier Supplies the {@link OmniboxStub}.
      * @param tabContentManager Manages the tab content.
      * @param modalDialogManager Manages modal dialogs.
      * @param chromeActivityNativeDelegate An activity delegate to handle native initialization.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param tabCreatorManager Manages {@link Tab} creation.
+     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
+     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -187,9 +200,14 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull OmniboxStub omniboxStub, @NonNull TabContentManager tabContentManager,
+            @NonNull Supplier<OmniboxStub> omniboxStubSupplier,
+            @NonNull TabContentManager tabContentManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate) {
+            @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
@@ -202,17 +220,24 @@ public class StartSurfaceCoordinator implements StartSurface {
         mBrowserControlsManager = browserControlsManager;
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
-        mOmniboxStub = omniboxStub;
+        mOmniboxStubSupplier = omniboxStubSupplier;
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mTabCreatorManager = tabCreatorManager;
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.NO_START_SURFACE;
         if (mSurfaceMode == SurfaceMode.NO_START_SURFACE) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
-            mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
-                    mActivity, mContainerView, scrimCoordinator);
+            mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
+                    activityLifecycleDispatcher, tabModelSelector, tabContentManager,
+                    browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
+                    containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
+                    scrimCoordinator, /* rootView= */ containerView);
         } else {
             createAndSetStartSurface(excludeMVTiles);
         }
@@ -322,7 +347,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mShareDelegateSupplier, mWindowAndroid, mTabModelSelector);
         }
         mStartSurfaceMediator.initWithNative(
-                mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStub : null,
+                mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinator != null
                         ? mExploreSurfaceCoordinator.getFeedSurfaceCreator()
                         : null,
@@ -333,7 +358,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
         }
         if (mTasksSurface != null) {
-            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
+            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get());
         }
 
         if (mIsInitPending) {
@@ -342,7 +367,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
-            mSecondaryTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
+            mSecondaryTasksSurface.onFinishNativeInitialization(
+                    mActivity, mOmniboxStubSupplier.get());
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -430,7 +456,11 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         mTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(mActivity,
                 mScrimCoordinator, mPropertyModel, tabSwitcherType, mParentTabSupplier,
-                !excludeMVTiles, mWindowAndroid);
+                !excludeMVTiles, mWindowAndroid, mActivityLifecycleDispatcher, mTabModelSelector,
+                mSnackbarManager, mDynamicResourceLoaderSupplier, mTabContentManager,
+                mModalDialogManager, mBrowserControlsManager, mTabCreatorManager,
+                mMenuOrKeyboardActionController, mShareDelegateSupplier,
+                mMultiWindowModeStateDispatcher, mContainerView);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         mTasksSurface.addFakeSearchBoxShrinkAnimation();
         mOffsetChangedListenerToGenerateScrollEvents = new AppBarLayout.OnOffsetChangedListener() {
@@ -456,11 +486,17 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         PropertyModel propertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
         mStartSurfaceMediator.setSecondaryTasksSurfacePropertyModel(propertyModel);
-        mSecondaryTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(
-                mActivity, mScrimCoordinator, propertyModel, TabSwitcherType.GRID,
-                mParentTabSupplier, false, mWindowAndroid);
+        mSecondaryTasksSurface =
+                TabManagementModuleProvider.getDelegate().createTasksSurface(mActivity,
+                        mScrimCoordinator, propertyModel, TabSwitcherType.GRID, mParentTabSupplier,
+                        /* hasMVTiles= */ false, mWindowAndroid, mActivityLifecycleDispatcher,
+                        mTabModelSelector, mSnackbarManager, mDynamicResourceLoaderSupplier,
+                        mTabContentManager, mModalDialogManager, mBrowserControlsManager,
+                        mTabCreatorManager, mMenuOrKeyboardActionController, mShareDelegateSupplier,
+                        mMultiWindowModeStateDispatcher, mContainerView);
         if (mIsInitializedWithNative) {
-            mSecondaryTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStub);
+            mSecondaryTasksSurface.onFinishNativeInitialization(
+                    mActivity, mOmniboxStubSupplier.get());
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;

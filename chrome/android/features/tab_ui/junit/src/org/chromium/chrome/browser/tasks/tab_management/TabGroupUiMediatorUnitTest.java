@@ -130,8 +130,6 @@ public class TabGroupUiMediatorUnitTest {
     @Mock
     Context mContext;
     @Mock
-    SnackbarManager.SnackbarManageable mSnackbarManageable;
-    @Mock
     SnackbarManager mSnackbarManager;
     @Mock
     ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -211,7 +209,7 @@ public class TabGroupUiMediatorUnitTest {
                 TabUiFeatureUtilities.isTabGroupsAndroidEnabled() ? mTabGridDialogController : null;
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mOverviewModeBehaviorSupplier,
-                mThemeColorProvider, controller, mActivityLifecycleDispatcher, mSnackbarManageable,
+                mThemeColorProvider, controller, mActivityLifecycleDispatcher, mSnackbarManager,
                 mOmniboxFocusStateSupplier);
 
         if (currentTab == null) {
@@ -349,9 +347,6 @@ public class TabGroupUiMediatorUnitTest {
         // Set up TabCreatorManager
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(null).when(mTabCreator).createNewTab(any(), anyInt(), any());
-
-        // Set up SnackbarManageable.
-        doReturn(mSnackbarManager).when(mSnackbarManageable).getSnackbarManager();
 
         // Set up omnibox focus state observer.
         doReturn(nullValue())

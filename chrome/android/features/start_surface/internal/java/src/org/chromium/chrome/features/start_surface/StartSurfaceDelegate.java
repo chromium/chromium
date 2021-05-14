@@ -18,12 +18,16 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -36,24 +40,32 @@ public class StartSurfaceDelegate {
         return new StartSurfaceLayout(context, updateHost, renderHost, startSurface);
     }
 
+    /** {@see StartSurfaceCoordinator} */
     public static StartSurface createStartSurface(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
             @NonNull Supplier<Tab> parentTabSupplier, boolean hadWarmStart,
-            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup rootView,
+            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup containerView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull OmniboxStub omniboxStub, @NonNull TabContentManager tabContentManager,
+            @NonNull Supplier<OmniboxStub> omniboxStubSupplier,
+            @NonNull TabContentManager tabContentManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate) {
+            @NonNull ChromeActivityNativeDelegate chromeActivityNativeDelegate,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
-                rootView, dynamicResourceLoaderSupplier, tabModelSelector, browserControlsManager,
-                snackbarManager, shareDelegateSupplier, omniboxStub, tabContentManager,
-                modalDialogManager, chromeActivityNativeDelegate);
+                containerView, dynamicResourceLoaderSupplier, tabModelSelector,
+                browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
+                tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
+                activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
+                multiWindowModeStateDispatcher);
     }
 }

@@ -112,7 +112,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
     private final ThemeColorProvider.TintObserver mTintObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final SnackbarManager.SnackbarManageable mSnackbarManageable;
+    private final SnackbarManager mSnackbarManager;
     private final Snackbar mUndoClosureSnackBar;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
@@ -136,7 +136,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             ThemeColorProvider themeColorProvider,
             @Nullable TabGridDialogMediator.DialogController dialogController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            SnackbarManager.SnackbarManageable snackbarManageable,
+            SnackbarManager snackbarManager,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mContext = context;
         mResetHandler = resetHandler;
@@ -147,7 +147,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mThemeColorProvider = themeColorProvider;
         mTabGridDialogController = dialogController;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mSnackbarManageable = snackbarManageable;
+        mSnackbarManager = snackbarManager;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mUndoClosureSnackBar =
                 Snackbar.make(context.getString(R.string.undo_tab_strip_closure_message), this,
@@ -164,10 +164,9 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 if (type == TabSelectionType.FROM_NEW) {
                     mAddedTabId = tab.getId();
                 }
-                if (lastId != tab.getId() && mSnackbarManageable.getSnackbarManager().isShowing()) {
+                if (lastId != tab.getId() && mSnackbarManager.isShowing()) {
                     // Dismiss undo snackbar when there is a selection of different tab.
-                    mSnackbarManageable.getSnackbarManager().dismissSnackbars(
-                            TabGroupUiMediator.this);
+                    mSnackbarManager.dismissSnackbars(TabGroupUiMediator.this);
                 }
                 // Maybe activate conditional tab strip for selection from toolbar swipe, but skip
                 // the same tab selection that is probably due to partial toolbar swipe. Also, when
@@ -304,7 +303,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mSnackbarManageable.getSnackbarManager().dismissSnackbars(TabGroupUiMediator.this);
+                mSnackbarManager.dismissSnackbars(TabGroupUiMediator.this);
                 resetTabStripWithRelatedTabsForId(mTabModelSelector.getCurrentTabId());
             }
         };
@@ -411,7 +410,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 ConditionalTabStripUtils.setFeatureStatus(FeatureStatus.FORBIDDEN);
                 RecordUserAction.record("TabStrip.UserDismissed");
                 if (ConditionalTabStripUtils.shouldShowSnackbarForDismissal()) {
-                    mSnackbarManageable.getSnackbarManager().showSnackbar(mUndoClosureSnackBar);
+                    mSnackbarManager.showSnackbar(mUndoClosureSnackBar);
                 } else {
                     showOptOutInfoBarForTab(mTabModelSelector.getCurrentTab());
                 }
