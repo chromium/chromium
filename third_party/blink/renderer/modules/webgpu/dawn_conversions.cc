@@ -106,7 +106,7 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
       // default values of 1 are used (which are set above).
       switch (webgpu_extent_sequence.size()) {
         default:
-          dawn_extent.depth = webgpu_extent_sequence[2];
+          dawn_extent.depthOrArrayLayers = webgpu_extent_sequence[2];
           FALLTHROUGH;
         case 2:
           dawn_extent.height = webgpu_extent_sequence[1];
