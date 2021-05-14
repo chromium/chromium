@@ -32,17 +32,20 @@ js_library("bookmarks_api_proxy") {
 
 js_library("bookmark_folder") {
   deps = [
+    ":bookmarks_api_proxy",
     "../:read_later_api_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:icon.m",
   ]
+  externs_list = [ "$externs_path/bookmarks.js" ]
 }
 
 js_library("bookmarks_list") {
   deps = [
     ":bookmarks_api_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:list_property_update_behavior.m",
   ]
 }
 

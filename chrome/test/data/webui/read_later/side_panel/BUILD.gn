@@ -25,7 +25,10 @@ js_library("bookmarks_list_test") {
     "//chrome/browser/resources/read_later/side_panel:bookmark_folder",
     "//chrome/browser/resources/read_later/side_panel:bookmarks_list",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/bookmarks.js",
+    "$externs_path/mocha-2.5.js",
+  ]
 }
 
 js_library("bookmark_folder_test") {
@@ -43,4 +46,5 @@ js_library("test_bookmarks_api_proxy") {
     "../..:test_browser_proxy.m",
     "//chrome/browser/resources/read_later/side_panel:bookmarks_api_proxy",
   ]
+  externs_list = [ "$externs_path/bookmarks.js" ]
 }

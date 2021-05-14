@@ -77,12 +77,12 @@
 
 <div id="children" hidden$="[[!open_]]">
   <template is="dom-repeat" items="[[folder.children]]">
-    <template is="dom-if" if="[[item.children]]">
+    <template is="dom-if" if="[[!item.url]]">
       <bookmark-folder folder="[[item]]" depth="[[childDepth_]]">
       </bookmark-folder>
     </template>
 
-    <template is="dom-if" if="[[!item.children]]">
+    <template is="dom-if" if="[[item.url]]">
       <a href="[[item.url]]" class="bookmark row" on-click="onBookmarkClick_">
         <div
             class="icon"
