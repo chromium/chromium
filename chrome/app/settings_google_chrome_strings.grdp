@@ -189,8 +189,7 @@
   </message>
 
   <!-- Languages Page -->
-  <!-- Chrome OS string is in settings_strings.grdp. -->
-  <if expr="not chromeos">
+  <if expr="is_win">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
       This language is used to display the Google Chrome UI
     </message>

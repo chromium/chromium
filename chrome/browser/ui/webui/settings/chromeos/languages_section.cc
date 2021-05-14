@@ -383,35 +383,18 @@ LanguagesSection::~LanguagesSection() = default;
 
 void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"orderLanguagesInstructions",
-       IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_ORDERING_INSTRUCTIONS},
       {"osLanguagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE},
       {"languagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE},
       {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
-      {"osLanguagesListTitle", IDS_OS_SETTINGS_LANGUAGES_LIST_TITLE},
-      {"inputMethodsListTitle",
-       IDS_SETTINGS_LANGUAGES_INPUT_METHODS_LIST_TITLE},
       {"inputMethodEnabled", IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED},
-      {"inputMethodsExpandA11yLabel",
-       IDS_SETTINGS_LANGUAGES_INPUT_METHODS_EXPAND_ACCESSIBILITY_LABEL},
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
-      {"manageInputMethods", IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGE},
-      // TODO(crbug.com/1097328): Remove this string, as it is unused.
-      {"manageInputMethodsPageTitle",
-       IDS_SETTINGS_LANGUAGES_MANAGE_INPUT_METHODS_TITLE},
       {"showImeMenu", IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU},
-      {"displayLanguageRestart",
-       IDS_SETTINGS_LANGUAGES_RESTART_TO_DISPLAY_LANGUAGE},
       {"moveDown", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_DOWN},
-      {"displayInThisLanguage",
-       IDS_SETTINGS_LANGUAGES_DISPLAY_IN_THIS_LANGUAGE},
       {"searchLanguages", IDS_SETTINGS_LANGUAGE_SEARCH},
       {"addLanguagesDialogTitle",
        IDS_SETTINGS_LANGUAGES_MANAGE_LANGUAGES_TITLE},
       {"moveToTop", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP},
-      {"isDisplayedInThisLanguage",
-       IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE},
       {"removeLanguage", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_REMOVE},
       {"addLanguages", IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD},
       {"moveUp", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP},
@@ -423,9 +406,6 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLanguagesPageStringsV2(html_source);
   AddInputPageStringsV2(html_source);
 
-  html_source->AddString(
-      "languagesLearnMoreURL",
-      base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl));
   html_source->AddBoolean("imeOptionsInSettings",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kImeOptionsInSettings));

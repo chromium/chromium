@@ -115,7 +115,6 @@ js_modulizer("modulize") {
     "os_about_page_tests.js",
     "os_edit_dictionary_page_test.js",
     "os_files_page_test.js",
-    "os_languages_page_tests.js",
     "os_languages_page_v2_tests.js",
     "os_reset_page_test.js",
     "os_people_page_test.js",

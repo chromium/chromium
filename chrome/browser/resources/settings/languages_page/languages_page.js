@@ -6,6 +6,8 @@
  * @fileoverview 'settings-languages-page' is the settings page
  * for language and input method settings.
  */
+
+// TODO(crbug.com/1097328): Remove all chromeos references here.
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';

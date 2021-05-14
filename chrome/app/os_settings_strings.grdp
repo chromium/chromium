@@ -453,45 +453,17 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_NO_DICTIONARY_WORDS_LABEL" desc="Placeholder that is shown when there are no custom words in the list of saved custom words dictionary.">
     Saved custom words will appear here
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LIST_TITLE" desc="Title for the list of the user's preferred written languages.">
-    Languages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
-    Add languages or reorder list. <ph name="BEGIN_LINK">&lt;a&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHODS_LIST_TITLE" desc="Title for the current input method in the header for the collapsible list of enabled input methods (keyboard layouts and input method editors).">
-    Input method
-  </message>
   <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED" desc="Label underneath the currently active input method in the list of enabled input methods.">
     Enabled
   </message>
-  <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHODS_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the input options (keyboard and keyboard layouts). Only visible by screen reader software.">
-    Show input options
-  </message>
   <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY" desc="Label which is shown on the manage input methods page if input methods are managed by policy.">
     Your administrator has limited the available input methods.
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGE" desc="Button under the list of input methods which opens a sub-page that lets the user enable or disable keyboard layouts and input method editors.">
-    Manage input methods
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_MANAGE_INPUT_METHODS_TITLE" desc="Name of the settings sub-page which allows enabling and disabling input methods.">
-    Manage input methods
   </message>
   <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE" translateable="false" desc="Name of the settings sub-page which allows changing input method options.">
     Input method options
   </message>
   <message name="IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
     Show input options in the shelf
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_RESTART_TO_DISPLAY_LANGUAGE" desc="The aria label to be read aloud to describe a button for restarting the device to change the device's UI language.">
-    Restart device to show system text in <ph name="LANGUAGE">$1<ex>English</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_DISPLAY_IN_THIS_LANGUAGE" desc="The label used for a button that changes the UI language.">
-    Show system text in this language
-  </message>
-  <!-- The non-Chrome OS string is in settings_google_chrome_strings.grdp -->
-  <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
-    System text is shown in this language
   </message>
 
   <!-- Suggestions Section -->

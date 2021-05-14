@@ -34,17 +34,6 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 };
 
-// TODO(crbug/1109431): Remove this test once migration is complete.
-// eslint-disable-next-line no-var
-var OSSettingsOsLanguagesPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_languages_page_tests.m.js';
-  }
-};
-
-TEST_F('OSSettingsOsLanguagesPageV3Test', 'All', () => mocha.run());
-
 // eslint-disable-next-line no-var
 var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */

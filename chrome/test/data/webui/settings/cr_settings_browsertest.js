@@ -645,8 +645,7 @@ GEN('#if !defined(OS_MAC) || defined(NDEBUG)');
 GEN('#endif  // !defined(OS_MAC) || defined(NDEBUG)');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-[['LanguagesPageMetricsChromeOS', 'languages_page_metrics_test_cros.js'],
- ['PasswordsSectionCros', 'passwords_section_test_cros.js'],
+[['PasswordsSectionCros', 'passwords_section_test_cros.js'],
  ['PeoplePageChromeOS', 'people_page_test_cros.js'],
  // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
  ['SiteListChromeOS', 'site_list_tests_cros.js', 'DISABLED_AndroidSmsInfo'],
