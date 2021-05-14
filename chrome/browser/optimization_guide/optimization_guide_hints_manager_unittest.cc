@@ -34,8 +34,9 @@
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -292,10 +293,13 @@ class OptimizationGuideHintsManagerTest
     if (hints_manager_)
       ResetHintsManager();
 
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
     pref_service_->registry()->RegisterBooleanPref(
         data_reduction_proxy::prefs::kDataSaverEnabled, false);
+    unified_consent::UnifiedConsentService::RegisterPrefs(
+        pref_service_->registry());
 
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -308,8 +312,8 @@ class OptimizationGuideHintsManagerTest
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 
     hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-        &testing_profile_, pref_service_.get(), hint_store_.get(),
-        top_host_provider, tab_url_provider_.get(), url_loader_factory_);
+        &testing_profile_, pref_service(), hint_store_.get(), top_host_provider,
+        tab_url_provider_.get(), url_loader_factory_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the OptimizationGuideHintsManager
@@ -433,7 +437,7 @@ class OptimizationGuideHintsManagerTest
 
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
-  TestingPrefServiceSimple* pref_service() const { return pref_service_.get(); }
+  PrefService* pref_service() const { return pref_service_.get(); }
 
   FakeTabUrlProvider* tab_url_provider() const {
     return tab_url_provider_.get();
@@ -463,7 +467,7 @@ class OptimizationGuideHintsManagerTest
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
   std::unique_ptr<FakeTabUrlProvider> tab_url_provider_;
   std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -2003,9 +2007,15 @@ class OptimizationGuideHintsManagerFetchingTest
     : public OptimizationGuideHintsManagerTest {
  public:
   OptimizationGuideHintsManagerFetchingTest() {
-    scoped_list_.InitAndEnableFeatureWithParameters(
-        optimization_guide::features::kRemoteOptimizationGuideFetching,
-        {{"max_concurrent_page_navigation_fetches", "2"}});
+    scoped_list_.InitWithFeaturesAndParameters(
+        {
+            {
+                optimization_guide::features::kRemoteOptimizationGuideFetching,
+                {{"max_concurrent_page_navigation_fetches", "2"}},
+            },
+        },
+        {optimization_guide::features::
+             kRemoteOptimizationGuideFetchingAnonymousDataConsent});
   }
 
   content::WebContents* Navigate(GURL url) {

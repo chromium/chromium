@@ -5463,21 +5463,6 @@
             ]
         }
     ],
-    "OptimizationHintsMSBB": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210421",
-                    "enable_features": [
-                        "OptimizationHintsFetchingAnonymousDataConsent"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizedRealtimeThreadingMac": [
         {
             "platforms": [
