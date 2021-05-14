@@ -119,45 +119,41 @@ int UtilityMain(const MainFunctionParams& parameters) {
   // Seccomp-BPF policy.
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
-  if (parameters.zygote_child ||
-      sandbox_type == sandbox::policy::SandboxType::kNetwork ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      sandbox_type == sandbox::policy::SandboxType::kIme ||
-      sandbox_type == sandbox::policy::SandboxType::kTts ||
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-      sandbox_type == sandbox::policy::SandboxType::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_PRINTING)
-      sandbox_type == sandbox::policy::SandboxType::kPrintBackend ||
-#endif
-      sandbox_type == sandbox::policy::SandboxType::kAudio ||
-      sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
-    sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
-    if (sandbox_type == sandbox::policy::SandboxType::kNetwork)
+  sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
+  switch (sandbox_type) {
+    case sandbox::policy::SandboxType::kNetwork:
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
+      break;
 #if BUILDFLAG(ENABLE_PRINTING)
-    else if (sandbox_type == sandbox::policy::SandboxType::kPrintBackend)
+    case sandbox::policy::SandboxType::kPrintBackend:
       pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
+      break;
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-    else if (sandbox_type == sandbox::policy::SandboxType::kAudio)
+    case sandbox::policy::SandboxType::kAudio:
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
-    else if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition)
+      break;
+    case sandbox::policy::SandboxType::kSpeechRecognition:
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    else if (sandbox_type == sandbox::policy::SandboxType::kIme)
+    case sandbox::policy::SandboxType::kIme:
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
-    else if (sandbox_type == sandbox::policy::SandboxType::kTts)
+      break;
+    case sandbox::policy::SandboxType::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
+      break;
 #if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-    else if (sandbox_type == sandbox::policy::SandboxType::kLibassistant) {
+    case sandbox::policy::SandboxType::kLibassistant:
       pre_sandbox_hook =
           base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
-    }
+      break;
 #endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+    default:
+      break;
+  }
+  if (parameters.zygote_child || !pre_sandbox_hook.is_null()) {
     sandbox::policy::Sandbox::Initialize(
         sandbox_type, std::move(pre_sandbox_hook),
         sandbox::policy::SandboxLinux::Options());
