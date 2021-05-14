@@ -112,7 +112,7 @@ class Rules(object):
   def __str__(self):
     result = ['Rules = {\n    (apply to all files): [\n%s\n    ],' % '\n'.join(
         '      %s' % x for x in self._general_rules)]
-    for regexp, rules in self._specific_rules.iteritems():
+    for regexp, rules in self._specific_rules.items():
       result.append('    (limited to files matching %s): [\n%s\n    ]' % (
           regexp, '\n'.join('      %s' % x for x in rules)))
     result.append('  }')
@@ -132,7 +132,7 @@ class Rules(object):
     if include_general_rules:
       AddDependencyTuplesImpl(deps, self._general_rules)
     if include_specific_rules:
-      for regexp, rules in self._specific_rules.iteritems():
+      for regexp, rules in self._specific_rules.items():
         AddDependencyTuplesImpl(deps, rules, "/" + regexp)
     return deps
 
@@ -175,7 +175,7 @@ class Rules(object):
     file located at |dependee_path|.
     """
     dependee_filename = os.path.basename(dependee_path)
-    for regexp, specific_rules in self._specific_rules.iteritems():
+    for regexp, specific_rules in self._specific_rules.items():
       if re.match(regexp, dependee_filename):
         for rule in specific_rules:
           if rule.ChildOrMatch(include_path):

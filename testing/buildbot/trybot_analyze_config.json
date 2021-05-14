@@ -34,6 +34,7 @@
   },
   "chromium": {
     "exclusions": [
+      "buildtools/checkdeps/.*",
       "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/.*(css|html|js)",
       "chrome/browser/ui/webui/.*browsertest.*js",

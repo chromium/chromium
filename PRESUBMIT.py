@@ -2169,6 +2169,12 @@ def _ParseDeps(contents):
       'Var': _VarImpl(local_scope).Lookup,
       'Str': str,
   }
+
+  # TODO(crbug.com/1207012): We need to strip the BOM because it isn't
+  # legal in Python source files. We can remove this check once the CL
+  # that actually removes the BOM from //third_party/crashpad/DEPS lands.
+  if contents.startswith(u'\ufeff'):
+      contents = contents[1:]
   exec contents in global_scope, local_scope
   return local_scope
 
