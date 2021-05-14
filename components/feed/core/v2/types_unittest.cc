@@ -51,4 +51,14 @@ TEST(Types, ToContentRevision) {
   EXPECT_EQ(ContentRevision(), ToContentRevision("c/"));
 }
 
+TEST(Types, ContentIdSet) {
+  ContentIdSet v123(std::vector<int64_t>{1, 2, 3});
+  ContentIdSet v1234(std::vector<int64_t>{1, 2, 3, 4});
+
+  EXPECT_TRUE(v1234.ContainsAllOf(v123));
+  EXPECT_FALSE(v123.ContainsAllOf(v1234));
+  EXPECT_FALSE(v123.IsEmpty());
+  EXPECT_TRUE(ContentIdSet().IsEmpty());
+}
+
 }  // namespace feed

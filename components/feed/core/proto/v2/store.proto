@@ -60,6 +60,8 @@ message StreamData {
   bool privacy_notice_fulfilled = 9;
   // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 10;
+  // List of unique IDs representing content contained in the stream.
+  repeated int64 content_ids = 11;
 
   reserved 3, 5;
 }
@@ -75,13 +77,16 @@ message Metadata {
   // Metadata about a specific stream.
   message StreamMetadata {
     string stream_id = 1;
-    // If this stream has been viewed before, this timestamp matches the
-    // 'StreamData.last_added_time_millis' value of that stream. This is used to
-    // determine whether the user has already seen a stored stream's data.
-    int64 view_time_millis = 2;
     // Whether the stream data is known to be stale. This can happen in the
     // WebFeed stream if the subscription list changes.
     bool is_known_stale = 3;
+    // If this stream has been viewed before, this is the list of content in the
+    // stream
+    // (`StreamData.content_ids`). This is used to determine whether the user
+    // has already seen a stored stream's data.
+    repeated int64 view_content_ids = 4;
+
+    reserved 2;
   }
 
   // Token used to read or write to the same storage.

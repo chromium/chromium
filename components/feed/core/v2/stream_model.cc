@@ -272,6 +272,9 @@ const std::string& StreamModel::GetNextPageToken() const {
 base::Time StreamModel::GetLastAddedTime() const {
   return feedstore::GetLastAddedTime(stream_data_);
 }
+ContentIdSet StreamModel::GetContentIds() const {
+  return feedstore::GetContentIds(stream_data_);
+}
 
 std::string StreamModel::DumpStateForTesting() {
   std::stringstream ss;

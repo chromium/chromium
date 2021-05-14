@@ -52,9 +52,13 @@ const Metadata::StreamMetadata* FindMetadataForStream(
 Metadata::StreamMetadata& MetadataForStream(
     Metadata& metadata,
     const feed::StreamType& stream_type);
-base::Optional<Metadata> SetStreamViewTime(const Metadata& metadata,
-                                           const feed::StreamType& stream_type,
-                                           base::Time stream_last_added_time);
+base::Optional<Metadata> SetStreamViewContentIds(
+    const Metadata& metadata,
+    const feed::StreamType& stream_type,
+    const feed::ContentIdSet& content_ids);
+feed::ContentIdSet GetContentIds(const StreamData& stream_data);
+feed::ContentIdSet GetViewContentIds(const Metadata& metadata,
+                                     const feed::StreamType& stream_type);
 
 }  // namespace feedstore
 

@@ -112,7 +112,7 @@ void LoadStreamTask::LoadFromStoreComplete(
   load_from_store_status_ = result.status;
   latencies_->StepComplete(LoadLatencyTimes::kLoadFromStore);
   stored_content_age_ = result.content_age;
-  last_added_time_ = result.last_added_time;
+  content_ids_ = result.content_ids;
 
   // Phase 2. Process the result of `LoadStreamFromStoreTask`.
 
@@ -235,8 +235,8 @@ void LoadStreamTask::ProcessNetworkResponse(
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
   loaded_new_content_from_network_ = true;
-  last_added_time_ = feedstore::GetLastAddedTime(
-      response_data.model_update_request->stream_data);
+  content_ids_ =
+      feedstore::GetContentIds(response_data.model_update_request->stream_data);
 
   stream_->GetStore()->OverwriteStream(
       options_.stream_type,
@@ -279,7 +279,7 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.stream_type = options_.stream_type;
   result.load_from_store_status = load_from_store_status_;
   result.stored_content_age = stored_content_age_;
-  result.last_added_time = last_added_time_;
+  result.content_ids = content_ids_;
   result.final_status = status;
   result.load_type = options_.load_type;
   result.update_request = std::move(update_request_);
@@ -300,7 +300,6 @@ std::ostream& operator<<(std::ostream& os,
      << " final_status=" << result.final_status
      << " load_from_store_status=" << result.load_from_store_status
      << " stored_content_age=" << result.stored_content_age
-     << " last_added_time=" << result.last_added_time
      << " load_type=" << static_cast<int>(result.load_type)
      << " request_schedule?=" << result.request_schedule.has_value();
   if (result.network_response_info)

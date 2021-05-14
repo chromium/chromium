@@ -164,6 +164,7 @@ class TestFeedNetwork : public FeedNetwork {
   void CancelRequests() override;
 
   void InjectRealFeedQueryResponse();
+  void InjectRealFeedQueryResponseWithNoContent();
 
   template <typename API>
   void InjectApiRawResponse(RawResponse result) {

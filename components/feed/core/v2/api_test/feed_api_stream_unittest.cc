@@ -864,7 +864,7 @@ TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromNetwork) {
 
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
+  EXPECT_EQ(std::vector<bool>({false, true}), observer.calls);
 }
 
 TEST_F(FeedApiTest, HasUnreadContentInitially) {
@@ -885,6 +885,31 @@ TEST_F(FeedApiTest, HasUnreadContentInitially) {
   EXPECT_EQ(std::vector<bool>({true}), observer.calls);
 }
 
+TEST_F(FeedApiTest, NetworkFetchWithNoNewContentDoesNotProvideUnreadContent) {
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  // Load content from the network, and view it.
+  {
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+
+    stream_->ReportSliceViewed(
+        surface.GetSurfaceId(), surface.GetStreamType(),
+        surface.initial_state->updated_slices(1).slice().slice_id());
+  }
+  // Wait until the feed content is stale.
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(100));
+
+  // Load content from the network again. This time there is no new content.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>({false, true, false}), observer.calls);
+}
+
 TEST_F(FeedApiTest, RemovedUnreadContentObserverDoesNotReceiveCalls) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestUnreadContentObserver observer;
@@ -894,7 +919,7 @@ TEST_F(FeedApiTest, RemovedUnreadContentObserverDoesNotReceiveCalls) {
 
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(std::vector<bool>(), observer.calls);
+  EXPECT_EQ(std::vector<bool>({false}), observer.calls);
 }
 
 TEST_F(FeedApiTest, DeletedUnreadContentObserverDoesNotCrash) {
@@ -911,10 +936,9 @@ TEST_F(FeedApiTest, DeletedUnreadContentObserverDoesNotCrash) {
 TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromStore) {
   store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
                           base::DoNothing());
-
+  TestForYouSurface surface(stream_.get());
   TestUnreadContentObserver observer;
   stream_->AddUnreadContentObserver(kForYouStream, &observer);
-  TestForYouSurface surface(stream_.get());
 
   WaitForIdleTaskQueue();
 
@@ -923,10 +947,9 @@ TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromStore) {
 
 TEST_F(FeedApiTest, ReportSliceViewedUpdatesObservers) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
   TestUnreadContentObserver observer;
   stream_->AddUnreadContentObserver(kForYouStream, &observer);
-  TestForYouSurface surface(stream_.get());
-
   WaitForIdleTaskQueue();
 
   stream_->ReportSliceViewed(
@@ -1182,6 +1205,20 @@ TEST_F(FeedApiTest, ReadNetworkResponse) {
 
   // The stream's user attributes are set, so activity logging is enabled.
   EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
+  // This network response has content.
+  EXPECT_TRUE(stream_->HasUnreadContent(kForYouStream));
+}
+
+TEST_F(FeedApiTest, ReadNetworkResponseWithNoContent) {
+  base::HistogramTester histograms;
+  network_.InjectRealFeedQueryResponseWithNoContent();
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> loading -> no-cards", surface.DescribeUpdates());
+
+  // This network response has no content.
+  EXPECT_FALSE(stream_->HasUnreadContent(kForYouStream));
 }
 
 TEST_F(FeedApiTest, ClearAllAfterLoadResultsInRefresh) {

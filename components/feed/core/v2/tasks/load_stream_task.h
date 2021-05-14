@@ -62,9 +62,8 @@ class LoadStreamTask : public offline_pages::Task {
     LoadStreamStatus load_from_store_status = LoadStreamStatus::kNoStatus;
     // Age of content loaded from local storage. Zero if none was loaded.
     base::TimeDelta stored_content_age;
-    // Last time the stream was fetched from the network. This may be either
-    // a previous fetch time, or the one triggered by `LoadStreamTask`.
-    base::Time last_added_time;
+    // Set of content IDs present in the feed.
+    ContentIdSet content_ids;
     LoadType load_type;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
     base::Optional<RequestSchedule> request_schedule;
@@ -114,7 +113,7 @@ class LoadStreamTask : public offline_pages::Task {
   base::Optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
-  base::Time last_added_time_;
+  ContentIdSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   base::Optional<RequestSchedule> request_schedule_;

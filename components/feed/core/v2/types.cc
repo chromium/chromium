@@ -185,4 +185,26 @@ void LoadLatencyTimes::StepComplete(StepKind kind) {
   last_time_ = now;
 }
 
+ContentIdSet::ContentIdSet() = default;
+ContentIdSet::~ContentIdSet() = default;
+ContentIdSet::ContentIdSet(base::flat_set<int64_t> content_ids)
+    : content_ids_(std::move(content_ids)) {}
+ContentIdSet::ContentIdSet(const ContentIdSet&) = default;
+ContentIdSet::ContentIdSet(ContentIdSet&&) = default;
+ContentIdSet& ContentIdSet::operator=(const ContentIdSet&) = default;
+ContentIdSet& ContentIdSet::operator=(ContentIdSet&&) = default;
+bool ContentIdSet::ContainsAllOf(const ContentIdSet& items) const {
+  for (int64_t id : items.content_ids_) {
+    if (!content_ids_.contains(id))
+      return false;
+  }
+  return true;
+}
+bool ContentIdSet::IsEmpty() const {
+  return content_ids_.empty();
+}
+bool ContentIdSet::operator==(const ContentIdSet& rhs) const {
+  return content_ids_ == rhs.content_ids_;
+}
+
 }  // namespace feed

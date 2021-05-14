@@ -309,6 +309,9 @@ RefreshResponseData TranslateWireResponse(
   result->stream_data.set_logging_enabled(response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
       response_metadata.privacy_notice_fulfilled());
+  for (const feedstore::Content& content : result->content) {
+    result->stream_data.add_content_ids(content.content_id().id());
+  }
 
   base::Optional<std::string> session_id = base::nullopt;
   if (was_signed_in_request) {

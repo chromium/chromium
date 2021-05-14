@@ -189,8 +189,8 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
     StreamType stream_type =
         feedstore::StreamTypeFromId(stream_data.stream_id());
     if (stream_type.IsValid()) {
-      GetStream(stream_type).last_updated_time =
-          feedstore::GetLastAddedTime(stream_data);
+      GetStream(stream_type).content_ids =
+          feedstore::GetContentIds(stream_data);
     }
   }
   metadata_populated_ = true;
@@ -868,8 +868,8 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
   if (result.fetched_content_has_notice_card.has_value())
     feed::prefs::SetLastFetchHadNoticeCard(
         *profile_prefs_, *result.fetched_content_has_notice_card);
-  if (!result.last_added_time.is_null())
-    GetStream(result.stream_type).last_updated_time = result.last_added_time;
+  if (!result.content_ids.IsEmpty())
+    GetStream(result.stream_type).content_ids = result.content_ids;
   if (result.loaded_new_content_from_network) {
     SetStreamStale(result.stream_type, false);
     if (result.stream_type.IsForYou())
@@ -881,9 +881,10 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
 
 bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
   Stream& stream = GetStream(stream_type);
-  return !stream.last_updated_time.is_null() &&
-         feedstore::GetStreamViewTime(metadata_, stream_type) !=
-             stream.last_updated_time;
+  if (stream.content_ids.IsEmpty())
+    return false;
+  return !feedstore::GetViewContentIds(metadata_, stream_type)
+              .ContainsAllOf(stream.content_ids);
 }
 
 void FeedStream::ClearAll() {
@@ -945,7 +946,7 @@ void FeedStream::LoadModel(const StreamType& stream_type,
   stream.model = std::move(model);
   stream.model->SetStreamType(stream_type);
   stream.model->SetStoreObserver(this);
-  stream.last_updated_time = stream.model->GetLastAddedTime();
+  stream.content_ids = stream.model->GetContentIds();
   stream.surface_updater->SetModel(stream.model.get());
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
   MaybeNotifyHasUnreadContent(stream_type);
@@ -1039,8 +1040,8 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
     return;
 
   if (stream.model) {
-    if (SetMetadata(SetStreamViewTime(metadata_, stream_type,
-                                      stream.model->GetLastAddedTime()))) {
+    if (SetMetadata(SetStreamViewContentIds(metadata_, stream_type,
+                                            stream.model->GetContentIds()))) {
       MaybeNotifyHasUnreadContent(stream_type);
     }
     metrics_reporter_->ContentSliceViewed(stream_type, index);
@@ -1064,21 +1065,16 @@ bool FeedStream::CanLogViews() const {
 }
 
 // Notifies observers if 'HasUnreadContent' has changed for `stream_type`.
-// Stream content has been seen if StreamData::last_added_time_millis ==
-// Metadata::StreamMetadata::view_time_millis. This should be called: when the
-// model is loaded, when a refresh is attempted, and when content is viewed.
+// Stream content has been seen if StreamData::content_hash ==
+// Metadata::StreamMetadata::view_content_hash. This should be called:
+// when initial metadata is loaded, when the model is loaded, when a refresh is
+// attempted, and when content is viewed.
 void FeedStream::MaybeNotifyHasUnreadContent(const StreamType& stream_type) {
-  if (!metadata_populated_)
-    return;
   Stream& stream = GetStream(stream_type);
-  // Don't notify if we don't know the update time.
-  if (stream.last_updated_time.is_null())
+  if (!metadata_populated_ || stream.model_loading_in_progress)
     return;
 
-  const bool has_new_content =
-      feedstore::GetStreamViewTime(metadata_, stream_type) !=
-          stream.last_updated_time &&
-      !stream.last_updated_time.is_null();
+  const bool has_new_content = HasUnreadContent(stream_type);
   for (auto& o : stream.unread_content_notifiers) {
     o.NotifyIfValueChanged(has_new_content);
   }

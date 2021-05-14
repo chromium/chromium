@@ -428,6 +428,24 @@ void TestFeedNetwork::InjectRealFeedQueryResponse() {
   injected_response_ = response;
 }
 
+void TestFeedNetwork::InjectRealFeedQueryResponseWithNoContent() {
+  base::FilePath response_file_path;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
+  response_file_path = response_file_path.AppendASCII(
+      "components/test/data/feed/response.binarypb");
+  std::string response_data;
+  CHECK(base::ReadFileToString(response_file_path, &response_data));
+
+  feedwire::Response response;
+  CHECK(response.ParseFromString(response_data));
+  // Keep only the first two operations, the CLEAR_ALL and root, but no content.
+  auto* data_operations =
+      response.mutable_feed_response()->mutable_data_operation();
+  data_operations->erase(data_operations->begin() + 2, data_operations->end());
+
+  injected_response_ = response;
+}
+
 void TestFeedNetwork::InjectEmptyActionRequestResult() {
   InjectApiRawResponse<UploadActionsDiscoverApi>({});
 }

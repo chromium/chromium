@@ -62,9 +62,11 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     Complete(LoadStreamStatus::kNoStreamDataInStore);
     return;
   }
+  content_ids_ = feedstore::GetContentIds(result.stream_data);
   if (!ignore_staleness_) {
-    last_added_time_ = feedstore::GetLastAddedTime(result.stream_data);
-    content_age_ = base::Time::Now() - last_added_time_;
+    content_age_ =
+        base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
+
     if (content_age_ > GetFeedConfig().content_expiration_threshold) {
       Complete(LoadStreamStatus::kDataInStoreIsExpired);
       return;
@@ -151,7 +153,7 @@ void LoadStreamFromStoreTask::Complete(LoadStreamStatus status) {
     task_result.status = status;
   }
   task_result.content_age = content_age_;
-  task_result.last_added_time = last_added_time_;
+  task_result.content_ids = content_ids_;
   std::move(result_callback_).Run(std::move(task_result));
   TaskComplete();
 }

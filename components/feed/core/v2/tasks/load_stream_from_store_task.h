@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
+#include "components/feed/core/v2/types.h"
 #include "components/offline_pages/task/task.h"
 
 namespace feed {
@@ -39,8 +40,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // How long since the loaded content was fetched from the server.
     // May be zero if content is not loaded.
     base::TimeDelta content_age;
-    // Last time the stream was fetched from the network.
-    base::Time last_added_time;
+    ContentIdSet content_ids;
   };
 
   // Determines what kind of data is loaded. See `Result` for what is loaded.
@@ -88,7 +88,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   std::vector<feedstore::StoredAction> pending_actions_;
   base::TimeDelta content_age_;
-  base::Time last_added_time_;
+  ContentIdSet content_ids_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};
 };

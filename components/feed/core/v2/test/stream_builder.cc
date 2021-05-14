@@ -190,6 +190,8 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
+  initial_update->stream_data.add_content_ids(MakeContent(i).content_id().id());
+  initial_update->stream_data.add_content_ids(MakeContent(j).content_id().id());
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
@@ -221,6 +223,9 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
+  initial_update->stream_data.add_content_ids(MakeContent(i).content_id().id());
+  initial_update->stream_data.add_content_ids(MakeContent(j).content_id().id());
+
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;

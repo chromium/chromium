@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TYPES_H_
 #define COMPONENTS_FEED_CORE_V2_TYPES_H_
 
+#include <cstdint>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/util/type_safety/id_type.h"
 #include "base/values.h"
@@ -91,6 +93,31 @@ class LoadLatencyTimes {
  private:
   base::TimeTicks last_time_;
   std::vector<Step> steps_;
+};
+
+// Tracks a set of `feedstore::Content` content IDs, for tracking whether unread
+// content is received from the server.
+class ContentIdSet {
+ public:
+  ContentIdSet();
+  ~ContentIdSet();
+  explicit ContentIdSet(base::flat_set<int64_t> ids);
+  ContentIdSet(const ContentIdSet&);
+  ContentIdSet(ContentIdSet&&);
+  ContentIdSet& operator=(const ContentIdSet&);
+  ContentIdSet& operator=(ContentIdSet&&);
+
+  // Returns whether this set contains all items.
+  bool ContainsAllOf(const ContentIdSet& items) const;
+  bool IsEmpty() const;
+  const base::flat_set<int64_t>& values() const { return content_ids_; }
+
+  bool operator==(const ContentIdSet& rhs) const;
+
+ private:
+  // Note, we only store the `id` field of ContentId, with the assumption that
+  // `id` is unique enough given these are only `feedstore::Content` ids.
+  base::flat_set<int64_t> content_ids_;
 };
 
 }  // namespace feed

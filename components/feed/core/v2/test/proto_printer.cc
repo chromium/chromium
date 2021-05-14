@@ -40,6 +40,12 @@ struct IsFieldSetHelper<google::protobuf::RepeatedPtrField<T>> {
   }
 };
 template <typename T>
+struct IsFieldSetHelper<google::protobuf::RepeatedField<T>> {
+  static bool IsSet(const google::protobuf::RepeatedField<T>& v) {
+    return !v.empty();
+  }
+};
+template <typename T>
 bool IsFieldSet(const T& v) {
   return IsFieldSetHelper<T>::IsSet(v);
 }
@@ -72,6 +78,16 @@ class TextProtoPrinter {
   struct FieldPrintHelper<google::protobuf::RepeatedPtrField<T>> {
     static void Run(const std::string& name,
                     const google::protobuf::RepeatedPtrField<T>& v,
+                    TextProtoPrinter* pp) {
+      for (int i = 0; i < v.size(); ++i) {
+        pp->Field(name, v[i]);
+      }
+    }
+  };
+  template <typename T>
+  struct FieldPrintHelper<google::protobuf::RepeatedField<T>> {
+    static void Run(const std::string& name,
+                    const google::protobuf::RepeatedField<T>& v,
                     TextProtoPrinter* pp) {
       for (int i = 0; i < v.size(); ++i) {
         pp->Field(name, v[i]);
@@ -177,6 +193,7 @@ class TextProtoPrinter {
     PRINT_FIELD(last_added_time_millis);
     PRINT_FIELD(shared_state_ids);
     PRINT_FIELD(stream_id);
+    PRINT_FIELD(content_ids);
     EndMessage();
     return *this;
   }
