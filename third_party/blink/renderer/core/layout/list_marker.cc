@@ -278,29 +278,21 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     return;
   }
 
-  // Create a LayoutText in it.
-  LayoutText* text = nullptr;
   // |text_style| should be as same as style propagated in
   // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
   // full layout due by style difference. See http://crbug.com/980399
   scoped_refptr<ComputedStyle> text_style =
       marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           marker.StyleRef(), marker.StyleRef().Display());
-  if (child) {
-    if (child->IsText()) {
-      text = To<LayoutText>(child);
-      text->SetStyle(text_style);
-    } else {
-      child->Destroy();
-      child = nullptr;
-    }
-  }
-  if (!child) {
-    text = LayoutText::CreateEmptyAnonymous(marker.GetDocument(), text_style,
-                                            LegacyLayout::kAuto);
-    marker.AddChild(text);
-    marker_text_type_ = kUnresolved;
-  }
+  if (IsA<LayoutText>(child))
+    return child->SetStyle(text_style);
+  if (child)
+    child->Destroy();
+
+  auto* const new_text = LayoutText::CreateEmptyAnonymous(
+      marker.GetDocument(), text_style, LegacyLayout::kAuto);
+  marker.AddChild(new_text);
+  marker_text_type_ = kUnresolved;
 }
 
 LayoutObject* ListMarker::SymbolMarkerLayoutText(
