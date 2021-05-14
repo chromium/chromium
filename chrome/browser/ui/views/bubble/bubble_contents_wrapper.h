@@ -110,12 +110,19 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                             std::string());
     // Depends on the WebUIController object being constructed synchronously
-    // when the navigation is started in LoadInitialURL().
-    GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());
+    // when the navigation is started in LoadInitialURL(). The WebUIController
+    // may not be defined at this point if the content code encounteres an
+    // error during navigation so check here to ensure the pointer is valid.
+    if (T* webui_controller = GetWebUIController())
+      webui_controller->set_embedder(weak_ptr_factory_.GetWeakPtr());
   }
 
+  // May return null.
   T* GetWebUIController() {
-    return web_contents()->GetWebUI()->GetController()->template GetAs<T>();
+    content::WebUI* const webui = web_contents()->GetWebUI();
+    return webui && webui->GetController()
+               ? webui->GetController()->template GetAs<T>()
+               : nullptr;
   }
 
  private:

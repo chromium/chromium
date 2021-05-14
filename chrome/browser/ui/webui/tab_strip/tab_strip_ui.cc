@@ -94,6 +94,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
 
 TabStripUI::~TabStripUI() = default;
 
+WEB_UI_CONTROLLER_TYPE_IMPL(TabStripUI)
+
 void TabStripUI::Initialize(Browser* browser, TabStripUIEmbedder* embedder) {
   content::WebUI* const web_ui = TabStripUI::web_ui();
   DCHECK_EQ(Profile::FromWebUI(web_ui), browser->profile());

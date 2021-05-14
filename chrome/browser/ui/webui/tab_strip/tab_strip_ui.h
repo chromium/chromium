@@ -43,6 +43,7 @@ class TabStripUI : public content::WebUIController {
 
   TabStripUIHandler* handler_ = nullptr;
 
+  WEB_UI_CONTROLLER_TYPE_DECL();
   DISALLOW_COPY_AND_ASSIGN(TabStripUI);
 };
 
