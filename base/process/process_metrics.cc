@@ -8,7 +8,7 @@
 // process_metrics.h is a widely included header and its size impacts build
 // time. Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 405200
+#pragma clang max_tokens_here 406534
 #endif  // defined(OS_LINUX)
 
 #include <utility>
