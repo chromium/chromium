@@ -22,6 +22,10 @@ class TimeDelta;
 }
 
 namespace ui {
+enum class StylusState;
+}  // namespace ui
+
+namespace ui {
 
 enum class DomCode;
 
@@ -37,6 +41,7 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // TODO(sky): convert this to value once mojo supports move for vectors.
   using GetTouchEventLogReply =
       base::OnceCallback<void(const std::vector<base::FilePath>&)>;
+  using GetStylusSwitchStateReply = base::OnceCallback<void(ui::StylusState)>;
 
   InputController() {}
   virtual ~InputController() {}
@@ -104,6 +109,11 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual bool IsInternalTouchpadEnabled() const = 0;
 
   virtual void SetTouchscreensEnabled(bool enabled) = 0;
+
+  // Find out whether stylus is in its garage; may trigger callback
+  // immediately on platforms where this cannot exist, otherwise
+  // this is be an async reply.
+  virtual void GetStylusSwitchState(GetStylusSwitchStateReply reply) = 0;
 
   // Controls vibration for the gamepad device with the corresponding |id|.
   // |amplitude| determines the strength of the vibration, where 0 is no

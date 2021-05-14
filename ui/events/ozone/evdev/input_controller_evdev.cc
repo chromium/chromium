@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
@@ -246,6 +247,14 @@ void InputControllerEvdev::SetTouchpadScrollAcceleration(bool enabled) {
 void InputControllerEvdev::SetTapToClickPaused(bool state) {
   input_device_settings_.tap_to_click_paused = state;
   ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::GetStylusSwitchState(
+    GetStylusSwitchStateReply reply) {
+  if (input_device_factory_)
+    input_device_factory_->GetStylusSwitchState(std::move(reply));
+  else
+    std::move(reply).Run(ui::StylusState::REMOVED);
 }
 
 void InputControllerEvdev::GetTouchDeviceStatus(

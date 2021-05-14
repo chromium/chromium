@@ -15,6 +15,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
+#include "ui/events/ozone/evdev/event_device_util.h"
 
 namespace ui {
 
@@ -48,6 +49,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       input_device_fd_(std::move(fd)),
       has_keyboard_(devinfo.HasKeyboard()),
       has_touchpad_(devinfo.HasTouchpad()),
+      has_stylus_switch_(devinfo.HasStylusSwitch()),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
@@ -90,6 +92,10 @@ bool EventConverterEvdevImpl::HasCapsLockLed() const {
   return has_caps_lock_led_;
 }
 
+bool EventConverterEvdevImpl::HasStylusSwitch() const {
+  return has_stylus_switch_;
+}
+
 void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
                                            std::vector<DomCode> allowed_keys) {
   if (!enable_filter) {
@@ -113,6 +119,22 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
 void EventConverterEvdevImpl::OnDisabled() {
   ReleaseKeys();
   ReleaseMouseButtons();
+}
+
+ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {
+  if (!HasStylusSwitch()) {
+    return ui::StylusState::REMOVED;
+  }
+
+  // Prepare storage for SW_MAX bits
+  unsigned long array[EVDEV_BITS_TO_LONGS(SW_MAX)] = {0};
+  int result = ioctl(input_device_fd_.get(), EVIOCGSW(SW_MAX), array);
+  if (result == -1) {
+    return ui::StylusState::REMOVED;
+  }
+
+  return EvdevBitIsSet(array, kSwitchStylusInserted) ? ui::StylusState::INSERTED
+                                                     : ui::StylusState::REMOVED;
 }
 
 void EventConverterEvdevImpl::ProcessEvents(const input_event* inputs,

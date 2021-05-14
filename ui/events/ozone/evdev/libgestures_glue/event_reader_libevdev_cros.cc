@@ -46,6 +46,7 @@ EventReaderLibevdevCros::EventReaderLibevdevCros(
       has_mouse_(devinfo.HasMouse()),
       has_pointing_stick_(devinfo.HasPointingStick()),
       has_touchpad_(devinfo.HasTouchpad()),
+      has_stylus_switch_(devinfo.HasSwEvent(SW_PEN_INSERTED)),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       delegate_(std::move(delegate)) {
   // This class assumes it does not deal with internal keyboards.
@@ -106,6 +107,10 @@ bool EventReaderLibevdevCros::HasTouchpad() const {
 
 bool EventReaderLibevdevCros::HasCapsLockLed() const {
   return has_caps_lock_led_;
+}
+
+bool EventReaderLibevdevCros::HasStylusSwitch() const {
+  return has_stylus_switch_;
 }
 
 void EventReaderLibevdevCros::OnDisabled() {

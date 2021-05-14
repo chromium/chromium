@@ -6,6 +6,7 @@
 
 #include "ash/test/ash_test_base.h"
 
+#include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -63,6 +64,11 @@ class TestInputController : public ui::InputController {
   void SetTouchpadAcceleration(bool enabled) override {}
   void SetTouchpadScrollAcceleration(bool enabled) override {}
   void SetTapToClickPaused(bool state) override {}
+  void GetStylusSwitchState(GetStylusSwitchStateReply reply) override {
+    // Return that there is no stylus in the garage; this test class
+    // does not need to trigger stylus charging behaviours.
+    std::move(reply).Run(ui::StylusState::REMOVED);
+  }
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override {
     std::move(reply).Run(std::string());
   }

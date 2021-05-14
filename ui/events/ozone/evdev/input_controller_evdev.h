@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/ozone/public/input_controller.h"
 
@@ -77,6 +78,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override;
   void GetTouchEventLog(const base::FilePath& out_dir,
                         GetTouchEventLogReply reply) override;
+  void GetStylusSwitchState(GetStylusSwitchStateReply reply) override;
   void SetInternalTouchpadEnabled(bool enabled) override;
   bool IsInternalTouchpadEnabled() const override;
   void SetTouchscreensEnabled(bool enabled) override;

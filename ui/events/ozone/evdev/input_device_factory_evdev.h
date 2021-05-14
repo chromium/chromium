@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // LED state.
   void SetCapsLockLed(bool enabled);
 
+  void GetStylusSwitchState(InputController::GetStylusSwitchStateReply reply);
+
   // Handle gamepad force feedback effects.
   void PlayVibrationEffect(int id, uint8_t amplitude, uint16_t duration_millis);
   void StopVibration(int id);

@@ -1089,6 +1089,26 @@ const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
     /* ff */ "0",
 };
 
+const DeviceCapabilities kDrawciaStylusGarage = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.2/PRP0001:00/input/input4/event4",
+    /* name */ "PRP0001:00",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "8000",
+    /* led */ "0",
+    /* ff */ "0",
+};
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.

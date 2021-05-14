@@ -17,6 +17,7 @@
 #include "base/task/current_thread.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -96,6 +97,15 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Returns true if the converter is used for a device with a caps lock LED.
   virtual bool HasCapsLockLed() const;
+
+  // Returns true if the converter is used for a device with a stylus switch
+  // (also known as garage or dock sensor, not buttons on a stylus).
+  virtual bool HasStylusSwitch() const;
+
+  // Returns the current state of the stylus garage switch, indicating whether a
+  // stylus is inserted in (or attached) to a stylus dock or garage, or has been
+  // removed.
+  virtual ui::StylusState GetStylusSwitchState();
 
   // Returns the size of the touchscreen device if the converter is used for a
   // touchscreen device.

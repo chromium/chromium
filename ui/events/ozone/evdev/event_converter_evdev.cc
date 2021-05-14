@@ -15,6 +15,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_utils.h"
 
 #ifndef input_event_sec
@@ -126,6 +127,15 @@ bool EventConverterEvdev::HasGamepad() const {
 
 bool EventConverterEvdev::HasCapsLockLed() const {
   return false;
+}
+
+bool EventConverterEvdev::HasStylusSwitch() const {
+  return false;
+}
+
+ui::StylusState EventConverterEvdev::GetStylusSwitchState() {
+  NOTREACHED();
+  return ui::StylusState::REMOVED;
 }
 
 gfx::Size EventConverterEvdev::GetTouchscreenSize() const {

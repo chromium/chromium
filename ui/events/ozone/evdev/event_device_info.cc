@@ -9,7 +9,6 @@
 #include <cstring>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -552,6 +551,11 @@ bool EventDeviceInfo::HasTablet() const {
 
 bool EventDeviceInfo::HasTouchscreen() const {
   return HasAbsXY() && HasDirect();
+}
+
+bool EventDeviceInfo::HasStylusSwitch() const {
+  return HasSwEvent(SW_PEN_INSERTED) && (device_type_ == INPUT_DEVICE_UNKNOWN ||
+                                         device_type_ == INPUT_DEVICE_INTERNAL);
 }
 
 bool EventDeviceInfo::HasGamepad() const {

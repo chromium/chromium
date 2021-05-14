@@ -127,6 +127,7 @@ component("ozone_base") {
     "//ui/display/util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/devices:devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",

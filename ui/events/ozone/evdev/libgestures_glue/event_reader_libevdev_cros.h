@@ -56,6 +56,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   bool HasPointingStick() const override;
   bool HasTouchpad() const override;
   bool HasCapsLockLed() const override;
+  bool HasStylusSwitch() const override;
   void OnDisabled() override;
 
  private:
@@ -69,6 +70,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   bool has_mouse_;
   bool has_pointing_stick_;
   bool has_touchpad_;
+  bool has_stylus_switch_;
 
   // LEDs for this device.
   bool has_caps_lock_led_;

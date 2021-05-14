@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
@@ -20,6 +21,7 @@
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
+#include "ui/ozone/public/input_controller.h"
 
 struct input_event;
 
@@ -43,6 +45,8 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   bool HasKeyboard() const override;
   bool HasTouchpad() const override;
   bool HasCapsLockLed() const override;
+  bool HasStylusSwitch() const override;
+  ui::StylusState GetStylusSwitchState() override;
   void SetKeyFilter(bool enable_filter,
                     std::vector<DomCode> allowed_keys) override;
   void OnDisabled() override;
@@ -71,6 +75,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // Input modalities for this device.
   bool has_keyboard_;
   bool has_touchpad_;
+  bool has_stylus_switch_;
 
   // LEDs for this device.
   bool has_caps_lock_led_;
@@ -111,4 +116,3 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_CONVERTER_EVDEV_IMPL_H_
-

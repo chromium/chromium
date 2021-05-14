@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   void RemoveInputDevice(const base::FilePath& path);
   void OnStartupScanComplete();
   void SetCapsLockLed(bool enabled);
+  void GetStylusSwitchState(InputController::GetStylusSwitchStateReply reply);
   void SetTouchEventLoggingEnabled(bool enabled);
   void UpdateInputDeviceSettings(const InputDeviceSettingsEvdev& settings);
   void GetTouchDeviceStatus(InputController::GetTouchDeviceStatusReply reply);

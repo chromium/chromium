@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -286,6 +287,18 @@ void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
   }
 }
 
+void InputDeviceFactoryEvdev::GetStylusSwitchState(
+    InputController::GetStylusSwitchStateReply reply) {
+  for (const auto& it : converters_) {
+    if (it.second->HasStylusSwitch()) {
+      auto result = it.second->GetStylusSwitchState();
+      std::move(reply).Run(result);
+      return;
+    }
+  }
+  std::move(reply).Run(ui::StylusState::REMOVED);
+}
+
 void InputDeviceFactoryEvdev::SetCapsLockLed(bool enabled) {
   caps_lock_led_enabled_ = enabled;
   ApplyCapsLockLed();
@@ -505,11 +518,27 @@ void InputDeviceFactoryEvdev::NotifyDevicesUpdated() {
 
 void InputDeviceFactoryEvdev::NotifyTouchscreensUpdated() {
   std::vector<TouchscreenDevice> touchscreens;
-  for (auto it = converters_.begin(); it != converters_.end(); ++it) {
-    if (it->second->HasTouchscreen()) {
+  bool has_stylus_switch = false;
+
+  // Check if there is a stylus garage/dock presence detection switch
+  // among the devices. The internal touchscreen controller is not currently
+  // responsible for exposing this device, it usually is a gpio-keys
+  // device only containing the single switch.
+
+  for (const auto& it : converters_) {
+    if (it.second->HasStylusSwitch()) {
+      has_stylus_switch = true;
+      break;
+    }
+  }
+
+  for (const auto& it : converters_) {
+    if (it.second->HasTouchscreen()) {
       touchscreens.emplace_back(
-          it->second->input_device(), it->second->GetTouchscreenSize(),
-          it->second->GetTouchPoints(), it->second->HasPen());
+          it.second->input_device(), it.second->GetTouchscreenSize(),
+          it.second->GetTouchPoints(), it.second->HasPen(),
+          it.second->type() == ui::InputDeviceType::INPUT_DEVICE_INTERNAL &&
+              has_stylus_switch);
     }
   }
 

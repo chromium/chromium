@@ -152,6 +152,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a touchscreen on this device.
   bool HasTouchscreen() const;
 
+  // Determine whether there's a stylus garage switch on this device.
+  bool HasStylusSwitch() const;
+
   // Determine whether there's a gamepad on this device.
   bool HasGamepad() const;
 
