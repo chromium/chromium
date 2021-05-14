@@ -688,6 +688,10 @@ crbug.com/1187332 [ android android-pixel-4 ] conformance/textures/misc/texture-
 # Misc failures
 crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]
 
+# Failing webgl passthrough test on nexus 5x.
+crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+
 ############
 # ChromeOS #
 ############

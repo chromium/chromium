@@ -94,9 +94,7 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
 
   // Call |cb| when we have a shared image that matches |spec|.  We may call
   // |cb| back before returning, or we might post it for later.
-  virtual void RequestImage(ImageReadyCB cb,
-                            const ImageSpec& spec,
-                            scoped_refptr<gpu::TextureOwner> texture_owner) = 0;
+  virtual void RequestImage(ImageReadyCB cb, const ImageSpec& spec) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SharedImageVideoProvider);

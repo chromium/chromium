@@ -336,33 +336,16 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   // need to ensure that it gets updated here.
 
   auto scoped_make_current = MakeCurrent(context_state_.get());
-
-  bool use_passthrough =
-      context_state_->feature_info()->is_passthrough_cmd_decoder();
-  std::unique_ptr<gles2::AbstractTexture> legacy_mailbox_texture;
-  if (use_passthrough) {
-    legacy_mailbox_texture =
-        std::make_unique<gles2::AbstractTextureImplPassthrough>(
-            GL_TEXTURE_EXTERNAL_OES, GL_RGBA, coded_size.width(),
-            coded_size.height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE);
-  } else {
-    legacy_mailbox_texture = std::make_unique<gles2::AbstractTextureImpl>(
-        GL_TEXTURE_EXTERNAL_OES, GL_RGBA, coded_size.width(),
-        coded_size.height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE);
-  }
-  legacy_mailbox_texture->BindStreamTextureImage(
-      this, texture_owner_->GetTextureId());
-
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
 
   // TODO(vikassoni): Hardcoding colorspace to SRGB. Figure how if we have a
   // colorspace and wire it here.
   auto shared_image = std::make_unique<SharedImageVideo>(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this,
-      std::move(legacy_mailbox_texture), context_state_, false);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
+      false);
   channel_->shared_image_stub()->factory()->RegisterBacking(
-      std::move(shared_image), true /* allow_legacy_mailbox */);
+      std::move(shared_image), /*allow_legacy_mailbox=*/false);
 
   return mailbox;
 }
