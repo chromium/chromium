@@ -10,6 +10,10 @@
 Polymer({
   is: 'os-settings-languages-section',
 
+  behaviors: [
+    I18nBehavior,
+  ],
+
   properties: {
     prefs: Object,
 
@@ -33,6 +37,16 @@ Polymer({
               '#smartInputsSubpageTrigger');
         }
         return map;
+      },
+    },
+
+    /** @private */
+    inputPageTitle_: {
+      type: String,
+      value() {
+        const isUpdate2 =
+            loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+        return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
       },
     },
 

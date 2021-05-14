@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="input_page.html">
 <link rel="import" href="os_languages_page_v2.html">
 <link rel="import" href="smart_inputs_page.html">
@@ -39,7 +40,7 @@
         <cr-link-row
             class="hr"
             id="inputPageTrigger"
-            label="$i18n{inputPageTitle}"
+            label="[[inputPageTitle_]]"
             sub-label="[[getInputMethodDisplayName_(
               languages.inputMethods.currentId, languageHelper)]]"
             on-click="onInputClick_"
@@ -73,7 +74,7 @@
       <template is="dom-if" route-path="/osLanguages/input">
         <settings-subpage
             associated-control="[[$$('#inputPageTrigger')]]"
-            page-title="$i18n{inputPageTitle}">
+            page-title="[[inputPageTitle_]]">
           <os-settings-input-page language-helper="[[languageHelper]]"
               languages="[[languages]]" prefs="{{prefs}}"
               focus-config="[[focusConfig_]]">

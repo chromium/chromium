@@ -165,6 +165,7 @@ js_library("os_languages_section.m") {
     "../../settings_page:settings_subpage",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
