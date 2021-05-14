@@ -72,6 +72,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/test_switches.h"
 #include "chromeos/components/drivefs/drivefs_host.h"
 #include "chromeos/components/drivefs/fake_drivefs.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
@@ -1716,10 +1717,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
-  if (command_line->HasSwitch("devtools-code-coverage") &&
+  if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =
-        command_line->GetSwitchValuePath("devtools-code-coverage");
+        command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the
