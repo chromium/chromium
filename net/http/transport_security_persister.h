@@ -45,7 +45,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class Value;
 }
 
 namespace net {
@@ -107,27 +106,13 @@ class NET_EXPORT TransportSecurityPersister
 
   // Clears any existing non-static entries, and then re-populates
   // |transport_security_state_|.
-  //
-  // Sets |*data_in_old_format| to true if the loaded data is in an older format
-  // and should be overwritten with data in the newest format.
-  bool LoadEntries(const std::string& serialized, bool* data_in_old_format);
+  bool LoadEntries(const std::string& serialized);
 
  private:
   // Populates |state| from the JSON string |serialized|. Returns true if
   // all entries were parsed and deserialized correctly.
-  //
-  // Sets |*data_in_old_format| to true if the old data is in the old file
-  // format and needs to be overwritten with data in the newer format; false
-  // otherwise.
   static bool Deserialize(const std::string& serialized,
-                          bool* data_in_old_format,
                           TransportSecurityState* state);
-
-  // Used internally by Deserialize() to handle older dictionaries.
-  // TODO(https://crbug.com/1086975): This should be removed in Chrome 88.
-  static bool DeserializeObsoleteData(const base::Value& value,
-                                      bool* dirty,
-                                      TransportSecurityState* state);
 
   void CompleteLoad(const std::string& state);
   void OnWriteFinished(base::OnceClosure callback);

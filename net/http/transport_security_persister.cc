@@ -88,13 +88,6 @@ const char kExpectCTExpiry[] = "expect_ct_expiry";
 const char kExpectCTEnforce[] = "expect_ct_enforce";
 const char kExpectCTReportUri[] = "expect_ct_report_uri";
 
-// Obsolete values in older STS entries.
-const char kIncludeSubdomains[] = "include_subdomains";
-const char kStrict[] = "strict";
-const char kPinningOnly[] = "pinning-only";
-const char kCreated[] = "created";
-const char kExpectCTSubdictionary[] = "expect_ct";
-
 std::string LoadState(const base::FilePath& path) {
   std::string result;
   if (!base::ReadFileToString(path, &result)) {
@@ -293,46 +286,6 @@ void DeserializeExpectCTData(const base::Value& ct_list,
   }
 }
 
-// Handles deserializing |kExpectCTSubdictionary| in dictionaries that use the
-// obsolete format. Populates |state| with the values from the Expect-CT
-// subdictionary in |parsed|. Returns false if |parsed| is malformed (e.g.
-// missing a required Expect-CT key) and true otherwise. Note that true does not
-// necessarily mean that Expect-CT state was present in |parsed|.
-//
-// TODO(mmenke): Remove once the obsolete format is no longer supported.
-bool DeserializeObsoleteExpectCTState(
-    const base::Value* parsed,
-    TransportSecurityState::ExpectCTState* state) {
-  const base::Value* expect_ct_subdictionary =
-      parsed->FindDictKey(kExpectCTSubdictionary);
-  if (!expect_ct_subdictionary) {
-    // Expect-CT data is not required, so this item is not malformed.
-    return true;
-  }
-  base::Optional<double> observed =
-      expect_ct_subdictionary->FindDoubleKey(kExpectCTObserved);
-  base::Optional<double> expiry =
-      expect_ct_subdictionary->FindDoubleKey(kExpectCTExpiry);
-  base::Optional<bool> enforce =
-      expect_ct_subdictionary->FindBoolKey(kExpectCTEnforce);
-  const std::string* report_uri_str =
-      expect_ct_subdictionary->FindStringKey(kExpectCTReportUri);
-
-  // If an Expect-CT subdictionary is present, it must have the required keys.
-  if (!observed.has_value() || !expiry.has_value() || !enforce.has_value())
-    return false;
-
-  state->last_observed = base::Time::FromDoubleT(*observed);
-  state->expiry = base::Time::FromDoubleT(*expiry);
-  state->enforce = *enforce;
-  if (report_uri_str) {
-    GURL report_uri(*report_uri_str);
-    if (report_uri.is_valid())
-      state->report_uri = report_uri;
-  }
-  return true;
-}
-
 void OnWriteFinishedTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
                          base::OnceClosure callback,
                          bool result) {
@@ -408,35 +361,24 @@ bool TransportSecurityPersister::SerializeData(std::string* output) {
   return true;
 }
 
-bool TransportSecurityPersister::LoadEntries(const std::string& serialized,
-                                             bool* data_in_old_format) {
+bool TransportSecurityPersister::LoadEntries(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   transport_security_state_->ClearDynamicData();
-  return Deserialize(serialized, data_in_old_format, transport_security_state_);
+  return Deserialize(serialized, transport_security_state_);
 }
 
 bool TransportSecurityPersister::Deserialize(const std::string& serialized,
-                                             bool* data_in_old_format,
                                              TransportSecurityState* state) {
-  *data_in_old_format = false;
   base::Optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_dict())
     return false;
 
-  // Old dictionaries don't have a version number, so try the obsolete format if
-  // there's no integer version number.
   base::Optional<int> version = value->FindIntKey(kVersionKey);
-  if (!version) {
-    bool dirty_unused = false;
-    bool success = DeserializeObsoleteData(*value, &dirty_unused, state);
-    // If successfully loaded data from a file in the old format, need to
-    // overwrite the file with the newer format.
-    *data_in_old_format = success;
-    return success;
-  }
 
-  if (*version != kCurrentVersionValue)
+  // Stop if the data is out of date (or in the previous format that didn't have
+  // a version number).
+  if (!version || *version != kCurrentVersionValue)
     return false;
 
   base::Value* sts_value = value->FindKey(kSTSKey);
@@ -453,126 +395,13 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
   return true;
 }
 
-bool TransportSecurityPersister::DeserializeObsoleteData(
-    const base::Value& dict_value,
-    bool* dirty,
-    TransportSecurityState* state) {
-  const base::Time current_time(base::Time::Now());
-  bool dirtied = false;
-
-  // The one caller ensures |dict_value| is of Value::Type::DICTIONARY already.
-  DCHECK(dict_value.is_dict());
-
-  for (const auto& i : dict_value.DictItems()) {
-    const base::Value& parsed = i.second;
-    if (!parsed.is_dict()) {
-      LOG(WARNING) << "Could not parse entry " << i.first << "; skipping entry";
-      continue;
-    }
-
-    TransportSecurityState::STSState sts_state;
-    TransportSecurityState::ExpectCTState expect_ct_state;
-
-    // kIncludeSubdomains is a legacy synonym for kStsIncludeSubdomains. Parse
-    // at least one of these properties, preferably the new one.
-    bool parsed_include_subdomains = false;
-    base::Optional<bool> include_subdomains =
-        parsed.FindBoolKey(kIncludeSubdomains);
-    if (include_subdomains.has_value()) {
-      sts_state.include_subdomains = include_subdomains.value();
-      parsed_include_subdomains = true;
-    }
-    include_subdomains = parsed.FindBoolKey(kStsIncludeSubdomains);
-    if (include_subdomains.has_value()) {
-      sts_state.include_subdomains = include_subdomains.value();
-      parsed_include_subdomains = true;
-    }
-
-    const std::string* mode_string = parsed.FindStringKey(kMode);
-    base::Optional<double> expiry = parsed.FindDoubleKey(kExpiry);  // 0;
-    if (!parsed_include_subdomains || !mode_string || !expiry.has_value()) {
-      LOG(WARNING) << "Could not parse some elements of entry " << i.first
-                   << "; skipping entry";
-      continue;
-    }
-
-    if (*mode_string == kForceHTTPS || *mode_string == kStrict) {
-      sts_state.upgrade_mode =
-          TransportSecurityState::STSState::MODE_FORCE_HTTPS;
-    } else if (*mode_string == kDefault || *mode_string == kPinningOnly) {
-      sts_state.upgrade_mode = TransportSecurityState::STSState::MODE_DEFAULT;
-    } else {
-      LOG(WARNING) << "Unknown TransportSecurityState mode string "
-                   << mode_string << " found for entry " << i.first
-                   << "; skipping entry";
-      continue;
-    }
-
-    sts_state.expiry = base::Time::FromDoubleT(expiry.value());
-
-    base::Optional<double> sts_observed = parsed.FindDoubleKey(kStsObserved);
-    if (sts_observed.has_value()) {
-      sts_state.last_observed = base::Time::FromDoubleT(sts_observed.value());
-    } else if (parsed.FindDoubleKey(kCreated)) {
-      // kCreated is a legacy synonym for both kStsObserved.
-      sts_observed = parsed.FindDoubleKey(kCreated);
-      sts_state.last_observed = base::Time::FromDoubleT(sts_observed.value());
-    } else {
-      // We're migrating an old entry with no observation date. Make sure we
-      // write the new date back in a reasonable time frame.
-      dirtied = true;
-      sts_state.last_observed = base::Time::Now();
-    }
-
-    if (!DeserializeObsoleteExpectCTState(&parsed, &expect_ct_state)) {
-      continue;
-    }
-
-    bool has_sts =
-        sts_state.expiry > current_time && sts_state.ShouldUpgradeToSSL();
-    bool has_expect_ct =
-        expect_ct_state.expiry > current_time &&
-        (expect_ct_state.enforce || !expect_ct_state.report_uri.is_empty());
-    if (!has_sts && !has_expect_ct) {
-      // Make sure we dirty the state if we drop an entry. The entries can only
-      // be dropped when all the STS and Expect-CT states are expired or
-      // invalid.
-      dirtied = true;
-      continue;
-    }
-
-    std::string hashed = ExternalStringToHashedDomain(i.first);
-    if (hashed.empty()) {
-      dirtied = true;
-      continue;
-    }
-
-    // Until the on-disk storage is split, there will always be 'null' entries.
-    // We only register entries that have actual state.
-    if (has_sts)
-      state->AddOrUpdateEnabledSTSHosts(hashed, sts_state);
-    if (has_expect_ct) {
-      // Use empty NetworkIsolationKeys for old data.
-      state->AddOrUpdateEnabledExpectCTHosts(hashed, NetworkIsolationKey(),
-                                             expect_ct_state);
-    }
-  }
-
-  *dirty = dirtied;
-  return true;
-}
-
 void TransportSecurityPersister::CompleteLoad(const std::string& state) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   if (state.empty())
     return;
 
-  bool data_in_old_format = false;
-  if (!LoadEntries(state, &data_in_old_format))
-    return;
-  if (data_in_old_format)
-    StateIsDirty(transport_security_state_);
+  LoadEntries(state);
 }
 
 }  // namespace net
