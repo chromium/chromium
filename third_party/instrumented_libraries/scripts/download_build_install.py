@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -115,10 +115,10 @@ class InstrumentedPackageBuilder(object):
     stdout, stderr = child.communicate()
     if ignore_ret_code:
       if self._verbose:
-        print stdout
+        print(stdout)
       return stdout
     if self._verbose or child.returncode:
-      print stdout
+      print(stdout)
     if child.returncode:
       raise Exception('Failed to run: %s' % command)
     return stdout
@@ -189,11 +189,9 @@ class InstrumentedPackageBuilder(object):
     try:
       self.build_and_install()
     except Exception as exception:
-      print 'ERROR: Failed to build package %s. Have you run ' \
-            'src/third_party/instrumented_libraries/scripts/' \
-            'install-build-deps.sh?' % \
-            self._package
-      print
+      print(f'ERROR: Failed to build package {self._package}. Have you '
+            'run src/third_party/instrumented_libraries/scripts/'
+            'install-build-deps.sh?')
       raise
 
     # Touch a text file to indicate package is installed.
@@ -467,7 +465,7 @@ class NSSBuilder(InstrumentedPackageBuilder):
         if filename.endswith('.so'):
           full_path = os.path.join(dirpath, filename)
           if self._verbose:
-            print 'download_build_install.py: installing %s' % full_path
+            print(f'download_build_install.py: installing {full_path}')
           shutil.copy(full_path, self.dest_libdir())
 
 

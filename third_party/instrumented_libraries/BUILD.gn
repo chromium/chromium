@@ -177,7 +177,7 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   template("instrumented_library") {
-    python2_action(target_name) {
+    action(target_name) {
       script = "scripts/download_build_install.py"
       build_method = "destdir"
       if (defined(invoker.build_method)) {
