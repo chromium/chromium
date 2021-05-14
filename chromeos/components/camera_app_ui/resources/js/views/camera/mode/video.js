@@ -311,10 +311,8 @@ export class Video extends ModeBase {
     if (avc1Parameters !== null) {
       return avc1Parameters;
     }
-    const preference = encoderPreference.get(loadTimeData.getBoard());
-    if (preference === undefined) {
-      return null;
-    }
+    const preference = encoderPreference.get(loadTimeData.getBoard()) ||
+        {profile: h264.Profile.HIGH, multiplier: 2};
     const {profile, multiplier} = preference;
     const {width, height, frameRate} =
         this.stream_.getVideoTracks()[0].getSettings();
