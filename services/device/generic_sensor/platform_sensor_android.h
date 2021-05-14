@@ -13,10 +13,17 @@ namespace device {
 
 class PlatformSensorAndroid : public PlatformSensor {
  public:
+  // Creates a new PlatformSensorAndroid for the given sensor type, returning
+  // nullptr if it is not supported by the platform.
+  static scoped_refptr<PlatformSensorAndroid> Create(
+      mojom::SensorType type,
+      SensorReadingSharedBuffer* reading_buffer,
+      PlatformSensorProvider* provider,
+      const base::android::JavaRef<jobject>& java_provider);
+
   PlatformSensorAndroid(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
-                        PlatformSensorProvider* provider,
-                        const base::android::JavaRef<jobject>& java_sensor);
+                        PlatformSensorProvider* provider);
 
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;

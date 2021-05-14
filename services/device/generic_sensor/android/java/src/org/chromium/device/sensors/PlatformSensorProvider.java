@@ -193,36 +193,4 @@ class PlatformSensorProvider {
         List<Sensor> sensors = mSensorManager.getSensorList(sensorType);
         return !sensors.isEmpty();
     }
-
-    /**
-     * Creates PlatformSensor instance.
-     *
-     * @param type type of a sensor.
-     * @return PlatformSensor new PlatformSensor instance or null if sensor cannot be created.
-     */
-    @CalledByNative
-    protected PlatformSensor createSensor(int type) {
-        if (mSensorManager == null) return null;
-
-        switch (type) {
-            case SensorType.AMBIENT_LIGHT:
-                return PlatformSensor.create(Sensor.TYPE_LIGHT, 1, this);
-            case SensorType.ACCELEROMETER:
-                return PlatformSensor.create(Sensor.TYPE_ACCELEROMETER, 3, this);
-            case SensorType.LINEAR_ACCELERATION:
-                return PlatformSensor.create(Sensor.TYPE_LINEAR_ACCELERATION, 3, this);
-            case SensorType.GRAVITY:
-                return PlatformSensor.create(Sensor.TYPE_GRAVITY, 3, this);
-            case SensorType.GYROSCOPE:
-                return PlatformSensor.create(Sensor.TYPE_GYROSCOPE, 3, this);
-            case SensorType.MAGNETOMETER:
-                return PlatformSensor.create(Sensor.TYPE_MAGNETIC_FIELD, 3, this);
-            case SensorType.ABSOLUTE_ORIENTATION_QUATERNION:
-                return PlatformSensor.create(Sensor.TYPE_ROTATION_VECTOR, 4, this);
-            case SensorType.RELATIVE_ORIENTATION_QUATERNION:
-                return PlatformSensor.create(Sensor.TYPE_GAME_ROTATION_VECTOR, 4, this);
-            default:
-                return null;
-        }
-    }
 }
