@@ -8,8 +8,8 @@
   await TestRunner.showPanel('console');
 
   SDK.consoleModel.addMessage(new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.Other,
-      SDK.ConsoleMessage.MessageLevel.Info, 'PASS'));
+      TestRunner.runtimeModel, Protocol.Log.LogEntrySource.Other,
+      Protocol.Log.LogEntryLevel.Info, 'PASS'));
   Common.settingForTest('preserveConsoleLog').set(true);
   TestRunner.reloadPage(async function() {
     await ConsoleTestRunner.dumpConsoleMessages();

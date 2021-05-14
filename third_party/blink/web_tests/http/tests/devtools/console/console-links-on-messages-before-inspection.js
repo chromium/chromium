@@ -21,8 +21,8 @@
 
 
   var message = new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.JS,
-      SDK.ConsoleMessage.MessageLevel.Info, 'hello?', null,
+      TestRunner.runtimeModel, Protocol.Log.LogEntrySource.JS,
+      Protocol.Log.LogEntryLevel.Info, 'hello?', null,
       'http://127.0.0.1:8000/devtools/resources/source2.js');
 
   SDK.consoleModel.addMessage(message);

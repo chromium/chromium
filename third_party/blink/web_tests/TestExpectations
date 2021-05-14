@@ -4757,7 +4757,6 @@ crbug.com/757165 [ Win ] fast/spatial-navigation/snav-tiny-table-traversal.html 
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-two-elements-one-line.html [ Pass Failure Timeout Crash ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-unit-overflow-and-scroll-in-direction.html [ Pass Failure Timeout Crash ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-z-index.html [ Pass Failure Timeout Crash ]
-crbug.com/757165 [ Win ] http/tests/devtools/console/console-filter-test.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/devtools/console/console-links-in-errors-with-trace.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/devtools/sources/ui-source-code-metadata.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/misc/client-hints-accept-meta-preloader.html [ Skip ]
@@ -6861,6 +6860,16 @@ crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextme
 
 # Will be passed when compositing-after-paint is used by default 2021-05-13
 crbug.com/1208213 external/wpt/css/css-transforms/add-child-in-empty-layer.html [ Failure ]
+
+# Required for DevTools roll
+crbug.com/1208357 http/tests/devtools/console/console-bad-stacktrace.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-filter-test.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-group-similar.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-preserve-log.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-revoke-error-in-worker.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/console/console-timestamp.js [ Skip ]
+crbug.com/1208357 http/tests/devtools/sources/debugger-ui/monitor-console-command.js [ Skip ]
 
 # Sheriff 2021-05-12
 crbug.com/1095540 [ Linux Debug ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html [ Pass Failure ]

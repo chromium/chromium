@@ -33,7 +33,7 @@
     TestRunner.addResult('');
     TestRunner.addResult('Message added: ' + event.data.level + ' ' + event.data.type);
 
-    if (event.data.level === SDK.ConsoleMessage.MessageLevel.Error) {
+    if (event.data.level === Protocol.Log.LogEntryLevel.Error) {
       await ConsoleTestRunner.dumpConsoleCounters();
       TestRunner.addResult('');
       TestRunner.addResult('Handling promise');

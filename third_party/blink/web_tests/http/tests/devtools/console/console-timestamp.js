@@ -18,28 +18,35 @@
   function addMessageWithFixedTimestamp(messageText, timestamp, type) {
     var message = new SDK.ConsoleMessage(
         TestRunner.runtimeModel,
-        SDK.ConsoleMessage.MessageSource.Other,  // source
-        SDK.ConsoleMessage.MessageLevel.Info,    // level
+        Protocol.Log.LogEntrySource.Other,  // source
+        Protocol.Log.LogEntryLevel.Info,    // level
         messageText, type,
-        undefined,                                        // url
-        undefined,                                        // line
-        undefined,                                        // column
-        undefined,                                        // parameters
-        undefined,                                        // stackTrace
-        timestamp || baseTimestamp + 123);                // timestamp: 2014-05-13T16:53:20.123Z
+        undefined,  // url
+        undefined,  // line
+        undefined,  // column
+        undefined,  // parameters
+        undefined,  // stackTrace
+        timestamp ||
+            baseTimestamp + 123);  // timestamp: 2014-05-13T16:53:20.123Z
     SDK.consoleModel.addMessage(message, true);  // allowGrouping
   }
 
   TestRunner.addResult('Console messages with timestamps disabled:');
   addMessageWithFixedTimestamp(
-      '<Before> First Command', baseTimestamp + 789, SDK.ConsoleMessage.MessageType.Command);
+      '<Before> First Command', baseTimestamp + 789,
+      SDK.ConsoleMessage.FrontendMessageType.Command);
   addMessageWithFixedTimestamp(
-      '<Before> First Result', baseTimestamp + 789, SDK.ConsoleMessage.MessageType.Result);
+      '<Before> First Result', baseTimestamp + 789,
+      SDK.ConsoleMessage.FrontendMessageType.Result);
   addMessageWithFixedTimestamp('<Before>');
   addMessageWithFixedTimestamp('<Before>', baseTimestamp + 456);
   addMessageWithFixedTimestamp('<Before>');
-  addMessageWithFixedTimestamp('<Before> Command', baseTimestamp, SDK.ConsoleMessage.MessageType.Command);
-  addMessageWithFixedTimestamp('<Before> Result', baseTimestamp + 1, SDK.ConsoleMessage.MessageType.Result);
+  addMessageWithFixedTimestamp(
+      '<Before> Command', baseTimestamp,
+      SDK.ConsoleMessage.FrontendMessageType.Command);
+  addMessageWithFixedTimestamp(
+      '<Before> Result', baseTimestamp + 1,
+      SDK.ConsoleMessage.FrontendMessageType.Result);
 
   await ConsoleTestRunner.dumpConsoleMessages();
 

@@ -24,10 +24,11 @@
     ]
   };
   var badStackTraceMessage = new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.ConsoleAPI,
-      SDK.ConsoleMessage.MessageLevel.Error, "This should be visible",
-      SDK.ConsoleMessage.MessageType.Error, null, undefined, undefined,
-      undefined, badStackTrace);
+      TestRunner.runtimeModel,
+      SDK.ConsoleMessage.FrontendMessageSource.ConsoleAPI,
+      Protocol.Log.LogEntryLevel.Error, 'This should be visible',
+      Protocol.Runtime.ConsoleAPICalledEventType.Error, null, undefined,
+      undefined, undefined, badStackTrace);
   SDK.consoleModel.addMessage(badStackTraceMessage);
 
   await ConsoleTestRunner.dumpConsoleMessages();
