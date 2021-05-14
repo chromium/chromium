@@ -668,7 +668,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
         ],
         'swarming': {
-          'shards': 30,
+          'shards': 40,
         },
       },
       'linux-chromeos-ltc': {
