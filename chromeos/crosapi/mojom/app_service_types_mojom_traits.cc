@@ -482,4 +482,48 @@ bool EnumTraits<crosapi::mojom::PatternMatchType,
   return false;
 }
 
+crosapi::mojom::UninstallSource EnumTraits<
+    crosapi::mojom::UninstallSource,
+    apps::mojom::UninstallSource>::ToMojom(apps::mojom::UninstallSource input) {
+  switch (input) {
+    case apps::mojom::UninstallSource::kUnknown:
+      return crosapi::mojom::UninstallSource::kUnknown;
+    case apps::mojom::UninstallSource::kAppList:
+      return crosapi::mojom::UninstallSource::kAppList;
+    case apps::mojom::UninstallSource::kAppManagement:
+      return crosapi::mojom::UninstallSource::kAppManagement;
+    case apps::mojom::UninstallSource::kShelf:
+      return crosapi::mojom::UninstallSource::kShelf;
+    case apps::mojom::UninstallSource::kMigration:
+      return crosapi::mojom::UninstallSource::kMigration;
+  }
+
+  NOTREACHED();
+}
+
+bool EnumTraits<crosapi::mojom::UninstallSource, apps::mojom::UninstallSource>::
+    FromMojom(crosapi::mojom::UninstallSource input,
+              apps::mojom::UninstallSource* output) {
+  switch (input) {
+    case crosapi::mojom::UninstallSource::kUnknown:
+      *output = apps::mojom::UninstallSource::kUnknown;
+      return true;
+    case crosapi::mojom::UninstallSource::kAppList:
+      *output = apps::mojom::UninstallSource::kAppList;
+      return true;
+    case crosapi::mojom::UninstallSource::kAppManagement:
+      *output = apps::mojom::UninstallSource::kAppManagement;
+      return true;
+    case crosapi::mojom::UninstallSource::kShelf:
+      *output = apps::mojom::UninstallSource::kShelf;
+      return true;
+    case crosapi::mojom::UninstallSource::kMigration:
+      *output = apps::mojom::UninstallSource::kMigration;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace mojo

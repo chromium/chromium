@@ -51,6 +51,17 @@ apps::mojom::AppPtr ConvertLaunchedWebApp(const web_app::WebApp* web_app,
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::mojom::UninstallSource uninstall_source);
 
+// Directly uninstalls |web_app| without prompting the user.
+// If |clear_site_data| is true, any site data associated with the app will
+// be removed.
+// If |report_abuse| is true, the app will be reported for abuse to the Web
+// Store.
+void UninstallWebApp(Profile* profile,
+                     const web_app::WebApp* web_app,
+                     apps::mojom::UninstallSource uninstall_source,
+                     bool clear_site_data,
+                     bool report_abuse);
+
 }  // namespace apps_util
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_UTILS_H_

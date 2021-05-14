@@ -51,6 +51,7 @@ void AppServiceProxy::Initialize() {
     fake_lacros_web_apps_host_->Init();
   } else {
     web_apps_publisher_host_ = std::make_unique<WebAppsPublisherHost>(profile_);
+    web_apps_publisher_host_->Init();
   }
 #endif
 

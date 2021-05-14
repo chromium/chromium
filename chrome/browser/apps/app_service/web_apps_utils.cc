@@ -4,16 +4,22 @@
 
 #include "chrome/browser/apps/app_service/web_apps_utils.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
+#include "content/public/browser/clear_site_data_utils.h"
+#include "url/origin.h"
 
 namespace apps_util {
 
@@ -179,6 +185,43 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     case apps::mojom::UninstallSource::kUnknown:
       return webapps::WebappUninstallSource::kUnknown;
   }
+}
+
+void UninstallWebApp(Profile* profile,
+                     const web_app::WebApp* web_app,
+                     apps::mojom::UninstallSource uninstall_source,
+                     bool clear_site_data,
+                     bool report_abuse) {
+  auto origin = url::Origin::Create(web_app->start_url());
+
+  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  DCHECK(provider);
+  DCHECK(
+      provider->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
+  webapps::WebappUninstallSource webapp_uninstall_source =
+      ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
+  provider->install_finalizer().UninstallWebApp(
+      web_app->app_id(), webapp_uninstall_source, base::DoNothing());
+  web_app = nullptr;
+
+  if (!clear_site_data) {
+    // TODO(crbug.com/1062885): Add UMA_HISTOGRAM_ENUMERATION here.
+    return;
+  }
+
+  // TODO(crbug.com/1062885): Add UMA_HISTOGRAM_ENUMERATION here.
+  constexpr bool kClearCookies = true;
+  constexpr bool kClearStorage = true;
+  constexpr bool kClearCache = true;
+  constexpr bool kAvoidClosingConnections = false;
+
+  content::ClearSiteData(base::BindRepeating(
+                             [](content::BrowserContext* browser_context) {
+                               return browser_context;
+                             },
+                             base::Unretained(profile)),
+                         origin, kClearCookies, kClearStorage, kClearCache,
+                         kAvoidClosingConnections, base::DoNothing());
 }
 
 }  // namespace apps_util

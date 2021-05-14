@@ -81,10 +81,11 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   web_app::InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
-  MockAppPublisher mock_app_publisher;
-  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
 
+  MockAppPublisher mock_app_publisher;
   WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
 
@@ -92,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
       browser(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   mock_app_publisher.Wait();
-  // We may receive more than one delta for the new app.
-  EXPECT_GE(mock_app_publisher.get_deltas().size(), 3U);
+
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->readiness,
             apps::mojom::Readiness::kReady);
@@ -118,12 +119,13 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LaunchTime) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  MockAppPublisher mock_app_publisher;
-  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
-
   web_app::AppId app_id = web_app::InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
+
+  MockAppPublisher mock_app_publisher;
   WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
   mock_app_publisher.Wait();
   ASSERT_TRUE(
       mock_app_publisher.get_deltas().back()->last_launch_time.has_value());
@@ -145,9 +147,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
 
   MockAppPublisher mock_app_publisher;
-  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
-
   WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
 
   web_app::AppId app_id;
   {
@@ -192,9 +194,6 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
 
-  MockAppPublisher mock_app_publisher;
-  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
-
   web_app::AppId app_id;
   {
     const std::u16string description = u"Web App";
@@ -212,7 +211,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
                                    /*is_locally_installed=*/false);
   }
 
+  MockAppPublisher mock_app_publisher;
   WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             static_cast<IconEffects>(IconEffects::kRoundCorners |

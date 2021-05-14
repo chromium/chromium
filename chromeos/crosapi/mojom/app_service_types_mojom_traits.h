@@ -240,6 +240,15 @@ struct EnumTraits<crosapi::mojom::PatternMatchType,
                         apps::mojom::PatternMatchType* output);
 };
 
+template <>
+struct EnumTraits<crosapi::mojom::UninstallSource,
+                  apps::mojom::UninstallSource> {
+  static crosapi::mojom::UninstallSource ToMojom(
+      apps::mojom::UninstallSource input);
+  static bool FromMojom(crosapi::mojom::UninstallSource input,
+                        apps::mojom::UninstallSource* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

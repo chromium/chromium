@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_FAKE_LACROS_WEB_APPS_HOST_H_
 
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace apps {
 
@@ -28,6 +28,12 @@ class FakeLacrosWebAppsHost : public crosapi::mojom::AppController {
   void Init();
 
  private:
+  // crosapi::mojom::AppController overrides.
+  void Uninstall(const std::string& app_id,
+                 apps::mojom::UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse) override;
+
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 };
 

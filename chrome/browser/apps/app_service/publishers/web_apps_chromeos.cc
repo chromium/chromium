@@ -178,35 +178,8 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
     return;
   }
 
-  auto origin = url::Origin::Create(web_app->start_url());
-
-  DCHECK(provider());
-  DCHECK(provider()->install_finalizer().CanUserUninstallWebApp(app_id));
-  webapps::WebappUninstallSource webapp_uninstall_source =
-      apps_util::ConvertUninstallSourceToWebAppUninstallSource(
-          uninstall_source);
-  provider()->install_finalizer().UninstallWebApp(
-      app_id, webapp_uninstall_source, base::DoNothing());
-  web_app = nullptr;
-
-  if (!clear_site_data) {
-    // TODO(loyso): Add UMA_HISTOGRAM_ENUMERATION here.
-    return;
-  }
-
-  // TODO(loyso): Add UMA_HISTOGRAM_ENUMERATION here.
-  constexpr bool kClearCookies = true;
-  constexpr bool kClearStorage = true;
-  constexpr bool kClearCache = true;
-  constexpr bool kAvoidClosingConnections = false;
-
-  content::ClearSiteData(base::BindRepeating(
-                             [](content::BrowserContext* browser_context) {
-                               return browser_context;
-                             },
-                             base::Unretained(profile())),
-                         origin, kClearCookies, kClearStorage, kClearCache,
-                         kAvoidClosingConnections, base::DoNothing());
+  apps_util::UninstallWebApp(profile(), web_app, uninstall_source,
+                             clear_site_data, report_abuse);
 }
 
 void WebAppsChromeOs::PauseApp(const std::string& app_id) {

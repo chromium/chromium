@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
 
@@ -31,21 +32,28 @@ namespace apps {
 
 // This WebAppsPublisherHost observes AppRegistrar on Lacros, and calls
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
-class WebAppsPublisherHost : public web_app::AppRegistrarObserver {
+class WebAppsPublisherHost : public crosapi::mojom::AppController,
+                             public web_app::AppRegistrarObserver {
  public:
   explicit WebAppsPublisherHost(Profile* profile);
   WebAppsPublisherHost(const WebAppsPublisherHost&) = delete;
   WebAppsPublisherHost& operator=(const WebAppsPublisherHost&) = delete;
   ~WebAppsPublisherHost() override;
 
+  void Init();
+
   web_app::WebAppRegistrar& registrar() const;
 
-  crosapi::mojom::AppPublisher* GetPublisher() const;
-
-  static void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
+  void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
  private:
   void OnReady();
+
+  // crosapi::mojom::AppController:
+  void Uninstall(const std::string& app_id,
+                 apps::mojom::UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
@@ -70,12 +78,13 @@ class WebAppsPublisherHost : public web_app::AppRegistrarObserver {
                               apps::mojom::Readiness readiness);
   void Publish(apps::mojom::AppPtr app);
 
-  static crosapi::mojom::AppPublisher* publisher_for_testing_;
-
   Profile* const profile_;
   web_app::WebAppProvider* const provider_;
+  crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 
   base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       registrar_observation_{this};

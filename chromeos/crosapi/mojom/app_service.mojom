@@ -23,4 +23,16 @@ interface AppPublisher {
 // Interacts with the app service. Implemented in lacros-chrome and called in
 // ash-chrome.
 [Stable, Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
-interface AppController {};
+interface AppController {
+  // Directly uninstalls |app_id| without prompting the user.
+  // If |clear_site_data| is true, any site data associated with the app will
+  // be removed.
+  // If |report_abuse| is true, the app will be reported for abuse to the Web
+  // Store.
+  [MinVersion=1]
+  Uninstall@1(
+      string app_id,
+      UninstallSource uninstall_source,
+      bool clear_site_data,
+      bool report_abuse);
+};

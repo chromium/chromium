@@ -41,15 +41,34 @@ IconEffects GetIconEffects(const web_app::WebApp* web_app) {
 
 }  // namespace
 
-// static
-crosapi::mojom::AppPublisher* WebAppsPublisherHost::publisher_for_testing_ =
-    nullptr;
-
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
-    : profile_(profile), provider_(web_app::WebAppProvider::Get(profile)) {
+    : profile_(profile), provider_(web_app::WebAppProvider::Get(profile)) {}
+
+WebAppsPublisherHost::~WebAppsPublisherHost() = default;
+
+void WebAppsPublisherHost::Init() {
   // Allow for web app migration tests.
-  if (!provider_->registrar().AsWebAppRegistrar())
+  if (!provider_->registrar().AsWebAppRegistrar()) {
     return;
+  }
+
+  if (!remote_publisher_) {
+    auto* service = chromeos::LacrosService::Get();
+    if (!service) {
+      return;
+    }
+    if (!service->IsAvailable<crosapi::mojom::AppPublisher>()) {
+      return;
+    }
+    if (!service->init_params()->web_apps_enabled) {
+      return;
+    }
+
+    service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
+        receiver_.BindNewPipeAndPassRemote());
+    remote_publisher_ =
+        service->GetRemote<crosapi::mojom::AppPublisher>().get();
+  }
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
@@ -57,38 +76,17 @@ WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
   registrar_observation_.Observe(&registrar());
 }
 
-WebAppsPublisherHost::~WebAppsPublisherHost() = default;
-
 web_app::WebAppRegistrar& WebAppsPublisherHost::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
 }
 
-crosapi::mojom::AppPublisher* WebAppsPublisherHost::GetPublisher() const {
-  if (publisher_for_testing_) {
-    return publisher_for_testing_;
-  }
-  auto* service = chromeos::LacrosService::Get();
-  if (!service) {
-    return nullptr;
-  }
-  if (!service->IsAvailable<crosapi::mojom::AppPublisher>()) {
-    return nullptr;
-  }
-  if (!service->init_params()->web_apps_enabled) {
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::AppPublisher>().get();
-}
-
-// static
 void WebAppsPublisherHost::SetPublisherForTesting(
     crosapi::mojom::AppPublisher* publisher) {
-  publisher_for_testing_ = publisher;
+  remote_publisher_ = publisher;
 }
 
 void WebAppsPublisherHost::OnReady() {
-  crosapi::mojom::AppPublisher* const publisher = GetPublisher();
-  if (!publisher || !registrar_observation_.IsObserving()) {
+  if (!remote_publisher_ || !registrar_observation_.IsObserving()) {
     return;
   }
 
@@ -96,7 +94,22 @@ void WebAppsPublisherHost::OnReady() {
   for (const web_app::WebApp& web_app : registrar().GetApps()) {
     apps.push_back(Convert(&web_app, apps::mojom::Readiness::kReady));
   }
-  publisher->OnApps(std::move(apps));
+  remote_publisher_->OnApps(std::move(apps));
+}
+
+// crosapi::mojom::AppController:
+void WebAppsPublisherHost::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
+  const web_app::WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  apps_util::UninstallWebApp(profile_, web_app, uninstall_source,
+                             clear_site_data, report_abuse);
 }
 
 // web_app::AppRegistrarObserver:
@@ -176,14 +189,13 @@ apps::mojom::AppPtr WebAppsPublisherHost::Convert(
 }
 
 void WebAppsPublisherHost::Publish(apps::mojom::AppPtr app) {
-  crosapi::mojom::AppPublisher* const publisher = GetPublisher();
-  if (!publisher) {
+  if (!remote_publisher_) {
     return;
   }
 
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(std::move(app));
-  publisher->OnApps(std::move(apps));
+  remote_publisher_->OnApps(std::move(apps));
 }
 
 }  // namespace apps

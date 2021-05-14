@@ -187,3 +187,13 @@ struct IntentFilter {
   // The label shown to the user for this activity.
   string? activity_label;
 };
+
+// What caused the app to be uninstalled.
+[Stable, Extensible]
+enum UninstallSource {
+  [Default] kUnknown = 0,
+  kAppList,       // Uninstall by the user from the App List (Launcher)
+  kAppManagement, // Uninstall by the user from the App Management page
+  kShelf,         // Uninstall by the user from the Shelf
+  kMigration,     // Uninstall by app migration.
+};

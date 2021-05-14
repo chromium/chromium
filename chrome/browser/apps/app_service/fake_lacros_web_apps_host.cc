@@ -7,8 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
@@ -65,6 +67,14 @@ void FakeLacrosWebAppsHost::Init() {
         receiver_.BindNewPipeAndPassRemote());
     PushOneApp();
   }
+}
+
+void FakeLacrosWebAppsHost::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace apps

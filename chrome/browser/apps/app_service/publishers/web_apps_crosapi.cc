@@ -7,12 +7,15 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
@@ -75,7 +78,9 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
                               bool allow_placeholder_icon,
                               LoadIconCallback callback) {
   // TODO(crbug.com/1144877): Implement this.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  apps::mojom::IconValuePtr icon = apps::mojom::IconValue::New();
+  icon->icon_type = apps::mojom::IconType::kStandard;
+  std::move(callback).Run(std::move(icon));
 }
 
 void WebAppsCrosapi::Launch(const std::string& app_id,
@@ -83,6 +88,30 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::WindowInfoPtr window_info) {
   // TODO(crbug.com/1144877): Implement this.
+}
+
+void WebAppsCrosapi::Uninstall(const std::string& app_id,
+                               apps::mojom::UninstallSource uninstall_source,
+                               bool clear_site_data,
+                               bool report_abuse) {
+  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
+                         report_abuse);
+}
+
+void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
+                                  apps::mojom::MenuType menu_type,
+                                  int64_t display_id,
+                                  GetMenuModelCallback callback) {
+  // TODO(crbug.com/1194709): Check if the app is installed.
+
+  // TODO(crbug.com/1194709): Add menu items, based on
+  // WebAppsChromeOs::GetMenuModel().
+  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+
+  // TODO(crbug.com/1194709): Check if the user can uninstall the web app.
+  AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
+
+  std::move(callback).Run(std::move(menu_items));
 }
 
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
@@ -106,9 +135,11 @@ void WebAppsCrosapi::RegisterAppController(
 
 void WebAppsCrosapi::OnCrosapiDisconnected() {
   receiver_.reset();
+  controller_.reset();
 }
 
 void WebAppsCrosapi::OnControllerDisconnected() {
   controller_.reset();
 }
+
 }  // namespace apps
