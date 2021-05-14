@@ -82,10 +82,14 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
     return https_server_.GetURL(kReportingHost, "/upload");
   }
 
-  std::string GetReportingHeader() const {
-    return UseDocumentReporting() ? "Reporting-Endpoints: default=\"" +
-                                        GetCollectorURL().spec() + "\"\r\n"
+  std::string GetAppropriateReportingHeader() const {
+    return UseDocumentReporting() ? GetReportingEndpointsHeader()
                                   : GetReportToHeader();
+  }
+
+  std::string GetReportingEndpointsHeader() const {
+    return "Reporting-Endpoints: default=\"" + GetCollectorURL().spec() +
+           "\"\r\n";
   }
 
   std::string GetReportToHeader() const {
@@ -97,6 +101,10 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
     return "NEL: "
            "{\"report_to\":\"default\",\"max_age\":86400,\"success_fraction\":"
            "1.0}\r\n";
+  }
+
+  std::string GetCSPHeader() const {
+    return "Content-Security-Policy: script-src 'none'; report-to default\r\n";
   }
 
  protected:
@@ -158,14 +166,18 @@ std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
+// Tests that NEL reports are delivered correctly, whether or not reporting
+// isolation is enabled. NEL reports can only be configured with the Report-To
+// header, but this header should continue to function until support is
+// completely removed.
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestNELHeadersProcessed) {
   NavigateParams params(browser(), GetReportingEnabledURL(),
                         ui::PAGE_TRANSITION_LINK);
   Navigate(&params);
 
   original_response()->WaitForRequest();
   original_response()->Send("HTTP/1.1 204 OK\r\n");
-  original_response()->Send(GetReportingHeader());
+  original_response()->Send(GetReportToHeader());
   original_response()->Send(GetNELHeader());
   original_response()->Send("\r\n");
   original_response()->Done();
@@ -179,9 +191,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
 
   // Verify the contents of the report that we received.
   ASSERT_TRUE(actual);
-  std::unique_ptr<base::Value> expected =
-      base::test::ParseJsonDeprecated(base::StringPrintf(
-          R"json(
+  base::Value expected = base::test::ParseJson(base::StringPrintf(
+      R"json(
         [
           {
             "body": {
@@ -200,8 +211,59 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
           },
         ]
       )json",
-          GetReportingEnabledURL().spec().c_str()));
-  EXPECT_EQ(*expected, *actual);
+      GetReportingEnabledURL().spec().c_str()));
+  EXPECT_EQ(expected, *actual);
+}
+
+// Tests that CSP reports are delivered properly whether configured with the
+// v0 Report-To header or the v1 Reporting-Endpoints header.
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send("Content-Type: text/html\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send(GetCSPHeader());
+  original_response()->Send("\r\n");
+  original_response()->Send("<script>alert(1);</script>\r\n");
+  original_response()->Done();
+
+  upload_response()->WaitForRequest();
+  std::unique_ptr<base::Value> actual =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 204 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  ASSERT_TRUE(actual);
+  base::Value expected = base::test::ParseJson(base::StringPrintf(
+      R"json(
+        [ {
+           "body": {
+              "blockedURL": "inline",
+              "disposition": "enforce",
+              "documentURL": "%s",
+              "effectiveDirective": "script-src-elem",
+              "lineNumber": 1,
+              "originalPolicy": "script-src 'none'; report-to default",
+              "referrer": "",
+              "sample": "",
+              "sourceFile": "%s",
+              "statusCode": 200
+           },
+           "type": "csp-violation",
+           "url": "%s",
+           "user_agent": "Mozilla/1.0"
+        } ]
+      )json",
+      GetReportingEnabledURL().spec().c_str(),
+      GetReportingEnabledURL().spec().c_str(),
+      GetReportingEnabledURL().spec().c_str()));
+  EXPECT_EQ(expected, *actual);
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
@@ -288,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
 
   original_response()->WaitForRequest();
   original_response()->Send("HTTP/1.1 200 OK\r\n");
-  original_response()->Send(GetReportingHeader());
+  original_response()->Send(GetAppropriateReportingHeader());
   original_response()->Send("\r\n");
   original_response()->Done();
   navigation_observer.Wait();
@@ -327,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   original_response()->WaitForRequest();
   original_response()->Send("HTTP/1.1 200 OK\r\n");
-  original_response()->Send(GetReportingHeader());
+  original_response()->Send(GetAppropriateReportingHeader());
   original_response()->Send("\r\n");
   original_response()->Done();
   navigation_observer.Wait();
