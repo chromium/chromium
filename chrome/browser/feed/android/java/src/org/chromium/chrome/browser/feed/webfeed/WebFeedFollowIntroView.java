@@ -96,7 +96,7 @@ class WebFeedFollowIntroView {
         TextBubble followingBubble = new TextBubble(mActivity, mMenuButtonAnchorView,
                 R.string.menu_following, R.string.menu_following, /*showArrow=*/false,
                 createRectProvider(), R.drawable.ic_done_blue, /*isRoundBubble=*/true,
-                /*inverseColor=*/true, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                /*inverseColor=*/false, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         followingBubble.setDismissOnTouchInteraction(true);
         followingBubble.show();
     }
