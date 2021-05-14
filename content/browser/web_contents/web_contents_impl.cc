@@ -1410,16 +1410,11 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
     return;
 
   accessibility_mode_ = mode;
-
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
-    node->current_frame_host()->UpdateAccessibilityMode();
-    // Also update accessibility mode on the speculative RenderFrameHost for
-    // this FrameTreeNode, if one exists.
-    RenderFrameHostImpl* speculative_frame_host =
-        node->render_manager()->speculative_frame_host();
-    if (speculative_frame_host)
-      speculative_frame_host->UpdateAccessibilityMode();
-  }
+  // Update state for all frames in this tree and inner trees. Should also
+  // include speculative frame hosts.
+  GetMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
+      base::BindRepeating(
+          [](RenderFrameHostImpl* rfhi) { rfhi->UpdateAccessibilityMode(); }));
 }
 
 void WebContentsImpl::AddAccessibilityMode(ui::AXMode mode) {
@@ -1694,10 +1689,13 @@ void WebContentsImpl::EnableWebContentsOnlyAccessibilityMode() {
   desired_mode |= ui::kAXModeWebContentsOnly;
   AddAccessibilityMode(desired_mode);
 
+  // Accessibility mode updates include speculative RFH's as well as any inner
+  // trees. Iterate across these as we do for SetAccessibilityMode (which is
+  // called indirectly above via AddAccessibilityMode).
   if (need_reset) {
-    for (RenderFrameHost* rfh : GetAllFrames()) {
-      static_cast<RenderFrameHostImpl*>(rfh)->AccessibilityReset();
-    }
+    GetMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
+        base::BindRepeating(
+            [](RenderFrameHostImpl* rfhi) { rfhi->AccessibilityReset(); }));
   }
 }
 
