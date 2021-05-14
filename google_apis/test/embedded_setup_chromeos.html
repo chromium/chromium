@@ -12,7 +12,6 @@ gaia.chromeOSLogin.initialized_ = false;
 gaia.chromeOSLogin.sendImplicitServices = true;
 
 const urlParams = new URLSearchParams(window.location.search);
-const syncTrustedVaultKeysRequestedByClient = !!urlParams.get('szkr');
 const useNativeNavigation = !!urlParams.get('use_native_navigation');
 
 function goFirstPage() {
@@ -147,10 +146,7 @@ function goNext() {
     request.open('POST', '/_/embedded/signin/challenge', true);
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
-        if (request.getResponseHeader("fake-sync-trusted-vault-keys") &&
-            syncTrustedVaultKeysRequestedByClient) {
-          // TODO(crbug.com/1081651): Revisit if this message should be sent
-          // *after* sending userInfo.
+        if (request.getResponseHeader("fake-sync-trusted-vault-keys")) {
           sendSyncTrustedVaultKeys(JSON.parse(
               request.getResponseHeader("fake-sync-trusted-vault-keys")));
         }

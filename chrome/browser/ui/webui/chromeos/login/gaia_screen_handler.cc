@@ -507,8 +507,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   params.SetBoolean("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
-  params.SetBoolean("enableSyncTrustedVaultKeys",
-                    IsSyncTrustedVaultKeysEnabled());
   params.SetBoolean("enableCloseView",
                     ash::features::IsGaiaCloseViewMessageEnabled());
 

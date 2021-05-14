@@ -87,7 +87,6 @@ cr.define('cr.login', function() {
    *   flow: string,
    *   ignoreCrOSIdpSetting: boolean,
    *   enableGaiaActionButtons: boolean,
-   *   enableSyncTrustedVaultKeys: boolean,
    *   enterpriseEnrollmentDomain: string,
    *   samlAclUrl: string,
    *   isSupervisedUser: boolean,
@@ -155,9 +154,6 @@ cr.define('cr.login', function() {
                      // If this set to |false|, |confirmPasswordCallback| is
                      // not called before dispatching |authCopleted|.
                      // Default is |true|.
-    'enableSyncTrustedVaultKeys',  // Whether the host is interested in getting
-                                   // sync trusted vault keys.
-                                   // Default is |false|.
     'flow',                        // One of 'default', 'enterprise', or
                                    // 'theftprotection'.
     'enterpriseDisplayDomain',     // Current domain name to be displayed.
@@ -333,9 +329,6 @@ cr.define('cr.login', function() {
       this.dispatchEvent(new CustomEvent('exit'));
     },
     'syncTrustedVaultKeys'(msg) {
-      if (!this.enableSyncTrustedVaultKeys_) {
-        return;
-      }
       this.syncTrustedVaultKeys_ = msg.value;
     },
     'closeView'(msg) {
@@ -435,7 +428,6 @@ cr.define('cr.login', function() {
        */
       this.getIsSamlUserPasswordlessCallback = null;
       this.needPassword = true;
-      this.enableSyncTrustedVaultKeys_ = false;
       this.services_ = null;
       this.gaiaDoneTimer_ = null;
       /**
@@ -656,7 +648,6 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
-      this.enableSyncTrustedVaultKeys_ = !!data.enableSyncTrustedVaultKeys;
       this.enableCloseView_ = !!data.enableCloseView;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
@@ -808,9 +799,6 @@ cr.define('cr.login', function() {
       }
       if (data.isDeviceOwner) {
         url = appendParam(url, 'is_device_owner', '1');
-      }
-      if (data.enableSyncTrustedVaultKeys) {
-        url = appendParam(url, 'szkr', '1');
       }
 
       return url;
