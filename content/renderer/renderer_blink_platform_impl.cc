@@ -272,14 +272,6 @@ blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
 #endif
 }
 
-blink::WebThemeEngine* RendererBlinkPlatformImpl::ThemeEngine() {
-  blink::WebThemeEngine* theme_engine =
-      GetContentClient()->renderer()->OverrideThemeEngine();
-  if (!theme_engine)
-    theme_engine = BlinkPlatformImpl::ThemeEngine();
-  return theme_engine;
-}
-
 bool RendererBlinkPlatformImpl::sandboxEnabled() {
   // As explained in Platform.h, this function is used to decide
   // whether to allow file system operations to come out of WebKit or not.

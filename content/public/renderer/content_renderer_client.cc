@@ -75,10 +75,6 @@ std::unique_ptr<media::Demuxer> ContentRendererClient::OverrideDemuxerForUrl(
   return nullptr;
 }
 
-blink::WebThemeEngine* ContentRendererClient::OverrideThemeEngine() {
-  return nullptr;
-}
-
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return nullptr;

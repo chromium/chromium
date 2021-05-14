@@ -48,7 +48,6 @@ class WebLocalFrame;
 class WebPlugin;
 class WebPrescientNetworking;
 class WebServiceWorkerContextProxy;
-class WebThemeEngine;
 class WebURL;
 class WebURLRequest;
 struct WebPluginParams;
@@ -160,10 +159,6 @@ class CONTENT_EXPORT ContentRendererClient {
       RenderFrame* render_frame,
       const GURL& url,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  // Allows the embedder to override the WebThemeEngine used. If it returns NULL
-  // the content layer will provide an engine.
-  virtual blink::WebThemeEngine* OverrideThemeEngine();
 
   // Allows the embedder to provide a WebSocketHandshakeThrottleProvider. If it
   // returns NULL then none will be used.

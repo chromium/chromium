@@ -76,7 +76,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
 
   // blink::Platform implementation.
   blink::WebSandboxSupport* GetSandboxSupport() override;
-  blink::WebThemeEngine* ThemeEngine() override;
   virtual bool sandboxEnabled();
   uint64_t VisitedLinkHash(const char* canonicalURL, size_t length) override;
   bool IsLinkVisited(uint64_t linkHash) override;
