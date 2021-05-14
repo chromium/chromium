@@ -859,13 +859,13 @@ class ServiceWorkerRegistrationObjectHostTest
     base::Optional<blink::ServiceWorkerStatusCode> status;
     registry()->FindRegistrationForId(
         registration_id, key,
-        base::AdaptCallbackForRepeating(base::BindOnce(
+        base::BindOnce(
             [](base::Optional<blink::ServiceWorkerStatusCode>* out_status,
                blink::ServiceWorkerStatusCode status,
                scoped_refptr<ServiceWorkerRegistration> registration) {
               *out_status = status;
             },
-            &status)));
+            &status));
     base::RunLoop().RunUntilIdle();
     return status.value();
   }

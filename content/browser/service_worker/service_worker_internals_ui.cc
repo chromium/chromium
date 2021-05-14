@@ -735,8 +735,7 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
   // implements StorageKey.
   context->context()->UnregisterServiceWorker(
       scope, storage::StorageKey(url::Origin::Create(scope)),
-      /*is_immediate=*/false,
-      base::AdaptCallbackForRepeating(std::move(callback)));
+      /*is_immediate=*/false, std::move(callback));
 }
 
 }  // namespace content

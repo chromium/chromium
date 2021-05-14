@@ -263,8 +263,7 @@ void OpenWindowOnUI(
 
   GetContentClient()->browser()->OpenURL(
       site_instance, params,
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&DidOpenURLOnUI, type, std::move(callback))));
+      base::BindOnce(&DidOpenURLOnUI, type, std::move(callback)));
 }
 
 void NavigateClientOnUI(const GURL& url,

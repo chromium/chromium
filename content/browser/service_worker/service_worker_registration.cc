@@ -338,8 +338,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
 
   context_->registry()->DeleteRegistration(
       this, storage::StorageKey(origin()),
-      AdaptCallbackForRepeating(
-          base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this)));
+      base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
 
   if (!active_version() || !active_version()->HasControllee())
     Clear();
@@ -350,8 +349,7 @@ void ServiceWorkerRegistration::DeleteAndClearImmediately() {
   if (!is_deleted()) {
     context_->registry()->DeleteRegistration(
         this, storage::StorageKey(origin()),
-        AdaptCallbackForRepeating(base::BindOnce(
-            &ServiceWorkerRegistration::OnDeleteFinished, this)));
+        base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
   }
 
   if (is_uninstalling())

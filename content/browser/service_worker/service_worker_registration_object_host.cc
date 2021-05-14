@@ -264,9 +264,9 @@ void ServiceWorkerRegistrationObjectHost::Unregister(
   context_->UnregisterServiceWorker(
       registration_->scope(), storage::StorageKey(registration_->origin()),
       /*is_immediate=*/false,
-      base::AdaptCallbackForRepeating(base::BindOnce(
+      base::BindOnce(
           &ServiceWorkerRegistrationObjectHost::UnregistrationComplete,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerRegistrationObjectHost::EnableNavigationPreload(
@@ -289,10 +289,10 @@ void ServiceWorkerRegistrationObjectHost::EnableNavigationPreload(
 
   context_->registry()->UpdateNavigationPreloadEnabled(
       registration_->id(), storage::StorageKey(registration_->origin()), enable,
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &ServiceWorkerRegistrationObjectHost::
-              DidUpdateNavigationPreloadEnabled,
-          weak_ptr_factory_.GetWeakPtr(), enable, std::move(callback))));
+      base::BindOnce(&ServiceWorkerRegistrationObjectHost::
+                         DidUpdateNavigationPreloadEnabled,
+                     weak_ptr_factory_.GetWeakPtr(), enable,
+                     std::move(callback)));
 }
 
 void ServiceWorkerRegistrationObjectHost::GetNavigationPreloadState(
@@ -339,10 +339,10 @@ void ServiceWorkerRegistrationObjectHost::SetNavigationPreloadHeader(
 
   context_->registry()->UpdateNavigationPreloadHeader(
       registration_->id(), storage::StorageKey(registration_->origin()), value,
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &ServiceWorkerRegistrationObjectHost::
-              DidUpdateNavigationPreloadHeader,
-          weak_ptr_factory_.GetWeakPtr(), value, std::move(callback))));
+      base::BindOnce(&ServiceWorkerRegistrationObjectHost::
+                         DidUpdateNavigationPreloadHeader,
+                     weak_ptr_factory_.GetWeakPtr(), value,
+                     std::move(callback)));
 }
 
 void ServiceWorkerRegistrationObjectHost::UpdateComplete(
