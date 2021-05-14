@@ -18,7 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/value_iterators.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/data_use_measurement/core/data_use_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
