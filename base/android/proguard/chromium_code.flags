@@ -69,8 +69,10 @@
   @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
 }
 
-# Never inline classes or methods with this annotation, but allow shrinking and
-# obfuscation.
+# Never inline classes, methods, or fields  with this annotation, but allow
+# shrinking and obfuscation.
+# Relevant to fields when they are needed to store strong refrences to objects
+# that are held as weak references by native code.
 -if @org.chromium.base.annotations.DoNotInline class * {
     *** *(...);
 }
@@ -79,6 +81,9 @@
 }
 -keepclassmembers,allowobfuscation class * {
    @org.chromium.base.annotations.DoNotInline <methods>;
+}
+-keepclassmembers,allowobfuscation class * {
+   @org.chromium.base.annotations.DoNotInline <fields>;
 }
 
 # Keep all CREATOR fields within Parcelable that are kept.
