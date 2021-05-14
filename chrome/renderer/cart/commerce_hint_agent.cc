@@ -42,6 +42,7 @@ namespace {
 constexpr unsigned kLengthLimit = 4096;
 constexpr char kAmazonDomain[] = "amazon.com";
 constexpr char kEbayDomain[] = "ebay.com";
+constexpr char kElectronicExpressDomain[] = "electronicexpress.com";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
     &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
@@ -329,12 +330,12 @@ void DetectAddToCart(content::RenderFrame* render_frame,
   // Only handle XHR POST requests here.
   // Other matches like navigation is handled in DidStartNavigation().
   // Some sites use GET requests though, so special-case them here.
-  if (!request.HttpMethod().Equals("POST") && !url.DomainIs(kEbayDomain)) {
+  if (!request.HttpMethod().Equals("POST") && !url.DomainIs(kEbayDomain) &&
+      !navigation_url.DomainIs(kElectronicExpressDomain)) {
     return;
   }
 
   bool is_add_to_cart = false;
-  std::string product_id;
   if (navigation_url.DomainIs("dickssportinggoods.com")) {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
   } else if (url.DomainIs("rei.com")) {
@@ -342,15 +343,21 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     // 'neo-product/rs/cart/item' that are missed here. Figure out a more
     // comprehensive solution.
     is_add_to_cart = url.path_piece() == "/rest/cart/item";
-  } else if (IsPartnerMerchant(navigation_url)) {
-    GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), &product_id);
-    is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
+  } else if (navigation_url.DomainIs(kElectronicExpressDomain)) {
+    is_add_to_cart =
+        CommerceHintAgent::IsAddToCart(url.spec()) &&
+        GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), nullptr);
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }
   if (is_add_to_cart) {
+    std::string url_product_id;
+    if (IsPartnerMerchant(navigation_url)) {
+      GetProductIdFromRequest(url.spec().substr(0, kLengthLimit),
+                              &url_product_id);
+    }
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
-    OnAddToCart(render_frame, std::move(product_id));
+    OnAddToCart(render_frame, std::move(url_product_id));
     return;
   }
 
@@ -363,6 +370,8 @@ void DetectAddToCart(content::RenderFrame* render_frame,
   if (navigation_url.DomainIs("qvc.com"))
     return;
   if (navigation_url.DomainIs("hsn.com") && url.DomainIs("granify.com"))
+    return;
+  if (navigation_url.DomainIs(kElectronicExpressDomain))
     return;
 
   blink::WebHTTPBody body = request.HttpBody();

@@ -35,6 +35,7 @@
 "dillards.com": "https://www.dillards.com/webapp/wcs/stores/servlet/OrderItemDisplay",
 "dsw.com": "https://www.dsw.com/en/us/shopping-bag",
 "ebay.com": "https://cart.ebay.com/",
+"electronicexpress.com": "https://www.electronicexpress.com/cart",
 "etsy.com": "https://www.etsy.com/cart/",
 "eyebuydirect.com": "https://www.eyebuydirect.com/cart",
 "fingerhut.com": "https://www.fingerhut.com/cart/index",
@@ -105,7 +106,9 @@
 "westelm.com": "https://www.westelm.com/shoppingcart/",
 "wiley.com": "https://www.wiley.com/en-us/cart",
 "williams-sonoma.com": "https://www.williams-sonoma.com/shoppingcart/",
+"wish.com": "https://www.wish.com/cart",
 "zappos.com": "https://www.zappos.com/cart",
 "zennioptical.com": "https://www.zennioptical.com/shoppingCart",
+"zazzle.com": "https://www.zazzle.com/co/cart",
 "guitarcenter.com":"https://www.guitarcenter.com/cart"
 }

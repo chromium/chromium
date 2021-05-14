@@ -95,7 +95,8 @@ function multipleImagesSupported() {
   // When saving target.com to mhtml, the color selecting images become very
   // large and are picked up. Adding in hostname.endsWith('target.com') is a
   // workaround for this problem. In target we only get one image per product.
-  return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com');
+  return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com')
+      || hostname.endsWith('zazzle.com');
 }
 
 function extractImage(item) {
@@ -681,42 +682,48 @@ function extractAllItems(root) {
     }
   }
 
-  // Generic pattern
-  const candidates = new Set();
-  items = root.querySelectorAll('a');
-
-  const urlMap = new Map();
-  for (const item of items) {
-    if (!urlMap.has(item.href)) {
-      urlMap.set(item.href, new Set());
-    }
-    urlMap.get(item.href).add(item);
-  }
-
-  for (const [key, value] of urlMap) {
-    const ancestor = commonAncestorList(Array.from(value));
-    if (!candidates.has(ancestor))
-      candidates.add(ancestor);
-  }
-  for (const item of items) {
-    candidates.add(item);
-  }
-  const ancestors = new Set();
-  // TODO: optimize this part.
-  for (let depth = 0; depth < 8; depth++) {
-    for (let item of candidates) {
-      for (let i = 0; i < depth; i++) {
-        item = item.parentElement;
-        if (!item)
-          break;
-      }
-      if (item)
-        ancestors.add(item);
-    }
-  }
-  items = Array.from(ancestors);
   if (document.URL.includes("samsclub.com")) {
     items = root.querySelectorAll(".sc-cart-item-shipping");
+  } else if (document.URL.includes("zazzle.com")) {
+    // TODO(yuezhanggg@): This is a workaround due to that zazzle.com
+    // has two images in cart item. Remove this when we support cart
+    // with multiple images for one product.
+    items = root.getElementsByClassName("CartItem CartLineItem");
+  } else {
+    // Generic pattern
+    const candidates = new Set();
+    items = root.querySelectorAll('a');
+
+    const urlMap = new Map();
+    for (const item of items) {
+      if (!urlMap.has(item.href)) {
+        urlMap.set(item.href, new Set());
+      }
+      urlMap.get(item.href).add(item);
+    }
+
+    for (const [key, value] of urlMap) {
+      const ancestor = commonAncestorList(Array.from(value));
+      if (!candidates.has(ancestor))
+        candidates.add(ancestor);
+    }
+    for (const item of items) {
+      candidates.add(item);
+    }
+    const ancestors = new Set();
+    // TODO: optimize this part.
+    for (let depth = 0; depth < 8; depth++) {
+      for (let item of candidates) {
+        for (let i = 0; i < depth; i++) {
+          item = item.parentElement;
+          if (!item)
+            break;
+        }
+        if (item)
+          ancestors.add(item);
+      }
+    }
+    items = Array.from(ancestors);
   }
 
   if (verbose > 0)
