@@ -3,9 +3,10 @@
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    --emoji-picker-search-margins: 14px;
   }
   cr-search-field {
-    --cr-search-field-clear-icon-margin-end: 14px;
+    --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
     --cr-search-field-clear-icon-size:20px;
     --cr-search-field-input-border-bottom: none;
     --cr-search-field-input-padding-bottom: 0;
@@ -15,7 +16,8 @@
     --cr-search-field-search-icon-display: none;
     --cr-search-field-search-icon-fill: var(--cr-secondary-text-color);
     --cr-search-field-search-icon-inline-display: block;
-    --cr-search-field-search-icon-inline-margin-start: 14px;
+    --cr-search-field-search-icon-inline-margin-start:
+      var(--emoji-picker-search-margins);
     --cr-search-field-underline-display: none;
     align-items: center;
     background-color: var(--google-grey-100);
@@ -34,6 +36,7 @@
     border: 2px solid transparent;
     border-radius: 40px;
     display: flex;
+    margin-inline-end: var(--emoji-picker-search-margins);
   }
   .result:focus,
   .result:active {
