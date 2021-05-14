@@ -83,8 +83,8 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/880078 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
-crbug.com/880078 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash_OOPD [ Failure ]
+crbug.com/880078 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ RetryOnFailure ]
+crbug.com/880078 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash_OOPD [ RetryOnFailure ]
 crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
 # Nexus 6
@@ -118,10 +118,7 @@ crbug.com/1078566 [ android ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 [ fuchsia ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
 
 # Flaky on Fuchsia.
-crbug.com/1105308 [ fuchsia ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
 crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-crbug.com/1105308 [ fuchsia ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
-crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
 
 # Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
 [ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
