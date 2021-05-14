@@ -4552,7 +4552,7 @@
   },
   {
     "name": "sanitizer-api",
-    "owners": [ "//third_party/blink/renderer/modules/sanitizer-api/OWNERS" ],
+    "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
     "expiry_milestone": 95
   },
   {
@@ -5369,7 +5369,7 @@
   },
   {
     "name": "xsurface-metrics-reporting",
-    "owners": [ "//chrom/android/feed/OWNERS", "feed@chromium.org" ],
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 99
   },
   {
