@@ -427,11 +427,16 @@ fileOperationUtil.copyTo =
           }
 
           switch (status.type) {
-            case 'begin_copy_entry':
+            case 'begin':
               callback();
               break;
 
-            case 'end_copy_entry':
+            case 'progress':
+              progressCallback(status.sourceUrl, status.size);
+              callback();
+              break;
+
+            case 'end_copy':
               // TODO(mtomasz): Convert URL to Entry in custom bindings.
               (source.isFile ? parent.getFile : parent.getDirectory)
                   .call(
@@ -446,8 +451,17 @@ fileOperationUtil.copyTo =
                       });
               break;
 
-            case 'progress':
-              progressCallback(status.sourceUrl, status.size);
+            case 'end_move':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
+              callback();
+              break;
+
+            case 'end_remove_source':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
               callback();
               break;
 

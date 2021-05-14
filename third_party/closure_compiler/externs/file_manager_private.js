@@ -107,10 +107,12 @@ chrome.fileManagerPrivate.TransferState = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.CopyProgressStatusType = {
-  BEGIN_COPY_ENTRY: 'begin_copy_entry',
-  END_COPY_ENTRY: 'end_copy_entry',
+chrome.fileManagerPrivate.CopyOrMoveProgressStatusType = {
+  BEGIN: 'begin',
   PROGRESS: 'progress',
+  END_COPY: 'end_copy',
+  END_MOVE: 'end_move',
+  END_REMOVE_SOURCE: 'end_remove_source',
   SUCCESS: 'success',
   ERROR: 'error',
 };
@@ -432,14 +434,14 @@ chrome.fileManagerPrivate.DriveConfirmDialogEvent;
 
 /**
  * @typedef {{
- *   type: !chrome.fileManagerPrivate.CopyProgressStatusType,
+ *   type: !chrome.fileManagerPrivate.CopyOrMoveProgressStatusType,
  *   sourceUrl: (string|undefined),
  *   destinationUrl: (string|undefined),
  *   size: (number|undefined),
  *   error: (string|undefined)
  * }}
  */
-chrome.fileManagerPrivate.CopyProgressStatus;
+chrome.fileManagerPrivate.CopyOrMoveProgressStatus;
 
 /**
  * @typedef {{

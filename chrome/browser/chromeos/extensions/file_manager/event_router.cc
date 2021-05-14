@@ -179,21 +179,26 @@ MountErrorToMountCompletedStatus(chromeos::MountError error) {
   return file_manager_private::MOUNT_COMPLETED_STATUS_NONE;
 }
 
-file_manager_private::CopyProgressStatusType
-CopyOrMoveProgressTypeToCopyProgressStatusType(
+file_manager_private::CopyOrMoveProgressStatusType
+CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
     storage::FileSystemOperation::CopyOrMoveProgressType type) {
   switch (type) {
     case storage::FileSystemOperation::CopyOrMoveProgressType::kBegin:
-      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_BEGIN_COPY_ENTRY;
+      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
     case storage::FileSystemOperation::CopyOrMoveProgressType::kProgress:
-      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_PROGRESS;
+      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
     case storage::FileSystemOperation::CopyOrMoveProgressType::kEndCopy:
-      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_END_COPY_ENTRY;
+      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_COPY;
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndMove:
+      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_MOVE;
+    case storage::FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource:
+      return file_manager_private::
+          COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_REMOVE_SOURCE;
     case storage::FileSystemOperation::CopyOrMoveProgressType::kError:
-      return file_manager_private::COPY_PROGRESS_STATUS_TYPE_ERROR;
+      return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
   }
   NOTREACHED();
-  return file_manager_private::COPY_PROGRESS_STATUS_TYPE_NONE;
+  return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_NONE;
 }
 
 std::string FileErrorToErrorName(base::File::Error error_code) {
@@ -611,16 +616,17 @@ void EventRouter::OnCopyCompleted(int copy_id,
                                   base::File::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  file_manager_private::CopyProgressStatus status;
+  file_manager_private::CopyOrMoveProgressStatus status;
   if (error == base::File::FILE_OK) {
     // Send success event.
-    status.type = file_manager_private::COPY_PROGRESS_STATUS_TYPE_SUCCESS;
+    status.type =
+        file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_SUCCESS;
     status.source_url = std::make_unique<std::string>(source_url.spec());
     status.destination_url =
         std::make_unique<std::string>(destination_url.spec());
   } else {
     // Send error event.
-    status.type = file_manager_private::COPY_PROGRESS_STATUS_TYPE_ERROR;
+    status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
     status.error = std::make_unique<std::string>(FileErrorToErrorName(error));
   }
 
@@ -638,11 +644,11 @@ void EventRouter::OnCopyProgress(
     int64_t size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  file_manager_private::CopyProgressStatus status;
-  status.type = CopyOrMoveProgressTypeToCopyProgressStatusType(type);
+  file_manager_private::CopyOrMoveProgressStatus status;
+  status.type = CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(type);
   status.source_url = std::make_unique<std::string>(source_url.spec());
-  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kEndCopy ||
-      type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
+  if (type !=
+      storage::FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource)
     status.destination_url =
         std::make_unique<std::string>(destination_url.spec());
   if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
@@ -658,7 +664,8 @@ void EventRouter::OnCopyProgress(
 
   // Should not skip events other than TYPE_PROGRESS.
   const bool always =
-      status.type != file_manager_private::COPY_PROGRESS_STATUS_TYPE_PROGRESS;
+      status.type !=
+      file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
   if (!ShouldSendProgressEvent(always, &last_copy_progress_event_))
     return;
 

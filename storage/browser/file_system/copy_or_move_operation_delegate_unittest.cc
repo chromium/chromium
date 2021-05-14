@@ -664,7 +664,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, ProgressCallback) {
 
     EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kBegin,
               records[begin_index].type);
-    EXPECT_FALSE(records[begin_index].dest_url.is_valid());
+    EXPECT_EQ(dest_url, records[begin_index].dest_url);
     EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kEndCopy,
               records[end_index].type);
     EXPECT_EQ(dest_url, records[end_index].dest_url);
@@ -679,7 +679,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, ProgressCallback) {
         if (records[j].source_url == src_url) {
           EXPECT_EQ(FileSystemOperation::CopyOrMoveProgressType::kProgress,
                     records[j].type);
-          EXPECT_FALSE(records[j].dest_url.is_valid());
+          EXPECT_EQ(dest_url, records[j].dest_url);
           EXPECT_GE(records[j].size, current_size);
           current_size = records[j].size;
         }

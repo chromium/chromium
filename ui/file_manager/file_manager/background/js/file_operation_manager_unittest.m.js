@@ -133,7 +133,7 @@ class BlockableFakeStartCopy {
       const mockEntry = /** @type {!MockEntry} */ (this.sourceEntry_);
       fileSystem.entries[newPath] =
           /** @type {!MockEntry} */ (mockEntry.clone(newPath));
-      listener(copyId, makeStatus('end_copy_entry'));
+      listener(copyId, makeStatus('end_copy'));
       listener(copyId, makeStatus('success'));
     };
 
@@ -141,7 +141,7 @@ class BlockableFakeStartCopy {
 
     callback(this.startCopyId_);
     const listener = mockChrome.fileManagerPrivate.onCopyProgress.listener_;
-    listener(this.startCopyId_, makeStatus('begin_copy_entry'));
+    listener(this.startCopyId_, makeStatus('begin'));
     listener(this.startCopyId_, makeStatus('progress'));
 
     if (destination.toURL() === this.blockedDestination_) {
@@ -534,14 +534,14 @@ export function testCopy(callback) {
         };
         callback(1);
         const listener = mockChrome.fileManagerPrivate.onCopyProgress.listener_;
-        listener(1, makeStatus('begin_copy_entry'));
+        listener(1, makeStatus('begin'));
         listener(1, makeStatus('progress'));
         const newPath = joinPath('/', newName);
         const entry = /** @type {!MockEntry} */
             (fileSystem.entries['/test.txt']);
         fileSystem.entries[newPath] =
             /** @type {!MockEntry} */ (entry.clone(newPath));
-        listener(1, makeStatus('end_copy_entry'));
+        listener(1, makeStatus('end_copy'));
         listener(1, makeStatus('success'));
       };
 

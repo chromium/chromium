@@ -60,21 +60,37 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 // File transfer progress state.
 enum TransferState { in_progress, completed, failed };
 
-// The type of the progress event.
-enum CopyProgressStatusType {
-  // "begin_copy_entry" is fired for each entry (file or directory) before
-  // starting the copy operation.
-  begin_copy_entry,
+// The type of the progress event for copy or move operations.
+// A copy or a cross-filesystem move happens recursively: these events are
+// expected for each single entry (file or directory) being moved.
+// A local (same-filesystem) move only requires the top-level entries to be
+// renamed: if we move entries 'a.txt', 'b/c.txt', 'b/d.txt' (relative paths),
+// events will be received for only for 'a.txt' and 'b'.
+enum CopyOrMoveProgressStatusType {
+  // "begin" is fired for each entry (file or directory) before
+  // starting the copy or move operation.
+  begin,
 
-  // "end_copy_entry" is fired for each entry (file or directory) after ending
-  // the copy operation.
-  end_copy_entry,
-
-  // "progress" is fired periodically to report progress of a file copy (not
-  // directory).
+  // "progress" is fired periodically to report progress of a file copy or move
+  // (not directory).
   progress,
 
-  // "success" is fired after all entries are copied.
+  // "end_copy" is fired for each entry (file or directory) that has been
+  // successfully copied to its destination. This event is expected both both
+  // copies and cross-filesystem moves (implemented as copy + delete).
+  end_copy,
+
+  // "end_move" is fired for each entry (file or directory) that has been
+  // successfully moved to its destination, in the case of a "same-filesystem"
+  // move.
+  end_move,
+
+  // "end_remove_source" is fired for each entry (file or directory) that has
+  // been successfully removed from its source location as part of a
+  // "cross-filesystem" move operation.
+  end_remove_source,
+
+  // "success" is fired after all entries have been copied or moved.
   success,
 
   // "error" is fired when an error occurs.
@@ -575,10 +591,10 @@ dictionary DriveConfirmDialogEvent {
   DOMString fileUrl;
 };
 
-// Payload data for copy status progress updates.
-dictionary CopyProgressStatus {
+// Payload data for copy or move status progress updates.
+dictionary CopyOrMoveProgressStatus {
   // The type of the progress event.
-  CopyProgressStatusType type;
+  CopyOrMoveProgressStatusType type;
 
   // URL for the entry currently being copied. This field is particularly useful
   // when a directory copy is initiated with startCopy(). The field tells what
@@ -1460,7 +1476,7 @@ interface Events {
 
   static void onPinTransfersUpdated(FileTransferStatus event);
 
-  static void onCopyProgress(long copyId, CopyProgressStatus status);
+  static void onCopyProgress(long copyId, CopyOrMoveProgressStatus status);
 
   static void onDirectoryChanged(FileWatchEvent event);
 

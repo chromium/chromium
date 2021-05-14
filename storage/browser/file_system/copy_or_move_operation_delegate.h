@@ -131,7 +131,9 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
                                           base::File::Error error);
   void DidRemoveSourceForMove(StatusCallback callback, base::File::Error error);
 
-  void OnCopyFileProgress(const FileSystemURL& src_url, int64_t size);
+  void OnCopyFileProgress(const FileSystemURL& src_url,
+                          const FileSystemURL& dest_url,
+                          int64_t size);
   FileSystemURL CreateDestURL(const FileSystemURL& src_url) const;
 
 #if DCHECK_IS_ON()

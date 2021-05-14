@@ -781,12 +781,13 @@ void CopyOrMoveOperationDelegate::RunRecursively() {
 
 void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
                                               StatusCallback callback) {
+  FileSystemURL dest_url = CreateDestURL(src_url);
+
   if (!progress_callback_.is_null()) {
     progress_callback_.Run(FileSystemOperation::CopyOrMoveProgressType::kBegin,
-                           src_url, FileSystemURL(), 0);
+                           src_url, dest_url, 0);
   }
 
-  FileSystemURL dest_url = CreateDestURL(src_url);
   std::unique_ptr<CopyOrMoveImpl> impl;
   if (same_file_system_ &&
       (file_system_context()
@@ -796,7 +797,7 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
     impl = std::make_unique<CopyOrMoveOnSameFileSystemImpl>(
         operation_runner(), operation_type_, src_url, dest_url, option_,
         base::BindRepeating(&CopyOrMoveOperationDelegate::OnCopyFileProgress,
-                            weak_factory_.GetWeakPtr(), src_url));
+                            weak_factory_.GetWeakPtr(), src_url, dest_url));
   } else {
     // Cross filesystem case.
     base::File::Error error = base::File::FILE_ERROR_FAILED;
@@ -825,7 +826,7 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
             dest_url, option_, std::move(reader), std::move(writer),
             base::BindRepeating(
                 &CopyOrMoveOperationDelegate::OnCopyFileProgress,
-                weak_factory_.GetWeakPtr(), src_url));
+                weak_factory_.GetWeakPtr(), src_url, dest_url));
       }
     }
 
@@ -834,7 +835,7 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
           operation_runner(), operation_type_, src_url, dest_url, option_,
           validator_factory,
           base::BindRepeating(&CopyOrMoveOperationDelegate::OnCopyFileProgress,
-                              weak_factory_.GetWeakPtr(), src_url));
+                              weak_factory_.GetWeakPtr(), src_url, dest_url));
     }
   }
 
@@ -862,13 +863,14 @@ void CopyOrMoveOperationDelegate::ProcessDirectory(const FileSystemURL& src_url,
     return;
   }
 
+  FileSystemURL dest_url = CreateDestURL(src_url);
+
   if (!progress_callback_.is_null()) {
     progress_callback_.Run(FileSystemOperation::CopyOrMoveProgressType::kBegin,
-                           src_url, FileSystemURL(), 0);
+                           src_url, dest_url, 0);
   }
 
-  ProcessDirectoryInternal(src_url, CreateDestURL(src_url),
-                           std::move(callback));
+  ProcessDirectoryInternal(src_url, dest_url, std::move(callback));
 }
 
 void CopyOrMoveOperationDelegate::PostProcessDirectory(
@@ -1011,11 +1013,12 @@ void CopyOrMoveOperationDelegate::DidRemoveSourceForMove(
 
 void CopyOrMoveOperationDelegate::OnCopyFileProgress(
     const FileSystemURL& src_url,
+    const FileSystemURL& dest_url,
     int64_t size) {
   if (!progress_callback_.is_null()) {
     progress_callback_.Run(
         FileSystemOperation::CopyOrMoveProgressType::kProgress, src_url,
-        FileSystemURL(), size);
+        dest_url, size);
   }
 }
 

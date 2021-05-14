@@ -125,53 +125,90 @@ class FileSystemOperation {
 
   // Used for progress update callback for Copy() and Move().
   //
-  // kBegin is fired at the start of each copy or move operation (for
-  // both file and directory). The |source_url| is the URL of the source entry.
-  // |size| should not be used.
+  // Note that Move() has both a same-filesystem (1) and a cross-filesystem (2)
+  // implementation.
+  // 1) Requires metadata updates. Depending on the underlying implementation:
+  // - we either only update the metadata of (or in other words, rename) the
+  // moving directory
+  // - or the directories are recursively copied + deleted, while the files are
+  // moved by having their metadata updated.
+  // 2) Degrades into copy + delete: each entry is copied and deleted
+  // recursively.
   //
-  // kEndCopy is fired for each the destination entry that has been copied
-  // successfully (for both file and directory). The |source_url| is the URL of
-  // the source entry. The |destination_url| is the URL of the destination
-  // entry. |size| should not be used.
+  // kBegin is fired at the start of each copy or move operation (for
+  // both file and directory). The |source_url| and the |destination_url| are
+  // the URLs of the source and the destination entries. |size| should not be
+  // used.
   //
   // kProgress is fired periodically during file transfer (not fired for
-  // directory transfer).
-  // The |source_url| is the URL of the source file. |size| is the number
-  // of cumulative copied bytes for the currently copied file.
-  // Both at beginning and ending of file transfer, PROGRESS event should be
-  // called. At beginning, |size| should be 0. At ending, |size| should be
-  // the size of the file.
+  // same-filesystem move and directory copy/move).
+  // The |source_url| and the |destination_url| are the URLs of the source and
+  // the destination entries. |size| is the number of cumulative copied bytes
+  // for the currently copied file. Both at beginning and ending of file
+  // transfer, PROGRESS event should be called. At beginning, |size| should be
+  // 0. At ending, |size| should be the size of the file.
   //
-  // Here is an example callback sequence of recursive transfer. Suppose
-  // there are a/b/c.txt (100 bytes) and a/b/d.txt (200 bytes), and trying to
-  // transfer a to x recursively, then the progress update sequence will be:
+  // kEndCopy is fired for each destination entry that has been successfully
+  // copied (for both file and directory). The |source_url| and the
+  // |destination_url| are the URLs of the source and the destination entries.
+  // |size| should not be used.
   //
-  // kBegin a  (starting create "a" directory in x/).
+  // kEndMove is fired for each entry that has been successfully moved (for both
+  // file and directory), in the case of a same-filesystem move. The
+  // |source_url| and the |destination_url| are the URLs of the source and the
+  // destination entries. |size| should not be used.
+  //
+  // kEndRemoveSource, applies in the Move() case only, and is fired for each
+  // source entry that has been successfully removed from its source location
+  // (for both file and directory). The |source_url| is the URL of the source
+  // entry. |destination_url| and |size| should not be used.
+  //
+  // When moving files, the expected events are as follows.
+  // Copy: kBegin -> kProgress -> ... -> kProgress -> kEndCopy.
+  // Move (same-filesystem): kBegin -> kEndMove.
+  // Move (cross-filesystem): kBegin -> kProgress -> ... -> kProgress ->
+  // kEndCopy -> kEndRemoveSource.
+  //
+  // Here is an example callback sequence of for a copy or a cross-filesystem
+  // move. Suppose there are a/b/c.txt (100 bytes) and a/b/d.txt (200 bytes),
+  // and trying to transfer a to x recursively, then the progress update
+  // sequence will be:
+  //
+  // kBegin a x/a (starting create "a" directory in x/).
   // kEndCopy a x/a (creating "a" directory in x/ is finished).
   //
-  // kBegin a/b (starting create "b" directory in x/a).
+  // kBegin a/b x/a/b (starting create "b" directory in x/a).
   // kEndCopy a/b x/a/b (creating "b" directory in x/a/ is
-  // finished).
+  //                     finished).
   //
-  // kBegin a/b/c.txt (starting to transfer "c.txt" in
-  // x/a/b/). kProgress a/b/c.txt 0 (The first kProgress's |size| should be 0).
-  // kProgress a/b/c.txt 10
+  // kBegin a/b/c.txt x/a/b/c.txt (starting to transfer "c.txt" in
+  //                               x/a/b/).
+  // kProgress a/b/c.txt x/a/b/c.txt 0 (The first kProgress's |size|
+  //                                    should be 0).
+  // kProgress a/b/c.txt x/a/b/c.txt 10
   //    :
-  // kProgress a/b/c.txt 90
-  // kProgress a/b/c.txt 100 (The last kProgress's |size| should be the size of
-  //                         the file).
+  // kProgress a/b/c.txt x/a/b/c.txt 90
+  // kProgress a/b/c.txt x/a/b/c.txt 100 (The last kProgress's |size| should be
+  //                                      the size of the file).
   // kEndCopy a/b/c.txt x/a/b/c.txt (transferring "c.txt" is
-  // finished).
+  //                                 finished).
+  // kEndRemoveSource a/b/c.txt ("copy + delete" move case).
   //
-  // kBegin a/b/d.txt (starting to transfer "d.txt" in x/a/b).
-  // kProgress a/b/d.txt 0 (The first kProgress's |size| should be 0).
-  // kProgress a/b/d.txt 10
+  // kBegin a/b/d.txt x/a/b/d.txt (starting to transfer "d.txt" in x/a/b).
+  // kProgress a/b/d.txt x/a/b/d.txt 0 (The first kProgress's |size| should be
+  //                                    0).
+  // kProgress a/b/d.txt x/a/b/d.txt 10
   //    :
-  // kProgress a/b/d.txt 190
-  // kProgress a/b/d.txt 200 (The last kProgress's |size| should be the size of
-  //                         the file).
+  // kProgress a/b/d.txt x/a/b/d.txt 190
+  // kProgress a/b/d.txt x/a/b/d.txt 200 (The last kProgress's |size| should be
+  //                                      the size of the file).
   // kEndCopy a/b/d.txt x/a/b/d.txt (transferring "d.txt" is
   // finished).
+  // kEndRemoveSource a/b/d.txt ("copy + delete" move case).
+  //
+  // kEndRemoveSource a/b ("copy + delete" move case).
+  //
+  // kEndRemoveSource a ("copy + delete" move case).
   //
   // Note that event sequence of a/b/c.txt and a/b/d.txt can be interlaced,
   // because they can be done in parallel. Also kProgress events are optional,
@@ -181,19 +218,12 @@ class FileSystemOperation {
   // progres callback invocation, the progress callback may NOT invoked for the
   // copy.
   //
-  // Note that Move() can be implemented either
-  // 1) by updating the metadata of resource (e.g. root of moving directory
-  // tree) or 2) by copying directory tree and them removing the source tree.
-  // For 1)'s case, the operation is generally instant: we currently don't use
-  // progress callbacks. If we were to do so in the future, we could add
-  // kBeginMove and kEndMove progress types specific to the move operation.
-  // For 2)'s case, we can add a kEndDeleteSource progress type to send
-  // notifications about the source entry being deleted, after it's been copied
-  // to its destination.
   enum class CopyOrMoveProgressType {
     kBegin = 0,
     kProgress,
     kEndCopy,
+    kEndMove,
+    kEndRemoveSource,
     kError,
   };
   using CopyOrMoveProgressCallback =
