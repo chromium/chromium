@@ -155,8 +155,11 @@ bool DrmOverlayManager::CanHandleCandidate(
     return true;
 
   // Reject candidates that don't fall on a pixel boundary.
-  if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
+  if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f)) {
+    VLOG(3) << "Overlay Rejected: display_rect="
+            << candidate.display_rect.ToString();
     return false;
+  }
 
   // DRM supposedly supports subpixel source crop. However, according to
   // drm_plane_funcs.update_plane, devices which don't support that are
@@ -164,11 +167,15 @@ bool DrmOverlayManager::CanHandleCandidate(
   // of 5.4. So reject candidates that require subpixel source crop.
   gfx::RectF crop(candidate.crop_rect);
   crop.Scale(candidate.buffer_size.width(), candidate.buffer_size.height());
-  if (!gfx::IsNearestRectWithinDistance(crop, 0.01f))
+  if (!gfx::IsNearestRectWithinDistance(crop, 0.01f)) {
+    VLOG(3) << "Overlay Rejected: crop=" << crop.ToString();
     return false;
+  }
 
   if (candidate.clip_rect && !candidate.clip_rect->Contains(
                                  gfx::ToNearestRect(candidate.display_rect))) {
+    VLOG(3) << "Overlay Rejected: clip_rect=" << candidate.clip_rect->ToString()
+            << ", display_rect=" << candidate.display_rect.ToString();
     return false;
   }
 
