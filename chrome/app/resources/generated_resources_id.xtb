@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1001033507375626788">Jaringan ini dibagikan kepada Anda</translation>
 <translation id="1001307489511021749">Aplikasi, setelan, dan penyesuaian Anda yang lain akan disinkronkan di semua perangkat Chrome OS yang login dengan Akun Google Anda.</translation>
 <translation id="1003088604756913841">Buka Link di Jendela <ph name="APP" /> baru</translation>
 <translation id="100323615638474026">Perangkat USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -960,6 +961,7 @@
 <translation id="1992924914582925289">Hapus dari perangkat</translation>
 <translation id="1994173015038366702">URL situs</translation>
 <translation id="1995916364271252349">Mengontrol informasi apa saja yang dapat digunakan dan ditampilkan situs (lokasi, kamera, pop-up, dan lainnya)</translation>
+<translation id="1997437640397887843">Kamera perangkat telah diaktifkan. Letakkan kode QR eSIM Anda di depan kamera.</translation>
 <translation id="1997616988432401742">Sertifikat Anda</translation>
 <translation id="1999115740519098545">Saat memulai</translation>
 <translation id="2000419248597011803">Mengirimkan beberapa cookie dan penelusuran dari kolom URL dan kotak penelusuran ke mesin telusur default</translation>
@@ -1015,6 +1017,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2055585478631012616">Anda akan logout dari semua situs tersebut, termasuk di tab yang terbuka</translation>
 <translation id="205560151218727633">Logo Asisten Google</translation>
 <translation id="2058456167109518507">Perangkat terdeteksi</translation>
+<translation id="2058581283817163201">Verifikasi dengan ponsel ini</translation>
 <translation id="2059913712424898428">Zona waktu</translation>
 <translation id="2060375639911876205">Hapus profil eSIM</translation>
 <translation id="2062354623176996748">Gunakan web tanpa menyimpan histori penjelajahan dengan jendela Samaran</translation>
@@ -2615,6 +2618,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3785308913036335955">Tampilkan Pintasan Aplikasi</translation>
 <translation id="3785727820640310185">Sandi yang tersimpan untuk situs ini</translation>
 <translation id="3788301286821743879">Aplikasi kios tidak dapat diluncurkan.</translation>
+<translation id="3788331399335602504">file berikut</translation>
 <translation id="3788401245189148511">Aplikasi/ekstensi dapat:</translation>
 <translation id="3789841737615482174">Instal</translation>
 <translation id="379082410132524484">Kartu Anda telah habis masa berlakunya</translation>
@@ -3190,6 +3194,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4438043733494739848">Transparan</translation>
 <translation id="4438639467177774583"><ph name="MASKED_PASSWORD" /> <ph name="USERNAME" /> akan disimpan ke Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> mengirim notifikasi ke ponsel Anda. Untuk mengonfirmasi bahwa ini benar-benar Anda, ketuk notifikasi “<ph name="NOTIFICATIONTITLE" />” dan ikuti langkah-langkahnya.</translation>
 <translation id="4441124369922430666">Ingin memulai aplikasi ini secara otomatis saat komputer diaktifkan?</translation>
 <translation id="4441147046941420429">Untuk melanjutkan, hapus kunci keamanan Anda dari perangkat, lalu masukkan kembali dan sentuh tombol</translation>
 <translation id="444134486829715816">Luaskan...</translation>
@@ -3492,6 +3497,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="477647109558161443">Buat pintasan desktop</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Pengguna lain di perangkat ini dapat menggunakan jaringan ini</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Konfigurasikan server nama jaringan</translation>
 <translation id="4778644898150334464">Gunakan sandi lain</translation>
@@ -4327,6 +4333,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5712153969432126546">Situs terkadang memublikasikan PDF, seperti dokumen, kontrak, dan formulir</translation>
 <translation id="5715711091495208045">Pialang Plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mesin telusur default</translation>
+<translation id="5719637365829998022">Kode QR sudah dipindai.</translation>
 <translation id="5719854774000914513">Situs dapat meminta untuk terhubung ke perangkat HID</translation>
 <translation id="572155275267014074">Setelan Android</translation>
 <translation id="5722086096420375088">Hijau dan putih</translation>
@@ -4538,6 +4545,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5955721306465922729">Sebuah situs ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Perangkat ini mungkin hanya memenuhi syarat untuk mode demo online. Hubungi perwakilan dukungan Anda untuk detail selengkapnya.</translation>
 <translation id="5956585768868398362">Apakah ini halaman penelusuran yang Anda harapkan?</translation>
+<translation id="5957918771633727933">Tidak ada profil eSIM yang tersedia. Download <ph name="BEGIN_LINK" />profile<ph name="END_LINK" /> baru.</translation>
 <translation id="5957987129450536192">Ketuk ikon Klik untuk Diucapkan dekat gambar profil, lalu pilih teks yang ingin Anda dengar.</translation>
 <translation id="5959471481388474538">Jaringan tidak tersedia</translation>
 <translation id="595959584676692139">Muat ulang halaman untuk menggunakan ekstensi ini</translation>
@@ -6043,6 +6051,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7638605456503525968">Port serial</translation>
 <translation id="7639914187072011620">Gagal mengambil URL alihan SAML dari server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> otomatis memasukkan Anda ke situs yang memenuhi syarat menggunakan sandi tersimpan.</translation>
+<translation id="7641513591566880111">Nama profil baru</translation>
 <translation id="7642778300616172920">Sembunyikan konten sensitif</translation>
 <translation id="7643842463591647490">{0,plural, =1{# jendela dibuka}other{# jendela dibuka}}</translation>
 <translation id="7643932971554933646">Izinkan situs melihat file?</translation>
@@ -6203,6 +6212,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7800518121066352902">Putar &amp;Berlawanan Arah Jarum Jam</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7804072833593604762">Tab Ditutup</translation>
+<translation id="7805759469263222011">Pindai kode QR menggunakan kamera perangkat Anda atau masukkan kode aktivasi yang diberikan oleh operator Anda</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Penelusuran dan Asisten</translation>
 <translation id="7807711621188256451">Selalu izinkan <ph name="HOST" /> mengakses kamera Anda</translation>
@@ -6682,6 +6692,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8300849813060516376">OTASP gagal</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Alamat}other{# alamat}}</translation>
 <translation id="8304383784961451596">Anda tidak diizinkan menggunakan perangkat ini. Hubungi administrator untuk mendapatkan izin login atau login dengan Akun Google yang diawasi oleh Family Link.</translation>
+<translation id="8308016398665340540">Anda membagikan jaringan ini kepada pengguna lain di perangkat ini</translation>
 <translation id="8308179586020895837">Tanyakan jika <ph name="HOST" /> ingin mengakses kamera Anda</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikat sudah ada</translation>

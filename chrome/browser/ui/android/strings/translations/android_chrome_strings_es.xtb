@@ -295,6 +295,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2904414404539560095">La lista de dispositivos con los que puedes compartir una pestaña está abierta y ocupa toda la pantalla.</translation>
 <translation id="2905036901251765993">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR</translation>
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
+<translation id="2912296070571964914">Gestiona los temas que te interesan</translation>
 <translation id="2923908459366352541">El nombre no es válido</translation>
 <translation id="2932150158123903946">Almacenamiento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tu teclado no cambiará</translation>
@@ -339,6 +340,8 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3254409185687681395">Añadir esta página a marcadores</translation>
 <translation id="3259831549858767975">Reduce todo el contenido de la página</translation>
 <translation id="3264124641674805320">Cómo descargar contenido para usarlo más adelante</translation>
+<translation id="3264259168916048410">Tu ordenador quiere usar este dispositivo para iniciar sesión en un sitio.</translation>
+<translation id="3265534588625245297">Gestiona los sitios que sigues</translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
 <translation id="3269956123044984603">Para ver las pestañas de tus otros dispositivos, activa la opción Sincronización automática en la configuración de la cuenta de Android.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4384468725000734951">Sogou se ha establecido como motor de búsqueda predeterminado</translation>
+<translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">No hay marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4411535500181276704">Modo básico</translation>
@@ -583,6 +587,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="488187801263602086">Cambiar nombre de archivo</translation>
 <translation id="4882831918239250449">Controla cómo se usa el historial de navegación para personalizar la Búsqueda, los anuncios y más</translation>
 <translation id="4885273946141277891">Número de instancias de Chrome no admitido.</translation>
+<translation id="4905269543817054577">En incógnito, el historial no se guarda</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4910889077668685004">Aplicaciones para pagar</translation>
 <translation id="4913161338056004800">Borrar estadísticas</translation>
@@ -951,6 +956,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
 <translation id="7233236755231902816">Si quieres ver la Web en tu idioma, consigue la última versión de Chrome</translation>
 <translation id="7248069434667874558">Asegúrate de que la sincronización de tu <ph name="TARGET_DEVICE_NAME" /> está activada en Chrome</translation>
+<translation id="7252076891734325316">Acerca tu teléfono al ordenador</translation>
 <translation id="7274013316676448362">Sitio web bloqueado</translation>
 <translation id="7286572596625053347">¿Cambiar a <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">El cambio de nombre no está disponible</translation>
@@ -1017,6 +1023,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7630202231528827509">URL del proveedor</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7641339528570811325">Borrar datos de navegación…</translation>
+<translation id="764170292089748542">Chrome no guarda tu historial de navegación cuando navegas en privado. Puedes seguir usando los marcadores para acceder a tus sitios web favoritos.</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
@@ -1042,6 +1049,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7815484226266492798">Captura de pantalla completa</translation>
 <translation id="7821588508402923572">El ahorro de datos aparecerá aquí</translation>
+<translation id="78270725016672455">Tu ordenador quiere registrar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="7844171778363018843">No hay datos seleccionados para sincronizar</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
 <translation id="784934925303690534">Tiempo</translation>
@@ -1138,6 +1146,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8427875596167638501">La pestaña de vista previa está medio abierta</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
+<translation id="8439974325294139057"><ph name="LANG" />: idioma listo, reinicia <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">No hay historias disponibles</translation>
 <translation id="8443209985646068659">No se puede actualizar Chrome.</translation>
 <translation id="8445448999790540984">No se pueden exportar las contraseñas</translation>
@@ -1210,6 +1219,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8937267401510745927">Para ayudarte a completar tareas, Google recibirá las URL y los contenidos de los sitios en los que uses el Asistente, así como la información que envíes a través de este. Es posible que esta información se almacene en tu cuenta de Google. Puedes desactivar el Asistente en los ajustes de Chrome.</translation>
 <translation id="8937772741022875483">¿Eliminar tu actividad de Chrome de Bienestar digital?</translation>
 <translation id="8942627711005830162">Abrir en otra ventana</translation>
+<translation id="8945143127965743188"><ph name="LANG" />: este idioma no se ha podido descargar. Inténtalo de nuevo más tarde.</translation>
 <translation id="8951232171465285730">Chrome te ha permitido ahorrar <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">pendiente</translation>
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>

@@ -502,6 +502,7 @@
 <translation id="2850739647070081192">Enveloppe d'invitation</translation>
 <translation id="2856444702002559011">Les cyberpirates peuvent essayer de voler vos données à partir de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (par exemple, des mots de passe, des messages ou des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ce site diffuse des annonces intrusives ou trompeuses.</translation>
+<translation id="287596039013813457">Amical</translation>
 <translation id="2876489322757410363">Vous devez désactiver le mode de navigation privée pour effectuer un paiement par l'intermédiaire d'une application externe. Continuer?</translation>
 <translation id="2878197950673342043">Pli au format affiche</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -599,6 +600,7 @@
 <translation id="3229041911291329567">Renseignements sur la version de votre appareil et de votre navigateur</translation>
 <translation id="323107829343500871">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Toujours détecter le contenu important sur ce site</translation>
+<translation id="3249845759089040423">Pimpant</translation>
 <translation id="3252266817569339921">Français</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
@@ -971,6 +973,7 @@
 <translation id="4594403342090139922">&amp;Annuler la suppression</translation>
 <translation id="4597348597567598915">Taille 8</translation>
 <translation id="4600854749408232102">Enveloppe C6/C5</translation>
+<translation id="4606870351894164739">Remarquable</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
 <translation id="4636930964841734540">Renseignements</translation>
@@ -1034,6 +1037,8 @@
 <translation id="4813512666221746211">Erreur réseau</translation>
 <translation id="4816492930507672669">Ajuster à la page</translation>
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
+<translation id="4825507807291741242">Puissant</translation>
+<translation id="4838327282952368871">Rêveur</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="485316830061041779">Allemand</translation>
@@ -1192,6 +1197,7 @@
 <translation id="5398772614898833570">Annonces bloquées</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas valide présentement. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par une personne malveillante.</translation>
+<translation id="541143247543991491">Nuage (à l'échelle du système)</translation>
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> veut vous envoyer des notifications.</translation>
@@ -1699,6 +1705,7 @@ Détails supplémentaires :
       &lt;li&gt;Consultez le &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centre d'aide de Chrome&lt;/a&gt; pour apprendre à supprimer définitivement le logiciel de votre ordinateur
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Format large</translation>
+<translation id="7410471291937727359">Précieux</translation>
 <translation id="7416351320495623771">Gérer les mots de passe…</translation>
 <translation id="7419106976560586862">Chemin d'accès du profil</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
@@ -2122,6 +2129,7 @@ Détails supplémentaires :
 <translation id="9020542370529661692">Cette page a été traduite en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Non valide)</translation>
+<translation id="9030265603405983977">Monochrome</translation>
 <translation id="9035022520814077154">Erreur liée à la sécurité</translation>
 <translation id="9038649477754266430">Utilisez un service de prédiction pour charger les pages plus rapidement</translation>
 <translation id="9039213469156557790">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer le comportement de cette page.</translation>
@@ -2145,6 +2153,7 @@ Détails supplémentaires :
 <translation id="91108059142052966">La politique définie par l'administrateur désactive le partage d'écran avec <ph name="APPLICATION_TITLE" /> lorsque le contenu affiché est confidentiel</translation>
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est pas géré par une entreprise ou une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Frais</translation>
 <translation id="9119042192571987207">Téléversé</translation>
 <translation id="9128016270925453879">Les politiques ont été chargées</translation>
 <translation id="9128870381267983090">Connexion au réseau</translation>

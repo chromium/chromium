@@ -506,6 +506,7 @@
 <translation id="2850739647070081192">Invite (конверт)</translation>
 <translation id="2856444702002559011">Зловмисники можуть намагатися викрасти вашу інформацію із сайту <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (наприклад, паролі, повідомлення чи дані кредитних карток). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Цей сайт показує нав’язливі чи оманливі оголошення.</translation>
+<translation id="287596039013813457">Приязний</translation>
 <translation id="2876489322757410363">Щоб оплатити в зовнішньому додатку, ви вийдете з режиму анонімного перегляду. Продовжити?</translation>
 <translation id="2878197950673342043">Зігнути за типом плаката</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -603,6 +604,7 @@
 <translation id="3229041911291329567">Інформація про версії пристрою та веб-переглядача</translation>
 <translation id="323107829343500871">Ввести код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Завжди виявляти важливий вміст на цьому сайті</translation>
+<translation id="3249845759089040423">Чудовий</translation>
 <translation id="3252266817569339921">Французька</translation>
 <translation id="3266793032086590337">Значення (конфліктне)</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
@@ -980,6 +982,7 @@
 <translation id="4594403342090139922">&amp;Відмінити видалення</translation>
 <translation id="4597348597567598915">Розмір 8</translation>
 <translation id="4600854749408232102">C6/C5 (конверт)</translation>
+<translation id="4606870351894164739">Вражаючий</translation>
 <translation id="4628948037717959914">Фотографія</translation>
 <translation id="4631649115723685955">З кешбеком</translation>
 <translation id="4636930964841734540">Інформація</translation>
@@ -1043,6 +1046,8 @@
 <translation id="4813512666221746211">Помилка мережі</translation>
 <translation id="4816492930507672669">За розміром сторінки</translation>
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
+<translation id="4825507807291741242">Потужний</translation>
+<translation id="4838327282952368871">Мрійливий</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="485316830061041779">Німецька</translation>
@@ -1201,6 +1206,7 @@
 <translation id="5398772614898833570">Оголошення заблоковано</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="540969355065856584">Серверу не вдалося підтвердити, що це <ph name="DOMAIN" />. Його сертифікат безпеки зараз недійсний. Можливі причини: неправильна конфігурація або хтось перехопив ваше з’єднання.</translation>
+<translation id="541143247543991491">Хмара (на рівні системи)</translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
@@ -1708,6 +1714,7 @@
       &lt;li&gt;Відвідайте &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Довідковий центр Chrome&lt;/a&gt;, щоб дізнатися, як повністю видалити програмне забезпечення з комп’ютера
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Широкий формат</translation>
+<translation id="7410471291937727359">Милий</translation>
 <translation id="7416351320495623771">Керувати паролями…</translation>
 <translation id="7419106976560586862">Шлях до профілю</translation>
 <translation id="7437289804838430631">Додати контактну інформацію</translation>
@@ -2132,6 +2139,7 @@
 <translation id="9020542370529661692">Цю сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Недійсний)</translation>
+<translation id="9030265603405983977">Монохромний</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9038649477754266430">Користуйтеся службою передбачення, щоб сторінки завантажувалися швидше</translation>
 <translation id="9039213469156557790">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати роботу сторінки.</translation>
@@ -2155,6 +2163,7 @@
 <translation id="91108059142052966">Адміністратор заборонив показувати екран за допомогою додатка <ph name="APPLICATION_TITLE" />, коли видно конфіденційний контент</translation>
 <translation id="9114524666733003316">Підтверджуються дані картки…</translation>
 <translation id="9114581008513152754">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chrome. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Свіжий</translation>
 <translation id="9119042192571987207">Завантажено</translation>
 <translation id="9128016270925453879">Правила завантажено</translation>
 <translation id="9128870381267983090">З'єднатися з мережею</translation>

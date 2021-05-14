@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1001033507375626788">הרשת הזו משותפת איתך</translation>
 <translation id="1001307489511021749">‏אפליקציות, הגדרות ופריטים נוספים שהתאמת אישית יסונכרנו בין כל מכשירי Chrome OS שמחוברים באמצעות חשבון Google שלך.</translation>
 <translation id="1003088604756913841">פתיחת הקישור בחלון חדש של <ph name="APP" /></translation>
 <translation id="100323615638474026">‏התקן USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -959,6 +960,7 @@
 <translation id="1992924914582925289">הסרה מהמכשיר</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1995916364271252349">בדף הזה אפשר לשלוט על המידע שאתרים יכולים להשתמש בו ולהציג אותו (מיקום, מצלמה, חלונות קופצים ועוד)</translation>
+<translation id="1997437640397887843">‏המצלמה של המכשיר הופעלה. עליך למקם את קוד ה-QR של ה-eSIM מול המצלמה.</translation>
 <translation id="1997616988432401742">האישורים שלך</translation>
 <translation id="1999115740519098545">בעת ההפעלה</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
@@ -1014,6 +1016,7 @@
 <translation id="2055585478631012616">המערכת תוציא אותך מהאתרים האלה, כולל בכרטיסיות הפתוחות</translation>
 <translation id="205560151218727633">‏הלוגו של Google Assistant</translation>
 <translation id="2058456167109518507">אותר מכשיר</translation>
+<translation id="2058581283817163201">אימות באמצעות הטלפון הזה</translation>
 <translation id="2059913712424898428">אזור זמן</translation>
 <translation id="2060375639911876205">‏הסרת פרופיל של eSIM</translation>
 <translation id="2062354623176996748">חלון אנונימי מאפשר לגלוש באינטרנט בלי לשמור את היסטוריית הגלישה</translation>
@@ -1360,7 +1363,7 @@
 <translation id="2428939361789119025">‏כיבוי Wi-Fi</translation>
 <translation id="2428978615149723410">עגלות הקניות האלה</translation>
 <translation id="2431027948063157455">‏לא ניתן היה לטעון את Google Assistant. יש לבדוק את חיבור הרשת ולנסות שוב.</translation>
-<translation id="243179355394256322">‏הארגון שלך מגביל שיוך מכשיר לארגון למשתמשים מורשים בלבד. משתמש זה אינו מורשה לשייך מכשירים. יש לוודא שלמשתמש יש הרשאת אדמין מסוג "שיוך ציוד ל-Google Meet" בקטע 'משתמשים' של מסוף ה-Admin.</translation>
+<translation id="243179355394256322">‏הארגון שלך מתיר רק למשתמשים מורשים לשייך מכשירים. משתמש זה אינו מורשה לשייך מכשירים. יש לוודא שלמשתמש יש הרשאת אדמין מסוג "שיוך ציוד ל-Google Meet" בקטע 'משתמשים' של מסוף ה-Admin.</translation>
 <translation id="2433452467737464329">‏יש להוסיף פרמטר שאילתה בכתובת אתר לריענון אוטומטי של הדף: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2433836460518180625">ביטול הנעילה של המכשיר בלבד</translation>
@@ -2615,6 +2618,7 @@
 <translation id="3785308913036335955">הצגת קיצור דרך אל יישומים</translation>
 <translation id="3785727820640310185">סיסמאות שמורות לאתר הזה</translation>
 <translation id="3788301286821743879">לא ניתן היה להפעיל את אפליקציית הקיוסק.</translation>
+<translation id="3788331399335602504">הקבצים האלה</translation>
 <translation id="3788401245189148511">מעוניינים:</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="379082410132524484">תוקף הכרטיס שלך פג</translation>
@@ -3190,6 +3194,7 @@
 <translation id="4438043733494739848">שקוף</translation>
 <translation id="4438639467177774583">‏<ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> תישמר בחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
+<translation id="4440097423000553826">נשלחה התראה על ידי <ph name="WEBSITE" /> אל הטלפון. כדי לאמת את זהותך, יש להקיש על ההתראה "<ph name="NOTIFICATIONTITLE" />" ולפעול לפי ההוראות.</translation>
 <translation id="4441124369922430666">להפעיל את האפליקציה באופן אוטומטי בעת הפעלת המחשב?</translation>
 <translation id="4441147046941420429">כדי להמשיך, יש לנתק את מפתח האבטחה מהמכשיר, לחבר אותו מחדש ולגעת בו</translation>
 <translation id="444134486829715816">הרחבה...</translation>
@@ -3492,6 +3497,7 @@
 <translation id="4773112038801431077">‏שדרוג Linux</translation>
 <translation id="477647109558161443">יצירת קיצור דרך בשולחן העבודה</translation>
 <translation id="4776917500594043016">סיסמה עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
 <translation id="4777825441726637019">‏חנות Play</translation>
 <translation id="4777943778632837590">הגדרת שרתי שמות של הרשת</translation>
 <translation id="4778644898150334464">שימוש בסיסמה אחרת</translation>
@@ -4327,6 +4333,7 @@
 <translation id="5712153969432126546">‏לפעמים אתרים מפרסמים קובצי PDF, כמו מסמכים, חוזים וטפסים</translation>
 <translation id="5715711091495208045">מתווך פלאגין: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">מנועי חיפוש המוגדרים כברירת מחדל</translation>
+<translation id="5719637365829998022">‏קוד ה-QR נסרק.</translation>
 <translation id="5719854774000914513">‏אתרים יכולים לבקש הרשאה להתחבר למכשירי HID</translation>
 <translation id="572155275267014074">‏הגדרות Android</translation>
 <translation id="5722086096420375088">ירוק ולבן</translation>
@@ -4538,6 +4545,7 @@
 <translation id="5955721306465922729">אתר מסוים רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="5955809630138889698">ייתכן שהמכשיר הזה כשיר רק למצב הדגמה אונליין. אפשר לפנות לנציג התמיכה כדי לקבל פרטים נוספים.</translation>
 <translation id="5956585768868398362">האם זהו דף החיפוש שציפית לראות?</translation>
+<translation id="5957918771633727933">‏אין פרופילים זמינים של eSIM. ניתן להוריד <ph name="BEGIN_LINK" />פרופיל<ph name="END_LINK" /> חדש.</translation>
 <translation id="5957987129450536192">יש להקיש על סמל ההקראה לצד תמונת הפרופיל ואז לבחור בטקסט להקראה.</translation>
 <translation id="5959471481388474538">הרשת לא זמינה</translation>
 <translation id="595959584676692139">צריך לטעון מחדש את הדף כדי להשתמש בתוסף הזה</translation>
@@ -6043,6 +6051,7 @@
 <translation id="7638605456503525968">יציאות טוריות</translation>
 <translation id="7639914187072011620">‏נכשל הניסיון לאחזר את ההפניה האוטומטית אל SAML מהשרת</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> מכניס אותך באופן אוטומטי לאתרים כשירים באמצעות סיסמאות ששמרת.</translation>
+<translation id="7641513591566880111">השם של הפרופיל החדש</translation>
 <translation id="7642778300616172920">הסתרה של תוכן רגיש</translation>
 <translation id="7643842463591647490">{0,plural, =1{חלון אחד פתוח}two{2 חלונות פתוחים}many{# חלונות פתוחים}other{# חלונות פתוחים}}</translation>
 <translation id="7643932971554933646">לאפשר לאתר לראות את הקבצים?</translation>
@@ -6202,6 +6211,7 @@
 <translation id="7800518121066352902">סיבוב נ&amp;גד כיוון השעון</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804072833593604762">הכרטיסייה נסגרה</translation>
+<translation id="7805759469263222011">‏יש לסרוק את קוד ה-QR באמצעות המצלמה של המכשיר או להזין את קוד ההפעלה שקיבלת מהספק</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
@@ -6683,6 +6693,7 @@
 <translation id="8300849813060516376">‏OTASP נכשל</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{כתובת}two{# כתובות}many{# כתובות}other{# כתובות}}</translation>
 <translation id="8304383784961451596">‏אין לך הרשאה להשתמש במכשיר הזה. עליך לפנות למנהל המערכת לקבלת הרשאת כניסה או להיכנס באמצעות חשבון Google בפיקוח של Family Link.</translation>
+<translation id="8308016398665340540">הרשת הזו משותפת עם משתמשים אחרים במכשיר הזה</translation>
 <translation id="8308179586020895837">לשאול אם <ph name="HOST" /> רוצה לגשת למצלמה שלך</translation>
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8309458809024885768">האישור כבר קיים</translation>

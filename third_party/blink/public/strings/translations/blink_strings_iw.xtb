@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">טיימר</translation>
 <translation id="3199563858620722075">תיבה משולבת</translation>
 <translation id="3220661731597678625">השלב הנוכחי</translation>
+<translation id="3321030238473337787">מהירות הפעלה</translation>
 <translation id="3329013043687509092">רווייה</translation>
 <translation id="3450233048674729344">הערך חייב להיות קטן מ-<ph name="MAXIMUM" /> או שווה לו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">שורת תפריטים</translation>
 <translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
 <translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">הסתרת התפריט של מהירות ההפעלה</translation>
 <translation id="4384249794467006333">לתמונה הזו אין תוויות. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה השמאלית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4384583879834880242">שאלות ותשובות</translation>
 <translation id="4444765639179266822">נראה שכתובים כאן הדברים הבאים: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">פריט בעץ</translation>
 <translation id="5466621249238537318">יש לבחור קובץ אחד או יותר.</translation>
 <translation id="5468998798572797635">יציאה ממסך מלא</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">בוחר תאריכים</translation>
 <translation id="5537725057119320332">העברה</translation>
 <translation id="5546461542133609677">ביטול השתקה</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">אפשרויות נוספות</translation>
 <translation id="576709008726043716">מבוא</translation>
 <translation id="57838592816432529">השתקה</translation>
+<translation id="5786442179789148008">הצגת התפריט של מהירות ההפעלה</translation>
 <translation id="5787939484346677755">הורחב, יש אפשרויות זמינות להשלמה אוטומטית.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="588258955323874662">מסך מלא</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5966707198760109579">שבוע</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">לחצן קביעת ערך</translation>
 <translation id="6011459053400940133">מחוון עוצמת קול</translation>
 <translation id="6015796118275082299">שנה</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">השתקה</translation>
 <translation id="6885760532393684712">מאגר</translation>
 <translation id="689129560213475294">קולופון</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">‏רכיב blockquote</translation>
 <translation id="693476918119313863">כותרת</translation>
 <translation id="6941933287844615239">הורדת מדיה</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">הפניה להערה</translation>
 <translation id="811583516810654505">התיאור עוד מעט מוכן…</translation>
 <translation id="8117451130807776954">השבוע</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">בורר תאריך ושעה מקומיים</translation>
 <translation id="8261464734335370856">איות שגוי</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">שליטה בהפעלה מרחוק</translation>
 <translation id="862370744433916922">כותרת משנה</translation>
 <translation id="8634971699417195529">הצגת בוחר החודש</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">גלישת שורות</translation>
 <translation id="8711688047404765493">פלט</translation>
 <translation id="8750798805984357768">יש לבחור אחת מהאפשרויות הבאות.</translation>

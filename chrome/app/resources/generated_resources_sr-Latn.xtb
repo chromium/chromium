@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1001033507375626788">Ova mreža se deli sa vama</translation>
 <translation id="1001307489511021749">Aplikacije, podešavanja i druga prilagođavanja će se sinhronizovati na svim Chrome OS uređajima na kojima ste prijavljeni pomoću Google naloga.</translation>
 <translation id="1003088604756913841">Otvori link u novom <ph name="APP" /> prozoru</translation>
 <translation id="100323615638474026">USB uređaj (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
@@ -947,6 +948,7 @@
 <translation id="1992924914582925289">Ukloni sa uređaja</translation>
 <translation id="1994173015038366702">URL sajta</translation>
 <translation id="1995916364271252349">Kontroliše koje informacije sajtovi mogu da koriste i prikazuju (lokacija, kamera, iskačući prozori i drugo)</translation>
+<translation id="1997437640397887843">Kamera uređaja je uključena. Postavite eSIM QR kôd ispred kamere.</translation>
 <translation id="1997616988432401742">Vaši sertifikati</translation>
 <translation id="1999115740519098545">Pri pokretanju</translation>
 <translation id="2000419248597011803">Podrazumevanom pretraživaču šalje neke kolačiće i pretrage iz trake za adresu i okvira za pretragu</translation>
@@ -1002,6 +1004,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2055585478631012616">Odjavićete se sa ovih sajtova, uključujući i one na otvorenim karticama</translation>
 <translation id="205560151218727633">Logotip Google pomoćnika</translation>
 <translation id="2058456167109518507">Otkriven je uređaj</translation>
+<translation id="2058581283817163201">Potvrdite pomoću ovog telefona</translation>
 <translation id="2059913712424898428">Vremenska zona</translation>
 <translation id="2060375639911876205">Uklonite eSIM profil</translation>
 <translation id="2062354623176996748">Pregledajte veb bez čuvanja istorije pregledanja u prozoru bez arhiviranja</translation>
@@ -2599,6 +2602,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3785308913036335955">Prikaži prečicu za aplikacije</translation>
 <translation id="3785727820640310185">Sačuvane lozinke za ovaj sajt</translation>
 <translation id="3788301286821743879">Pokretanje kiosk aplikacije nije uspelo.</translation>
+<translation id="3788331399335602504">ovi fajlovi</translation>
 <translation id="3788401245189148511">Mogli bi da:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="379082410132524484">Kartica je istekla</translation>
@@ -3174,6 +3178,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4438043733494739848">Prozirno</translation>
 <translation id="4438639467177774583">Lozinka <ph name="MASKED_PASSWORD" /> korisnika <ph name="USERNAME" /> će biti sačuvana na Google nalog, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
+<translation id="4440097423000553826">Sajt <ph name="WEBSITE" /> vam je poslao obaveštenje na telefon. Da biste potvrdili da ste to vi, dodirnite obaveštenje <ph name="NOTIFICATIONTITLE" /> i pratite korake.</translation>
 <translation id="4441124369922430666">Želite li da se ova aplikacija pokreće automatski kada uključite uređaj?</translation>
 <translation id="4441147046941420429">Da biste nastavili, uklonite bezbednosni ključ sa uređaja, pa ga ponovo umetnite i dodirnite</translation>
 <translation id="444134486829715816">Proširi...</translation>
@@ -3475,6 +3480,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4773112038801431077">Nadogradite Linux</translation>
 <translation id="477647109558161443">Napravi prečicu na radnoj površini</translation>
 <translation id="4776917500594043016">Lozinka za <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu da koriste ovu mrežu</translation>
 <translation id="4777825441726637019">Play prodavnica</translation>
 <translation id="4777943778632837590">Konfiguriši nazive servera mreže</translation>
 <translation id="4778644898150334464">Koristite drugu lozinku</translation>
@@ -4311,6 +4317,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5712153969432126546">Sajtovi ponekad objavljuju PDF-ove, poput dokumenata, ugovora i obrazaca</translation>
 <translation id="5715711091495208045">Posrednik dodatne komponente: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Podrazumevani pretraživači</translation>
+<translation id="5719637365829998022">QR kôd je skeniran.</translation>
 <translation id="5719854774000914513">Sajtovi mogu da traže da se povezuju sa HID uređajima</translation>
 <translation id="572155275267014074">Android podešavanja</translation>
 <translation id="5722086096420375088">Zelena i bela</translation>
@@ -4522,6 +4529,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5955721306465922729">Veb-sajt želi da otvori ovu aplikaciju.</translation>
 <translation id="5955809630138889698">Ovaj uređaj možda ispunjava uslove samo za onlajn režim demonstracije. Više detalja potražite od predstavnika podrške.</translation>
 <translation id="5956585768868398362">Je li ovo stranica pretrage koju ste očekivali?</translation>
+<translation id="5957918771633727933">Nema dostupnih eSIM profila. Preuzmite novi <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Dodirnite ikonu Izaberite za govor pored slike profila, pa izaberite ono što želite da čujete.</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="595959584676692139">Ponovo učitajte ovu stranicu da biste koristili ovaj dodatak</translation>
@@ -6024,6 +6032,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7638605456503525968">Serijski portovi</translation>
 <translation id="7639914187072011620">Preuzimanje SAML URL-a za preusmeravanje sa servera nije uspelo</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vas automatski prijavljuje na sajtove koji ispunjavaju uslove pomoću lozinki koje ste sačuvali.</translation>
+<translation id="7641513591566880111">Nov naziv profila</translation>
 <translation id="7642778300616172920">Sakrij osetljiv sadržaj</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvoren prozor}one{# otvoren prozor}few{# otvorena prozora}other{# otvorenih prozora}}</translation>
 <translation id="7643932971554933646">Želite li da dozvolite da sajt pregleda datoteke?</translation>
@@ -6184,6 +6193,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7800518121066352902">Okreći u s&amp;meru suprotnom od kretanja kazaljke na satu</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
+<translation id="7805759469263222011">Skenirajte QR kôd pomoću kamere uređaja ili unesite aktivacioni kôd koji ste dobili od mobilnog operatera</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Pretraga i Pomoćnik</translation>
 <translation id="7807711621188256451">Uvek dozvoli da <ph name="HOST" /> pristupa kameri</translation>
@@ -6663,6 +6673,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8300849813060516376">OTASP nije uspeo</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="8304383784961451596">Nemate ovlašćenje za korišćenje ovog uređaja. Zatražite dozvolu za prijavljivanje od administratora ili se prijavite pomoću Google naloga pod Family Link nadzorom.</translation>
+<translation id="8308016398665340540">Delite ovu mrežu sa ostalim korisnicima na ovom uređaju</translation>
 <translation id="8308179586020895837">Pitaj me ako <ph name="HOST" /> želi da pristupi kameri</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikat već postoji</translation>

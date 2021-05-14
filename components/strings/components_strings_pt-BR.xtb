@@ -502,6 +502,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2850739647070081192">Convite (Envelope)</translation>
 <translation id="2856444702002559011">Invasores podem estar tentando roubar suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, senhas, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Neste site, há exibição de anúncios invasivos ou enganosos</translation>
+<translation id="287596039013813457">Amigável</translation>
 <translation id="2876489322757410363">Saindo do modo de navegação anônima para pagar usando um aplicativo externo. Continuar?</translation>
 <translation id="2878197950673342043">Dobra em cruz sanfona</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -599,6 +600,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3229041911291329567">Informações sobre a versão do seu dispositivo e navegador</translation>
 <translation id="323107829343500871">Digite o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sempre detectar conteúdo importante neste site</translation>
+<translation id="3249845759089040423">Maravilhoso</translation>
 <translation id="3252266817569339921">Francês</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
@@ -971,6 +973,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4594403342090139922">&amp;Desfazer exclusão</translation>
 <translation id="4597348597567598915">Tamanho 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">Impactante</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Reembolso vinculado</translation>
 <translation id="4636930964841734540">Informações</translation>
@@ -1034,6 +1037,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4813512666221746211">Erro na rede</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
+<translation id="4825507807291741242">Intenso</translation>
+<translation id="4838327282952368871">Sonho</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4850886885716139402">Visualizar</translation>
 <translation id="485316830061041779">Alemão</translation>
@@ -1192,6 +1197,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não é válido no momento. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
+<translation id="541143247543991491">Nuvem (todo o sistema)</translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
@@ -1699,6 +1705,7 @@ Mais detalhes:
     &lt;li&gt;Visite a &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Central de Ajuda do Chrome&lt;/a&gt; para saber como remover permanentemente o software do seu computador
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Formato largo</translation>
+<translation id="7410471291937727359">Adorável</translation>
 <translation id="7416351320495623771">Gerenciar senhas…</translation>
 <translation id="7419106976560586862">Caminho de perfil</translation>
 <translation id="7437289804838430631">Adicionar Informações de Contato</translation>
@@ -2123,6 +2130,7 @@ Mais detalhes:
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(inválido)</translation>
+<translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9038649477754266430">Usar um serviço de previsão para carregar páginas mais rapidamente</translation>
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
@@ -2147,6 +2155,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="91108059142052966">A política do administrador desativará o compartilhamento de tela com <ph name="APPLICATION_TITLE" /> quando houver conteúdo confidencial visível</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Revigorado</translation>
 <translation id="9119042192571987207">Enviado</translation>
 <translation id="9128016270925453879">As políticas foram carregadas</translation>
 <translation id="9128870381267983090">Conectar à rede</translation>

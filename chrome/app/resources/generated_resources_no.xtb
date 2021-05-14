@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1001033507375626788">Dette nettverket deles med deg</translation>
 <translation id="1001307489511021749">Apper, innstillinger og andre tilpasninger blir synkronisert på alle Chrome OS-enheter som er logget på med Google-kontoen din.</translation>
 <translation id="1003088604756913841">Åpne linken i et nytt <ph name="APP" />-vindu</translation>
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -954,6 +955,7 @@
 <translation id="1992924914582925289">Fjern fra enheten</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
 <translation id="1995916364271252349">Styrer hvilken informasjon nettsteder kan bruke og vise (posisjon, kamera, forgrunnsvinduer med mer)</translation>
+<translation id="1997437640397887843">Enhetskameraet er slått på. Plassér e-SIM-QR-koden foran kameraet.</translation>
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
@@ -1009,6 +1011,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2055585478631012616">Du blir logget av disse nettstedene – inkludert i åpne faner</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Enhet oppdaget</translation>
+<translation id="2058581283817163201">Bekreft med denne telefonen</translation>
 <translation id="2059913712424898428">Tidssone</translation>
 <translation id="2060375639911876205">Fjern e-SIM-kortprofilen</translation>
 <translation id="2062354623176996748">Med et inkognitovindu kan du bruke nettet uten at nettleserloggen lagres</translation>
@@ -2609,6 +2612,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3785308913036335955">Vis appsnarveien</translation>
 <translation id="3785727820640310185">Lagrede passord for dette nettstedet</translation>
 <translation id="3788301286821743879">Kunne ikke starte kiosk-appen.</translation>
+<translation id="3788331399335602504">disse filene</translation>
 <translation id="3788401245189148511">Den får følgende tilgang:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="379082410132524484">Kortet ditt er utløpt</translation>
@@ -3182,6 +3186,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4438043733494739848">Gjennomsiktig</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> blir lagret i Google-kontoen din, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> har sendt et varsel til telefonen din. For å bekrefte at det er deg, trykk på varselet «<ph name="NOTIFICATIONTITLE" />» og følg fremgangsmåten.</translation>
 <translation id="4441124369922430666">Vil du starte denne appen automatisk når maskinen slås på?</translation>
 <translation id="4441147046941420429">For å fortsette, fjern sikkerhetsnøkkelen fra enheten, sett den inn på nytt, og berør den</translation>
 <translation id="444134486829715816">Utvid</translation>
@@ -3483,6 +3488,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4773112038801431077">Oppgrader Linux</translation>
 <translation id="477647109558161443">Opprett en snarvei på skrivebordet</translation>
 <translation id="4776917500594043016">Passord for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Andre brukere av denne enheten kan bruke dette nettverket</translation>
 <translation id="4777825441726637019">Play Butikk</translation>
 <translation id="4777943778632837590">Konfigurer navnetjenere for nettverket</translation>
 <translation id="4778644898150334464">Bruk et annet passord</translation>
@@ -4318,6 +4324,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5712153969432126546">Nettsteder publiserer av og til PDF-filer, for eksempel dokumenter, kontrakter og skjemaer</translation>
 <translation id="5715711091495208045">Programtilleggsmegler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standard søkemotorer</translation>
+<translation id="5719637365829998022">QR-koden er skannet.</translation>
 <translation id="5719854774000914513">Nettsteder kan be om å få koble til HID-enheter</translation>
 <translation id="572155275267014074">Android-innstillinger</translation>
 <translation id="5722086096420375088">Grønn og hvit</translation>
@@ -4529,6 +4536,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5955721306465922729">Et nettsted vil åpne denne appen.</translation>
 <translation id="5955809630138889698">Denne enheten er kanskje bare kvalifisert for én demomodus på nettet. Kontakt brukerstøtterepresentanten din for å få mer informasjon.</translation>
 <translation id="5956585768868398362">Er dette søkesiden du forventet?</translation>
+<translation id="5957918771633727933">Ingen tilgjengelige e-SIM-kortprofiler. Last ned en ny <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Trykk på tekstopplesing-ikonet ved profilbildet ditt, og velg hva du vil høre.</translation>
 <translation id="5959471481388474538">Nettverket er utilgjengelig</translation>
 <translation id="595959584676692139">Last inn siden på nytt for å bruke denne utvidelsen</translation>
@@ -6034,6 +6042,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7638605456503525968">Serielle porter</translation>
 <translation id="7639914187072011620">Kunne ikke hente SAML-viderekoblingsadressen fra tjeneren</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> logger deg på kvalifiserte nettsteder automatisk med passord du har lagret.</translation>
+<translation id="7641513591566880111">Nytt profilnavn</translation>
 <translation id="7642778300616172920">Skjul sensitivt innhold</translation>
 <translation id="7643842463591647490">{0,plural, =1{# åpent vindu}other{# åpne vinduer}}</translation>
 <translation id="7643932971554933646">Vil du la nettstedet se filene?</translation>
@@ -6194,6 +6203,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804072833593604762">Fanen er lukket</translation>
+<translation id="7805759469263222011">Skann en QR-kode med enhetskameraet, eller skriv inn aktiveringskoden du har fått av operatøren din</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7807711621188256451">Tillat alltid at <ph name="HOST" /> bruker kameraet ditt</translation>
@@ -6673,6 +6683,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8300849813060516376">OTASP mislyktes</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresse}other{# adresser}}</translation>
 <translation id="8304383784961451596">Du er ikke autorisert til å bruke denne enheten. Kontakt administratoren for å få tillatelse til å logge på, eller logg på med en Google-konto som er under tilsyn av Family Link.</translation>
+<translation id="8308016398665340540">Du deler dette nettverket med andre brukere av enheten</translation>
 <translation id="8308179586020895837">Spør om <ph name="HOST" /> vil bruke kameraet ditt</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikatet finnes allerede</translation>

@@ -509,6 +509,7 @@
 <translation id="1545775234664667895">已安装主题背景“<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">此扩展程序更改了您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />想安装一款能够执行以下操作的<ph name="EXTENSION_TYPE" />：</translation>
+<translation id="1547808936554660006">我已知悉，执行 Powerwash 不会移除已安装的 eSIM 卡配置文件</translation>
 <translation id="1549275686094429035">已启用 ARC</translation>
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -545,6 +546,7 @@
 <translation id="1588438908519853928">正常</translation>
 <translation id="158849752021629804">需要家庭网络</translation>
 <translation id="1588870296199743671">链接打开方式...</translation>
+<translation id="1588919647604819635">右键点击卡片</translation>
 <translation id="1589055389569595240">显示拼写和语法</translation>
 <translation id="1591679663873027990">授权 Parallels Desktop 访问 USB 设备。Parallels Desktop 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 调试，这会重置您的 <ph name="DEVICE_TYPE" />。请先备份您的文件，然后再重启设备。</translation>
@@ -980,6 +982,7 @@
 
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
+<translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2044014337866019681">请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
@@ -1318,6 +1321,7 @@
 <translation id="2395616325548404795">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务，但未能发送其资产和位置信息。请通过管理控制台为此设备手动输入这些信息。</translation>
 <translation id="2396387085693598316">您的管理员已禁用“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="2396783860772170191">输入 4 位数的 PIN 码 (0000-9999)</translation>
+<translation id="2398546389094871088">对您的设备执行 Powerwash 不会移除您的 eSIM 卡配置文件。请转到<ph name="LINK_BEGIN" />移动设置<ph name="LINK_END" />页面手动移除这些配置文件。</translation>
 <translation id="2399699884460174994">通知已开启</translation>
 <translation id="2399939490305346086">安全密钥登录数据</translation>
 <translation id="2400664245143453337">需要立即更新</translation>
@@ -1733,6 +1737,7 @@
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
 <translation id="284805635805850872">要移除有害软件吗？</translation>
+<translation id="2849035674501872372">查找</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">清理失败</translation>
 <translation id="2849936225196189499">关键</translation>
@@ -2044,6 +2049,7 @@
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192947282887913208">音频文件</translation>
+<translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3199127022143353223">服务器</translation>
 <translation id="3201422919974259695">可用的 USB 设备会显示在此处。</translation>
 <translation id="3202131003361292969">路径</translation>
@@ -2065,6 +2071,7 @@
 <translation id="3223531857777746191">“重置”按钮</translation>
 <translation id="3225084153129302039">默认的紫色头像</translation>
 <translation id="3225319735946384299">代码签名</translation>
+<translation id="3226487301970807183">显示/隐藏靠左对齐的侧边栏</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
 <translation id="3238192140106069382">正在连接并验证</translation>
@@ -2334,6 +2341,7 @@
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
 <translation id="3518985090088779359">接受并继续</translation>
 <translation id="3519564332031442870">打印后端服务</translation>
+<translation id="3519938335881974273">将页面另存为…</translation>
 <translation id="3521606918211282604">更改磁盘大小</translation>
 <translation id="3522088408596898827">磁盘空间严重不足。请释放一些磁盘空间，然后重试。</translation>
 <translation id="3524965460886318643">导出活动记录</translation>
@@ -2357,6 +2365,7 @@
 <translation id="3550593477037018652">断开移动网络连接</translation>
 <translation id="3550915441744863158">Chrome会自动更新，因此您使用的始终都是最新版本</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">退出时清除</translation>
 <translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
@@ -2409,6 +2418,7 @@
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3608576286259426129">用户图片预览</translation>
+<translation id="3609277884604412258">快速搜索</translation>
 <translation id="3610369246614755442">基座风扇需要维修</translation>
 <translation id="361106536627977100">闪存数据</translation>
 <translation id="3611655097742243705">如需查找更多应用，请前往 Play 商店</translation>
@@ -3351,6 +3361,7 @@
 <translation id="4636682061478263818">云端硬盘文件</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4637083375689622795">更多操作，<ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">再次使用摄像头</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="4638930039313743000">启用 ADB 调试</translation>
 <translation id="4641539339823703554">Chrome无法设置系统时间。请检查下面的时间，并在必要时进行更正。</translation>
@@ -4101,6 +4112,7 @@
 <translation id="5499313591153584299">此文件可能对您的计算机有害。</translation>
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
 <translation id="5500709606820808700">今天运行过安全检查</translation>
+<translation id="5501322521654567960">靠左对齐的侧边栏</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">从 Firefox 导入</translation>
 <translation id="5502915260472117187">孩子</translation>
@@ -5312,6 +5324,7 @@
 <translation id="6856348640027512653">不得使用虚拟实境设备或数据</translation>
 <translation id="6856459657722366306">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="6856623341093082836">设置和调整您的触摸屏的精确度</translation>
+<translation id="6857145580237920905">在执行 Powerwash 前先移除 eSIM 卡配置文件</translation>
 <translation id="6857699260879628349">获取配置信息</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">代理设置...</translation>

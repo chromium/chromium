@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Invite (Конверт)</translation>
 <translation id="2856444702002559011">Чабуулчулар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> дарегинен маалыматыңызды (мисалы, сырсөздөр, билдирүүлөр же насыя карталары) уурдоого аракет кылып жатышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Бул сайт тажатма же адаштыруучу жарнамаларды көрсөтүп жатат.</translation>
+<translation id="287596039013813457">Ынак</translation>
 <translation id="2876489322757410363">Тышкы колдонмо аркылуу төлөө үчүн жашыруун режимден чыкканы жатасыз. Уланта бересизби?</translation>
 <translation id="2878197950673342043">Постер формасында бүктөө</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@
 <translation id="3229041911291329567">Түзмөгүңүздүн жана серепчиңиздин версиясы тууралуу маалымат</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> карточкаңыз үчүн CVC кодун киргизиңиз</translation>
 <translation id="3234666976984236645">Бул сайттагы маанилүү мазмун ар дайым аныкталсын</translation>
+<translation id="3249845759089040423">Көркөм</translation>
 <translation id="3252266817569339921">Французча</translation>
 <translation id="3266793032086590337">Маани (карама-каршы)</translation>
 <translation id="3268451620468152448">Ачык өтмөктөр</translation>
@@ -981,6 +983,7 @@
 <translation id="4594403342090139922">Жок кылууну &amp;жасабоо</translation>
 <translation id="4597348597567598915">Өлчөмү: 8</translation>
 <translation id="4600854749408232102">C6/C5 (Конверт)</translation>
+<translation id="4606870351894164739">Таасирлүү</translation>
 <translation id="4628948037717959914">Сүрөт</translation>
 <translation id="4631649115723685955">Кешбэк байланыштырылды</translation>
 <translation id="4636930964841734540">Маалымат</translation>
@@ -1044,6 +1047,8 @@
 <translation id="4813512666221746211">Тармактык ката</translation>
 <translation id="4816492930507672669">Баракка чактоо</translation>
 <translation id="4819347708020428563">Ананнотацияларды демейки көрүнүштө түзөтөсүзбү?</translation>
+<translation id="4825507807291741242">Күчтүү</translation>
+<translation id="4838327282952368871">Кыялкеч</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="485316830061041779">Немисче</translation>
@@ -1202,6 +1207,7 @@
 <translation id="5398772614898833570">Жарнамалар бөгөттөлдү</translation>
 <translation id="5400836586163650660">Боз</translation>
 <translation id="540969355065856584">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; азыркы учурда анын коопсуздук тастыктамасы жарактуу эмес. Бул туура эмес конфигурациялоодон болушу мүмкүн же чабуулчу туташууңузга тоскоол болууда.</translation>
+<translation id="541143247543991491">Булут (жалпы тутумдук)</translation>
 <translation id="541416427766103491">4-төшөгүч</translation>
 <translation id="5421136146218899937">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
@@ -1709,6 +1715,7 @@
     &lt;li&gt;Программаны компьютериңизден биротоло алып салуунун жолун билип алуу үчүн &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome’дун жардам борборуна&lt;/a&gt; баш багыңыз
     &lt;ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Cүйкүмдүү</translation>
 <translation id="7416351320495623771">Сырсөздөрдү башкаруу…</translation>
 <translation id="7419106976560586862">Профиль жолу</translation>
 <translation id="7437289804838430631">Байланыш маалыматын кошуу</translation>
@@ -2132,6 +2139,7 @@
 <translation id="9020542370529661692">Бул бет <ph name="TARGET_LANGUAGE" /> тилине которулду</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Жараксыз)</translation>
+<translation id="9030265603405983977">Монохром</translation>
 <translation id="9035022520814077154">Коопсуздук катасы</translation>
 <translation id="9038649477754266430">Барактарды тезирээк жүктөө үчүн алдын ала айтуу кызматын колдонуңуз</translation>
 <translation id="9039213469156557790">Андан тышкары, бул бетте башка кооптуу булактар бар. Өткөрүү учурунда аларды башка колдонуучулар көрө алышат, ошону менен катар, беттин иш-аракетин өзгөртүү үчүн аларды чабуулчулар бурмалап коюшу мүмкүн.</translation>
@@ -2155,6 +2163,7 @@
 <translation id="91108059142052966">Купуя нерселер көрүнүп турганда Администратордун саясатына ылайык экранды <ph name="APPLICATION_TITLE" /> менен бөлүшүүгө болбойт</translation>
 <translation id="9114524666733003316">Карта текшерилүүдө…</translation>
 <translation id="9114581008513152754">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Жаңы</translation>
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
 <translation id="9128016270925453879">Саясаттар жүктөлдү</translation>
 <translation id="9128870381267983090">Тармакка туташуу</translation>

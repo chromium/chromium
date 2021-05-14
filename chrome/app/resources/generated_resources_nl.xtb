@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1001033507375626788">Dit netwerk is met jou gedeeld</translation>
 <translation id="1001307489511021749">Je apps, instellingen en andere aanpassingen worden gesynchroniseerd op alle Chrome OS-apparaten waarop je bent ingelogd met je Google-account.</translation>
 <translation id="1003088604756913841">Link openen in een nieuw <ph name="APP" />-venster</translation>
 <translation id="100323615638474026">USB-apparaat (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">Van apparaat verwijderen</translation>
 <translation id="1994173015038366702">Site-URL</translation>
 <translation id="1995916364271252349">Beheert welke informatie sites mogen gebruiken en tonen (locatie, camera, pop-ups en meer)</translation>
+<translation id="1997437640397887843">Apparaatcamera is ingeschakeld. Houd de QR-code van je e-simkaart voor de camera.</translation>
 <translation id="1997616988432401742">Je certificaten</translation>
 <translation id="1999115740519098545">Bij opstarten</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
@@ -1003,6 +1005,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2055585478631012616">Je wordt uitgelogd bij deze sites, ook in geopende tabbladen</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Apparaat gedetecteerd</translation>
+<translation id="2058581283817163201">Verifiëren met deze telefoon</translation>
 <translation id="2059913712424898428">Tijdzone</translation>
 <translation id="2060375639911876205">Profiel voor e-simkaart verwijderen</translation>
 <translation id="2062354623176996748">Gebruik een incognitovenster om te internetten zonder dat je browsegeschiedenis wordt opgeslagen</translation>
@@ -2599,6 +2602,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3785308913036335955">Snelle link voor apps tonen</translation>
 <translation id="3785727820640310185">Opgeslagen wachtwoorden voor deze site</translation>
 <translation id="3788301286821743879">De kiosk-app kan niet worden gestart.</translation>
+<translation id="3788331399335602504">deze bestanden</translation>
 <translation id="3788401245189148511">De apps/extensies zouden nu het volgende kunnen doen:</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="379082410132524484">Je pas is verlopen</translation>
@@ -3174,6 +3178,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4438043733494739848">Transparant</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> wordt opgeslagen in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> heeft een melding naar je telefoon gestuurd. Tik op de melding '<ph name="NOTIFICATIONTITLE" />' en volg de stappen om te bevestigen dat jij het bent.</translation>
 <translation id="4441124369922430666">Wil je dat deze app automatisch start wanneer het apparaat wordt aangezet?</translation>
 <translation id="4441147046941420429">Als je wilt doorgaan, verwijder je de beveiligingssleutel uit je apparaat, steek je hem er opnieuw en tik je erop</translation>
 <translation id="444134486829715816">Uitvouwen...</translation>
@@ -3475,6 +3480,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4773112038801431077">Linux upgraden</translation>
 <translation id="477647109558161443">Een snelkoppeling maken</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Andere gebruikers van dit apparaat kunnen dit netwerk gebruiken</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Naamservers voor netwerk configureren</translation>
 <translation id="4778644898150334464">Ander wachtwoord gebruiken</translation>
@@ -4308,6 +4314,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5712153969432126546">Sites publiceren soms pdf's, zoals documenten, contracten en formulieren</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
+<translation id="5719637365829998022">De QR-code is gescand</translation>
 <translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
 <translation id="572155275267014074">Android-instellingen</translation>
 <translation id="5722086096420375088">Groen/wit</translation>
@@ -4519,6 +4526,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5955721306465922729">Een website wil deze app openen.</translation>
 <translation id="5955809630138889698">Dit apparaat is mogelijk alleen geschikt voor de online demomodus. Neem contact op met een medewerker van support voor meer informatie.</translation>
 <translation id="5956585768868398362">Is dit de zoekpagina die je had verwacht?</translation>
+<translation id="5957918771633727933">Geen beschikbare e-simkaartprofielen. Download een nieuw <ph name="BEGIN_LINK" />profiel.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Tik op het icoon 'Selecteer om uitgesproken te worden' in de buurt van je profielfoto en selecteer vervolgens wat je wilt horen.</translation>
 <translation id="5959471481388474538">Netwerk niet beschikbaar</translation>
 <translation id="595959584676692139">Laad de pagina opnieuw om deze extensie te gebruiken</translation>
@@ -6024,6 +6032,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7638605456503525968">Seriële poorten</translation>
 <translation id="7639914187072011620">Kan de SAML-omleidings-URL niet ophalen van de server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> logt je automatisch in bij geschikte sites met wachtwoorden die je hebt opgeslagen.</translation>
+<translation id="7641513591566880111">Nieuwe profielnaam</translation>
 <translation id="7642778300616172920">Gevoelige content verbergen</translation>
 <translation id="7643842463591647490">{0,plural, =1{# geopend venster}other{# geopende vensters}}</translation>
 <translation id="7643932971554933646">Site toestemming geven deze bestanden te bekijken?</translation>
@@ -6183,6 +6192,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
+<translation id="7805759469263222011">Scan een QR-code met je apparaatcamera of voer de activeringscode in die je van je provider hebt gekregen</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> altijd toegang tot je camera geven</translation>
@@ -6662,6 +6672,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8300849813060516376">OTASP mislukt</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}other{# adressen}}</translation>
 <translation id="8304383784961451596">Je hebt geen rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen of log in met een Google-account dat onder toezicht staat via Family Link.</translation>
+<translation id="8308016398665340540">Je deelt dit netwerk met andere gebruikers van dit apparaat</translation>
 <translation id="8308179586020895837">Vragen of <ph name="HOST" /> toegang wil tot je camera</translation>
 <translation id="830868413617744215">Bèta</translation>
 <translation id="8309458809024885768">Certificaat bestaat al</translation>

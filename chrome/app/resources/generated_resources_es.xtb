@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1001033507375626788">Esta red se comparte contigo</translation>
 <translation id="1001307489511021749">Tus aplicaciones, ajustes y otras personalizaciones se sincronizarán en todos los dispositivos Chrome OS en los que hayas iniciado sesión con tu cuenta de Google.</translation>
 <translation id="1003088604756913841">Abrir enlace en una ventana nueva de <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">Eliminar del dispositivo</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1995916364271252349">Controla la información que pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y otros)</translation>
+<translation id="1997437640397887843">La cámara del dispositivo se ha encendido. Coloca el código QR de tu eSIM frente a la cámara.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1999115740519098545">Al abrir</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
@@ -1003,6 +1005,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2055585478631012616">Se cerrarán tus sesiones en esos sitios (también en las pestañas abiertas)</translation>
 <translation id="205560151218727633">Logotipo del Asistente de Google</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
+<translation id="2058581283817163201">Verificar con este teléfono</translation>
 <translation id="2059913712424898428">Zona horaria</translation>
 <translation id="2060375639911876205">Quitar perfil de eSIM</translation>
 <translation id="2062354623176996748">Navega por Internet sin guardar tu historial de navegación con una ventana de incógnito</translation>
@@ -2600,6 +2603,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3785308913036335955">Mostrar acceso directo de aplicaciones</translation>
 <translation id="3785727820640310185">Contraseñas guardadas de este sitio web</translation>
 <translation id="3788301286821743879">No se ha podido iniciar la aplicación de kiosco.</translation>
+<translation id="3788331399335602504">estos archivos</translation>
 <translation id="3788401245189148511">Podría:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="379082410132524484">Tu tarjeta ha caducado</translation>
@@ -3174,6 +3178,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4438043733494739848">Transparente</translation>
 <translation id="4438639467177774583">La contraseña <ph name="MASKED_PASSWORD" /> de <ph name="USERNAME" /> se guardará en tu cuenta de Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> te ha enviado una notificación al teléfono. Para confirmar que eres tú, toca la notificación <ph name="NOTIFICATIONTITLE" /> y sigue los pasos.</translation>
 <translation id="4441124369922430666">¿Quieres que esta aplicación se inicie de forma automática cuando se active el ordenador?</translation>
 <translation id="4441147046941420429">Para seguir, saca la llave de seguridad del dispositivo, vuelve a meterla y pulsa el botón de activación.</translation>
 <translation id="444134486829715816">Ampliar...</translation>
@@ -3475,6 +3480,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="477647109558161443">Crear un acceso directo del escritorio</translation>
 <translation id="4776917500594043016">Contraseña de <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar la red</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nombres de la red</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
@@ -4310,6 +4316,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
 <translation id="5715711091495208045">Agente de complementos: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Buscadores predeterminados</translation>
+<translation id="5719637365829998022">Código QR escaneado.</translation>
 <translation id="5719854774000914513">Los sitios pueden solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
@@ -4521,6 +4528,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5955721306465922729">Un sitio web quiere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo sea apto para el modo de demostración online. Para obtener más información, ponte en contacto con tu representante de soporte.</translation>
 <translation id="5956585768868398362">¿Es esta la página de búsqueda que esperabas?</translation>
+<translation id="5957918771633727933">No hay perfiles de eSIM disponibles. Descarga un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nuevo.</translation>
 <translation id="5957987129450536192">Toca el icono Enunciar selección, situado junto a la imagen de tu perfil, y selecciona la parte que quieres escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="595959584676692139">Vuelve a cargar la página para usar esta extensión</translation>
@@ -6026,6 +6034,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7638605456503525968">Puertos serie</translation>
 <translation id="7639914187072011620">No se ha podido obtener del servidor la URL de redirección basada en SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automáticamente en los sitios en los que se pueda iniciar sesión con las contraseñas que hayas guardado.</translation>
+<translation id="7641513591566880111">Nombre de perfil nuevo</translation>
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Quieres permitir que el sitio web vea los archivos?</translation>
@@ -6186,6 +6195,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7800518121066352902">Girar a la &amp;izquierda</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
+<translation id="7805759469263222011">Escanea un código QR con la cámara del dispositivo o escribe el código de activación proporcionado por tu operador.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
@@ -6665,6 +6675,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8300849813060516376">Error de OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Dirección}other{# direcciones}}</translation>
 <translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Ponte en contacto con el administrador para obtener permiso para iniciar sesión, o inicia sesión con una cuenta de Google supervisada con Family Link.</translation>
+<translation id="8308016398665340540">Compartes la red con otros usuarios de este dispositivo</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">El certificado ya existe</translation>

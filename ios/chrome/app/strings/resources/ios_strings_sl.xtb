@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
+<translation id="2022352537516230970">Ustvarjeno za vaš iPhone</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
@@ -314,6 +315,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
 <translation id="418156467088430727">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="4181841719683918333">Jeziki</translation>
+<translation id="4184011057600693970">Ustvarjeno za vaš iPad</translation>
 <translation id="424315890655130736">Vnos gesla</translation>
 <translation id="4263576668337963058">Prikaži razpoložljiva dejanja na strani</translation>
 <translation id="4267380167363222949">Naslednji zavihek</translation>
@@ -492,6 +494,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
+<translation id="60829778314739003">Sprejmi in nadaljuj</translation>
 <translation id="6108923351542677676">Poteka nastavitev …</translation>
 <translation id="6119050551270742952">Trenutna spletna stran je v anonimnem načinu</translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
@@ -587,6 +590,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6801927553864092214">Če želite zasebno brskati, odprite anonimni zavihek.</translation>
 <translation id="6807889908376551050">Pokaži vse ...</translation>
 <translation id="681368974849482173">Item created</translation>
+<translation id="6830804042318138535">Več o tem</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6851516051005285358">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6858855187367714033">Optično prebrano</translation>
@@ -635,6 +639,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7291368939935408496">Pripravljanje gesel ...</translation>
 <translation id="7293171162284876153">Če želite začeti sinhronizacijo, vklopite »Sinhronizacija podatkov v Chromu«.</translation>
 <translation id="7313347584264171202">Tu bodo prikazani anonimni zavihki</translation>
+<translation id="7319242366286515846">Z nadaljevanjem se strinjate s <ph name="BEGIN_LINK" />pogoji storitve<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241">Preneseno: <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">Možnosti za Odkrivanje</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
@@ -781,6 +786,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8840513115188359703">Iz Google Računa ne boste odjavljeni.</translation>
 <translation id="8870413625673593573">Nedavno zaprto</translation>
+<translation id="8876882697946675716">Poskrbite za sinhroniziranost naprav</translation>
 <translation id="8881801611828450202">Uporabi <ph name="SEARCH_ENGINE" /> za iskanje te slike</translation>
 <translation id="8909135823018751308">Skupna raba …</translation>
 <translation id="8917490105272468696">Da, sem za</translation>

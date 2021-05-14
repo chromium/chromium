@@ -390,6 +390,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1516486219683984217">Ne pas autoriser l'utilisation des notifications système</translation>
 <translation id="1522425503138261032">Autoriser les sites à suivre la position géographique des utilisateurs</translation>
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
+<translation id="1524243669991877602">Si cette règle est activée, les règles associées à un compte <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> sont autorisées à fusionner avec des règles au niveau des machines.
+
+      Seules les règles provenant d'utilisateurs sécurisés peuvent être fusionnées. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Toutes les autres règles utilisateurs seront toujours ignorées.
+
+      Les règles à fusionner doivent aussi être définies dans <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> ou <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Cette règle sera ignorée si aucune des règles mentionnées ci-dessus n'est configurée.
+
+      Si cette règle n'est pas définie ou désactivée, les règles cloud utilisateurs ne peuvent pas être fusionnées avec les règles provenant d'autres sources.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
 <translation id="1527298988676981599">Cette règle permet d'établir la liste des formats d'URL qui indiquent les sites automatiquement autorisés à se connecter à un appareil USB à l'aide des ID produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> doivent être renseignés pour chaque élément de la liste. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle ayant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
 
@@ -1180,6 +1187,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Si cette règle n'est pas définie, la mise en surbrillance du curseur de saisie est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="2509748672176727116">L'utilisateur pourra capturer des paquets du réseau</translation>
 <translation id="2509919237512982967">Utiliser les anciens éléments de contrôle de formulaire jusqu'à la version M84.</translation>
+<translation id="2512972020817284317">Activer la fusion de règles cloud utilisateurs.</translation>
 <translation id="2515699738406900920">Disponibilité de l'outil de sélection du profil au démarrage</translation>
 <translation id="2517466659416174529">Figer les onglets en arrière-plan</translation>
 <translation id="2518231489509538392">Autoriser la lecture audio</translation>
@@ -2717,6 +2725,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
 <translation id="4661889655253181651">L'option "Paramètres de contenu" permet d'indiquer la manière dont le contenu d'un type spécifique (par exemple, cookies, images ou JavaScript) est géré.</translation>
+<translation id="4663509616441994711">Désactiver la fusion de règles cloud utilisateurs.</translation>
 <translation id="4665897631924472251">Paramètres de gestion des extensions</translation>
 <translation id="4666930704271463612">Permet de spécifier le sous-ensemble des serveurs d'impression qui sont interrogés pour accéder aux imprimantes disponibles qui y sont associées.
 
@@ -5239,6 +5248,7 @@ au maximum si un utilisateur se sert de l'appareil.
 
           Si cette règle n'est pas configurée, le contraste élevé est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="7869986671709030417">Mode d'impression d'images de fond par défaut</translation>
+<translation id="7877924399554599110">Permet de fusionner les règles cloud utilisateurs avec les règles au niveau des machines.</translation>
 <translation id="7881421274383404138">La définition de cette règle permet de configurer les imprimantes d'entreprise. Son format correspond au dictionnaire <ph name="PRINTERS_POLICY_NAME" />, avec un champ supplémentaire <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> et <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur chaque appareil. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.

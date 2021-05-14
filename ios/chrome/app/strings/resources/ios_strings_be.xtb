@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
+<translation id="2022352537516230970">Распрацавана для iPhone</translation>
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">Заўсёды паказваць</translation>
 <translation id="418156467088430727">Паказаць пазасеткавую версію ў новай укладцы</translation>
 <translation id="4181841719683918333">Мовы</translation>
+<translation id="4184011057600693970">Распрацавана для iPad</translation>
 <translation id="424315890655130736">Увядз. фразу-пароль</translation>
 <translation id="4263576668337963058">Паказаць даступныя дзеянні са старонкай</translation>
 <translation id="4267380167363222949">Наступная ўкладка</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
+<translation id="60829778314739003">Прыняць і працягнуць</translation>
 <translation id="6108923351542677676">Ідзе наладка…</translation>
 <translation id="6119050551270742952">Вэб-старонка адкрыта ў рэжыме інкогніта</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">Для прагляду вэб-старонак у прыватным рэжыме адкрыйце ўкладку інкогніта</translation>
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
+<translation id="6830804042318138535">Чытаць далей</translation>
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6851516051005285358">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="6858855187367714033">Сканіраваны</translation>
@@ -629,11 +633,13 @@
 <translation id="7203585745079012652">Агучваць атрыманыя адказы</translation>
 <translation id="7207383424303353046">Навінка. Зрабіце Chrome стандартным браўзерам, каб сайты адкрываліся ў ім аўтаматычна. <ph name="BEGIN_LINK" />Адкрыць Налады<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Несапраўдны псеўданім карткі</translation>
+<translation id="722454870747268814">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7265758999917665941">Ніколі для гэтага сайта</translation>
 <translation id="7272437679830969316">Не ўдалося спраўдзіць вашу асобу. Пароль не скапіраваны.</translation>
 <translation id="7291368939935408496">Ідзе падрыхтоўка пароляў...</translation>
 <translation id="7293171162284876153">Каб пачаць сінхранізацыю, уключыце "Сінхранізацыю даных Chrome".</translation>
 <translation id="7313347584264171202">Вашы ўкладкі ў рэжыме інкогніта знаходзяцца тут</translation>
+<translation id="7319242366286515846">Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK" />Умовамі выкарыстання<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Спампавана: <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">Параметры рэкамендацый</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -780,6 +786,7 @@
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="8840513115188359703">З Уліковага запісу Google вы не выйдзеце.</translation>
 <translation id="8870413625673593573">Нядаўна закрытыя</translation>
+<translation id="8876882697946675716">Сінхранізуйце свае прылады</translation>
 <translation id="8881801611828450202">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
 <translation id="8917490105272468696">Так, я згаджаюся</translation>

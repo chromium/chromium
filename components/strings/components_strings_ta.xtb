@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">இந்தப் பக்கம் தெரிவிப்பது:</translation>
 <translation id="153384715582417236">அவ்வளவு தான்!</translation>
 <translation id="1536390784834419204">பக்கத்தை மொழிபெயர்</translation>
+<translation id="1539840569003678498">அறிக்கை அனுப்பப்பட்டது:</translation>
 <translation id="154408704832528245">டெலிவரி முகவரியைத் தேர்வு செய்</translation>
 <translation id="1549470594296187301">இந்த அம்சத்தைப் பயன்படுத்த JavaScript இயக்கப்பட வேண்டும்.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">குறுகிய ஓரம் முதலில்</translation>
 <translation id="168693727862418163">இந்தக் கொள்கை அதன் திட்டப்பணித் தரவுக்கு எதிராக மதிப்பீடு செய்யப்படாததால் புறக்கணிக்கப்படும்.</translation>
 <translation id="168841957122794586">சேவையக சான்றிதழில் வலுவற்ற குறியீட்டாக்க விசை இருக்கிறது.</translation>
+<translation id="1696290444144917273">விர்ச்சுவல் கார்டு விவரங்களைக் காட்டும்</translation>
 <translation id="1697532407822776718">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{இந்தச் சேவையகம் தான் <ph name="DOMAIN" /> என்பதை நிரூபிக்க முடியவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் நாளை முதலே செல்லுபடியாகும். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.}other{இந்தச் சேவையகம் தான் <ph name="DOMAIN" /> என்பதை நிரூபிக்க முடியவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் எதிர்காலத்தில் # நாட்களில் ஏற்றுக்கொள்ளப்படும். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">அஞ்சல் பெட்டி 3</translation>
 <translation id="1718029547804390981">ஆவணம் மிகப் பெரிதாக இருப்பதால் அதில் விரிவுரையைச் சேர்க்க முடியாது</translation>
 <translation id="1721424275792716183">* அவசியமான புலம்</translation>
+<translation id="1727613060316725209">சான்றிதழ் சரியானது</translation>
 <translation id="1727741090716970331">சரியான கார்டு எண்ணைச் சேர்க்கவும்</translation>
 <translation id="1728677426644403582">இணையப் பக்கத்தின் மூலத்தைப் பார்க்கிறீர்கள்</translation>
 <translation id="173080396488393970">இந்தக் கார்டு வகை ஆதரிக்கப்படவில்லை</translation>
@@ -696,6 +699,7 @@
 <translation id="3586931643579894722">விவரங்களை மறை</translation>
 <translation id="3587738293690942763">நடுவிலுள்ளது</translation>
 <translation id="3590643883886679995">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறிய பிறகு உள்நுழைவுத் தரவு இந்தச் சாதனத்தில் சேமிக்கப்படும்.</translation>
+<translation id="359126217934908072">மாதம்/ஆண்டு:</translation>
 <translation id="3592413004129370115">Italian (என்வலப்)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">உங்கள் நிர்வாகி ஆப்ஸைத் தடுத்துள்ளார்</translation>
@@ -751,6 +755,7 @@
 <translation id="3781428340399460090">ஹாட் பிங்க்</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">புளூடூத் சாதனங்கள்</translation>
+<translation id="3787675388804467730">விர்ச்சுவல் கார்டு எண்</translation>
 <translation id="3787705759683870569">காலாவதி: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">அளவு: 16</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
@@ -1549,6 +1554,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">சுலபமாகப் படிப்பதற்கு ஏற்றவகையில் Chrome இந்தப் பக்கத்தை எளிதாக்கியுள்ளது. பாதுகாப்பற்ற இணைப்பின் மூலம் அசல் பக்கத்தை Chrome மீட்டெடுத்தது.</translation>
 <translation id="6891596781022320156">கொள்கையின் நிலை ஆதரிக்கப்படவில்லை.</translation>
+<translation id="6895143722905299846">விர்ச்சுவல் எண்:</translation>
 <translation id="6895330447102777224">கார்டு உறுதிசெய்யப்பட்டது</translation>
 <translation id="6897140037006041989">பயனர் ஏஜெண்ட்</translation>
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
@@ -1587,6 +1593,7 @@
 <translation id="7014741021609395734">ஜூம் நிலை</translation>
 <translation id="7016992613359344582">இந்தக் கட்டணங்கள் ஒருமுறை அல்லது தொடர்ந்து வசூலிக்கப்படலாம், அவை வெளிப்படையாகத் தெரிவிக்கப்படாமல் இருக்கலாம்.</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
+<translation id="7030436163253143341">தவறான சான்றிதழ்</translation>
 <translation id="7031646650991750659">நீங்கள் நிறுவியுள்ள Google Play ஆப்ஸ்</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />ஐ அடைய முயற்சித்துள்ளீர்கள், சேவையகம் வழங்கிய சான்றிதழ் நம்புவதற்கு சாத்தியமற்ற நீண்ட செல்லுபடிக்காலத்தைக் கொண்டுள்ளது.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{இந்தக் கார்டை இப்போது சேமிக்க முடியவில்லை}other{இந்தக் கார்டுகளை இப்போது சேமிக்க முடியவில்லை}}</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">Списъкът с устройства, с които да се сподели даден раздел, е отворен на пълната височина.</translation>
 <translation id="2905036901251765993">За да споделите с хората в близост, те трябва да сканират този код за бърза реакция</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912296070571964914">Управлявайте темите, от които се интересувате</translation>
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">Запазване на отметка към тази страница</translation>
 <translation id="3259831549858767975">Смаляване на всички елементи на страницата</translation>
 <translation id="3264124641674805320">Как да изтеглите съдържание, което да прегледате по-късно</translation>
+<translation id="3264259168916048410">Компютърът ви иска да използва това устройство с цел влизане в сайт</translation>
+<translation id="3265534588625245297">Управление на следените от вас сайтове</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
 <translation id="3269956123044984603">Включете „Авт. синхронизиране на данните“ от „Профили“ в настройките на Android, за да получите разделите си от другите си устройства.</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384468725000734951">За търсене ще се използва Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – изтегля се…</translation>
 <translation id="4404568932422911380">Няма отметки</translation>
 <translation id="4405224443901389797">Преместване във…</translation>
 <translation id="4411535500181276704">Олекотен режим</translation>
@@ -583,6 +587,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="488187801263602086">Преименуване на файла</translation>
 <translation id="4882831918239250449">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето, рекламите и др.</translation>
 <translation id="4885273946141277891">Неподдържан брой екземпляри на Chrome.</translation>
+<translation id="4905269543817054577">В режим „инкогнито“ историята не се запазва</translation>
 <translation id="4908869848243824489">Discover от Google</translation>
 <translation id="4910889077668685004">Приложения за плащане</translation>
 <translation id="4913161338056004800">Нулиране на статистическите данни</translation>
@@ -951,6 +956,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
 <translation id="7233236755231902816">За да виждате съдържанието в мрежата на своя език, изтеглете най-новата версия на Chrome</translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
 <translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>
@@ -1017,6 +1023,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7630202231528827509">URL адрес на доставчика</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7641339528570811325">Изчистване на данните за сърфирането…</translation>
+<translation id="764170292089748542">Chrome не запазва съответната ви история, когато сърфирате частно. Пак можете да използвате отметки, за да посещавате любимите си сайтове.</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
@@ -1042,6 +1049,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7810647596859435254">Отваряне със…</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
 <translation id="7821588508402923572">Тук ще се показва количеството икономисани данни</translation>
+<translation id="78270725016672455">Компютърът ви иска да регистрира това устройство с цел влизане в сайт</translation>
 <translation id="7844171778363018843">Няма избрани данни за синхронизиране</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Период от време</translation>
@@ -1138,6 +1146,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8427875596167638501">Разделът за визуализация е наполовина отворен</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – езикът е готов, рестартирайте <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Няма налични истории</translation>
 <translation id="8443209985646068659">Не може да се актуализира</translation>
 <translation id="8445448999790540984">Паролите не могат да бъдат експортирани</translation>
@@ -1210,6 +1219,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8937267401510745927">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата. Тази информация може да се съхранява в профила ви в Google. Имате възможност да изключите Асистент от настройките на Chrome.</translation>
 <translation id="8937772741022875483">Искате ли активността ви в Chrome да се премахне от „Дигитално благополучие“?</translation>
 <translation id="8942627711005830162">Отваряне в другия прозорец</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
 <translation id="8951232171465285730">Chrome ви спести <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8965591936373831584">изчаква</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>

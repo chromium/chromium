@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
+<translation id="2022352537516230970">Dibuat untuk iPhone Anda</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
 <translation id="2074131957428911366">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="2079545284768500474">Urungkan</translation>
@@ -314,6 +315,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="418156467088430727">Tampilkan Versi Offline di Tab Baru</translation>
 <translation id="4181841719683918333">Bahasa</translation>
+<translation id="4184011057600693970">Dibuat untuk iPad Anda</translation>
 <translation id="424315890655130736">Masukkan Frasa Sandi</translation>
 <translation id="4263576668337963058">Tampilkan tindakan halaman yang tersedia</translation>
 <translation id="4267380167363222949">Tab Berikutnya</translation>
@@ -492,6 +494,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
+<translation id="60829778314739003">Setujui dan Lanjutkan</translation>
 <translation id="6108923351542677676">Penyiapan sedang berlangsung...</translation>
 <translation id="6119050551270742952">Halaman Web saat ini sedang dalam Mode Samaran</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +590,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6801927553864092214">Untuk melakukan penjelajahan rahasia, buka tab Samaran</translation>
 <translation id="6807889908376551050">Tampilkan Semua...</translation>
 <translation id="681368974849482173">Item dibuat</translation>
+<translation id="6830804042318138535">Baca Selengkapnya</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6851516051005285358">Minta Situs Desktop</translation>
 <translation id="6858855187367714033">Dipindai</translation>
@@ -635,6 +639,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7291368939935408496">Mempersiapkan Sandi…</translation>
 <translation id="7293171162284876153">Untuk memulai sinkronisasi, aktifkan "Sinkronkan data Chrome Anda".</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
+<translation id="7319242366286515846">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
@@ -781,6 +786,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8840513115188359703">Anda tidak akan keluar dari Akun Google.</translation>
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>
+<translation id="8876882697946675716">Jaga Perangkat Anda Tetap Sinkron</translation>
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Bagikan...</translation>
 <translation id="8917490105272468696">Ya, Saya Setuju</translation>

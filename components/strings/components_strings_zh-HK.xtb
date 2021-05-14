@@ -502,6 +502,7 @@
 <translation id="2850739647070081192">Invite (信封)</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
+<translation id="287596039013813457">友善</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改用外部應用程式付款。要繼續嗎？</translation>
 <translation id="2878197950673342043">十字摺</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -599,6 +600,7 @@
 <translation id="3229041911291329567">裝置和瀏覽器的版本資料</translation>
 <translation id="323107829343500871">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)</translation>
 <translation id="3234666976984236645">一律在這個網站上偵測重要內容</translation>
+<translation id="3249845759089040423">型格</translation>
 <translation id="3252266817569339921">法文</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -970,6 +972,7 @@
 <translation id="4594403342090139922">復原刪除(&amp;U)</translation>
 <translation id="4597348597567598915">粗幼：8</translation>
 <translation id="4600854749408232102">C6/C5 (信封)</translation>
+<translation id="4606870351894164739">具影響力</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
 <translation id="4636930964841734540">資訊</translation>
@@ -1033,6 +1036,8 @@
 <translation id="4813512666221746211">網絡錯誤</translation>
 <translation id="4816492930507672669">依頁面大小調整</translation>
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
+<translation id="4825507807291741242">強大</translation>
+<translation id="4838327282952368871">夢幻</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
@@ -1191,6 +1196,7 @@
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="541143247543991491">雲端 (整個系統)</translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
@@ -1698,6 +1704,7 @@
       &lt;li&gt;前往 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 說明中心&lt;/a&gt;，瞭解如何從您的電腦中永久移除有關軟件
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">可愛</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7419106976560586862">設定檔路徑</translation>
 <translation id="7437289804838430631">新增聯絡人資料</translation>
@@ -2121,6 +2128,7 @@
 <translation id="9020542370529661692">這個網頁內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(無效)</translation>
+<translation id="9030265603405983977">單色</translation>
 <translation id="9035022520814077154">安全錯誤</translation>
 <translation id="9038649477754266430">使用搜尋預測服務，加快網頁載入速度</translation>
 <translation id="9039213469156557790">而且，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，繼而變更網頁行為。</translation>
@@ -2144,6 +2152,7 @@
 <translation id="91108059142052966">當畫面上出現機密內容，管理員政策就會停用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
 <translation id="9114524666733003316">正在驗證信用卡…</translation>
 <translation id="9114581008513152754">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">新鮮</translation>
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9128016270925453879">載入咗政策</translation>
 <translation id="9128870381267983090">連線至網路</translation>

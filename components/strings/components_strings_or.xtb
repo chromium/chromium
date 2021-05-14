@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">ଏହି ପୃଷ୍ଠା ଏହା କୁହେ</translation>
 <translation id="153384715582417236">ବର୍ତ୍ତମାନ ପାଇଁ ଏତିକି</translation>
 <translation id="1536390784834419204">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="1539840569003678498">ରିପୋର୍ଟ ପଠାଯାଇଛି:</translation>
 <translation id="154408704832528245">ଡେଲିଭରୀ ଠିକଣା ବାଛନ୍ତୁ</translation>
 <translation id="1549470594296187301">ଏହି ବୈଶିଷ୍ଟ୍ୟକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ନିଶ୍ଚିତରୂପେ JavaScriptକୁ ସକ୍ଷମ କରାଯିବା ଉଚିତ।</translation>
 <translation id="155039086686388498">ଇଞ୍ଜିନିୟରିଂ-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">ପ୍ରଥମେ ଛୋଟ ଏଡଜ୍</translation>
 <translation id="168693727862418163">ଏହି ନୀତିର ମୂଲ୍ୟ ଏହାର ସ୍କିମା ଅନୁଯାୟୀ ବୈଧ ହେବାରେ ବିଫଳ ହୋଇଛି ଏବଂ ଏହାକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="168841957122794586">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍‍‍ରେ ଗୋଟିଏ ଦୁର୍ବଳ କ୍ରିପ୍ଟୋଗ୍ରାଫିକ୍ କୀ ଅଛି।</translation>
+<translation id="1696290444144917273">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ବିବରଣୀ ଦେଖନ୍ତୁ</translation>
 <translation id="1697532407822776718">ଆପଣ ପୂରା ପ୍ରସ୍ତୁତ ଅଛନ୍ତି!</translation>
 <translation id="1703835215927279855">ଲେଟର୍</translation>
 <translation id="1706954506755087368">{1,plural, =1{ଏହି ସର୍ଭର୍‌ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ ଏହା <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସର୍ଟିଫିକେଟ୍‍ ଆସନ୍ତାକାଲିଠାରୁ ସ୍ୱୀକାର କରାଯିବ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।}other{ଏହି ସର୍ଭର୍‌ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ ଏହା <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସର୍ଟିଫିକେଟ୍‍ ଭବିଷ୍ୟତରେ # ଦିନଠାରୁ ସ୍ୱୀକାର କରାଯିବ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">ମେଲବକ୍ସ 3</translation>
 <translation id="1718029547804390981">ଅଂଶୀଦାର ହେବା ପାଇଁ ଡକ୍ୟୁମେଣ୍ଟ ବହୁତ ବଡ଼ ଅଟେ</translation>
 <translation id="1721424275792716183">* ଫିଲ୍ଡ ଆବଶ୍ୟକ ଅଟେ</translation>
+<translation id="1727613060316725209">ସାର୍ଟିଫିକେଟଟି ବୈଧ ଅଟେ</translation>
 <translation id="1727741090716970331">ବୈଧ କାର୍ଡ ନମ୍ବର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1728677426644403582">ଆପଣ ଏକ ୱେବ୍ ପୃଷ୍ଠାର ଉତ୍ସ ଦେଖୁଛନ୍ତି</translation>
 <translation id="173080396488393970">ଏହି ପ୍ରକାର କାର୍ଡ ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -694,6 +697,7 @@
 <translation id="3586931643579894722">ବିବରଣୀଗୁଡ଼ିକ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3587738293690942763">ମଧ୍ୟମ</translation>
 <translation id="3590643883886679995">ଆପଣ ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରି ଯିବା ପରେ ସାଇନ୍-ଇନ୍ ଡାଟା ଏହି ଡିଭାଇସରେ ଷ୍ଟୋର୍ କରାଯିବ।</translation>
+<translation id="359126217934908072">ମାସ/ବର୍ଷ:</translation>
 <translation id="3592413004129370115">ଇଟାଲିଆନ୍ (ଏନଭଲପ୍)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଆପ୍ଲିକେସନ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -748,6 +752,7 @@
 <translation id="3781428340399460090">ଅତ୍ୟଧିକ ଗୋଲାପି</translation>
 <translation id="3783418713923659662">MasterCard</translation>
 <translation id="3784372983762739446">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ</translation>
+<translation id="3787675388804467730">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />ରେ ମିଆଦ ସମାପ୍ତ ହେବ</translation>
 <translation id="3789155188480882154">ଆକାର 16</translation>
 <translation id="3789841737615482174">ସଂସ୍ଥାପନ</translation>
@@ -1408,6 +1413,7 @@
 <translation id="6289939620939689042">ପୃଷ୍ଠାର ରଙ୍ଗ</translation>
 <translation id="6290238015253830360">ଆପଣଙ୍କ ଦ୍ୱାରା ପରାମର୍ଶିତ ନିବନ୍ଧଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Chromeରେ Google ଆସିଷ୍ଟାଣ୍ଟ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="6305205051461490394"><ph name="URL" />ରେ ପହଞ୍ଚି ହେଉନାହିଁ।</translation>
 <translation id="6312113039770857350">ୱେବ୍ ପୃଷ୍ଠା ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -1540,6 +1546,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /><ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ଏହି ପୃଷ୍ଠାଟି ପଢ଼ିବାକୁ ସହଜ କରିବା ପାଇଁ Chrome ଏହାକୁ ସରଳୀକୃତ କରିଛି। Chrome ଏକ ଅସୁରକ୍ଷିତ ସଂଯୋଗ ମାଧ୍ୟମରେ ଅରିଜିନାଲ ପୃଷ୍ଠାକୁ ପୁନରୁଦ୍ଧାର କରିଛି।</translation>
 <translation id="6891596781022320156">ନୀତି ସ୍ତର ସମର୍ଥିତ ନୁହେଁ।</translation>
+<translation id="6895143722905299846">ଭର୍ଚୁଆଲ୍ ନମ୍ବର:</translation>
 <translation id="6895330447102777224">ଆପଣଙ୍କ କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଇଛି</translation>
 <translation id="6897140037006041989">ଉପଯୋଗକର୍ତ୍ତା ଏଜେଣ୍ଟ</translation>
 <translation id="6898699227549475383">ସଂସ୍ଥା (O)</translation>
@@ -1578,6 +1585,7 @@
 <translation id="7014741021609395734">ଜୁମ୍ ସ୍ତର</translation>
 <translation id="7016992613359344582">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ଭାବରେ ଲାଗୁ ହୋ‍ଇନପାରେ।</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
+<translation id="7030436163253143341">ସାର୍ଟିଫିକେଟଟି ବୈଧ ନୁହେଁ</translation>
 <translation id="7031646650991750659">ଆପଣ କେଉଁ Google Play ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>
 <translation id="7050187094878475250">ଆପଣଙ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ପ୍ରୟାସ କରିଛନ୍ତି, କିନ୍ତୁ ବିଶ୍ଵାସଯୋଗ୍ୟ ହେବା ପାଇଁ ସର୍ଭର ଉପସ୍ଥାପନ କରିଥିବା ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ସମୟ ଅବଧି ଅଧିକ ଲମ୍ବା।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ବର୍ତ୍ତମାନ ସମୟରେ ସେଭ୍ କରାଯାଇପାରିବ ନାହିଁ}other{ଏହି କାର୍ଡଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ସମୟରେ ସେଭ୍ କରାଯାଇପାରିବ ନାହିଁ}}</translation>

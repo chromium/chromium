@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">網絡裝置</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">其他主機</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">家庭網絡供應商名稱</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>

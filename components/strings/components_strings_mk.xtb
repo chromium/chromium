@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Invite (плик)</translation>
 <translation id="2856444702002559011">Напаѓачите можеби се обидуваат да ги украдат вашите информации од <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример, лозинки, пораки или кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Сајтов прикажува нападни или лажни реклами.</translation>
+<translation id="287596039013813457">Пријателски</translation>
 <translation id="2876489322757410363">Ќе излезете од режимот „Инкогнито“ за да платите преку надворешна апликација. Дали сакате да продолжите?</translation>
 <translation id="2878197950673342043">Превиткување постер</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@
 <translation id="3229041911291329567">Информации за верзијата за уредот и прелистувачот</translation>
 <translation id="323107829343500871">Внесете го CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Секогаш откривај важна содржина на оваа локација</translation>
+<translation id="3249845759089040423">Модерен</translation>
 <translation id="3252266817569339921">француски</translation>
 <translation id="3266793032086590337">Вредност (конфликт)</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
@@ -982,6 +984,7 @@
 <translation id="4594403342090139922">&amp;Врати бришење</translation>
 <translation id="4597348597567598915">Големина 8</translation>
 <translation id="4600854749408232102">C6/C5 (плик)</translation>
+<translation id="4606870351894164739">Забележителен</translation>
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
 <translation id="4636930964841734540">Информации</translation>
@@ -1045,6 +1048,8 @@
 <translation id="4813512666221746211">Грешка на мрежа</translation>
 <translation id="4816492930507672669">Скрој во страница</translation>
 <translation id="4819347708020428563">Сакате ли да ги измените прибелешките во стандарден приказ?</translation>
+<translation id="4825507807291741242">Моќен</translation>
+<translation id="4838327282952368871">Нереален</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
@@ -1203,6 +1208,7 @@
 <translation id="5398772614898833570">Рекламите се блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="540969355065856584">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат не е важечки во моментов. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="541143247543991491">Облак (на целиот систем)</translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
 <translation id="5421136146218899937">Исчисти податоци од прелистување…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
@@ -1710,6 +1716,7 @@
       &lt;li&gt;Посетете го &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Центарот за помош на Chrome&lt;/a&gt; за да дознаете како трајно да го отстраните софтверот од компјутерот
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Убав</translation>
 <translation id="7416351320495623771">Управувајте со лозинките…</translation>
 <translation id="7419106976560586862">Патека на профилот</translation>
 <translation id="7437289804838430631">Додајте информации за контакт</translation>
@@ -2133,6 +2140,7 @@
 <translation id="9020542370529661692">Страницава е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Неважечки)</translation>
+<translation id="9030265603405983977">Монохроматски</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
 <translation id="9038649477754266430">Користете услуга за предвидување за да ги вчитате страниците побрзо</translation>
 <translation id="9039213469156557790">Понатаму, страницава опфаќа други ресурси што не се безбедни. Нив може да ги гледаат други лица при преносот и може да ги менува напаѓач за да го смени однесувањето на страницата.</translation>
@@ -2156,6 +2164,7 @@
 <translation id="91108059142052966">Политиката на администраторот оневозможува споделување екран со <ph name="APPLICATION_TITLE" /> кога се видливи доверливи содржини</translation>
 <translation id="9114524666733003316">Се потврдува картичката…</translation>
 <translation id="9114581008513152754">Прелистувачов не е управуван од компанија или друга организација. Активноста на уредов можеби се управува надвор од Chrome. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Свеж</translation>
 <translation id="9119042192571987207">Прикачен</translation>
 <translation id="9128016270925453879">Правилата се вчитани</translation>
 <translation id="9128870381267983090">Поврзете се на мрежа</translation>

@@ -295,6 +295,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2904414404539560095">De lijst met apparaten om een tabblad mee te delen, is op volledige hoogte geopend.</translation>
 <translation id="2905036901251765993">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen</translation>
 <translation id="2909615210195135082">Platform voor Google-meldingen</translation>
+<translation id="2912296070571964914">Beheer de onderwerpen waarin je geïnteresseerd bent</translation>
 <translation id="2923908459366352541">Naam is ongeldig</translation>
 <translation id="2932150158123903946">Opslag van Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Je toetsenbord verandert niet</translation>
@@ -339,6 +340,8 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3254409185687681395">Bookmark instellen voor deze pagina</translation>
 <translation id="3259831549858767975">Alles op de pagina verkleinen</translation>
 <translation id="3264124641674805320">Content downloaden voor later</translation>
+<translation id="3264259168916048410">Je computer wil dit apparaat gebruiken om in te loggen op een site</translation>
+<translation id="3265534588625245297">De sites beheren die je volgt</translation>
 <translation id="3269093882174072735">Afbeelding laden</translation>
 <translation id="3269956123044984603">Zet in de instellingen van je Android-account Gegevens automatisch synchroniseren aan om de tabbladen op je andere apparaten te bekijken.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4384468725000734951">Sogou wordt gebruikt om te zoeken</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Downloaden…</translation>
 <translation id="4404568932422911380">Geen bookmarks</translation>
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
 <translation id="4411535500181276704">Lite-versie</translation>
@@ -583,6 +587,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="488187801263602086">Naam van bestand wijzigen</translation>
 <translation id="4882831918239250449">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken, advertenties en meer te personaliseren</translation>
 <translation id="4885273946141277891">Niet-ondersteund aantal Chrome-instanties.</translation>
+<translation id="4905269543817054577">De geschiedenis wordt niet opgeslagen in de incognitomodus</translation>
 <translation id="4908869848243824489">Discover van Google</translation>
 <translation id="4910889077668685004">Betaal-apps</translation>
 <translation id="4913161338056004800">Statistieken resetten</translation>
@@ -951,6 +956,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7233236755231902816">Als je webpagina's in je eigen taal wilt kunnen lezen, download je de nieuwste versie van Chrome</translation>
 <translation id="7248069434667874558">Zorg dat synchronisatie in Chrome is aangezet voor <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Houd je telefoon dicht bij de computer</translation>
 <translation id="7274013316676448362">Geblokkeerde site</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> wijzigen?</translation>
 <translation id="7290209999329137901">Naam wijzigen niet beschikbaar</translation>
@@ -1017,6 +1023,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7630202231528827509">Provider-URL</translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
 <translation id="7641339528570811325">Browsegegevens wissen</translation>
+<translation id="764170292089748542">Chrome slaat je browsegeschiedenis niet op als je kiest om privé te browsen. Je kunt nog steeds bookmarks gebruiken om je favoriete sites te bezoeken.</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665369617277396874">Account toevoegen</translation>
@@ -1042,6 +1049,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7810647596859435254">Openen met…</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
 <translation id="7821588508402923572">Hier wordt getoond hoeveel data je bespaart</translation>
+<translation id="78270725016672455">Je computer wil dit apparaat registreren om in te loggen op een site</translation>
 <translation id="7844171778363018843">Geen gegevens geselecteerd om te synchroniseren</translation>
 <translation id="7846296061357476882">Google-services</translation>
 <translation id="784934925303690534">Periode</translation>
@@ -1138,6 +1146,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8427875596167638501">Voorbeeldtabblad is half geopend</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Taal klaar, start <ph name="APP_NAME" /> opnieuw op.</translation>
 <translation id="8442258441309440798">Geen artikelen beschikbaar</translation>
 <translation id="8443209985646068659">Chrome kan niet updaten</translation>
 <translation id="8445448999790540984">Wachtwoorden kunnen niet worden geëxporteerd</translation>
@@ -1210,6 +1219,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8937267401510745927">Google kan je helpen taken sneller af te ronden en krijgt daarom de URL's en content van sites waarop je de Assistent gebruikt en informatie die je via de Assistent indient. Deze informatie kan worden opgeslagen in je Google-account. Je kunt de Assistent uitzetten in de instellingen van Chrome.</translation>
 <translation id="8937772741022875483">Je Chrome-activiteit verwijderen uit Digitaal welzijn?</translation>
 <translation id="8942627711005830162">Openen in een ander venster</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8951232171465285730">Chrome bespaart je <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">in behandeling</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>

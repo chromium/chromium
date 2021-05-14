@@ -299,6 +299,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7359657277149375382">Skráargerð</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8372477600026034341">Aukahýslar</translation>
 <translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Heiti heimaveitu</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>

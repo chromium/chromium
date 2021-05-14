@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">tenporizadorea</translation>
 <translation id="3199563858620722075">koadro konbinatua</translation>
 <translation id="3220661731597678625">une honetako urratsa</translation>
+<translation id="3321030238473337787">Erreprodukzio-abiadura</translation>
 <translation id="3329013043687509092">Saturazioa</translation>
 <translation id="3450233048674729344">Balioak <ph name="MAXIMUM" /> edo gutxiago izan behar du.</translation>
 <translation id="3486220673238053218">definizioa</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">menu-barra</translation>
 <translation id="4293574643247337246">orri-goiburua</translation>
 <translation id="4360991593054037559">Idatzi balio egoki bat. <ph name="VALID_VALUE_LOW" /> eta <ph name="VALID_VALUE_HIGHER" /> dira gertuen dauden bi balio egokiak.</translation>
+<translation id="4371899966896349864">ezkutatu erreprodukzio-abiaduraren menua</translation>
 <translation id="4384249794467006333">Irudi hau ez dago etiketatuta. Ireki goian eskuinean dagoen Aukera gehiago menua irudien deskribapenak eskuratzeko.</translation>
 <translation id="4384583879834880242">Galde-erantzunak</translation>
 <translation id="4444765639179266822">Badirudi hau dioela: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">zuhaitzeko elementua</translation>
 <translation id="5466621249238537318">Hautatu fitxategi bat gutxienez.</translation>
 <translation id="5468998798572797635">irten pantaila osoko modutik</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">data-hautatzailea</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5546461542133609677">aktibatu audioa</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">aukera gehiago</translation>
 <translation id="576709008726043716">sarrera</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
+<translation id="5786442179789148008">erakutsi erreprodukzio-abiaduraren menua</translation>
 <translation id="5787939484346677755">zabalduta, automatikoki osatzeko aukerak daude.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
 <translation id="5966707198760109579">Astea</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">biratze-botoia</translation>
 <translation id="6011459053400940133">bolumen-graduatzailea</translation>
 <translation id="6015796118275082299">Urtea</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">desaktibatu audioa</translation>
 <translation id="6885760532393684712">direktorioa</translation>
 <translation id="689129560213475294">azken oharra</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">aipamena</translation>
 <translation id="693476918119313863">goiburua</translation>
 <translation id="6941933287844615239">deskargatu multimedia-edukia</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">oharraren erreferentzia</translation>
 <translation id="811583516810654505">Azalpena eskuratzen…</translation>
 <translation id="8117451130807776954">Aste hau</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">uuuu</translation>
 <translation id="8208673686607688524">tokiko data- eta ordu-hautatzailea</translation>
 <translation id="8261464734335370856">Ortografia-akatsa</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">kontrolatu urruneko erreprodukzioa</translation>
 <translation id="862370744433916922">azpititulua</translation>
 <translation id="8634971699417195529">Erakutsi hilabete-hautatzailea</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Lerro-doitzea</translation>
 <translation id="8711688047404765493">irteera</translation>
 <translation id="8750798805984357768">Hautatu aukera hauetako batzuk.</translation>

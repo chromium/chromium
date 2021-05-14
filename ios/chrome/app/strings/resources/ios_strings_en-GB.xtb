@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
+<translation id="2022352537516230970">Built for your iPhone</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -314,6 +315,7 @@ Follow the steps below:</translation>
 <translation id="4172051516777682613">Always show</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
 <translation id="4181841719683918333">Languages</translation>
+<translation id="4184011057600693970">Built for your iPad</translation>
 <translation id="424315890655130736">Enter Passphrase</translation>
 <translation id="4263576668337963058">Show available page actions</translation>
 <translation id="4267380167363222949">Next tab</translation>
@@ -492,6 +494,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
+<translation id="60829778314739003">Accept and continue</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +590,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6801927553864092214">To browse privately, open an Incognito tab</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
+<translation id="6830804042318138535">Read more</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6851516051005285358">Request Desktop Site</translation>
 <translation id="6858855187367714033">Scanned</translation>
@@ -635,6 +639,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7291368939935408496">Preparing Passwords…</translation>
 <translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
+<translation id="7319242366286515846">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7346909386216857016">OK, got it</translation>
@@ -781,6 +786,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
+<translation id="8876882697946675716">Keep your devices in sync</translation>
 <translation id="8881801611828450202">Search <ph name="SEARCH_ENGINE" /> for This Image</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8917490105272468696">Yes, I'm In</translation>

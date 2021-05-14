@@ -295,6 +295,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2904414404539560095">Välilehden jakamisen laiteluettelo avataan koko näytön korkeudella.</translation>
 <translation id="2905036901251765993">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi skannattavaksi</translation>
 <translation id="2909615210195135082">Googlen ilmoitusalusta</translation>
+<translation id="2912296070571964914">Valitse sinua kiinnostavia aiheita</translation>
 <translation id="2923908459366352541">Nimi on virheellinen</translation>
 <translation id="2932150158123903946">Tallennustila: Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tämä ei vaikuta näppäimistöön</translation>
@@ -339,6 +340,8 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3254409185687681395">Luo kirjanmerkki tälle sivulle</translation>
 <translation id="3259831549858767975">Pienennä sivun kaikki sisältö</translation>
 <translation id="3264124641674805320">Miten sisältöä ladataan myöhempää käyttöä varten</translation>
+<translation id="3264259168916048410">Tietokoneesi pyytää tämän laitteen käyttämistä sivustolle kirjautumiseen</translation>
+<translation id="3265534588625245297">Valitse seurattavat sivustot</translation>
 <translation id="3269093882174072735">Lataa kuva</translation>
 <translation id="3269956123044984603">Ota tietojen automaattinen synkronointi käyttöön Androidin tiliasetuksissa, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
@@ -497,6 +500,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4351244548802238354">Sulje ikkuna</translation>
 <translation id="4378154925671717803">Puhelin</translation>
 <translation id="4384468725000734951">Hakukoneena käytetään Sogouta.</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – Ladataan…</translation>
 <translation id="4404568932422911380">Ei kirjanmerkkejä</translation>
 <translation id="4405224443901389797">Siirrä…</translation>
 <translation id="4411535500181276704">Yksinkertaistettu tila</translation>
@@ -583,6 +587,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="488187801263602086">Nimeä tiedosto uudelleen</translation>
 <translation id="4882831918239250449">Määritä, miten selaushistoria personoi hakua, mainoksia ja muita</translation>
 <translation id="4885273946141277891">Chromen versioiden määrää ei tueta.</translation>
+<translation id="4905269543817054577">Historiaa ei tallenneta incognito-tilassa</translation>
 <translation id="4908869848243824489">Google Discover</translation>
 <translation id="4910889077668685004">Maksusovellukset</translation>
 <translation id="4913161338056004800">Nollaa tilastot</translation>
@@ -951,6 +956,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7233236755231902816">Päivitä Chrome uusimpaan versioon, niin näet verkon sisällön omalla kielelläsi</translation>
 <translation id="7248069434667874558">Varmista, että <ph name="TARGET_DEVICE_NAME" /> käyttää synkronointia Chromessa</translation>
+<translation id="7252076891734325316">Aseta puhelin tietokoneen lähelle</translation>
 <translation id="7274013316676448362">Estetty sivusto</translation>
 <translation id="7286572596625053347">Vaihdetaanko <ph name="LANGUAGE" /> toiseen kieleen?</translation>
 <translation id="7290209999329137901">Uudelleennimeäminen ei saatavilla</translation>
@@ -1017,6 +1023,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7630202231528827509">Palvelun URL-osoite</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
 <translation id="7641339528570811325">Poista selaustiedot…</translation>
+<translation id="764170292089748542">Kun selaat yksityisesti, Chrome ei tallenna selaushistoriaasi. Voit edelleen käyttää kirjanmerkkejä päästäksesi suosikkisivustoillesi.</translation>
 <translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
@@ -1042,6 +1049,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7815484226266492798">Pitkä kuvakaappaus</translation>
 <translation id="7821588508402923572">Datasäästösi näkyvät täällä</translation>
+<translation id="78270725016672455">Tietokoneesi pyytää tämän laitteen rekisteröintiä sivustolle kirjautumista varten</translation>
 <translation id="7844171778363018843">Synkronoitavaa dataa ei ole valittu</translation>
 <translation id="7846296061357476882">Googlen palvelut</translation>
 <translation id="784934925303690534">Aikaväli</translation>
@@ -1138,6 +1146,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8427875596167638501">Esikatseluvälilehti on puoliksi auki</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8438566539970814960">Paranna hakuja ja selausta</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – Kieli valmis, käynnistä <ph name="APP_NAME" /> uudelleen.</translation>
 <translation id="8442258441309440798">Ei tarinoita saatavilla</translation>
 <translation id="8443209985646068659">Chromea ei voi päivittää</translation>
 <translation id="8445448999790540984">Salasanojen vienti epäonnistui</translation>
@@ -1210,6 +1219,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8937267401510745927">Jotta tehtävien hoitaminen sujuisi helpommin, Google saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joilla käytät Assistantia, sekä Assistantin kautta lähettämäsi tiedot. Nämä tiedot voidaan tallentaa Google-tilillesi. Voit poistaa Assistantin käytöstä Chromen asetuksissa.</translation>
 <translation id="8937772741022875483">Poistetaanko Chrome-toimintasi Digitaalisesta hyvinvoinnista?</translation>
 <translation id="8942627711005830162">Avaa uudessa ikkunassa</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – Kieltä ei voitu ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="8951232171465285730">Chrome on säästänyt <ph name="MEGABYTES" /> Mt tilaa</translation>
 <translation id="8965591936373831584">odottaa</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>

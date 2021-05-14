@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2905036901251765993">近くのユーザーと共有するには、この QR コードをスキャンしてもらいます</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
+<translation id="2912296070571964914">興味のあるトピックを管理します</translation>
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
 <translation id="2932222164150889403">キーボードは変更されません</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">このページをブックマークに追加します</translation>
 <translation id="3259831549858767975">ページ上のすべての要素を縮小する</translation>
 <translation id="3264124641674805320">後で見るコンテンツをダウンロードするには</translation>
+<translation id="3264259168916048410">パソコンからサイトへのログインにこのデバイスを使用するよう求められています</translation>
+<translation id="3265534588625245297">フォローするサイトを管理</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
 <translation id="3269956123044984603">他のデバイスと同じタブを使用するには、Android のアカウント設定で [データの自動同期] を有効にします。</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">ダイアログを閉じる</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - ダウンロードしています…</translation>
 <translation id="4404568932422911380">ブックマークがありません</translation>
 <translation id="4405224443901389797">移動…</translation>
 <translation id="4411535500181276704">ライトモード</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">ファイル名を変更してください</translation>
 <translation id="4882831918239250449">検索、広告などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
 <translation id="4885273946141277891">Chrome のインスタンス数の上限を超えています。</translation>
+<translation id="4905269543817054577">シークレット モードでは履歴は保存されません</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">お支払いアプリ</translation>
 <translation id="4913161338056004800">統計情報をリセット</translation>
@@ -951,6 +956,7 @@
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
+<translation id="7252076891734325316">パソコンの近くにスマートフォンを置いてください</translation>
 <translation id="7274013316676448362">ブロック中のサイト</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> を変更しますか？</translation>
 <translation id="7290209999329137901">名前の変更はできません</translation>
@@ -1017,6 +1023,7 @@
 <translation id="7630202231528827509">プロバイダの URL</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7641339528570811325">閲覧履歴データを削除…</translation>
+<translation id="764170292089748542">シークレット モードで閲覧する場合、Chrome に閲覧履歴は保存されません。ブックマークを使って、お気に入りのサイトにアクセスすることはできます。</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
@@ -1042,6 +1049,7 @@
 <translation id="7810647596859435254">アプリで開く…</translation>
 <translation id="7815484226266492798">ロング スクリーンショット</translation>
 <translation id="7821588508402923572">データ節約量がここに表示されます</translation>
+<translation id="78270725016672455">パソコンからサイトへのログインにこのデバイスを登録するよう求められています</translation>
 <translation id="7844171778363018843">同期するデータが選択されていません</translation>
 <translation id="7846296061357476882">Google のサービス</translation>
 <translation id="784934925303690534">期間</translation>
@@ -1138,6 +1146,7 @@
 <translation id="8427875596167638501">[プレビュー] タブが半分開いています</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - 言語を使用できるようになりました。<ph name="APP_NAME" /> を再起動してください。</translation>
 <translation id="8442258441309440798">表示できる記事はありません</translation>
 <translation id="8443209985646068659">Chrome を更新できません</translation>
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8937267401510745927">タスクを完了するため、アシスタントを使用したサイトの URL とコンテンツ、およびアシスタントで送信した情報が Google に送られます。この情報は、Google アカウントに保存される可能性があります。アシスタントは、Chrome の設定で無効にできます。</translation>
 <translation id="8937772741022875483">Chrome のアクティビティを Digital Wellbeing から削除しますか？</translation>
 <translation id="8942627711005830162">別のウィンドウで開く</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - この言語をダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="8951232171465285730">Chrome で <ph name="MEGABYTES" /> MB の容量を節約しました</translation>
 <translation id="8965591936373831584">保留中</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>

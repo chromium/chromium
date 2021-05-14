@@ -295,6 +295,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2904414404539560095">Lista urządzeń, którym udostępnisz kartę, jest otwarta na pełną wysokość.</translation>
 <translation id="2905036901251765993">Aby udostępniać pliki użytkownikom w pobliżu, pozwól im zeskanować ten kod QR</translation>
 <translation id="2909615210195135082">Platforma powiadomień Google</translation>
+<translation id="2912296070571964914">Zarządzaj tematami, które Cię interesują</translation>
 <translation id="2923908459366352541">Nazwa jest nieprawidłowa.</translation>
 <translation id="2932150158123903946">Dane aplikacji Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Twoja klawiatura się nie zmieni</translation>
@@ -339,6 +340,8 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3254409185687681395">Dodaj stronę do zakładek</translation>
 <translation id="3259831549858767975">Pomniejsz całą zawartość strony</translation>
 <translation id="3264124641674805320">Pobieranie treści na później</translation>
+<translation id="3264259168916048410">Twój komputer chce użyć tego urządzenia, aby umożliwić Ci zalogowanie się na stronie</translation>
+<translation id="3265534588625245297">Zarządzaj obserwowanymi witrynami</translation>
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="3269956123044984603">Aby korzystać z kart ze swoich pozostałych urządzeń, włącz opcję „Autosynchronizacja danych” w ustawieniach konta na urządzeniu z Androidem.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
@@ -497,6 +500,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4351244548802238354">Zamknij okno</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384468725000734951">Korzystam z wyszukiwarki Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – pobieram…</translation>
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
 <translation id="4411535500181276704">Wersja uproszczona</translation>
@@ -583,6 +587,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="488187801263602086">Zmień nazwę pliku</translation>
 <translation id="4882831918239250449">Zarządzaj personalizacją wyszukiwarki, reklam i innych funkcji na podstawie historii przeglądania</translation>
 <translation id="4885273946141277891">Nieobsługiwana liczba wystąpień Chrome.</translation>
+<translation id="4905269543817054577">W trybie incognito historia nie jest zapisywana</translation>
 <translation id="4908869848243824489">Discover od Google</translation>
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4913161338056004800">Resetuj statystyki</translation>
@@ -951,6 +956,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7233236755231902816">Aby wyświetlać strony internetowe w swoim języku, pobierz najnowszą wersję Chrome</translation>
 <translation id="7248069434667874558">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma włączoną synchronizację w Chrome</translation>
+<translation id="7252076891734325316">Przybliż telefon do komputera</translation>
 <translation id="7274013316676448362">Zablokowana witryna</translation>
 <translation id="7286572596625053347">Zmienić język <ph name="LANGUAGE" /> na inny?</translation>
 <translation id="7290209999329137901">Nie można zmienić nazwy</translation>
@@ -1017,6 +1023,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7630202231528827509">Adres URL dostawcy</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło</translation>
 <translation id="7641339528570811325">Wyczyść dane przeglądania…</translation>
+<translation id="764170292089748542">Kiedy przeglądasz strony w trybie incognito, Chrome nie zapisuje historii przeglądania. Nadal możesz używać zakładek, aby uzyskać dostęp do ulubionych witryn.</translation>
 <translation id="7646772052135772216">Synchronizacja haseł nie działa</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
@@ -1042,6 +1049,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
 <translation id="7821588508402923572">Tutaj będą widoczne informacje o zaoszczędzonych danych</translation>
+<translation id="78270725016672455">Twój komputer chce zarejestrować to urządzenie, aby umożliwić Ci zalogowanie się na stronie</translation>
 <translation id="7844171778363018843">Nie wybrano danych do synchronizacji</translation>
 <translation id="7846296061357476882">Usługi Google</translation>
 <translation id="784934925303690534">Zakres czasu</translation>
@@ -1138,6 +1146,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8427875596167638501">Karta podglądu jest otwarta w połowie</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – ten język jest gotowy. Uruchom ponownie aplikację <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Brak artykułów</translation>
 <translation id="8443209985646068659">Nie można zaktualizować</translation>
 <translation id="8445448999790540984">Nie można wyeksportować haseł</translation>
@@ -1210,6 +1219,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8937267401510745927">Aby pomóc Ci w wykonywaniu zadań, Google będzie otrzymywać adresy URL i zawartość stron, na których używasz Asystenta, a także informacje, które przekazujesz za pomocą Asystenta. Te informacje mogą być przechowywane na Twoim koncie Google. Możesz wyłączyć Asystenta w ustawieniach Chrome.</translation>
 <translation id="8937772741022875483">Usunąć Twoją aktywność w Chrome z Cyfrowej równowagi?</translation>
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – nie udało się pobrać tego języka. Spróbuj później.</translation>
 <translation id="8951232171465285730">Chrome pozwolił Ci zaoszczędzić <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">Oczekiwanie</translation>
 <translation id="8970887620466824814">Coś poszło nie tak.</translation>

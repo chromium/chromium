@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1001033507375626788">Այս ցանցը հասանելի է ձեզ</translation>
 <translation id="1001307489511021749">Ձեր հավելվածները, կարգավորումներն ու մյուս անհատականացումները կհամաժամացվեն բոլոր Chrome OS սարքերում, որոնցում մտել եք ձեր Google հաշիվ։</translation>
 <translation id="1003088604756913841">Բացել հղումը նոր <ph name="APP" /> պատուհանում</translation>
 <translation id="100323615638474026">USB սարք (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -950,6 +951,7 @@
 <translation id="1992924914582925289">Հեռացնել սարքից</translation>
 <translation id="1994173015038366702">Կայքի URL</translation>
 <translation id="1995916364271252349">Սահմանում է, թե ինչ տեղեկություններ կարող են կայքերն օգտագործել և ցուցադրել (օրինակ՝ արդյոք կայքերը կարող են օգտագործել տեղադրության տվյալներն ու տեսախցիկը, կամ ցուցադրել ելնող պատուհաններ)։</translation>
+<translation id="1997437640397887843">Սարքի տեսախցիկն անջատված է։ Պահեք ձեր eSIM-ի QR կոդը տեսախցիկի առջև։</translation>
 <translation id="1997616988432401742">Ձեր վկայագրերը</translation>
 <translation id="1999115740519098545">Մեկնարկի ժամանակ</translation>
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
@@ -1005,6 +1007,7 @@
 <translation id="2055585478631012616">Դուք դուրս կգրվեք հաշվից այս կայքերում և բաց ներդիրներում</translation>
 <translation id="205560151218727633">Google Օգնականի լոգո</translation>
 <translation id="2058456167109518507">Հայտնաբերվել է սարք</translation>
+<translation id="2058581283817163201">Հաստատեք այս հեռախոսով</translation>
 <translation id="2059913712424898428">Ժամային գոտի</translation>
 <translation id="2060375639911876205">Հեռացնել eSIM-ի պրոֆիլը</translation>
 <translation id="2062354623176996748">Եթե չեք ուզում, որ ձեր այցելությունների պատմությունը պահվի, բացեք ինկոգնիտո պատուհան։</translation>
@@ -2601,6 +2604,7 @@
 <translation id="3785308913036335955">Ցուցադրել հավելվածների դյուրանցումը</translation>
 <translation id="3785727820640310185">Այս կայքի պահված գաղտնաբառերը</translation>
 <translation id="3788301286821743879">Չհաջողվեց գործարկել կրպակ-հավելվածը։</translation>
+<translation id="3788331399335602504">այս ֆայլերը</translation>
 <translation id="3788401245189148511">Կարող է՝</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="379082410132524484">Քարտի գործողության ժամկետը սպառվել է</translation>
@@ -3176,6 +3180,7 @@
 <translation id="4438043733494739848">Թափանցիկ</translation>
 <translation id="4438639467177774583">Այս տվյալները (<ph name="USERNAME" /> <ph name="MASKED_PASSWORD" />) կպահվեն ձեր Google հաշվում՝ <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> կայքը ծանուցում է ուղարկել ձեր հեռախոսին։ Որպեսզի հաստատեք ձեր ինքնությունը, հպեք «<ph name="NOTIFICATIONTITLE" />» ծանուցմանը և կատարեք նշված քայլերը։</translation>
 <translation id="4441124369922430666">Ուզո՞ւմ եք, որ այս հավելվածն ավտոմատ մեկնարկվի համակարգիչը միացնելիս:</translation>
 <translation id="4441147046941420429">Շարունակելու համար հանեք անվտանգության բանալին սարքից, ապա նորից տեղադրեք ու հպեք դրան:</translation>
 <translation id="444134486829715816">Ընդարձակել…</translation>
@@ -3477,6 +3482,7 @@
 <translation id="4773112038801431077">Լինուքսի նորացում</translation>
 <translation id="477647109558161443">Ստեղծել աշխատասեղանի դյուրանցում</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
+<translation id="4777458362738635055">Սարքի մյուս օգտատերերը կարող են օգտագործել այս ցանցը</translation>
 <translation id="4777825441726637019">Play Խանութ</translation>
 <translation id="4777943778632837590">Կարգավորել DNS-ների հասցեները</translation>
 <translation id="4778644898150334464">Օգտագործել այլ գաղտնաբառ</translation>
@@ -4315,6 +4321,7 @@
 <translation id="5712153969432126546">Կայքերը երբեմն հրապարակում են PDF ֆայլեր, օրինակ՝ փաստաթղթեր, պայմանագրեր և այլ ձևեր։</translation>
 <translation id="5715711091495208045">Փլագինի միջնորդ՝ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Կանխադրված որոնման համակարգեր</translation>
+<translation id="5719637365829998022">QR կոդը սկանավորվեց</translation>
 <translation id="5719854774000914513">Կայքերը կարող են HID սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="572155275267014074">Android-ի կարգավորումներ</translation>
 <translation id="5722086096420375088">Կանաչ և սպիտակ</translation>
@@ -4526,6 +4533,7 @@
 <translation id="5955721306465922729">Կայքին անհրաժեշտ է բացել այս հավելվածը:</translation>
 <translation id="5955809630138889698">Այս սարքն աշխատում է միայն անցանց դեմո ռեժիմում։ Մանրամասներն իմանալու համար դիմեք աջակցման կենտրոնի մասնագետներին։</translation>
 <translation id="5956585768868398362">Սա՞ է ձեր սպասած որոնման էջը:</translation>
+<translation id="5957918771633727933">eSIM-ի հասանելի պրոֆիլներ չկան։ Ներբեռնեք նոր <ph name="BEGIN_LINK" />պրոֆիլ<ph name="END_LINK" />։</translation>
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
 <translation id="595959584676692139">Կրկին բեռնեք էջը՝ այս ընդլայնումն օգտագործելու համար</translation>
@@ -6031,6 +6039,7 @@
 <translation id="7638605456503525968">Հաջորդական միացքներ</translation>
 <translation id="7639914187072011620">Չհաջողվեց URL-ի SAML վերաուղղորդումները բեռնել սերվերից</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />-ը թույլ է տալիս ավտոմատ կերպով մուտք գործել աջակցվող կայքեր ձեր պահած գաղտնաբառերով:</translation>
+<translation id="7641513591566880111">Նոր պրոֆիլի անունը</translation>
 <translation id="7642778300616172920">Թաքցնել գաղտնի տվյալները</translation>
 <translation id="7643842463591647490">{0,plural, =1{# բաց պատուհան}one{# բաց պատուհան}other{# բաց պատուհան}}</translation>
 <translation id="7643932971554933646">Թույլ տա՞լ կայքին ֆայլեր դիտել</translation>
@@ -6190,6 +6199,7 @@
 <translation id="7800518121066352902">Պտտել &amp;սլաքի հակառակ ուղղությամբ</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7804072833593604762">Ներդիրը փակված է</translation>
+<translation id="7805759469263222011">Սկանավորեք QR կոդը սարքի տեսախցիկի միջոցով կամ մուտքագրեք օպերատորի տրամադրած ակտիվացման կոդը</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7807067443225230855">Որոնում և Օգնական</translation>
 <translation id="7807711621188256451">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տեսախցիկը</translation>
@@ -6668,6 +6678,7 @@
 <translation id="8300849813060516376">OTASP-ի խափանում</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="8304383784961451596">Դուք այս սարքից օգտվելու թույլտվություն չունեք։ Մուտքի թույլտվության համար դիմեք ադմինիստրատորին կամ մտեք Google հաշիվ, որը վերահսկվում է Family Link-ի կողմից։</translation>
+<translation id="8308016398665340540">Դուք այս ցանցն օգտագործում եք սարքի մյուս օգտատերերի հետ համատեղ</translation>
 <translation id="8308179586020895837">Հարցնել, եթե <ph name="HOST" />-ը ցանկանա օգտագործել տեսախցիկը</translation>
 <translation id="830868413617744215">Բետա</translation>
 <translation id="8309458809024885768">Հավաստագիրն արդեն առկա է</translation>

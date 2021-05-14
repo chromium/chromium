@@ -515,6 +515,7 @@
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />? என்ற தீம் நிறுவப்பட்டது</translation>
 <translation id="1546280085599573572">முகப்புப் பொத்தானைக் கிளிக் செய்யும் போது காண்பிக்கப்படும் பக்கத்தை இந்த நீட்டிப்பு மாற்றியுள்ளது.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> நிறுவ விரும்பும் <ph name="EXTENSION_TYPE" /> நீட்டிப்பினால் இவற்றைச் செய்ய முடியும்:</translation>
+<translation id="1547808936554660006">பவர்வாஷ் செய்வதால் நிறுவப்பட்டுள்ள eSIM சுயவிவரங்கள் அகற்றப்படாது எனப் புரிந்துகொண்டேன்</translation>
 <translation id="1549275686094429035">ARC இயக்கப்பட்டது</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />க்கு <ph name="VOLUME_NAME" /> இன் அணுகல் தேவை. இது உங்கள் கோப்புகளை மாற்றலாம் அல்லது நீக்கலாம்.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> டொமைனைப் பயன்படுத்தும் வகையில் தேடலை "<ph name="EXTENSION_NAME" />" நீட்டிப்பு மாற்றியுள்ளது</translation>
@@ -551,6 +552,7 @@
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="158849752021629804">உள்ளூர் நெட்வொர்க் தேவை</translation>
 <translation id="1588870296199743671">இதைக் கொண்டு இணைப்பைத் திற...</translation>
+<translation id="1588919647604819635">வலது கிளிக் கார்டு</translation>
 <translation id="1589055389569595240">இலக்கணம் மற்றும் எழுத்துப்பிழையைக் காண்பி</translation>
 <translation id="1591679663873027990">USB சாதனங்களை அணுக Parallels Desktopபிற்கு அனுமதி வழங்கவும். USB சாதனத்தை அகற்றிய பிறகு அதைப் பற்றிய விவரம் Parallels Desktopபிலிருந்து நீக்கப்படும்.</translation>
 <translation id="1592074621872221573">ADB பிழைதிருத்தத்தை <ph name="MANAGER" /> முடக்கியதால் உங்கள் <ph name="DEVICE_TYPE" /> மீட்டமைக்கப்படும். அதை மீண்டும் தொடங்கும் முன்னர் கோப்புகளைக் காப்புப் பிரதி எடுத்துக்கொள்ளவும்.</translation>
@@ -995,6 +997,7 @@
 
 உங்கள் சாதனத்தில் Family Link ஆப்ஸை நிறுவுவதன் மூலம் இந்தக் கணக்கின் அமைப்புகளை நீங்கள் நிர்வகிக்க முடியும்.  மின்னஞ்சலில் இதற்கான வழிமுறைகளை அனுப்பியுள்ளோம்.</translation>
 <translation id="2040460856718599782">அச்சச்சோ! உங்களை அங்கீகரிக்க முயற்சிக்கும்போது ஏதோ தவறு நடந்துவிட்டது. உங்கள் உள்நுழைவு நற்சான்றிதழ்களை இருமுறை சரிபார்த்து மீண்டும் முயற்சி செய்க.</translation>
+<translation id="2042279886444479655">செயலில் உள்ள சுயவிவரங்கள்</translation>
 <translation id="2044014337866019681">சாதனத்தை அன்லாக் செய்ய, <ph name="ACCOUNT" /> கணக்கைச் சரிபார்த்திருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="2044023416777079300">மோடம் பதிவுசெய்யப்படவில்லை</translation>
 <translation id="204497730941176055">Microsoft சான்றிதழ் டெம்பிளேட் பெயர்</translation>
@@ -1336,6 +1339,7 @@
 <translation id="2395616325548404795">உங்கள் <ph name="DEVICE_TYPE" /> சாதனம் நிறுவன மேலாண்மைக்குப் பதிவுசெய்யப்பட்டது, ஆனால் அதன் பண்பையும் இருப்பிடத் தகவலையும் அனுப்ப முடியவில்லை. இந்தச் சாதனத்திற்கான இந்தத் தகவலை உங்கள் Admin console இலிருந்து நீங்களாகவே உள்ளிடவும்.</translation>
 <translation id="2396387085693598316">"<ph name="EXTENSION_NAME" />" ஐ உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="2396783860772170191">4 இலக்கப் பின்னை உள்ளிடவும் (0000-9999)</translation>
+<translation id="2398546389094871088">உங்கள் சாதனத்தைப் பவர்வாஷ் செய்வதால் eSIM சுயவிவரங்கள் அகற்றப்படாது. இவற்றை அகற்ற <ph name="LINK_BEGIN" />மொபைல் அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
 <translation id="2399699884460174994">அறிவிப்புகள் இயக்கப்பட்டுள்ளன</translation>
 <translation id="2399939490305346086">பாதுகாப்பு விசைக்கான உள்நுழைவுத் தகவல்கள்</translation>
 <translation id="2400664245143453337">உடனடியாகப் புதுப்பிக்கப்பட வேண்டும்</translation>
@@ -1753,6 +1757,7 @@
 <translation id="2844809857160214557">அச்சுப் பணிகளைப் பார்க்கலாம் நிர்வகிக்கலாம்</translation>
 <translation id="2845382757467349449">எப்பொழுதும் புக்மார்க்ஸ் பட்டியைக் காட்டு</translation>
 <translation id="284805635805850872">தீங்கிழைக்கும் மென்பொருளை அகற்றவா?</translation>
+<translation id="2849035674501872372">தேடுக</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">சுத்தப்படுத்த முடியவில்லை</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
@@ -2064,6 +2069,7 @@
 <translation id="3189187154924005138">பெரிய கர்சர்</translation>
 <translation id="3190558889382726167">கடவுச்சொல் சேமிக்கப்பட்டது</translation>
 <translation id="3192947282887913208">ஆடியோ கோப்புகள்</translation>
+<translation id="3197453258332670132">வலது கிளிக் செய்தோ நீண்ட நேரம் அழுத்தியோ, நீங்கள் தேர்ந்தெடுக்கும் உரைக்கான தொடர்புடைய தகவலைப் பார்க்கலாம்</translation>
 <translation id="3199127022143353223">சேவைகங்கள்</translation>
 <translation id="3201422919974259695">கிடைக்கக்கூடிய USB சாதனங்கள் இங்குத் தோன்றும்.</translation>
 <translation id="3202131003361292969">தடம்</translation>
@@ -2085,6 +2091,7 @@
 <translation id="3223531857777746191">மீட்டமைப்பதற்கான பட்டன்</translation>
 <translation id="3225084153129302039">இயல்பு பர்பிள்நிற அவதார்</translation>
 <translation id="3225319735946384299">குறியீடு கையொப்பமிடல்</translation>
+<translation id="3226487301970807183">இடப்புறமாகச் சீரமைக்கப்பட்ட பக்கவாட்டுப் பேனலுக்கு மாறும்</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3233271424239923319">Linux ஆப்ஸ் காப்புப்பிரதிகளும் கோப்புகளும்</translation>
 <translation id="3238192140106069382">இணைக்கிறது &amp; சரிபார்க்கிறது</translation>
@@ -2354,6 +2361,7 @@
 <translation id="3515983984924808886">மீட்டமைப்பதை உறுதிசெய்ய பாதுகாப்பு விசையை மீண்டும் தொடவும். பின் உட்பட பாதுகாப்பு விசையில் சேமிக்கப்பட்ட அனைத்து விவரங்களும் நீக்கப்படும்.</translation>
 <translation id="3518985090088779359">ஏற்று, தொடரவும்</translation>
 <translation id="3519564332031442870">பின்னணிப் பிரிண்ட் சேவை</translation>
+<translation id="3519938335881974273">பக்கத்தை இவ்வாறு சேமி...</translation>
 <translation id="3521606918211282604">டிஸ்க்கின் அளவை மாற்றும்</translation>
 <translation id="3522088408596898827">டிஸ்க் சேமிப்பிடம் மிகவும் குறைவாக உள்ளது. சேமிப்பிடத்தைக் காலியாக்கிவிட்டு முயலவும்.</translation>
 <translation id="3524965460886318643">செயல்பாடுகளைப் பதிவேற்று</translation>
@@ -2377,6 +2385,7 @@
 <translation id="3550593477037018652">செல்லுலார் நெட்வொர்க்கைத் துண்டி</translation>
 <translation id="3550915441744863158">Chrome தானாகவே புதுப்பித்துக்கொள்வதால், எப்போதுமே புதிய பதிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="3551320343578183772">தாவலை மூடுக</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">வெளியேறும் போது அழி</translation>
 <translation id="3554493885489666172">உங்கள் சாதனத்தை <ph name="PROFILE_NAME" /> நிர்வகிக்கிறது. இந்தச் சாதனத்தில் உள்ள எந்தவொரு சுயவிவரத் தரவையும் நிர்வாகிகளால் அணுக முடியும்.</translation>
 <translation id="3555812735919707620">நீட்டிப்பை அகற்று</translation>
@@ -2429,6 +2438,7 @@
 <translation id="3604713164406837697">வால்பேப்பரை மாற்று</translation>
 <translation id="3605780360466892872">பட்டன்டவுண்</translation>
 <translation id="3608576286259426129">பயனர் படத்தின் மாதிரிக்காட்சி</translation>
+<translation id="3609277884604412258">விரைவுத் தேடல்</translation>
 <translation id="3610369246614755442">டாக் ஃபேனில் உள்ள சிக்கலை சரி செய்ய வேண்டும்</translation>
 <translation id="361106536627977100">ஃப்ளாஷ் தரவு</translation>
 <translation id="3611655097742243705">மேலும் ஆப்ஸ்களைப் பார்க்க Play ஸ்டோருக்குச் செல்லவும்</translation>
@@ -3373,6 +3383,7 @@
 <translation id="4636682061478263818">Drive கோப்புகள்</translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4637083375689622795">கூடுதல் செயல்கள், <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">மீண்டும் கேமராவைப் பயன்படுத்து</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{உரை}other{# உரைகள்}}</translation>
 <translation id="4638930039313743000">ADB பிழைதிருத்தத்தை இயக்கு</translation>
 <translation id="4641539339823703554">Chrome ஆல் கணினி நேரத்தை அமைக்க முடியவில்லை. கீழே நேரத்தைச் சரிபார்த்து, தேவைப்பட்டால் சரிசெய்யவும்.</translation>
@@ -4123,6 +4134,7 @@
 <translation id="5499313591153584299">இந்தக் கோப்பு உங்கள் கம்ப்யூட்டருக்குத் தீங்கு விளைவிக்கலாம்.</translation>
 <translation id="5499453227627332024">Linux கண்டெய்னருக்கான மேம்படுத்தல் உள்ளது. அமைப்புகள் ஆப்ஸிலிருந்தும் பின்னர் மேம்படுத்திக்கொள்ளலாம்.</translation>
 <translation id="5500709606820808700">பாதுகாப்புச் சரிபார்ப்பு இன்று மேற்கொள்ளப்பட்டது</translation>
+<translation id="5501322521654567960">இடப்புறமாகச் சீரமைக்கப்பட்ட பக்கவாட்டுப் பேனல்</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}}</translation>
 <translation id="5502500733115278303">Firefox இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
 <translation id="5502915260472117187">பிள்ளை</translation>
@@ -5335,6 +5347,7 @@
 <translation id="6856348640027512653">விர்ச்சுவல் ரியாலிட்டி சாதனங்களையோ தரவையோ பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="6856459657722366306">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="6856623341093082836">டச்ஸ்கிரீனை அமைத்து, அதன் துல்லியத்தைச் சரிசெய்க</translation>
+<translation id="6857145580237920905">பவர்வாஷிற்கு முன்பு eSIM சுயவிவரங்களை அகற்றுதல்</translation>
 <translation id="6857699260879628349">உள்ளமைவுத் தகவலைப் பெறுக</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> வி</translation>
 <translation id="6860097299815761905">ப்ராக்ஸி அமைப்புகள்...</translation>

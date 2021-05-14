@@ -295,6 +295,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2904414404539560095">Nakabukas ang listahan ng mga device kung saan magbabahagi ng tab nang buo ang taas.</translation>
 <translation id="2905036901251765993">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912296070571964914">Pamahalaan ang mga paksa kung saan ka interesado</translation>
 <translation id="2923908459366352541">Di-wasto ang pangalan</translation>
 <translation id="2932150158123903946">Storage ng <ph name="APP_NAME" /> sa Google</translation>
 <translation id="2932222164150889403">Hindi magbabago ang iyong keyboard</translation>
@@ -339,6 +340,8 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3254409185687681395">I-bookmark ang page na ito</translation>
 <translation id="3259831549858767975">Paliitin ang lahat ng nasa page</translation>
 <translation id="3264124641674805320">Paano mag-download ng content para sa ibang pagkakataon</translation>
+<translation id="3264259168916048410">Gustong gamitin ng iyong computer ang device na ito para mag-sign in sa isang site</translation>
+<translation id="3265534588625245297">Pamahalaan ang mga site na sinusubaybayan mo</translation>
 <translation id="3269093882174072735">I-load ang larawan</translation>
 <translation id="3269956123044984603">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang "I-auto sync ang data" sa mga setting ng Android account.</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
@@ -497,6 +500,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4351244548802238354">Isara ang dialog</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Dina-download…</translation>
 <translation id="4404568932422911380">Walang bookmark</translation>
 <translation id="4405224443901389797">Ilipat sa…</translation>
 <translation id="4411535500181276704">Lite mode</translation>
@@ -583,6 +587,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="488187801263602086">Palitan ang pangalan ng file</translation>
 <translation id="4882831918239250449">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap, mga ad, at iba pa</translation>
 <translation id="4885273946141277891">Hindi sinusuportahang bilang ng mga instance ng Chrome.</translation>
+<translation id="4905269543817054577">Hindi nase-save ang history sa Incognito</translation>
 <translation id="4908869848243824489">Discover ng Google</translation>
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4913161338056004800">I-reset ang mga istatistika</translation>
@@ -951,6 +956,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7191430249889272776">Binuksan ang tab sa background.</translation>
 <translation id="7233236755231902816">Para makita ang web sa iyong wika, kunin ang pinakabagong bersyon ng Chrome</translation>
 <translation id="7248069434667874558">Tiyaking naka-on sa <ph name="TARGET_DEVICE_NAME" /> ang pag-sync sa Chrome</translation>
+<translation id="7252076891734325316">Ilapit ang iyong telepono sa computer</translation>
 <translation id="7274013316676448362">Naka-block na site</translation>
 <translation id="7286572596625053347">Palitan ang <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Hindi available ang pag-rename</translation>
@@ -1017,6 +1023,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
 <translation id="7641339528570811325">I-clear ang data sa pag-browse...</translation>
+<translation id="764170292089748542">Hindi sine-save ng Chrome ang iyong history ng pag-browse kapag pinili mong mag-browse nang pribado. Puwede ka pa ring gumamit ng mga bookmark para ma-access ang iyong mga paboritong site.</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
@@ -1042,6 +1049,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7810647596859435254">Buksan gamit ang…</translation>
 <translation id="7815484226266492798">Mahabang Screenshot</translation>
 <translation id="7821588508402923572">Lalabas dito ang mga natipid sa iyong data</translation>
+<translation id="78270725016672455">Gustong irehistro ng iyong computer ang device na ito para sa pag-sign in sa isang site</translation>
 <translation id="7844171778363018843">Walang piniling data para i-sync</translation>
 <translation id="7846296061357476882">Mga serbisyo ng Google</translation>
 <translation id="784934925303690534">Sakop na oras</translation>
@@ -1138,6 +1146,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8427875596167638501">Nakabukas nang kalahati ang tab na preview</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8438566539970814960">Mas pahusayin ang mga paghahanap at pag-browse</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Handa na ang wika, i-restart ang <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Walang available na kuwento</translation>
 <translation id="8443209985646068659">Hindi ma-update: Chrome</translation>
 <translation id="8445448999790540984">Hindi ma-export ang mga password</translation>
@@ -1210,6 +1219,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8937267401510745927">Para tulungan kang tapusin ang mga gawain, matatanggap ng Google ang mga URL at content ng mga site kung saan ka gumamit ng Assistant, gayundin ang impormasyong isinumite mo sa pamamagitan ng Assistant. Puwedeng i-store sa iyong Google account ang impormasyong ito. Puwede mong i-off ang Assistant sa mga setting ng Chrome.</translation>
 <translation id="8937772741022875483">Alisin sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
 <translation id="8942627711005830162">Buksan sa ibang window</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Hindi ma-download ang wikang ito. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="8951232171465285730">Nag-save ang Chrome ng <ph name="MEGABYTES" /> MB para sa iyo</translation>
 <translation id="8965591936373831584">nakabinbin</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>

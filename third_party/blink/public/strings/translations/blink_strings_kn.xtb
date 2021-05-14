@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ಟೈಮರ್</translation>
 <translation id="3199563858620722075">ಕಾಂಬೊ ಬಾಕ್ಸ್</translation>
 <translation id="3220661731597678625">ಪ್ರಸ್ತುತ ಹಂತ</translation>
+<translation id="3321030238473337787">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗ</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
 <translation id="3450233048674729344">ಮೌಲ್ಯವು <ph name="MAXIMUM" /> ಕ್ಕೆ ಸಮನಾಗಿರಬಹುದು ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆ ಆಗಿರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">ಮೆನು ಬಾರ್‌</translation>
 <translation id="4293574643247337246">ಪುಟದ ಶಿರೋಲೇಖ</translation>
 <translation id="4360991593054037559">ಮಾನ್ಯವಾದ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. <ph name="VALID_VALUE_LOW" /> ಮತ್ತು <ph name="VALID_VALUE_HIGHER" /> ಎರಡು ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯಗಳಾಗಿವೆ.</translation>
+<translation id="4371899966896349864">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗದ ಮೆನುವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4384249794467006333">ಈ ಚಿತ್ರವನ್ನು ಲೇಬಲ್ ಮಾಡಿಲ್ಲ. ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಲು, ಮೇಲಿನ ಬಲ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="4384583879834880242">ಪ್ರಶ್ನೋತ್ತರ</translation>
 <translation id="4444765639179266822">ಹೀಗೆ ಹೇಳುತ್ತಿರಬಹುದು: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ಟ್ರೀ ಐಟಂ</translation>
 <translation id="5466621249238537318">ದಯವಿಟ್ಟು ಒಂದು ಅಥವಾ ಹೆಚ್ಚು ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5468998798572797635">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">ದಿನಾಂಕದ ಪಿಕರ್</translation>
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="5546461542133609677">ಅನ್‌ಮ್ಯೂಟ್ ಮಾಡು</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="576709008726043716">ಪರಿಚಯ</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
+<translation id="5786442179789148008">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗದ ಮೆನುವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5787939484346677755">ವಿಸ್ತರಿಸಲಾಗಿದೆ, ಸ್ವಯಂಪೂರ್ಣತೆ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="5966707198760109579">ವಾರ</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">ಸ್ಪಿನ್ ಬಟನ್</translation>
 <translation id="6011459053400940133">ವಾಲ್ಯೂಮ್ ಸ್ಲೈಡರ್</translation>
 <translation id="6015796118275082299">ವರ್ಷ</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">ಮ್ಯೂಟ್</translation>
 <translation id="6885760532393684712">ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="689129560213475294">ಕೊಲೊಫೋನ್</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">ಬ್ಲಾಕ್‌ಕೋಟ್</translation>
 <translation id="693476918119313863">ಶಿರೋಲೇಖ</translation>
 <translation id="6941933287844615239">ಮಾಧ್ಯಮ ಡೌನ್‌ಲೋಡ್</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">ಸೂಚನೆ ಉಲ್ಲೇಖ</translation>
 <translation id="811583516810654505">ವಿವರಣೆಯನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8117451130807776954">ಈ ವಾರ</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ವವವವ</translation>
 <translation id="8208673686607688524">ಸ್ಥಳೀಯ ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಆಯ್ಕೆ</translation>
 <translation id="8261464734335370856">ಅಮಾನ್ಯ ಕಾಗುಣಿತ</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">ರಿಮೋಟ್ ಪ್ಲೇಬ್ಯಾಕ್ ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="862370744433916922">ಉಪಶೀರ್ಷಿಕೆ</translation>
 <translation id="8634971699417195529">ತಿಂಗಳಿನ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ಲೈನ್ ವ್ರ್ಯಾಪ್</translation>
 <translation id="8711688047404765493">ಔಟ್‌ಪುಟ್</translation>
 <translation id="8750798805984357768">ದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಆರಿಸಿ.</translation>

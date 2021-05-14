@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> కోసం సమాచార డైలాగ్‌ను తెరవండి</translation>
 <translation id="1153356358378277386">జత చేసిన పరికరాలు</translation>
 <translation id="1165712434476988950">అప్‌డేట్‌ను వర్తింపజేయడానికి పరికరాన్ని రీస్టార్ట్ చేయాలి.</translation>
+<translation id="1170240434488307589">పరికర మైక్రోఫోన్ బటన్ మ్యూట్ చేయబడింది.</translation>
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">ఇన్‌పుట్ పద్ధతులు మీ నిర్వాహకుల ద్వారా కాన్ఫిగర్ చేయబడ్డాయి.</translation>
 <translation id="1747827819627189109">స్క్రీన్‌పై కనిపించే కీబోర్డ్ ప్రారంభించబడింది</translation>
 <translation id="1761222317188459878">నెట్‌వర్క్ కనెక్షన్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + పీరియడ్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ఇన్‌సర్ట్ కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + షిఫ్ట్ + బ్యాక్‌స్పేస్ కీలను నొక్కండి.</translation>
 <translation id="1771761307086386028">కుడికి స్క్రోల్ చేయి</translation>
 <translation id="1782199038061388045">అనువాదం</translation>
 <translation id="1787955149152357925">ఆఫ్ చేయి</translation>

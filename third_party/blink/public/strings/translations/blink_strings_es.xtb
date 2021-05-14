@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">temporizador</translation>
 <translation id="3199563858620722075">cuadro combinado</translation>
 <translation id="3220661731597678625">paso actual</translation>
+<translation id="3321030238473337787">Velocidad de reproducción</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3450233048674729344">El valor debe ser inferior o igual a <ph name="MAXIMUM" /></translation>
 <translation id="3486220673238053218">definición</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">barra de menús</translation>
 <translation id="4293574643247337246">cabecera de página</translation>
 <translation id="4360991593054037559">Introduce un valor válido. Los dos valores válidos más aproximados son <ph name="VALID_VALUE_LOW" /> y <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">ocultar menú de velocidad de reproducción</translation>
 <translation id="4384249794467006333">Esta imagen no tiene texto. Abre el menú Más opciones, arriba a la derecha, para obtener descripciones de imágenes.</translation>
 <translation id="4384583879834880242">Preguntas</translation>
 <translation id="4444765639179266822">Parece que pone: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">elemento del árbol</translation>
 <translation id="5466621249238537318">Selecciona uno o varios archivos</translation>
 <translation id="5468998798572797635">salir de pantalla completa</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">selector de fecha</translation>
 <translation id="5537725057119320332">Enviar</translation>
 <translation id="5546461542133609677">activar sonido</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">más opciones</translation>
 <translation id="576709008726043716">introducción</translation>
 <translation id="57838592816432529">Silenciar</translation>
+<translation id="5786442179789148008">mostrar menú de velocidad de reproducción</translation>
 <translation id="5787939484346677755">desplegado, opciones de autocompletado disponibles.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5966707198760109579">Semana</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">botón de control numérico</translation>
 <translation id="6011459053400940133">control deslizante de volumen</translation>
 <translation id="6015796118275082299">Año</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">silenciar</translation>
 <translation id="6885760532393684712">directorio</translation>
 <translation id="689129560213475294">colofón</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">encabezado</translation>
 <translation id="6941933287844615239">descargar archivos multimedia</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">referencia de nota</translation>
 <translation id="811583516810654505">Obteniendo la descripción...</translation>
 <translation id="8117451130807776954">Esta semana</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8208673686607688524">selector de fecha y hora locales</translation>
 <translation id="8261464734335370856">La ortografía no es válida</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">reproducción de control remoto</translation>
 <translation id="862370744433916922">subtítulo</translation>
 <translation id="8634971699417195529">Mostrar selector de mes</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Ajuste de línea</translation>
 <translation id="8711688047404765493">salida</translation>
 <translation id="8750798805984357768">Selecciona una de estas opciones</translation>

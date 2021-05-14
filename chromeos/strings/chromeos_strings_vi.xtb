@@ -299,6 +299,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Thiết bị mạng</translation>
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8372477600026034341">Máy chủ khác</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
 <translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Tên nhà mạng nội hạt</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>

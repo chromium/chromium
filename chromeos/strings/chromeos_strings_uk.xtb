@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">Додаткові хости</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Назва локального постачальника</translation>
 <translation id="8475690821716466388">Мережа Wi-Fi захищена ненадійним протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>

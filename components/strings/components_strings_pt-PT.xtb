@@ -508,6 +508,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">Os atacantes poderão estar a tentar roubar as suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, palavras-passe, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Este site apresenta anúncios intrusivos ou enganadores.</translation>
+<translation id="287596039013813457">Amigável</translation>
 <translation id="2876489322757410363">Está a sair do Modo de navegação anónima para pagar através de uma aplicação externa. Pretende continuar?</translation>
 <translation id="2878197950673342043">Dobra cruzada</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3229041911291329567">Informações da versão do dispositivo e do navegador.</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
+<translation id="3249845759089040423">Descontraído</translation>
 <translation id="3252266817569339921">Francês</translation>
 <translation id="3266793032086590337">Valor (em conflito)</translation>
 <translation id="3268451620468152448">Abrir Separadores</translation>
@@ -982,6 +984,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4594403342090139922">&amp;Anular eliminação</translation>
 <translation id="4597348597567598915">Tamanho 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">Impactante</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Reembolso associado</translation>
 <translation id="4636930964841734540">Informações</translation>
@@ -1045,6 +1048,8 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4813512666221746211">Erro de rede</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4819347708020428563">Pretende editar anotações na vista predefinida?</translation>
+<translation id="4825507807291741242">Potente</translation>
+<translation id="4838327282952368871">Sonhador</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemão</translation>
@@ -1203,6 +1208,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
+<translation id="541143247543991491">Nuvem (em todo o sistema)</translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> pretende enviar-lhe notificações.</translation>
@@ -1709,6 +1715,7 @@ Detalhes adicionais:
       &lt;li&gt;Clique em &lt;strong&gt;Aplicar&lt;/strong&gt; e, de seguida, em &lt;strong&gt;OK&lt;/strong&gt;.
       &lt;li&gt;Visite o &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centro de Ajuda do Chrome&lt;/a&gt; para saber como remover permanentemente o software do computador.      &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Adorável</translation>
 <translation id="7416351320495623771">Gerir palavras-passe…</translation>
 <translation id="7419106976560586862">Caminho do Perfil</translation>
 <translation id="7437289804838430631">Adicionar informações de contacto</translation>
@@ -2133,6 +2140,7 @@ Detalhes adicionais:
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Inválido)</translation>
+<translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9038649477754266430">Utilizar um serviço de previsão para carregar páginas mais rapidamente</translation>
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o comportamento da página.</translation>
@@ -2156,6 +2164,7 @@ Detalhes adicionais:
 <translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Moderno</translation>
 <translation id="9119042192571987207">Carregado</translation>
 <translation id="9128016270925453879">As políticas foram carregadas.</translation>
 <translation id="9128870381267983090">Ligar à rede</translation>

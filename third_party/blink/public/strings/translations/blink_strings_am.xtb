@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ሰዓት ቆጣሪ</translation>
 <translation id="3199563858620722075">ጥምድ ሳጥን</translation>
 <translation id="3220661731597678625">የአሁኑ ደረጃ</translation>
+<translation id="3321030238473337787">የመልሶ ማጫወት ፍጥነት</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
 <translation id="3450233048674729344">ዋጋ ከ<ph name="MAXIMUM" /> የሚያንስ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="3486220673238053218">ብየና</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">የምናሌ አሞሌ</translation>
 <translation id="4293574643247337246">የገጽ ራስጌ</translation>
 <translation id="4360991593054037559">እባክዎ የሚሰራ ዋጋ ያስገቡ። ሁለቱ የሚቀርቡ ዋጋዎች <ph name="VALID_VALUE_LOW" /> እና <ph name="VALID_VALUE_HIGHER" /> ናቸው።</translation>
+<translation id="4371899966896349864">የመልሶ ማጫወት ፍጥነት ምናሌን ደብቅ</translation>
 <translation id="4384249794467006333">ይህ ምስል አልተሰየመም። የምስል መግለጫዎችን ለማግኘት ከላይ በቀኝ በኩል ያለውን ተጨማሪ አማራጮች ምናሌን ይክፈቱ።</translation>
 <translation id="4384583879834880242">ጥያቄ እና መልስ</translation>
 <translation id="4444765639179266822">እንዲህ የሚል ይመስላል፦ <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">የዛፍ ንጥል</translation>
 <translation id="5466621249238537318">እባክዎ አንድ ወይም ተጨማሪ ፋይሎችን ይምረጡ።</translation>
 <translation id="5468998798572797635">ከሙሉ ማያ ገጽ ውጣ</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">ቀን መራጭ</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">ድምፅ-ከልን አንሳ</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">ተጨማሪ አማራጮች</translation>
 <translation id="576709008726043716">መግቢያ</translation>
 <translation id="57838592816432529">ድምጽ ይዝጉ</translation>
+<translation id="5786442179789148008">የመልሶ ማጫወት ፍጥነት ምናሌን አሳይ</translation>
 <translation id="5787939484346677755">ተዘርግቷል፣ የራስ-ማጠናቀቅ አማራጮች አሉ።</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5966707198760109579">ሳምንት</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">ማሾሪያ አዝራር</translation>
 <translation id="6011459053400940133">የድምጽ ተንሸራታች</translation>
 <translation id="6015796118275082299">ዓመት</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">ድምጸ-ከል ያድርጉ</translation>
 <translation id="6885760532393684712">ማውጫ</translation>
 <translation id="689129560213475294">ኮሎፎን</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">የጽሑፍ ጥቅስ</translation>
 <translation id="693476918119313863">ራስጌ</translation>
 <translation id="6941933287844615239">ማህደረ መረጃን አውርድ</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">ማስታወሻ ማጣቀሻ</translation>
 <translation id="811583516810654505">ዝርዝርን በማግኘት ላይ...</translation>
 <translation id="8117451130807776954">በዚህ ሳምንት</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ዓዓዓዓ</translation>
 <translation id="8208673686607688524">አካባቢያዊ ቀን እና ሰዓት መራጭ</translation>
 <translation id="8261464734335370856">ልክ ያልኾነ ሥርዓተ አጻጻፍ</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">በርቀት መልሶ ማጫወትን ተቆጣጠር</translation>
 <translation id="862370744433916922">የግርጌ ጽሑፍ</translation>
 <translation id="8634971699417195529">የወር መራጭን አሳይ</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">የመስመር መጠቅለያ</translation>
 <translation id="8711688047404765493">ውጽዓት</translation>
 <translation id="8750798805984357768">እባክዎ ከእነዚህ አማራጮች ውስጥ አንዱን ይምረጡ።</translation>

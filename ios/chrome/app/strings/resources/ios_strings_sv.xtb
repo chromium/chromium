@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
+<translation id="2022352537516230970">Byggd för iPhone</translation>
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
@@ -314,6 +315,7 @@ Följ stegen nedan:</translation>
 <translation id="4172051516777682613">Visa alltid</translation>
 <translation id="418156467088430727">Visa offlineversionen i en ny flik</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4184011057600693970">Byggd för iPad</translation>
 <translation id="424315890655130736">Ange lösenfras</translation>
 <translation id="4263576668337963058">Visa tillgängliga åtgärder för sida</translation>
 <translation id="4267380167363222949">Nästa flik</translation>
@@ -492,6 +494,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
+<translation id="60829778314739003">Godkänn och fortsätt</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +590,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6801927553864092214">Öppna en inkognitoflik om du vill surfa privat</translation>
 <translation id="6807889908376551050">Visa alla ...</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
+<translation id="6830804042318138535">Läs mer</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
 <translation id="6858855187367714033">Skannat</translation>
@@ -635,6 +639,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7291368939935408496">Lösenorden förbereds …</translation>
 <translation id="7293171162284876153">Starta synkroniseringen genom att aktivera Synkronisera data i Chrome.</translation>
 <translation id="7313347584264171202">Du hittar dina inkognitoflikar här</translation>
+<translation id="7319242366286515846">Genom att fortsätta godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent har laddats ned</translation>
 <translation id="7340958967809483333">Alternativ för Förslag</translation>
 <translation id="7346909386216857016">Ok, jag förstår</translation>
@@ -781,6 +786,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8840513115188359703">Du loggas inte ut från Google-kontot.</translation>
 <translation id="8870413625673593573">Nyligen stängda</translation>
+<translation id="8876882697946675716">Håll dina enheter synkroniserade</translation>
 <translation id="8881801611828450202">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="8909135823018751308">Dela …</translation>
 <translation id="8917490105272468696">Ja</translation>

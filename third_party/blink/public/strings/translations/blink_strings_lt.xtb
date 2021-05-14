@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">laikmatis</translation>
 <translation id="3199563858620722075">jungtinis laukelis</translation>
 <translation id="3220661731597678625">dabartinis veiksmas</translation>
+<translation id="3321030238473337787">Atkūrimo sparta</translation>
 <translation id="3329013043687509092">Spalvų sodrumas</translation>
 <translation id="3450233048674729344">Vertė turi būti <ph name="MAXIMUM" /> arba mažesnė.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">meniu juosta</translation>
 <translation id="4293574643247337246">puslapio antraštė</translation>
 <translation id="4360991593054037559">Įveskite galiojančią vertę. Dvi artimiausios vertės yra <ph name="VALID_VALUE_LOW" /> ir <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">slėpti atkūrimo spartos meniu</translation>
 <translation id="4384249794467006333">Šis vaizdas neturi etiketės. Viršuje dešinėje atidarykite meniu „Daugiau parinkčių“, kad gautumėte vaizdo aprašų.</translation>
 <translation id="4384583879834880242">Klausimai ir atsakymai</translation>
 <translation id="4444765639179266822">Tai tikriausiai reiškia: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">medžio elementas</translation>
 <translation id="5466621249238537318">Pasirinkite bent vieną failą.</translation>
 <translation id="5468998798572797635">išeiti iš viso ekrano režimo</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">datos rinkiklis</translation>
 <translation id="5537725057119320332">Perduoti</translation>
 <translation id="5546461542133609677">įjungti garsą</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">daugiau parinkčių</translation>
 <translation id="576709008726043716">įžanga</translation>
 <translation id="57838592816432529">Nutildyti</translation>
+<translation id="5786442179789148008">rodyti atkūrimo spartos meniu</translation>
 <translation id="5787939484346677755">išskleista, pasiekiamos automatinio užbaigimo parinktys.</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5966707198760109579">Savaitė</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">sukimo mygtukas</translation>
 <translation id="6011459053400940133">garsumo šliaužiklis</translation>
 <translation id="6015796118275082299">Metai</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">nutildyti</translation>
 <translation id="6885760532393684712">katalogas</translation>
 <translation id="689129560213475294">informacija apie leidimą</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">citata</translation>
 <translation id="693476918119313863">antraštė</translation>
 <translation id="6941933287844615239">atsisiųsti mediją</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">pastabos nuoroda</translation>
 <translation id="811583516810654505">Gaunamas aprašas...</translation>
 <translation id="8117451130807776954">Ši savaitė</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">mmmm</translation>
 <translation id="8208673686607688524">vietos datos ir laiko rinkiklis</translation>
 <translation id="8261464734335370856">Netinkama rašyba</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">valdyti nuotolinį atkūrimą</translation>
 <translation id="862370744433916922">paantraštė</translation>
 <translation id="8634971699417195529">Rodyti mėnesio rinkiklį</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Eilučių skaidymas</translation>
 <translation id="8711688047404765493">išvestis</translation>
 <translation id="8750798805984357768">Pasirinkite vieną iš šių parinkčių.</translation>

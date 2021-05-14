@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
+<translation id="2022352537516230970">Մշակված է ձեր iPhone-ի համար</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">Միշտ ցույց տալ</translation>
 <translation id="418156467088430727">Դիտել անցանց տարբերակը նոր ներդիրում</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
+<translation id="4184011057600693970">Մշակված է ձեր iPad-ի համար</translation>
 <translation id="424315890655130736">Մուտքագրեք անցաբառը</translation>
 <translation id="4263576668337963058">Ցուցադրել հասանելի գործողությունները էջերի համար</translation>
 <translation id="4267380167363222949">Հաջորդ ներդիրը</translation>
@@ -492,6 +494,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="605721222689873409">տարի</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
+<translation id="60829778314739003">Ընդունել և շարունակել</translation>
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6119050551270742952">Ընթացիկ կայքէջը ինկոգնիտո ռեժիմում է բացված</translation>
 <translation id="6122191549521593678">Առցանց</translation>
@@ -587,6 +590,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6801927553864092214">Գաղտնի կերպով կայքէջեր այցելելու համար բացեք ինկոգնիտո ներդիր</translation>
 <translation id="6807889908376551050">Ցույց տալ բոլորը…</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
+<translation id="6830804042318138535">Կարդալ ավելին</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6851516051005285358">Համակարգչային տարբերակ</translation>
 <translation id="6858855187367714033">Սկանավորվեց</translation>
@@ -635,6 +639,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7291368939935408496">Արտահանման նախապատրաստում…</translation>
 <translation id="7293171162284876153">Սկսելու համար միացրեք «Համաժամացնել Chrome-ի տվյալները» կարգավորումը:</translation>
 <translation id="7313347584264171202">Ձեր ինկոգնիտո ներդիրները կգտնեք այստեղ</translation>
+<translation id="7319242366286515846">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK" />Օգտագործման պայմանները<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Ներբեռնվել է <ph name="PERCENT" /> տոկոսը</translation>
 <translation id="7340958967809483333">Discover-ի կարգավորումներ</translation>
 <translation id="7346909386216857016">Եղավ</translation>
@@ -781,6 +786,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8840513115188359703">Դուք դուրս չեք գա ձեր Google հաշվից:</translation>
 <translation id="8870413625673593573">Վերջին փակվածները</translation>
+<translation id="8876882697946675716">Համաժամացրեք ձեր սարքերը</translation>
 <translation id="8881801611828450202">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
 <translation id="8917490105272468696">Եղավ</translation>

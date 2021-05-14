@@ -295,6 +295,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2904414404539560095">La llista de dispositius amb què es compartirà una pestanya s'ha obert a alçada completa.</translation>
 <translation id="2905036901251765993">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR</translation>
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
+<translation id="2912296070571964914">Gestiona els temes que t'interessen</translation>
 <translation id="2923908459366352541">El nom no és vàlid</translation>
 <translation id="2932150158123903946">Emmagatzematge de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">El teclat no canviarà</translation>
@@ -339,6 +340,8 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3254409185687681395">Afegeix aquesta pàgina a les adreces d'interès</translation>
 <translation id="3259831549858767975">Redueix la mida de tots els elements de la pàgina</translation>
 <translation id="3264124641674805320">Com es pot baixar contingut per a més tard</translation>
+<translation id="3264259168916048410">L'ordinador vol utilitzar aquest dispositiu per iniciar la sessió en un lloc web</translation>
+<translation id="3265534588625245297">Gestiona els llocs web que segueixes</translation>
 <translation id="3269093882174072735">Carrega la imatge</translation>
 <translation id="3269956123044984603">Per accedir a les pestanyes dels altres dispositius que tinguis, activa Sincronitza dades automàticament a la configuració del compte a Android.</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4384468725000734951">S'utilitza Sogou per a la cerca</translation>
+<translation id="4402611456429872546"><ph name="LANG" />: s'està baixant…</translation>
 <translation id="4404568932422911380">Cap adreça d'interès</translation>
 <translation id="4405224443901389797">Mou a…</translation>
 <translation id="4411535500181276704">Mode bàsic</translation>
@@ -583,6 +587,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="488187801263602086">Canvia el nom del fitxer</translation>
 <translation id="4882831918239250449">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca, els anuncis i molt més</translation>
 <translation id="4885273946141277891">No s'admet aquest nombre d'instàncies de Chrome.</translation>
+<translation id="4905269543817054577">L'historial no es desa en mode d'incògnit</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4913161338056004800">Restableix les estadístiques</translation>
@@ -951,6 +956,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7191430249889272776">Pestanya oberta en segon pla</translation>
 <translation id="7233236755231902816">Per veure el web en el teu idioma, actualitza Chrome a la versió més recent.</translation>
 <translation id="7248069434667874558">Comprova que <ph name="TARGET_DEVICE_NAME" /> tingui la sincronització activada a Chrome</translation>
+<translation id="7252076891734325316">Acosta el telèfon a l'ordinador</translation>
 <translation id="7274013316676448362">Lloc bloquejat</translation>
 <translation id="7286572596625053347">Vols canviar <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">No es pot canviar el nom</translation>
@@ -1017,6 +1023,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7630202231528827509">URL del proveïdor</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
 <translation id="7641339528570811325">Esborra les dades de navegació…</translation>
+<translation id="764170292089748542">Chrome no desa l'historial de navegació quan tries navegar de manera privada. Pots seguir utilitzant les adreces d'interès per accedir als teus llocs web preferits.</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
@@ -1042,6 +1049,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7810647596859435254">Obre amb…</translation>
 <translation id="7815484226266492798">Captura de pantalla llarga</translation>
 <translation id="7821588508402923572">Les dades que estalviïs es mostraran aquí</translation>
+<translation id="78270725016672455">L'ordinador vol registrar aquest dispositiu per iniciar la sessió en un lloc web</translation>
 <translation id="7844171778363018843">No s'han seleccionat dades per sincronitzar</translation>
 <translation id="7846296061357476882">Serveis de Google</translation>
 <translation id="784934925303690534">Interval de temps</translation>
@@ -1138,6 +1146,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8427875596167638501">La pestanya de previsualització està oberta fins a la meitat</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
+<translation id="8439974325294139057"><ph name="LANG" />: l'idioma està a punt. Reinicia <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">No hi ha cap història disponible</translation>
 <translation id="8443209985646068659">Chrome no actualitzable</translation>
 <translation id="8445448999790540984">No es poden exportar les contrasenyes</translation>
@@ -1210,6 +1219,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8937267401510745927">Per ajudar-te a dur a terme tasques, Google rebrà els URL i el contingut dels llocs web en què facis servir l'Assistent, així com la informació que enviïs amb l'Assistent. Pot ser que aquesta informació s'emmagatzemi al teu Compte de Google. Pots desactivar l'Assistent a la configuració de Chrome.</translation>
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
+<translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
 <translation id="8951232171465285730">Chrome t'ha estalviat <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">pendent</translation>
 <translation id="8970887620466824814">S'ha produït un error.</translation>

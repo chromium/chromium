@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בגובה המלא של המסך.</translation>
 <translation id="2905036901251765993">‏כדי לשתף עם אנשים בקרבת מקום, יש לתת להם לסרוק את קוד ה-QR הזה</translation>
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
+<translation id="2912296070571964914">ניהול הנושאים שמעניינים אותך</translation>
 <translation id="2923908459366352541">השם לא חוקי</translation>
 <translation id="2932150158123903946">‏נפח אחסון של <ph name="APP_NAME" />‏ Google</translation>
 <translation id="2932222164150889403">לא יהיה שינוי במקלדת</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">הוספת הדף לסימניות</translation>
 <translation id="3259831549858767975">הקטנת כל מה שמופיע בדף</translation>
 <translation id="3264124641674805320">איך להוריד תוכן שסומן לקריאה מאוחר יותר</translation>
+<translation id="3264259168916048410">התקבלה מהמחשב בקשה להשתמש במכשיר הזה לצורך כניסה לאתר</translation>
+<translation id="3265534588625245297">ניהול האתרים שבמעקב</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="3269956123044984603">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את האפשרות 'סנכרון אוטומטי של נתונים' בהגדרות של חשבון Android.</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4384468725000734951">‏שימוש ב-Sogou לחיפוש</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - ההורדה מתבצעת…</translation>
 <translation id="4404568932422911380">ללא סימניות</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
 <translation id="4411535500181276704">מצב טעינה מהירה</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">שינוי שם של קובץ</translation>
 <translation id="4882831918239250449">הגדרת השימוש בהיסטוריית הגלישה לצורך התאמה אישית של החיפוש, המודעות ועוד</translation>
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
+<translation id="4905269543817054577">ההיסטוריה לא נשמרת במצב אנונימי</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
@@ -951,6 +956,7 @@
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7233236755231902816">‏כדי לראות באינטרנט תוכן בשפה שלך, יש להוריד את הגרסה האחרונה של Chrome</translation>
 <translation id="7248069434667874558">‏יש לוודא שהסנכרון ב-Chrome הופעל ב-<ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">יש להניח את הטלפון בקרבת המחשב</translation>
 <translation id="7274013316676448362">אתר חסום</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> לא מתאימה לך?</translation>
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
@@ -1017,6 +1023,7 @@
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7641339528570811325">מחיקת נתוני הגלישה...</translation>
+<translation id="764170292089748542">‏היסטוריית הגלישה לא נשמרת ב-Chrome במהלך גלישה פרטית. ניתן להמשיך להשתמש בסימניות כדי לגשת לאתרים המועדפים עליך.</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
@@ -1042,6 +1049,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
 <translation id="7821588508402923572">ערכי החיסכון בנתונים יופיעו כאן</translation>
+<translation id="78270725016672455">התקבלה מהמחשב בקשה לרשום את המכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
 <translation id="784934925303690534">טווח זמן</translation>
@@ -1138,6 +1146,7 @@
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - השפה מוכנה, צריך להפעיל מחדש את <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">אין סיפורים זמינים</translation>
 <translation id="8443209985646068659">‏אי אפשר לעדכן את Chrome</translation>
 <translation id="8445448999790540984">אי אפשר לייצא סיסמאות</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8937267401510745927">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של אתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant. ייתכן שהמידע הזה יישמר בחשבון Google שלך. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="8937772741022875483">‏האם להסיר את הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'?</translation>
 <translation id="8942627711005830162">פתיחה בחלון האחר</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - לא ניתן היה להוריד את השפה הזו. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="8951232171465285730">‏Chrome חסך לך ‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">בהמתנה</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>

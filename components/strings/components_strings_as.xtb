@@ -174,6 +174,7 @@
 <translation id="1532118530259321453">এই পৃষ্ঠাটোৱে কৈছে</translation>
 <translation id="153384715582417236">এতিয়াৰ বাবে ইমানেই</translation>
 <translation id="1536390784834419204">পৃষ্ঠাখন অনুবাদ কৰক</translation>
+<translation id="1539840569003678498">অভিযোগ পঠিওৱা হ’ল:</translation>
 <translation id="154408704832528245">ডেলিভাৰী ঠিকনা বাছনি কৰক</translation>
 <translation id="1549470594296187301">এই সুবিধাটো ব্যৱহাৰ কৰিবলৈ হ'লে JavaScript সক্ষম কৰা থাকিবই লাগিব।</translation>
 <translation id="155039086686388498">অভিযান্ত্রিক-D</translation>
@@ -216,6 +217,7 @@
 <translation id="1682696192498422849">চুটি কাষটো প্ৰথমে</translation>
 <translation id="168693727862418163">এই নীতিৰ মানটোৱে ইয়াৰ স্কীমাৰ বিৰুদ্ধে সত্যাপন কৰিব নোৱাৰিলে আৰু ইয়াক উপেক্ষা কৰা হ’ব।</translation>
 <translation id="168841957122794586">ছার্ভাৰ প্ৰমাণপত্ৰখনত এটা দুৰ্বল ক্ৰিপ্টগ্ৰাফিক কী আছে।</translation>
+<translation id="1696290444144917273">ভাৰ্ছুৱেল কাৰ্ডৰ সবিশেষ চাওক</translation>
 <translation id="1697532407822776718">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706954506755087368">{1,plural, =1{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ কাইলৈৰপৰা মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}one{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পিছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}other{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পিছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">মেইলবক্স ৩</translation>
 <translation id="1718029547804390981">নথিটো ইমানেই ডাঙৰ যে সেইটো এন’টেট কৰিব নোৱাৰি</translation>
 <translation id="1721424275792716183">* ক্ষেত্ৰটো আৱশ্যকীয়</translation>
+<translation id="1727613060316725209">প্ৰমাণপত্ৰখন মান্য</translation>
 <translation id="1727741090716970331">মান্য কাৰ্ডৰ নম্বৰ যোগ কৰক</translation>
 <translation id="1728677426644403582">আপুনি কোনো ৱেব পৃষ্ঠাৰ উৎস চাই আছে</translation>
 <translation id="173080396488393970">এই ধৰণৰ কার্ড সমর্থন নকৰে</translation>
@@ -699,6 +702,7 @@
 <translation id="3586931643579894722">সবিশেষ লুকুৱাওক</translation>
 <translation id="3587738293690942763">মাজভাগ</translation>
 <translation id="3590643883886679995">আপুনি ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ ওলোৱাৰ পাছত এই ডিভাইচটোত ছাইন-ইনৰ ডেটা ষ্ট’ৰ কৰা হ’ব।</translation>
+<translation id="359126217934908072">মাহ/বছৰ:</translation>
 <translation id="3592413004129370115">ইটালিয়ান (লেফাফা)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">আপোনাৰ প্ৰশাসকৰ দ্বাৰা এপ্লিকেশ্বনটো অৱৰোধ কৰা হৈছে</translation>
@@ -754,6 +758,7 @@
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
 <translation id="3783418713923659662">MasterCard গ্ৰহণ কৰে</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইচসমূহ</translation>
+<translation id="3787675388804467730">ভাৰ্ছুৱেল কাৰ্ডৰ নম্বৰ</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />ত ম্যাদ উকলিব</translation>
 <translation id="3789155188480882154">আকাৰ ১৬</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
@@ -1416,6 +1421,7 @@
 <translation id="6289939620939689042">পৃষ্ঠাৰ ৰং</translation>
 <translation id="6290238015253830360">আপুনি পৰামৰ্শ দিয়া প্ৰবন্ধবোৰ ইয়াত দেখা যাব</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">চিভিচি:</translation>
 <translation id="6302269476990306341">Chromeত Google Assistant বন্ধ হ'ব</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
 <translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
@@ -1548,6 +1554,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chromeএ এই পৃষ্ঠাখন সৰলীকৃত কৰিছে যাতে এইখন সহজে পঢ়িব পাৰি। এটা অসুৰক্ষিত সংযোগৰ জৰিয়তে Chromeএ মূল পৃষ্ঠাখন পুনৰুদ্ধাৰ কৰিছে।</translation>
 <translation id="6891596781022320156">নীতিটোৰ স্তৰ সমর্থন নকৰে।</translation>
+<translation id="6895143722905299846">ভাৰ্ছুৱেল নম্বৰ:</translation>
 <translation id="6895330447102777224">আপোনাৰ কার্ড নিশ্চিত কৰা হৈছে</translation>
 <translation id="6897140037006041989">ব্যৱহাৰকাৰীৰ এজেণ্ট</translation>
 <translation id="6898699227549475383">প্ৰতিষ্ঠান (O)</translation>
@@ -1586,6 +1593,7 @@
 <translation id="7014741021609395734">জুমৰ স্তৰ</translation>
 <translation id="7016992613359344582">এই মাচুলটো এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেইটো সুনিৰ্দিষ্ট নহ’ব পাৰে।</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
+<translation id="7030436163253143341">প্ৰমাণপত্ৰখন মান্য নহয়</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>
 <translation id="7050187094878475250">আপুনি <ph name="DOMAIN" />লৈ যাবলৈ চেষ্টা কৰিছিল, কিন্তু ছাৰ্ভাৰটোৱে এখন প্ৰমাণপত্ৰ উপস্থাপন কৰিছে যাৰ ম্যাদ উকলাৰ সময় অৱধি যথেষ্ট দীঘল হোৱাৰ বাবে সেইখন বিশ্বাস কৰিব নোৱাৰি।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূৰ্তত এই কার্ডখন ছেভ কৰিব নোৱাৰি}one{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}other{এই মুহূৰ্তত এই কার্ডসমূহ ছেভ কৰিব নোৱাৰি}}</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">탭을 공유할 기기 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="2905036901251765993">근처에 있는 사람과 공유하려면 상대방이 QR 코드를 스캔하도록 하세요.</translation>
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
+<translation id="2912296070571964914">관심 주제 관리</translation>
 <translation id="2923908459366352541">잘못된 이름</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
 <translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">현재 페이지를 북마크에 추가</translation>
 <translation id="3259831549858767975">페이지의 모든 항목 축소</translation>
 <translation id="3264124641674805320">나중에 보기 위해 콘텐츠를 다운로드하는 방법</translation>
+<translation id="3264259168916048410">컴퓨터가 사이트에 로그인하기 위해 기기를 사용하려고 합니다.</translation>
+<translation id="3265534588625245297">팔로우하는 사이트 관리</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3269956123044984603">다른 기기에서 탭을 가져오려면 Android 계정 설정에서 '데이터 자동 동기화'를 사용 설정하세요.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
+<translation id="4402611456429872546"><ph name="LANG" />: 다운로드 중입니다…</translation>
 <translation id="4404568932422911380">북마크 없음</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
 <translation id="4411535500181276704">라이트 모드</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">파일 이름 변경</translation>
 <translation id="4882831918239250449">검색, 광고 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
+<translation id="4905269543817054577">시크릿 모드에서는 기록이 저장되지 않음</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4913161338056004800">통계 재설정</translation>
@@ -951,6 +956,7 @@
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
+<translation id="7252076891734325316">휴대전화를 컴퓨터 가까이 두세요</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" />를 변경하시겠습니까?</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
@@ -1017,6 +1023,7 @@
 <translation id="7630202231528827509">제공업체 URL</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
+<translation id="764170292089748542">비공개 탐색을 선택하면 Chrome에서 방문 기록을 저장하지 않습니다. 이때도 북마크를 사용해 자주 찾는 사이트에 액세스할 수 있습니다.</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665369617277396874">계정 추가</translation>
@@ -1042,6 +1049,7 @@
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
 <translation id="7821588508402923572">절약한 데이터 양이 여기에 표시됩니다</translation>
+<translation id="78270725016672455">컴퓨터가 사이트에 로그인하기 위해 기기를 등록하려고 합니다.</translation>
 <translation id="7844171778363018843">동기화할 데이터 선택 안됨</translation>
 <translation id="7846296061357476882">Google 서비스</translation>
 <translation id="784934925303690534">기간</translation>
@@ -1138,6 +1146,7 @@
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
+<translation id="8439974325294139057"><ph name="LANG" />: 언어가 준비되었습니다. <ph name="APP_NAME" /> 앱을 다시 시작하세요.</translation>
 <translation id="8442258441309440798">사용할 수 있는 스토리 없음</translation>
 <translation id="8443209985646068659">Chrome을 업데이트할 수 없습니다.</translation>
 <translation id="8445448999790540984">비밀번호를 내보낼 수 없음</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8937267401510745927">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠도 Google에 전송됩니다. 이 정보는 Google 계정에 저장될 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지할 수 있습니다.</translation>
 <translation id="8937772741022875483">디지털 웰빙에서 Chrome 활동을 삭제할까요?</translation>
 <translation id="8942627711005830162">다른 창에서 열기</translation>
+<translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="8951232171465285730">Chrome을 통해 <ph name="MEGABYTES" />MB를 절약했습니다.</translation>
 <translation id="8965591936373831584">보류 중</translation>
 <translation id="8970887620466824814">문제 발생</translation>

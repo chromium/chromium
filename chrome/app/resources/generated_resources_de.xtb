@@ -509,6 +509,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1545775234664667895">Design "<ph name="THEME_NAME" />" installiert</translation>
 <translation id="1546280085599573572">Durch diese Erweiterung wurde die Seite geändert, die beim Klicken auf die Schaltfläche "Startseite" erscheint.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> möchte eine <ph name="EXTENSION_TYPE" /> installieren, die folgende Berechtigungen anfordert:</translation>
+<translation id="1547808936554660006">Mir ist bewusst, dass die installierten eSIM-Profile durch ein Powerwash nicht entfernt werden</translation>
 <translation id="1549275686094429035">ARC aktiviert</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> möchte auf <ph name="VOLUME_NAME" /> zugreifen. Ihre Dateien können geändert oder gelöscht werden.</translation>
 <translation id="1552301827267621511">Die Erweiterung "<ph name="EXTENSION_NAME" />" hat <ph name="SEARCH_PROVIDER_DOMAIN" /> als neuen Suchanbieter festgelegt</translation>
@@ -545,6 +546,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Heimnetzwerk erforderlich</translation>
 <translation id="1588870296199743671">Link öffnen mit...</translation>
+<translation id="1588919647604819635">Karte rechtsklicken</translation>
 <translation id="1589055389569595240">Rechtschreibung und Grammatik einblenden</translation>
 <translation id="1591679663873027990">Parallels Desktop erlauben, auf USB-Geräte zuzugreifen. Parallels Desktop merkt sich keine USB-Geräte, nachdem sie entfernt wurden.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> hat die ADB-Fehlerbehebung deaktiviert. Dadurch wird <ph name="DEVICE_TYPE" /> zurückgesetzt. Sichern Sie vor dem Neustart Ihre Dateien.</translation>
@@ -980,6 +982,7 @@ Falls nicht, können Sie sich jetzt abmelden, damit die Änderungen an diesem Ko
 
 Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Einstellungen dieses Kontos verwalten.  Eine entsprechende Anleitung haben wir Ihnen per E-Mail gesendet.</translation>
 <translation id="2040460856718599782">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.</translation>
+<translation id="2042279886444479655">Aktive Profile</translation>
 <translation id="2044014337866019681">Bitte bestätigen Sie <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
 <translation id="2044023416777079300">Modem nicht registriert</translation>
 <translation id="204497730941176055">Name der Microsoft-Zertifikatsvorlage</translation>
@@ -1318,6 +1321,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2395616325548404795">Ihr <ph name="DEVICE_TYPE" /> wurde erfolgreich für die Unternehmensverwaltung angemeldet, aber es wurden keine Asset- und Standortinformationen gesendet. Bitte geben Sie diese Informationen für das Gerät manuell über Ihre Admin-Konsole ein.</translation>
 <translation id="2396387085693598316">Ihr Administrator hat "<ph name="EXTENSION_NAME" />" blockiert</translation>
 <translation id="2396783860772170191">Geben Sie die 4-stellige PIN ein (0000–9999)</translation>
+<translation id="2398546389094871088">Ein Powerwash des Geräts löscht nicht Ihre eSIM-Profile. Öffnen Sie die <ph name="LINK_BEGIN" />Einstellungen für mobile Nutzung<ph name="LINK_END" />, um diese Profile manuell zu entfernen.</translation>
 <translation id="2399699884460174994">Benachrichtigungen aktiviert</translation>
 <translation id="2399939490305346086">Anmeldedaten auf Sicherheitsschlüssel</translation>
 <translation id="2400664245143453337">Sofortiges Update erforderlich</translation>
@@ -1734,6 +1738,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2844809857160214557">Druckaufträge ansehen und verwalten</translation>
 <translation id="2845382757467349449">Lesezeichenleiste immer anzeigen</translation>
 <translation id="284805635805850872">Schädliche Software entfernen?</translation>
+<translation id="2849035674501872372">Nachsehen</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Fehler bei der Bereinigung</translation>
 <translation id="2849936225196189499">Kritisch</translation>
@@ -2045,6 +2050,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
 <translation id="3190558889382726167">Passwort gespeichert</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
+<translation id="3197453258332670132">Wenn Sie rechts klicken oder lange drücken, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3201422919974259695">Verfügbare USB-Geräte werden hier angezeigt.</translation>
 <translation id="3202131003361292969">Pfad</translation>
@@ -2066,6 +2072,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3223531857777746191">Taste zum Zurücksetzen</translation>
 <translation id="3225084153129302039">Lila Standardavatar</translation>
 <translation id="3225319735946384299">Codesignatur</translation>
+<translation id="3226487301970807183">Linke Seitenleiste ein-/ausblenden</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Linux-Apps und -Dateien sichern</translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
@@ -2335,6 +2342,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3515983984924808886">Tippen Sie noch einmal auf Ihren Sicherheitsschlüssel, um das Zurücksetzen zu bestätigen. Damit werden alle auf dem Sicherheitsschlüssel gespeicherten Informationen und die zugehörige PIN gelöscht.</translation>
 <translation id="3518985090088779359">Akzeptieren &amp; weiter</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
+<translation id="3519938335881974273">Seite speichern unter…</translation>
 <translation id="3521606918211282604">Laufwerkgröße ändern</translation>
 <translation id="3522088408596898827">Nur noch sehr wenig Speicherplatz vorhanden. Geben Sie Speicherplatz frei und versuchen Sie es dann noch einmal.</translation>
 <translation id="3524965460886318643">Aktivitäten exportieren</translation>
@@ -2358,6 +2366,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3550593477037018652">Verbindung mit Mobilfunknetz trennen</translation>
 <translation id="3550915441744863158">Chrome wird automatisch aktualisiert, sodass Sie immer über die neueste Version verfügen.</translation>
 <translation id="3551320343578183772">Tab schließen</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Wird beim Beenden gelöscht</translation>
 <translation id="3554493885489666172">Dein Gerät wird von <ph name="PROFILE_NAME" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
@@ -2410,6 +2419,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3604713164406837697">Hintergrund ändern</translation>
 <translation id="3605780360466892872">Hemdträger</translation>
 <translation id="3608576286259426129">Vorschau für Nutzerbild</translation>
+<translation id="3609277884604412258">Schnellsuche</translation>
 <translation id="3610369246614755442">Lüfter des Docks muss repariert werden</translation>
 <translation id="361106536627977100">Flash-Daten</translation>
 <translation id="3611655097742243705">Im Play Store finden Sie weitere Apps</translation>
@@ -3353,6 +3363,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4636682061478263818">Drive-Dateien</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Weitere Aktionen, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Kamera wieder verwenden</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# Texte}}</translation>
 <translation id="4638930039313743000">ADB-Fehlerbehebung aktivieren</translation>
 <translation id="4641539339823703554">Die Systemzeit konnte nicht eingestellt werden. Bitte überprüfen Sie die unten angegebene Uhrzeit und korrigieren Sie sie gegebenenfalls.</translation>
@@ -4101,6 +4112,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5499313591153584299">Diese Datei könnte schädlich für Ihren Computer sein.</translation>
 <translation id="5499453227627332024">Für Ihren Linux-Container ist ein Upgrade verfügbar. Sie können es auch später über die App "Einstellungen" ausführen.</translation>
 <translation id="5500709606820808700">Der Sicherheitscheck wurde heute durchgeführt</translation>
+<translation id="5501322521654567960">Linke Seitenleiste</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}other{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Aus Firefox importiert</translation>
 <translation id="5502915260472117187">Ein Kind</translation>
@@ -5309,6 +5321,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6856348640027512653">Dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="6856459657722366306">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="6856623341093082836">Touchscreen einrichten und Genauigkeit anpassen</translation>
+<translation id="6857145580237920905">eSIM-Profile vor dem Powerwash entfernen</translation>
 <translation id="6857699260879628349">Konfigurationsinformationen abrufen</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="6860097299815761905">Proxy-Einstellungen...</translation>

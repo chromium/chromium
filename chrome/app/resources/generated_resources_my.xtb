@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1001033507375626788">ဤကွန်ရက်ကို သင့်အား မျှဝေထားသည်</translation>
 <translation id="1001307489511021749">သင်၏ Google Account ဖြင့် လက်မှတ်ထိုးဝင်ထားသော Chrome OS စက်အားလုံးတွင် သင့်အက်ပ်၊ ဆက်တင်နှင့် အခြားစိတ်ကြိုက်ပြင်ဆက်မှုများကို စင့်ခ်လုပ်ပါမည်။</translation>
 <translation id="1003088604756913841"><ph name="APP" /> ဝင်းဒိုးအသစ်တွင် လင့်ခ်ကို ဖွင့်ခြင်း</translation>
 <translation id="100323615638474026">USB ကိရိယာ (<ph name="VENDOR_ID" />- <ph name="PRODUCT_ID" />)</translation>
@@ -959,6 +960,7 @@
 <translation id="1992924914582925289">စက်မှ ဖယ်ရှားရန်</translation>
 <translation id="1994173015038366702">ဆိုက် URL</translation>
 <translation id="1995916364271252349">ဝဘ်ဆိုက်များက မည်သည့်အချက်အလက်များကို အသုံးပြုပြီး ပြသနိုင်သည်ကို ထိန်းချုပ်ပါ (တည်နေရာ၊ ကင်မရာ၊ ပေါ့ပ်အပ်နှင့် အခြားအရာများ)</translation>
+<translation id="1997437640397887843">စက်ကင်မရာကို ဖွင့်လိုက်သည်။ သင့် eSIM QR ကုဒ်ကို ကင်မရာရှေ့တွင် ထားပါ။</translation>
 <translation id="1997616988432401742">သင်ရဲ့ လက်မှတ်များ</translation>
 <translation id="1999115740519098545">အစပြုချိန်တွင်</translation>
 <translation id="2000419248597011803">လိပ်စာဘားနှင့် ရှာဖွေမှုအကွက်ထဲရှိ အချို့သော ကွတ်ကီးများနှင့် ရှာဖွေမှုများကို သင်၏မူရင်းရှာဖွေမှုအင်ဂျင်သို့ ပို့သည်</translation>
@@ -1014,6 +1016,7 @@
 <translation id="2055585478631012616">ဖွင့်ထားသော တဘ်များအပါအဝင် ဤဝဘ်ဆိုက်များမှ သင် ထွက်သွားပါမည်</translation>
 <translation id="205560151218727633">Google assistant တံဆိပ်</translation>
 <translation id="2058456167109518507">စက်ပစ္စည်း တွေ့ရှိထားသည်</translation>
+<translation id="2058581283817163201">ဤဖုန်းဖြင့် စိစစ်ပါ</translation>
 <translation id="2059913712424898428">စံတော်ချိန်</translation>
 <translation id="2060375639911876205">eSIM ပရိုဖိုင် ဖယ်ရှားရန်</translation>
 <translation id="2062354623176996748">ရုပ်ဖျက် ဝင်းဒိုးသုံးပြီး သင့်ကြည့်ရှုခြင်းမှတ်တမ်းကို မသိမ်းဘဲ ဝဘ်ကို အသုံးပြုနိုင်သည်</translation>
@@ -2614,6 +2617,7 @@
 <translation id="3785308913036335955">အက်ပ်များ ဖြတ်လမ်းကို ပြပေးရန်</translation>
 <translation id="3785727820640310185">ဤဝဘ်ဆိုက်အတွက် သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="3788301286821743879">Koisk အပလီကေးရှင်း စတင်၍ မရပါ။</translation>
+<translation id="3788331399335602504">ဤဖိုင်များ</translation>
 <translation id="3788401245189148511">ဖြစ်နိုင်ခဲ့သည်မှာ:</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="379082410132524484">သင်၏ကတ်သည် သက်တမ်းကုန်ဆုံးသွားပါပြီ</translation>
@@ -3188,6 +3192,7 @@
 <translation id="4438043733494739848">ထွင်းဖောက်မြင်ရသည်</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> ကို သင်၏ <ph name="ACCOUNT" /> Google Account တွင် သိမ်းပါမည်။</translation>
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> က သင့်ဖုန်းသို့ အကြောင်းကြားချက် ပို့ထားသည်။ သင်ဖြစ်ကြောင်း အတည်ပြုရန် “<ph name="NOTIFICATIONTITLE" />” အကြောင်းကြားချက်ကို တို့ပြီး အဆင့်များအတိုင်း လုပ်ဆောင်ပါ။</translation>
 <translation id="4441124369922430666">စက် ပွင့်လာသည့် အခါမှာ ဒီအက်ပ်ကို သင်သည် အလိုအလျောက် စတင်စေလိုပါသလား?</translation>
 <translation id="4441147046941420429">ရှေ့ဆက်ရန် သင်၏စက်မှ လုံခြုံရေးကီး ဖယ်ရှားပါ၊ ထို့နောက် ၎င်းကို ပြန်ထည့်သွင်းပြီး ထိပါ</translation>
 <translation id="444134486829715816">တိုးချဲ့ရန်...</translation>
@@ -3490,6 +3495,7 @@
 <translation id="4773112038801431077">Linux အဆင့်မြှင့်ခြင်း</translation>
 <translation id="477647109558161443">အမြန်ဖွင့်ဖြတ်လမ်းလင့်ခ်တစ်ခု ပြုလုပ်ရန်</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />အတွက် စကားဝှက်</translation>
+<translation id="4777458362738635055">ဤစက်၏ အခြားအသုံးပြုသူများက ဤကွန်ရက်ကို သုံးနိုင်သည်</translation>
 <translation id="4777825441726637019">Play စတိုး</translation>
 <translation id="4777943778632837590">ကွန်ရက်အမည်ဆာဗာများ စီစဉ်သတ်မှတ်ရန်</translation>
 <translation id="4778644898150334464">အခြားစကားဝှက်ကို သုံးပါ</translation>
@@ -4326,6 +4332,7 @@
 <translation id="5712153969432126546">ဝဘ်ဆိုက်များသည် စာရွက်စာတမ်း၊ စာချုပ်နှင့် ဖောင်များကဲ့သို့ PDF များကို တစ်ခါတစ်ရံ ထုတ်ဝေသည်</translation>
 <translation id="5715711091495208045">ပလတ်အင် အကျိုးဆောင်- <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">မူရင်းရှာဖွေမှုအင်ဂျင်များ</translation>
+<translation id="5719637365829998022">QR ကုဒ်ကို စကင်ဖတ်ပြီးပါပြီ။</translation>
 <translation id="5719854774000914513">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="572155275267014074">Android ဆက်တင်များ</translation>
 <translation id="5722086096420375088">အစိမ်းနှင့် အဖြူ</translation>
@@ -4535,6 +4542,7 @@
 <translation id="5955721306465922729">ဝဘ်ဆိုက်တစ်ခုက ဤအပလီကေးရှင်းကို ဖွင့်လိုသည်။</translation>
 <translation id="5955809630138889698">ဤစက်ပစ္စည်းသည် အွန်လိုင်းသရုပ်ပြမုဒ်အတွက်သာ သတ်မှတ်ချက်ပြည့်မီနိုင်သည်။ နောက်ထပ်အသေးစိတ်များအတွက် ကူညီရေးရာ ကိုယ်စားလှယ်ထံ ဆက်သွယ်ပါ။</translation>
 <translation id="5956585768868398362">ဤသည်မှာ သင်မျှော်လင့်ထားသည့် ရှာဖွေမှုစာမျက်နှာ ဟုတ်ပါသလား?</translation>
+<translation id="5957918771633727933">ရနိုင်သော eSIM ပရိုဖိုင်များ မရှိပါ။ <ph name="BEGIN_LINK" />ပရိုဖိုင်<ph name="END_LINK" /> အသစ်ကို ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="5957987129450536192">သင်၏ ပရိုဖိုင်ပုံအနီးရှိ 'စကားပြောရွေးရန်' သင်္ကေတကို တို့ပြီး သင်နားထောင်လိုသည့်အရာကို ရွေးပါ။</translation>
 <translation id="5959471481388474538">ကွန်ရက်ကို ရှာမရ</translation>
 <translation id="595959584676692139">ဤနောက်ဆက်တွဲ အသုံးပြုရန် စာမျက်နှာကို ပြန်လည်စတင်ပါ</translation>
@@ -6039,6 +6047,7 @@
 <translation id="7638605456503525968">အစဉ်လိုက်ပို့တ်များ</translation>
 <translation id="7639914187072011620">ဆာဗာမှ SAML တစ်ဆင့်ပြန်ညွှန်ပြသော URL ကို မရယူနိုင်ပါ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> သည်သင်သိမ်းဆည်းထားသည့် စကားဝှက်များဖြင့် အရည်အချင်းပြည့်မီသည့်ဆိုက်များသို့ အလိုအလျောက် လက်မှတ်ထိုးဝင်ပေးပါသည်။</translation>
+<translation id="7641513591566880111">ပရိုဖိုင်အမည် အသစ်</translation>
 <translation id="7642778300616172920">အလွန်အရေးကြီးသော အကြောင်းအရာကို ဝှက်ထားရန်</translation>
 <translation id="7643842463591647490">{0,plural, =1{ဖွင့်ထားသောဝင်းဒိုး # ခု}other{ဖွင့်ထားသောဝင်းဒိုး # ခု}}</translation>
 <translation id="7643932971554933646">ဖိုင်များကို ဝဘ်ဆိုက်အား ကြည့်ခွင့်ပေးလိုပါသလား။</translation>
@@ -6199,6 +6208,7 @@
 <translation id="7800518121066352902">ရေတွက်စက်ကို လက်ဝဲ&amp;ရစ် လှည့်ပေးရန်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7804072833593604762">တဘ်ပိတ်လိုက်သည်</translation>
+<translation id="7805759469263222011">စက်ကင်မရာသုံး၍ QR ကုဒ်ကို စကင်ဖတ်ပါ (သို့) သင်၏မိုဘိုင်းဖုန်းကုမ္ပဏီက ပို့ထားသည့် စသုံးရန်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7807067443225230855">Search နှင့် Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" />အား သင့် ကင်မရာကို ရယူသုံးမှု အမြဲတမ်း ခွင့်ပြုရန်</translation>
@@ -6677,6 +6687,7 @@
 <translation id="8300849813060516376">OTASP မအောင်မြင်ပါ</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{လိပ်စာ}other{လိပ်စာ # ခု}}</translation>
 <translation id="8304383784961451596">ဤကိရိယာအသုံးပြုရန် သင့်ကို ခွင့်ပြုမထားပါ။ လက်မှတ်ထိုးဝင်ရန် ခွင့်ပြုချက်အတွက် စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ (သို့) Family Link က ကြီးကြပ်ထားသော Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ။</translation>
+<translation id="8308016398665340540">သင်သည် ယခုကွန်ရက်ကို ဤစက်၏ အခြားအသုံးပြုသူများအား မျှဝေထားသည်</translation>
 <translation id="8308179586020895837"><ph name="HOST" />က သင်၏ ကင်မရာကို ရယူသုံးလိုသမားကို မေးရန်</translation>
 <translation id="830868413617744215">စမ်းသပ်ဆဲ</translation>
 <translation id="8309458809024885768">အသိမှတ်ပြုလက်မှတ် ရှိပြီးဖြစ်သည်</translation>

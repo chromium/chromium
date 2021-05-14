@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Invite (ծրար)</translation>
 <translation id="2856444702002559011">Հարձակվողները կարող են գողանալ ձեր տեղեկությունները (օրինակ՝ գաղտնաբառերը, նամակները կամ վարկային քարտերը) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքից։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
+<translation id="287596039013813457">Ընկերական</translation>
 <translation id="2876489322757410363">Դուք դուրս կգաք ինկոգնիտո ռեժիմից՝ արտաքին հավելվածում վճարում կատարելու համար։ Շարունակե՞լ։</translation>
 <translation id="2878197950673342043">Կրկնակի ուղղաձիգ ծալում</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@
 <translation id="3229041911291329567">Ձեր սարքի և դիտարկիչի տարբերակի մասին տեղեկությունները</translation>
 <translation id="323107829343500871">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի CVC կոդը</translation>
 <translation id="3234666976984236645">Միշտ հատկորոշել կարևոր բովանդակությունը այս կայքում</translation>
+<translation id="3249845759089040423">Նորաձև</translation>
 <translation id="3252266817569339921">Ֆրանսիական</translation>
 <translation id="3266793032086590337">Արժեքը (հակասական)</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
@@ -982,6 +984,7 @@
 <translation id="4594403342090139922">&amp;Հետարկել ջնջումը</translation>
 <translation id="4597348597567598915">Չափ 8</translation>
 <translation id="4600854749408232102">C6/C5 (ծրար)</translation>
+<translation id="4606870351894164739">Ազդեցիկ</translation>
 <translation id="4628948037717959914">Լուսանկար</translation>
 <translation id="4631649115723685955">Քեշբեքով</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
@@ -1045,6 +1048,8 @@
 <translation id="4813512666221746211">Ցանցի սխալ</translation>
 <translation id="4816492930507672669">Հարմարեցնել էջին</translation>
 <translation id="4819347708020428563">Խմբագրե՞լ ծանոթագրությունները կանխադրված դիտակերպում</translation>
+<translation id="4825507807291741242">Հզոր</translation>
+<translation id="4838327282952368871">Երազային</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="485316830061041779">Գերմանական</translation>
@@ -1203,6 +1208,7 @@
 <translation id="5398772614898833570">Գովազդն արգելափակված է</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="540969355065856584">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականն այս անգամ վավեր չէ: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
+<translation id="541143247543991491">Ամպային (համակարգային)</translation>
 <translation id="541416427766103491">Շեղջիչ 4</translation>
 <translation id="5421136146218899937">Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
@@ -1710,6 +1716,7 @@
       &lt;li&gt;Այցելեք &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-ի օգնության կենտրոն&lt;/a&gt; և իմացեք՝ ինչպես ծրագիրն ընդմիշտ հեռացնել համակարգչից։
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Հաճելի</translation>
 <translation id="7416351320495623771">Գաղտնաբառերի կառավարում…</translation>
 <translation id="7419106976560586862">Պրոֆիլի ուղի</translation>
 <translation id="7437289804838430631">Ավելացնել կոնտակտային տվյալներ</translation>
@@ -2133,6 +2140,7 @@
 <translation id="9020542370529661692">Այս էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(անվավեր)</translation>
+<translation id="9030265603405983977">Միագույն</translation>
 <translation id="9035022520814077154">Անվտանգության սխալ</translation>
 <translation id="9038649477754266430">Օգտագործել կանխատեսման ծառայությունը՝ էջերն ավելի արագ բեռնելու համար</translation>
 <translation id="9039213469156557790">Բացի այդ, այս էջը պարունակում է այլ ռեսուրսներ, որոնք ապահով չեն: Այս ռեսուրսները տարանցման ժամանակ կարող են դիտվել ուրիշների կողմից և փոփոխվել հարձակվողի կողմից, ինչը կփոխի էջի վարքագիծը:</translation>
@@ -2156,6 +2164,7 @@
 <translation id="91108059142052966">Ադմինիստրատորն անջատել է էկրանի ցուցադրումը <ph name="APPLICATION_TITLE" /> հավելվածին, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="9114524666733003316">Քարտի հաստատում...</translation>
 <translation id="9114581008513152754">Ձեր դիտարկիչը չի կառավարվում որևէ ընկերության կամ կազմակերպության կողմից։ Սարքում արվող գործողությունները կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Թարմ</translation>
 <translation id="9119042192571987207">Վերբեռնված է</translation>
 <translation id="9128016270925453879">Կանոնները բեռնվել են</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>

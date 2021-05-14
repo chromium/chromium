@@ -508,6 +508,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">Aanvallers probeer dalk om jou inligting (byvoorbeeld: wagwoorde, boodskappe of kredietkaartinligting) op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te steel. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Hierdie werf wys indringerige of misleidende advertensies.</translation>
+<translation id="287596039013813457">Vriendelik</translation>
 <translation id="2876489322757410363">Verlaat tans Incognitomodus om deur 'n eksterne program te betaal. Gaan voort?</translation>
 <translation id="2878197950673342043">Plakkaatvou</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3229041911291329567">Weergawe-inligting oor jou toestel en blaaier</translation>
 <translation id="323107829343500871">Voer die CVC vir <ph name="CREDIT_CARD" /> in</translation>
 <translation id="3234666976984236645">Bespeur altyd belangrike inhoud op hierdie werf</translation>
+<translation id="3249845759089040423">Fantasties</translation>
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3266793032086590337">Waarde (konflik)</translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
@@ -982,6 +984,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4594403342090139922">Ontdoen uitvee</translation>
 <translation id="4597348597567598915">Grootte 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">Treffend</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Kontantterugbetaling is gekoppel</translation>
 <translation id="4636930964841734540">Inligting</translation>
@@ -1045,6 +1048,8 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4813512666221746211">Netwerkfout</translation>
 <translation id="4816492930507672669">Pas op bladsy</translation>
 <translation id="4819347708020428563">Redigeer aantekeninge in verstekaansig?</translation>
+<translation id="4825507807291741242">Kragtig</translation>
+<translation id="4838327282952368871">Dromerig</translation>
 <translation id="484462545196658690">Outo</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="485316830061041779">Duits</translation>
@@ -1203,6 +1208,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5398772614898833570">Advertensies is geblokkeer</translation>
 <translation id="5400836586163650660">Grys</translation>
 <translation id="540969355065856584">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is nie op die oomblik geldig nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
+<translation id="541143247543991491">Wolk (hele stelsel)</translation>
 <translation id="541416427766103491">Stapelaar 4</translation>
 <translation id="5421136146218899937">Vee blaaidata uit …</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil vir jou kennisgewings stuur</translation>
@@ -1710,6 +1716,7 @@ Bykomende besonderhede:
       &lt;li&gt;Besoek die &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-hulpsentrum&lt;/a&gt; 
 om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Lieflik</translation>
 <translation id="7416351320495623771">Bestuur wagwoorde …</translation>
 <translation id="7419106976560586862">Profielpad</translation>
 <translation id="7437289804838430631">Voeg kontakinligting by</translation>
@@ -2133,6 +2140,7 @@ Bykomende besonderhede:
 <translation id="9020542370529661692">Hierdie bladsy is in <ph name="TARGET_LANGUAGE" /> vertaal</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Ongeldig)</translation>
+<translation id="9030265603405983977">Eenkleurig</translation>
 <translation id="9035022520814077154">Sekuriteitsfout</translation>
 <translation id="9038649477754266430">Gebruik 'n voorspellingdiens om bladsye vinniger te laai</translation>
 <translation id="9039213469156557790">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se gedrag te verander.</translation>
@@ -2156,6 +2164,7 @@ Bykomende besonderhede:
 <translation id="91108059142052966">Administrateursbeleid deaktiveer skermdeling met <ph name="APPLICATION_TITLE" /> wanneer vertroulike inhoud sigbaar is</translation>
 <translation id="9114524666733003316">Bevestig tans kaart …</translation>
 <translation id="9114581008513152754">Hierdie blaaier word nie deur 'n maatskappy of ander organisasie bestuur nie. Aktiwiteit op hierdie toestel kan buite Chrome bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Vars</translation>
 <translation id="9119042192571987207">Opgelaai</translation>
 <translation id="9128016270925453879">Beleide is gelaai</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>

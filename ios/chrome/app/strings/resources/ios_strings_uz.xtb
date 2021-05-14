@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
+<translation id="2022352537516230970">iPhone uchun ishlab chiqilgan</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
@@ -314,6 +315,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="418156467088430727">Oflayn versiyasini yangi varaqda ochish</translation>
 <translation id="4181841719683918333">Tillar</translation>
+<translation id="4184011057600693970">iPad uchun ishlab chiqilgan</translation>
 <translation id="424315890655130736">Kodli iborani kiriting</translation>
 <translation id="4263576668337963058">Sahifa amallarini chiqarish</translation>
 <translation id="4267380167363222949">Keyingi varaq</translation>
@@ -492,6 +494,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Yangiliklar va faoliyatni shu yerdan boshqaring</translation>
 <translation id="6066301408025741299">Bekor qilish uchun bu yerga bosing.</translation>
+<translation id="60829778314739003">Qabul qilish va davom etish</translation>
 <translation id="6108923351542677676">Sozlanmoqda...</translation>
 <translation id="6119050551270742952">Bu sahifa inkognito rejimida</translation>
 <translation id="6122191549521593678">Onlayn</translation>
@@ -587,6 +590,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6801927553864092214">Yashirin kezish uchun inkognito rejimida varaq oching</translation>
 <translation id="6807889908376551050">Hammasini ochish...</translation>
 <translation id="681368974849482173">Saqlandi</translation>
+<translation id="6830804042318138535">Batafsil</translation>
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6851516051005285358">Kompyuter versiyasi</translation>
 <translation id="6858855187367714033">Tekshirildi</translation>
@@ -635,6 +639,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
 <translation id="7293171162284876153">Sinxronlashni boshlash uchun “Chrome axborotini sinxronlash” tugmasini bosing.</translation>
 <translation id="7313347584264171202">Brauzer Inkognito varaqlari shu yerda chiqadi</translation>
+<translation id="7319242366286515846">Davom etish orqali siz <ph name="BEGIN_LINK" />xizmat shartlariga<ph name="END_LINK" /> rozilik bildirasiz</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% yuklab olindi</translation>
 <translation id="7340958967809483333">Discover parametrlari</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -781,6 +786,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8840513115188359703">Google hisobingizdan chiqmaysiz.</translation>
 <translation id="8870413625673593573">Yaqinda yopilganlar</translation>
+<translation id="8876882697946675716">Qurilmalaringizni sinxronlab boring</translation>
 <translation id="8881801611828450202">Bu rasmni <ph name="SEARCH_ENGINE" /> orqali qidirish</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
 <translation id="8917490105272468696">Ha, roziman</translation>

@@ -507,6 +507,7 @@
 <translation id="2850739647070081192">न्योता (एन्वेलप)</translation>
 <translation id="2856444702002559011">हो सकता है कि हमलावर <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> से आपकी जानकारी (जैसे- पासवर्ड, मैसेज या क्रेडिट कार्ड वगैरह) चुराने की कोशिश कर रहे हों. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">इस साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं.</translation>
+<translation id="287596039013813457">दोस्ताना</translation>
 <translation id="2876489322757410363">किसी बाहरी ऐप्लिकेशन के ज़रिए पैसे चुकाने के लिए गुप्त मोड छोड़ रहे हैं. क्या आप यह मोड बंद करना चाहते हैं?</translation>
 <translation id="2878197950673342043">पोस्टर फ़ोल्ड</translation>
 <translation id="2878424575911748999">ए1</translation>
@@ -603,6 +604,7 @@
 <translation id="3229041911291329567">आपके डिवाइस और ब्राउज़र के वर्शन के बारे में जानकारी</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> का CVC डालें.</translation>
 <translation id="3234666976984236645">इस साइट पर हमेशा महत्‍वपूर्ण सामग्री का पता लगाएं</translation>
+<translation id="3249845759089040423">ग्रूवी</translation>
 <translation id="3252266817569339921">फ़्रांसीसी</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
@@ -980,6 +982,7 @@
 <translation id="4594403342090139922">मिटाना &amp;पहले जैसा करें</translation>
 <translation id="4597348597567598915">आकार 8</translation>
 <translation id="4600854749408232102">सी6/सी5 (एन्वेलप)</translation>
+<translation id="4606870351894164739">असरदार</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
 <translation id="4636930964841734540">जानकारी</translation>
@@ -1043,6 +1046,8 @@
 <translation id="4813512666221746211">नेटवर्क गड़बड़ी</translation>
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
 <translation id="4819347708020428563">क्या आप डिफ़ॉल्ट व्यू में वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करना चाहते हैं?</translation>
+<translation id="4825507807291741242">दमदार</translation>
+<translation id="4838327282952368871">ख्वाब जैसा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -1201,6 +1206,7 @@
 <translation id="5398772614898833570">विज्ञापन ब्लॉक हैं</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
+<translation id="541143247543991491">क्लाउड (सिस्टम-व्यापी)</translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5421136146218899937">ब्राउज़िंग डेटा साफ़ करें...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
@@ -1708,6 +1714,7 @@
       &lt;li&gt;&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome सहायता केंद्र&lt;/a&gt; पर जाकर अपने कंप्यूटर से सॉफ़्टवेयर को हमेशा के लिए हटाने का तरीका जानें
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">चौड़े पेज वाला फ़ॉर्मैट</translation>
+<translation id="7410471291937727359">प्यारा</translation>
 <translation id="7416351320495623771">पासवर्ड प्रबंधित करें…</translation>
 <translation id="7419106976560586862">प्रोफ़ाइल पाथ</translation>
 <translation id="7437289804838430631">संपर्क जानकारी जोड़ें</translation>
@@ -2132,6 +2139,7 @@
 <translation id="9020542370529661692">इस पेज का <ph name="TARGET_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="9020742383383852663">ए8</translation>
 <translation id="9025348182339809926">(मान्य नहीं है)</translation>
+<translation id="9030265603405983977">मोनोक्रोम</translation>
 <translation id="9035022520814077154">सुरक्षा गड़बड़ी</translation>
 <translation id="9038649477754266430">ज़्यादा तेज़ी से पेज लोड करने के लिए किसी पूर्वानुमान सेवा का उपयोग करें</translation>
 <translation id="9039213469156557790">इसके अतिरिक्त, इस पेज में ऐसे अन्य संसाधन भी शामिल हैं, जो सुरक्षित नहीं हैं. ट्रांज़िट में होने के दौरान ये संसाधन अन्य लोगों द्वारा देखे जा सकते हैं और पेज का व्यवहार बदलने के लिए किसी हमवलावर द्वारा इनमें बदलाव किए जा सकते हैं.</translation>
@@ -2155,6 +2163,7 @@
 <translation id="91108059142052966">एडमिन नीति के तहत, स्क्रीन पर गोपनीय कॉन्टेंट दिखने पर, <ph name="APPLICATION_TITLE" /> के साथ स्क्रीन शेयर करना बंद कर दिया जाता है.</translation>
 <translation id="9114524666733003316">कार्ड की पुष्टि की जा रही है...</translation>
 <translation id="9114581008513152754">यह ब्राउज़र कोई कंपनी या दूसरा संगठन प्रबंधित नहीं करता. इस डिवाइस की गतिविधि Chrome से बाहर प्रबंधित की जा सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">ताज़ा</translation>
 <translation id="9119042192571987207">अपलोड किया गया</translation>
 <translation id="9128016270925453879">नीतियां लोड हो गई हैं</translation>
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>

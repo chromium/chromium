@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">သံပတ်</translation>
 <translation id="3199563858620722075">ပူးပေါင်းအကွက်</translation>
 <translation id="3220661731597678625">လက်ရှိ အဆင့်</translation>
+<translation id="3321030238473337787">ဖွင့်သည့်မြန်နှုန်း</translation>
 <translation id="3329013043687509092">စိုရွှဲမှု</translation>
 <translation id="3450233048674729344">တန်ဖိုးမှာ <ph name="MAXIMUM" /> နည်း သို့မဟုတ် တူညီရမည်။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">မီနူးဘားတန်း</translation>
 <translation id="4293574643247337246">စာမျက်နှာ ခေါင်းစီး</translation>
 <translation id="4360991593054037559">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ရိုက်ထည့်ပါ။ မှန်ကန်သည့် အနီးဆုံး တန်ဖိုး နှစ်ခုမှာ <ph name="VALID_VALUE_LOW" /> နှင့် <ph name="VALID_VALUE_HIGHER" /> ဖြစ်သည်။</translation>
+<translation id="4371899966896349864">ဖွင့်သည့်မြန်နှုန်း မီနူး ဖျောက်ရန်</translation>
 <translation id="4384249794467006333">ဤပုံကို အညွှန်းတပ်မထားပါ။ ပုံ၏ရှင်းလင်းချက်များ ရယူရန် ညာဘက်ထိပ်ရှိ 'နောက်ထပ်ရွေးစရာများ' မီနူးကို ဖွင့်ပါ။</translation>
 <translation id="4384583879834880242">အမေးအဖြေ</translation>
 <translation id="4444765639179266822">အောက်ပါကို ပြောပုံရသည်- <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">သစ်ပင်ပုံစံဇယား အကြောင်းအရာ</translation>
 <translation id="5466621249238537318">ကျေးဇူးပြုပြီး ဖိုင် တစ်ခု သို့ ပိုများပြီး ရွေးပါ။</translation>
 <translation id="5468998798572797635">စကရင်အပြည့်မှ ထွက်</translation>
+<translation id="5516235301412634559">၀.၇၅</translation>
 <translation id="5516424706154626233">ရက်စွဲ ရွေးချယ်မှု</translation>
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="5546461542133609677">အသံဖွင့်မည်</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">နောက်ထပ် ရွေးချယ်စရာများ</translation>
 <translation id="576709008726043716">နိဒါန်း</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
+<translation id="5786442179789148008">ဖွင့်သည့်မြန်နှုန်း မီနူး ပြရန်</translation>
 <translation id="5787939484346677755">ချဲ့ထားသည်၊ အလိုအလျောက်ဖြည့်စရာများ ရွေးနိုင်သည်။</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="5966707198760109579">အပတ်</translation>
+<translation id="5985507339671257014">၀.၅</translation>
 <translation id="5987525920412732405">လည်သည့် ခလုတ်</translation>
 <translation id="6011459053400940133">အသံအတိုးအကျယ်ချိန်သည့် ဆလိုက်ဒါ</translation>
 <translation id="6015796118275082299">နှစ်</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">တိတ်ရန်</translation>
 <translation id="6885760532393684712">ဖိုင်လမ်းညွှန်</translation>
 <translation id="689129560213475294">အမှတ်တံဆိပ်</translation>
+<translation id="6919891270253167948">၁.၅</translation>
 <translation id="6934078000481955284">စာပိုဒ်အဖွင့်အပိတ်</translation>
 <translation id="693476918119313863">ခေါင်းစီး</translation>
 <translation id="6941933287844615239">မီဒီယာကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">မှတ်ချက် အညွှန်း</translation>
 <translation id="811583516810654505">အကြောင်းအရာ ရယူနေသည်...</translation>
 <translation id="8117451130807776954">ဤအပတ်</translation>
+<translation id="8131955114056917397">၀.၂၅</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">စက်အတွင်း ရက်စွဲနှင့် အချိန် ရွေးချယ်ရေးစနစ်</translation>
 <translation id="8261464734335370856">စာလုံးပေါင်း မမှန်ကန်ပါ</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">အဝေးတွင် ဖွင့်မှုကို ထိန်းချုပ်ရန်</translation>
 <translation id="862370744433916922">စာတန်း</translation>
 <translation id="8634971699417195529">လရွေးချယ်ရေးစနစ် ပြရန်</translation>
+<translation id="8637593834423658414">၁.၇၅</translation>
 <translation id="8668988909814782445">စာကြောင်းကို ပတ်ရန်</translation>
 <translation id="8711688047404765493">အထွက်</translation>
 <translation id="8750798805984357768">ကျေးဇူးပြုပြီး အောက်ပါ ရွေးစရာများ ထဲက တစ်ခုကို ရွေးပါ။</translation>

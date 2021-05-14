@@ -4257,6 +4257,14 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6689343802305995925">Non viene compiuta alcuna azione</translation>
 <translation id="6689792153960219308">Segnala lo stato dell'hardware</translation>
 <translation id="6690425645391461516">Disattiva controlli dell'intercettazione DNS; consenti barre di informazioni "http://intranetsite/" alternative</translation>
+<translation id="669066148640728553">Consente di specificare un intervallo di tempo target per la fine del periodo di notifica per il riavvio.
+
+      Agli utenti viene inviata una notifica che informa che è necessario riavviare il browser o il dispositivo in base alle impostazioni dei criteri <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> e <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Se il criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostato su "Required", al termine del periodo di notifica viene forzato il riavvio dei browser e dei dispositivi. Questo criterio <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> può essere usato per rimandare il termine del periodo di notifica affinché rientri in un intervallo di tempo specifico.
+
+      Se questo criterio non viene impostato, l'intervallo di tempo target predefinito per <ph name="PRODUCT_OS_NAME" /> è 02:00-04:00. L'intervallo di tempo target predefinito per <ph name="PRODUCT_NAME" /> è l'intera giornata (vale a dire che il termine del periodo di notifica non viene mai rimandato).
+
+      Nota: anche se per il campo <ph name="ENTRIES_FIELD_NAME" /> del criterio sono accettati più valori, vengono ignorati tutti tranne il primo.
+      Avviso: la configurazione di questo criterio potrebbe ritardare l'applicazione degli aggiornamenti software.</translation>
 <translation id="6698632841807204978">Attiva la stampa monocromatica</translation>
 <translation id="6699880231565102694">Abilita autenticazione a due fattori per gli host di accesso remoto</translation>
 <translation id="6703251016607733593">La configurazione del criterio consente di disattivare l'applicazione dei requisiti di divulgazione di Certificate Transparency per un elenco di hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Gli host aziendali possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato. Per disattivare l'applicazione, l'hash deve rispettare una delle seguenti condizioni:
@@ -4400,6 +4408,19 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
+<translation id="6864283226733000548">Questa impostazione offre diverse opzioni relative alla disponibilità del browser <ph name="LACROS_NAME" />.
+
+      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, l'utente può attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale. È comunque possibile non consentire <ph name="LACROS_NAME" /> con il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" />.
+
+      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, l'utente non potrà usare <ph name="LACROS_NAME" />. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
+
+      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> viene attivato, ma non è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
+
+      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> viene attivato ed è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
+
+      Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti dall'azienda e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
+
+      In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
       Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.

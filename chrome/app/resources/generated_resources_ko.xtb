@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1001033507375626788">나와 공유된 네트워크입니다.</translation>
 <translation id="1001307489511021749">앱, 설정 및 기타 맞춤설정이 내 Google 계정으로 로그인된 모든 Chrome OS 기기에서 동기화됩니다.</translation>
 <translation id="1003088604756913841">새 <ph name="APP" /> 창에서 링크 열기</translation>
 <translation id="100323615638474026">USB 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -960,6 +961,7 @@
 <translation id="1992924914582925289">기기에서 삭제</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등)를 제어합니다.</translation>
+<translation id="1997437640397887843">기기 카메라가 켜졌습니다. 카메라 앞에 eSIM QR 코드를 두세요.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
@@ -1015,6 +1017,7 @@
 <translation id="2055585478631012616">열려 있는 탭을 포함하여 이러한 사이트에서 로그아웃됩니다.</translation>
 <translation id="205560151218727633">Google 어시스턴트 로고</translation>
 <translation id="2058456167109518507">기기가 검색됨</translation>
+<translation id="2058581283817163201">이 휴대전화로 확인</translation>
 <translation id="2059913712424898428">시간대</translation>
 <translation id="2060375639911876205">eSIM 프로필 삭제</translation>
 <translation id="2062354623176996748">시크릿 창에서는 인터넷 사용 기록을 저장하지 않고 웹을 사용할 수 있습니다.</translation>
@@ -2615,6 +2618,7 @@
 <translation id="3785308913036335955">앱 단축키 표시</translation>
 <translation id="3785727820640310185">이 사이트의 저장된 비밀번호</translation>
 <translation id="3788301286821743879">키오스크 애플리케이션을 시작할 수 없습니다.</translation>
+<translation id="3788331399335602504">파일</translation>
 <translation id="3788401245189148511">이전에 가능했던 대상:</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
@@ -3188,6 +3192,7 @@
 <translation id="4438043733494739848">투명</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" />의 비밀번호(<ph name="MASKED_PASSWORD" />)가 Google 계정 <ph name="ACCOUNT" />에 저장됩니다.</translation>
 <translation id="4439427728133035643">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" />에서 휴대전화로 알림을 보냈습니다. 본인 인증을 하려면 "<ph name="NOTIFICATIONTITLE" />" 알림을 탭하고 단계를 따르세요.</translation>
 <translation id="4441124369922430666">컴퓨터를 켤 때 이 앱을 자동으로 시작하시겠습니까?</translation>
 <translation id="4441147046941420429">계속하려면 기기에서 보안 키를 제거한 후 다시 삽입하고 터치하세요.</translation>
 <translation id="444134486829715816">펼치기...</translation>
@@ -3489,6 +3494,7 @@
 <translation id="4773112038801431077">Linux 업그레이드</translation>
 <translation id="477647109558161443">바탕화면 바로가기 만들기</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
+<translation id="4777458362738635055">기기의 다른 사용자가 이 네트워크를 사용할 수 있음</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
 <translation id="4777943778632837590">네트워크 네임서버 구성</translation>
 <translation id="4778644898150334464">다른 비밀번호 사용</translation>
@@ -4324,6 +4330,7 @@
 <translation id="5712153969432126546">사이트에서 때때로 문서, 계약서, 양식과 같은 PDF를 게시할 수 있습니다.</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">기본 검색엔진</translation>
+<translation id="5719637365829998022">QR 코드가 스캔되었습니다.</translation>
 <translation id="5719854774000914513">사이트에서 HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="572155275267014074">Android 설정</translation>
 <translation id="5722086096420375088">초록색 및 흰색</translation>
@@ -4535,6 +4542,7 @@
 <translation id="5955721306465922729">웹사이트에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="5955809630138889698">이 기기는 온라인 데모 모드에서만 사용 가능할 수 있습니다. 자세한 내용은 지원 담당자에게 문의하세요.</translation>
 <translation id="5956585768868398362">설정한 검색 페이지가 맞습니까?</translation>
+<translation id="5957918771633727933">사용할 수 있는 eSIM 프로필이 없습니다. 새 <ph name="BEGIN_LINK" />프로필<ph name="END_LINK" />을 다운로드하세요.</translation>
 <translation id="5957987129450536192">프로필 이미지 근처의 텍스트 읽어주기 아이콘을 탭한 다음 음성으로 들으려는 부분을 선택합니다.</translation>
 <translation id="5959471481388474538">네트워크에 연결할 수 없음</translation>
 <translation id="595959584676692139">페이지를 새로고침하여 이 확장 프로그램 사용</translation>
@@ -6040,6 +6048,7 @@
 <translation id="7638605456503525968">직렬 포트</translation>
 <translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />에서 저장한 비밀번호를 사용하여 적합한 사이트에 자동 로그인합니다.</translation>
+<translation id="7641513591566880111">새 프로필 이름</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>
 <translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
@@ -6200,6 +6209,7 @@
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
+<translation id="7805759469263222011">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
@@ -6679,6 +6689,7 @@
 <translation id="8300849813060516376">OTASP 실패</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{주소}other{주소 #개}}</translation>
 <translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
+<translation id="8308016398665340540">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8308179586020895837"><ph name="HOST" />에서 카메라에 액세스하려는 경우 메시지 표시</translation>
 <translation id="830868413617744215">베타</translation>
 <translation id="8309458809024885768">인증서가 이미 존재합니다.</translation>

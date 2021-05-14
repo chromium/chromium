@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1001033507375626788">Mạng này được chia sẻ với bạn</translation>
 <translation id="1001307489511021749">Các ứng dụng, tùy chọn cài đặt và những mục tùy chỉnh khác của bạn sẽ được đồng bộ hóa trên mọi thiết bị Chrome OS mà bạn đăng nhập bằng Tài khoản Google của mình.</translation>
 <translation id="1003088604756913841">Mở đường liên kết trong cửa sổ mới của <ph name="APP" /></translation>
 <translation id="100323615638474026">Thiết bị USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -960,6 +961,7 @@
 <translation id="1992924914582925289">Xóa khỏi thiết bị</translation>
 <translation id="1994173015038366702">URL trang web</translation>
 <translation id="1995916364271252349">Kiểm soát thông tin mà các trang web có thể dùng và hiển thị (vị trí, máy ảnh, cửa sổ bật lên và thông tin khác)</translation>
+<translation id="1997437640397887843">Máy ảnh của thiết bị đã bật. Vui lòng đặt mã QR của eSIM trước máy ảnh.</translation>
 <translation id="1997616988432401742">Chứng chỉ của bạn</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
@@ -1015,6 +1017,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2055585478631012616">Bạn sẽ bị đăng xuất khỏi những trang web này, bao gồm cả các thẻ đang mở</translation>
 <translation id="205560151218727633">Biểu trưng Trợ lý Google</translation>
 <translation id="2058456167109518507">Đã phát hiện thiết bị</translation>
+<translation id="2058581283817163201">Xác minh bằng điện thoại này</translation>
 <translation id="2059913712424898428">Múi giờ</translation>
 <translation id="2060375639911876205">Xóa hồ sơ eSIM</translation>
 <translation id="2062354623176996748">Duyệt web mà không lưu nhật ký duyệt web qua một cửa sổ Ẩn danh</translation>
@@ -2615,6 +2618,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3785308913036335955">Hiển thị lối tắt cho ứng dụng</translation>
 <translation id="3785727820640310185">Đã lưu mật khẩu cho trang web này</translation>
 <translation id="3788301286821743879">Không chạy được ứng dụng kiosk.</translation>
+<translation id="3788331399335602504">các tệp này</translation>
 <translation id="3788401245189148511">Tiện ích/ứng dụng này có thể:</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="379082410132524484">Thẻ của bạn đã hết hạn</translation>
@@ -3190,6 +3194,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4438043733494739848">Trong suốt</translation>
 <translation id="4438639467177774583">Mật khẩu <ph name="MASKED_PASSWORD" /> của <ph name="USERNAME" /> sẽ được lưu vào Tài khoản Google <ph name="ACCOUNT" /> của bạn</translation>
 <translation id="4439427728133035643">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> đã gửi một thông báo đến điện thoại của bạn. Để xác nhận danh tính của bạn, hãy nhấn vào thông báo "<ph name="NOTIFICATIONTITLE" />" rồi làm theo các bước.</translation>
 <translation id="4441124369922430666">Bạn có muốn tự động khởi động ứng dụng này khi máy bật không?</translation>
 <translation id="4441147046941420429">Để tiếp tục, hãy rút khóa bảo mật khỏi thiết bị rồi cắm lại và chạm vào khóa đó</translation>
 <translation id="444134486829715816">Mở rộng...</translation>
@@ -3492,6 +3497,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4773112038801431077">Nâng cấp Linux</translation>
 <translation id="477647109558161443">Tạo lối tắt trên màn hình</translation>
 <translation id="4776917500594043016">Mật khẩu cho <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Những người dùng khác trên thiết bị này có thể sử dụng mạng này</translation>
 <translation id="4777825441726637019">Cửa hàng Play</translation>
 <translation id="4777943778632837590">Định cấu hình các máy chủ định danh trong mạng</translation>
 <translation id="4778644898150334464">Dùng mật khẩu khác</translation>
@@ -4327,6 +4333,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5712153969432126546">Đôi khi, trang web sẽ xuất bản các tệp PDF, như tài liệu, hợp đồng và biểu mẫu</translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
+<translation id="5719637365829998022">Đã quét xong mã QR.</translation>
 <translation id="5719854774000914513">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="572155275267014074">Cài đặt Android</translation>
 <translation id="5722086096420375088">Xanh lục và trắng</translation>
@@ -4538,6 +4545,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5955721306465922729">Một trang web muốn mở ứng dụng này.</translation>
 <translation id="5955809630138889698">Có thể thiết bị này chỉ đủ điều kiện đối với chế độ minh họa trực tuyến. Vui lòng liên hệ với người đại diện hỗ trợ của bạn để biết thêm chi tiết.</translation>
 <translation id="5956585768868398362">Đây có phải là trang tìm kiếm bạn muốn không?</translation>
+<translation id="5957918771633727933">Không có hồ sơ eSIM nào. Hãy tải một <ph name="BEGIN_LINK" />hồ sơ<ph name="END_LINK" /> mới xuống.</translation>
 <translation id="5957987129450536192">Nhấn vào biểu tượng Chọn để nói gần ảnh hồ sơ của bạn, sau đó chọn nội dung bạn muốn nghe.</translation>
 <translation id="5959471481388474538">Không có mạng</translation>
 <translation id="595959584676692139">Tải lại trang để sử dụng tiện ích này</translation>
@@ -6043,6 +6051,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7638605456503525968">Cổng nối tiếp</translation>
 <translation id="7639914187072011620">Không tải được URL chuyển hướng SAML từ máy chủ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> tự động đăng nhập bạn vào các trang web đủ điều kiện bằng mật khẩu bạn đã lưu.</translation>
+<translation id="7641513591566880111">Tên hồ sơ mới</translation>
 <translation id="7642778300616172920">Ẩn nội dung nhạy cảm</translation>
 <translation id="7643842463591647490">{0,plural, =1{# cửa sổ đang mở}other{# cửa sổ đang mở}}</translation>
 <translation id="7643932971554933646">Cho phép trang web xem tệp?</translation>
@@ -6203,6 +6212,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804072833593604762">Đã đóng thẻ</translation>
+<translation id="7805759469263222011">Quét mã QR bằng máy ảnh của thiết bị hoặc nhập mã kích hoạt mà nhà mạng cung cấp</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
@@ -6682,6 +6692,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8300849813060516376">OTASP không thành công</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Địa chỉ}other{# địa chỉ}}</translation>
 <translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc dùng một Tài khoản Google được giám sát bằng Family Link để đăng nhập.</translation>
+<translation id="8308016398665340540">Bạn đang chia sẻ mạng này với những người dùng khác trên thiết bị này</translation>
 <translation id="8308179586020895837">Hỏi nếu <ph name="HOST" /> muốn truy cập máy ảnh của bạn</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Chứng chỉ đã tồn tại</translation>

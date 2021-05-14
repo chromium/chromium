@@ -101,7 +101,7 @@
 <translation id="1746730358044914197">Методите на въвеждане са конфигурирани от администратора ви.</translation>
 <translation id="1747827819627189109">Екранната клавиатура е активирана</translation>
 <translation id="1761222317188459878">Превключване на връзката с мрежа. <ph name="STATE_TEXT" /></translation>
-<translation id="1768366657309696705">Клавишната комбинация „<ph name="LAUNCHER_KEY_NAME" />“ + точка се промени. За да използвате клавиша Insert, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Shift + Backspace.</translation>
+<translation id="1768366657309696705">Клавишната комбинация <ph name="LAUNCHER_KEY_NAME" /> + точка се промени. За да използвате клавиша Insert, натиснете клавиша <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>
 <translation id="1782199038061388045">превод</translation>
 <translation id="1787955149152357925">Изкл.</translation>

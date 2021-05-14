@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">разгъващ се списък</translation>
 <translation id="3220661731597678625">текуща стъпка</translation>
+<translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3450233048674729344">Стойността трябва да е по-малка или равна на <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">дефиниция</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">лента с менюта</translation>
 <translation id="4293574643247337246">горен колонтитул на страницата</translation>
 <translation id="4360991593054037559">Моля, въведете валидна стойност. Двете най-близки такива са <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">скриване на менюто за скоростта на възпроизвеждане</translation>
 <translation id="4384249794467006333">Това изображение няма етикет. Отворете менюто „Още опции“ горе вдясно, за да получите описание на изображението.</translation>
 <translation id="4384583879834880242">Въпроси и отговори</translation>
 <translation id="4444765639179266822">Изглежда, че пише: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">елемент от дърво</translation>
 <translation id="5466621249238537318">Моля, изберете един или повече файлове.</translation>
 <translation id="5468998798572797635">изход от цял екран</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">инструмент за избор на дата</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5546461542133609677">пускане на звука</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">още опции</translation>
 <translation id="576709008726043716">въведение</translation>
 <translation id="57838592816432529">Заглушаване</translation>
+<translation id="5786442179789148008">показване на менюто за скоростта на възпроизвеждане</translation>
 <translation id="5787939484346677755">разгънато, има опции за автоматично довършване.</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="588258955323874662">Цял екран</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5966707198760109579">Седмица</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">брояч</translation>
 <translation id="6011459053400940133">плъзгач за силата на звука</translation>
 <translation id="6015796118275082299">Година</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">заглушаване</translation>
 <translation id="6885760532393684712">директория</translation>
 <translation id="689129560213475294">колофон</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">блоков цитат</translation>
 <translation id="693476918119313863">горен колонтитул</translation>
 <translation id="6941933287844615239">изтегляне на мултимедията</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">препратка към бележка</translation>
 <translation id="811583516810654505">Описанието се изтегля...</translation>
 <translation id="8117451130807776954">Тази седмица</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8208673686607688524">инструмент за избор на дата и час според местното време</translation>
 <translation id="8261464734335370856">Невалиден правопис</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">управление на отдалеченото възпроизвеждане</translation>
 <translation id="862370744433916922">подзаглавие</translation>
 <translation id="8634971699417195529">Показване на инструмента за избор на месец</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пренасяне на нов ред</translation>
 <translation id="8711688047404765493">изход</translation>
 <translation id="8750798805984357768">Моля, изберете една от тези опции.</translation>

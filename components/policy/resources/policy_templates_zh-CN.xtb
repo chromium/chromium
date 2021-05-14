@@ -387,6 +387,13 @@
 <translation id="1516486219683984217">不允许使用系统通知</translation>
 <translation id="1522425503138261032">允许网站跟踪用户的地理位置</translation>
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
+<translation id="1524243669991877602">如果此政策已启用，与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策便可被合并到计算机级政策中。
+
+      只能合并源自安全用户的政策。安全用户是指与会使用 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />来管理用户浏览器的组织关联的用户。其他所有的用户级政策一律会被忽略。
+
+      此外，务必要在 <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> 或 <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" /> 中设置需合并的政策。如果这两项政策均未配置，系统会忽略此政策。
+
+      如果此政策未设置或已停用，系统会禁止用户级云政策与任何其他来源的政策合并。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
 <translation id="1527298988676981599">通过设置此政策，您可以罗列一些网址格式，从而指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段，此政策才有效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每项内容都可以包含“<ph name="VENDOR_ID_FIELD_NAME" />”和“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="VENDOR_ID_FIELD_NAME" />”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的政策无效。
 
@@ -1157,6 +1164,7 @@
           如果未设置此政策，则“插入符号突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="2509748672176727116">用户将能够执行网络数据包捕获流程</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
+<translation id="2512972020817284317">允许合并用户级云政策。</translation>
 <translation id="2515699738406900920">在 Chrome 启动时是否显示个人资料选择器</translation>
 <translation id="2517466659416174529">允许系统冻结后台标签页</translation>
 <translation id="2518231489509538392">允许播放视频</translation>
@@ -2700,6 +2708,7 @@
 
       注意：此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />（若已设置）。</translation>
 <translation id="4661889655253181651">“内容设置”可用来指定对特定类型内容（例如 Cookie、图片或 JavaScript）的处理方式。</translation>
+<translation id="4663509616441994711">禁止合并用户级云政策。</translation>
 <translation id="4665897631924472251">扩展程序管理设置</translation>
 <translation id="4666930704271463612">指定系统在寻找服务器打印机时，应查询符合哪种条件的打印服务器。
 
@@ -5184,6 +5193,7 @@
 
           如果您未设置此政策，高对比度模式在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="7869986671709030417">默认背景图片打印模式</translation>
+<translation id="7877924399554599110">允许将用户级云政策合并到计算机级政策中</translation>
 <translation id="7881421274383404138">通过设置此政策，您可以配置企业打印机。其格式与 <ph name="PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 和 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
 
       此政策对用户能否在个别设备上配置打印机没有影响。它旨在对个别用户的打印机配置进行补充。

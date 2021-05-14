@@ -4227,6 +4227,14 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6689343802305995925">Er wordt geen actie uitgevoerd.</translation>
 <translation id="6689792153960219308">De hardwarestatus melden</translation>
 <translation id="6690425645391461516">Controles voor DNS-onderschepping uitzetten, infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
+<translation id="669066148640728553">Geef een beoogd tijdvenster op voor het einde van de meldingsperiode voor herstarten.
+
+      Op basis van de instellingen voor het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> en <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> krijgen gebruikers een melding als de browser moet worden herstart of het apparaat opnieuw moet worden opgestart. Browsers en apparaten worden gedwongen opnieuw opgestart aan het einde van de meldingsperiode als het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> is ingesteld op Vereist. Dit beleid <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> kan worden gebruikt om het einde van de meldingsperiode uit te stellen zodat dit binnen een specifiek tijdvenster valt.
+
+      Als je dit beleid niet instelt, is het standaard beoogde tijdvenster voor <ph name="PRODUCT_OS_NAME" /> tussen 02:00 en 04:00 uur. Het standaard beoogde tijdvenster voor <ph name="PRODUCT_NAME" /> is de hele dag (dat wil zeggen, het einde van de meldingsperiode wordt nooit uitgesteld).
+
+      Opmerking: Hoewel er met het beleid meerdere items kunnen worden geaccepteerd in <ph name="ENTRIES_FIELD_NAME" />, wordt alleen het eerste item gebruikt. De andere items worden genegeerd.
+      Waarschuwing: Als je dit beleid instelt, kan de toepassing van software-updates worden vertraagd.</translation>
 <translation id="6698632841807204978">Monochroom afdrukken aanzetten</translation>
 <translation id="6699880231565102694">Verificatie in 2 stappen aanzetten voor hosts voor externe toegang</translation>
 <translation id="6703251016607733593">Als je dit beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor een lijst van <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hashes. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitzetten, moet de hash aan een van de volgende voorwaarden voldoen:
@@ -4370,6 +4378,19 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6857240169209507953">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
+<translation id="6864283226733000548">Deze instelling biedt verschillende beschikbaarheidsopties voor de <ph name="LACROS_NAME" />-browser.
+
+      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, kan de gebruiker <ph name="LACROS_NAME" /> aanzetten en instellen als primaire browser. <ph name="LACROS_NAME" /> kan nog steeds niet toegestaan worden met het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" />.
+
+      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, kan de gebruiker <ph name="LACROS_NAME" /> niet gebruiken. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
+
+      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, wordt <ph name="LACROS_NAME" /> aangezet maar niet ingesteld als primaire browser. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
+
+      Als je het beleid instelt op <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, wordt <ph name="LACROS_NAME" /> aangezet en ingesteld als primaire browser. Het beleid <ph name="LACROS_ALLOWED_POLICY_NAME" /> wordt genegeerd.
+
+      Als het beleid niet is ingesteld, is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> de standaard voor gebruikers die op ondernemingsniveau worden beheerd en <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> voor niet-beheerde gebruikers.
+
+      In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
 
       Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.

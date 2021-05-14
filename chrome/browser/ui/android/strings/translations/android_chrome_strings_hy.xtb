@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="2905036901251765993">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար սկանավորեք այս QR կոդը</translation>
 <translation id="2909615210195135082">Google ծանուցումների հարթակ</translation>
+<translation id="2912296070571964914">Կառավարեք ձեզ հետաքրքրող թեմաները</translation>
 <translation id="2923908459366352541">Անունն անվավեր է:</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ի օգտագործած տարածքը</translation>
 <translation id="2932222164150889403">Ձեր ստեղնաշարը չի փոխվի</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3259831549858767975">Էջում ամեն ինչ փոքրացնել</translation>
 <translation id="3264124641674805320">Ինչպես բովանդակություն ներբեռնել ավելի ուշ դիտման համար</translation>
+<translation id="3264259168916048410">Ձեր համակարգիչն ուզում է օգտագործել այս սարքը՝ կայքում մուտք գործելու համար</translation>
+<translation id="3265534588625245297">Կառավարեք կայքերը, որոնց բաժանորդագրված եք</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="3269956123044984603">Ձեր բոլոր սարքերում եղած ներդիրներն օգտագործելու համար Android հաշվի կարգավորումներում միացրեք «Տվյալների ինքնահամաժամացում» գործառույթը:</translation>
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
+<translation id="4402611456429872546">Ներբեռնվում է <ph name="LANG" /> լեզվի փաթեթը…</translation>
 <translation id="4404568932422911380">Էջանիշներ չկան</translation>
 <translation id="4405224443901389797">Տեղափոխել…</translation>
 <translation id="4411535500181276704">Lite ռեժիմ</translation>
@@ -583,6 +587,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="488187801263602086">Ֆայլի վերանվանում</translation>
 <translation id="4882831918239250449">Կառավարեք ձեր այցելությունների պատմության օգտագործումը՝ Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար</translation>
 <translation id="4885273946141277891">Chrome-ի բացված էջերի թիվը չի աջակցվում:</translation>
+<translation id="4905269543817054577">Ինկոգնիտո ռեժիմում պատմությունը չի պահվում</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Հավելվածներ վճարումների համար</translation>
 <translation id="4913161338056004800">Վերակայել վիճակագրությունը</translation>
@@ -951,6 +956,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7233236755231902816">Կայքերը ձեր լեզվով դիտելու համար տեղադրեք Chrome-ի վերջին տարբերակը</translation>
 <translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>
+<translation id="7252076891734325316">Հեռախոսը դրեք համակարգչի մոտ</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
 <translation id="7286572596625053347">Փոխե՞լ լեզուն (<ph name="LANGUAGE" />)</translation>
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>
@@ -1017,6 +1023,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7630202231528827509">Մատակարարի URL-ը</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7641339528570811325">Մաքրել այցելությունների պատմությունը…</translation>
+<translation id="764170292089748542">Ձեր այցելությունների պատմությունը չի պահվում Chrome-ում, երբ միացնում եք ինկոգնիտո ռեժիմը։ Ձեր էջանիշները հասանելի կլինեն ձեզ։</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
@@ -1042,6 +1049,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7810647596859435254">Բացել հավելվածով…</translation>
 <translation id="7815484226266492798">Երկար սքրինշոթ</translation>
 <translation id="7821588508402923572">Թրաֆիկի տնտեսման մասին տվյալները կցուցադրվեն այստեղ</translation>
+<translation id="78270725016672455">Ձեր համակարգիչն ուզում է գրանցել այս սարքը՝ կայքում մուտք գործելու համար</translation>
 <translation id="7844171778363018843">Համաժամացման համար տվյալներ չեն ընտրվել</translation>
 <translation id="7846296061357476882">Google-ի ծառայություններ</translation>
 <translation id="784934925303690534">Ժամանակի սանդղակ</translation>
@@ -1138,6 +1146,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> լեզվի փաթեթը ներբեռնվել է։ Վերագործարկեք <ph name="APP_NAME" /> հավելվածը։</translation>
 <translation id="8442258441309440798">Պատմություններ չկան</translation>
 <translation id="8443209985646068659">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="8445448999790540984">Չհաջողվեց արտահանել գաղտնաբառերը</translation>
@@ -1210,6 +1219,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8937267401510745927">Ձեր աշխատանքը հեշտացնելու համար Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։ Այս տեղեկությունները կարող են պահվել ձեր Google հաշվում։ Օգնականը կարող եք անջատել Chrome-ի կարգավորումներում։</translation>
 <translation id="8937772741022875483">Հեռացնե՞լ Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
 <translation id="8942627711005830162">Բացել նոր պատուհանում</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> լեզուն հնարավոր չէ ներբեռնել։ Փորձեք ավելի ուշ։</translation>
 <translation id="8951232171465285730">Chrome-ը խնայել է <ph name="MEGABYTES" /> ՄԲ տարածք</translation>
 <translation id="8965591936373831584">սպասում է</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>

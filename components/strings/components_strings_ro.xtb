@@ -506,6 +506,7 @@
 <translation id="2850739647070081192">Invite (Plic)</translation>
 <translation id="2856444702002559011">Atacatorii pot încerca să îți fure informațiile de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (de exemplu, parole, mesaje sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Acest site afișează anunțuri deranjante sau înșelătoare.</translation>
+<translation id="287596039013813457">Amical</translation>
 <translation id="2876489322757410363">Vei părăsi modul incognito pentru a plăti folosind o aplicație externă. Continui?</translation>
 <translation id="2878197950673342043">Îndoire de tip afiș</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -603,6 +604,7 @@
 <translation id="3229041911291329567">Informații despre versiunea dispozitivului și browserului</translation>
 <translation id="323107829343500871">Introdu codul CVC pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detectează întotdeauna conținutul important pe acest site</translation>
+<translation id="3249845759089040423">Șic</translation>
 <translation id="3252266817569339921">Franceză</translation>
 <translation id="3266793032086590337">Valoare (conflictuală)</translation>
 <translation id="3268451620468152448">File deschise</translation>
@@ -980,6 +982,7 @@
 <translation id="4594403342090139922">&amp;Anulați ștergerea</translation>
 <translation id="4597348597567598915">Mărimea 8</translation>
 <translation id="4600854749408232102">C6/C5 (Plic)</translation>
+<translation id="4606870351894164739">De impact</translation>
 <translation id="4628948037717959914">Fotografie</translation>
 <translation id="4631649115723685955">Ofertă cu returnare de bani</translation>
 <translation id="4636930964841734540">Informații</translation>
@@ -1043,6 +1046,8 @@
 <translation id="4813512666221746211">Eroare de rețea</translation>
 <translation id="4816492930507672669">Încadrați în pagină</translation>
 <translation id="4819347708020428563">Editezi adnotările în afișarea prestabilită?</translation>
+<translation id="4825507807291741242">Puternic</translation>
+<translation id="4838327282952368871">Visare</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="485316830061041779">Germană</translation>
@@ -1201,6 +1206,7 @@
 <translation id="5398772614898833570">Anunțurile au fost blocate</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="540969355065856584">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; momentan, certificatul de securitate nu este valid. Cauza poate fi o configurare greșită sau interceptarea conexiunii de un atacator.</translation>
+<translation id="541143247543991491">Cloud (la nivel de sistem)</translation>
 <translation id="541416427766103491">Receptorul de hârtie 4</translation>
 <translation id="5421136146218899937">Șterge datele de navigare...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
@@ -1708,6 +1714,7 @@ Detalii suplimentare:
       &lt;li&gt;Accesează &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centrul de ajutor Chrome&lt;/a&gt; pentru a afla cum poți să elimini definitiv software-ul de pe computer
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Format-Larg</translation>
+<translation id="7410471291937727359">Adorabil</translation>
 <translation id="7416351320495623771">Gestionează parolele…</translation>
 <translation id="7419106976560586862">Calea profilului</translation>
 <translation id="7437289804838430631">Adaugă informații de contact</translation>
@@ -2132,6 +2139,7 @@ Detalii suplimentare:
 <translation id="9020542370529661692">Această pagină a fost tradusă în <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Nevalid)</translation>
+<translation id="9030265603405983977">Monocromatic</translation>
 <translation id="9035022520814077154">Eroare de securitate</translation>
 <translation id="9038649477754266430">Folosește un serviciu de predicții pentru a încărca paginile mai rapid</translation>
 <translation id="9039213469156557790">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba comportamentul paginii.</translation>
@@ -2155,6 +2163,7 @@ Detalii suplimentare:
 <translation id="91108059142052966">Politica implementată de administrator dezactivează permiterea accesului la ecran pentru <ph name="APPLICATION_TITLE" /> atunci când este vizibil conținut confidențial</translation>
 <translation id="9114524666733003316">Se confirmă cardul…</translation>
 <translation id="9114581008513152754">Browserul nu este gestionat de o companie sau o altă organizație. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată în afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Prospețime</translation>
 <translation id="9119042192571987207">Încărcat</translation>
 <translation id="9128016270925453879">Politicile s-au încărcat</translation>
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>

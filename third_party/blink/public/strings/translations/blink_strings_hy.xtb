@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ժամաչափ</translation>
 <translation id="3199563858620722075">ցուցակով դաշտ</translation>
 <translation id="3220661731597678625">ընթացիկ քայլը</translation>
+<translation id="3321030238473337787">Նվագարկման արագություն</translation>
 <translation id="3329013043687509092">Հագեցում</translation>
 <translation id="3450233048674729344">Արժեքը պետք է փոքր կամ հավասար լինի <ph name="MAXIMUM" />-ին:</translation>
 <translation id="3486220673238053218">սահմանում</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">ընտրացանկի գոտի</translation>
 <translation id="4293574643247337246">էջագլուխ</translation>
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
+<translation id="4371899966896349864">թաքցնել նվագարկման արագության ընտրացանկը</translation>
 <translation id="4384249794467006333">Այս պատկերը պիտակված չէ։ Պատկերների նկարագրությունները ստանալու համար բացեք «Լրացուցիչ ընտրանքներ» ընտրացանկը վերևի աջ անկյունում։</translation>
 <translation id="4384583879834880242">Հարց ու պատասխան</translation>
 <translation id="4444765639179266822">Կարծես թե ասում է <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ծառի տարր</translation>
 <translation id="5466621249238537318">Ընտրեք մեկ կամ մի քանի ֆայլ:</translation>
 <translation id="5468998798572797635">ելնել լիաէկրան ռեժիմից</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">ամսաթվի ընտրիչ</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">հնչեցնել</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">լրացուցիչ ընտրանքներ</translation>
 <translation id="576709008726043716">ներածություն</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5786442179789148008">ցուցադրել նվագարկման արագության ընտրացանկը</translation>
 <translation id="5787939484346677755">ծավալվեց, հասանելի են ինքնալրացման տարբերակներ։</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5966707198760109579">Շաբաթ</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">հաշվիչի կոճակ</translation>
 <translation id="6011459053400940133">ձայնի սահիչ</translation>
 <translation id="6015796118275082299">Տարի</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">լռեցնել</translation>
 <translation id="6885760532393684712">գրացուցակ</translation>
 <translation id="689129560213475294">հիշատակարան</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">մեջբերում</translation>
 <translation id="693476918119313863">վերնագիր</translation>
 <translation id="6941933287844615239">ներբեռնել ֆայլը</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">ծանոթագրության հղում</translation>
 <translation id="811583516810654505">Նկարագրության բեռնում…</translation>
 <translation id="8117451130807776954">Այս շաբաթ</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">տտտտ</translation>
 <translation id="8208673686607688524">տեղական ամսաթվի և ժամանակի ընտրիչ</translation>
 <translation id="8261464734335370856">Ուղղագրական սխալ</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">կառավարել հեռակա նվագարկումը</translation>
 <translation id="862370744433916922">ենթավերնագիր</translation>
 <translation id="8634971699417195529">Ցուցադրել ամսվա ընտրիչը</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Տողադարձ</translation>
 <translation id="8711688047404765493">ելք</translation>
 <translation id="8750798805984357768">Ընտրեք այս տարբերակներից մեկը:</translation>

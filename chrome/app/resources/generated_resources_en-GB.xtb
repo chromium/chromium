@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1001033507375626788">This network is shared with you</translation>
 <translation id="1001307489511021749">Your apps, settings and other customisations will be synced across all Chrome OS devices signed in with your Google Account.</translation>
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -960,6 +961,7 @@
 <translation id="1992924914582925289">Remove from device</translation>
 <translation id="1994173015038366702">Site URL</translation>
 <translation id="1995916364271252349">Controls what information sites can use and show (location, camera, pop-ups and more)</translation>
+<translation id="1997437640397887843">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
 <translation id="1997616988432401742">Your certificates</translation>
 <translation id="1999115740519098545">On start-up</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
@@ -1015,6 +1017,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2055585478631012616">You’ll be signed out of these sites, including in open tabs</translation>
 <translation id="205560151218727633">Google assistant logo</translation>
 <translation id="2058456167109518507">Device detected</translation>
+<translation id="2058581283817163201">Verify with this phone</translation>
 <translation id="2059913712424898428">Time zone</translation>
 <translation id="2060375639911876205">Remove eSIM profile</translation>
 <translation id="2062354623176996748">Use the web without saving your browsing history with an Incognito window</translation>
@@ -2615,6 +2618,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3785308913036335955">Show Apps Shortcut</translation>
 <translation id="3785727820640310185">Saved passwords for this site</translation>
 <translation id="3788301286821743879">The kiosk application could not be launched.</translation>
+<translation id="3788331399335602504">these files</translation>
 <translation id="3788401245189148511">It could:</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="379082410132524484">Your card has expired</translation>
@@ -3190,6 +3194,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> will be saved to your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> sent a notification to your phone. To confirm that it's you, tap the '<ph name="NOTIFICATIONTITLE" />' notification and follow the steps.</translation>
 <translation id="4441124369922430666">Do you want to automatically start this app when the machine turns on?</translation>
 <translation id="4441147046941420429">To continue, remove your security key from your device, then reinsert and touch it</translation>
 <translation id="444134486829715816">Expand...</translation>
@@ -3492,6 +3497,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Other users of this device can use this network</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configure network name servers</translation>
 <translation id="4778644898150334464">Use other password</translation>
@@ -4327,6 +4333,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Default search engines</translation>
+<translation id="5719637365829998022">QR code has been scanned.</translation>
 <translation id="5719854774000914513">Sites can ask to connect to HID devices</translation>
 <translation id="572155275267014074">Android settings</translation>
 <translation id="5722086096420375088">Green and white</translation>
@@ -4538,6 +4545,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5955721306465922729">A website wants to open this application.</translation>
 <translation id="5955809630138889698">This device might be only eligible for online demo mode. Please contact your support representative for more details.</translation>
 <translation id="5956585768868398362">Is this the search page that you were expecting?</translation>
+<translation id="5957918771633727933">No available eSIM profiles. Download a new <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Tap the Select-to-Speak icon near your profile image, then select what you want to hear.</translation>
 <translation id="5959471481388474538">Network not available</translation>
 <translation id="595959584676692139">Reload page to use this extension</translation>
@@ -6043,6 +6051,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7638605456503525968">Serial ports</translation>
 <translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatically signs you in to eligible sites with passwords that you saved.</translation>
+<translation id="7641513591566880111">New profile name</translation>
 <translation id="7642778300616172920">Hide sensitive content</translation>
 <translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>
 <translation id="7643932971554933646">Let site view files?</translation>
@@ -6203,6 +6212,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7800518121066352902">Rotate A&amp;nti-clockwise</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804072833593604762">Tab closed</translation>
+<translation id="7805759469263222011">Scan a QR code using your device camera or enter the activation code provided by your operator</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7807711621188256451">Always allow <ph name="HOST" /> to access your camera</translation>
@@ -6682,6 +6692,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8300849813060516376">OTASP failed</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Address}other{# addresses}}</translation>
 <translation id="8304383784961451596">You are not authorised to use this device. Please contact the administrator for sign-in permission or sign in with a Google Account supervised by Family Link.</translation>
+<translation id="8308016398665340540">You are sharing this network with other users of this device</translation>
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Certificate already exists</translation>

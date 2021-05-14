@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
 <translation id="1165712434476988950">અપડેટ લાગુ કરવા માટે ડિવાઇસને ફરી શરૂ કરવાની જરૂર છે.</translation>
+<translation id="1170240434488307589">ડિવાઇસના માઇક્રોફોનનું બટન મ્યૂટ કરેલું છે.</translation>
 <translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">ઇનપુટ પદ્ધતિઓને તમારા વ્યવસ્થાપક દ્વારા ગોઠવવામાં આવી છે.</translation>
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
 <translation id="1761222317188459878">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period કીનો કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Insert કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace કી દબાવો.</translation>
 <translation id="1771761307086386028">જમણે સ્ક્રોલ કરો</translation>
 <translation id="1782199038061388045">અનુવાદ</translation>
 <translation id="1787955149152357925">બંધ છે</translation>

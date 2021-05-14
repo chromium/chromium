@@ -4209,6 +4209,14 @@
 <translation id="6689343802305995925">不執行任何動作。</translation>
 <translation id="6689792153960219308">回報硬體狀態</translation>
 <translation id="6690425645391461516">停用 DNS 攔截檢查功能；允許你是不是要前往「http://intranetsite/」資訊列。</translation>
+<translation id="669066148640728553">指定重新啟動通知期結束的目標時間範圍。
+
+      系統會根據 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 和 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策設定，通知使用者必須重新啟動瀏覽器或裝置。如果 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策設為「Required」，系統就會在通知期結束時強制重新啟動瀏覽器和裝置。這項 <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> 政策可用於延後通知期的結束時間，讓結束時間落在指定時間範圍內。
+
+      未設定這項政策時，<ph name="PRODUCT_OS_NAME" />預設的目標時間範圍會介於凌晨 2 點至 4 點之間，<ph name="PRODUCT_NAME" /> 預設的目標時間範圍則是全天 (也就是說，通知期的結束時間絕不會延後)。
+
+      注意：雖然這項政策可接受 <ph name="ENTRIES_FIELD_NAME" /> 中的多個項目，但除了第一個項目外，其他項目都會遭到忽略。
+      警告：設定這項政策可能導致軟體更新延遲套用。</translation>
 <translation id="6698632841807204978">啟用單色列印</translation>
 <translation id="6699880231565102694">為遠端存取主機啟用雙重驗證機制</translation>
 <translation id="6703251016607733593">設定這項政策後，系統不會強制要求列出的 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊依憑證透明化規定公開憑證。此外，因為未依規定對外公開而不受信任的憑證，企業主機也可以繼續使用。雜湊必須符合以下其中一項條件，才能不強制要求公開憑證：
@@ -4352,6 +4360,19 @@
 <translation id="6857240169209507953">禁止在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="685769593149966548">強制執行 YouTube 高度嚴格篩選模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以上版本</translation>
+<translation id="6864283226733000548">這項設定針對 <ph name="LACROS_NAME" /> 瀏覽器提供了多個可用性選項。
+
+      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />，使用者就可以啟用 <ph name="LACROS_NAME" />，並將其設為主要瀏覽器。<ph name="LACROS_NAME" /> 仍可能受到 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁止使用。
+
+      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />，使用者就無法使用 <ph name="LACROS_NAME" />。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用，但不是主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用並成為主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
+
+      如果不設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />；其他一般使用者的預設值則為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />。
+
+      日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" />中唯一可用的瀏覽器。</translation>
 <translation id="68818134518270542">你可以透過這項政策指定應用程式，允許使用者在 <ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上以筆記應用程式的形式開啟。
 
       如果偏好的筆記應用程式已在螢幕鎖定畫面上，用來啟動該應用程式的 UI 元素就會顯示在畫面上。應用程式啟動後，將可在螢幕鎖定畫面的上方建立視窗，並在螢幕鎖定的情況下建立筆記。應用程式可在工作階段解鎖後，將已建立的筆記匯入主要使用者的工作階段。螢幕鎖定畫面上僅支援 <ph name="PRODUCT_NAME" /> 筆記應用程式。

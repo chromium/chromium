@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1001033507375626788">Hierdie netwerk is met jou gedeel</translation>
 <translation id="1001307489511021749">Jou programme, instellings en ander pasmakings sal gesinkroniseer word op alle toestelle met Chrome-bedryfstelsel waarop jy met jou Google-rekening aangemeld is.</translation>
 <translation id="1003088604756913841">Maak skakel in nuwe <ph name="APP" />-venster oop</translation>
 <translation id="100323615638474026">USB-toestel (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -960,6 +961,7 @@
 <translation id="1992924914582925289">Verwyder van toestel</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
 <translation id="1995916364271252349">Beheer watter inligting werwe kan gebruik en wys (ligging, kamera, opspringers en meer)</translation>
+<translation id="1997437640397887843">Toestelkamera het aangeskakel. Plaas jou e-SIM se QR-kode voor die kamera.</translation>
 <translation id="1997616988432401742">Jou sertifikate</translation>
 <translation id="1999115740519098545">Met afskop</translation>
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
@@ -1015,6 +1017,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2055585478631012616">Jy sal by hierdie werwe afgemeld word, insluitend in oop oortjies</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Toestel is bespeur</translation>
+<translation id="2058581283817163201">Verifieer met hierdie foon</translation>
 <translation id="2059913712424898428">Tydsone</translation>
 <translation id="2060375639911876205">Verwyder e-SIM-profiel</translation>
 <translation id="2062354623176996748">Gebruik 'n Incognito-venster om die web te gebruik sonder om jou blaaigeskiedenis te stoor</translation>
@@ -2615,6 +2618,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3785308913036335955">Wys programkortpad</translation>
 <translation id="3785727820640310185">Gestoorde wagwoorde vir hierde werf</translation>
 <translation id="3788301286821743879">Die Kiosk-program kon nie begin word nie.</translation>
+<translation id="3788331399335602504">hierdie lêers</translation>
 <translation id="3788401245189148511">Dit kan:</translation>
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="379082410132524484">Jou kaart het verval</translation>
@@ -3190,6 +3194,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4438043733494739848">Deursigtig</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> sal in jou Google-rekening, <ph name="ACCOUNT" />, gestoor word</translation>
 <translation id="4439427728133035643">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, koppel</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> het 'n kennisgewing na jou foon toe gestuur. Tik op die “<ph name="NOTIFICATIONTITLE" />”-kennisgewing en volg die stappe.</translation>
 <translation id="4441124369922430666">Wil jy hierdie program outomaties begin wanneer die masjien aanskakel?</translation>
 <translation id="4441147046941420429">Verwyder jou sekuriteitsleutel uit jou toestel, sit dit weer in en raak daaraan om voort te gaan</translation>
 <translation id="444134486829715816">Vou uit …</translation>
@@ -3492,6 +3497,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4773112038801431077">Gradeer Linux op</translation>
 <translation id="477647109558161443">Skep 'n werkskermkortpad</translation>
 <translation id="4776917500594043016">Wagwoord vir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Ander gebruikers van hierdie toestel kan hierdie netwerk gebruik</translation>
 <translation id="4777825441726637019">Play Winkel</translation>
 <translation id="4777943778632837590">Stel netwerknaambedieners op</translation>
 <translation id="4778644898150334464">Gebruik ander wagwoord</translation>
@@ -4328,6 +4334,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5712153969432126546">Werwe publiseer soms PDF's, soos dokumente, kontrakte en vorms</translation>
 <translation id="5715711091495208045">Inpropagent: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Versteksoekenjins</translation>
+<translation id="5719637365829998022">QR-kode is geskandeer.</translation>
 <translation id="5719854774000914513">Werwe kan vra om aan HID-toestelle te koppel</translation>
 <translation id="572155275267014074">Android-instellings</translation>
 <translation id="5722086096420375088">Groen en wit</translation>
@@ -4539,6 +4546,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5955721306465922729">'n Webwerf wil hierdie program oopmaak.</translation>
 <translation id="5955809630138889698">Hierdie toestel kwalifiseer dalk vir aanlyn demonstrasiemodus. Kontak jou steundiensverteenwoordiger vir meer besonderhede.</translation>
 <translation id="5956585768868398362">Is dit die soekbladsy wat jy verwag het?</translation>
+<translation id="5957918771633727933">Geen beskikbare e-SIM-profiele nie. Laai 'n nuwe <ph name="BEGIN_LINK" />profiel<ph name="END_LINK" /> af.</translation>
 <translation id="5957987129450536192">Tik op die Hardoplees-ikoon naby jou profielprent en kies wat jy wil hoor.</translation>
 <translation id="5959471481388474538">Netwerk nie beskikbaar nie</translation>
 <translation id="595959584676692139">Herlaai bladsy om hierdie uitbreiding te gebruik</translation>
@@ -6044,6 +6052,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7638605456503525968">Reekspoorte</translation>
 <translation id="7639914187072011620">Kon nie die SAML-herlei-URL by die bediener gaan haal nie</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> meld jou outomaties by geskikte werwe aan met wagwoorde wat jy gestoor het.</translation>
+<translation id="7641513591566880111">Nuwe profielnaam</translation>
 <translation id="7642778300616172920">Versteek sensitiewe inhoud</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oop venster}other{# oop vensters}}</translation>
 <translation id="7643932971554933646">Laat werf lêers bekyk?</translation>
@@ -6204,6 +6213,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7800518121066352902">Draai antikloksgewys</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804072833593604762">Oortjie is toegemaak</translation>
+<translation id="7805759469263222011">Skandeer 'n QR-kode met jou toestelkamera of voer die aktiveringkode in wat jou diensverskaffer verskaf het</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Soek en assistent</translation>
 <translation id="7807711621188256451">Laat <ph name="HOST" /> altyd toe om by jou kamera in te gaan</translation>
@@ -6682,6 +6692,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8300849813060516376">OTASP het misluk</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}other{# adresse}}</translation>
 <translation id="8304383784961451596">Jy is nie gemagtig om hierdie toestel te gebruik nie. Kontak asseblief die administrateur vir aanmeldtoestemming of meld aan met 'n Google-rekening wat onder Family Link-toesig is.</translation>
+<translation id="8308016398665340540">Jy deel hierdie netwerk tans met ander gebruikers van hierdie toestel</translation>
 <translation id="8308179586020895837">Vra of <ph name="HOST" /> by jou kamera wil ingaan</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikaat bestaan reeds</translation>

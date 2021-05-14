@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1001033507375626788">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1001307489511021749">ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Chrome OS ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಇತರೆ ಕಸ್ಟಮೈಸ್ ಮಾಡುವಿಕೆಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="1003088604756913841">ಹೊಸ <ph name="APP" /> ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="100323615638474026">USB ಸಾಧನ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -953,6 +954,7 @@
 <translation id="1992924914582925289">ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1994173015038366702">ಸೈಟ್ URL</translation>
 <translation id="1995916364271252349">ಸೈಟ್ ಯಾವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಬಹುದು ಮತ್ತು ಪ್ರದರ್ಶಿಸಬಹುದು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಿ (ಸ್ಥಳ, ಕ್ಯಾಮರಾ, ಪಾಪ್-ಅಪ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು)</translation>
+<translation id="1997437640397887843">ಸಾಧನ ಕ್ಯಾಮರಾ ಆನ್ ಆಗಿದೆ. ಕ್ಯಾಮರಾದ ಮುಂದೆ ನಿಮ್ಮ eSIM QR ಕೋಡ್ ಅನ್ನು ಇರಿಸಿ.</translation>
 <translation id="1997616988432401742">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
 <translation id="1999115740519098545">ಸ್ಟಾರ್ಟ್‌ಅಪ್‌ನಲ್ಲಿ</translation>
 <translation id="2000419248597011803">ಕೆಲವು ಕುಕೀಗಳನ್ನು ಹಾಗೂ ವಿಳಾಸ ಪಟ್ಟಿ ಮತ್ತು ಹುಡುಕಾಟ ಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಾಟಗಳನ್ನು, ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
@@ -1008,6 +1010,7 @@
 <translation id="2055585478631012616">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="205560151218727633">Google ಸಹಾಯಕದ ಲೋಗೋ</translation>
 <translation id="2058456167109518507">ಸಾಧನ ಪತ್ತೆಯಾಗಿದೆ</translation>
+<translation id="2058581283817163201">ಈ ಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2059913712424898428">ಸಮಯ ವಲಯ</translation>
 <translation id="2060375639911876205">eSIM ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2062354623176996748">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಉಳಿಸದೆಯೇ ಅಜ್ಞಾತ ವಿಂಡೋ ಮೂಲಕ ವೆಬ್ ಬಳಸಿ</translation>
@@ -2607,6 +2610,7 @@
 <translation id="3785308913036335955">ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸು</translation>
 <translation id="3785727820640310185">ಈ ಸೈಟ್‌ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3788301286821743879">ಕಿಯೋಸ್ಕ್ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
+<translation id="3788331399335602504">ಈ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3788401245189148511">ಇದು ಸಾಧ್ಯವಾಗಬಹುದು:</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="379082410132524484">ನಿಮ್ಮ ಕಾರ್ಡ್‌ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
@@ -3182,6 +3186,7 @@
 <translation id="4438043733494739848">ಪಾರದರ್ಶಕ</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ಗೆ ಉಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" />, ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಿದೆ. ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು, “<ph name="NOTIFICATIONTITLE" />” ಅಧಿಸೂಚನೆಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಹಾಗೂ ಈ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.</translation>
 <translation id="4441124369922430666">ಯಂತ್ರವು ಆನ್ ಆದ ಸಂದರ್ಭದಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನೀವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆರಂಭಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4441147046941420429">ಮುಂದುವರಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀಯನ್ನು ತೆಗೆಯಿರಿ, ನಂತರ ಅದನ್ನು ಪುನಃ ಸೇರಿಸಿ ಮತ್ತು ಸ್ಪರ್ಶಿಸಿ.</translation>
 <translation id="444134486829715816">ವಿಸ್ತರಿಸಿ...</translation>
@@ -3483,6 +3488,7 @@
 <translation id="4773112038801431077">Linux ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="477647109558161443">ಒಂದು ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
+<translation id="4777458362738635055">ಈ ಸಾಧನದ ಇತರ ಬಳಕೆದಾರರು ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">ನೆಟ್‌ವರ್ಕ್ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="4778644898150334464">ಬೇರೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ</translation>
@@ -4320,6 +4326,7 @@
 <translation id="5712153969432126546">ಸೈಟ್‌ಗಳು ಕೆಲವೊಮ್ಮೆ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು, ಒಪ್ಪಂದಗಳು ಮತ್ತು ಫಾರ್ಮ್‌ಗಳಂತಹ PDF ಗಳನ್ನು ಪ್ರಕಟಿಸುತ್ತವೆ</translation>
 <translation id="5715711091495208045">ಪ್ಲಗಿನ್ ಬ್ರೋಕರ್: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
+<translation id="5719637365829998022">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5719854774000914513">ಸೈಟ್‌ಗಳು HID ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="572155275267014074">Android ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5722086096420375088">ಹಸಿರು ಮತ್ತು ಬಿಳಿ</translation>
@@ -4531,6 +4538,7 @@
 <translation id="5955721306465922729">ಒಂದು ವೆಬ್‌ಸೈಟ್ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೆರೆಯಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="5955809630138889698">ಈ ಸಾಧನವು ಆನ್‌ಲೈನ್ ಡೆಮೊ ಮೋಡ್‌ಗೆ ಮಾತ್ರ ಅರ್ಹವಾಗಿರಬಹುದು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ಬೆಂಬಲ ಪ್ರತಿನಿಧಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5956585768868398362">ಇದು ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವ ಹುಡುಕಾಟ ಪುಟವೇ?</translation>
+<translation id="5957918771633727933">ಯಾವುದೇ ಲಭ್ಯವಿರುವ eSIM ಪ್ರೊಫೈಲ್‌ಗಳಿಲ್ಲ. ಹೊಸ <ph name="BEGIN_LINK" />ಪ್ರೊಫೈಲ್<ph name="END_LINK" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="5957987129450536192">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಚಿತ್ರದ ಬಳಿಯಿರುವ 'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ, ನಂತರ ನೀವು ಆಲಿಸಲು ಬಯಸಿರುವುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5959471481388474538">ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="595959584676692139">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
@@ -6037,6 +6045,7 @@
 <translation id="7638605456503525968">ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು</translation>
 <translation id="7639914187072011620">ಸರ್ವರ್‌ನಿಂದ SAML ಮರುನಿರ್ದೇಶನದ URL ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="764017888128728">ನೀವು ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಮೂಲಕ ಅರ್ಹರಾಗಿರುವ ಸೈಟ್‌ಗಳಿಗೆ <ph name="PASSWORD_MANAGER_BRAND" /> ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತದೆ.</translation>
+<translation id="7641513591566880111">ಹೊಸ ಪ್ರೊಫೈಲ್ ಹೆಸರು</translation>
 <translation id="7642778300616172920">ಸೂಕ್ಷ್ಮ ವಿಷಯವನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ತೆರೆದ ವಿಂಡೋ}one{# ತೆರೆದ ವಿಂಡೋಗಳು}other{# ತೆರೆದ ವಿಂಡೋಗಳು}}</translation>
 <translation id="7643932971554933646">ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿ ನೀಡಬೇಕೇ?</translation>
@@ -6196,6 +6205,7 @@
 <translation id="7800518121066352902">ಅಪ್ರ&amp;ದಕ್ಷಿಣೆಯಂತೆ ತಿರುಗಿಸಿ</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="7804072833593604762">ಟ್ಯಾಬ್ ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="7805759469263222011">ನಿಮ್ಮ ಸಾಧನ ಕ್ಯಾಮರಾ ಬಳಸಿ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7807067443225230855">ಹುಡುಕಾಟ ಮತ್ತು ಅಸಿಸ್ಟೆಂಟ್</translation>
 <translation id="7807711621188256451">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
@@ -6672,6 +6682,7 @@
 <translation id="8300849813060516376">OTASP ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{ವಿಳಾಸ}one{# ವಿಳಾಸಗಳು}other{# ವಿಳಾಸಗಳು}}</translation>
 <translation id="8304383784961451596">ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ನಿಮಗೆ ಅನುಮತಿ ಇಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ Family Link ಮೇಲ್ವಿಚಾರಣೆಯಲ್ಲಿರುವ Google ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
+<translation id="8308016398665340540">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನೀವು ಈ ಸಾಧನದಲ್ಲಿನ ಇತರ ಬಳಕೆದಾರರ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="8308179586020895837">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಬಯಸುತ್ತದೆಯೇ ಎಂಬುದನ್ನು ಕೇಳಿ</translation>
 <translation id="830868413617744215">ಬೀಟಾ</translation>
 <translation id="8309458809024885768">ಪ್ರಮಾಣಪತ್ರ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>

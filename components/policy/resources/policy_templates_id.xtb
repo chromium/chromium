@@ -4305,6 +4305,14 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6689343802305995925">Tidak ada tindakan yang dilakukan.</translation>
 <translation id="6689792153960219308">Melaporkan status hardware</translation>
 <translation id="6690425645391461516">Nonaktifkan pemeriksaan intersepsi DNS; izinkan infobar "Mungkin maksud Anda http://intranetsite/".</translation>
+<translation id="669066148640728553">Menentukan interval waktu target untuk batas akhir periode notifikasi peluncuran kembali.
+
+      Pengguna akan diberi tahu saat browser perlu diluncurkan kembali atau perangkat perlu dimulai ulang berdasarkan setelan kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> dan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Browser dan perangkat dimulai ulang dengan paksa pada batas akhir periode notifikasi jika kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> disetel ke 'Required'. Kebijakan <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> ini dapat digunakan untuk menunda batas akhir periode notifikasi agar batas akhir berada pada interval waktu tertentu.
+
+      Jika kebijakan ini tidak disetel, interval waktu target default untuk <ph name="PRODUCT_OS_NAME" /> adalah antara pukul 2 AM dan 4 AM. Interval waktu target default untuk <ph name="PRODUCT_NAME" /> adalah sepanjang hari (yang berarti batas akhir periode notifikasi tidak pernah ditunda).
+
+      Catatan: Meskipun kebijakan dapat menerima beberapa item dalam <ph name="ENTRIES_FIELD_NAME" />, semua item kecuali yang pertama akan diabaikan.
+      Peringatan: Jika kebijakan ini disetel, penerapan update software mungkin tertunda.</translation>
 <translation id="6698632841807204978">Aktifkan pencetakan monokrom</translation>
 <translation id="6699880231565102694">Mengaktifkan autentikasi dua faktor untuk hosting akses jarak jauh</translation>
 <translation id="6703251016607733593">Jika kebijakan ditetapkan, penerapan persyaratan pengungkapan Transparansi Sertifikat akan dinonaktifkan untuk daftar hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Host perusahaan tetap dapat menggunakan sertifikat yang tidak tepercaya (karena tidak diungkapkan secara publik dengan sesuai). Untuk menonaktifkan penerapan, hash harus memenuhi salah satu ketentuan berikut:
@@ -4448,6 +4456,19 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6857240169209507953">Cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
+<translation id="6864283226733000548">Setelan ini memberikan beberapa opsi ketersediaan untuk browser <ph name="LACROS_NAME" />.
+
+      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, pengguna dapat mengaktifkan <ph name="LACROS_NAME" /> dan menjadikannya sebagai browser utama. <ph name="LACROS_NAME" /> bisa tetap tidak diizinkan dengan kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" />.
+
+      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, pengguna tidak dapat menggunakan <ph name="LACROS_NAME" />. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
+
+      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan tetapi bukan sebagai browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
+
+      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan dan menjadi browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
+
+      Jika kebijakan tidak disetel, setelan default adalah <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> untuk pengguna yang dikelola perusahaan dan <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> untuk pengguna yang tidak dikelola perusahaan.
+
+      Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
       Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di atas layar kunci dan membuat catatan dalam konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.

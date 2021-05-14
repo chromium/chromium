@@ -507,6 +507,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
+<translation id="287596039013813457">Friendly</translation>
 <translation id="2876489322757410363">Leaving Incognito mode to pay via an external application. Continue?</translation>
 <translation id="2878197950673342043">Poster fold</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -604,6 +605,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3229041911291329567">Version information about your device and browser</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Always detect important content on this site</translation>
+<translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">French</translation>
 <translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3268451620468152448">Open tabs</translation>
@@ -981,6 +983,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4594403342090139922">&amp;Undo Delete</translation>
 <translation id="4597348597567598915">Size 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">Impactful</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1044,6 +1047,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4816492930507672669">Fit to page</translation>
 <translation id="4819347708020428563">Edit annotations in default view?</translation>
+<translation id="4825507807291741242">Powerful</translation>
+<translation id="4838327282952368871">Dreamy</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
@@ -1202,6 +1207,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5398772614898833570">Ads blocked</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="540969355065856584">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not valid at this time. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
+<translation id="541143247543991491">Cloud (system-wide)</translation>
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
@@ -1709,6 +1715,7 @@ Additional details:
       &lt;li&gt;Visit the &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome help centre&lt;/a&gt; to find out how to permanently remove the software from your computer
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Lovely</translation>
 <translation id="7416351320495623771">Manage passwords...</translation>
 <translation id="7419106976560586862">Profile Path</translation>
 <translation id="7437289804838430631">Add contact info</translation>
@@ -2132,6 +2139,7 @@ Additional details:
 <translation id="9020542370529661692">This page has been translated to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Invalid)</translation>
+<translation id="9030265603405983977">Monochrome</translation>
 <translation id="9035022520814077154">Security error</translation>
 <translation id="9038649477754266430">Use a prediction service to load pages more quickly</translation>
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
@@ -2155,6 +2163,7 @@ Additional details:
 <translation id="91108059142052966">Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE" /> when confidential content is visible</translation>
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Fresh</translation>
 <translation id="9119042192571987207">Uploaded</translation>
 <translation id="9128016270925453879">Policies is loaded</translation>
 <translation id="9128870381267983090">Connect to network</translation>

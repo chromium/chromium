@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
+<translation id="2022352537516230970">Deseñado para iPhones</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
@@ -314,6 +315,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184011057600693970">Deseñado para iPads</translation>
 <translation id="424315890655130736">Introducir contrasinal</translation>
 <translation id="4263576668337963058">Mostrar accións da páxina dispoñibles</translation>
 <translation id="4267380167363222949">Pestana seguinte</translation>
@@ -492,6 +494,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
+<translation id="60829778314739003">Aceptar e continuar</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6119050551270742952">O sitio web actual está no modo de incógnito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +590,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6801927553864092214">Para navegar de forma privada, abre unha pestana do modo de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
+<translation id="6830804042318138535">Ler máis</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6858855187367714033">Escaneado</translation>
@@ -635,6 +639,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7291368939935408496">Preparando contrasinais…</translation>
 <translation id="7293171162284876153">Para iniciar a sincronización, activa a opción Sincronizar os teus datos de Chrome.</translation>
 <translation id="7313347584264171202">Aquí atoparás as túas pestanas do modo de incógnito</translation>
+<translation id="7319242366286515846">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7346909386216857016">Entendido</translation>
@@ -781,6 +786,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8840513115188359703">Non se pechará sesión na túa conta de Google.</translation>
 <translation id="8870413625673593573">Pechados recentemente</translation>
+<translation id="8876882697946675716">Mantén sincronizados os teus dispositivos</translation>
 <translation id="8881801611828450202">Buscar esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8917490105272468696">Si, acepto</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1001033507375626788">已與你共用這個網路</translation>
 <translation id="1001307489511021749">當你使用 Google 帳戶登入後，所有 Chrome 作業系統裝置上的應用程式、設定和其他自訂項目都會保持同步。</translation>
 <translation id="1003088604756913841">在新的「<ph name="APP" />」視窗中開啟連結</translation>
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">從裝置中移除</translation>
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控管網站可以使用和顯示的資訊 (位置資訊、攝影機和彈出式視窗等等)</translation>
+<translation id="1997437640397887843">已開啟裝置相機。請將相機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始畫面</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2055585478631012616">系統會將你登出這些網站 (這項操作會套用到所有已開啟的分頁)。</translation>
 <translation id="205560151218727633">Google 助理標誌</translation>
 <translation id="2058456167109518507">偵測到裝置</translation>
+<translation id="2058581283817163201">透過這支手機驗證</translation>
 <translation id="2059913712424898428">時區</translation>
 <translation id="2060375639911876205">移除 eSIM 卡設定檔</translation>
 <translation id="2062354623176996748">如果不希望系統在你使用網路時儲存你的瀏覽記錄，請使用無痕式視窗</translation>
@@ -2599,6 +2602,7 @@
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存這個網站的密碼</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
+<translation id="3788331399335602504">這些檔案</translation>
 <translation id="3788401245189148511">要求下列權限：</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="379082410132524484">你的卡片已過期</translation>
@@ -3173,6 +3177,7 @@
 <translation id="4438043733494739848">透明</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> 的密碼 <ph name="MASKED_PASSWORD" /> 將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，連線</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> 已傳送通知到你的手機。如要確認你的身分，請輕觸「<ph name="NOTIFICATIONTITLE" />」通知，然後按照步驟操作。</translation>
 <translation id="4441124369922430666">你要在裝置開機時自動啟動這個應用程式嗎？</translation>
 <translation id="4441147046941420429">如要繼續，請將安全金鑰從裝置上移除，然後重新插入並輕觸安全金鑰</translation>
 <translation id="444134486829715816">展開...</translation>
@@ -3474,6 +3479,7 @@
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
+<translation id="4777458362738635055">這部裝置的其他使用者可以使用這個網路</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4777943778632837590">設定網路名稱伺服器</translation>
 <translation id="4778644898150334464">使用其他密碼</translation>
@@ -4309,6 +4315,7 @@
 <translation id="5712153969432126546">網站有時會發布文件、合約和表單等 PDF 檔案</translation>
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
+<translation id="5719637365829998022">已掃描 QR 圖碼。</translation>
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
@@ -4520,6 +4527,7 @@
 <translation id="5955721306465922729">有個網站想要開啟這個應用程式。</translation>
 <translation id="5955809630138889698">這個裝置可能只能使用線上示範模式。如需詳情，請與你的產品支援代表聯絡。</translation>
 <translation id="5956585768868398362">這是你想要的搜尋頁面嗎？</translation>
+<translation id="5957918771633727933">沒有可用的 eSIM 卡設定檔。請下載新的<ph name="BEGIN_LINK" />設定檔<ph name="END_LINK" />。</translation>
 <translation id="5957987129450536192">輕觸靠近設定檔圖片的「隨選朗讀」圖示，然後選取你要聆聽的內容。</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="595959584676692139">重新載入網頁即可使用這個擴充功能</translation>
@@ -6025,6 +6033,7 @@
 <translation id="7638605456503525968">序列埠</translation>
 <translation id="7639914187072011620">無法從伺服器擷取 SAML 重新導向網址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 會使用您儲存的密碼，讓您自動登入符合資格的網站。</translation>
+<translation id="7641513591566880111">新設定檔名稱</translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要允許網站查看檔案嗎？</translation>
@@ -6185,6 +6194,7 @@
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804072833593604762">已關閉分頁</translation>
+<translation id="7805759469263222011">請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7807067443225230855">搜尋與 Google 助理</translation>
 <translation id="7807711621188256451">一律允許 <ph name="HOST" /> 存取你的攝影機</translation>
@@ -6663,6 +6673,7 @@
 <translation id="8300849813060516376">OTASP 失敗</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 個地址}}</translation>
 <translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或使用受 Family Link 監督的 Google 帳戶登入。</translation>
+<translation id="8308016398665340540">你正在與這部裝置的其他使用者共用這個網路</translation>
 <translation id="8308179586020895837">當 <ph name="HOST" /> 要求存取攝影機時詢問我。</translation>
 <translation id="830868413617744215">測試版</translation>
 <translation id="8309458809024885768">憑證已存在</translation>

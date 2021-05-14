@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1096883626080133124">Zvýšte svoju výkonnosť pomocou jednoduchého, bezpečného a mimoriadne rýchleho Chromu</translation>
 <translation id="1282031177488366470">Pomoc so zlepšovaním funkcií a výkonu Chromu</translation>
 <translation id="1314663809820920746">Vaše záložky, história, heslá a ďalšie nastavenia zostanú v tomto zariadení zachované. Ak ich zmeníte, tieto zmeny nebudú synchronizované do vášho účtu Google.</translation>
 <translation id="1479202195792305274">Keď sa prihlásite účtom Google, Chrome môže skontrolovať vaše heslá.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="1682483655351012182">Synchronizácia údajov Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Odošlite štatistiky používania a prehľady pádov Googlu a pomôžte tak zlepšiť Chrome</translation>
 <translation id="1917964099031477364">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z Chromu a ďalších aplikácií Google v tomto zariadení.</translation>
 <translation id="2009224836393115614">Chromu sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>

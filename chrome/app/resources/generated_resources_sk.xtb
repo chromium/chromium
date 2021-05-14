@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1001033507375626788">Táto sieť je s vami zdieľaná</translation>
 <translation id="1001307489511021749">Vaše aplikácie, nastavenia a ďalšie prispôsobenia budú synchronizované vo všetkých zariadeniach so systémom Chrome OS, v ktorých ste sa prihlásili do účtu Google.</translation>
 <translation id="1003088604756913841">Otvoriť odkaz v novom okne aplikácie <ph name="APP" /></translation>
 <translation id="100323615638474026">Zariadenie USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -950,6 +951,7 @@
 <translation id="1992924914582925289">Odstrániť zo zariadenia</translation>
 <translation id="1994173015038366702">Webová adresa</translation>
 <translation id="1995916364271252349">Ovláda, ktoré informácie môžu weby používať a zobrazovať (polohu, fotoaparát, vyskakovacie okná a ďalšie)</translation>
+<translation id="1997437640397887843">Fotoaparát zariadenia je zapnutý. Umiestnite QR kód eSIM karty pred objektív fotoaparátu.</translation>
 <translation id="1997616988432401742">Vaše certifikáty</translation>
 <translation id="1999115740519098545">Pri spustení</translation>
 <translation id="2000419248597011803">Odošle niektoré súbory cookie a vyhľadávania z panela s adresou a vyhľadávacieho poľa do vášho predvoleného vyhľadávača</translation>
@@ -1005,6 +1007,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2055585478631012616">Systém vás odhlási z týchto webov (aj v otvorených kartách)</translation>
 <translation id="205560151218727633">Logo asistenta Google</translation>
 <translation id="2058456167109518507">Bolo rozpoznané zariadenie</translation>
+<translation id="2058581283817163201">Overiť týmto telefónom</translation>
 <translation id="2059913712424898428">Časové pásmo</translation>
 <translation id="2060375639911876205">Odstrániť profil eSIM</translation>
 <translation id="2062354623176996748">Používajte internet bez ukladania histórie prehliadania v okne inkognito</translation>
@@ -2601,6 +2604,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3785308913036335955">Zobrazovať odkaz aplikácií</translation>
 <translation id="3785727820640310185">Uložené heslá pre tento web</translation>
 <translation id="3788301286821743879">Verejnú aplikáciu sa nepodarilo spustiť.</translation>
+<translation id="3788331399335602504">tieto súbory</translation>
 <translation id="3788401245189148511">Mohli by:</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="379082410132524484">Platnosť vašej karty vypršala</translation>
@@ -3176,6 +3180,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4438043733494739848">Priehľadné</translation>
 <translation id="4438639467177774583">Používateľské meno <ph name="USERNAME" /> a heslo <ph name="MASKED_PASSWORD" /> budú uložené do vášho účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
+<translation id="4440097423000553826">Z webu <ph name="WEBSITE" /> bolo odoslané upozornenie do vášho telefónu. Ak chcete potvrdiť svoju totožnosť, klepnite na upozornenie <ph name="NOTIFICATIONTITLE" /> a postupujte podľa pokynov.</translation>
 <translation id="4441124369922430666">Chcete automaticky spustiť túto aplikáciu po zapnutí zariadenia?</translation>
 <translation id="4441147046941420429">Ak chcete pokračovať, vyberte bezpečnostný kľúč zo svojho zariadenia, potom ho znova vložte a klepnite naň</translation>
 <translation id="444134486829715816">Rozbaliť...</translation>
@@ -3477,6 +3482,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4773112038801431077">Inovácia systému Linux</translation>
 <translation id="477647109558161443">Vytvoriť odkaz na pracovnej ploche</translation>
 <translation id="4776917500594043016">Heslo pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Ostatní používatelia tohto zariadenia môžu túto sieť používať</translation>
 <translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4777943778632837590">Konfigurovať servery s názvami siete</translation>
 <translation id="4778644898150334464">Použiť iné heslo</translation>
@@ -4312,6 +4318,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5712153969432126546">Weby niekedy zverejňujú súbory PDF, napríklad dokumenty, zmluvy a formuláre</translation>
 <translation id="5715711091495208045">Doplnok Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Predvolené vyhľadávače</translation>
+<translation id="5719637365829998022">QR kód bol naskenovaný</translation>
 <translation id="5719854774000914513">Weby môžu žiadať o pripojenie k zariadeniam HID</translation>
 <translation id="572155275267014074">Nastavenia Androidu</translation>
 <translation id="5722086096420375088">Zelená a biela</translation>
@@ -4523,6 +4530,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5955721306465922729">Nejaký web chce otvoriť túto aplikáciu.</translation>
 <translation id="5955809630138889698">Toto zariadenie zrejme spĺňa podmienky iba pre režim online ukážky. Ďalšie informácie vám poskytne zástupca podpory.</translation>
 <translation id="5956585768868398362">Je toto stránka vyhľadávania, ktorú ste čakali?</translation>
+<translation id="5957918771633727933">Nie sú k dispozícii žiadne profily eSIM karty. Stiahnite <ph name="BEGIN_LINK" />nový profil.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Klepnite na ikonu počúvania vybraného textu pri profilovej fotke a vyberte obsah, ktorý si chcete vypočuť.</translation>
 <translation id="5959471481388474538">Sieť je nedostupná</translation>
 <translation id="595959584676692139">Ak chcete toto rozšírenie použiť, znova načítajte stránku</translation>
@@ -6028,6 +6036,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7638605456503525968">Sériové porty</translation>
 <translation id="7639914187072011620">Presmerovanie SAML sa nepodarilo načítať zo servera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky prihlási na vhodných weboch pomocou hesiel, ktoré ste si uložili.</translation>
+<translation id="7641513591566880111">Názov nového profilu</translation>
 <translation id="7642778300616172920">Skryť citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvorené okno}few{# otvorené okná}many{# open windows}other{# otvorených okien}}</translation>
 <translation id="7643932971554933646">Chcete povoliť webu zobrazovať si súbory?</translation>
@@ -6188,6 +6197,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7800518121066352902">Otočiť &amp;proti smeru hodinových ručičiek</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804072833593604762">Karta je zatvorená</translation>
+<translation id="7805759469263222011">Naskenujte QR kód fotoaparátom zariadenia alebo zadajte aktivačný kód, ktorý vám poskytol operátor</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7807067443225230855">Vyhľadávanie a Asistent</translation>
 <translation id="7807711621188256451">Vždy povoliť stránkam <ph name="HOST" /> prístup ku kamere</translation>
@@ -6666,6 +6676,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8300849813060516376">Zlyhanie služby OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresa}few{# adresy}many{# addresses}other{# adries}}</translation>
 <translation id="8304383784961451596">Nemáte oprávnenie používať toto zariadenie. Požiadajte správcu o povolenie na prihlásenie alebo sa prihláste účtom Google pod dohľadom aplikácie Family Link.</translation>
+<translation id="8308016398665340540">Túto sieť zdieľate s ďalšími používateľmi tohto zariadenia</translation>
 <translation id="8308179586020895837">Opýtať sa, ak chcú stránky <ph name="HOST" /> pristupovať ku kamere</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Certifikát už existuje</translation>

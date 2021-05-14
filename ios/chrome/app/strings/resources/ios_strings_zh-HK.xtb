@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
+<translation id="2022352537516230970">專為 iPhone 而設</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">永遠顯示</translation>
 <translation id="418156467088430727">在新分頁中查看離線版本</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4184011057600693970">專為 iPad 而設</translation>
 <translation id="424315890655130736">輸入密碼短語</translation>
 <translation id="4263576668337963058">顯示可用的網頁動作</translation>
 <translation id="4267380167363222949">下一個分頁</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
+<translation id="60829778314739003">接受並繼續</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6119050551270742952">目前的網頁已處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -585,6 +588,7 @@
 <translation id="6801927553864092214">如要私密瀏覽，請開啟無痕式分頁</translation>
 <translation id="6807889908376551050">全部顯示…</translation>
 <translation id="681368974849482173">項目已建立</translation>
+<translation id="6830804042318138535">瞭解詳情</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6851516051005285358">切換至電腦版網站</translation>
 <translation id="6858855187367714033">已經掃咗瞄</translation>
@@ -633,6 +637,7 @@
 <translation id="7291368939935408496">正在準備密碼…</translation>
 <translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理 Chrome 資料」。</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
+<translation id="7319242366286515846">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
@@ -779,6 +784,7 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
+<translation id="8876882697946675716">讓您的裝置保持同步</translation>
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜尋此圖片</translation>
 <translation id="8909135823018751308">共用…</translation>
 <translation id="8917490105272468696">係，我同意</translation>

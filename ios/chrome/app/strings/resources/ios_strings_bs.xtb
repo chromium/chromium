@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
+<translation id="2022352537516230970">Napravljeno za vaš iPhone</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Vrati</translation>
@@ -314,6 +315,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="418156467088430727">Prikaži verziju van mreže u novoj kartici</translation>
 <translation id="4181841719683918333">Jezici</translation>
+<translation id="4184011057600693970">Napravljeno za vaš iPad</translation>
 <translation id="424315890655130736">Unesite pristupni izraz</translation>
 <translation id="4263576668337963058">Prikaži dostupne radnje za stranicu</translation>
 <translation id="4267380167363222949">Sljedeća kartica</translation>
@@ -492,6 +494,7 @@ Također, Handoff mora biti omogućen u odjeljku Općenito u Postavkama, a vaši
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
 <translation id="6066301408025741299">Dodirnite da otkažete.</translation>
+<translation id="60829778314739003">Prihvati i nastavi</translation>
 <translation id="6108923351542677676">U toku je postavljanje…</translation>
 <translation id="6119050551270742952">Trenutna web stranica je u Anonimnom načinu</translation>
 <translation id="6122191549521593678">Na mreži</translation>
@@ -587,6 +590,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6801927553864092214">Da privatno pregledate, otvorite anonimnu karticu</translation>
 <translation id="6807889908376551050">Prikaži sve…</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
+<translation id="6830804042318138535">Pročitajte više</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
 <translation id="6858855187367714033">Skenirano</translation>
@@ -635,6 +639,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7291368939935408496">Pripremanje lozinki...</translation>
 <translation id="7293171162284876153">Da pokrenete sinhroniziranje, uključite "Sinhroniziranje Chrome podataka"</translation>
 <translation id="7313347584264171202">Anonimne kartice ćete pronaći ovdje</translation>
+<translation id="7319242366286515846">Ako nastavite, pristajete na <ph name="BEGIN_LINK" />Uslove korištenja usluge<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Preuzeto je <ph name="PERCENT" /> posto</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
@@ -781,6 +786,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8820817407110198400">Oznake</translation>
 <translation id="8840513115188359703">Nećete se odjaviti sa svog Google računa.</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
+<translation id="8876882697946675716">Kontinuirano sinhronizirajte uređaje</translation>
 <translation id="8881801611828450202">Pretraži <ph name="SEARCH_ENGINE" /> za ovu sliku</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
 <translation id="8917490105272468696">Pristajem</translation>

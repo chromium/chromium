@@ -295,6 +295,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
 <translation id="2905036901251765993">To share with people nearby, let them scan this QR code</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912296070571964914">Manage the topics that you're interested in</translation>
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
@@ -339,6 +340,8 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3254409185687681395">Bookmark this page</translation>
 <translation id="3259831549858767975">Make everything on the page smaller</translation>
 <translation id="3264124641674805320">How to download content for later</translation>
+<translation id="3264259168916048410">Your computer wants to use this device to sign in to a site</translation>
+<translation id="3265534588625245297">Manage the sites that you follow</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="3269956123044984603">To get your tabs from your other devices, turn on “Auto-sync data” in Android account settings.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – Downloading…</translation>
 <translation id="4404568932422911380">No bookmarks</translation>
 <translation id="4405224443901389797">Move to…</translation>
 <translation id="4411535500181276704">Lite mode</translation>
@@ -583,6 +587,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="488187801263602086">Rename file</translation>
 <translation id="4882831918239250449">Control how your browsing history is used to personalise Search, ads and more</translation>
 <translation id="4885273946141277891">Unsupported number of Chrome instances.</translation>
+<translation id="4905269543817054577">History isn’t saved in Incognito</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Payment apps</translation>
 <translation id="4913161338056004800">Reset statistics</translation>
@@ -951,6 +956,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
+<translation id="7252076891734325316">Place your phone close to the computer</translation>
 <translation id="7274013316676448362">Blocked site</translation>
 <translation id="7286572596625053347">Change <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
@@ -1017,6 +1023,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7630202231528827509">Provider URL</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7641339528570811325">Clear browsing data…</translation>
+<translation id="764170292089748542">Chrome doesn’t save your browsing history when you choose to browse privately. You can still use bookmarks to access your favourite sites.</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665369617277396874">Add account</translation>
@@ -1042,6 +1049,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
 <translation id="7821588508402923572">Your data savings will appear here</translation>
+<translation id="78270725016672455">Your computer wants to register this device for signing in to a site</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>
 <translation id="7846296061357476882">Google services</translation>
 <translation id="784934925303690534">Time range</translation>
@@ -1138,6 +1146,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8438566539970814960">Make searches and browsing better</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – Language ready, restart <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">No stories available</translation>
 <translation id="8443209985646068659">Chrome can’t update</translation>
 <translation id="8445448999790540984">Can’t export passwords</translation>
@@ -1210,6 +1219,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8937267401510745927">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant. This information may be stored in your Google Account. You can turn off Assistant in Chrome settings.</translation>
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
 <translation id="8951232171465285730">Chrome has saved you <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">pending</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>

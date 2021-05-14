@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Invite (канверт)</translation>
 <translation id="2856444702002559011">Зламыснікі могуць спрабаваць украсці вашы даныя з сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (напрыклад, паролі, паведамленні або даныя крэдытных картак). <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
+<translation id="287596039013813457">Таварыскі</translation>
 <translation id="2876489322757410363">Адбудзецца выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
 <translation id="2878197950673342043">Плакатны згіб</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@
 <translation id="3229041911291329567">Звесткі пра версію прылады і браўзера</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Заўсёды выяўляць важнае змесціва на гэтым сайце</translation>
+<translation id="3249845759089040423">Стыльны</translation>
 <translation id="3252266817569339921">Французская</translation>
 <translation id="3266793032086590337">Значэнне (канфліктуючае)</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
@@ -981,6 +983,7 @@
 <translation id="4594403342090139922">&amp;Адрабіць выдаленне</translation>
 <translation id="4597348597567598915">Памер 8</translation>
 <translation id="4600854749408232102">C6/C5 (канверт)</translation>
+<translation id="4606870351894164739">Уражальны</translation>
 <translation id="4628948037717959914">Фота</translation>
 <translation id="4631649115723685955">З вяртаннем грошай</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
@@ -1044,6 +1047,8 @@
 <translation id="4813512666221746211">Памылка сеткі</translation>
 <translation id="4816492930507672669">Дапасаваць да памераў старонкі</translation>
 <translation id="4819347708020428563">Збіраецеся змяняць анатацыі ў стандартным выглядзе?</translation>
+<translation id="4825507807291741242">Моцны</translation>
+<translation id="4838327282952368871">Летуценны</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="485316830061041779">Нямецкая</translation>
@@ -1202,6 +1207,7 @@
 <translation id="5398772614898833570">Рэклама заблакіравана</translation>
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="540969355065856584">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; сертыфікат бяспекі гэтага сайта не распазнаецца як сапраўдны. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
+<translation id="541143247543991491">Воблака (у маштабе сістэмы)</translation>
 <translation id="541416427766103491">Укладчык 4</translation>
 <translation id="5421136146218899937">Выдаліць гісторыю праглядаў...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> запытвае дазвол адпраўляць вам апавяшчэнні</translation>
@@ -1710,6 +1716,7 @@
       &lt;li&gt;Каб даведацца, як назаўжды выдаліць гэта праграмнае забеспячэнне з вашага камп'ютара, наведайце старонку &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Даведачны цэнтр Chrome&lt;/a&gt;.
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Шырокі фармат</translation>
+<translation id="7410471291937727359">Мілы</translation>
 <translation id="7416351320495623771">Кіраваць паролямі…</translation>
 <translation id="7419106976560586862">Шлях да профілю</translation>
 <translation id="7437289804838430631">Дадаць кантактную інфармацыю</translation>
@@ -2133,6 +2140,7 @@
 <translation id="9020542370529661692">Гэта старонка была перакладзена на наступную мову: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Несапраўдны)</translation>
+<translation id="9030265603405983977">Манахромны</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>
 <translation id="9038649477754266430">Выкарыстоўваць сэрвіс прагназавання для больш хуткай загрузкі старонак</translation>
 <translation id="9039213469156557790">Акрамя таго, на гэтай старонцы ёсць іншыя рэсурсы, якія не з'яўляюцца бяспечнымі: яны могуць быць прагледжаны іншымі падчас перадачы, а таксама могуць быць мадыфікаваны зламыснікам з мэтай змяніць паводзіны старонкі.</translation>
@@ -2156,6 +2164,7 @@
 <translation id="91108059142052966">Згодна з палітыкай, зададзенай адміністратарам, <ph name="APPLICATION_TITLE" /> не можа выкарыстоўвацца для абагульвання экрана, калі на ім паказваецца прыватнае змесціва.</translation>
 <translation id="9114524666733003316">Пацвярджаюцца даныя карткі...</translation>
 <translation id="9114581008513152754">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Свежы</translation>
 <translation id="9119042192571987207">Запампавана</translation>
 <translation id="9128016270925453879">Палітыкі загружаны</translation>
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>

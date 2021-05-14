@@ -295,6 +295,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2904414404539560095">Lys toestelle om 'n oortjie mee te deel, is teen volle hoogte oopgemaak.</translation>
 <translation id="2905036901251765993">Om met mense naby te deel, moet hulle hierdie QR-kode skandeer</translation>
 <translation id="2909615210195135082">Google-kennisgewingsplatform</translation>
+<translation id="2912296070571964914">Bestuur die onderwerpe waarin jy belangstel</translation>
 <translation id="2923908459366352541">Naam is ongeldig</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-berging</translation>
 <translation id="2932222164150889403">Jou sleutelbord sal nie verander nie</translation>
@@ -339,6 +340,8 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3254409185687681395">Boekmerk hierdie bladsy</translation>
 <translation id="3259831549858767975">Maak alles op die bladsy kleiner</translation>
 <translation id="3264124641674805320">Hoe om inhoud vir later af te laai</translation>
+<translation id="3264259168916048410">Jou rekenaar wil hierdie toestel gebruik om by 'n werf aan te meld</translation>
+<translation id="3265534588625245297">Bestuur die werwe wat jy volg</translation>
 <translation id="3269093882174072735">Laai prent</translation>
 <translation id="3269956123044984603">Skakel “Sinkroniseer data outomaties” in Android-rekeninginstellings aan om jou oortjies van jou ander toestelle af te kry.</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir
 <translation id="4351244548802238354">Maak dialoog toe</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4384468725000734951">Gebruik Sogou om te soek</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – laai tans af …</translation>
 <translation id="4404568932422911380">Geen boekmerke nie</translation>
 <translation id="4405224443901389797">Skuif na …</translation>
 <translation id="4411535500181276704">Ligte modus</translation>
@@ -583,6 +587,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="488187801263602086">Hernoem lêer</translation>
 <translation id="4882831918239250449">Beheer hoe jou blaaigeskiedenis gebruik word om Search, advertensies en meer te personaliseer</translation>
 <translation id="4885273946141277891">Ongesteunde aantal Chrome-gevalle.</translation>
+<translation id="4905269543817054577">Geskiedenis word nie in Incognito gestoor nie</translation>
 <translation id="4908869848243824489">Ontdek deur Google</translation>
 <translation id="4910889077668685004">Betalingprogramme</translation>
 <translation id="4913161338056004800">Stel statistiek terug</translation>
@@ -951,6 +956,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7191430249889272776">Oortjie is op die agtergrond oopgemaak.</translation>
 <translation id="7233236755231902816">Kry die jongste weergawe van Chrome om die web in jou taal te sien.</translation>
 <translation id="7248069434667874558">Maak seker dat sinkronisering in Chrome op <ph name="TARGET_DEVICE_NAME" /> aangeskakel is.</translation>
+<translation id="7252076891734325316">Plaas jou foon naby die rekenaar</translation>
 <translation id="7274013316676448362">Geblokkeerde werf</translation>
 <translation id="7286572596625053347">Verander <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Hernoeming is nie beskikbaar nie</translation>
@@ -1017,6 +1023,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7630202231528827509">Verskaffer-URL</translation>
 <translation id="7638584964844754484">Verkeerde wagwoordfrase</translation>
 <translation id="7641339528570811325">Maak blaaidata skoon …</translation>
+<translation id="764170292089748542">Chrome stoor nie jou blaaigeskiedenis wanneer jy kies om privaat te blaai nie. Jy kan steeds boekmerke gebruik om na jou gunstelingwerwe toe te gaan.</translation>
 <translation id="7646772052135772216">Wagwoordsinkronisering werk nie</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7665369617277396874">Voeg rekening by</translation>
@@ -1042,6 +1049,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7810647596859435254">Maak oop met …</translation>
 <translation id="7815484226266492798">Lang skermkiekie</translation>
 <translation id="7821588508402923572">Jou databesparing sal hier verskyn</translation>
+<translation id="78270725016672455">Jou rekenaar wil hierdie toestel vir aanmelding by 'n werf registreer</translation>
 <translation id="7844171778363018843">Geen data gekies om te sinkroniseer nie</translation>
 <translation id="7846296061357476882">Google-dienste</translation>
 <translation id="784934925303690534">Tydomvang</translation>
@@ -1138,6 +1146,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8427875596167638501">Voorskou-oortjie is half oopgemaak</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – taal is gereed; herbegin <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Geen stories beskikbaar nie</translation>
 <translation id="8443209985646068659">Chrome dateer nie op nie</translation>
 <translation id="8445448999790540984">Kan nie wagwoorde uitvoer nie</translation>
@@ -1210,6 +1219,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8937267401510745927">Om jou te help om take te voltooi, sal Google die URL'e en inhoud ontvang van werwe waarop jy Assistent gebruik, asook inligting wat jy deur Assistent indien. Hierdie inligting kan in jou Google-rekening geberg word. Jy kan Assistent in Chrome-instellings afskakel.</translation>
 <translation id="8937772741022875483">Verwyder jou Chrome-aktiwiteit van Digitale Welstand?</translation>
 <translation id="8942627711005830162">Maak in 'n ander venster oop</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – hierdie taal kon nie afgelaai word nie. Probeer later weer.</translation>
 <translation id="8951232171465285730">Chrome het vir jou <ph name="MEGABYTES" /> MB bespaar</translation>
 <translation id="8965591936373831584">hangende</translation>
 <translation id="8970887620466824814">Iets is fout.</translation>

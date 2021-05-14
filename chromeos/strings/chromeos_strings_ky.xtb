@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">Интернет провайдери</translation>
 <translation id="7271040990581020067">Сканер учурда колдонулуп жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Тармак түзмөктөрү</translation>
 <translation id="7359657277149375382">Файлдын түрү</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">Кошумча башкы түйүндөр</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Баштапкы жабдуучунун аты</translation>
 <translation id="8475690821716466388">WiFi тармагынын WEP PSK протоколунун коопсуздугу начар</translation>
 <translation id="8477551185774834963">DNS күтүү убакыты уруксат берилген босогодон бир аз жогору</translation>

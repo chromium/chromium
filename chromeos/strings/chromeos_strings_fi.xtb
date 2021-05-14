@@ -299,6 +299,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8372477600026034341">Muut isännät</translation>
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
+<translation id="8422748173858722634">IMEI-koodi</translation>
 <translation id="8461329675984532579">Kotiverkon palveluntarjoajan nimi</translation>
 <translation id="8475690821716466388">Wi-Fi-verkko on suojattu heikolla WEP PSK -protokollalla</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>

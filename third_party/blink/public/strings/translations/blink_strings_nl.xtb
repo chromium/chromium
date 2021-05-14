@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">keuzelijst met invoervak</translation>
 <translation id="3220661731597678625">huidige stap</translation>
+<translation id="3321030238473337787">Afspeelsnelheid</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3450233048674729344">Waarde moet kleiner dan of gelijk zijn aan <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definitie</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">menubalk</translation>
 <translation id="4293574643247337246">koptekst van de pagina</translation>
 <translation id="4360991593054037559">Geef een geldige waarde op. De twee dichtstbijzijnde geldige waarden zijn <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">menu afspeelsnelheid verbergen</translation>
 <translation id="4384249794467006333">Deze afbeelding is niet gelabeld. Open rechtsboven het menu 'Meer opties' om afbeeldingsbeschrijvingen te krijgen.</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4444765639179266822">Lijkt het volgende te zeggen: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">item in boomstructuur</translation>
 <translation id="5466621249238537318">Selecteer een of meer bestanden.</translation>
 <translation id="5468998798572797635">volledig scherm sluiten</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">datumkiezer</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">geluid aanzetten</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">meer opties</translation>
 <translation id="576709008726043716">inleiding</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
+<translation id="5786442179789148008">menu afspeelsnelheid weergeven</translation>
 <translation id="5787939484346677755">uitgevouwen, er zijn opties voor automatisch aanvullen beschikbaar.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5966707198760109579">Week</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">draaiknop</translation>
 <translation id="6011459053400940133">volumeregelaar</translation>
 <translation id="6015796118275082299">Jaar</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">geluid uitzetten</translation>
 <translation id="6885760532393684712">directory</translation>
 <translation id="689129560213475294">colofon</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">blok met geciteerde tekst</translation>
 <translation id="693476918119313863">koptekst</translation>
 <translation id="6941933287844615239">media downloaden</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">opmerkingsreferentie</translation>
 <translation id="811583516810654505">Beschrijving ophalen…</translation>
 <translation id="8117451130807776954">Deze week</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
 <translation id="8208673686607688524">lokale datum- en tijdkiezer</translation>
 <translation id="8261464734335370856">Ongeldige spelling</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">afspelen bedienen op afstand</translation>
 <translation id="862370744433916922">ondertitel</translation>
 <translation id="8634971699417195529">Maandkiezer tonen</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Regelterugloop</translation>
 <translation id="8711688047404765493">uitvoer</translation>
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>

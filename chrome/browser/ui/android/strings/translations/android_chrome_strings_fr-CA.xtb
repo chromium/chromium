@@ -295,6 +295,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
 <translation id="2905036901251765993">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
+<translation id="2912296070571964914">Gérez les sujets qui vous intéressent</translation>
 <translation id="2923908459366352541">Le nom est incorrect</translation>
 <translation id="2932150158123903946">Stockage de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier restera le même</translation>
@@ -339,6 +340,8 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3254409185687681395">Ajouter cette page aux favoris</translation>
 <translation id="3259831549858767975">Réduire la taille de tout le contenu de la page</translation>
 <translation id="3264124641674805320">Comment télécharger du contenu pour plus tard</translation>
+<translation id="3264259168916048410">Votre ordinateur demande à utiliser cet appareil pour se connecter à un site</translation>
+<translation id="3265534588625245297">Gérez les sites auxquels vous êtes abonnés</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3269956123044984603">Pour synchroniser vos onglets sur vos autres appareils, activez « Synchroniser automatiquement les données » dans les paramètres de compte Android.</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
@@ -497,6 +500,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
+<translation id="4402611456429872546">Téléchargement de la langue <ph name="LANG" /> en cours…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
 <translation id="4411535500181276704">Mode simplifié</translation>
@@ -583,6 +587,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="488187801263602086">Renommer le fichier</translation>
 <translation id="4882831918239250449">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser la recherche, les annonces et plus encore</translation>
 <translation id="4885273946141277891">Trop d'exécutions simultanées de Google Chrome.</translation>
+<translation id="4905269543817054577">L'historique n'est pas enregistré en mode de navigation privée</translation>
 <translation id="4908869848243824489">Découvertes par Google</translation>
 <translation id="4910889077668685004">Applications de paiement</translation>
 <translation id="4913161338056004800">Réinitialiser les statistiques</translation>
@@ -951,6 +956,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre propre langue, procurez-vous la dernière version de Chrome</translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
+<translation id="7252076891734325316">Placez votre téléphone près de l'ordinateur</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7286572596625053347">Ne plus utiliser <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Impossible de renommer l'élément</translation>
@@ -1017,6 +1023,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
 <translation id="7641339528570811325">Effacer les données de navigation…</translation>
+<translation id="764170292089748542">Chrome n'enregistre pas votre historique de navigation lorsque vous choisissez de naviguer en mode privé. Vous pouvez toujours utiliser les favoris pour accéder à vos sites préférés.</translation>
 <translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
@@ -1042,6 +1049,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
 <translation id="7821588508402923572">Vos économies de données s'afficheront ici</translation>
+<translation id="78270725016672455">Votre ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Intervalle de temps</translation>
@@ -1138,6 +1146,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8427875596167638501">L'onglet d'aperçu est ouvert à moitié</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
+<translation id="8439974325294139057">Langue prête à être utilisée : <ph name="LANG" />. Redémarrez <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Aucun article</translation>
 <translation id="8443209985646068659">Impossible de mettre à jour Chrome</translation>
 <translation id="8445448999790540984">Impossible d'exporter les mots de passe</translation>
@@ -1210,6 +1219,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8937267401510745927">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant. Cette information peut être stockée dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
+<translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
 <translation id="8951232171465285730">Chrome vous a fait économiser <ph name="MEGABYTES" /> Mo</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1096883626080133124">シンプル、安全で、さらに高速になった Google Chrome をご活用ください</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
 <translation id="1314663809820920746">このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容は Google アカウントと同期されません。</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="1682483655351012182">Chrome のデータを同期する</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">使用統計情報と障害レポートを Google に送信して Chrome の機能向上に役立てる</translation>
 <translation id="1917964099031477364">このアカウントと保存されていないデータは、Chrome やこのデバイスの他の Google アプリから削除されます。</translation>
 <translation id="2009224836393115614">Chrome でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="2147651015520127414">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>

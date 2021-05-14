@@ -299,6 +299,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Võrguseadmed</translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8372477600026034341">Lisahostid</translation>
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Koduteenuse pakkuja nimi</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
 <translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>

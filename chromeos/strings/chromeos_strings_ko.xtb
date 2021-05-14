@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">추가 호스트</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">홈 공급자 이름</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>

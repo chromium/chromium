@@ -295,6 +295,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2904414404539560095">Tækjalisti fyrir deilingu flipa sem er opinn á öllum skjánum.</translation>
 <translation id="2905036901251765993">Ef þú vilt deila með fólki í nágrenninu skaltu láta það skanna þennan QR-kóða</translation>
 <translation id="2909615210195135082">Tilkynningakerfi Google</translation>
+<translation id="2912296070571964914">Stjórna umfjöllunarefnum sem þú hefur áhuga á</translation>
 <translation id="2923908459366352541">Nafnið er ógilt</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> geymslurými</translation>
 <translation id="2932222164150889403">Lyklaborðið þitt breytist ekki</translation>
@@ -339,6 +340,8 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3254409185687681395">Setja þessa síðu í bókamerki</translation>
 <translation id="3259831549858767975">Minnka allt á síðunni</translation>
 <translation id="3264124641674805320">Svona sækirðu efni til að nota síðar</translation>
+<translation id="3264259168916048410">Tölvan vill nota þetta tæki til að skrá inn á vefsvæði</translation>
+<translation id="3265534588625245297">Stjórna vefsvæðunum sem þú fylgir</translation>
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="3269956123044984603">Kveiktu á „Samstilla gögn sjálfkrafa“ í reikningsstillingum Android til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4351244548802238354">Loka glugga</translation>
 <translation id="4378154925671717803">Sími</translation>
 <translation id="4384468725000734951">Notar Sogou fyrir leit</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Sækir…</translation>
 <translation id="4404568932422911380">Engin bókamerki</translation>
 <translation id="4405224443901389797">Færa í…</translation>
 <translation id="4411535500181276704">Léttútgáfa</translation>
@@ -583,6 +587,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="488187801263602086">Endurnefna skrá</translation>
 <translation id="4882831918239250449">Stjórnaðu því hvernig vefskoðunarferillinn þinn er notaður til að sérsníða leit, auglýsingar og fleira</translation>
 <translation id="4885273946141277891">Óstuddur fjöldi Chrome tilvika.</translation>
+<translation id="4905269543817054577">Ferill er ekki vistaður í huliðsstillingu</translation>
 <translation id="4908869848243824489">Tillögur frá Google</translation>
 <translation id="4910889077668685004">Greiðsluforrit</translation>
 <translation id="4913161338056004800">Endurstilla tölfræði</translation>
@@ -951,6 +956,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
 <translation id="7233236755231902816">Til að skoða vefinn á þínu tungumáli skaltu sækja nýjustu útgáfuna af Chrome</translation>
 <translation id="7248069434667874558">Gakktu úr skugga um að kveikt sé á samstillingu í Chrome í <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Stilltu símanum upp við tölvuna</translation>
 <translation id="7274013316676448362">Vefsvæði á bannlista</translation>
 <translation id="7286572596625053347">Breyta <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Ekki er hægt að endurnefna</translation>
@@ -1017,6 +1023,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7630202231528827509">Vefslóð veitu</translation>
 <translation id="7638584964844754484">Rangt aðgangsorð</translation>
 <translation id="7641339528570811325">Hreinsa vafragögn…</translation>
+<translation id="764170292089748542">Chrome vistar ekki vafraferil þegar þú notar huliðsstillinguna til að vafra. Þú getur áfram notað bókamerki til að opna uppáhaldsvefsvæðin þín.</translation>
 <translation id="7646772052135772216">Samstilling aðgangsorða virkar ekki</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665369617277396874">Bæta við reikningi</translation>
@@ -1042,6 +1049,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7810647596859435254">Opna með…</translation>
 <translation id="7815484226266492798">Löng skjámynd</translation>
 <translation id="7821588508402923572">Gagnasparnaður birtist hér</translation>
+<translation id="78270725016672455">Tölvan biður um að skrá þetta tæki við skráningu inn á vefsvæði</translation>
 <translation id="7844171778363018843">Engin gögn valin fyrir samstillingu</translation>
 <translation id="7846296061357476882">Google þjónusta</translation>
 <translation id="784934925303690534">Tímabil</translation>
@@ -1138,6 +1146,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8427875596167638501">Forskoðunarflipinn er hálfopinn</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8438566539970814960">Bæta leit og vafra</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Tungumál er tilbúið, endurræstu <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Engar sögur í boði</translation>
 <translation id="8443209985646068659">Ekki er hægt að uppfæra</translation>
 <translation id="8445448999790540984">Ekki er hægt að flytja út aðgangsorð</translation>
@@ -1210,6 +1219,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8937267401510745927">Google fær vefslóðir og innihald vefsvæða þar sem þú notar Hjálparann, auk upplýsinga sem þú sendir með Hjálparanum, til að auðvelda þér að ljúka verkefnum. Þessar upplýsingar gætu verið vistaðar á Google reikningnum þínum. Þú getur slökkt á Hjálparanum í stillingum Chrome.</translation>
 <translation id="8937772741022875483">Viltu fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan?</translation>
 <translation id="8942627711005830162">Opna í öðrum glugga</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Ekki tókst að hlaða þessu tungumáli niður. Reyndu aftur síðar.</translation>
 <translation id="8951232171465285730">Chrome hefur sparað þér <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">bíður</translation>
 <translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>

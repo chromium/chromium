@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
+<translation id="2022352537516230970">Conçu pour votre iPhone</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
@@ -314,6 +315,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher la version hors ligne dans un nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
+<translation id="4184011057600693970">Conçu pour votre iPad</translation>
 <translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
 <translation id="4267380167363222949">Onglet suivant</translation>
@@ -492,6 +494,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
+<translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6119050551270742952">La page Web actuelle est ouverte en mode de navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -586,6 +589,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6801927553864092214">Pour naviguer de manière incognito, ouvrez un onglet de navigation privée</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
+<translation id="6830804042318138535">Lire la suite</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6858855187367714033">Numérisé</translation>
@@ -634,6 +638,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
 <translation id="7293171162284876153">Pour démarrer la synchronisation, activez l'option « Synchroniser vos données Chrome ».</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
+<translation id="7319242366286515846">En continuant, vous acceptez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
@@ -780,6 +785,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8870413625673593573">Éléments récemment fermés</translation>
+<translation id="8876882697946675716">Synchroniser vos appareils</translation>
 <translation id="8881801611828450202">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>

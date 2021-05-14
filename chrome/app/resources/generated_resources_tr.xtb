@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1001033507375626788">Bu ağ sizinle paylaşıldı</translation>
 <translation id="1001307489511021749">Uygulamalarınız, ayarlarınız ve diğer özelleştirmeleriniz, Google Hesabınızla oturum açtığınız tüm Chrome OS cihazlarında senkronize edilir.</translation>
 <translation id="1003088604756913841">Bağlantıyı yeni <ph name="APP" /> Penceresinde aç</translation>
 <translation id="100323615638474026">USB cihaz (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">Cihazdan kaldır</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="1995916364271252349">Sitelerin hangi bilgileri kullanabileceğini ve gösterebileceğini kontrol eder (konum, kamera, pop-up'lar ve diğerleri)</translation>
+<translation id="1997437640397887843">Cihaz kamerası açıldı. Lütfen eSIM QR kodunuzu kameranın önüne yerleştirin.</translation>
 <translation id="1997616988432401742">Sertifikalarınız</translation>
 <translation id="1999115740519098545">Başlangıçta</translation>
 <translation id="2000419248597011803">Adres çubuğundan ve arama kutusundan bazı çerezleri ve aramaları varsayılan arama motorunuza gönderir</translation>
@@ -1003,6 +1005,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2055585478631012616">Açık sekmeler dahil olmak üzere bu sitelerdeki oturumunuzu kapatacaksınız</translation>
 <translation id="205560151218727633">Google Asistan logosu</translation>
 <translation id="2058456167109518507">Cihaz algılandı</translation>
+<translation id="2058581283817163201">Bu telefon ile doğrulayın</translation>
 <translation id="2059913712424898428">Saat dilimi</translation>
 <translation id="2060375639911876205">eSIM profilini kaldır</translation>
 <translation id="2062354623176996748">Gizli pencere sayesinde tarama geçmişinizi kaydetmeden web'i kullanın</translation>
@@ -2599,6 +2602,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3785308913036335955">Uygulamalar Kısayolunu Göster</translation>
 <translation id="3785727820640310185">Bu site için kaydedilen şifreler</translation>
 <translation id="3788301286821743879">Kiosk uygulaması başlatılamadı.</translation>
+<translation id="3788331399335602504">bu dosyalar</translation>
 <translation id="3788401245189148511">Şunları yapabilecek:</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="379082410132524484">Kartınızın süresi doldu</translation>
@@ -3174,6 +3178,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4438043733494739848">Şeffaf</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" />, <ph name="ACCOUNT" /> Google Hesabınıza kaydedilecek</translation>
 <translation id="4439427728133035643">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" />, telefonunuza bildirim gönderdi. Siz olduğunuzu doğrulamak için “<ph name="NOTIFICATIONTITLE" />” bildirimine dokunup adımları takip edin.</translation>
 <translation id="4441124369922430666">Makine açıldığında bu uygulamayı otomatik olarak başlatmak istiyor musunuz?</translation>
 <translation id="4441147046941420429">Devam etmek için güvenlik anahtarınızı cihazınızdan çıkarıp tekrar takın ve anahtara dokunun.</translation>
 <translation id="444134486829715816">Genişlet...</translation>
@@ -3475,6 +3480,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4773112038801431077">Linux'u yeni sürüme geçirin</translation>
 <translation id="477647109558161443">Masaüstü kısayolu oluştur</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
+<translation id="4777458362738635055">Bu cihazın diğer kullanıcıları bu ağı kullanabilir</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Ağ alan adı sunucularını yapılandır</translation>
 <translation id="4778644898150334464">Başka şifre kullan</translation>
@@ -4311,6 +4317,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5712153969432126546">Siteler, bazen doküman, sözleşme ve form gibi PDF'ler yayınlar</translation>
 <translation id="5715711091495208045">Eklenti Aracısı: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Varsayılan arama motorları</translation>
+<translation id="5719637365829998022">QR kodu tarandı.</translation>
 <translation id="5719854774000914513">Siteler, HID cihazlarına bağlanmak isteyebilir</translation>
 <translation id="572155275267014074">Android ayarları</translation>
 <translation id="5722086096420375088">Yeşil ve beyaz</translation>
@@ -4522,6 +4529,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5955721306465922729">Bir web sitesi bu uygulamayı açmak istiyor.</translation>
 <translation id="5955809630138889698">Bu cihaz yalnızca online demo moduna uygun olabilir. Daha fazla bilgi için lütfen destek temsilcinizle iletişime geçin.</translation>
 <translation id="5956585768868398362">Bu beklediğiniz arama sayfası mı?</translation>
+<translation id="5957918771633727933">Kullanılabilir eSIM profili yok. Yeni bir <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> indirin.</translation>
 <translation id="5957987129450536192">Profil resminizin yakınındaki Seç ve Dinle simgesine dokunun, ardından dinlemek istediğiniz içeriği seçin.</translation>
 <translation id="5959471481388474538">Ağ kullanılamıyor</translation>
 <translation id="595959584676692139">Bu uzantıyı kullanmak için sayfayı yeniden yükleyin</translation>
@@ -6026,6 +6034,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7638605456503525968">Seri bağlantı noktaları</translation>
 <translation id="7639914187072011620">Sunucudan SAML yönlendirme URL'si alınamadı</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />, kaydettiğiniz şifrelerle uygun sitelerde otomatik olarak oturum açmanızı sağlar.</translation>
+<translation id="7641513591566880111">Yeni profil adı</translation>
 <translation id="7642778300616172920">Hassas içeriği gizle</translation>
 <translation id="7643842463591647490">{0,plural, =1{# açık pencere}other{# açık pencere}}</translation>
 <translation id="7643932971554933646">Sitenin dosyaları görüntülemesine izin verilsin mi?</translation>
@@ -6186,6 +6195,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="7800518121066352902">Saat Yönünün &amp;Tersine Döndür</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804072833593604762">Sekme Kapatıldı</translation>
+<translation id="7805759469263222011">Cihazınızın kamerasını kullanarak QR kodunu tarayın veya operatörünüz tarafından sağlanan etkinleştirme kodunu girin</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7807711621188256451">Kameranıza <ph name="HOST" /> tarafından erişilmesine her zaman izin verin</translation>
@@ -6664,6 +6674,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8300849813060516376">OTASP başarısız oldu</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}other{# adres}}</translation>
 <translation id="8304383784961451596">Bu cihazı kullanmak için yetkili değilsiniz. Oturum açma izni için lütfen yöneticinize danışın veya Family Link gözetimindeki bir Google hesabı ile oturum açın.</translation>
+<translation id="8308016398665340540">Bu ağı, bu cihazın diğer kullanıcılarıyla paylaşıyorsunuz</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> sitesi kamerama erişmek isterse sor</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifika zaten var</translation>

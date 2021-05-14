@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">zamanlayıcı</translation>
 <translation id="3199563858620722075">birleşik kutu</translation>
 <translation id="3220661731597678625">geçerli adım</translation>
+<translation id="3321030238473337787">Oynatma hızı</translation>
 <translation id="3329013043687509092">Doygunluk</translation>
 <translation id="3450233048674729344">Değer <ph name="MAXIMUM" /> veya daha küçük olmalıdır.</translation>
 <translation id="3486220673238053218">tanım</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">menü çubuğu</translation>
 <translation id="4293574643247337246">sayfa üstbilgisi</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">oynatma hızı menüsünü gizle</translation>
 <translation id="4384249794467006333">Bu resim etiketlenmemiş. Resim açıklamalarını almak için sağ üstteki Diğer Seçenekler menüsünü açın.</translation>
 <translation id="4384583879834880242">Soru-Cevap</translation>
 <translation id="4444765639179266822">Şöyle diyor olabilir: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ağaç öğesi</translation>
 <translation id="5466621249238537318">Lütfen bir veya daha fazla dosya seçin.</translation>
 <translation id="5468998798572797635">tam ekrandan çık</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">tarih seçici</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="5546461542133609677">sesi aç</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">diğer seçenekler</translation>
 <translation id="576709008726043716">giriş</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
+<translation id="5786442179789148008">oynatma hızı menüsünü göster</translation>
 <translation id="5787939484346677755">genişletildi, otomatik tamamlama seçenekleri mevcut.</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="588258955323874662">Tam ekran</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
 <translation id="5966707198760109579">Hafta</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">dönme düğmesi</translation>
 <translation id="6011459053400940133">ses kaydırma çubuğu</translation>
 <translation id="6015796118275082299">Yıl</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">sesi kapat</translation>
 <translation id="6885760532393684712">dizin</translation>
 <translation id="689129560213475294">künye</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">blok alıntı</translation>
 <translation id="693476918119313863">üst bilgi</translation>
 <translation id="6941933287844615239">medyayı indir</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">not referansı</translation>
 <translation id="811583516810654505">Açıklama alınıyor...</translation>
 <translation id="8117451130807776954">Bu hafta</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">yerel tarih ve zaman seçici</translation>
 <translation id="8261464734335370856">Geçersiz yazım</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">uzaktan oynatmayı kontrol et</translation>
 <translation id="862370744433916922">alt başlık</translation>
 <translation id="8634971699417195529">Ay seçiciyi gösterir</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Satır kaydır</translation>
 <translation id="8711688047404765493">çıkış</translation>
 <translation id="8750798805984357768">Lütfen bu seçeneklerden birini belirleyin.</translation>

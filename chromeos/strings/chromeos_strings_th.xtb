@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">โฮสต์เพิ่มเติม</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">ชื่อผู้ให้บริการหน้าแรก</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>

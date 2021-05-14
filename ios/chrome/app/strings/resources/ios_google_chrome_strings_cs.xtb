@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1096883626080133124">S Google Chrome toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív</translation>
 <translation id="1282031177488366470">Pomozte zlepšit funkce a výkon Chromu</translation>
 <translation id="1314663809820920746">Všechny záložky, historii, hesla a další nastavení na tomto zařízení nadále uvidíte. Pokud provedete nějaké změny, do účtu Google se synchronizovat nebudou.</translation>
 <translation id="1479202195792305274">Když se přihlásíte k účtu Google, může vám Chrome kontrolovat hesla</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="1682483655351012182">Synchronizovat data prohlížeče Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Odesílat do Googlu statistiky využití a zprávy o selhání a pomoci tak s vylepšováním prohlížeče Chrome</translation>
 <translation id="1917964099031477364">Tento účet a všechna neuložená data budou z Chromu a z ostatních aplikací v tomto zařízení odstraněny.</translation>
 <translation id="2009224836393115614">Chromu se nepodařilo zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2147651015520127414">Chrome ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>

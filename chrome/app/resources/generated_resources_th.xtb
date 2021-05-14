@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1001033507375626788">เครือข่ายนี้แชร์กับคุณอยู่</translation>
 <translation id="1001307489511021749">แอป การตั้งค่า และการปรับแต่งอื่นๆ จะซิงค์กับอุปกรณ์ Chrome OS ทั้งหมดที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชี Google</translation>
 <translation id="1003088604756913841">เปิดลิงก์ในหน้าต่าง <ph name="APP" /> ใหม่</translation>
 <translation id="100323615638474026">อุปกรณ์ USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">นำออกจากอุปกรณ์</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="1995916364271252349">กำหนดประเภทข้อมูลที่เว็บไซต์ต่างๆ จะใช้และแสดงได้ (เช่น ข้อมูลตำแหน่ง กล้อง ป๊อปอัป)</translation>
+<translation id="1997437640397887843">เปิดกล้องของอุปกรณ์แล้ว โปรดวางคิวอาร์โค้ด eSIM ตรงหน้ากล้อง</translation>
 <translation id="1997616988432401742">ใบรับรองของคุณ</translation>
 <translation id="1999115740519098545">เมื่อเริ่มต้นใช้งาน</translation>
 <translation id="2000419248597011803">ส่งคุกกี้และการค้นหาบางรายการจากแถบที่อยู่และช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2055585478631012616">คุณจะออกจากระบบของเว็บไซต์เหล่านี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="205560151218727633">โลโก้ Google Assistant</translation>
 <translation id="2058456167109518507">อุปกรณ์ที่ตรวจพบ</translation>
+<translation id="2058581283817163201">ยืนยันด้วยโทรศัพท์เครื่องนี้</translation>
 <translation id="2059913712424898428">เขตเวลา</translation>
 <translation id="2060375639911876205">นำโปรไฟล์ eSIM ออก</translation>
 <translation id="2062354623176996748">ใช้เว็บโดยไม่บันทึกประวัติการท่องเว็บด้วยหน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -2600,6 +2603,7 @@
 <translation id="3785308913036335955">แสดงทางลัดแอป</translation>
 <translation id="3785727820640310185">รหัสผ่านที่บันทึกไว้สำหรับเว็บไซต์นี้</translation>
 <translation id="3788301286821743879">เปิดแอปพลิเคชันคีออสก์ไม่ได้</translation>
+<translation id="3788331399335602504">ไฟล์เหล่านี้</translation>
 <translation id="3788401245189148511">ส่วนขยายต้องการจะ:</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="379082410132524484">บัตรของคุณหมดอายุแล้ว</translation>
@@ -3175,6 +3179,7 @@
 <translation id="4438043733494739848">โปร่งใส</translation>
 <translation id="4438639467177774583"><ph name="MASKED_PASSWORD" /> ของ <ph name="USERNAME" /> จะบันทึกไว้ในบัญชี Google (<ph name="ACCOUNT" />)</translation>
 <translation id="4439427728133035643">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> ได้ส่งการแจ้งเตือนไปยังโทรศัพท์ของคุณ แตะการแจ้งเตือน "<ph name="NOTIFICATIONTITLE" />" และทำตามขั้นตอนต่างๆ เพื่อยืนยันว่าเป็นคุณ</translation>
 <translation id="4441124369922430666">คุณต้องการเริ่มแอปนี้โดยอัตโนมัติเมื่อเครื่องเปิดไหม</translation>
 <translation id="4441147046941420429">หากต้องการดำเนินการต่อ ให้ดึงคีย์ความปลอดภัยออกจากอุปกรณ์ จากนั้นเสียบกลับเข้าไปใหม่แล้วแตะที่คีย์นั้น</translation>
 <translation id="444134486829715816">ขยาย...</translation>
@@ -3476,6 +3481,7 @@
 <translation id="4773112038801431077">อัปเกรด Linux</translation>
 <translation id="477647109558161443">สร้างทางลัดบนเดสก์ท็อป</translation>
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">ผู้ใช้คนอื่นๆ ของอุปกรณ์นี้จะใช้เครือข่ายได้</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">กำหนดค่าเนมเซิร์ฟเวอร์ของเครือข่าย</translation>
 <translation id="4778644898150334464">ใช้รหัสผ่านอื่น</translation>
@@ -4311,6 +4317,7 @@
 <translation id="5712153969432126546">บางครั้งเว็บไซต์จะเผยแพร่ PDF เช่น เอกสาร สัญญา แบบฟอร์ม</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
+<translation id="5719637365829998022">สแกนคิวอาร์โค้ดแล้ว</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="572155275267014074">การตั้งค่า Android</translation>
 <translation id="5722086096420375088">สีเขียวและสีขาว</translation>
@@ -4522,6 +4529,7 @@
 <translation id="5955721306465922729">เว็บไซต์หนึ่งต้องการเปิดแอปพลิเคชันนี้</translation>
 <translation id="5955809630138889698">อุปกรณ์นี้อาจมีสิทธิ์ใช้งานในโหมดสาธิตออนไลน์เท่านั้น โปรดติดต่อตัวแทนฝ่ายสนับสนุนเพื่อขอรายละเอียดเพิ่มเติม</translation>
 <translation id="5956585768868398362">นี่คือหน้าค้นหาที่คุณต้องการใช่ไหม</translation>
+<translation id="5957918771633727933">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้ ดาวน์โหลด<ph name="BEGIN_LINK" />โปรไฟล์<ph name="END_LINK" />ใหม่</translation>
 <translation id="5957987129450536192">แตะไอคอน "เลือกเพื่อให้อ่าน" ใกล้ๆ รูปโปรไฟล์ จากนั้นเลือกสิ่งที่ต้องการฟัง</translation>
 <translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="595959584676692139">โหลดหน้าซ้ำเพื่อใช้ส่วนขยายนี้</translation>
@@ -6027,6 +6035,7 @@
 <translation id="7638605456503525968">พอร์ตอนุกรม</translation>
 <translation id="7639914187072011620">ดึงข้อมูล URL เปลี่ยนเส้นทาง SAML จากเซิร์ฟเวอร์ไม่สำเร็จ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ลงชื่อเข้าใช้ให้คุณในเว็บไซต์ที่มีสิทธิ์โดยอัตโนมัติด้วยรหัสผ่านที่คุณบันทึกไว้</translation>
+<translation id="7641513591566880111">ชื่อโปรไฟล์ใหม่</translation>
 <translation id="7642778300616172920">ซ่อนเนื้อหาที่ละเอียดอ่อน</translation>
 <translation id="7643842463591647490">{0,plural, =1{หน้าต่างเปิดอยู่ # หน้า}other{หน้าต่างเปิดอยู่ # หน้า}}</translation>
 <translation id="7643932971554933646">อนุญาตให้เว็บไซต์ดูไฟล์ใช่ไหม</translation>
@@ -6187,6 +6196,7 @@
 <translation id="7800518121066352902">หมุน&amp;ทวนเข็มนาฬิกา</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7804072833593604762">ปิดแท็บแล้ว</translation>
+<translation id="7805759469263222011">สแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการให้มา</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7807067443225230855">การค้นหาและผู้ช่วย</translation>
 <translation id="7807711621188256451">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องของคุณเสมอ</translation>
@@ -6666,6 +6676,7 @@
 <translation id="8300849813060516376">OTASP ล้มเหลว</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{ที่อยู่}other{# ที่อยู่}}</translation>
 <translation id="8304383784961451596">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อผู้ดูแลระบบเพื่อขอสิทธิ์ลงชื่อเข้าใช้ หรือลงชื่อเข้าใช้ด้วยบัญชี Google ที่อยู่ภายใต้การควบคุมดูแลของ Family Link</translation>
+<translation id="8308016398665340540">คุณกำลังแชร์เครือข่ายกับผู้ใช้คนอื่นๆ ของอุปกรณ์นี้</translation>
 <translation id="8308179586020895837">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงกล้องของคุณไหม</translation>
 <translation id="830868413617744215">เบต้า</translation>
 <translation id="8309458809024885768">มีใบรับรองนี้อยู่แล้ว</translation>

@@ -299,6 +299,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8372477600026034341">Ytterligare värdar</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
 <translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>

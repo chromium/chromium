@@ -504,6 +504,7 @@
 <translation id="2850739647070081192">Invite (плик)</translation>
 <translation id="2856444702002559011">Възможно е извършители на атака да опитват да откраднат информацията ви от <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (например пароли, съобщения или номера на кредитни карти). <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">На този сайт се показват натрапчиви или подвеждащи реклами.</translation>
+<translation id="287596039013813457">Приятелско</translation>
 <translation id="2876489322757410363">Ще напуснете режим „инкогнито“, за да платите във външно приложение. Искате ли да продължите?</translation>
 <translation id="2878197950673342043">Кръстосано сгъване</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -601,6 +602,7 @@
 <translation id="3229041911291329567">Информацията за версията на устройството и браузъра</translation>
 <translation id="323107829343500871">Въведете кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Важното съдържание на този сайт да се открива винаги</translation>
+<translation id="3249845759089040423">Приятно</translation>
 <translation id="3252266817569339921">френски</translation>
 <translation id="3266793032086590337">Стойност (несъвместима)</translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
@@ -978,6 +980,7 @@
 <translation id="4594403342090139922">&amp;Отмяна на изтриването</translation>
 <translation id="4597348597567598915">Размер 8</translation>
 <translation id="4600854749408232102">C6/C5 (плик)</translation>
+<translation id="4606870351894164739">Въздействащо</translation>
 <translation id="4628948037717959914">Снимка</translation>
 <translation id="4631649115723685955">Опцията за връщане на пари при покупка е свързана</translation>
 <translation id="4636930964841734540">Информация</translation>
@@ -1041,6 +1044,8 @@
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4819347708020428563">Искате ли да редактирате поясненията в стандартния изглед?</translation>
+<translation id="4825507807291741242">Впечатляващо</translation>
+<translation id="4838327282952368871">Замечтано</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="485316830061041779">немски</translation>
@@ -1199,6 +1204,7 @@
 <translation id="5398772614898833570">Рекламите са блокирани</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="540969355065856584">Сървърът не можа да докаже, че е <ph name="DOMAIN" />. Понастоящем сертификатът му за сигурност не е валиден. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от извършител на атака.</translation>
+<translation id="541143247543991491">Облака (за цялата система)</translation>
 <translation id="541416427766103491">Стакер 4</translation>
 <translation id="5421136146218899937">Изчистване на данните за сърфирането...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
@@ -1706,6 +1712,7 @@
 &lt;li&gt;Посетете &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Помощния център на Chrome&lt;/a&gt;, за да научите как да премахнете за постоянно софтуера от компютъра си.
 &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Очарователно</translation>
 <translation id="7416351320495623771">Управление на паролите…</translation>
 <translation id="7419106976560586862">Път на потребителския профил</translation>
 <translation id="7437289804838430631">Добавяне на информация за връзка</translation>
@@ -2129,6 +2136,7 @@
 <translation id="9020542370529661692">Тази страница е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(невалиден)</translation>
+<translation id="9030265603405983977">Монохромно</translation>
 <translation id="9035022520814077154">Грешка в сигурността</translation>
 <translation id="9038649477754266430">Използване на услуга за предвиждане с цел по-бързо зареждане на страниците</translation>
 <translation id="9039213469156557790">Освен това тази страница включва други ресурси, които не са защитени. Докато се предават, те могат да бъдат видени от други хора и да бъдат модифицирани от извършител на атака, така че да се промени поведението на страницата.</translation>
@@ -2152,6 +2160,7 @@
 <translation id="91108059142052966">Споделянето на екрана с(ъс) <ph name="APPLICATION_TITLE" />, когато се вижда поверително съдържание, е деактивирано от администраторски правила</translation>
 <translation id="9114524666733003316">Картата се потвърждава...</translation>
 <translation id="9114581008513152754">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chrome. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Свежо</translation>
 <translation id="9119042192571987207">Качено</translation>
 <translation id="9128016270925453879">Правилата са заредени</translation>
 <translation id="9128870381267983090">Свързване към мрежа</translation>

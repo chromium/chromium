@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">поле зі списком</translation>
 <translation id="3220661731597678625">поточний крок</translation>
+<translation id="3321030238473337787">Швидкість відтворення</translation>
 <translation id="3329013043687509092">Насиченість</translation>
 <translation id="3450233048674729344">Значення має бути меншим або дорівнювати <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">визначення</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">панель меню</translation>
 <translation id="4293574643247337246">верхній колонтитул</translation>
 <translation id="4360991593054037559">Введіть дійсне значення. Два найближчі дійсні значення: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">сховати меню швидкості відтворення</translation>
 <translation id="4384249794467006333">Це зображення не має мітки. Щоб отримати описи зображень, угорі праворуч відкрийте меню "Інші опції".</translation>
 <translation id="4384583879834880242">Запитання</translation>
 <translation id="4444765639179266822">Схоже, на зображенні написано "<ph name="OCR_TEXT" />"</translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">елемент дерева</translation>
 <translation id="5466621249238537318">Виберіть один або декілька файлів.</translation>
 <translation id="5468998798572797635">вийти з повноекранного режиму</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">засіб вибору дати</translation>
 <translation id="5537725057119320332">Трансляція</translation>
 <translation id="5546461542133609677">увімкнути звук</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">більше опцій</translation>
 <translation id="576709008726043716">вступ</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
+<translation id="5786442179789148008">показати меню швидкості відтворення</translation>
 <translation id="5787939484346677755">розгорнуто, доступні опції автозавершення.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5939518447894949180">Скинути</translation>
 <translation id="5966707198760109579">Тиждень</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">лічильник</translation>
 <translation id="6011459053400940133">повзунок гучності</translation>
 <translation id="6015796118275082299">Рік</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">вимкнути звук</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">емблема видавництва</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">цитата</translation>
 <translation id="693476918119313863">заголовок</translation>
 <translation id="6941933287844615239">завантажити медіафайл</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">посилання на примітку</translation>
 <translation id="811583516810654505">Завантажується опис…</translation>
 <translation id="8117451130807776954">Цей тиждень</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">рррр</translation>
 <translation id="8208673686607688524">засіб вибору місцевих дати й часу</translation>
 <translation id="8261464734335370856">Орфографічна помилка</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">керувати віддаленим відтворенням</translation>
 <translation id="862370744433916922">підзаголовок</translation>
 <translation id="8634971699417195529">Показувати засіб вибору місяця</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Переносити рядки</translation>
 <translation id="8711688047404765493">вихід</translation>
 <translation id="8750798805984357768">Виберіть один із запропонованих варіантів.</translation>

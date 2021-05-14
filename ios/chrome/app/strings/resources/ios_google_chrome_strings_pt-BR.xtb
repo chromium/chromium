@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1096883626080133124">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca</translation>
 <translation id="1282031177488366470">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="1314663809820920746">Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua Conta do Google.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Envie estatísticas de uso e relatórios de erros ao Google para ajudar a melhorar o Chrome</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="2009224836393115614">Não foi possível verificar suas senhas com o Chrome. Verifique sua conexão de Internet.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>

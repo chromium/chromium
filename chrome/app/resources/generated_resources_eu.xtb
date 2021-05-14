@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1001033507375626788">Zeurekin dago partekatuta sarea</translation>
 <translation id="1001307489511021749">Aplikazioak, ezarpenak eta pertsonalizatzeko beste aukera batzuk sinkronizatu egingo dira Chrome OS darabilten eta Google-ko kontuan saioa hasita daukaten gailu guztien artean.</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1992924914582925289">Kendu gailutik</translation>
 <translation id="1994173015038366702">Webgunearen URLa</translation>
 <translation id="1995916364271252349">Webguneek erabili eta erakuts dezaketen informazioa kontrolatzen du (kokapena, kamera, leiho gainerakorrak eta beste)</translation>
+<translation id="1997437640397887843">Gailuaren kamera piztu duzu. Jarri eSIM txartelaren QR kodea kameraren aurrean.</translation>
 <translation id="1997616988432401742">Zure ziurtagiriak</translation>
 <translation id="1999115740519098545">Abioan</translation>
 <translation id="2000419248597011803">Helbide-barrako zein bilaketa-koadroko bilaketak eta cookie batzuk bidaltzen ditu bilatzaile lehenetsira</translation>
@@ -1003,6 +1005,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2055585478631012616">Webgune horietako saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
 <translation id="205560151218727633">Google-ren Laguntzailea eginbidearen logotipoa</translation>
 <translation id="2058456167109518507">Hautemandako gailua</translation>
+<translation id="2058581283817163201">Egiaztatu telefono honekin</translation>
 <translation id="2059913712424898428">Ordu-zona</translation>
 <translation id="2060375639911876205">Kendu eSIM txartelaren profila</translation>
 <translation id="2062354623176996748">Sarean egiten duzuna historian gordeta geratzerik nahi ez baduzu, ireki leiho bat ezkutuko moduan</translation>
@@ -2599,6 +2602,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3785308913036335955">Erakutsi aplikazioen lasterbidea</translation>
 <translation id="3785727820640310185">Webgune honetan gordetako pasahitzak</translation>
 <translation id="3788301286821743879">Ezin izan da abiarazi aplikazio espezializatua.</translation>
+<translation id="3788331399335602504">fitxategiak</translation>
 <translation id="3788401245189148511">Hau egin dezake:</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="379082410132524484">Iraungita dago txartela</translation>
@@ -3174,6 +3178,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4438043733494739848">Gardena</translation>
 <translation id="4438639467177774583">Google-ko <ph name="ACCOUNT" /> kontuan gordeko da <ph name="USERNAME" /> erabiltzailearen <ph name="MASKED_PASSWORD" /> pasahitza</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> webguneak jakinarazpen bat bidali dizu telefonora. Zeu zarela berresteko, sakatu "<ph name="NOTIFICATIONTITLE" />" izeneko jakinarazpena eta egin urratsak.</translation>
 <translation id="4441124369922430666">Gailua pizten duzunean aplikazioa automatikoki hastea nahi duzu?</translation>
 <translation id="4441147046941420429">Aurrera egiteko, atera segurtasun-giltza gailutik, sar ezazu berriro eta, ondoren, sakatu</translation>
 <translation id="444134486829715816">Zabaldu…</translation>
@@ -3475,6 +3480,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4773112038801431077">Bertsio-berritu Linux</translation>
 <translation id="477647109558161443">Sortu mahaigaineko lasterbidea</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuaren pasahitza</translation>
+<translation id="4777458362738635055">Gailu honen beste erabiltzaileek sarea erabil dezakete</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Konfiguratu sareko izenen zerbitzariak</translation>
 <translation id="4778644898150334464">Erabili beste pasahitz bat</translation>
@@ -3788,7 +3794,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5133483819862530305">Iluntzetik egunsentira</translation>
 <translation id="5135085122826131075">Laguntzailea atzitzeko, esan "Ok Google".</translation>
 <translation id="5135533361271311778">Ezin izan da sortu laster-markaren elementua.</translation>
-<translation id="5136343472380336530">Egiaztatu bi gailuak desblokeatuta daudela, elkarrengandik hurbil daudela eta Bluetooth-a aktibatuta daukatela. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="5136343472380336530">Egiaztatu bi gailuak desblokeatuta daudela, elkarrengandik hurbil daudela, eta Bluetooth-a aktibatuta daukatela. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Ezabatu elementua</translation>
 <translation id="5139112070765735680">Bilatu "<ph name="QUERY_NAME" />" <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> erabilita</translation>
 <translation id="5139823398361067371">Idatzi segurtasun-giltzaren PIN kodea. PIN kodea ez badakizu, segurtasun-giltza berrezarri egin beharko duzu.</translation>
@@ -4310,6 +4316,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5712153969432126546">Batzuetan, webguneek PDFak argitaratzen dituzte, hala nola dokumentuak, kontratuak eta inprimakiak</translation>
 <translation id="5715711091495208045">Pluginaren bitartekaria: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Bilatzaile lehenetsiak</translation>
+<translation id="5719637365829998022">Eskaneatu da QR kodea.</translation>
 <translation id="5719854774000914513">Webguneek HID gailuetara konektatzea eska dezakete</translation>
 <translation id="572155275267014074">Android-en ezarpenak</translation>
 <translation id="5722086096420375088">Berdea eta zuria</translation>
@@ -4521,6 +4528,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5955721306465922729">Webgune batek aplikazio hau ireki nahi du.</translation>
 <translation id="5955809630138889698">Baliteke gailu hau sareko demo moduan soilik erabili ahal izatea. Xehetasunak lortzeko, jarri laguntza-zerbitzuko ordezkariarekin harremanetan.</translation>
 <translation id="5956585768868398362">Espero zenuen bilaketa-orria da hau?</translation>
+<translation id="5957918771633727933">Ez dago eSIM txartelaren profil erabilgarririk. Deskargatu <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> bat.</translation>
 <translation id="5957987129450536192">Sakatu profileko irudiaren ondoko "Hautatu ozen irakurtzeko" ikonoa, eta hautatu entzun nahi duzuna.</translation>
 <translation id="5959471481388474538">Sarea ez dago erabilgarri</translation>
 <translation id="595959584676692139">Kargatu berriro orria luzapen hori erabiltzeko</translation>
@@ -4651,7 +4659,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6100736666660498114">Hasierako menua</translation>
 <translation id="6101226222197207147">Aplikazio berria gaitu da (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Babes aurreratuak blokeatu du fitxategi hau.</translation>
-<translation id="6103681770816982672">Abisua: garatzaileen kanalera aldatzen ari zara</translation>
+<translation id="6103681770816982672">Abisua: garatzaileentzako kanalera aldatzen ari zara</translation>
 <translation id="6104068876731806426">Google Kontuak</translation>
 <translation id="6104311680260824317">Ezin da gehitu gailua domeinuan. Zerbitzariak ez ditu onartzen zehaztutako Kerberos enkriptatze motak. Joan "Aukera gehiago" atalera enkriptatze-ezarpenak ikusteko.</translation>
 <translation id="6104796831253957966">Beteta dago inprimagailuaren ilara</translation>
@@ -6026,6 +6034,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7638605456503525968">Serieko atakak</translation>
 <translation id="7639914187072011620">Ezin izan da eskuratu SAMLko birbideratze URLa zerbitzaritik</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> arakatzaileak automatikoki hasten du saioa webguneetan, gorde dituzun pasahitzak erabilita.</translation>
+<translation id="7641513591566880111">Profilaren izen berria</translation>
 <translation id="7642778300616172920">Ezkutatu kontuzko edukia</translation>
 <translation id="7643842463591647490">{0,plural, =1{# leiho dago irekita}other{# leiho daude irekita}}</translation>
 <translation id="7643932971554933646">Fitxategiak ikusteko baimena eman nahi diozu webguneari?</translation>
@@ -6186,6 +6195,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7800518121066352902">Biratu &amp;erlojuaren orratzen aurka</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804072833593604762">Itxi da fitxa</translation>
+<translation id="7805759469263222011">Eskaneatu QR kode bat gailuaren kamera erabiliz edo idatzi operadoreak emandako aktibazio-kodea</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7807067443225230855">Bilaketa eta Laguntzailea</translation>
 <translation id="7807711621188256451">Eman beti zure kamera erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
@@ -6664,6 +6674,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Helbidea}other{# helbide}}</translation>
 <translation id="8304383784961451596">Ez duzu baimenik gailu hau erabiltzeko. Jarri harremanetan administratzailearekin saioa hasteko baimena lortzeko, edo hasi saioa Family Link-ek gainbegiratutako Google-ko kontu batean.</translation>
+<translation id="8308016398665340540">Gailu honen beste erabiltzaile batzuekin ari zara partekatzen sarea</translation>
 <translation id="8308179586020895837">Galdetu <ph name="HOST" /> ostalariak zure kamera atzitu nahi duenean</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Ziurtagiria badago lehendik</translation>

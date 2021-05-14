@@ -295,6 +295,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2904414404539560095">Seznam zařízení, se kterými se má karta sdílet, otevřený na plnou výšku.</translation>
 <translation id="2905036901251765993">Chcete-li obsah sdílet s lidmi z okolí, nechte je naskenovat tento QR kód</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912296070571964914">Správa témat, která vás zajímají</translation>
 <translation id="2923908459366352541">Název je neplatný</translation>
 <translation id="2932150158123903946">Úložiště aplikace Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Klávesnice se nezmění</translation>
@@ -339,6 +340,8 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3254409185687681395">Přidat stránku do záložek</translation>
 <translation id="3259831549858767975">Zmenšit veškerý obsah stránky</translation>
 <translation id="3264124641674805320">Jak stáhnout obsah na později</translation>
+<translation id="3264259168916048410">Váš počítač chce toto zařízení používat k přihlašování na web</translation>
+<translation id="3265534588625245297">Správa sledovaných webů</translation>
 <translation id="3269093882174072735">Načíst obrázek</translation>
 <translation id="3269956123044984603">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte v nastavení účtu Android možnost Automatická synchronizace dat.</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384468725000734951">K vyhledávání se používá služba Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – Stahování…</translation>
 <translation id="4404568932422911380">Žádné záložky</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
 <translation id="4411535500181276704">Zjednodušený režim</translation>
@@ -583,6 +587,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="488187801263602086">Přejmenovat soubor</translation>
 <translation id="4882831918239250449">Nastavte, jak se má vaše historie procházení používat k personalizaci Vyhledávání, reklam a dalších služeb</translation>
 <translation id="4885273946141277891">Nepodporovaný počet instancí Chromu.</translation>
+<translation id="4905269543817054577">V anonymním režimu se neukládá historie</translation>
 <translation id="4908869848243824489">Kanál Objevit od Googlu</translation>
 <translation id="4910889077668685004">Platební aplikace</translation>
 <translation id="4913161338056004800">Obnovit statistiky</translation>
@@ -951,6 +956,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7191430249889272776">Karta je otevřena na pozadí.</translation>
 <translation id="7233236755231902816">Chcete-li si web prohlížet ve svém jazyce, stáhněte si nejnovější verzi Chromu</translation>
 <translation id="7248069434667874558">Zkontrolujte, zda je v Chromu na zařízení <ph name="TARGET_DEVICE_NAME" /> zapnutá synchronizace</translation>
+<translation id="7252076891734325316">Umístěte telefon k počítači</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>
 <translation id="7286572596625053347">Změnit jazyk <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Přejmenování není k dispozici</translation>
@@ -1017,6 +1023,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7630202231528827509">Adresa URL poskytovatele</translation>
 <translation id="7638584964844754484">Nesprávná heslová fráze</translation>
 <translation id="7641339528570811325">Vymazat údaje o prohlížení…</translation>
+<translation id="764170292089748542">Při procházení v anonymním režimu Chrome neukládá historii. Své oblíbené weby můžete i nadále navštívit pomocí záložek.</translation>
 <translation id="7646772052135772216">Synchronizace hesel nefunguje</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
@@ -1042,6 +1049,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
 <translation id="7821588508402923572">Zde se budou zobrazovat vaše úspory dat</translation>
+<translation id="78270725016672455">Váš počítač chce toto zařízení zaregistrovat k přihlášení na web</translation>
 <translation id="7844171778363018843">Nebyla vybrána žádná data k synchronizaci</translation>
 <translation id="7846296061357476882">Služby Google</translation>
 <translation id="784934925303690534">Časové období</translation>
@@ -1138,6 +1146,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8427875596167638501">Karta náhledu je otevřená na půlce</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8438566539970814960">Vylepšit vyhledávání a procházení</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – Jazyk je připraven, restartujte aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nejsou k dispozici žádné příběhy</translation>
 <translation id="8443209985646068659">Chrome nelze aktualizovat</translation>
 <translation id="8445448999790540984">Hesla se nepodařilo exportovat</translation>
@@ -1210,6 +1219,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8937267401510745927">Abyste mohli provádět akce, Google bude dostávat adresy URL a obsah webů, ve kterých používáte Asistenta, a informace, které prostřednictvím Asistenta odesíláte. Tyto informace mohou být ukládány do vašeho účtu Google. Asistenta můžete vypnout v nastavení Chromu.</translation>
 <translation id="8937772741022875483">Odstranit vaši aktivitu v Chromu z digitální rovnováhy?</translation>
 <translation id="8942627711005830162">Otevřít v jiném okně</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – Tento jazyk se nepodařilo stáhnout. Zkuste to znovu později.</translation>
 <translation id="8951232171465285730">Chrome vám ušetřil <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">nevyřízeno</translation>
 <translation id="8970887620466824814">Došlo k chybě.</translation>

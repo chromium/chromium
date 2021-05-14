@@ -21,6 +21,7 @@
 <translation id="2168108852149185974">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用你的相機</translation>
 <translation id="2195025571279539885">下次造訪這個網站時，需要 Chromium 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
+<translation id="2567507405773541360">運用簡便、安全且速度遠勝以往的 Chromium 讓你事半功倍</translation>
 <translation id="2590893390871230428">同步處理你的 Chromium 資料</translation>
 <translation id="2650312721222849884">開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="2684230048001240293">將 Chromium 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
@@ -42,6 +43,7 @@
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="4787850887676698916">你在其他裝置上透過 Chromium 開啟的分頁會顯示在這裡。</translation>
+<translation id="4806326830773390517">將使用統計資料和當機報告傳送給 Google，協助我們讓 Chromium 更臻完美</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="4852878756222711218">如要充分運用 Chromium 的所有功能，請登入你的 Google 帳戶</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>

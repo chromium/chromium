@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1001033507375626788">Bu şəbəkə sizinlə paylaşılır</translation>
 <translation id="1001307489511021749">Tətbiqlər, ayarlar və digər fərdi elementlər Google Hesabınız ilə daxil olduğunuz bütün Chrome ƏS cihazlarında sinxronlaşdırılacaq.</translation>
 <translation id="1003088604756913841">Linki yeni <ph name="APP" /> Pənəcərəsində açın</translation>
 <translation id="100323615638474026">USB cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -944,6 +945,7 @@
 <translation id="1992924914582925289">Cihazdan silin</translation>
 <translation id="1994173015038366702">Sayt URL-i</translation>
 <translation id="1995916364271252349">Saytların istifadə edə və göstərə biləcəyi məlumatlara (məkan, kamera, xəbərdarlıq pəncərələri və s.) nəzarət edir</translation>
+<translation id="1997437640397887843">Cihaz kamerası aktiv edilib. eSIM QR kodunuzu kameranın qarşısına tutun.</translation>
 <translation id="1997616988432401742">Sertifikatlarınız</translation>
 <translation id="1999115740519098545">Başlanğıcda</translation>
 <translation id="2000419248597011803">Ünvan paneli və axtarış qutusundakı bəzi kuki və axtarışları defolt axtarış mühərrikinizə göndərin</translation>
@@ -999,6 +1001,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2055585478631012616">Açıq tablar da daxil olmaqla, bu saytlardan çıxmış olacaqsınız</translation>
 <translation id="205560151218727633">Google assistent loqosu</translation>
 <translation id="2058456167109518507">Cihaz aşkarlandı</translation>
+<translation id="2058581283817163201">Bu telefon ilə doğrulayın</translation>
 <translation id="2059913712424898428">Saat qurşağı</translation>
 <translation id="2060375639911876205">eSIM profilini silin</translation>
 <translation id="2062354623176996748">Axtarış tarixçənizi Anonim pəncərədə saxlamadan vebdən istifadə edin</translation>
@@ -2597,6 +2600,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3785308913036335955">Tətbiqlərin qısayollarını göstərin</translation>
 <translation id="3785727820640310185">Bu sayt üçün yadda saxlanmış parollar</translation>
 <translation id="3788301286821743879">Köşk tətbiqini işə salmaq mümkün olmadı.</translation>
+<translation id="3788331399335602504">bu fayllar</translation>
 <translation id="3788401245189148511">Edə bilərdi:</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="379082410132524484">Kartın vaxtı bitib</translation>
@@ -3170,6 +3174,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4438043733494739848">Şəffaf</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> <ph name="ACCOUNT" /> Google Hesabınızda saxlanılacaq</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> telefonunuza bildiriş göndərib. Kimliyinizi təsdiq etmək üçün “<ph name="NOTIFICATIONTITLE" />” bildirişinə toxunun və addımları izləyin.</translation>
 <translation id="4441124369922430666">Cihaz aktivləşdirildikdə bu tətbiqin avtomatik açılmasını istəyirsiniz?</translation>
 <translation id="4441147046941420429">Davam etmək üçün təhlükəsizlik açarını cihazınızdan çıxarıb yenidən daxil edin və ona toxunun</translation>
 <translation id="444134486829715816">Genişləndirin...</translation>
@@ -3471,6 +3476,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4773112038801431077">Linux'u təkmilləşdirin</translation>
 <translation id="477647109558161443">Masaüstü qısayol yaradın</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> üçün parol</translation>
+<translation id="4777458362738635055">Bu cihazın digər istifadəçiləri şəbəkədən istifadə edə bilər</translation>
 <translation id="4777825441726637019">Play Mağaza</translation>
 <translation id="4777943778632837590">Şəbəkə adı serverlərini konfiqurasiya edin</translation>
 <translation id="4778644898150334464">Digər paroldan istifadə edin</translation>
@@ -4306,6 +4312,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5712153969432126546">Saytlar bəzən sənədlər, müqavilələr və formalar kimi PDF-lər yayımlayır</translation>
 <translation id="5715711091495208045">Plaqin Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Defolt axtarış sistemləri</translation>
+<translation id="5719637365829998022">QR kod skanlanıb.</translation>
 <translation id="5719854774000914513">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="572155275267014074">Android ayarları</translation>
 <translation id="5722086096420375088">Yaşıl və ağ</translation>
@@ -4515,6 +4522,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5955721306465922729">Veb sayt bu tətbiqi açmaq istəyir.</translation>
 <translation id="5955809630138889698">Bu cihaz yalnız onlayn demo rejimi üçün uyğundur. Ətraflı məlumat üçün dəstək nüməyəndəsi ilə əlaqə saxlayın.</translation>
 <translation id="5956585768868398362">Gözlədiyiniz axtarış səhifəsi budur?</translation>
+<translation id="5957918771633727933">Əlçatan eSIM profili yoxdur. Yeni <ph name="BEGIN_LINK" />profil endirin.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Profil şəklinin yanında Səsləndirmək üçün Seçim əmrinə klikləyin sonra dinləmək istədiyiniz elementi seçin.</translation>
 <translation id="5959471481388474538">Şəbəkə mövcud deyil</translation>
 <translation id="595959584676692139">Bu artırmadan istifadə etmək üçün səhifəni yenidən yükləyin</translation>
@@ -6020,6 +6028,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7638605456503525968">Seriya portları</translation>
 <translation id="7639914187072011620">SAML yönləndirmə keçidini serverdən əldə etmək alınmadı</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> yadda saxladığınız parollarla uyğun saytlara avtomatik daxil edir.</translation>
+<translation id="7641513591566880111">Yeni profil adı</translation>
 <translation id="7642778300616172920">Həssas məlumatı gizlədin</translation>
 <translation id="7643842463591647490">{0,plural, =1{# açıq pəncərə}other{# açıq pəncərə}}</translation>
 <translation id="7643932971554933646">Sayta fayllara baxmağa icazə verilsin?</translation>
@@ -6180,6 +6189,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7800518121066352902">Saat əqrəbi istiqamətinin əksinə fırladın</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7804072833593604762">Tab bağlanıb</translation>
+<translation id="7805759469263222011">Cihazın kamerasını istifadə edərək QR kodunu skanlayın və ya operatorunuz tərəfindən verilən aktivasiya kodunu daxil edin</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Axtarış və Assistent</translation>
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
@@ -6657,6 +6667,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8300849813060516376">OTASP uğursuz oldu</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Ünvan}other{# ünvan}}</translation>
 <translation id="8304383784961451596">Bu cihazdan istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın, yaxud Family Link ilə nəzarət edilən Google hesabı vasitəsilə daxil olun.</translation>
+<translation id="8308016398665340540">Bu şəbəkəni bu cihazın digər istifadəçiləri ilə paylaşırsınız</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> kameranıza girmədən öncə icazə alsın</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikat artıq mövcuddur</translation>

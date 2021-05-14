@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1001033507375626788">Esta rede compártese contigo</translation>
 <translation id="1001307489511021749">As túas aplicacións, opcións de configuración e personalizacións sincronizaranse en todos os dispositivos Chrome OS nos que iniciases sesión coa túa Conta de Google.</translation>
 <translation id="1003088604756913841">Abrir ligazón nunha nova ventá da aplicación <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
@@ -947,6 +948,7 @@
 <translation id="1992924914582925289">Quitar do dispositivo</translation>
 <translation id="1994173015038366702">URL do sitio</translation>
 <translation id="1995916364271252349">Controla a información que poden utilizar e mostrar os sitios (localización, cámara, ventás emerxentes etc.)</translation>
+<translation id="1997437640397887843">Acendeuse a cámara do dispositivo. Coloca diante dela o código QR da eSIM.</translation>
 <translation id="1997616988432401742">Os teus certificados</translation>
 <translation id="1999115740519098545">No inicio</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
@@ -1002,6 +1004,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2055585478631012616">Ademais, pecharase sesión nestes sitios aínda que os teñas abertos en pestanas</translation>
 <translation id="205560151218727633">Logotipo do Asistente de Google</translation>
 <translation id="2058456167109518507">Detectouse un dispositivo</translation>
+<translation id="2058581283817163201">Verificar o acceso con este dispositivo</translation>
 <translation id="2059913712424898428">Fuso horario</translation>
 <translation id="2060375639911876205">Quitar perfil de eSIM</translation>
 <translation id="2062354623176996748">Utiliza a Web sen gardar o teu historial de navegación cunha ventá do modo de incógnito</translation>
@@ -2598,6 +2601,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3785308913036335955">Mostrar o atallo das aplicacións</translation>
 <translation id="3785727820640310185">Gardáronse os contrasinais para este sitio</translation>
 <translation id="3788301286821743879">Non se puido iniciar a aplicación de quiosco.</translation>
+<translation id="3788331399335602504">estes ficheiros</translation>
 <translation id="3788401245189148511">Podería:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="379082410132524484">A tarxeta caducou</translation>
@@ -3173,6 +3177,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4438043733494739848">Transparente</translation>
 <translation id="4438639467177774583">Na túa Conta de Google (<ph name="ACCOUNT" />) gardarase <ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /></translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> enviouche unha notificación ao teléfono. Para confirmar a túa identidade, toca a notificación titulada “<ph name="NOTIFICATIONTITLE" />” e sigue os pasos indicados.</translation>
 <translation id="4441124369922430666">Queres que se inicie automaticamente esta aplicación cando se acenda o equipo?</translation>
 <translation id="4441147046941420429">Para continuar, quita a chave de seguranza do teu dispositivo, volve inserila e toca o botón de activación</translation>
 <translation id="444134486829715816">Expandir...</translation>
@@ -3474,6 +3479,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="477647109558161443">Crear acceso directo do escritorio</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Os demais usuarios deste dispositivo poden usar esta rede</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nomes de redes</translation>
 <translation id="4778644898150334464">Utilizar outro contrasinal</translation>
@@ -4309,6 +4315,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5712153969432126546">Ás veces, os sitios publican PDF (por exemplo, documentos, contratos e formularios)</translation>
 <translation id="5715711091495208045">Axente do plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de busca predeterminados</translation>
+<translation id="5719637365829998022">Código QR lido.</translation>
 <translation id="5719854774000914513">Os sitios poden pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde e branco</translation>
@@ -4520,6 +4527,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5955721306465922729">Un sitio web quere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">É posible que este dispositivo só sexa adecuado para o modo de demostración en liña. Ponte en contacto co representante do servizo de asistencia para obter máis información.</translation>
 <translation id="5956585768868398362">É esta a páxina de busca que esperabas?</translation>
+<translation id="5957918771633727933">Non hai perfís de eSIM dispoñibles. Podes <ph name="BEGIN_LINK" />descargar<ph name="END_LINK" /> un novo.</translation>
 <translation id="5957987129450536192">Toca a icona Escoitar selección, situada cerca da túa imaxe do perfil e, a continuación, selecciona o que queiras escoitar.</translation>
 <translation id="5959471481388474538">Rede non dispoñible</translation>
 <translation id="595959584676692139">Volve cargar a páxina para usar esta extensión</translation>
@@ -6025,6 +6033,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7638605456503525968">Portos de serie</translation>
 <translation id="7639914187072011620">Non se puido obter do servidor o URL de redirección da SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automaticamente nos sitios aptos cos contrasinais que gardaches.</translation>
+<translation id="7641513591566880111">Novo nome de perfil</translation>
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventá aberta}other{# ventás abertas}}</translation>
 <translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
@@ -6185,6 +6194,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7800518121066352902">Xirar á &amp;esquerda</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7804072833593604762">Pestana pechada</translation>
+<translation id="7805759469263222011">Le o código QR coa cámara do dispositivo ou escribe o código de activación que che proporcionou o teu operador</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Busca e Asistente</translation>
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
@@ -6663,6 +6673,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8300849813060516376">Erro de OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Enderezo}other{# enderezos}}</translation>
 <translation id="8304383784961451596">Non tes autorización para usar este dispositivo. Se queres obter permiso para iniciar sesión, ponte en contacto co administrador. Tamén podes iniciar sesión cunha conta de Google supervisada por Family Link.</translation>
+<translation id="8308016398665340540">Estás compartindo esta rede con outros usuarios deste dispositivo</translation>
 <translation id="8308179586020895837">Preguntar se <ph name="HOST" /> quere acceder á túa cámara</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">O certificado xa existe</translation>

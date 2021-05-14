@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
+<translation id="2022352537516230970">შექმნილია iPhone-ისთვის</translation>
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">ყოველთვის ჩვენება</translation>
 <translation id="418156467088430727">ხაზგარეშე ვერსიის ახალ ჩანართში ნახვა</translation>
 <translation id="4181841719683918333">ენები</translation>
+<translation id="4184011057600693970">შექმნილია iPad-ისთვის</translation>
 <translation id="424315890655130736">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="4263576668337963058">გვერდთან დაკავშირებული ხელმისაწვდომი ქმედებების ჩვენება</translation>
 <translation id="4267380167363222949">შემდეგი ჩანართი</translation>
@@ -492,6 +494,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="605721222689873409">წწ</translation>
 <translation id="6059830886158432458">აქ შეგიძლიათ მართოთ ამბები და აქტივობა</translation>
 <translation id="6066301408025741299">შეეხეთ გასაუქმებლად.</translation>
+<translation id="60829778314739003">დათანხმება და გაგრძელება</translation>
 <translation id="6108923351542677676">მიმდინარეობს დაყენება…</translation>
 <translation id="6119050551270742952">ამჟამად გახსნილი ვებგვერდი ინკოგნიტო რეჟიმშია</translation>
 <translation id="6122191549521593678">ონლაინ</translation>
@@ -587,6 +590,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6801927553864092214">ვების კონფიდენციალურად დასათვალიერებლად გახსენით ინკოგნიტო ჩანართი</translation>
 <translation id="6807889908376551050">ყველას ჩვენება…</translation>
 <translation id="681368974849482173">ელემენტი შექმნილია</translation>
+<translation id="6830804042318138535">მეტის წაკითხვა</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6851516051005285358">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="6858855187367714033">სკანირებული</translation>
@@ -635,6 +639,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7291368939935408496">მიმდინარეობს პაროლების მომზადება...</translation>
 <translation id="7293171162284876153">სიქრონიზაციის დასაწყებად ჩართეთ „თქვენი Chrome მონაცემების სინქრონიზაციის“ პარამეტრი.</translation>
 <translation id="7313347584264171202">აქ იპოვით თქვენს ინკოგნიტო ჩანართებს</translation>
+<translation id="7319242366286515846">გაგრძელებით თქვენ ეთანხმებით <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> პროცენტი ჩამოიტვირთა</translation>
 <translation id="7340958967809483333">Discover-ის ვარიანტები</translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
@@ -781,6 +786,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8840513115188359703">თქვენ არ გამოხვალთ თქვენი Google ანგარიშიდან.</translation>
 <translation id="8870413625673593573">ბოლოს დახურული</translation>
+<translation id="8876882697946675716">შეინარჩუნეთ მოწყობილობები სინქრონიზებულ მდგომარეობაში</translation>
 <translation id="8881801611828450202">ამ სურათის ძიება <ph name="SEARCH_ENGINE" />-ში</translation>
 <translation id="8909135823018751308">გაზიარება…</translation>
 <translation id="8917490105272468696">დიახ, თანახმა ვარ</translation>

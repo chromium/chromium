@@ -508,6 +508,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2850739647070081192">Invite (koverat)</translation>
 <translation id="2856444702002559011">Napadači možda pokušavaju da ukradu informacije sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primer, lozinke, poruke ili kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ovaj sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
+<translation id="287596039013813457">Prijateljski</translation>
 <translation id="2876489322757410363">Napustićete režim bez arhiviranja da biste platili u spoljnoj aplikaciji. Želite li da nastavite?</translation>
 <translation id="2878197950673342043">Presavijanje u obliku postera</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3229041911291329567">Informacije o verziji za uređaj i pregledač</translation>
 <translation id="323107829343500871">Unesite CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvek otkrivaj važan sadržaj na ovom sajtu</translation>
+<translation id="3249845759089040423">Hipi</translation>
 <translation id="3252266817569339921">francuski</translation>
 <translation id="3266793032086590337">Vrednost (neusaglašena)</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
@@ -982,6 +984,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4594403342090139922">&amp;Opozovi brisanje</translation>
 <translation id="4597348597567598915">Veličina 8</translation>
 <translation id="4600854749408232102">C6/C5 (koverat)</translation>
+<translation id="4606870351894164739">Upečatljivo</translation>
 <translation id="4628948037717959914">Slika</translation>
 <translation id="4631649115723685955">Povezan je povraćaj gotovine</translation>
 <translation id="4636930964841734540">Informacije</translation>
@@ -1045,6 +1048,8 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4813512666221746211">Greška na mreži</translation>
 <translation id="4816492930507672669">Uklopi u stranicu</translation>
 <translation id="4819347708020428563">Želite li da izmenite komentare u podrazumevanom prikazu?</translation>
+<translation id="4825507807291741242">Moćno</translation>
+<translation id="4838327282952368871">Čarobno</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">nemački</translation>
@@ -1203,6 +1208,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="541143247543991491">Klaud (na nivou sistema)</translation>
 <translation id="541416427766103491">4. pregrada za slaganje</translation>
 <translation id="5421136146218899937">Obriši podatke pregledanja...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
@@ -1709,6 +1715,7 @@ Dodatni detalji:
     &lt;li&gt;Posetite &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome centar za pomoć&lt;/a&gt; da biste saznali kako da trajno uklonite softver sa računara
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Divno</translation>
 <translation id="7416351320495623771">Upravljaj lozinkama...</translation>
 <translation id="7419106976560586862">Putanja profila</translation>
 <translation id="7437289804838430631">Dodaj kontakt informacije</translation>
@@ -2133,6 +2140,7 @@ Dodatni detalji:
 <translation id="9020542370529661692">Ova stranica je prevedena na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Nevažeće)</translation>
+<translation id="9030265603405983977">Monohromatsko</translation>
 <translation id="9035022520814077154">Bezbednosna greška</translation>
 <translation id="9038649477754266430">Koristite uslugu predviđanja da biste brže učitavali stranice</translation>
 <translation id="9039213469156557790">Pored toga, ova stranica sadrži i druge resurse koji nisu bezbedni. Ove resurse mogu da vide i drugi dok su u prolazu i napadač može da ih izmeni kako bi promenio ponašanje stranice.</translation>
@@ -2156,6 +2164,7 @@ Dodatni detalji:
 <translation id="91108059142052966">Smernice za administratore onemogućavaju deljenje sadržaja ekrana sa aplikacijom <ph name="APPLICATION_TITLE" /> kada je vidljiv poverljivi sadržaj</translation>
 <translation id="9114524666733003316">Kartica se potvrđuje...</translation>
 <translation id="9114581008513152754">Ovim pregledačem ne upravlja kompanija niti druga organizacija. Aktivnostima na ovom uređaju se možda upravlja van Chrome-a. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Sveže</translation>
 <translation id="9119042192571987207">Otpremljeno</translation>
 <translation id="9128016270925453879">Smernice su učitane</translation>
 <translation id="9128870381267983090">Povezivanje sa mrežom</translation>

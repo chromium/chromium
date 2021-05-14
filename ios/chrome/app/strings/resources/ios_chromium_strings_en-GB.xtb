@@ -21,6 +21,7 @@
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
+<translation id="2567507405773541360">Get more done with a simple, secure and faster-than-ever Chromium</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
@@ -42,6 +43,7 @@
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4787850887676698916">Tabs that you've opened in Chromium on your other devices will appear here.</translation>
+<translation id="4806326830773390517">Help improve Chromium by sending usage statistics and crash reports to Google</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4852878756222711218">To get the most out of Chromium, sign in with your Google Account</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>

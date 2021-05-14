@@ -295,6 +295,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2904414404539560095">Listan över enheter som fliken kan delas med öppnades och tar upp hela skärmen.</translation>
 <translation id="2905036901251765993">Be andra att skanna QR-koden om du vill dela med personer i närheten</translation>
 <translation id="2909615210195135082">Googles aviseringsplattform</translation>
+<translation id="2912296070571964914">Hantera ämnen som du är intresserad av</translation>
 <translation id="2923908459366352541">Namnet är ogiltigt</translation>
 <translation id="2932150158123903946">Lagring för Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tangentbordet ändras inte</translation>
@@ -339,6 +340,8 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3254409185687681395">Bokmärk sidan</translation>
 <translation id="3259831549858767975">Gör allt på sidan mindre</translation>
 <translation id="3264124641674805320">Så här laddar du ned innehåll att spara till senare</translation>
+<translation id="3264259168916048410">Datorn vill använda den här enheten för att logga in på en webbplats</translation>
+<translation id="3265534588625245297">Hantera de webbplatser du följer</translation>
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="3269956123044984603">Aktivera Automatisk synkronisering av data i kontoinställningarna för Android om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4384468725000734951">Du söker med Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> – Laddar ned …</translation>
 <translation id="4404568932422911380">Inga bokmärken</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
 <translation id="4411535500181276704">Begränsat läge</translation>
@@ -583,6 +587,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="488187801263602086">Byt namn på fil</translation>
 <translation id="4882831918239250449">Styr hur Sök, annonser och annat ska anpassas utifrån webbhistoriken</translation>
 <translation id="4885273946141277891">Fler Chrome-förekomster än det finns stöd för.</translation>
+<translation id="4905269543817054577">Historik sparas inte i inkognitoläge.</translation>
 <translation id="4908869848243824489">Förslag från Google</translation>
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4913161338056004800">Återställ statistik</translation>
@@ -951,6 +956,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7233236755231902816">Skaffa den senaste versionen av Chrome och få webben översatt till ditt språk</translation>
 <translation id="7248069434667874558">Kontrollera att synkronisering har aktiverats i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Lägg telefonen nära datorn</translation>
 <translation id="7274013316676448362">Blockerad webbplats</translation>
 <translation id="7286572596625053347">Vill du byta till <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Det går inte att byta namn</translation>
@@ -1017,6 +1023,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7630202231528827509">Leverantörens webbadress</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7641339528570811325">Rensa webbinformation …</translation>
+<translation id="764170292089748542">Chrome sparar inte webbhistoriken när du väljer att surfa privat. Du kan fortfarande använda bokmärken för att få åtkomst till dina favoritwebbplatser.</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
@@ -1042,6 +1049,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
 <translation id="7821588508402923572">Här visas hur mycket data du har sparat</translation>
+<translation id="78270725016672455">Datorn vill registrera den här enheten för att logga in på en webbplats</translation>
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>
 <translation id="784934925303690534">Tidsintervall</translation>
@@ -1138,6 +1146,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8427875596167638501">Fliken Förhandsgranskning visas på halva skärmen</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> – Språket kan nu användas. Starta om <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Inga berättelser tillgängliga</translation>
 <translation id="8443209985646068659">Uppdatering inte möjlig</translation>
 <translation id="8445448999790540984">Det gick inte att exportera lösenord</translation>
@@ -1210,6 +1219,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8937267401510745927">Innehållet på en webbplats där du använder Google Assistent, dess webbadress samt information som du skickar via assistenten överförs till Google så att du kan få uppgifterna utförda. Informationen kan sparas i Google-kontot. Du kan inaktivera Google Assistent i Chrome-inställningarna.</translation>
 <translation id="8937772741022875483">Vill du ta bort din aktivitet i Chrome från Digitalt välmående?</translation>
 <translation id="8942627711005830162">Öppna i ett annat fönster</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – Det gick inte att ladda ned språket. Försök igen senare.</translation>
 <translation id="8951232171465285730">Du har sparat <ph name="MEGABYTES" /> MB med Chrome</translation>
 <translation id="8965591936373831584">väntar</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>

@@ -299,6 +299,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8372477600026034341">Mga karagdagang host</translation>
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Pangalan ng home provider</translation>
 <translation id="8475690821716466388">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP PSK</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد کاملاً باز است.</translation>
 <translation id="2905036901251765993">برای هم‌رسانی کردن با افراد اطراف، اجازه دهید این رمزینه پاسخ‌سریع را اسکن کنند</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
+<translation id="2912296070571964914">مدیریت موضوع‌هایی که به آن‌ها علاقه دارید</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">صفحه‌کلیدتان تغییر نخواهد کرد</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">نشانک گذاری این صفحه</translation>
 <translation id="3259831549858767975">کوچک‌تر کردن همه‌چیز در صفحه</translation>
 <translation id="3264124641674805320">نحوه بارگیری محتوا برای فرصتی دیگر</translation>
+<translation id="3264259168916048410">رایانه‌تان می‌خواهد از این دستگاه برای ورود به سیستم سایتی استفاده کند</translation>
+<translation id="3265534588625245297">مدیریت سایت‌هایی که دنبال می‌کنید</translation>
 <translation id="3269093882174072735">بارگیری تصویر</translation>
 <translation id="3269956123044984603">‏برای دسترسی به برگه‌ها از دستگاه‌های دیگرتان، «همگام‌سازی خودکار داده‌ها» را در تنظیمات حساب Android روشن کنید.</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">بستن کادر گفتگو</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4384468725000734951">‏استفاده از Sogou برای جستجو</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - درحال بارگیری…</translation>
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
 <translation id="4405224443901389797">انتقال به…</translation>
 <translation id="4411535500181276704">حالت ساده</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">تغییر نام فایل</translation>
 <translation id="4882831918239250449">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو»، آگهی‌ها و موارد دیگر</translation>
 <translation id="4885273946141277891">‏این تعداد از نسخه‌های Chrome پشتیبانی نمی‌شود.</translation>
+<translation id="4905269543817054577">سابقه در «حالت ناشناس» ذخیره نمی‌شود</translation>
 <translation id="4908869848243824489">‏«یافته‌ها» از Google</translation>
 <translation id="4910889077668685004">برنامه‌های پرداخت</translation>
 <translation id="4913161338056004800">بازنشانی آمار</translation>
@@ -951,6 +956,7 @@
 <translation id="7191430249889272776">برگه در پس‌زمینه باز شد.</translation>
 <translation id="7233236755231902816">‏برای اینکه وب را به زبان خود ببینید، آخرین نسخه Chrome را دریافت کنید</translation>
 <translation id="7248069434667874558">‏مطمئن شوید همگام‌سازی <ph name="TARGET_DEVICE_NAME" /> در Chrome روشن باشد</translation>
+<translation id="7252076891734325316">تلفن را نزدیک رایانه قرار دهید</translation>
 <translation id="7274013316676448362">سایت مسدودشده</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> تغییر داده شود؟</translation>
 <translation id="7290209999329137901">عدم‌دسترسی به تغییر نام</translation>
@@ -1017,6 +1023,7 @@
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="764170292089748542">‏وقتی انتخاب کنید که به‌صورت خصوصی مرور کنید، Chrome سابقه مرورتان را ذخیره نمی‌کند. همچنان می‌توانید برای دسترسی به سایت‌های دلخواهتان از نشانک‌ها استفاده کنید.</translation>
 <translation id="7646772052135772216">همگام‌سازی گذرواژه کار نمی‌کند</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
@@ -1042,6 +1049,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
 <translation id="7821588508402923572">میزان داده صرفه‌جویی‌شده اینجا نشان داده می‌شود</translation>
+<translation id="78270725016672455">رایانه‌تان می‌خواهد این دستگاه را برای ورود به سیستم یک سایت ثبت کند</translation>
 <translation id="7844171778363018843">هیچ داده‌ای برای همگام‌سازی انتخاب نشده است</translation>
 <translation id="7846296061357476882">‏سرویس‌های Google</translation>
 <translation id="784934925303690534">محدوده زمانی</translation>
@@ -1138,6 +1146,7 @@
 <translation id="8427875596167638501">برگه پیش‌نمایش نیمه‌باز است</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - زبان آماده است، <ph name="APP_NAME" /> را بازراه‌اندازی کنید.</translation>
 <translation id="8442258441309440798">هیچ داستانی دردسترس نیست</translation>
 <translation id="8443209985646068659">‏Chrome به‌روزرسانی نشد</translation>
 <translation id="8445448999790540984">گذرواژه‌ها صادر نشدند</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8937267401510745927">‏برای کمک به انجام کارها، Google نشانی‌های وب و محتوای سایت‌هایی را که در آن‌ها از «دستیار» استفاده می‌کنید، و همچنین اطلاعاتی را که ازطریق «دستیار» ارسال می‌کنید دریافت خواهد کرد. ممکن است این اطلاعات در «حساب Google» شما ذخیره شود. می‌توانید «دستیار» را در «تنظیمات Chrome» خاموش کنید.</translation>
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="8951232171465285730">‏Chrome ‏<ph name="MEGABYTES" /> مگابایت از داده‌های شما را ذخیره کرده است</translation>
 <translation id="8965591936373831584">در انتظار</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>

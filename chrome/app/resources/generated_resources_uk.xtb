@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1001033507375626788">Ви маєте доступ до цієї мережі</translation>
 <translation id="1001307489511021749">Додатки, налаштування й інші параметри синхронізуватимуться між усіма пристроями з ОС Chrome, на яких ви ввійшли в обліковий запис Google.</translation>
 <translation id="1003088604756913841">Відкрити посилання в новому вікні додатка <ph name="APP" /></translation>
 <translation id="100323615638474026">Пристрій USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -963,6 +964,7 @@
 <translation id="1992924914582925289">Видалити з пристрою</translation>
 <translation id="1994173015038366702">URL-адреса сайту</translation>
 <translation id="1995916364271252349">Контролює, яку інформацію можуть використовувати й показувати сайти (місцезнаходження, камера, спливаючі вікна тощо)</translation>
+<translation id="1997437640397887843">Камеру пристрою ввімкнено. Наведіть її на QR-код eSIM-карти.</translation>
 <translation id="1997616988432401742">Ваші сертифікати</translation>
 <translation id="1999115740519098545">Після запуску</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
@@ -1018,6 +1020,7 @@
 <translation id="2055585478631012616">Ви вийдете з облікового запису на цих сайтах, зокрема у відкритих вкладках</translation>
 <translation id="205560151218727633">Логотип Google Асистент</translation>
 <translation id="2058456167109518507">Виявлено пристрій</translation>
+<translation id="2058581283817163201">Підтвердити за допомогою цього телефона</translation>
 <translation id="2059913712424898428">Часовий пояс</translation>
 <translation id="2060375639911876205">Видалити профіль eSIM-карти</translation>
 <translation id="2062354623176996748">Відкрийте вікно в режимі анонімного перегляду й користуйтесь Інтернетом, не зберігаючи історію веб-перегляду</translation>
@@ -2618,6 +2621,7 @@
 <translation id="3785308913036335955">Показувати ярлики додатків</translation>
 <translation id="3785727820640310185">Збережені паролі для цього сайту</translation>
 <translation id="3788301286821743879">Не вдалося запустити додаток-термінал.</translation>
+<translation id="3788331399335602504">ці файли</translation>
 <translation id="3788401245189148511">Зможе:</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="379082410132524484">Ваша картка недійсна</translation>
@@ -3193,6 +3197,7 @@
 <translation id="4438043733494739848">Прозоро</translation>
 <translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> користувача <ph name="USERNAME" /> буде збережено в обліковому записі Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> надсилає сповіщення на ваш телефон. Щоб підтвердити свою особу, натисніть сповіщення "<ph name="NOTIFICATIONTITLE" />" і виконайте вказівки.</translation>
 <translation id="4441124369922430666">Запускати цю програму автоматично під час увімкнення комп’ютера?</translation>
 <translation id="4441147046941420429">Щоб продовжити, вийміть і знову вставте ключ безпеки, а потім торкніться його</translation>
 <translation id="444134486829715816">Розгорнути...</translation>
@@ -3495,6 +3500,7 @@
 <translation id="4773112038801431077">Оновити Linux</translation>
 <translation id="477647109558161443">Створити ярлик на робочому столі</translation>
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Інші користувачі цього пристрою мають доступ до цієї мережі</translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4777943778632837590">Налаштувати мережеві сервери імен</translation>
 <translation id="4778644898150334464">Ввести інший пароль</translation>
@@ -4330,6 +4336,7 @@
 <translation id="5712153969432126546">Сайти іноді публікують файли PDF, як-от документи, договори та форми</translation>
 <translation id="5715711091495208045">Посередник для плагінів: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Пошукові системи за умовчанням</translation>
+<translation id="5719637365829998022">QR-код зіскановано.</translation>
 <translation id="5719854774000914513">Сайти можуть запитувати дозвіл на підключення до пристроїв HID</translation>
 <translation id="572155275267014074">Налаштування Android</translation>
 <translation id="5722086096420375088">Зелено-білий</translation>
@@ -4541,6 +4548,7 @@
 <translation id="5955721306465922729">Веб-сайт просить дозвіл відкрити цей додаток.</translation>
 <translation id="5955809630138889698">Цей пристрій доступний лише для демо-режиму онлайн. Щоб дізнатися більше, зв’яжіться з представником служби підтримки.</translation>
 <translation id="5956585768868398362">Це сторінка пошуку, яку ви очікували?</translation>
+<translation id="5957918771633727933">Немає профілів eSIM-карти. Завантажте новий <ph name="BEGIN_LINK" />профіль<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Торкніться значка "Читання з екрана" біля зображення профілю, а тоді виберіть фрагмент, який хочете почути.</translation>
 <translation id="5959471481388474538">Мережа не доступна</translation>
 <translation id="595959584676692139">Оновіть сторінку, щоб використовувати це розширення</translation>
@@ -5335,7 +5343,7 @@
 <translation id="6843264316370513305">Налагодження мережі</translation>
 <translation id="6843423766595476978">Команду "Ok Google" налаштовано</translation>
 <translation id="6845038076637626672">Відкрити в розгорнутому вигляді</translation>
-<translation id="6845325883481699275">Допоможіть покращити безпеку Chrome</translation>
+<translation id="6845325883481699275">Допомагати покращувати безпеку Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" хоче роздрукувати файл "<ph name="FILE_NAME" />" на принтері <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Щоб продовжити, звільніть місце</translation>
 <translation id="6848388270925200958">Зараз у вас є кілька карток, які можна використовувати лише на цьому пристрої</translation>
@@ -6046,6 +6054,7 @@
 <translation id="7638605456503525968">Послідовні порти</translation>
 <translation id="7639914187072011620">Не вдалось отримати із сервера переспрямування SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> зберігає ваші паролі й автоматично входить в облікові записи на сайтах.</translation>
+<translation id="7641513591566880111">Нова назва профілю</translation>
 <translation id="7642778300616172920">Ховати конфіденційний вміст</translation>
 <translation id="7643842463591647490">{0,plural, =1{# відкрите вікно}one{# відкрите вікно}few{# відкриті вікна}many{# відкритих вікон}other{# відкритого вікна}}</translation>
 <translation id="7643932971554933646">Дозволити сайту переглядати файли?</translation>
@@ -6113,7 +6122,7 @@
 <translation id="7702574632857388784">Видалити файл "<ph name="FILE_NAME" />" зі списку</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Завдання</translation>
-<translation id="7704317875155739195">Автоматично завершувати пошукові запити та URL-адреси</translation>
+<translation id="7704317875155739195">Увімкнути автозавершення пошукових запитів і URL-адрес</translation>
 <translation id="7704521324619958564">Відкрити Google Play</translation>
 <translation id="7705276765467986571">Не вдалося завантажити модель закладки.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -6206,6 +6215,7 @@
 <translation id="7800518121066352902">Повернути п&amp;роти годинникової стрілки</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804072833593604762">Вкладку закрито</translation>
+<translation id="7805759469263222011">Зіскануйте QR-код камерою пристрою або введіть код активації, який надав оператор</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
@@ -6685,6 +6695,7 @@
 <translation id="8300849813060516376">Помилка OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Адреса}one{# адреса}few{# адреси}many{# адрес}other{# адреси}}</translation>
 <translation id="8304383784961451596">У вас немає дозволу користуватися цим пристроєм. Попросіть адміністратора надати вам дозвіл на вхід або увійдіть в обліковий запис Google, яким керують через Family Link.</translation>
+<translation id="8308016398665340540">До цієї мережі мають доступ інші користувачі пристрою</translation>
 <translation id="8308179586020895837">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до вашої камери</translation>
 <translation id="830868413617744215">Бета-версія</translation>
 <translation id="8309458809024885768">Сертифікат уже існує</translation>

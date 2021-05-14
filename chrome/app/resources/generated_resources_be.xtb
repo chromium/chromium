@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1001033507375626788">Гэта сетка абагульваецца з вамі.</translation>
 <translation id="1001307489511021749">Праграмы, налады і іншыя параметры будуць сінхранізавацца на ўсіх прыладах Chrome OS, з якіх вы ўвайшлі ва Уліковы запіс Google.</translation>
 <translation id="1003088604756913841">Адкрыць спасылку ў новым акне <ph name="APP" /></translation>
 <translation id="100323615638474026">Прылада USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -951,6 +952,7 @@
 <translation id="1992924914582925289">Выдаліць з прылады</translation>
 <translation id="1994173015038366702">URL-адрас сайта</translation>
 <translation id="1995916364271252349">Кантралюе, якую інфармацыю могуць выкарыстоўваць і паказваць сайты (месцазнаходжанне, камера, усплывальныя вокны і іншае)</translation>
+<translation id="1997437640397887843">Камера прылады ўключана. Навядзіце камеру на QR-код eSIM-карты.</translation>
 <translation id="1997616988432401742">Вашы сертыфікаты</translation>
 <translation id="1999115740519098545">Пры запуску</translation>
 <translation id="2000419248597011803">Адпраўляе вашай стандартнай пошукавай сістэме некаторыя файлы cookie, а таксама пошукавыя запыты, уведзеныя ў адрасным радку і полі пошуку</translation>
@@ -1006,6 +1008,7 @@
 <translation id="2055585478631012616">Будзе выкананы выхад з гэтых сайтаў, у тым ліку на адкрытых укладках</translation>
 <translation id="205560151218727633">Лагатып памочніка Google</translation>
 <translation id="2058456167109518507">Выяўлена прылада</translation>
+<translation id="2058581283817163201">Праходзьце спраўджанне з дапамогай тэлефона</translation>
 <translation id="2059913712424898428">Часавы пояс</translation>
 <translation id="2060375639911876205">Выдаліць профіль eSIM-карты</translation>
 <translation id="2062354623176996748">Акно ў рэжыме інкогніта дазваляе карыстацца інтэрнэтам без захавання гісторыі прагляду сайтаў</translation>
@@ -2602,6 +2605,7 @@
 <translation id="3785308913036335955">Паказваць ярлыкі праграм</translation>
 <translation id="3785727820640310185">Захаваныя паролі для гэтага сайта</translation>
 <translation id="3788301286821743879">Не ўдалося запусціць праграму-кіёск.</translation>
+<translation id="3788331399335602504">гэтыя файлы</translation>
 <translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="379082410132524484">Тэрмін дзеяння карткі скончыўся</translation>
@@ -3177,6 +3181,7 @@
 <translation id="4438043733494739848">Празрыста</translation>
 <translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> карыстальніка <ph name="USERNAME" /> будзе захаваны для Уліковага запісу Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
+<translation id="4440097423000553826">Сайт <ph name="WEBSITE" /> адправіў апавяшчэнне на ваш тэлефон. Каб пацвердзіць сваю асобу, націсніце на апавяшчэнне "<ph name="NOTIFICATIONTITLE" />" і выканайце атрыманыя інструкцыі.</translation>
 <translation id="4441124369922430666">Ці запускаць аўтаматычна гэту праграму пры ўключэнні прылады?</translation>
 <translation id="4441147046941420429">Каб працягнуць, дастаньце ключ бяспекі з прылады, затым зноў устаўце і дакраніцеся да яго</translation>
 <translation id="444134486829715816">Разгарнуць...</translation>
@@ -3478,6 +3483,7 @@
 <translation id="4773112038801431077">Абнаўленне Linux</translation>
 <translation id="477647109558161443">Стварыць ярлык на працоўным стале</translation>
 <translation id="4776917500594043016">Пароль карыстальніка <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Іншыя карыстальнікі прылады могуць выкарыстоўваць гэту сетку</translation>
 <translation id="4777825441726637019">Крама Play</translation>
 <translation id="4777943778632837590">Наладзіць серверы даменных імён</translation>
 <translation id="4778644898150334464">Выкарыстаць іншы пароль</translation>
@@ -4311,6 +4317,7 @@
 <translation id="5712153969432126546">Часам сайты публікуюць PDF-файлы (напрыклад, дакументы, кантракты і формы)</translation>
 <translation id="5715711091495208045">Брокер убудовы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандартныя пошукавыя сістэмы</translation>
+<translation id="5719637365829998022">QR-код адсканіраваны.</translation>
 <translation id="5719854774000914513">Сайты могуць запытваць дазвол на падключэнне да прылад з HID</translation>
 <translation id="572155275267014074">Налады Android</translation>
 <translation id="5722086096420375088">Зялёны і белы</translation>
@@ -4522,6 +4529,7 @@
 <translation id="5955721306465922729">Вэб-сайт запытвае адкрыццё гэтай праграмы.</translation>
 <translation id="5955809630138889698">Магчыма, прылада можа выкарыстоўвацца толькі для дэманстрацыйнага інтэрнэт-рэжыму. Па дадатковыя звесткі звярніцеся да гандлёвага прадстаўніка.</translation>
 <translation id="5956585768868398362">Ці тая гэта старонка пошуку, якую вы чакалі ўбачыць?</translation>
+<translation id="5957918771633727933">Даступных профіляў eSIM-карты няма. Спампуйце новы <ph name="BEGIN_LINK" />профіль<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Націсніце значок "Чытаць уголас" побач з відарысам профілю і выберыце, што трэба агучыць.</translation>
 <translation id="5959471481388474538">Сетка недаступная</translation>
 <translation id="595959584676692139">Каб выкарыстоўваць гэта пашырэнне, перазагрузіце старонку</translation>
@@ -6024,6 +6032,7 @@
 <translation id="7638605456503525968">Паслядоўныя парты</translation>
 <translation id="7639914187072011620">Не ўдалося атрымаць з сервера URL-адрас перанакіравання SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> аўтаматычна выконвае для вас уваход на прыдатныя сайты, выкарыстоўваючы захаваныя вамі паролі.</translation>
+<translation id="7641513591566880111">Новая назва профілю</translation>
 <translation id="7642778300616172920">Схаваць канфідэнцыяльнае змесціва</translation>
 <translation id="7643842463591647490">{0,plural, =1{# адкрытае акно}one{# адкрытае акно}few{# адкрытыя акны}many{# адкрытых вокнаў}other{# адкрытага акна}}</translation>
 <translation id="7643932971554933646">Дазволіць сайту праглядаць файлы?</translation>
@@ -6184,6 +6193,7 @@
 <translation id="7800518121066352902">Павярнуць су&amp;праць гадзіннікавай стрэлкі</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7804072833593604762">Укладка закрыта</translation>
+<translation id="7805759469263222011">Адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, атрыманы ад аператара.</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7807711621188256451">Заўсёды даваць хосту <ph name="HOST" /> доступ да камеры</translation>
@@ -6662,6 +6672,7 @@
 <translation id="8300849813060516376">Памылка OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
 <translation id="8304383784961451596">Вы не аўтарызаваны для выкарыстання гэтай прылады. Звярніцеся да адміністратара з запытам дазволу на ўваход або ўвайдзіце праз Уліковы запіс Google, які кіруецца праз Family Link.</translation>
+<translation id="8308016398665340540">Вы абагульваеце гэту сетку з іншымі карыстальнікамі гэтай прылады</translation>
 <translation id="8308179586020895837">Запытваць, калі <ph name="HOST" /> патрабуе доступ да камеры</translation>
 <translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8309458809024885768">Сертыфікат ужо існуе</translation>

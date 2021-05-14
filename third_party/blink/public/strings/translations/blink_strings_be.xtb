@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">камбінаванае акно</translation>
 <translation id="3220661731597678625">бягучы крок</translation>
+<translation id="3321030238473337787">Хуткасць прайгравання</translation>
 <translation id="3329013043687509092">Насычанасць</translation>
 <translation id="3450233048674729344">Значэнне павінна быць меншым або роўным <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">панэль меню</translation>
 <translation id="4293574643247337246">верхні калонтытул старонкі</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">схаваць меню хуткасці прайгравання</translation>
 <translation id="4384249794467006333">Гэты відарыс не мае метак. Каб атрымаць апісанні відарыса, адкрыйце меню дадатковых параметраў у правым верхнім вугле экрана.</translation>
 <translation id="4384583879834880242">Пытанні і адказы</translation>
 <translation id="4444765639179266822">Здаецца, напісана наступнае: <ph name="OCR_TEXT" /></translation>
@@ -148,6 +150,7 @@
 <translation id="512758898067543763">загаловак радка</translation>
 <translation id="5143125788380636750">эпілог</translation>
 <translation id="5164977714490026579">Значэнне павінна быць большым або роўным <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">Адрас "<ph name="INVALIDADDRESS" />" – няпоўны. Увядзіце частку перад сімвалам "<ph name="ATSIGN" />".</translation>
 <translation id="5334352251556557839">Не ўдалося прайграць мультымедыйны файл.</translation>
@@ -158,6 +161,7 @@
 <translation id="5453733299334684579">элемент дрэва</translation>
 <translation id="5466621249238537318">Выберыце адзін або некалькі файлаў.</translation>
 <translation id="5468998798572797635">выключыць поўнаэкранны рэжым</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">інструмент выбару даты</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5546461542133609677">уключыць гук</translation>
@@ -169,6 +173,7 @@
 <translation id="5677946354068040947">дадатковыя параметры</translation>
 <translation id="576709008726043716">уводзіны</translation>
 <translation id="57838592816432529">Выключыць</translation>
+<translation id="5786442179789148008">паказаць меню хуткасці прайгравання</translation>
 <translation id="5787939484346677755">– разгорнута, варыянты аўтазапаўнення даступныя.</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
@@ -177,6 +182,7 @@
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5966707198760109579">Тыдзень</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">кнопка-лічыльнік</translation>
 <translation id="6011459053400940133">рэгулятар гучнасці</translation>
 <translation id="6015796118275082299">Год</translation>
@@ -215,6 +221,7 @@
 <translation id="6843725295806269523">выключыць гук</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">калафон</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">блок з цытатай</translation>
 <translation id="693476918119313863">загаловак</translation>
 <translation id="6941933287844615239">спампаваць мультымедыя</translation>
@@ -251,6 +258,7 @@
 <translation id="7745230546936012372">Каб атрымаць адсутныя апісанні відарысаў, адкрыйце кантэкстнае меню.</translation>
 <translation id="7750228210027921155">Відарыс у відарысе</translation>
 <translation id="775297008183122718">Несапраўдны запіс</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">прыпыніць</translation>
 <translation id="7802800022689234070">трохвугольнік разгортвання</translation>
 <translation id="7852167693871241274">Паўзунок адцення</translation>
@@ -264,6 +272,7 @@
 <translation id="8105797009065549151">спасылка на заўвагу</translation>
 <translation id="811583516810654505">Ідзе атрыманне апісання...</translation>
 <translation id="8117451130807776954">Гэты тыдзень</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8208673686607688524">выбар лакальнай даты і часу</translation>
 <translation id="8261464734335370856">Арфаграфічная памылка</translation>
@@ -288,6 +297,7 @@
 <translation id="8613126697340063924">кіраваць аддаленым прайграваннем</translation>
 <translation id="862370744433916922">субцітр</translation>
 <translation id="8634971699417195529">Паказаць сродак выбару месяца</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пераносіць радкі</translation>
 <translation id="8711688047404765493">выхад</translation>
 <translation id="8750798805984357768">Выберыце адзін з варыянтаў.</translation>

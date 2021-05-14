@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1001033507375626788">У вас есть доступ к этой сети</translation>
 <translation id="1001307489511021749">Приложения и настройки будут синхронизироваться на всех устройствах с Chrome OS, на которых вы вошли в аккаунт Google.</translation>
 <translation id="1003088604756913841">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="100323615638474026">USB-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -950,6 +951,7 @@
 <translation id="1992924914582925289">Удалить с устройства</translation>
 <translation id="1994173015038366702">Адрес сайта</translation>
 <translation id="1995916364271252349">Определяет, какую информацию могут использовать и показывать сайты (например, есть ли у них доступ к местоположению и камере, а также разрешение на показ всплывающих окон и т. д.).</translation>
+<translation id="1997437640397887843">Камера устройства включена. Разместите QR-код eSIM перед объективом.</translation>
 <translation id="1997616988432401742">Ваши сертификаты</translation>
 <translation id="1999115740519098545">Запуск Chrome</translation>
 <translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
@@ -1005,6 +1007,7 @@
 <translation id="2055585478631012616">Вы автоматически выйдете из аккаунта на этих сайтах (в том числе на открытых вкладках).</translation>
 <translation id="205560151218727633">Логотип Google Ассистента</translation>
 <translation id="2058456167109518507">Обнаружено устройство</translation>
+<translation id="2058581283817163201">Аутентификация с помощью телефона</translation>
 <translation id="2059913712424898428">Часовой пояс</translation>
 <translation id="2060375639911876205">Удалить профиль eSIM</translation>
 <translation id="2062354623176996748">Не хотите, чтобы сохранялась история браузера? Используйте режим инкогнито.</translation>
@@ -2600,6 +2603,7 @@
 <translation id="3785308913036335955">Показывать кнопку "Сервисы"</translation>
 <translation id="3785727820640310185">Сохраненные пароли для этого сайта</translation>
 <translation id="3788301286821743879">Не удалось запустить киоск-приложение.</translation>
+<translation id="3788331399335602504">эти файлы</translation>
 <translation id="3788401245189148511">Разрешения:</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="379082410132524484">Срок действия карты истек</translation>
@@ -3175,6 +3179,7 @@
 <translation id="4438043733494739848">Прозрачный</translation>
 <translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> пользователя <ph name="USERNAME" /> будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4439427728133035643">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
+<translation id="4440097423000553826">Сайт <ph name="WEBSITE" /> отправил на ваш телефон уведомление с заголовком "<ph name="NOTIFICATIONTITLE" />". Чтобы подтвердить свою личность, нажмите на него и следуйте дальнейшим инструкциям.</translation>
 <translation id="4441124369922430666">Автоматически запускать это приложение при включении устройства?</translation>
 <translation id="4441147046941420429">Чтобы продолжить, извлеките электронный ключ и снова вставьте его в устройство. Затем нажмите кнопку на электронном ключе.</translation>
 <translation id="444134486829715816">Развернуть...</translation>
@@ -3476,6 +3481,7 @@
 <translation id="4773112038801431077">Обновление Linux</translation>
 <translation id="477647109558161443">Создать ярлык на рабочем столе</translation>
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">У других пользователей устройства есть доступ к этой сети</translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4777943778632837590">Настроить серверы доменных имен</translation>
 <translation id="4778644898150334464">Использовать другой пароль</translation>
@@ -4311,6 +4317,7 @@
 <translation id="5712153969432126546">Иногда на сайтах публикуются файлы в формате PDF, например документы, договоры или формы.</translation>
 <translation id="5715711091495208045">Посредник: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Поисковая система по умолчанию</translation>
+<translation id="5719637365829998022">QR-код отсканирован.</translation>
 <translation id="5719854774000914513">Разрешить сайтам отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="572155275267014074">Настройки Android</translation>
 <translation id="5722086096420375088">Зеленый с белым</translation>
@@ -4522,6 +4529,7 @@
 <translation id="5955721306465922729">Один из сайтов собирается открыть это приложение.</translation>
 <translation id="5955809630138889698">Это устройство работает только в демонстрационном офлайн-режиме. Чтобы узнать подробности, обратитесь в службу поддержки.</translation>
 <translation id="5956585768868398362">Другая поисковая система?</translation>
+<translation id="5957918771633727933">Нет доступных профилей eSIM. Скачайте <ph name="BEGIN_LINK" />новый профиль<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Коснитесь значка "Озвучивание при нажатии" рядом с фотографией профиля и выберите текст для прослушивания.</translation>
 <translation id="5959471481388474538">Сеть недоступна</translation>
 <translation id="595959584676692139">Перезагрузите страницу, чтобы использовать расширение</translation>
@@ -6027,6 +6035,7 @@
 <translation id="7638605456503525968">Последовательные порты</translation>
 <translation id="7639914187072011620">Не удалось получить URL переадресации SAML с сервера</translation>
 <translation id="764017888128728">С помощью <ph name="PASSWORD_MANAGER_BRAND" /> вы будете автоматически входить на сайты, для которых сохранили пароли.</translation>
+<translation id="7641513591566880111">Новое название профиля</translation>
 <translation id="7642778300616172920">Скрыть конфиденциальные данные</translation>
 <translation id="7643842463591647490">{0,plural, =1{Открыто # окно}one{Открыто # окно}few{Открыто # окна}many{Открыто # окон}other{Открыто # окна}}</translation>
 <translation id="7643932971554933646">Разрешить сайту доступ для просмотра файлов?</translation>
@@ -6187,6 +6196,7 @@
 <translation id="7800518121066352902">Повернуть п&amp;ротив часовой стрелки</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
 <translation id="7804072833593604762">Вкладка закрыта</translation>
+<translation id="7805759469263222011">Отсканируйте QR-код с помощью камеры устройства или введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
@@ -6665,6 +6675,7 @@
 <translation id="8300849813060516376">Сбой OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
 <translation id="8304383784961451596">Вы не можете использовать это устройство. Обратитесь к его администратору, чтобы получить разрешение, или войдите в аккаунт Google, контролируемый через сервис Family Link.</translation>
+<translation id="8308016398665340540">Вы открыли доступ к этой сети другим пользователям устройства</translation>
 <translation id="8308179586020895837">Запрашивать разрешение на доступ к камере для сайта <ph name="HOST" /></translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8309458809024885768">Такой сертификат уже существует</translation>

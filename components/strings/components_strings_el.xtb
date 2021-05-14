@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Invite (Φάκελος)</translation>
 <translation id="2856444702002559011">Οι εισβολείς ενδέχεται να προσπαθήσουν να υποκλέψουν τα στοιχεία σας από τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (για παράδειγμα, κωδικούς πρόσβασης, μηνύματα ή πιστωτικές κάρτες). <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Αυτός ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις.</translation>
+<translation id="287596039013813457">Φιλικό</translation>
 <translation id="2876489322757410363">Έξοδος από την κατάσταση ανώνυμης περιήγησης για πληρωμή μέσω εξωτερικής εφαρμογής. Θέλετε να συνεχίστε;</translation>
 <translation id="2878197950673342043">Δίπλωση αφίσας</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@
 <translation id="3229041911291329567">Πληροφορίες έκδοσης σχετικά με τη συσκευή και το πρόγραμμα περιήγησης</translation>
 <translation id="323107829343500871">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Να εντοπίζεται πάντα σημαντικό περιεχόμενο σε αυτόν τον ιστότοπο</translation>
+<translation id="3249845759089040423">Μοδάτο</translation>
 <translation id="3252266817569339921">Γαλλικά
 </translation>
 <translation id="3266793032086590337">Τιμή (διένεξη)</translation>
@@ -984,6 +986,7 @@
 <translation id="4594403342090139922">&amp;Αναίρεση διαγραφής</translation>
 <translation id="4597348597567598915">Μέγεθος 8</translation>
 <translation id="4600854749408232102">C6/C5 (Φάκελος)</translation>
+<translation id="4606870351894164739">Εμφατικό</translation>
 <translation id="4628948037717959914">Φωτογραφία</translation>
 <translation id="4631649115723685955">Συνδέθηκε επιστροφή μετρητών</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
@@ -1047,6 +1050,8 @@
 <translation id="4813512666221746211">Σφάλμα δικτύου</translation>
 <translation id="4816492930507672669">Προσαρμογή στη σελίδα</translation>
 <translation id="4819347708020428563">Επεξεργασία σχολιασμών στην προεπιλεγμένη προβολή;</translation>
+<translation id="4825507807291741242">Ισχυρό</translation>
+<translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
@@ -1206,6 +1211,7 @@
 <translation id="5398772614898833570">Αποκλείστηκαν διαφημίσεις</translation>
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="540969355065856584">Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν είναι έγκυρο αυτήν τη στιγμή. Αυτό μπορεί να οφείλεται σε εσφαλμένη ρύθμιση ή σε κάποιον εισβολέα που παρεμβαίνει στη σύνδεσή σας.</translation>
+<translation id="541143247543991491">Cloud (σε ολόκληρο το σύστημα)</translation>
 <translation id="541416427766103491">Μονάδα στοίβαξης 4</translation>
 <translation id="5421136146218899937">Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
@@ -1714,6 +1720,7 @@
     &lt;li&gt;Επισκεφτείτε το &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Κέντρο βοήθειας του Chrome&lt;/a&gt;, για να μάθετε πώς μπορείτε να καταργήσετε οριστικά το λογισμικό από τον υπολογιστή σας
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Αξιαγάπητο</translation>
 <translation id="7416351320495623771">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="7419106976560586862">Διαδρομή προφίλ</translation>
 <translation id="7437289804838430631">Προσθήκη στοιχείων επικοινωνίας</translation>
@@ -2140,6 +2147,7 @@
 <translation id="9020542370529661692">Αυτή η σελίδα έχει μεταφραστεί στα <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Μη έγκυρο)</translation>
+<translation id="9030265603405983977">Μονόχρωμο</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>
 <translation id="9038649477754266430">Χρήση μιας υπηρεσίας πρόβλεψης για ταχύτερη φόρτωση σελίδων</translation>
 <translation id="9039213469156557790">Επίσης, αυτή η σελίδα περιέχει άλλους πόρους, οι οποίοι δεν είναι ασφαλείς. Αυτοί οι πόροι μπορούν να προβληθούν από άλλους χρήστες κατά τη μετάβαση και μπορούν να τροποποιηθούν από έναν εισβολέα ώστε να αλλάξει η συμπεριφορά της σελίδας.</translation>
@@ -2163,6 +2171,7 @@
 <translation id="91108059142052966">Η πολιτική διαχειριστή απενεργοποιεί την κοινή χρήση οθόνης με την εφαρμογή <ph name="APPLICATION_TITLE" /> όταν εμφανίζεται εμπιστευτικό περιεχόμενο.</translation>
 <translation id="9114524666733003316">Επιβεβαίωση κάρτας…</translation>
 <translation id="9114581008513152754">Αυτός ο ιστότοπος δεν είναι διαχειριζόμενος από κάποια εταιρεία ή άλλον οργανισμό. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί να πραγματοποιηθεί εκτός Chrome. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Φρέσκο</translation>
 <translation id="9119042192571987207">Έγινε μεταφόρτωση</translation>
 <translation id="9128016270925453879">Οι πολιτικές φορτώθηκαν</translation>
 <translation id="9128870381267983090">Σύνδεση σε δίκτυο</translation>

@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
+<translation id="2022352537516230970">Vytvořeno pro iPhone</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -314,6 +315,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
 <translation id="418156467088430727">Zobrazit offline verzi na nové kartě</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4184011057600693970">Vytvořeno pro iPad</translation>
 <translation id="424315890655130736">Zadání heslové fráze</translation>
 <translation id="4263576668337963058">Zobrazit dostupné akce stránky</translation>
 <translation id="4267380167363222949">Další karta</translation>
@@ -492,6 +494,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
 <translation id="6066301408025741299">Stahování zrušíte klepnutím.</translation>
+<translation id="60829778314739003">Přijmout a pokračovat</translation>
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6119050551270742952">Webová stránka je v anonymním režimu</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -587,6 +590,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6801927553864092214">K prohlížení v soukromí otevřete anonymní kartu</translation>
 <translation id="6807889908376551050">Zobrazit vše…</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
+<translation id="6830804042318138535">Další informace</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6851516051005285358">Verze webu pro počítače</translation>
 <translation id="6858855187367714033">Naskenováno</translation>
@@ -635,6 +639,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7291368939935408496">Příprava hesel…</translation>
 <translation id="7293171162284876153">Chcete-li synchronizaci spustit, zapněte přepínač Synchronizovat data prohlížeče Chrome.</translation>
 <translation id="7313347584264171202">Zde najdete své anonymní karty</translation>
+<translation id="7319242366286515846">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK" />smluvními podmínkami<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Staženo <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
@@ -781,6 +786,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8840513115188359703">Nebudete odhlášeni ze svého účtu Google.</translation>
 <translation id="8870413625673593573">Nedávno zavřené</translation>
+<translation id="8876882697946675716">Synchronizujte svá zařízení</translation>
 <translation id="8881801611828450202">Vyhledat tento obrázek ve službě <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Sdílet…</translation>
 <translation id="8917490105272468696">Souhlasím</translation>

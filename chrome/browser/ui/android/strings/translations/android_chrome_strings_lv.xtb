@@ -295,6 +295,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2904414404539560095">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="2905036901251765993">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo ātrās atbildes kodu</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912296070571964914">Pārvaldiet tēmas, kuras jums interesē</translation>
 <translation id="2923908459366352541">Vārds nav derīgs</translation>
 <translation id="2932150158123903946">Lietotnes Google <ph name="APP_NAME" /> krātuve</translation>
 <translation id="2932222164150889403">Jūsu tastatūra netiks mainīta.</translation>
@@ -339,6 +340,8 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3254409185687681395">Grāmatot šo lapu</translation>
 <translation id="3259831549858767975">Samazināt visu lapas saturu</translation>
 <translation id="3264124641674805320">Kā lejupielādēt saturu, lai skatītu vēlāk</translation>
+<translation id="3264259168916048410">Jūsu datorā tiek pieprasīta atļauja izmantot šo ierīci, lai pierakstītos vietnē</translation>
+<translation id="3265534588625245297">Pārvaldiet vietnes, kurām sekojat</translation>
 <translation id="3269093882174072735">Ielādēt attēlu</translation>
 <translation id="3269956123044984603">Lai būtu pieejamas cilnes no citām jūsu ierīcēm, Android konta iestatījumos ieslēdziet iestatījumu “Automātiski sinhronizēt datus”.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4351244548802238354">Aizvērt dialoglodziņu</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
 <translation id="4384468725000734951">Tiek izmantota meklētājprogramma Sogou</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> — notiek lejupielāde…</translation>
 <translation id="4404568932422911380">Nav grāmatzīmju</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>
 <translation id="4411535500181276704">Vienkāršais režīms</translation>
@@ -583,6 +587,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="488187801263602086">Faila pārdēvēšana</translation>
 <translation id="4882831918239250449">Kontrolējiet, kā jūsu pārlūkošanas vēsture tiek izmantota Meklēšanas, reklāmu un cita satura personalizēšanai</translation>
 <translation id="4885273946141277891">Neatbalstīts Chrome instanču skaits</translation>
+<translation id="4905269543817054577">Inkognito režīmā vēsture netiek saglabāta.</translation>
 <translation id="4908869848243824489">Google funkcija Discover</translation>
 <translation id="4910889077668685004">Maksājumu lietotnes</translation>
 <translation id="4913161338056004800">Atiestatīt statistikas datus</translation>
@@ -951,6 +956,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
 <translation id="7233236755231902816">Lai skatītu tīmekli savā valodā, iegūstiet jaunāko Chrome versiju</translation>
 <translation id="7248069434667874558">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ieslēdziet Chrome sinhronizāciju</translation>
+<translation id="7252076891734325316">Novietojiet tālruni blakus datoram</translation>
 <translation id="7274013316676448362">Bloķēta vietne</translation>
 <translation id="7286572596625053347">Vai mainīt valodu (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Pārdēvēšana nav pieejama</translation>
@@ -1017,6 +1023,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7630202231528827509">Piegādātāja URL</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
 <translation id="7641339528570811325">Pārlūkošanas datu notīrīšana…</translation>
+<translation id="764170292089748542">Kad pārlūkojat tīmekli privāti, pārlūkā Chrome netiek saglabāta jūsu pārlūkošanas vēsture. Pāriešanai uz savām iecienītākajām vietnēm joprojām varat izmantot grāmatzīmes.</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7665369617277396874">Pievienot kontu</translation>
@@ -1042,6 +1049,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7810647596859435254">Atvērt ar…</translation>
 <translation id="7815484226266492798">Garš ekrānuzņēmums</translation>
 <translation id="7821588508402923572">Šeit tiks parādīts ietaupīto datu apjoms.</translation>
+<translation id="78270725016672455">Lai varētu pierakstīties vietnē, datorā tiek pieprasīta atļauja reģistrēt šo ierīci</translation>
 <translation id="7844171778363018843">Sinhronizēšanai nav atlasīti dati.</translation>
 <translation id="7846296061357476882">Google pakalpojumi</translation>
 <translation id="784934925303690534">Laika periods</translation>
@@ -1138,6 +1146,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8427875596167638501">Priekšskatījuma cilne ir daļēji atvērta</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8438566539970814960">Uzlabot meklēšanu un pārlūkošanu</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> — valoda ir sagatavota. Restartējiet lietotni <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nav pieejams neviens raksts</translation>
 <translation id="8443209985646068659">Nevar atjaunināt Chrome</translation>
 <translation id="8445448999790540984">Nevar eksportēt paroles</translation>
@@ -1210,6 +1219,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8937267401510745927">Lai palīdzētu jums paveikt uzdevumus, Google saņems to vietņu vietrāžus URL un saturu, kurās izmantojat Asistentu, kā arī informāciju, ko iesniedzat, izmantojot Asistentu. Šī informācija var tikt glabāta jūsu Google kontā. Chrome iestatījumos varat izslēgt Asistentu.</translation>
 <translation id="8937772741022875483">Vai noņemt jūsu Chrome darbības no Digitālās labjutības?</translation>
 <translation id="8942627711005830162">Atvērt citā logā</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8951232171465285730">Pārlūkā Chrome esat ietaupījis <ph name="MEGABYTES" /> MB.</translation>
 <translation id="8965591936373831584">gaida</translation>
 <translation id="8970887620466824814">Radās kļūda.</translation>

@@ -4245,6 +4245,14 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6689343802305995925">Herhangi bir işlem yapılmasın.</translation>
 <translation id="6689792153960219308">Donanım durumunu bildir</translation>
 <translation id="6690425645391461516">DNS müdahale kontrollerini devre dışı bırak; bunu mu demek istediniz "http://intranetsite/" bilgi çubuklarına izin ver.</translation>
+<translation id="669066148640728553">Yeniden başlatma bildirim süresinin sonu için bir hedef zaman aralığı belirler.
+
+      <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> ve <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politika ayarları uyarınca tarayıcının veya cihazın yeniden başlatılması gerekliliği kullanıcılara bildirilir. <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> politikası "Gerekli" değerine ayarlanırsa tarayıcılar ve cihazlar, bildirim süresinin sonunda zorla yeniden başlatılır. <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> politikası, bildirim süresinin sonunu belirli bir zaman aralığına denk gelecek şekilde ertelemek için kullanılabilir.
+
+      Bu politika ayarlanmadığında <ph name="PRODUCT_OS_NAME" /> için varsayılan hedef zaman dilimi 02:00 ile 04:00 saatleri arasıdır. <ph name="PRODUCT_NAME" /> için varsayılan hedef zaman aralığı tüm gündür (bildirim süresinin sonu hiçbir zaman ertelenmez).
+
+      Not: Politika <ph name="ENTRIES_FIELD_NAME" /> alanında birden çok öğe kabul edebilir, ancak birinci öğe hariç diğerleri yok sayılır.
+      Uyarı: Bu politikayı ayarlamak, yazılım güncellemelerinin uygulanmasını geciktirebilir.</translation>
 <translation id="6698632841807204978">Tek renk yazdırmayı etkinleştir</translation>
 <translation id="6699880231565102694">Uzaktan erişim ana makineleri için iki öğeli kimlik doğrulamayı etkinleştir</translation>
 <translation id="6703251016607733593">Politikanın ayarlanması, <ph name="SUBJECT_PUBLIC_KEY_INFO" /> karmaları listesi için Sertifika Şeffaflığı açıklama gereksinimlerinin uygulanmasını kapatır. Kurumsal ana makineler, aksi halde güvenilmeyecek olan (uygun bir şekilde herkese açık olarak açıklanmadığından) sertifikaları kullanmaya devam edebilir. Uygulamanın kapatılması için karmanın aşağıdaki koşullardan birini karşılaması gerekir:
@@ -4388,6 +4396,19 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6857240169209507953"><ph name="BOREALIS_NAME" /> politikasının cihazda çalışması engellensin</translation>
 <translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
+<translation id="6864283226733000548">Bu ayar, <ph name="LACROS_NAME" /> tarayıcısı için çeşitli kullanılabilirlik seçenekleri sunar.
+
+      Bu politika <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> değerine ayarlanırsa <ph name="LACROS_NAME" />, kullanıcı tarafından etkinleştirilip birincil tarayıcı yapılabilir. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası <ph name="LACROS_NAME" /> tarayıcısını engellemeye devam edebilir.
+
+      Politika <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> değerine ayarlanırsa kullanıcılar <ph name="LACROS_NAME" /> tarayıcısını kullanamaz. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
+
+      Politika <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> değerine ayarlanırsa <ph name="LACROS_NAME" /> tarayıcısı etkinleştirilir ancak birincil tarayıcı olmaz. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
+
+      Politika <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> değerine ayarlanırsa <ph name="LACROS_NAME" /> etkinleştirilir ve birincil tarayıcı olur. <ph name="LACROS_ALLOWED_POLICY_NAME" /> politikası yoksayılır.
+
+      Politika ayarlanmadan bırakılırsa varsayılan değer, kuruluş tarafından yönetilen kullanıcılar için <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> ve yönetilmeyen kullanıcılar için <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> olur.
+
+      İleride <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> değeri kullanılarak <ph name="LACROS_NAME" /> tarayıcısının <ph name="PRODUCT_OS_NAME" /> ile kullanılabilen tek tarayıcı olması sağlanabilecektir.</translation>
 <translation id="68818134518270542">Politikanın ayarlanması, kullanıcıların <ph name="PRODUCT_OS_NAME" /> kilit ekranında not alma uygulaması olarak açabilecekleri uygulamaları belirtir.
 
       Tercih edilen not alma uygulaması kilit ekranındaysa ekranda bu uygulamayı başlatan bir kullanıcı arayüzü öğesi görünür. Başlatıldığında uygulama, kilit ekranının üst kısmında bir pencere ve kilit ekranı bağlamında notlar oluşturabilir. Oturumun kilidi açık olduğunda uygulama, oluşturulan notları birincil kullanıcı oturumunda içe aktarabilir. Kilit ekranında yalnızca <ph name="PRODUCT_NAME" /> not alma uygulamaları desteklenir.

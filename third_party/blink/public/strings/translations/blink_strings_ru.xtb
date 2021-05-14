@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">поле со списком</translation>
 <translation id="3220661731597678625">текущий этап</translation>
+<translation id="3321030238473337787">Скорость воспроизведения</translation>
 <translation id="3329013043687509092">Насыщенность</translation>
 <translation id="3450233048674729344">Значение должно быть меньше или равно <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">описание</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">панель меню</translation>
 <translation id="4293574643247337246">заголовок страницы</translation>
 <translation id="4360991593054037559">Введите допустимое значение. Ближайшие допустимые значения: <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">Скрыть меню скорости воспроизведения</translation>
 <translation id="4384249794467006333">У этого изображения нет ярлыка. Чтобы получить описания изображений, откройте меню "Ещё" в правом верхнем углу экрана.</translation>
 <translation id="4384583879834880242">Вопросы и ответы</translation>
 <translation id="4444765639179266822">Похоже, тут написано "<ph name="OCR_TEXT" />"</translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">элемент дерева</translation>
 <translation id="5466621249238537318">Выберите один или несколько файлов.</translation>
 <translation id="5468998798572797635">выход из полноэкранного режима</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">окно выбора даты</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">включение звука</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">дополнительные параметры</translation>
 <translation id="576709008726043716">введение</translation>
 <translation id="57838592816432529">Отключить звук</translation>
+<translation id="5786442179789148008">Показать меню скорости воспроизведения</translation>
 <translation id="5787939484346677755">развернуто, доступны варианты автозаполнения.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5966707198760109579">Неделя</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">кнопка счетчика</translation>
 <translation id="6011459053400940133">регулятор громкости</translation>
 <translation id="6015796118275082299">Год</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">отключить звук</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">выпускные данные</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">цитата</translation>
 <translation id="693476918119313863">Заголовок</translation>
 <translation id="6941933287844615239">скачать файл</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">ссылка на примечание</translation>
 <translation id="811583516810654505">Загружается описание...</translation>
 <translation id="8117451130807776954">На этой неделе</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8208673686607688524">выбор местного времени и даты</translation>
 <translation id="8261464734335370856">Орфографическая ошибка</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">управлять воспроизведением на удаленных устройствах</translation>
 <translation id="862370744433916922">подзаголовок</translation>
 <translation id="8634971699417195529">Показать окно выбора месяца</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Переносить строки</translation>
 <translation id="8711688047404765493">выход</translation>
 <translation id="8750798805984357768">Выберите один из вариантов.</translation>

@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">taymer</translation>
 <translation id="3199563858620722075">kombo xanası</translation>
 <translation id="3220661731597678625">cari addım</translation>
+<translation id="3321030238473337787">Oxutma sürəti</translation>
 <translation id="3329013043687509092">Saturasiya</translation>
 <translation id="3450233048674729344">Qiymət <ph name="MAXIMUM" /> göstəricisindən kiçik və ya ona tay olmalıdır.</translation>
 <translation id="3486220673238053218">təsvir</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">menyu paneli</translation>
 <translation id="4293574643247337246">səhifə başlığı</translation>
 <translation id="4360991593054037559">Düzgün dəyər daxil edin. Ən uyğun düzgün dəyərlər: <ph name="VALID_VALUE_LOW" /> və <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">oxutma sürəti menyusunu gizlədin</translation>
 <translation id="4384249794467006333">Bu şəkil etiketlənməyib. Şəkil təsvirlərini əldə etmək üçün yuxarı sağdakı Daha Çox Seçim menyusunu açın.</translation>
 <translation id="4384583879834880242">Sual-Cavab</translation>
 <translation id="4444765639179266822">Ola bilər: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ağac elementi</translation>
 <translation id="5466621249238537318">Bir və ya daha çox faylı seçin.</translation>
 <translation id="5468998798572797635">tam ekrandan çıxın</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">tarix seçici</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="5546461542133609677">səsssiz etməyin</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">əlavə seçimlər</translation>
 <translation id="576709008726043716">giriş</translation>
 <translation id="57838592816432529">Səssiz</translation>
+<translation id="5786442179789148008">oxutma sürəti menyusunu göstərin</translation>
 <translation id="5787939484346677755">genişləndirilib, avtomatik tamamlama seçimləri əlçatandır.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="588258955323874662">Tam ekran</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="5966707198760109579">Həftə</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">fırlatma düyməsi</translation>
 <translation id="6011459053400940133">səs slayderi</translation>
 <translation id="6015796118275082299">İl</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">səssiz</translation>
 <translation id="6885760532393684712">kataloq</translation>
 <translation id="689129560213475294">kolofon</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">blok sitat</translation>
 <translation id="693476918119313863">başlıq</translation>
 <translation id="6941933287844615239">medianı endirin</translation>
@@ -252,6 +258,7 @@
 <translation id="7745230546936012372">Olmayan şəkil təsvirlərini əldə etmək üçün kontekst menyunu açın.</translation>
 <translation id="7750228210027921155">Şəkil içində şəkil</translation>
 <translation id="775297008183122718">Yanlış giriş</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">durdurun</translation>
 <translation id="7802800022689234070">açılma üçbucaq</translation>
 <translation id="7852167693871241274">Çalar slayderi</translation>
@@ -265,6 +272,7 @@
 <translation id="8105797009065549151">qeyd istinadı</translation>
 <translation id="811583516810654505">Təsvir əldə edilir...</translation>
 <translation id="8117451130807776954">Bu həftə</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">yerli vaxt və ya vaxt seçicisi</translation>
 <translation id="8261464734335370856">Yanlış yazı</translation>
@@ -289,6 +297,7 @@
 <translation id="8613126697340063924">uzaqdan idarəetməni idarə edin</translation>
 <translation id="862370744433916922">alt başlıq</translation>
 <translation id="8634971699417195529">Ay seçicisini göstərin</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Sətrin sığışdırılması</translation>
 <translation id="8711688047404765493">çıxış</translation>
 <translation id="8750798805984357768">Bu variantlardan birini seçin.</translation>

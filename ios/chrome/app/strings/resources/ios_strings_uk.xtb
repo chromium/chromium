@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
+<translation id="2022352537516230970">Створено для iPhone</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
@@ -190,7 +191,7 @@
 <translation id="288655811176831528">Закрити вкладку</translation>
 <translation id="2893180576842394309">Google може використовувати вашу історію, щоб персоналізувати Пошук та інші сервіси Google</translation>
 <translation id="2898963176829412617">Нова папка…</translation>
-<translation id="2916171785467530738">Автозавершення пошукових запитів і URL-адрес</translation>
+<translation id="2916171785467530738">Увімкнути автозавершення пошукових запитів і URL-адрес</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="2921219216347069551">Неможливо поділитися</translation>
 <translation id="2923448633003185837">Вставити й перейти</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">Завжди показувати</translation>
 <translation id="418156467088430727">Переглянути офлайн-версію в новій вкладці</translation>
 <translation id="4181841719683918333">Мови</translation>
+<translation id="4184011057600693970">Створено для iPad</translation>
 <translation id="424315890655130736">Ввести парольну фразу</translation>
 <translation id="4263576668337963058">Показати доступні дії зі сторінкою</translation>
 <translation id="4267380167363222949">Наступна вкладка</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">РР</translation>
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6066301408025741299">Торкніться, щоб скасувати.</translation>
+<translation id="60829778314739003">Прийняти та продовжити</translation>
 <translation id="6108923351542677676">Виконується налаштування…</translation>
 <translation id="6119050551270742952">Поточна сторінка в анонімному режимі</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">Щоб переглядати веб-сторінки конфіденційно, відкрийте анонімну вкладку</translation>
 <translation id="6807889908376551050">Показати всі...</translation>
 <translation id="681368974849482173">Закладку творено</translation>
+<translation id="6830804042318138535">Показати більше</translation>
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6851516051005285358">Повна версія сайту</translation>
 <translation id="6858855187367714033">Зіскановано</translation>
@@ -635,6 +639,7 @@
 <translation id="7291368939935408496">Готуються паролі…</translation>
 <translation id="7293171162284876153">Щоб почати синхронізацію, увімкніть параметр "Синхронізувати дані Chrome".</translation>
 <translation id="7313347584264171202">Тут відображатимуться ваші анонімні вкладки</translation>
+<translation id="7319242366286515846">Продовжуючи, ви приймаєте <ph name="BEGIN_LINK" />Умови використання<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Налаштування рекомендацій</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -781,6 +786,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Ви не вийдете з облікового запису Google.</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>
+<translation id="8876882697946675716">Синхронізуйте свої пристрої</translation>
 <translation id="8881801611828450202">Пошук цього зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Надіслати…</translation>
 <translation id="8917490105272468696">Так</translation>

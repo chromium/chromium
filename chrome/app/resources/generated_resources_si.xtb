@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
+<translation id="1001033507375626788">මෙම ජාලය ඔබ සමග බෙදා ගැනේ</translation>
 <translation id="1001307489511021749">ඔබේ යෙදුම්, සැකසීම්, සහ අනෙකුත් අභිරුචි කිරීම් සියල්ල ඔබේ Google ගිණුම මඟින් පුරනය වී ඇති සියලුම Chrome OS උපාංග අතරින් සමමුහූර්ත කෙරේ.</translation>
 <translation id="1003088604756913841">සබැඳිය නව <ph name="APP" /> කවුළුවක විවෘත කරන්න</translation>
 <translation id="100323615638474026">USB උපාංගය (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -949,6 +950,7 @@
 <translation id="1992924914582925289">උපාංගයෙන් ඉවත් කරන්න</translation>
 <translation id="1994173015038366702">අඩවි URL</translation>
 <translation id="1995916364271252349">වෙබ් අඩවිවලට භාවිත කිරීමට සහ පෙන්වීමට හැකි තොරතුරු පාලන කරයි (ස්ථානය, කැමරාව, උත්පතන, සහ තවත් ඒවා)</translation>
+<translation id="1997437640397887843">උපාංග කැමරාව ක්‍රියාත්මක කර ඇත. කරුණාකර ඔබගේ eSIM QR කේතය කැමරාවට ඉදිරියෙන් ස්ථානගත කරන්න.</translation>
 <translation id="1997616988432401742">ඔබේ සහතික</translation>
 <translation id="1999115740519098545">ආරම්භයෙහි</translation>
 <translation id="2000419248597011803">ලිපින තීරුවේ සහ සෙවීම් පෙට්ටියේ ඇතැම් කුකී සහ සෙවීම් ඔබගේ පෙරනිමි සෙවීම් එන්ජිමට යවයි</translation>
@@ -1004,6 +1006,7 @@
 <translation id="2055585478631012616">ඔබ විවෘත පටිති ඇතුළුව මෙම වෙබ් අඩවිවලින් වරනු ලැබේ</translation>
 <translation id="205560151218727633">Google සහායක ලාංඡනය</translation>
 <translation id="2058456167109518507">උපාංගය අනාවරණය කර ඇත</translation>
+<translation id="2058581283817163201">මෙම දුරකථනය සමගින් සත්‍යාපනය කරන්න</translation>
 <translation id="2059913712424898428">වේලා කලාපය</translation>
 <translation id="2060375639911876205">eSIM පැතිකඩ ඉවත් කරන්න</translation>
 <translation id="2062354623176996748">අප්‍රසිද්ධ කවුළුවක් සමඟින් ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය සුරැකීමෙන් තොරව වෙබය භාවිත කරන්න</translation>
@@ -2603,6 +2606,7 @@
 <translation id="3785308913036335955">යෙදුම් කෙටිමං පෙන්වන්න</translation>
 <translation id="3785727820640310185">මෙම අඩවිය සඳහා සුරැකි මුරපද</translation>
 <translation id="3788301286821743879">ඩාර්න්, කියෝස්ක් යෙදුම දියත් කිරීමට නොහැකි විය.</translation>
+<translation id="3788331399335602504">මෙම ගොනු</translation>
 <translation id="3788401245189148511">එයට හේතුව:</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
 <translation id="379082410132524484">ඔබේ කාඩ්පත කල් ඉකුත් වී ඇත</translation>
@@ -3179,6 +3183,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4438043733494739848">විනිවිද</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> ඔබගේ Google ගිණුමට සුරකිනු ඇත, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> ඔබගේ දුරකථනයට දැනුම්දීමක් එවීය. ඔබ බව තහවුරු කිරීමට, “<ph name="NOTIFICATIONTITLE" />” දැනුම්දීම තට්ටු කර පියවර අනුගමනය කරන්න.</translation>
 <translation id="4441124369922430666">ඔබට පරිගණකය ආරම්භ වන විට ස්වයංක්‍රීයව මෙම යෙදුම ආරම්භ කිරීමට අවශ්‍යද?</translation>
 <translation id="4441147046941420429">ඉදිරියට යාමට, ඔබේ උපාංගයෙන් ඔබේ ආරක්‍ෂක යතුර ඉවත් කරන්න, පසුව යළි ඇතුළත් කර එය ස්පර්ශ කරන්න</translation>
 <translation id="444134486829715816">පුළුල් කරන්න...</translation>
@@ -3480,6 +3485,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4773112038801431077">Linux උත්ශ්‍රේණි කරන්න</translation>
 <translation id="477647109558161443">ඩෙස්ක්ටොප් කෙටි මගක් තනන්න</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
+<translation id="4777458362738635055">මෙම උපාංගයේ වෙනත් පරිශීලකයින්ට මෙම ජාලය භාවිත කළ හැකිය</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">ජාල නම් සේවාදායක වින්‍යාස කරන්න</translation>
 <translation id="4778644898150334464">වෙනත් මුරපදයක් භාවිත කරන්න</translation>
@@ -4316,6 +4322,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5712153969432126546">අඩවි සමහර විට ලේඛන, කොන්ත්‍රාත්තු සහ පෝරම වැනි PDF ප්‍රකාශයට පත් කළ හැකිය</translation>
 <translation id="5715711091495208045">ප්ලගින තැරැව්කරු: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">පෙරනිමි සෙවීම් යාන්ත්‍රණ</translation>
+<translation id="5719637365829998022">QR කේතය ස්කෑන් කර ඇත.</translation>
 <translation id="5719854774000914513">අඩවි HID උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="572155275267014074">Android සැකසීම්</translation>
 <translation id="5722086096420375088">කොළ සහ සුදු</translation>
@@ -4527,6 +4534,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5955721306465922729">වෙබ් අඩවියකට මෙම යෙදුම විවෘත කළ යුතුය.</translation>
 <translation id="5955809630138889698">මෙම උපාංගය සබැඳි ආදර්ශන ප්‍රකාරයට පමණක් සුදුසු විය හැක. වැඩි විස්තර සඳහා ඔබේ සහය නියෝජිතයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="5956585768868398362">ඔබ බලාපොරොත්තුවෙන් සිටි සෙවුම් පිටුව මෙයද?</translation>
+<translation id="5957918771633727933">ලබා ගත හැකි eSIM පැතිකඩවල් නැත. නව <ph name="BEGIN_LINK" />පැතිකඩක්<ph name="END_LINK" /> බාගන්න.</translation>
 <translation id="5957987129450536192">ඔබේ පැතිකඩ රූපය අසල කථා කිරීමට තෝරන්න නිරූපකය තට්ටු කර, ඔබට ඇසීමට අවශ්‍ය දේ තෝරන්න.</translation>
 <translation id="5959471481388474538">ජාලය ලද නොහැක</translation>
 <translation id="595959584676692139">මෙම දිගුව භාවිතා කිරීමට පිටුව පූරණය කරන්න</translation>
@@ -6030,6 +6038,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7638605456503525968">අනුක්‍රමික තොට</translation>
 <translation id="7639914187072011620">සේවාදායකයෙන් SAML ප්‍රතියොමු URL යළි ලබා ගැනීමට අපොහොසත් විය</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> විසින් ඔබ සුරැකි මුරපද සමඟ සුදුසු වෙබ් අඩවි වෙත ඔබව ස්වයංක්‍රීයව පුරනය කරවයි.</translation>
+<translation id="7641513591566880111">නව පැතිකඩ නම</translation>
 <translation id="7642778300616172920">සංවේදී අන්තර්ගතය සඟවන්න</translation>
 <translation id="7643842463591647490">{0,plural, =1{# විවෘත කවුළුවක්}one{විවෘත කවුළු #ක්}other{විවෘත කවුළු #ක්}}</translation>
 <translation id="7643932971554933646">වෙබ් අඩවියට ගොනු බැලීමට ඉඩ දෙන්නේද?</translation>
@@ -6189,6 +6198,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7800518121066352902">වාමාවර්ථව කරකරවන්න (&amp;o)</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7804072833593604762">ටැබය වසන ලදි</translation>
+<translation id="7805759469263222011">උපාංග කැමරාව භාවිතයෙන් QR කේතයක් ස්කෑන් කරන්න හෝ ඔබගේ වාහකය විසින් සපයන ලද සක්‍රිය කිරීමේ කේතය ඇතුළත් කරන්න</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7807067443225230855">සෙවීම සහ සහායක</translation>
 <translation id="7807711621188256451">ඔබේ කැමරාව වෙත පිවිසීමට <ph name="HOST" /> හට ඉඩ දෙන්න</translation>
@@ -6667,6 +6677,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8300849813060516376">OTASP අසාර්ථක විය</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{ලිපිනය}one{ලිපින #}other{ලිපින #}}</translation>
 <translation id="8304383784961451596">ඔබට මෙම උපාංගය භාවිතා කිරීමට අවසර නැත. පිරීමේ අවසරය සඳහා කරුණාකර පරිපාලක අමතන්න හෝ Family Link මගින් අධීක්ෂණය කරන Google ගිණුමක් සමඟ පුරන්න.</translation>
+<translation id="8308016398665340540">ඔබ මෙම ජාලය මෙම උපාංගයේ අනෙකුත් පරිශීලකයින් සමඟ බෙදා ගනියි</translation>
 <translation id="8308179586020895837">ඔබේ කැමරාවට ප්‍රවේශ වීමට අවශ්‍යදැයි <ph name="HOST" /> ගෙන් විමසන්න</translation>
 <translation id="830868413617744215">බීටා</translation>
 <translation id="8309458809024885768">සහතිකය දැනටමත් තිබේ</translation>

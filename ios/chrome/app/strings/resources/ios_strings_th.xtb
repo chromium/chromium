@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
+<translation id="2022352537516230970">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
 <translation id="2073572773299281212">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">แสดงทุกครั้ง</translation>
 <translation id="418156467088430727">ดูเวอร์ชันออฟไลน์ในแท็บใหม่</translation>
 <translation id="4181841719683918333">ภาษา</translation>
+<translation id="4184011057600693970">สร้างขึ้นเพื่อ iPad ของคุณ</translation>
 <translation id="424315890655130736">ป้อนรหัสผ่าน</translation>
 <translation id="4263576668337963058">แสดงการทำงานของหน้าเว็บที่ใช้ได้</translation>
 <translation id="4267380167363222949">แท็บถัดไป</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
+<translation id="60829778314739003">ยอมรับและดำเนินการต่อ</translation>
 <translation id="6108923351542677676">กำลังดำเนินการตั้งค่า…</translation>
 <translation id="6119050551270742952">หน้าเว็บนี้อยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">หากต้องการท่องเว็บแบบส่วนตัว ให้เปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
+<translation id="6830804042318138535">อ่านเพิ่มเติม</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="6858855187367714033">สแกนแล้ว</translation>
@@ -635,6 +639,7 @@
 <translation id="7291368939935408496">กำลังเตรียมรหัสผ่าน...</translation>
 <translation id="7293171162284876153">หากต้องการเริ่มซิงค์ ให้เปิด "ซิงค์ข้อมูล Chrome"</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
+<translation id="7319242366286515846">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7340958967809483333">ตัวเลือกสำหรับ Discover</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
@@ -781,6 +786,7 @@
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8840513115188359703">คุณจะไม่ออกจากระบบบัญชี Google</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>
+<translation id="8876882697946675716">ซิงค์อุปกรณ์อยู่เสมอ</translation>
 <translation id="8881801611828450202">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">แชร์…</translation>
 <translation id="8917490105272468696">ได้สิ ตกลง</translation>

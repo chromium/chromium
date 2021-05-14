@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">teljari</translation>
 <translation id="3199563858620722075">fellivalmynd</translation>
 <translation id="3220661731597678625">núverandi skref</translation>
+<translation id="3321030238473337787">Spilunarhraði</translation>
 <translation id="3329013043687509092">Mettun</translation>
 <translation id="3450233048674729344">Gildið þarf að vera minna en eða jafnt og <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">valmyndarstika</translation>
 <translation id="4293574643247337246">síðuhaus</translation>
 <translation id="4360991593054037559">Sláðu inn gilt gildi. Næstu tvö gildu gildi eru <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">fela valmynd spilunarhraða</translation>
 <translation id="4384249794467006333">Þessi mynd er ekki merkt. Opnaðu valmyndina „Fleiri valkostir“ efst til hægri til að fá lýsingar á myndum.</translation>
 <translation id="4384583879834880242">Spurt og svarað</translation>
 <translation id="4444765639179266822">Þarna virðist standa: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">trjáatriði</translation>
 <translation id="5466621249238537318">Veldu eina eða fleiri skrár.</translation>
 <translation id="5468998798572797635">hætta að nota allan skjáinn</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">dagsetningarval</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5546461542133609677">hætta að þagga</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">fleiri valkostir</translation>
 <translation id="576709008726043716">inngangur</translation>
 <translation id="57838592816432529">Þagga</translation>
+<translation id="5786442179789148008">sýna valmynd spilunarhraða</translation>
 <translation id="5787939484346677755">stækkað, möguleikar sjálfvirkrar útfyllingar í boði.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
 <translation id="5966707198760109579">Vika</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">snúningshnappur</translation>
 <translation id="6011459053400940133">sleði fyrir hljóð</translation>
 <translation id="6015796118275082299">Ár</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">þagga</translation>
 <translation id="6885760532393684712">skráasafn</translation>
 <translation id="689129560213475294">baktitill</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">tilvitnun</translation>
 <translation id="693476918119313863">haus</translation>
 <translation id="6941933287844615239">sækja miðlaefni</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">tilvísun í athugasemd</translation>
 <translation id="811583516810654505">Sækir lýsingu...</translation>
 <translation id="8117451130807776954">Þessi vika</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">áááá</translation>
 <translation id="8208673686607688524">val á staðbundinni dagsetningu og tíma</translation>
 <translation id="8261464734335370856">Stafsetningarvilla</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">stjórna fjarspilun</translation>
 <translation id="862370744433916922">undirtitill</translation>
 <translation id="8634971699417195529">Sýna mánaðarval</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Línuskrið</translation>
 <translation id="8711688047404765493">úttak</translation>
 <translation id="8750798805984357768">Veldu einn af þessum valkostum.</translation>

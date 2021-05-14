@@ -508,6 +508,7 @@ brukere av denne nettleseren.</translation>
 <translation id="2850739647070081192">Invite (konvolutt)</translation>
 <translation id="2856444702002559011">Det kan hende at angripere prøver å stjele informasjonen din fra <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for eksempel passord, meldinger og kredittkortinformasjon). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Dette nettstedet viser forstyrrende eller villedende annonser.</translation>
+<translation id="287596039013813457">Vennskapelig</translation>
 <translation id="2876489322757410363">Går ut av Inkognitomodus for å betale via en ekstern app. Vil du fortsette?</translation>
 <translation id="2878197950673342043">Kryssfals</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -605,6 +606,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3229041911291329567">Versjonsinformasjon om enheten og nettleseren din</translation>
 <translation id="323107829343500871">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Oppdag alltid viktig innhold på dette nettstedet</translation>
+<translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Fransk</translation>
 <translation id="3266793032086590337">Verdi (konflikt)</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
@@ -982,6 +984,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4594403342090139922">&amp;Angre slettingen</translation>
 <translation id="4597348597567598915">Størrelse 8</translation>
 <translation id="4600854749408232102">C6/C5 (konvolutt)</translation>
+<translation id="4606870351894164739">Virkningsfull</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1045,6 +1048,8 @@ brukere av denne nettleseren.</translation>
 <translation id="4813512666221746211">Nettverksfeil</translation>
 <translation id="4816492930507672669">Tilpass til siden</translation>
 <translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
+<translation id="4825507807291741242">Kraftfull</translation>
+<translation id="4838327282952368871">Drømmende</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="485316830061041779">Tysk</translation>
@@ -1203,6 +1208,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
+<translation id="541143247543991491">Nettsky (hele systemet)</translation>
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5421136146218899937">Slett nettleserdata</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
@@ -1709,6 +1715,7 @@ brukere av denne nettleseren.</translation>
       &lt;li&gt;Gå til &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;brukerstøtten for Chrome&lt;/a&gt; for å finne ut hvordan du fjerner programvaren fra datamaskinen permanent.
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Nydelig</translation>
 <translation id="7416351320495623771">Administrer passord…</translation>
 <translation id="7419106976560586862">Profilbane</translation>
 <translation id="7437289804838430631">Legg til kontaktinformasjon</translation>
@@ -2132,6 +2139,7 @@ Mer informasjon:
 <translation id="9020542370529661692">Denne siden har blitt oversatt til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Ugyldig)</translation>
+<translation id="9030265603405983977">Ensfarget</translation>
 <translation id="9035022520814077154">Sikkerhetsfeil</translation>
 <translation id="9038649477754266430">Bruk en prediksjonstjeneste for å laste inn sider raskere</translation>
 <translation id="9039213469156557790">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på atferden til siden.</translation>
@@ -2155,6 +2163,7 @@ Mer informasjon:
 <translation id="91108059142052966">En administratorregel deaktiverer skjermdeling med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig</translation>
 <translation id="9114524666733003316">Bekrefter kortet …</translation>
 <translation id="9114581008513152754">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Frisk</translation>
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9128016270925453879">Regler er lastet inn</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>

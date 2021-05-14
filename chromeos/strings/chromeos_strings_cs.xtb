@@ -299,6 +299,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8372477600026034341">Extra hostitelské servery</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Název domácího poskytovatele</translation>
 <translation id="8475690821716466388">Síť Wi-Fi je zabezpečena slabým protokolem WEP PSK</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">要共用分頁嘅裝置清單宜家顯示喺成個畫面。</translation>
 <translation id="2905036901251765993">如要與附近的使用者分享，請讓對方掃瞄此二維條碼</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
+<translation id="2912296070571964914">管理您感興趣的主題</translation>
 <translation id="2923908459366352541">名稱無效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存空間</translation>
 <translation id="2932222164150889403">這不會影響您的鍵盤設定</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">將此頁加入書籤</translation>
 <translation id="3259831549858767975">縮小網頁中的所有內容</translation>
 <translation id="3264124641674805320">如何下載內容供日後使用</translation>
+<translation id="3264259168916048410">您的電腦想透過此裝置登入網站</translation>
+<translation id="3265534588625245297">管理您追蹤的網站</translation>
 <translation id="3269093882174072735">載入圖片</translation>
 <translation id="3269956123044984603">如要取得其他裝置上的分頁，請在 Android 帳戶設定中開啟「自動同步資料」功能。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
 <translation id="4405224443901389797">移至…</translation>
 <translation id="4411535500181276704">精簡模式</translation>
@@ -583,6 +587,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="488187801263602086">重新命名檔案</translation>
 <translation id="4882831918239250449">控制系統如何使用您的瀏覽記錄為您提供個人化的搜尋內容、廣告和其他服務</translation>
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
+<translation id="4905269543817054577">在無痕模式下無法儲存記錄</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4913161338056004800">重設統計資料</translation>
@@ -951,6 +956,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7233236755231902816">如要以您的語言查看網頁，請下載 Chrome 的最新版本。</translation>
 <translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
+<translation id="7252076891734325316">請將手機放在電腦附近</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
 <translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
@@ -1017,6 +1023,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7630202231528827509">供應商網址</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
+<translation id="764170292089748542">當您選擇私下瀏覽內容時，Chrome 將不會儲存您的瀏覽記錄，但您仍可透過書籤存取喜愛的網站。</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
@@ -1042,6 +1049,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7821588508402923572">節省的數據會在這裡顯示</translation>
+<translation id="78270725016672455">您的電腦想註冊此裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784934925303690534">時間範圍</translation>
@@ -1138,6 +1146,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8427875596167638501">預覽分頁喺畫面下半部分顯示</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - 語言套件已下載完成，請重新啟動 <ph name="APP_NAME" />。</translation>
 <translation id="8442258441309440798">沒有任何報導</translation>
 <translation id="8443209985646068659">無法更新 Chrome</translation>
 <translation id="8445448999790540984">無法匯出密碼</translation>
@@ -1210,6 +1219,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8937267401510745927">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google。此資料可能會儲存在您的 Google 帳戶中。您可在 Chrome 設定中關閉「Google 助理」。</translation>
 <translation id="8937772741022875483">要從「健康數碼生活」移除您的 Chrome 活動記錄嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8951232171465285730">Chrome 已為您節省 <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>

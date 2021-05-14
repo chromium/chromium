@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
+<translation id="2022352537516230970">Направљено за iPhone</translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Опозови</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">Увек прикажи</translation>
 <translation id="418156467088430727">Прикажи офлајн верзију на новој картици</translation>
 <translation id="4181841719683918333">Језици</translation>
+<translation id="4184011057600693970">Направљено за iPad</translation>
 <translation id="424315890655130736">Унесите приступну фразу</translation>
 <translation id="4263576668337963058">Прикажи доступне радње за страницу</translation>
 <translation id="4267380167363222949">Следећа картица</translation>
@@ -492,6 +494,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Овде контролишите приче и активности</translation>
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
+<translation id="60829778314739003">Прихватам, настави</translation>
 <translation id="6108923351542677676">Подешавање је у току...</translation>
 <translation id="6119050551270742952">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="6122191549521593678">Онлајн</translation>
@@ -587,6 +590,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6801927553864092214">Да бисте прегледали приватно, отворите картицу без архивирања</translation>
 <translation id="6807889908376551050">Прикажи све...</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
+<translation id="6830804042318138535">Прочитајте више</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6851516051005285358">Захтевај сајт за рачунар</translation>
 <translation id="6858855187367714033">Скенирано</translation>
@@ -635,6 +639,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7291368939935408496">Припремају се лозинке...</translation>
 <translation id="7293171162284876153">Да бисте покренули синхронизацију, укључите опцију „Синхронизујте Chrome податке“.</translation>
 <translation id="7313347584264171202">Овде ћете пронаћи картице без архивирања</translation>
+<translation id="7319242366286515846">Ако наставите, прихватате <ph name="BEGIN_LINK" />услове коришћења услуге<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
 <translation id="7340958967809483333">Опције за Discover</translation>
 <translation id="7346909386216857016">Важи</translation>
@@ -781,6 +786,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>
+<translation id="8876882697946675716">Синхронизујте уређаје</translation>
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="8909135823018751308">Дели...</translation>
 <translation id="8917490105272468696">Да, омогући</translation>

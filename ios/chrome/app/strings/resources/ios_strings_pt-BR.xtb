@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
+<translation id="2022352537516230970">Criado para o iPhone</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -314,6 +315,7 @@ Siga estas etapas:</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="418156467088430727">Ver versão off-line em uma nova guia</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184011057600693970">Criado para o iPad</translation>
 <translation id="424315890655130736">Informar senha longa</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267380167363222949">Próxima guia</translation>
@@ -492,6 +494,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
+<translation id="60829778314739003">Aceitar e continuar</translation>
 <translation id="6108923351542677676">Configuração em andamento...</translation>
 <translation id="6119050551270742952">Esta pág. está no modo anônimo</translation>
 <translation id="6122191549521593678">On-line</translation>
@@ -587,6 +590,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6801927553864092214">Para navegar com privacidade, abra uma guia anônima</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
+<translation id="6830804042318138535">Mais informações</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
 <translation id="6858855187367714033">Lido</translation>
@@ -635,6 +639,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7291368939935408496">Preparando senhas…</translation>
 <translation id="7293171162284876153">Para iniciar a sincronização, ative a opção "Sincronizar seus dados do Chrome".</translation>
 <translation id="7313347584264171202">Você verá suas guias anônimas aqui</translation>
+<translation id="7319242366286515846">Ao continuar, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento baixados</translation>
 <translation id="7340958967809483333">Opções do Discover</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
@@ -781,6 +786,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8840513115188359703">Você não será desconectado da sua Conta do Google.</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
+<translation id="8876882697946675716">Manter os dispositivos sincronizados</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
 <translation id="8917490105272468696">Sim</translation>

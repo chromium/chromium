@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1001033507375626788">Esta rede é compartilhada com você</translation>
 <translation id="1001307489511021749">Seus apps, suas configurações e outras personalizações serão sincronizados por todos os dispositivos Chrome OS conectados à sua Conta do Google.</translation>
 <translation id="1003088604756913841">Abrir link em uma nova janela do <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -961,6 +962,7 @@
 <translation id="1992924914582925289">Remover do dispositivo</translation>
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="1995916364271252349">Controla quais informações os sites podem usar e mostrar (local, câmera, pop-ups, entre outros)</translation>
+<translation id="1997437640397887843">A câmera do dispositivo foi ativada. Posicione o código QR do eSIM na frente dela.</translation>
 <translation id="1997616988432401742">Seus certificados</translation>
 <translation id="1999115740519098545">Inicialização</translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para seu mecanismo de pesquisa padrão.</translation>
@@ -1016,6 +1018,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2055585478631012616">Sua conta será desconectada desses sites, inclusive nas guias abertas.</translation>
 <translation id="205560151218727633">Logotipo do Google Assistente</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
+<translation id="2058581283817163201">Verificar com este smartphone</translation>
 <translation id="2059913712424898428">Fuso horário</translation>
 <translation id="2060375639911876205">Remover perfil do eSIM</translation>
 <translation id="2062354623176996748">Navegue pela Web sem salvar seu histórico de navegação usando uma janela anônima</translation>
@@ -2617,6 +2620,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3785308913036335955">Mostrar atalho para aplicativos</translation>
 <translation id="3785727820640310185">Senhas salvas para este site</translation>
 <translation id="3788301286821743879">Não foi possível iniciar o aplicativo de quiosque.</translation>
+<translation id="3788331399335602504">estes arquivos</translation>
 <translation id="3788401245189148511">Ele poderia:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="379082410132524484">Seu cartão expirou</translation>
@@ -3192,6 +3196,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4438043733494739848">Transparente</translation>
 <translation id="4438639467177774583">A senha <ph name="MASKED_PASSWORD" /> de <ph name="USERNAME" /> será salva na sua Conta do Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectada</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> enviou uma notificação para seu smartphone. Para confirmar sua identidade, toque na notificação "<ph name="NOTIFICATIONTITLE" />" e siga as etapas.</translation>
 <translation id="4441124369922430666">Quer iniciar automaticamente este aplicativo quando o computador for ligado?</translation>
 <translation id="4441147046941420429">Para continuar, remova sua chave de segurança do dispositivo, reinsira-a e toque nela</translation>
 <translation id="444134486829715816">Expandir...</translation>
@@ -3494,6 +3499,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4773112038801431077">Fazer upgrade do Linux</translation>
 <translation id="477647109558161443">Criar um atalho na área de trabalho</translation>
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Outros usuários do dispositivo podem usar a rede</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nomes da rede</translation>
 <translation id="4778644898150334464">Usar outra senha</translation>
@@ -4330,6 +4336,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mecanismos de pesquisa padrão</translation>
+<translation id="5719637365829998022">Leitura do código QR realizada.</translation>
 <translation id="5719854774000914513">Os sites podem pedir para se conectar a dispositivos HID</translation>
 <translation id="572155275267014074">Configurações do Android</translation>
 <translation id="5722086096420375088">Verde e branco</translation>
@@ -4541,6 +4548,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5955721306465922729">Um site quer abrir esse aplicativo.</translation>
 <translation id="5955809630138889698">Este dispositivo pode estar qualificado apenas para o modo de demonstração on-line. Entre em contato com seu representante de suporte para receber mais detalhes.</translation>
 <translation id="5956585768868398362">Esta é a página de pesquisa que você esperava?</translation>
+<translation id="5957918771633727933">Nenhum perfil de eSIM disponível. Faça o download de um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Toque no ícone "Selecionar para ouvir" ao lado da sua imagem de perfil e selecione o que você quer ouvir.</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
 <translation id="595959584676692139">Recarregue a página para usar esta extensão</translation>
@@ -6046,6 +6054,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7638605456503525968">Portas seriais</translation>
 <translation id="7639914187072011620">Falha ao buscar o URL de redirecionamento SAML no servidor</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> conecta você automaticamente a sites qualificados com as senhas que você salvou.</translation>
+<translation id="7641513591566880111">Novo nome do perfil</translation>
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}one{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permitir que o site veja arquivos?</translation>
@@ -6206,6 +6215,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7800518121066352902">Girar no s&amp;entido anti-horário</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7804072833593604762">Guia fechada</translation>
+<translation id="7805759469263222011">Leia o código QR usando a câmera do dispositivo ou digite o código de ativação fornecido pela operadora</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7807711621188256451">Sempre permitir que <ph name="HOST" /> acesse sua câmera</translation>
@@ -6685,6 +6695,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8300849813060516376">Falha no OTASP</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Endereço}one{# endereço}other{# endereços}}</translation>
 <translation id="8304383784961451596">Você não tem autorização para usar este dispositivo. Entre em contato com o administrador para falar sobre permissões de login ou faça login com uma Conta do Google supervisionada pelo Family Link.</translation>
+<translation id="8308016398665340540">Você está compartilhando a rede com outros usuários do dispositivo</translation>
 <translation id="8308179586020895837">Perguntar se <ph name="HOST" /> deseja acessar sua câmera</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">O certificado já existe</translation>

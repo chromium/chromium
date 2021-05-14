@@ -295,6 +295,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2904414404539560095">Fitxa partekatzeko hautatutako gailuen zerrenda irekita dago, eta altuera osoa hartzen du.</translation>
 <translation id="2905036901251765993">Ingurukoekin partekatu nahi izanez gero, eska iezaiezu QR kode hau eskaneatzeko</translation>
 <translation id="2909615210195135082">Google-ren jakinarazpenen plataforma</translation>
+<translation id="2912296070571964914">Kudeatu interesatzen zaizkizun gaiak</translation>
 <translation id="2923908459366352541">Izenak ez du balio</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> aplikazioaren datuak</translation>
 <translation id="2932222164150889403">Teklatua ez da aldatuko</translation>
@@ -339,6 +340,8 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3254409185687681395">Ezarri laster-marka orriari</translation>
 <translation id="3259831549858767975">Txikitu orriko eduki guztia</translation>
 <translation id="3264124641674805320">Geroago erabiltzeko edukia deskargatzeko argibideak</translation>
+<translation id="3264259168916048410">Ordenagailuak gailua erabili nahi du webgune batean saioa hasteko</translation>
+<translation id="3265534588625245297">Kudeatu jarraitzen diezun webguneak</translation>
 <translation id="3269093882174072735">Kargatu irudia</translation>
 <translation id="3269956123044984603">Beste gailuetako fitxak eskura izateko, aktibatu "Sinkronizatu datuak automatikoki" aukera Android kontuaren ezarpenetan.</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4351244548802238354">Itxi leihoa</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4384468725000734951">Sogou erabiliko da bilatzaile gisa</translation>
+<translation id="4402611456429872546"><ph name="LANG" />: deskargatzen…</translation>
 <translation id="4404568932422911380">Ez dago laster-markarik</translation>
 <translation id="4405224443901389797">Eraman hona…</translation>
 <translation id="4411535500181276704">Oinarrizko modua</translation>
@@ -583,6 +587,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="488187801263602086">Aldatu fitxategiaren izena</translation>
 <translation id="4882831918239250449">Kontrolatu arakatze-historia nola erabiltzen den Bilaketa, iragarkiak eta beste pertsonalizatzeko</translation>
 <translation id="4885273946141277891">Chrome instantzia gehiegi daude irekita.</translation>
+<translation id="4905269543817054577">Historia ez da gordetzen ezkutuko moduan</translation>
 <translation id="4908869848243824489">Google-ren Discover</translation>
 <translation id="4910889077668685004">Ordainketa-aplikazioak</translation>
 <translation id="4913161338056004800">Berrezarri estatistikak</translation>
@@ -951,6 +956,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7191430249889272776">Atzeko planoan ireki da fitxa.</translation>
 <translation id="7233236755231902816">Eskuratu Chrome-ren azken bertsioa webgunea zure hizkuntzan ikusteko</translation>
 <translation id="7248069434667874558">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailuak Chrome-ren sinkronizazioa aktibatuta daukala</translation>
+<translation id="7252076891734325316">Jarri telefonoa ordenagailutik gertu</translation>
 <translation id="7274013316676448362">Blokeatutako webgunea</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> aldatu nahi duzu?</translation>
 <translation id="7290209999329137901">Ezin da aldatu izena</translation>
@@ -1017,6 +1023,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7630202231528827509">Hornitzailearen URLa</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
 <translation id="7641339528570811325">Garbitu arakatze-datuak…</translation>
+<translation id="764170292089748542">Chrome-k ez du zure arakatze-historia gordetzen sarea modu pribatuan arakatzen duzunean. Hala ere, laster-markak erabil ditzakezu gogoko webguneak atzitzeko.</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
@@ -1042,6 +1049,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7810647596859435254">Ireki honekin…</translation>
 <translation id="7815484226266492798">Orri osoaren pantaila-argazkia</translation>
 <translation id="7821588508402923572">Hemen agertuko da zenbat datu aurreztu dituzun</translation>
+<translation id="78270725016672455">Ordenagailuak gailua erregistratu nahi du webgune batean saioa hasteko</translation>
 <translation id="7844171778363018843">Ez da daturik hautatu sinkronizatzeko</translation>
 <translation id="7846296061357476882">Google-ren zerbitzuak</translation>
 <translation id="784934925303690534">Denbora tartea</translation>
@@ -1138,6 +1146,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8427875596167638501">Aurrebista-fitxa erdiirekita dago</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
+<translation id="8439974325294139057"><ph name="LANG" />: hizkuntza-paketea prest dago; berrabiarazi <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Ez dago istorio berririk</translation>
 <translation id="8443209985646068659">Ezin da eguneratu Chrome</translation>
 <translation id="8445448999790540984">Ezin dira esportatu pasahitzak</translation>
@@ -1210,6 +1219,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8937267401510745927">Zereginak osatzen laguntzeko, Laguntzailea eginbidearen bidez erabiltzen dituzun webguneen URLak eta edukia jasoko ditu Google-k, baita Laguntzailea erabilita bidaltzen duzun informazioa ere. Baliteke informazio hori Google-n duzun kontuan gordetzea. Laguntzailea desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="8937772741022875483">Chrome-ko jarduerak Ongizate digitala programatik kendu nahi dituzu?</translation>
 <translation id="8942627711005830162">Ireki beste leiho batean</translation>
+<translation id="8945143127965743188"><ph name="LANG" />: ezin izan da deskargatu hizkuntza-paketea. Saiatu geroago.</translation>
 <translation id="8951232171465285730"><ph name="MEGABYTES" /> MB aurreztu dituzu Chrome-ri esker</translation>
 <translation id="8965591936373831584">zain</translation>
 <translation id="8970887620466824814">Arazoren bat izan da.</translation>

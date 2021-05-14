@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1001033507375626788">このネットワークが共有されました</translation>
 <translation id="1001307489511021749">Google アカウントでログインしているすべての Chrome OS デバイス間でアプリや設定、その他のカスタマイズが同期されます。</translation>
 <translation id="1003088604756913841">新しい <ph name="APP" /> ウィンドウでリンクを開く</translation>
 <translation id="100323615638474026">USB デバイス（<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />）</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">デバイスから削除</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
 <translation id="1995916364271252349">サイトが使用、表示できる情報（位置情報、カメラ、ポップアップなど）を制御します</translation>
+<translation id="1997437640397887843">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2055585478631012616">開いているすべてのタブで、これらのサイトからログアウトします</translation>
 <translation id="205560151218727633">Google アシスタントのロゴ</translation>
 <translation id="2058456167109518507">デバイスが検出されました</translation>
+<translation id="2058581283817163201">このスマートフォンで認証</translation>
 <translation id="2059913712424898428">タイムゾーン</translation>
 <translation id="2060375639911876205">eSIM プロファイルの削除</translation>
 <translation id="2062354623176996748">シークレット ウィンドウを使うと、閲覧履歴を残さずにウェブを閲覧できます</translation>
@@ -2600,6 +2603,7 @@
 <translation id="3785308913036335955">アプリのショートカットを表示</translation>
 <translation id="3785727820640310185">このサイト用に保存されているパスワード</translation>
 <translation id="3788301286821743879">キオスク アプリケーションを起動できませんでした。</translation>
+<translation id="3788331399335602504">これらのファイル</translation>
 <translation id="3788401245189148511">次の権限へのアクセス要求:</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="379082410132524484">カードの有効期限が切れています</translation>
@@ -3175,6 +3179,7 @@
 <translation id="4438043733494739848">透明</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> さんのパスワード <ph name="MASKED_PASSWORD" /> は Google アカウント（<ph name="ACCOUNT" />）に保存されます</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> からスマートフォンに通知が送信されました。「<ph name="NOTIFICATIONTITLE" />」通知をタップし、表示されている手順に沿って本人確認を行ってください。</translation>
 <translation id="4441124369922430666">マシンの起動時にこのアプリを自動的に起動しますか？</translation>
 <translation id="4441147046941420429">続行するには、デバイスからセキュリティ キーを取り外し、もう一度差し込んでからタッチしてください</translation>
 <translation id="444134486829715816">展開...</translation>
@@ -3476,6 +3481,7 @@
 <translation id="4773112038801431077">Linux のアップグレード</translation>
 <translation id="477647109558161443">デスクトップ ショートカットを作成</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
+<translation id="4777458362738635055">このデバイスの他のユーザーもこのネットワークを使用できます</translation>
 <translation id="4777825441726637019">Play ストア</translation>
 <translation id="4777943778632837590">ネットワーク ネームサーバーの設定</translation>
 <translation id="4778644898150334464">他のパスワードを使用</translation>
@@ -4311,6 +4317,7 @@
 <translation id="5712153969432126546">一部のサイトはドキュメント、契約、フォームなどの PDF を一般に提供しています</translation>
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">既定の検索エンジン</translation>
+<translation id="5719637365829998022">QR コードをスキャンしました。</translation>
 <translation id="5719854774000914513">サイトが HID デバイスへの接続を要求できるようにする</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">緑と白</translation>
@@ -4522,6 +4529,7 @@
 <translation id="5955721306465922729">ウェブサイトがこのアプリケーションを開く許可を求めています。</translation>
 <translation id="5955809630138889698">このデバイスの使用はオンライン デモモードのみに限定されている可能性があります。詳しくはサポート担当者にお問い合わせください。</translation>
 <translation id="5956585768868398362">この検索ページでよろしいですか？</translation>
+<translation id="5957918771633727933">eSIM プロファイルがありません。新しい<ph name="BEGIN_LINK" />プロファイル<ph name="END_LINK" />をダウンロードしてください。</translation>
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="595959584676692139">この拡張機能を使用するにはページを再読み込みします</translation>
@@ -6027,6 +6035,7 @@
 <translation id="7638605456503525968">シリアルポート</translation>
 <translation id="7639914187072011620">サーバーから SAML リダイレクト URL を取得できませんでした</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> では、保存したパスワードを使って対象となるサイトへの自動ログインが行われます。</translation>
+<translation id="7641513591566880111">新しいプロファイル名</translation>
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
 <translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
@@ -6187,6 +6196,7 @@
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
+<translation id="7805759469263222011">デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
@@ -6666,6 +6676,7 @@
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{住所}other{# 件の住所}}</translation>
 <translation id="8304383784961451596">このデバイスを使用する権限がありません。ログイン権限についてデバイスの管理者に問い合わせるか、ファミリー リンクで管理されている Google アカウントでログインしてください。</translation>
+<translation id="8308016398665340540">このデバイスの他のユーザーとネットワークを共有しています</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> がカメラへのアクセスを必要としているときは確認画面を表示する</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">証明書がすでに存在します</translation>

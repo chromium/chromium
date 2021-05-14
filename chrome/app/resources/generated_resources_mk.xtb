@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1001033507375626788">Мрежава се споделува со вас</translation>
 <translation id="1001307489511021749">Вашите апликации, поставки и другите приспособувања ќе се синхронизираат на сите уреди со Chrome OS каде што сте најавени со сметката на Google.</translation>
 <translation id="1003088604756913841">Отвори го линкот во нов прозорец на <ph name="APP" /></translation>
 <translation id="100323615638474026">USB-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -961,6 +962,7 @@
 <translation id="1992924914582925289">Отстрани од уредот</translation>
 <translation id="1994173015038366702">URL на локацијата</translation>
 <translation id="1995916364271252349">Контролира кои информации може да ги користат и прикажуваат сајтовите (локација, камера, скокачки програми и друго)</translation>
+<translation id="1997437640397887843">Камерата на уредот се вклучи. Наместете го QR-кодот од вашата eSIM-картичка пред камерата.</translation>
 <translation id="1997616988432401742">Ваши сертификати</translation>
 <translation id="1999115740519098545">На стартување</translation>
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
@@ -1016,6 +1018,7 @@
 <translation id="2055585478631012616">Ќе ве одјавиме од овие сајтови, вклучително и од отворените картички</translation>
 <translation id="205560151218727633">Лого на „Помошникот на Google“</translation>
 <translation id="2058456167109518507">Откриен е уред</translation>
+<translation id="2058581283817163201">Потврдете го телефонов</translation>
 <translation id="2059913712424898428">Временска зона</translation>
 <translation id="2060375639911876205">Отстранете го профилот на eSIM</translation>
 <translation id="2062354623176996748">Користете интернет без да ја зачувувате историјата на прелистувањето со прозорец „Инкогнито“</translation>
@@ -2616,6 +2619,7 @@
 <translation id="3785308913036335955">Покажи кратенка за Апликации</translation>
 <translation id="3785727820640310185">Зачувани лозинки за сајтов</translation>
 <translation id="3788301286821743879">Апликацијата Kiosk не може да се стартува.</translation>
+<translation id="3788331399335602504">овие датотеки</translation>
 <translation id="3788401245189148511">Може да:</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="379082410132524484">Картичката ви е истечена</translation>
@@ -3191,6 +3195,7 @@
 <translation id="4438043733494739848">Проѕирно</translation>
 <translation id="4438639467177774583"><ph name="MASKED_PASSWORD" /> на <ph name="USERNAME" /> ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> испрати известување на вашиот телефон. За да потврдите дека сте вие, допрете на „<ph name="NOTIFICATIONTITLE" /> и следете ги чекорите таму.</translation>
 <translation id="4441124369922430666">Дали сакате автоматски да ја стартувате оваа апликација кога се вклучува машината?</translation>
 <translation id="4441147046941420429">За да продолжите, отстранете го безбедносниот клуч од уредот, а потоа повторно вметнете го и допрете го</translation>
 <translation id="444134486829715816">Прошири…</translation>
@@ -3493,6 +3498,7 @@
 <translation id="4773112038801431077">Надградете го Linux</translation>
 <translation id="477647109558161443">Создајте кратенка за работна површина</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Другите корисници на уредов може да ја користат мрежава</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Конфигурирање сервери за име на мрежа</translation>
 <translation id="4778644898150334464">Употребете друга лозинка</translation>
@@ -4328,6 +4334,7 @@
 <translation id="5712153969432126546">Сајтовите понекогаш објавуваат документи, договори и формулари во PDF-формат</translation>
 <translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандардни пребарувачи</translation>
+<translation id="5719637365829998022">QR-кодот е скениран.</translation>
 <translation id="5719854774000914513">Сајтовите може да прашуваат за да се поврзат со HID-уреди</translation>
 <translation id="572155275267014074">Поставки за Android</translation>
 <translation id="5722086096420375088">Зелена и бела</translation>
@@ -4539,6 +4546,7 @@
 <translation id="5955721306465922729">Веб-сајт сака да ја отвори апликацијава.</translation>
 <translation id="5955809630138889698">Уредов може да биде достапен само за онлајн демо-режим. За повеќе детали, контактирајте со претставникот за поддршка.</translation>
 <translation id="5956585768868398362">Дали е ова страницата за пребарување што ја очекувавте?</translation>
+<translation id="5957918771633727933">Нема достапни eSIM-профили. Преземете нов <ph name="BEGIN_LINK" />профил.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Или допрете ја иконата „Изберете за говор“ во близина на сликата на профилот, а потоа изберете го тоа што сакате да го чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е достапна</translation>
 <translation id="595959584676692139">Вчитајте ја страницата повторно за да ја користите екстензијава</translation>
@@ -6044,6 +6052,7 @@
 <translation id="7638605456503525968">Сериски порти</translation>
 <translation id="7639914187072011620">Не можеше да се вчита URL за пренасочување на SAML од серверот</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> автоматски ве најавува на соодветни страници со лозинките што сте ги зачувале.</translation>
+<translation id="7641513591566880111">Ново име на профил</translation>
 <translation id="7642778300616172920">Сокривај ги чувствителните содржини</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oтворен прозорец}one{# отворен прозорец}other{# отворени прозорци}}</translation>
 <translation id="7643932971554933646">Дали да му се дозволи на сајтот да ги прикажува датотеките?</translation>
@@ -6204,6 +6213,7 @@
 <translation id="7800518121066352902">Ротирај на&amp;лево</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804072833593604762">Картичката е затворена</translation>
+<translation id="7805759469263222011">Скенирајте го QR-кодот со камерата на уредот или внесете код за активација од операторот</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
@@ -6685,6 +6695,7 @@
 <translation id="8300849813060516376">OTASP не успеа</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="8304383784961451596">Не сте овластени за користење на уредов. Контактирајте со администраторот за дозвола за најавување или најавете се со сметка на Google што е под надзор на Family Link.</translation>
+<translation id="8308016398665340540">Ја споделувате мрежава со други корисници на уредов</translation>
 <translation id="8308179586020895837">Прашајте дали <ph name="HOST" /> сака да пристапи до вашиот фотоапарат</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8309458809024885768">Сертификатот веќе постои</translation>

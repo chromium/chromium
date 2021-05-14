@@ -508,6 +508,7 @@
 <translation id="2850739647070081192">Dəvət edin (Zərf)</translation>
 <translation id="2856444702002559011">Hücumçular <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytından məlumat (məsələn, parol, mesaj və ya kredit kartları) oğurlamağa çalışa bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Bu sayt inadçı və ya aldadıcı reklamlar göstərir.</translation>
+<translation id="287596039013813457">Dost</translation>
 <translation id="2876489322757410363">Xarici tətbiqlə ödəniş etmək üçün Anonim rejimdən çıxırsınız. Davam edilsin?</translation>
 <translation id="2878197950673342043">Poster formasında qatlayın</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -603,6 +604,7 @@
 <translation id="3229041911291329567">Cihaz və brauzer haqqında versiya məlumatı</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> üçün CVC kodu daxil edin</translation>
 <translation id="3234666976984236645">Bu saytda həmişə önəmli məzmunu aşkarlayın</translation>
+<translation id="3249845759089040423">Modern</translation>
 <translation id="3252266817569339921">Fransız</translation>
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
@@ -977,6 +979,7 @@
 <translation id="4594403342090139922">&amp;Silinməni ləğv edin</translation>
 <translation id="4597348597567598915">Ölçü 8</translation>
 <translation id="4600854749408232102">C6/C5 (Zərf)</translation>
+<translation id="4606870351894164739">Təsirli</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Keşbek əlaqələndirilib</translation>
 <translation id="4636930964841734540">İnfo</translation>
@@ -1040,6 +1043,8 @@
 <translation id="4813512666221746211">Şəbəkə xətası</translation>
 <translation id="4816492930507672669">Səhifəyə uyğunlaşsın</translation>
 <translation id="4819347708020428563">Annotasiyalar defolt görünüşdə redaktə edilsin?</translation>
+<translation id="4825507807291741242">Güclü</translation>
+<translation id="4838327282952368871">Xəyali</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="485316830061041779">Alman</translation>
@@ -1198,6 +1203,7 @@
 <translation id="5398772614898833570">Reklamlar blok edildi</translation>
 <translation id="5400836586163650660">Boz</translation>
 <translation id="540969355065856584">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; güvənlik sertifikatı hazırda etibarlı deyil. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
+<translation id="541143247543991491">Bulud (sistem)</translation>
 <translation id="541416427766103491">Yığıcı 4</translation>
 <translation id="5421136146218899937">Baxış datasını silin...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
@@ -1705,6 +1711,7 @@
     &lt;li&gt;Kompüterdən proqramı birdəfəlik silmək haqqında məlumat üçün &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome help center&lt;/a&gt; ünvanına daxil olun
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Geniş Formatlı</translation>
+<translation id="7410471291937727359">Sevimli</translation>
 <translation id="7416351320495623771">Parolları İdarə edin...</translation>
 <translation id="7419106976560586862">Profil yolu</translation>
 <translation id="7437289804838430631">Kontakt Məlumatı Əlavə Edin</translation>
@@ -2128,6 +2135,7 @@
 <translation id="9020542370529661692">Bu səhifə <ph name="TARGET_LANGUAGE" /> dilinə tərcümə edilmişdir</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(Yanlış)</translation>
+<translation id="9030265603405983977">Monoxrom</translation>
 <translation id="9035022520814077154">Güvənlik xətası</translation>
 <translation id="9038649477754266430">Səhifələri daha sürətlə yükləmək üçün proqnozlaşdırma xidmətindən istifadə edin</translation>
 <translation id="9039213469156557790">Bundan əlavə, bu səhifəyə təhlükəsiz olmayan başqa resurslar daxildir. Bu resurslar keçid zamanı başqaları tərəfindən görüntülən bilər və hücumçu tərəfindən səhifə rejiminin dəyişdirilməsi üçün modifikasiya edilə bilər.</translation>
@@ -2151,6 +2159,7 @@
 <translation id="91108059142052966">Administrator suyasəti məxfi məzmun göründüyü zaman <ph name="APPLICATION_TITLE" /> ilə ekran paylaşımını deaktiv edir</translation>
 <translation id="9114524666733003316">Kart təsdiqlənir...</translation>
 <translation id="9114581008513152754">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chrome'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Təzə</translation>
 <translation id="9119042192571987207">Yüklənib</translation>
 <translation id="9128016270925453879">Siyasətlər yüklənib</translation>
 <translation id="9128870381267983090">Şəbəkəyə qoşulun</translation>

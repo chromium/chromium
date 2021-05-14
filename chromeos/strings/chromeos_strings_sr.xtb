@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">Мобилни оператер</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7359657277149375382">Тип датотеке</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">Додатни хостови</translation>
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Назив добављача за Home</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>

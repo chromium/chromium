@@ -295,6 +295,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2904414404539560095">Elenco di dispositivi con cui condividere una scheda aperto a schermo intero.</translation>
 <translation id="2905036901251765993">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
+<translation id="2912296070571964914">Gestisci gli argomenti che ti interessano</translation>
 <translation id="2923908459366352541">Nome non valido</translation>
 <translation id="2932150158123903946">Spazio di archiviazione di Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">La tua tastiera resterà invariata</translation>
@@ -339,6 +340,8 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3254409185687681395">Aggiungi ai Preferiti</translation>
 <translation id="3259831549858767975">Rimpicciolisci i contenuti della pagina</translation>
 <translation id="3264124641674805320">Come scaricare contenuti da usare in un secondo momento</translation>
+<translation id="3264259168916048410">Il computer chiede di usare questo dispositivo per accedere a un sito</translation>
+<translation id="3265534588625245297">Gestisci i siti che segui</translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="3269956123044984603">Attiva la funzione "Sincronizzazione automatica dei dati" nelle impostazioni dell'account Android per trovare le tue schede sugli altri tuoi dispositivi.</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4384468725000734951">Sogou in uso per la ricerca</translation>
+<translation id="4402611456429872546"><ph name="LANG" />: download in corso…</translation>
 <translation id="4404568932422911380">Nessun preferito</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
 <translation id="4411535500181276704">Modalità Lite</translation>
@@ -583,6 +587,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="488187801263602086">Rinomina file</translation>
 <translation id="4882831918239250449">Controlla il modo in cui la cronologia di navigazione viene utilizzata per personalizzare la Ricerca, gli annunci e altro ancora</translation>
 <translation id="4885273946141277891">Numero di istanze di Chrome non supportato.</translation>
+<translation id="4905269543817054577">La cronologia non viene salvata in modalità di navigazione in incognito</translation>
 <translation id="4908869848243824489">Discover di Google</translation>
 <translation id="4910889077668685004">App di pagamento</translation>
 <translation id="4913161338056004800">Reimposta statistiche</translation>
@@ -951,6 +956,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7191430249889272776">Scheda aperta in background.</translation>
 <translation id="7233236755231902816">Per navigare sul Web nella tua lingua, scarica l'ultima versione di Chrome</translation>
 <translation id="7248069434667874558">Assicurati che in Chrome sia attiva la sincronizzazione di <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Avvicina il telefono al computer</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>
 <translation id="7286572596625053347">Vuoi cambiare la lingua <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Impossibile rinominare</translation>
@@ -1017,6 +1023,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7630202231528827509">URL del fornitore</translation>
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
 <translation id="7641339528570811325">Cancella dati di navigazione…</translation>
+<translation id="764170292089748542">Chrome non salva la cronologia di navigazione quando scegli di navigare in privato. Puoi comunque usare i preferiti per accedere ai siti che visiti più spesso.</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
@@ -1042,6 +1049,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7810647596859435254">Apri con…</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
 <translation id="7821588508402923572">La quantità di dati risparmiata sarà visualizzata qui</translation>
+<translation id="78270725016672455">Il computer chiede di registrare questo dispositivo per accedere a un sito</translation>
 <translation id="7844171778363018843">Nessun dato selezionato da sincronizzare</translation>
 <translation id="7846296061357476882">Servizi Google</translation>
 <translation id="784934925303690534">Intervallo di tempo</translation>
@@ -1138,6 +1146,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
+<translation id="8439974325294139057"><ph name="LANG" />: lingua pronta, riavvia <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nessuna notizia disponibile</translation>
 <translation id="8443209985646068659">Imp. aggiornare Chrome</translation>
 <translation id="8445448999790540984">Impossibile esportare le password</translation>
@@ -1210,6 +1219,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8937267401510745927">Per aiutarti a completare le attività, Google riceverà gli URL e i contenuti dei siti su cui utilizzi l'assistente, oltre alle informazioni che invii tramite l'assistente. Queste informazioni potrebbero essere memorizzate nel tuo Account Google. Puoi disattivare l'assistente nelle impostazioni di Chrome.</translation>
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
+<translation id="8945143127965743188"><ph name="LANG" />: impossibile scaricare questa lingua. Riprova più tardi.</translation>
 <translation id="8951232171465285730">Chrome ti ha fatto risparmiare <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">in attesa</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>

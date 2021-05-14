@@ -507,6 +507,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">Firibgarlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytidan ma’lumotlaringizni (parol, xabar va kredit karta ma’lumotlari kabilarni) o‘g‘irlashga urinayotgan bo‘lishi mumkin. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Bu saytda yoqimsiz yoki befoyda reklamalar chiqadi.</translation>
+<translation id="287596039013813457">Doʻstona</translation>
 <translation id="2876489322757410363">Tashqi ilova orqali toʻlash uchun inkognito rejimidan chiqib ketasiz. Davom etasizmi?</translation>
 <translation id="2878197950673342043">Poster shaklida taxlash</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -602,6 +603,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3229041911291329567">Qurilma va brauzer versiyalari axboroti</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> kartasining CVC kodini kiriting</translation>
 <translation id="3234666976984236645">Bu saytda har doim muhim kontent aniqlansin</translation>
+<translation id="3249845759089040423">Jozibali</translation>
 <translation id="3252266817569339921">Fransuzcha</translation>
 <translation id="3266793032086590337">Qiymat (ziddiyatli)</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
@@ -977,6 +979,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4594403342090139922">&amp;O‘chirishni bekor qilish</translation>
 <translation id="4597348597567598915">Hajmi: 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">Taʼsirli</translation>
 <translation id="4628948037717959914">Rasm</translation>
 <translation id="4631649115723685955">Keshbek ulandi</translation>
 <translation id="4636930964841734540">Ma’lumot</translation>
@@ -1040,6 +1043,8 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4813512666221746211">Tarmoq xatoligi</translation>
 <translation id="4816492930507672669">Sahifa hajmiga moslash</translation>
 <translation id="4819347708020428563">Izohlar standart shaklda tahrirlansinmi?</translation>
+<translation id="4825507807291741242">Qudratli</translation>
+<translation id="4838327282952368871">Xayolparast</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
@@ -1198,6 +1203,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5398772614898833570">Reklamalar bloklandi</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
+<translation id="541143247543991491">Bulut (umumtizimli)</translation>
 <translation id="541416427766103491">Taxlovchi 4</translation>
 <translation id="5421136146218899937">Brauzer tarixini tozalash...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
@@ -1704,6 +1710,7 @@ Batafsil axborot:
     &lt;li&gt;Dasturni butunlay kompyuterdan olib tashlash haqida ma’lumot olish uchun &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome yordam markaziga&lt;/a&gt; tashrif buyuring.
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">Sevimli</translation>
 <translation id="7416351320495623771">Parollarni boshqarish…</translation>
 <translation id="7419106976560586862">Profil saqlanadigan jild</translation>
 <translation id="7437289804838430631">Aloqa ma’lumotini qo‘shish</translation>
@@ -2127,6 +2134,7 @@ Batafsil axborot:
 <translation id="9020542370529661692">Bu sahifa <ph name="TARGET_LANGUAGE" /> tiliga o‘girildi.</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(yaroqsiz)</translation>
+<translation id="9030265603405983977">Monoxrom</translation>
 <translation id="9035022520814077154">Xavfsizlik xatosi</translation>
 <translation id="9038649477754266430">Sahifalar tezroq yuklanishi uchun oldindan yuklash xizmatidan foydalaning</translation>
 <translation id="9039213469156557790">Bundan tashqari, ushbu sahifada xavfli kontent ham aniqlandi. Ma’lumotlarni uzatishda uchinchi tomon resurslarni ko‘rishi mumkin. Yovuz niyatli odamlar esa sahifaga kirishi va uning xatti-harakatini o‘zgartirishi mumkin.</translation>
@@ -2150,6 +2158,7 @@ Batafsil axborot:
 <translation id="91108059142052966">Maxfiy axborotlar koʻrinib turganda administrator ekran namoyishini <ph name="APPLICATION_TITLE" /> uchun taqiqlagan</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>
 <translation id="9114581008513152754">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromedan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">Yangi</translation>
 <translation id="9119042192571987207">Yuklangan</translation>
 <translation id="9128016270925453879">Qoidalar yuklandi</translation>
 <translation id="9128870381267983090">Tarmoqqa ulanish</translation>

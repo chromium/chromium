@@ -510,6 +510,7 @@
 <translation id="2850739647070081192">ဖိတ်စာ (စာအိတ်)</translation>
 <translation id="2856444702002559011">တိုက်ခိုက်သူများက <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ရှိ သင်၏အချက်အလက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်ပါသည် (ဥပမာ- စကားဝှက်၊ မက်ဆေ့ဂျ်နှင့် ခရက်ဒစ်ကတ် အချက်အလက်များ)။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ဤဝဘ်ဆိုက်က စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများကို ပြသည်။</translation>
+<translation id="287596039013813457">နှစ်လိုဖွယ်</translation>
 <translation id="2876489322757410363">ပြင်ပအပလီကေးရှင်းဖြင့် ငွေပေးချေရန် ရုပ်ဖျက်မုဒ်မှ ထွက်နေသည်။ ရှေ့ဆက်မလား။</translation>
 <translation id="2878197950673342043">ပိုစတာပုံ ခေါက်ရန်</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -606,6 +607,7 @@
 <translation id="3229041911291329567">သင့်စက်နှင့် ဘရောင်ဇာအကြောင်း ဗားရှင်းအချက်အလက်</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> အတွက် CVC ကို ထည့်ပါ</translation>
 <translation id="3234666976984236645">ဤအင်တာနက်စာမျက်နှာ‌ပေါ်တွင် အရေးကြီး‌သော မာတိကာများကို အစဉ် ထောက်လှမ်းပါ</translation>
+<translation id="3249845759089040423">မိမိမိုက်မိုက်</translation>
 <translation id="3252266817569339921">ပြင်သစ်</translation>
 <translation id="3266793032086590337">တန်ဖိုး (ကွဲလွဲသည်)</translation>
 <translation id="3268451620468152448">တဲဘ်များ ဖွင့်ရန်</translation>
@@ -982,6 +984,7 @@
 <translation id="4594403342090139922">&amp;ဖျက်မှုကို ပြန်လုပ်ရန်</translation>
 <translation id="4597348597567598915">အရွယ်အစား ၈</translation>
 <translation id="4600854749408232102">C6/C5 (စာအိတ်)</translation>
+<translation id="4606870351894164739">အကျိုးသက်ရောက်မှု</translation>
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>
 <translation id="4631649115723685955">ငွေပြန်ပေးခြင်းကို လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
@@ -1045,6 +1048,8 @@
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
 <translation id="4816492930507672669">စာမျက်နှာ ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="4819347708020428563">မှတ်ချက်များကို မူရင်းမြင်ကွင်းတွင် တည်းဖြတ်မလား။</translation>
+<translation id="4825507807291741242">စွမ်းအားပြည့်</translation>
+<translation id="4838327282952368871">အိပ်မက်ဆန်ဆန်</translation>
 <translation id="484462545196658690">အော်တို</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="485316830061041779">ဂျာမန်</translation>
@@ -1203,6 +1208,7 @@
 <translation id="5398772614898833570">ကြော်ငြာများကို ပိတ်လိုက်ပါပြီ</translation>
 <translation id="5400836586163650660">မီးခိုး</translation>
 <translation id="540969355065856584">ဤဆာဗာသည် <ph name="DOMAIN" /> ဖြစ်ကြောင်း သက်သေမပြနိုင်ပါ; ၎င်း၏လုံခြုံရေး အသိမှတ်ပြုလက်မှတ်သည် ယခုအချိန်တွင် တရားမဝင်ပါ။ ဖွဲ့စည်းမှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
+<translation id="541143247543991491">Cloud (စနစ်တစ်ခုလုံး)</translation>
 <translation id="541416427766103491">စီထည့်သည့်ပုံး ၄</translation>
 <translation id="5421136146218899937">ဘရောင်ဇာ ဒေတာကို ရှင်းရန်...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
@@ -1710,6 +1716,7 @@
     &lt;li&gt;&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome ကူညီရေးရာ ဌာန&lt;/a&gt; သို့ဝင်ပြီး သင့်ကွန်ပျူတာထဲမှနေ၍ ဆော့ဖ်ဝဲကို မည်ကဲ့သို့ အပြီးအပိုင် ဖယ်ရှားနိုင်ကြောင်း လေ့လာပါ
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">အကျယ် ပုံစံ</translation>
+<translation id="7410471291937727359">ချစ်စဖွယ်</translation>
 <translation id="7416351320495623771">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="7419106976560586862">ပရိုဖိုင် လမ်းကြောင်း</translation>
 <translation id="7437289804838430631">အဆက်အသွယ် အချက်အလက်ကို ထည့်ရန်</translation>
@@ -2133,6 +2140,7 @@
 <translation id="9020542370529661692">ဒီစာမျက်နှာကို  <ph name="TARGET_LANGUAGE" />သို့ ဘာသာပြန်ပေးခဲ့သည်။</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(မမှန်ပါ)</translation>
+<translation id="9030265603405983977">အဖြူအမည်း</translation>
 <translation id="9035022520814077154">လုံခြုံမှု အမှား</translation>
 <translation id="9038649477754266430">စာမျက်နှာများကို ပိုမိုမြန်ဆန်စွာ ဖွင့်နိုင်ရန် ကြိုတင်ခန့်မှန်းခြင်း ဝန်ဆောင်မှုကို အသုံးပြုပါ</translation>
 <translation id="9039213469156557790">ထပ်မံ၍၊ ဤစာမျက်နှာတွင် လုံခြုံမှု မရှိသော အခြားမှီငြမ်းထားမှုများ ပါဝင်သည်။ ဤမှီငြမ်းထားမှုများအား ကြားကာလတွင် အခြားသူများမှ ကြည့်နိုင်ပြီး စာမျက်နှာ၏ အမူအကျင့်ကို ပြောင်းလဲရန် တိုက်ခိုက်သူမှ ပြုပြင်နိုင်သည်။</translation>
@@ -2156,6 +2164,7 @@
 <translation id="91108059142052966">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် <ph name="APPLICATION_TITLE" /> အား မျက်နှာပြင်မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="9114524666733003316">ကတ် အတည်ပြုနေသည်...</translation>
 <translation id="9114581008513152754">ဤဘရောင်ဇာကို ကုမ္ပဏီ သို့မဟုတ် အခြားအဖွဲ့အစည်းက စီမံခန့်ခွဲမထားပါ။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်ကို Chrome ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">လန်းလန်းဆန်းဆန်း</translation>
 <translation id="9119042192571987207">အပ်လုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="9128016270925453879">မူဝါဒများကို ဖွင့်လိုက်သည်</translation>
 <translation id="9128870381267983090">ကွန်ယက်သို့ ချိတ်ဆက်ပါ</translation>

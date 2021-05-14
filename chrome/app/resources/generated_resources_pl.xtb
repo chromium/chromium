@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1001033507375626788">Ta sieć została Ci udostępniona</translation>
 <translation id="1001307489511021749">Twoje aplikacje, ustawienia i inne dostosowania zsynchronizują się na wszystkich urządzeniach z Chrome OS, na których zalogujesz się na konto Google.</translation>
 <translation id="1003088604756913841">Otwórz link w nowym oknie aplikacji <ph name="APP" /></translation>
 <translation id="100323615638474026">Urządzenie USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -946,6 +947,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1992924914582925289">Usuń z urządzenia</translation>
 <translation id="1994173015038366702">URL strony</translation>
 <translation id="1995916364271252349">Tu możesz określić, jakie informacje mogą wykorzystywać i wyświetlać strony (lokalizacja, kamera, wyskakujące okienka i inne)</translation>
+<translation id="1997437640397887843">Aparat urządzenia został włączony. Umieść kod QR eSIM przed obiektywem aparatu.</translation>
 <translation id="1997616988432401742">Twoje certyfikaty</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
@@ -1001,6 +1003,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2055585478631012616">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
 <translation id="205560151218727633">Logo Asystenta Google</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
+<translation id="2058581283817163201">Potwierdzenie na telefonie</translation>
 <translation id="2059913712424898428">Strefa czasowa</translation>
 <translation id="2060375639911876205">Usuń profil eSIM</translation>
 <translation id="2062354623176996748">Korzystaj z internetu w oknie incognito, aby nie zapisywać historii przeglądania</translation>
@@ -2597,6 +2600,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3785308913036335955">Pokaż skrót do aplikacji</translation>
 <translation id="3785727820640310185">Zapisano hasła do tej strony</translation>
 <translation id="3788301286821743879">Nie udało się uruchomić aplikacji kiosku.</translation>
+<translation id="3788331399335602504">te pliki</translation>
 <translation id="3788401245189148511">Będzie mógł:</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="379082410132524484">Twoja karta straciła ważność</translation>
@@ -3172,6 +3176,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4438043733494739848">Przezroczyste</translation>
 <translation id="4438639467177774583">Hasło <ph name="MASKED_PASSWORD" /> użytkownika <ph name="USERNAME" /> zostanie zapisane na koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, połącz</translation>
+<translation id="4440097423000553826">Strona <ph name="WEBSITE" /> wysłała powiadomienie na Twój telefon. Aby potwierdzić, że to Ty, kliknij powiadomienie „<ph name="NOTIFICATIONTITLE" />” i postępuj zgodnie z instrukcjami.</translation>
 <translation id="4441124369922430666">Chcesz, by ta aplikacja była uruchamiana automatycznie po włączeniu urządzenia?</translation>
 <translation id="4441147046941420429">Aby kontynuować, odłącz klucz bezpieczeństwa od urządzenia, a potem podłącz go ponownie i dotknij</translation>
 <translation id="444134486829715816">Rozwiń...</translation>
@@ -3473,6 +3478,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4773112038801431077">Uaktualnij Linuksa</translation>
 <translation id="477647109558161443">Utwórz skrót na pulpicie</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Inni użytkownicy tego urządzenia mogą używać tej sieci</translation>
 <translation id="4777825441726637019">Sklep Play</translation>
 <translation id="4777943778632837590">Skonfiguruj serwery nazw sieci</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
@@ -4308,6 +4314,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5712153969432126546">Czasami witryny publikują pliki PDF takie jak dokumenty, umowy i formularze</translation>
 <translation id="5715711091495208045">Broker wtyczek: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Domyślne wyszukiwarki</translation>
+<translation id="5719637365829998022">Zeskanowano kod QR.</translation>
 <translation id="5719854774000914513">Witryny mogą prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="572155275267014074">Ustawienia Androida</translation>
 <translation id="5722086096420375088">Zielono-biały</translation>
@@ -4519,6 +4526,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5955721306465922729">Strona chce otworzyć tę aplikację.</translation>
 <translation id="5955809630138889698">Możliwe, że na tym urządzeniu dozwolony jest tylko tryb demonstracyjny online. Skontaktuj się z przedstawicielem pomocy, by dowiedzieć się więcej.</translation>
 <translation id="5956585768868398362">Czy to oczekiwana strona wyszukiwania?</translation>
+<translation id="5957918771633727933">Brak dostępnych profili eSIM. Pobierz nowy <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Kliknij ikonę Przeczytaj na głos obok swojego zdjęcia profilowego, a następnie zaznacz to, co chcesz usłyszeć.</translation>
 <translation id="5959471481388474538">Sieć niedostępna</translation>
 <translation id="595959584676692139">Aby użyć tego rozszerzenia, załaduj ponownie stronę</translation>
@@ -6021,6 +6029,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7638605456503525968">Porty szeregowe</translation>
 <translation id="7639914187072011620">Nie udało się pobrać przekierowania SAML z serwera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatycznie loguje Cię w odpowiednich witrynach przy użyciu zapisanych wcześniej haseł.</translation>
+<translation id="7641513591566880111">Nowa nazwa profilu</translation>
 <translation id="7642778300616172920">Ukryj informacje poufne</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otwarte okno}few{# otwarte okna}many{# otwartych okien}other{# otwartego okna}}</translation>
 <translation id="7643932971554933646">Zezwolić witrynie na wyświetlanie plików?</translation>
@@ -6181,6 +6190,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7804072833593604762">Karta została zamknięta</translation>
+<translation id="7805759469263222011">Zeskanuj aparatem urządzenia kod QR lub wpisz kod aktywacyjny otrzymany od operatora</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
@@ -6660,6 +6670,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8300849813060516376">Dostarczanie OTASP nie powiodło się</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}few{# adresy}many{# adresów}other{# adresu}}</translation>
 <translation id="8304383784961451596">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie, skontaktuj się z administratorem. Możesz też zalogować się przy użyciu konta Google nadzorowanego przez Family Link.</translation>
+<translation id="8308016398665340540">Udostępniasz tę sieć innym użytkownikom urządzenia</translation>
 <translation id="8308179586020895837">Pytaj, gdy witryna <ph name="HOST" /> chce mieć dostęp do kamery</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Certyfikat już istnieje</translation>

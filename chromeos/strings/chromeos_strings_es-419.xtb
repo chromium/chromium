@@ -299,6 +299,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7216409898977639127">Proveedor de red celular</translation>
 <translation id="7271040990581020067">El escáner está en uso. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8372477600026034341">Hosts adicionales</translation>
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Nombre del proveedor de origen</translation>
 <translation id="8475690821716466388">la red Wi-Fi está protegida con el protocolo de PSK WEP (poco seguro)</translation>
 <translation id="8477551185774834963">la latencia de DNS supera ligeramente el umbral permitido</translation>

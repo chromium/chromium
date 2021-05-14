@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
+<translation id="2022352537516230970">‏מותאם ל-iPhone שלך</translation>
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="418156467088430727">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="4181841719683918333">שפות</translation>
+<translation id="4184011057600693970">‏מותאם ל-iPad שלך</translation>
 <translation id="424315890655130736">הזנת ביטוי סיסמה</translation>
 <translation id="4263576668337963058">הצגה של פעולות זמינות בדף</translation>
 <translation id="4267380167363222949">הכרטיסייה הבאה</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
 <translation id="6066301408025741299">יש להקיש כדי לבטל.</translation>
+<translation id="60829778314739003">אישור והמשך</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6119050551270742952">דף האינטרנט הנוכחי מוצג במצב אנונימי</translation>
 <translation id="6122191549521593678">אונליין</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">כדי לגלוש באופן פרטי יש לפתוח כרטיסיית מצב אנונימי</translation>
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
+<translation id="6830804042318138535">להמשך קריאה</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
 <translation id="6858855187367714033">נסרק</translation>
@@ -635,6 +639,7 @@
 <translation id="7291368939935408496">הכנת הסיסמאות מתבצעת...</translation>
 <translation id="7293171162284876153">‏כדי להתחיל לסנכרן צריך להפעיל את האפשרות "סנכרון הנתונים מ-Chrome".</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
+<translation id="7319242366286515846">לחיצה על המשך תתפרש כהסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
@@ -781,6 +786,7 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
+<translation id="8876882697946675716">אפשר לסנכרן בין המכשירים</translation>
 <translation id="8881801611828450202">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8917490105272468696">כן, מקובל עלי.</translation>

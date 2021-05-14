@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
+<translation id="2022352537516230970">Diseñado para tu iPhone</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -314,6 +315,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="418156467088430727">Ver la versión sin conexión en una nueva pestaña</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184011057600693970">Diseñado para tu iPad</translation>
 <translation id="424315890655130736">Ingresar frase de contraseña</translation>
 <translation id="4263576668337963058">Mostrar las acciones de página disponibles</translation>
 <translation id="4267380167363222949">Siguiente pestaña</translation>
@@ -492,6 +494,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y actividad aquí</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
+<translation id="60829778314739003">Aceptar y continuar</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6119050551270742952">Pág. incógnito</translation>
 <translation id="6122191549521593678">En línea</translation>
@@ -587,6 +590,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6801927553864092214">Para navegar de forma privada, abre una pestaña de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="6830804042318138535">Más información</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6851516051005285358">Solicitar versión de escritorio</translation>
 <translation id="6858855187367714033">Escaneado</translation>
@@ -635,6 +639,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
 <translation id="7293171162284876153">Para comenzar la sincronización, activa "Sincroniza tus datos de Chrome".</translation>
 <translation id="7313347584264171202">Aquí encontrarás tus pestañas de incógnito</translation>
+<translation id="7319242366286515846">Si continúas, aceptas las <ph name="BEGIN_LINK" />Condiciones del Servicio<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % descargado</translation>
 <translation id="7340958967809483333">Opciones para Descubre</translation>
 <translation id="7346909386216857016">Entendido</translation>
@@ -781,6 +786,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8840513115188359703">No saldrás de tu cuenta de Google.</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>
+<translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartir…</translation>
 <translation id="8917490105272468696">Acepto</translation>

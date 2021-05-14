@@ -506,6 +506,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">شاید مهاجم‌ها در تلاش باشند اطلاعات شما (مانند گذرواژه‌ها، پیام‌ها یا کارت‌های اعتباری) را از <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سرقت کنند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد.</translation>
+<translation id="287596039013813457">دوستانه</translation>
 <translation id="2876489322757410363">برای پرداخت ازطریق یک برنامه خارجی، از «حالت ناشناس» خارج می‌شوید. ادامه می‌دهید؟</translation>
 <translation id="2878197950673342043">تاخوردگی پوسترمانند</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -603,6 +604,7 @@
 <translation id="3229041911291329567">اطلاعات مربوط به نسخه دستگاه و مرورگر</translation>
 <translation id="323107829343500871">‏CVC کارت <ph name="CREDIT_CARD" /> را وارد کنید</translation>
 <translation id="3234666976984236645">همیشه محتوای مهم در این سایت شناسایی شود</translation>
+<translation id="3249845759089040423">شیک</translation>
 <translation id="3252266817569339921">فرانسوی</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
@@ -980,6 +982,7 @@
 <translation id="4594403342090139922">&amp;واگرد حذف</translation>
 <translation id="4597348597567598915">اندازه ۸</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4606870351894164739">تأثیرگذار</translation>
 <translation id="4628948037717959914">عکس</translation>
 <translation id="4631649115723685955">بازگشت نقدی پیوند داده شده است</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
@@ -1043,6 +1046,8 @@
 <translation id="4813512666221746211">خطای شبکه</translation>
 <translation id="4816492930507672669">متناسب با صفحه</translation>
 <translation id="4819347708020428563">یادداشت‌ها در نمای پیش‌فرض ویرایش شوند؟</translation>
+<translation id="4825507807291741242">نیرومند</translation>
+<translation id="4838327282952368871">رؤیایی</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="485316830061041779">آلمانی</translation>
@@ -1201,6 +1206,7 @@
 <translation id="5398772614898833570">آگهی‌ها مسدود شدند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
+<translation id="541143247543991491">ابر (سراسر سیستم)</translation>
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
 <translation id="5421136146218899937">پاک کردن داده‌های مرور...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
@@ -1708,6 +1714,7 @@
     &lt;li&gt;برای آشنایی با نحوه برداشتن دائم نرم‌افزار از رایانه، از &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;مرکز راهنمای ‏Chrome‏&lt;/a&gt; بازدید کنید
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">دوست‌داشتنی</translation>
 <translation id="7416351320495623771">مدیریت گذرواژه‌ها…</translation>
 <translation id="7419106976560586862">مسیر نمایه</translation>
 <translation id="7437289804838430631">افرودن اطلاعات تماس</translation>
@@ -2131,6 +2138,7 @@
 <translation id="9020542370529661692">این صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(نامعتبر)</translation>
+<translation id="9030265603405983977">تک‌رنگ</translation>
 <translation id="9035022520814077154">خطای امنیتی</translation>
 <translation id="9038649477754266430">استفاده از یک سرویس پیش‌بینی برای بار کردن سریع‌تر صفحه‌ها</translation>
 <translation id="9039213469156557790">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر رفتار صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
@@ -2154,6 +2162,7 @@
 <translation id="91108059142052966">هروقت محتوای محرمانه نمایان باشد، خط‌مشی سرپرست هم‌رسانی صفحه‌نمایش با <ph name="APPLICATION_TITLE" /> را غیرفعال می‌کند</translation>
 <translation id="9114524666733003316">درحال تأیید کردن کارت…</translation>
 <translation id="9114581008513152754">‏این مرورگر را شرکت یا سازمان دیگری مدیریت نمی‌کند. فعالیت در این دستگاه ممکن است خارج از Chrome مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">تازه</translation>
 <translation id="9119042192571987207">بارگذاری‌شده</translation>
 <translation id="9128016270925453879">خط‌مشی‌ها بار شد</translation>
 <translation id="9128870381267983090">اتصال به شبکه</translation>

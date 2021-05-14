@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
+<translation id="2022352537516230970">Sérhannað fyrir iPhone</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
@@ -314,6 +315,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>
 <translation id="418156467088430727">Skoða skrá án nettengingar í nýjum flipa</translation>
 <translation id="4181841719683918333">Tungumál</translation>
+<translation id="4184011057600693970">Sérhannað fyrir iPad</translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
 <translation id="4263576668337963058">Sýna tiltækar aðgerðir fyrir síðu</translation>
 <translation id="4267380167363222949">Næsti flipi</translation>
@@ -492,6 +494,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
 <translation id="6066301408025741299">Ýttu til að hætta við.</translation>
+<translation id="60829778314739003">Samþykkja og halda áfram</translation>
 <translation id="6108923351542677676">Uppsetning fer fram…</translation>
 <translation id="6119050551270742952">Opin vefsíða er í huliðsstillingu</translation>
 <translation id="6122191549521593678">Á netinu</translation>
@@ -587,6 +590,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6801927553864092214">Opnaðu huliðsflipa til að vafra í leyni</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
+<translation id="6830804042318138535">Lesa meira</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6851516051005285358">Biðja um tölvuvefsvæði</translation>
 <translation id="6858855187367714033">Skannað</translation>
@@ -635,6 +639,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7291368939935408496">Undirbýr aðgangsorð...</translation>
 <translation id="7293171162284876153">Til að hefja samstillingu skaltu kveikja á „Samstilla gögnin þín í Chrome“.</translation>
 <translation id="7313347584264171202">Þú finnur huliðsflipana þína hér</translation>
+<translation id="7319242366286515846">Með því að halda áfram samþykkir þú <ph name="BEGIN_LINK" />þjónustuskilmálana<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prósent sótt</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
 <translation id="7346909386216857016">Ég skil</translation>
@@ -781,6 +786,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8840513115188359703">Þú verður ekki skráð(ur) út af Google reikningnum þínum.</translation>
 <translation id="8870413625673593573">Nýlega lokað</translation>
+<translation id="8876882697946675716">Samstilltu öll tækin þín</translation>
 <translation id="8881801611828450202">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Deila…</translation>
 <translation id="8917490105272468696">Já, ég er til</translation>

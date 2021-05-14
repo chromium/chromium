@@ -4304,6 +4304,14 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6689343802305995925">No se realiza ninguna acción.</translation>
 <translation id="6689792153960219308">Informar sobre el estado del hardware</translation>
 <translation id="6690425645391461516">Inhabilitar las comprobaciones de interceptación de DNS y permitir las barras de información aclaratorias "http://intranetsite/".</translation>
+<translation id="669066148640728553">Especifica un periodo objetivo para el final del periodo de notificación de reinicio.
+
+      A los usuarios se les notifica que es necesario reiniciar el navegador o el dispositivo en función de los ajustes de la políticas <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> y <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Si se asigna el valor Required a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, se forzará el reinicio de los navegadores y los dispositivos cuando termine el periodo de notificación. La política <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> puede utilizarse para retrasar el final del periodo de notificación y hacer que coincida con un espacio de tiempo concreto.
+
+      Si esta política no se establece, el periodo objetivo predeterminado de <ph name="PRODUCT_OS_NAME" /> será de 2:00 a 4:00. El periodo objetivo predeterminado de <ph name="PRODUCT_NAME" /> será todo el día (es decir, el final del periodo de notificación no se retrasará nunca).
+
+      Nota: Aunque la política pueda aceptar varios elementos en <ph name="ENTRIES_FIELD_NAME" />, se ignorarán todos menos el primero.
+      Advertencia: Si se establece esta política, es posible que se retrase la aplicación de actualizaciones de software.</translation>
 <translation id="6698632841807204978">Habilitar la impresión en monocromo</translation>
 <translation id="6699880231565102694">Habilitar la autenticación de dos factores para hosts de acceso remoto</translation>
 <translation id="6703251016607733593">Si se establece la política, se desactivará la implementación obligatoria de los requisitos de comunicación de la transparencia en los certificados para una lista de hashes <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Los hosts empresariales podrán seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta). Para desactivar la implementación obligatoria, el hash debe cumplir una de estas condiciones:
@@ -4447,6 +4455,19 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6857240169209507953">Impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
+<translation id="6864283226733000548">Este ajuste proporciona varias opciones de disponibilidad que se aplican al navegador <ph name="LACROS_NAME" />.
+
+      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> a la política, el usuario podrá habilitar <ph name="LACROS_NAME" /> y establecer que sea el navegador principal. Sin embargo, <ph name="LACROS_NAME" /> se podrá deshabilitar con la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
+
+      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> a la política, el usuario no podrá usar <ph name="LACROS_NAME" />. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
+
+      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> a la política, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
+
+      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> a la política, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
+
+      Si esta política no se establece, la opción predeterminada será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> en el caso de los usuarios administrados por empresas y, en el caso de los usuarios no administrados, será <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />.
+
+      En el futuro, con el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />, <ph name="LACROS_NAME" /> se podrá establecer como único navegador disponible en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="68818134518270542">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
       Si la aplicación preferida está habilitada en la pantalla de bloqueo, aparecerá en la pantalla un elemento de interfaz de usuario para iniciar la aplicación para tomar notas. Una vez iniciada, la aplicación podrá abrir una ventana sobre la pantalla de bloqueo y crear notas en este contexto. La aplicación puede importar las notas creadas a la sesión del usuario principal cuando se desbloquee la sesión. En la pantalla de bloqueo, solo se admiten las aplicaciones para tomar notas de <ph name="PRODUCT_NAME" />.

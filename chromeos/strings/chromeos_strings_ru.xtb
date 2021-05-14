@@ -299,6 +299,7 @@
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@
 <translation id="8372477600026034341">Дополнительные хосты</translation>
 <translation id="8395584934117017006">Этим устройством <ph name="DEVICE_TYPE" /> управляет организация.</translation>
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Название провайдера</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>

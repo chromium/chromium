@@ -502,6 +502,7 @@
 <translation id="2850739647070081192">Invite（封筒）</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、パスワード、メッセージ、クレジット カードなどの情報が盗まれる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">このサイトでは煩わしい広告または誤解を招く広告が表示されます。</translation>
+<translation id="287596039013813457">フレンドリー</translation>
 <translation id="2876489322757410363">外部アプリケーションを経由したお支払いの処理に進むため、シークレット モードを解除します。続行しますか？</translation>
 <translation id="2878197950673342043">ポスター折り</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -599,6 +600,7 @@
 <translation id="3229041911291329567">デバイスとブラウザに関するバージョン情報</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> の CVC を入力</translation>
 <translation id="3234666976984236645">このサイトの重要なコンテンツを常に検出</translation>
+<translation id="3249845759089040423">グルービー</translation>
 <translation id="3252266817569339921">フランス語</translation>
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
@@ -971,6 +973,7 @@
 <translation id="4594403342090139922">削除の取り消し（&amp;U）</translation>
 <translation id="4597348597567598915">サイズ 8</translation>
 <translation id="4600854749408232102">C6 / C5（封筒）</translation>
+<translation id="4606870351894164739">インパクト</translation>
 <translation id="4628948037717959914">写真</translation>
 <translation id="4631649115723685955">キャッシュバックをリンクしました</translation>
 <translation id="4636930964841734540">情報</translation>
@@ -1034,6 +1037,8 @@
 <translation id="4813512666221746211">ネットワーク エラー</translation>
 <translation id="4816492930507672669">ページサイズに合わせる</translation>
 <translation id="4819347708020428563">デフォルト表示でメモを編集しますか？</translation>
+<translation id="4825507807291741242">パワフル</translation>
+<translation id="4838327282952368871">ドリーミー</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="485316830061041779">ドイツ語</translation>
@@ -1192,6 +1197,7 @@
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
+<translation id="541143247543991491">クラウド（システム全体）</translation>
 <translation id="541416427766103491">スタッカー 4</translation>
 <translation id="5421136146218899937">閲覧履歴データを削除...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> が通知を送信しようとしています。</translation>
@@ -1699,6 +1705,7 @@
       &lt;li&gt;このソフトウェアをパソコンから完全に削除する方法については、&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome ヘルプセンター&lt;/a&gt;をご覧ください。
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
+<translation id="7410471291937727359">ラブリー</translation>
 <translation id="7416351320495623771">パスワードを管理…</translation>
 <translation id="7419106976560586862">プロフィール パス</translation>
 <translation id="7437289804838430631">連絡先情報を追加</translation>
@@ -2123,6 +2130,7 @@
 <translation id="9020542370529661692">このページは<ph name="TARGET_LANGUAGE" />に翻訳されています</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">（無効）</translation>
+<translation id="9030265603405983977">モノクロ</translation>
 <translation id="9035022520814077154">セキュリティ エラー</translation>
 <translation id="9038649477754266430">予測サービスを使用してページをより迅速に読み込む</translation>
 <translation id="9039213469156557790">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの動作が変わる可能性もあります。</translation>
@@ -2146,6 +2154,7 @@
 <translation id="91108059142052966">管理者のポリシーによって、機密コンテンツが表示されているときは、<ph name="APPLICATION_TITLE" /> との画面共有が無効になります</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">フレッシュ</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9128016270925453879">ポリシーが読み込まれました</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>

@@ -299,6 +299,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8372477600026034341">Hosts extra</translation>
 <translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Nome do fornecedor de orixe</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>

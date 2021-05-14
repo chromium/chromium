@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1001033507375626788">Se comparte esta red contigo</translation>
 <translation id="1001307489511021749">Se sincronizarán tus apps, opciones de configuración y otras personalizaciones en todos los dispositivos con el Sistema operativo Chrome a los que hayas accedido con tu Cuenta de Google.</translation>
 <translation id="1003088604756913841">Abrir vínculo en una ventana nueva de <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -945,6 +946,7 @@
 <translation id="1992924914582925289">Quitar del dispositivo</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1995916364271252349">Controla qué información pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y más)</translation>
+<translation id="1997437640397887843">Se activó la cámara del dispositivo. Coloca el código QR de tu eSIM frente a la cámara.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado</translation>
@@ -1000,6 +1002,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2055585478631012616">Saldrás de estos sitios, incluidas las pestañas abiertas</translation>
 <translation id="205560151218727633">Logotipo del Asistente de Google</translation>
 <translation id="2058456167109518507">Se detectó un dispositivo</translation>
+<translation id="2058581283817163201">Verificar con este teléfono</translation>
 <translation id="2059913712424898428">Zona horaria</translation>
 <translation id="2060375639911876205">Quitar el perfil de eSIM</translation>
 <translation id="2062354623176996748">Con una ventana de incógnito, podrás usar la Web sin que se guarde tu historial de navegación</translation>
@@ -2597,6 +2600,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3785308913036335955">Mostrar acceso directo a las aplicaciones</translation>
 <translation id="3785727820640310185">Se guardaron contraseñas para este sitio</translation>
 <translation id="3788301286821743879">No se pudo iniciar la app del kiosco.</translation>
+<translation id="3788331399335602504">estos archivos</translation>
 <translation id="3788401245189148511">Podría:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="379082410132524484">La tarjeta está vencida</translation>
@@ -3172,6 +3176,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4438043733494739848">Transparente</translation>
 <translation id="4438639467177774583">La contraseña <ph name="MASKED_PASSWORD" /> de <ph name="USERNAME" /> se guardará en tu Cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="4439427728133035643">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> te envió una notificación al teléfono. Para confirmar que eres tú, presiona la notificación "<ph name="NOTIFICATIONTITLE" />" y sigue los pasos.</translation>
 <translation id="4441124369922430666">¿Quieres que esta aplicación se inicie de forma automática cuando se encienda el equipo?</translation>
 <translation id="4441147046941420429">Para continuar, quita la llave de seguridad del dispositivo y, luego, vuelve a colocarla y tócala</translation>
 <translation id="444134486829715816">Mostrar...</translation>
@@ -3473,6 +3478,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4773112038801431077">Actualiza Linux</translation>
 <translation id="477647109558161443">Crear un acceso directo de escritorio</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar esta red</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar los servidores de nombres de la red</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
@@ -4308,6 +4314,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
 <translation id="5715711091495208045">Agente del complemento: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de búsqueda predeterminados</translation>
+<translation id="5719637365829998022">Se escaneó el código QR.</translation>
 <translation id="5719854774000914513">Permitir que los sitios soliciten permiso para conectarse a dispositivos HID</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
@@ -4519,6 +4526,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5955721306465922729">Un sitio web quiere abrir esta app.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo esté habilitado para el modo de demostración en línea. Para obtener más información, comunícate con tu representante de asistencia.</translation>
 <translation id="5956585768868398362">¿Esta es la página de búsqueda que esperabas ver?</translation>
+<translation id="5957918771633727933">No hay perfiles de eSIM disponibles. Descarga un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nuevo.</translation>
 <translation id="5957987129450536192">Presiona el ícono de Seleccionar para pronunciar que se encuentra cerca de tu imagen de perfil y, luego, elige lo que quieras escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="595959584676692139">Vuelve a cargar la página para usar esta extensión</translation>
@@ -6024,6 +6032,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7638605456503525968">Puertos en serie</translation>
 <translation id="7639914187072011620">No se pudo obtener la URL de redireccionamiento para SAML del servidor.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> te permite acceder automáticamente a los sitios aptos con las contraseñas que guardaste.</translation>
+<translation id="7641513591566880111">Nuevo nombre del perfil</translation>
 <translation id="7642778300616172920">Ocultar contenido confidencial</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Quieres permitir que el sitio vea los archivos?</translation>
@@ -6184,6 +6193,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7800518121066352902">Girar &amp;a la izquierda</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
+<translation id="7805759469263222011">Escanea un código QR con la cámara del dispositivo o ingresa el código de activación que te brinde tu proveedor.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
@@ -6649,7 +6659,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8283475148136688298">El código de autenticación se rechazó mientras se establecía la conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
-<translation id="8286036467436129157">Iniciar sesión</translation>
+<translation id="8286036467436129157">Acceder</translation>
 <translation id="8287902281644548111">Busca por URL o llamada a la API</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Tamaño del disco</translation>
@@ -6663,6 +6673,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8300849813060516376">OTASP falló</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Dirección}other{# direcciones}}</translation>
 <translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Comunícate con el administrador para solicitar permiso de acceso o bien accede con una Cuenta de Google supervisada por Family Link.</translation>
+<translation id="8308016398665340540">Compartes esta red con otros usuarios de este dispositivo</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">El certificado ya existe</translation>

@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="1153356358378277386">இணைத்த சாதனங்கள்</translation>
 <translation id="1165712434476988950">புதுப்பிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும்.</translation>
+<translation id="1170240434488307589">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1175572348579024023">நகர்த்து</translation>
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1181037720776840403">அகற்று</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
 <translation id="1761222317188459878">நெட்வொர்க் இணைப்பை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + Period. Insert பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + Shift + Backspace பட்டன்களை அழுத்தவும்.</translation>
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>
 <translation id="1782199038061388045">மொழிபெயர்ப்பு</translation>
 <translation id="1787955149152357925">முடக்கு</translation>

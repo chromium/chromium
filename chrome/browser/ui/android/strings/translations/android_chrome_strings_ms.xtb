@@ -295,6 +295,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2904414404539560095">Senarai peranti untuk berkongsi tab dibuka pada ketinggian penuh.</translation>
 <translation id="2905036901251765993">Benarkan orang berdekatan mengimbas kod QR ini untuk berkongsi dengan mereka</translation>
 <translation id="2909615210195135082">Platform Pemberitahuan Google</translation>
+<translation id="2912296070571964914">Urus topik yang anda minati</translation>
 <translation id="2923908459366352541">Nama tidak sah</translation>
 <translation id="2932150158123903946">Storan Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Papan kekunci anda tidak akan berubah</translation>
@@ -339,6 +340,8 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3254409185687681395">Tanda halaman ini</translation>
 <translation id="3259831549858767975">Jadikan semua yang ada pada halaman lebih kecil</translation>
 <translation id="3264124641674805320">Cara memuat turun kandungan untuk dilihat kemudian</translation>
+<translation id="3264259168916048410">Komputer anda mahu menggunakan peranti ini untuk log masuk ke laman</translation>
+<translation id="3265534588625245297">Urus laman yang anda ikuti</translation>
 <translation id="3269093882174072735">Muatkan imej</translation>
 <translation id="3269956123044984603">Untuk mendapatkan tab daripada peranti anda yang lain, hidupkan "Auto segerak data" dalam tetapan akaun Android.</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
@@ -497,6 +500,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4351244548802238354">Tutup dialog</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk carian</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Memuat turun…</translation>
 <translation id="4404568932422911380">Tiada penanda halaman</translation>
 <translation id="4405224443901389797">Alihkan ke…</translation>
 <translation id="4411535500181276704">Mod Ringkas</translation>
@@ -583,6 +587,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="488187801263602086">Namakan semula fail</translation>
 <translation id="4882831918239250449">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian, iklan dan pelbagai lagi</translation>
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
+<translation id="4905269543817054577">Sejarah tidak disimpan dalam Inkognito</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4913161338056004800">Tetapkan semula perangkaan</translation>
@@ -951,6 +956,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7233236755231902816">Untuk melihat web dalam bahasa anda, dapatkan versi terkini Chrome</translation>
 <translation id="7248069434667874558">Pastikan penyegerakan telah dihidupkan dalam Chrome pada <ph name="TARGET_DEVICE_NAME" /></translation>
+<translation id="7252076891734325316">Letakkan telefon anda dekat dengan komputer</translation>
 <translation id="7274013316676448362">Tapak yang disekat</translation>
 <translation id="7286572596625053347">Tukar <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Penamaan semula tidak tersedia</translation>
@@ -1017,6 +1023,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7630202231528827509">URL penyedia</translation>
 <translation id="7638584964844754484">Frasa laluan tidak betul</translation>
 <translation id="7641339528570811325">Kosongkan data semakan imbas...</translation>
+<translation id="764170292089748542">Chrome tidak menyimpan sejarah penyemakan imbas anda apabila anda memilih untuk menyemak imbas secara tertutup. Anda masih boleh menggunakan penanda halaman untuk mengakses laman kegemaran anda.</translation>
 <translation id="7646772052135772216">Penyegerakan kata laluan tidak berfungsi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665369617277396874">Tambah akaun</translation>
@@ -1042,6 +1049,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7815484226266492798">Tangkapan Skrin Panjang</translation>
 <translation id="7821588508402923572">Penjimatan data anda akan dipaparkan di sini</translation>
+<translation id="78270725016672455">Komputer anda ingin mendaftarkan peranti ini untuk log masuk ke laman</translation>
 <translation id="7844171778363018843">Tiada data yang dipilih untuk disegerakkan</translation>
 <translation id="7846296061357476882">Perkhidmatan Google</translation>
 <translation id="784934925303690534">Julat masa</translation>
@@ -1138,6 +1146,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8427875596167638501">Tab pratonton separa terbuka</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8438566539970814960">Mempertingkatkan carian dan penyemakan imbas</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Bahasa sudah sedia, mulakan semula <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Tiada cerita tersedia</translation>
 <translation id="8443209985646068659">Gagal kemas kini Chrome</translation>
 <translation id="8445448999790540984">Tidak dapat mengeskport kata laluan</translation>
@@ -1210,6 +1219,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8937267401510745927">Untuk membantu anda menyelesaikan tugas, Google akan menerima URL dan kandungan bagi laman tempat anda menggunakan Assistant, serta maklumat yang anda serahkan menerusi Assistant. Maklumat ini mungkin disimpan dalam akaun Google anda. Anda boleh mematikan Assistant dalam tetapan Chrome.</translation>
 <translation id="8937772741022875483">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital?</translation>
 <translation id="8942627711005830162">Buka dalam tetingkap lain</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat dimuat turun. Cuba lagi nanti.</translation>
 <translation id="8951232171465285730">Chrome telah menjimatkan data anda sebanyak <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">belum selesai</translation>
 <translation id="8970887620466824814">Kesilapan telah berlaku.</translation>

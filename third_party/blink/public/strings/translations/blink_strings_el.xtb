@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">χρονόμετρο</translation>
 <translation id="3199563858620722075">σύνθετο πλαίσιο</translation>
 <translation id="3220661731597678625">τρέχον βήμα</translation>
+<translation id="3321030238473337787">Ταχύτητα αναπαραγωγής</translation>
 <translation id="3329013043687509092">Κορεσμός</translation>
 <translation id="3450233048674729344">Η τιμή πρέπει να είναι μικρότερη ή ίση του <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">γραμμή μενού</translation>
 <translation id="4293574643247337246">κεφαλίδα σελίδας</translation>
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">μενού απόκρυψης ταχύτητας αναπαραγωγής</translation>
 <translation id="4384249794467006333">Αυτή η εικόνα δεν διαθέτει ετικέτα. Επάνω δεξιά, ανοίξτε το μενού Περισσότερες επιλογές για να λάβετε περιγραφές των εικόνων.</translation>
 <translation id="4384583879834880242">Ερωτήσεις και απαντήσεις</translation>
 <translation id="4444765639179266822">Φαίνεται πως λέει: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">στοιχείο δέντρου</translation>
 <translation id="5466621249238537318">Επιλέξτε ένα ή περισσότερα αρχεία.</translation>
 <translation id="5468998798572797635">έξοδος από πλήρη οθόνη</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">εργαλείο επιλογής ημερομηνίας</translation>
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="5546461542133609677">κατάργηση σίγασης</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">περισσότερες επιλογές</translation>
 <translation id="576709008726043716">εισαγωγή</translation>
 <translation id="57838592816432529">Σίγαση</translation>
+<translation id="5786442179789148008">μενού εμφάνισης ταχύτητας αναπαραγωγής</translation>
 <translation id="5787939484346677755">αναπτυγμένο, διαθέσιμες επιλογές αυτόματης συμπλήρωσης.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5966707198760109579">Εβδομάδα</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">κουμπί αυξομείωσης</translation>
 <translation id="6011459053400940133">ρυθμιστικό έντασης ήχου</translation>
 <translation id="6015796118275082299">Έτος</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">σίγαση</translation>
 <translation id="6885760532393684712">κατάλογος</translation>
 <translation id="689129560213475294">εκδοτικό σήμα</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">κεφαλίδα</translation>
 <translation id="6941933287844615239">λήψη μέσων</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">παραπομπή</translation>
 <translation id="811583516810654505">Λήψη περιγραφής…</translation>
 <translation id="8117451130807776954">Αυτήν την εβδομάδα</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">εεεε</translation>
 <translation id="8208673686607688524">επιλογέας τοπικής ώρας και ημερομηνίας</translation>
 <translation id="8261464734335370856">Μη έγκυρη ορθογραφία</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">έλεγχος απομακρυσμένης αναπαραγωγής</translation>
 <translation id="862370744433916922">υπότιτλος</translation>
 <translation id="8634971699417195529">Εμφάνιση εργαλείου επιλογής μήνα</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Αναδίπλωση γραμμής</translation>
 <translation id="8711688047404765493">έξοδος</translation>
 <translation id="8750798805984357768">Ορίστε μία από αυτές τις επιλογές.</translation>

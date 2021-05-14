@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1001033507375626788">ეს ქსელი გაზიარებულია თქვენთან</translation>
 <translation id="1001307489511021749">თქვენი აპები, პარამეტრები და სხვა მოდიფიკაციები სინქრონიზებული იქნება ყველა Chrome OS მოწყობილობას შორის, რომლებზეც შესული ხართ თქვენი Google ანგარიშით.</translation>
 <translation id="1003088604756913841">ბმულის გახსნა <ph name="APP" />-ის ახალ ფანჯარაში</translation>
 <translation id="100323615638474026">USB მოწყობილობა (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -948,6 +949,7 @@
 <translation id="1992924914582925289">მოწყობილობიდან ამოშლა</translation>
 <translation id="1994173015038366702">საიტის URL</translation>
 <translation id="1995916364271252349">აკონტროლებს, რა ტიპის ინფორმაციის გამოყენება და ჩვენება შეუძლია საიტებს (მდებარეობა, კამერა, ამომხტარი ფანჯრები და ა.შ.)</translation>
+<translation id="1997437640397887843">მოწყობილობის კამერა ჩართულია. მოათავსეთ თქვენი eSIM-ის QR-კოდი კამერის წინ.</translation>
 <translation id="1997616988432401742">თქვენი სერტიფიკატები</translation>
 <translation id="1999115740519098545">ჩატვირთვისას</translation>
 <translation id="2000419248597011803">თქვენს ნაგულისხმევ საძიებო სისტემას უგზავნის ზოგიერთ ქუქი-ჩანაწერს და საძიებო მოთხოვნებს მისამართთა ზოლიდან ან საძიებო ველიდან</translation>
@@ -1003,6 +1005,7 @@
 <translation id="2055585478631012616">თქვენ გამოხვალთ ამ საიტებიდან, მათ შორის, გახსნილ ჩანართებზე</translation>
 <translation id="205560151218727633">Google ასისტენტის ლოგო</translation>
 <translation id="2058456167109518507">აღმოჩენილია მოწყობილობა</translation>
+<translation id="2058581283817163201">ამ ტელეფონით დადასტურება</translation>
 <translation id="2059913712424898428">სასაათო სარტყელი</translation>
 <translation id="2060375639911876205">eSIM პროფილის წაშლა</translation>
 <translation id="2062354623176996748">გამოიყენეთ ინკოგნიტო ფანჯარა და დაათვალიერეთ ვები ისტორიის შენახვის გარეშე</translation>
@@ -2599,6 +2602,7 @@
 <translation id="3785308913036335955">პროგრამების მალსახმობის ჩვენება</translation>
 <translation id="3785727820640310185">ამ საიტისთვის შენახული პაროლები</translation>
 <translation id="3788301286821743879">სამწუხაროდ, კიოსკის აპლიკაციის გაშვება ვერ მოხერხდა.</translation>
+<translation id="3788331399335602504">ეს ფაილები</translation>
 <translation id="3788401245189148511">შესაძლებლობები:</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="379082410132524484">თქვენი ბარათი ვადაგასულია</translation>
@@ -3174,6 +3178,7 @@
 <translation id="4438043733494739848">გამჭვირვალე</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> შეინახება თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
 <translation id="4439427728133035643">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" />-მა გამოგიგზავნათ შეტყობინება ტელეფონზე. იმის დასადასტურებლად, რომ ეს თქვენ ხართ, შეეხეთ შეტყობინებას „<ph name="NOTIFICATIONTITLE" />“ და მიჰყევით შესაბამის საფეხურებს.</translation>
 <translation id="4441124369922430666">გსურთ ავტომატურად გაუშვათ ეს პროგრამა კომპიუტერის ჩართვისას?</translation>
 <translation id="4441147046941420429">გასაგრძელებლად ამოიღეთ უსაფრთხოების გასაღები მოწყობილობიდან, შემდეგ ხელახლა ჩასვით ის და შეეხეთ მას</translation>
 <translation id="444134486829715816">გაშლა…</translation>
@@ -3475,6 +3480,7 @@
 <translation id="4773112038801431077">განაახლეთ Linux-ის ვერსია</translation>
 <translation id="477647109558161443">დესკტოპის მალსახმობის შექმნა</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
+<translation id="4777458362738635055">ამ ქსელის გამოყენება ამ მოწყობილობის სხვა მომხმარებლებსაც შეუძლია</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">ქსელის სახელთა სერვერების კონფიგურაცია</translation>
 <translation id="4778644898150334464">სხვა პაროლის გამოყენება</translation>
@@ -4310,6 +4316,7 @@
 <translation id="5712153969432126546">საიტები ზოგჯერ აქვეყნებს ისეთ PDF-ებს, როგორიცაა, მაგალითად, დოკუმენტები, კონტრაქტები, ფორმები და ა.შ.</translation>
 <translation id="5715711091495208045">დანამატის ბროკერი: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ნაგულისხმევი საძიებო სისტემები</translation>
+<translation id="5719637365829998022">QR-კოდი დასკანირდა.</translation>
 <translation id="5719854774000914513">საიტებს შეუძლია HID მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="572155275267014074">Android-ის პარამეტრები</translation>
 <translation id="5722086096420375088">მწვანე და თეთრი</translation>
@@ -4521,6 +4528,7 @@
 <translation id="5955721306465922729">ვებსაიტი ითხოვს ამ აპლიკაციის გახსნას.</translation>
 <translation id="5955809630138889698">შესაძლოა ეს მოწყობილობა შესაფერისი იყოს მხოლოდ ონლაინ დემო-რეჟიმისთვის. დეტალური ინფორმაციისთვის დაუკავშირდეთ მხარდაჭერის გუნდის წარმომადგენელს.</translation>
 <translation id="5956585768868398362">გაამართლა ამ საძიებო გვერდმა თქვენი მოლოდინები?</translation>
+<translation id="5957918771633727933">eSIM-პროფილები მიუწვდომელია. ჩამოტვირთეთ ახალი <ph name="BEGIN_LINK" />პროფილი.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">შეეხეთ თქვენი პროფილის სურათთან მდებარე „წარმოსათქმელად მონიშვნის“ ხატულას, შემდეგ კი აირჩიეთ ის, რისი ხმამაღლა მოსმენაც გსურთ.</translation>
 <translation id="5959471481388474538">ქსელი მიუწვდომელია</translation>
 <translation id="595959584676692139">ამ გაფართოების გამოსაყენებლად გადატვირთეთ გვერდი</translation>
@@ -6026,6 +6034,7 @@
 <translation id="7638605456503525968">თანმიმდევრული პორტები</translation>
 <translation id="7639914187072011620">სერვერიდან SAML გადამისამართების URL-ის მიღება ვერ მოხერხდა</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> თქვენ მიერ შენახული პაროლების მეშვეობით შესაბამის საიტებში ავტომატურად შესვლაში გეხმარებათ.</translation>
+<translation id="7641513591566880111">ახალი პროფილის სახელი</translation>
 <translation id="7642778300616172920">სენსიტიური კონტენტის დამალვა</translation>
 <translation id="7643842463591647490">{0,plural, =1{# გახსნილი ფანჯარა}other{# გახსნილი ფანჯარა}}</translation>
 <translation id="7643932971554933646">გსურთ, მიანიჭოთ უფლება საიტს, ნახოს ფაილები?</translation>
@@ -6186,6 +6195,7 @@
 <translation id="7800518121066352902">შეტრიალება &amp;საათის ისრის საწინააღმდეგო მიმართულებით</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7804072833593604762">ჩანართი დაიხურა</translation>
+<translation id="7805759469263222011">დაასკანირეთ QR კოდი მოწყობილობის კამერის მეშვეობით, ან შეიყვანეთ თქვენი ოპერატორის მიერ მოწოდებული აქტივაციის კოდი</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7807067443225230855">ძიება და ასისტენტი</translation>
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
@@ -6663,6 +6673,7 @@
 <translation id="8300849813060516376">OTASP ვერ შესრულდა</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{მისამართი}other{# მისამართი}}</translation>
 <translation id="8304383784961451596">ამ მოწყობილობის გამოყენების უფლება არ გაქვთ. სისტემაში შესვლის ნებართვის მისაღებად მიმართეთ ადმინისტრატორს, ან შედით Google ანგარიშით, რომლის ზედამხედველობაც ხორციელდება Family Link-ის მეშვეობით.</translation>
+<translation id="8308016398665340540">თქვენ ამ ქსელს უზიარებთ ამ მოწყობილობის სხვა მომხმარებლებს</translation>
 <translation id="8308179586020895837">იკითხეთ სურს თუ არა <ph name="HOST" />-ს თქვენს კამერაზე წვდომა</translation>
 <translation id="830868413617744215">ბეტა</translation>
 <translation id="8309458809024885768">სერტიფიკატი უკვე არსებობს</translation>

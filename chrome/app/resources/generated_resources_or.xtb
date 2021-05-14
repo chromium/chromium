@@ -511,6 +511,7 @@
 <translation id="1545775234664667895">ସଂସ୍ଥାପିତ ହୋଇଥିବା ଥିମ୍ "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍ ଏହା ପରିବର୍ତ୍ତନ କରିଛି ଯେ ଯେତେବେଳେ ଆପଣ ହୋମ୍‌ ବଟନ୍‌ କ୍ଲିକ୍‌ କରନ୍ତି ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଇବ।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ଏସବୁ କରିପାରୁଥିବା ଏକ <ph name="EXTENSION_TYPE" /> ଇନଷ୍ଟଲ୍ କରିବାକୁ ଚାହୁଁଛି:</translation>
+<translation id="1547808936554660006">ମୁଁ ବୁଝିଛି ଯେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା eSIM ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ପାୱାରୱାସ୍ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯିବ ନାହିଁ</translation>
 <translation id="1549275686094429035">ARC ସକ୍ଷମ ଅଛି</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" />କୁ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହେଁ। ଏହା ଆପଣଙ୍କ ଫାଇଲ୍‌କୁ ସଂଶୋଧନ କିମ୍ବା ଡିଲିଟ୍‌ କରିପାରେ।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ୍ <ph name="SEARCH_PROVIDER_DOMAIN" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସନ୍ଧାନକୁ ପରିବର୍ତ୍ତନ କରିଛି</translation>
@@ -547,6 +548,7 @@
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="158849752021629804">ହୋମ୍‌ ନେଟ୍‌ୱର୍କ ଦରକାର</translation>
 <translation id="1588870296199743671">ଏହା ମାଧ୍ୟମରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ...</translation>
+<translation id="1588919647604819635">ରାଇଟ୍ କ୍ଲିକ୍ କାର୍ଡ</translation>
 <translation id="1589055389569595240">'ବନାନ ଏବଂ ବ୍ୟାକରଣ' ବିକଳ୍ପ ଦେଖାନ୍ତୁ</translation>
 <translation id="1591679663873027990">Parallels Desktopକୁ USB ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ। କୌଣସି USB ଡିଭାଇସକୁ କାଢ଼ି ଦିଆଯିବା ପରେ Parallels Desktop ଏହାକୁ ମନେ ରଖିବ ନାହିଁ।</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରିଛି ଯାହା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ରିସେଟ୍ କରିବ। ରିଷ୍ଟାର୍ଟ କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
@@ -980,6 +982,7 @@
 
 ଆପଣ ଆପଣଙ୍କର ଡିଭାଇସ୍‌‌ରେ Family Link ଆପ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରି ଏହି ଆକାଉଣ୍ଟର ସେଟିଂସ୍ ପରିଚାଳନା କରିପାରିବେ।  ଆମେ ଏକ ଇମେଲ୍‌ରେ ଆପଣଙ୍କୁ ନିର୍ଦ୍ଦେଶାବଳୀ ପଠାଇଛୁ।</translation>
 <translation id="2040460856718599782">ଓହୋ!  ଆପଣଙ୍କୁ ପ୍ରମାଣିକୃତ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି।  ଦୟାକରି ଦୁଇଥର ଆପଣଙ୍କର ସାଇନ୍‌-ଇନ୍‌ ବିଶ୍ୱସନୀୟତା ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="2042279886444479655">ସକ୍ରିୟ ପ୍ରୋଫାଇଲ୍</translation>
 <translation id="2044014337866019681">ଦୟାକରି ସେସନକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣ <ph name="ACCOUNT" />କୁ ଯାଞ୍ଚ କରୁଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="2044023416777079300">ମୋଡେମ୍ ପଞ୍ଜିକୃତ ହୋଇନାହିଁ</translation>
 <translation id="204497730941176055">Microsoft ସର୍ଟିଫିକେଟ୍‍ ଟେମ୍ପଲେଟ୍‍ର ନାମ</translation>
@@ -1319,6 +1322,7 @@
 <translation id="2395616325548404795">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସଫଳତାପୂର୍ବକ ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ପରିଚାଳନା ପାଇଁ ନାମାଙ୍କିତ କରାଯାଇଛି, କିନ୍ତୁ ଏହାର ଆସେଟ୍‍ ଏବଂ ଲୋକେସନ୍‌ ସୂଚନା ପଠାଇବାରେ ବିଫଳ ହୋ‍ଇଛି। ଦୟାକରି ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ କନସୋଲ୍‌ରୁ ଏହି ସୂଚନା ମାନୁଆଲ୍‌ ଭାବେ ଲେଖନ୍ତୁ।</translation>
 <translation id="2396387085693598316">ଆପଣଙ୍କ ଆଡମିନ୍ "<ph name="EXTENSION_NAME" />" ବ୍ଲକ୍ କରିଛନ୍ତି</translation>
 <translation id="2396783860772170191">4 ଅକ୍ଷର ବିଶିଷ୍ଟ ପିନ୍ ଲେଖନ୍ତୁ (0000-9999)</translation>
+<translation id="2398546389094871088">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାରୱାସ୍ କରିବା ଫଳରେ ଆପଣଙ୍କ eSIM ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ ନାହିଁ। ଏହି ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ଦେବା ପାଇଁ <ph name="LINK_BEGIN" />ମୋବାଇଲ୍ ସେଟିଂସ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="2399699884460174994">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରାଯାଇଛି</translation>
 <translation id="2399939490305346086">ସୁରକ୍ଷା କୀ ସାଇନ୍-ଇନ୍ ଡାଟା</translation>
 <translation id="2400664245143453337">ତୁରନ୍ତ ଅପଡେଟ୍ ଆବଶ୍ୟକ</translation>
@@ -1735,6 +1739,7 @@
 <translation id="2844809857160214557">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2845382757467349449">ସର୍ବଦା ବୁକମାର୍କ ବାର୍‍ ଦେଖାନ୍ତୁ</translation>
 <translation id="284805635805850872">କ୍ଷତିକାରକ ସଫ୍ଟୱେର୍ କାଢ଼ିବେ?</translation>
+<translation id="2849035674501872372">ଉପରକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">କ୍ଲିନ୍‍ଅପ୍ କାର୍ଯ୍ୟ ବିଫଳ ହେଲା</translation>
 <translation id="2849936225196189499">ଜଟିଳ</translation>
@@ -2046,6 +2051,7 @@
 <translation id="3189187154924005138">ବଡ଼ କର୍ସର୍</translation>
 <translation id="3190558889382726167">ପାସୱାର୍ଡ ସେଭ୍‍ କରାଯାଇଛି</translation>
 <translation id="3192947282887913208">ଅଡିଓ ଫାଇଲ୍ସ</translation>
+<translation id="3197453258332670132">ଡାହାଣ-କ୍ଲିକ୍ କରି କିମ୍ବା ଅଧିକ ସମୟ ଦବାଇ ରଖି, ଆପଣଙ୍କ ଟେକ୍ସଟ୍ ଚୟନ ପାଇଁ ସମ୍ବନ୍ଧିତ ସୂଚନା ଦେଖାନ୍ତୁ</translation>
 <translation id="3199127022143353223">ସର୍ଭର୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3201422919974259695">ଏଠାରେ ଉପଲବ୍ଧ ଥିବା USB ଡିଭାଇସ୍‍ଗୁଡ଼ିକ ଦେଖାଯିବ।</translation>
 <translation id="3202131003361292969">ପାଥ୍</translation>
@@ -2067,6 +2073,7 @@
 <translation id="3223531857777746191">ବଟନ୍‌କୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3225084153129302039">ଡିଫଲ୍ଟ ପର୍ପଲ୍ ଅବତାର</translation>
 <translation id="3225319735946384299">କୋଡ୍‌ ହସ୍ତାକ୍ଷର</translation>
+<translation id="3226487301970807183">ବାମକୁ ଆଲାଇନ୍ କରାଯାଇଥିବା ସାଇଡ୍ ପ୍ୟାନେଲକୁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3233271424239923319">Linux ଆପ୍ସ ଏବଂ ଫାଇଲ୍‌ଗୁଡ଼ିକର ବ୍ୟାକ୍‍ଅପ୍ ନିଅନ୍ତୁ</translation>
 <translation id="3238192140106069382">ସଂଯୋଗ ଓ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
@@ -2336,6 +2343,7 @@
 <translation id="3515983984924808886">ରିସେଟ୍ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'କୁ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ। ସୁରକ୍ଷା କୀ’ର PIN ସମେତ ଏଥିରେ ଷ୍ଟୋର୍ ହୋଇଥିବା ସମସ୍ତ ସୂଚନା ଡିଲିଟ୍ ହୋଇଯିବ।</translation>
 <translation id="3518985090088779359">ସ୍ୱୀକାର କରନ୍ତୁ ଏବଂ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="3519564332031442870">ପ୍ରିଣ୍ଟ ବ୍ୟାକଏଣ୍ଡ ସେବା</translation>
+<translation id="3519938335881974273">ଏହିପରି ଭାବେ ପୃଷ୍ଠାଟିକୁ ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="3521606918211282604">ଡିସ୍କର ଆକାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3522088408596898827">ଡିସ୍କ ସ୍ପେସ୍ ଅତ୍ୟନ୍ତ କମ୍ ଅଛି। ସ୍ପେସ୍ ଖାଲି କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3524965460886318643">କାର୍ଯ୍ୟକଳାପଗୁଡ଼ିକୁ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
@@ -2359,6 +2367,7 @@
 <translation id="3550593477037018652">ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3550915441744863158">Chrome ସ୍ଵଚାଳିତ ଭାବେ ଅପ୍‌ଡେଟ୍‌ ହୋଇଥାଏ, ଯାହାଦ୍ଵାରା ଆପଣଙ୍କର ସର୍ବଦା ସଦ୍ୟତମ ଭର୍ସନ୍ ରହିଥିବ।</translation>
 <translation id="3551320343578183772">ଟାବ୍‌ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">ବାହାରିଗଲା ପରେ ଖାଲି କରାଯାଇଛି</translation>
 <translation id="3554493885489666172">ଆପଣଙ୍କ ଡିଭାଇସ୍ <ph name="PROFILE_NAME" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଏହି ଡିଭାଇସରେ ଥିବା ଯେ କୌଣସି ପ୍ରୋଫାଇଲରେ ଡାଟା ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
 <translation id="3555812735919707620">ଏକ୍ସଟେନ୍‌ସନ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
@@ -2411,6 +2420,7 @@
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3605780360466892872">ବଟନ୍‍ଡାଉନ୍</translation>
 <translation id="3608576286259426129">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ଛବିର ପୂର୍ବାବଲୋକନ</translation>
+<translation id="3609277884604412258">ଦ୍ରୁତ ସନ୍ଧାନ</translation>
 <translation id="3610369246614755442">ଡକ୍ ଫ୍ୟାନ୍‌କୁ ସେବାର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="361106536627977100">ଫ୍ଲାସ୍ ଡାଟା</translation>
 <translation id="3611655097742243705">ଅଧିକ ଆପ୍ ଖୋଜିବା ପାଇଁ Play Storeକୁ ଭିଜିଟ୍ କରନ୍ତୁ</translation>
@@ -3354,6 +3364,7 @@
 <translation id="4636682061478263818">Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4637083375689622795">ଅଧିକ ପଦକ୍ଷେପ, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">ପୁଣି କ୍ୟାମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ଟେକ୍ସଟ୍}other{#ଟି ଟେକ୍ସଟ୍}}</translation>
 <translation id="4638930039313743000">ADB ଡିବଗିଂ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4641539339823703554">Chrome ସିଷ୍ଟମ୍ ସମୟ ସେଟ୍ କରିପାରିଲା ନାହିଁ। ଦୟାକରି ନିମ୍ନୋକ୍ତ ସମୟ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଯଦି ଆବଶ୍ୟକ ଥାଏ ତେବେ ଏହାକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ।</translation>
@@ -4104,6 +4115,7 @@
 <translation id="5499313591153584299">ଏହି ଫାଇଲ୍ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ପାଇଁ କ୍ଷତିକାରକ ହୋଇପାରେ।</translation>
 <translation id="5499453227627332024">ଆପଣଙ୍କ Linux କଣ୍ଟେନର୍ ପାଇଁ ଏକ ଅପଗ୍ରେଡ୍ ଉପଲବ୍ଧ ଅଛି। ଆପଣ ପରେ ସେଟିଂସ୍ ଆପରୁ ମଧ୍ୟ ଅପଗ୍ରେଡ୍ କରିପାରିବେ।</translation>
 <translation id="5500709606820808700">ସୁରକ୍ଷା ଯାଞ୍ଚ ଆଜି ଚାଲିଥିଲା</translation>
+<translation id="5501322521654567960">ବାମକୁ ଆଲାଇନ୍ କରାଯାଇଥିବା ସାଇଡ୍ ପ୍ୟାନେଲ୍</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିବା ବିଫଳ ହୋଇଛି}other{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିବା ବିଫଳ ହୋଇଛି}}</translation>
 <translation id="5502500733115278303">Firefox ରୁ ଆମଦାନି କରାଗଲା</translation>
 <translation id="5502915260472117187">ଜଣେ ପିଲା</translation>
@@ -5317,6 +5329,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6856348640027512653">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="6856623341093082836">ଆପଣଙ୍କ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ସଠିକତା ସେଟ୍ ଅପ୍ କରନ୍ତୁ ଏବଂ ଆଡ୍‍ଜଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="6857145580237920905">ପାୱାରୱାସ୍ ପୂର୍ବରୁ eSIM ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6857699260879628349">କନଫ୍ୟୁଗରେସନ୍ ସୂଚନା ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
 <translation id="6860097299815761905">ପ୍ରୋକ୍ସି ସେଟିଂ</translation>
@@ -5761,6 +5774,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />କୁ ଚାଲୁ କରିବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="7362387053578559123">ସାଇଟଗୁଡ଼ିକ ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ପଚାରିପାରେ</translation>
 <translation id="7364591875953874521">ଆକ୍ସେସର ଅନୁରୋଧ କରାଯାଇଛି</translation>
+<translation id="7364745943115323529">କାଷ୍ଟ କରନ୍ତୁ...</translation>
 <translation id="7364796246159120393">ଫାଇଲ୍ ମନୋନୟନ କରନ୍ତୁ</translation>
 <translation id="7365076891350562061">ମନିଟରର ଆକାର</translation>
 <translation id="7366316827772164604">ଆଖପାଖର ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ସ୍କାନ୍ କରୁଛି...</translation>

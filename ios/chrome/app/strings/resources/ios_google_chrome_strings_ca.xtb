@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1096883626080133124">Augmenta la teva productivitat amb un Google Chrome senzill, segur i més ràpid que mai</translation>
 <translation id="1282031177488366470">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="1314663809820920746">Encara pots veure les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en aquest dispositiu. Si fas canvis, no se sincronitzaran amb el teu Compte de Google.</translation>
 <translation id="1479202195792305274">Chrome pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="1682483655351012182">Sincronitza les dades de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Ajuda a millorar Chrome enviant les estadístiques d'ús i els informes d'error a Google</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
 <translation id="2009224836393115614">Chrome no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="2147651015520127414">Chrome ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>

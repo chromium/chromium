@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">combo box</translation>
 <translation id="3220661731597678625">kasalukuyang hakbang</translation>
+<translation id="3321030238473337787">Bilis ng pag-playback</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3450233048674729344">Dapat mas mababa kaysa sa o katumbas ng <ph name="MAXIMUM" /> ang halaga.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">menu bar</translation>
 <translation id="4293574643247337246">header ng page</translation>
 <translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">itago ang menu para sa bilis ng pag-playback</translation>
 <translation id="4384249794467006333">Walang label ang larawang ito. Buksan ang menu ng Higit pang Opsyon sa kanang bahagi sa itaas para makakuha ng mga paglalarawan ng larawan.</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4444765639179266822">Mukhang ang sabi ay: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">item sa tree</translation>
 <translation id="5466621249238537318">Mangyaring pumili ng isa o higit pang mga file.</translation>
 <translation id="5468998798572797635">lumabas sa full screen</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">picker ng petsa</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="5546461542133609677">i-unmute</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">higit pang opsyon</translation>
 <translation id="576709008726043716">panimula</translation>
 <translation id="57838592816432529">I-mute</translation>
+<translation id="5786442179789148008">ipakita ang menu para sa bilis ng pag-playback</translation>
 <translation id="5787939484346677755">na-expand, opsyon sa autocomplete ang available.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="588258955323874662">Fullscreen</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5939518447894949180">I-reset</translation>
 <translation id="5966707198760109579">Linggo</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">button ng pag-spin</translation>
 <translation id="6011459053400940133">slider ng volume</translation>
 <translation id="6015796118275082299">Taon</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">i-mute</translation>
 <translation id="6885760532393684712">direktoryo</translation>
 <translation id="689129560213475294">colophon</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">header</translation>
 <translation id="6941933287844615239">i-download ang media</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">sanggunian sa tala</translation>
 <translation id="811583516810654505">Kinukuha ang paglalarawan...</translation>
 <translation id="8117451130807776954">Linggong ito</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">picker ng lokal na petsa at oras</translation>
 <translation id="8261464734335370856">Invalid na spelling</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">kontrolin ang malayuang pag-playback</translation>
 <translation id="862370744433916922">subtitle</translation>
 <translation id="8634971699417195529">Ipakita ang picker ng buwan</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Line wrap</translation>
 <translation id="8711688047404765493">output</translation>
 <translation id="8750798805984357768">Mangyaring pumili ng isa sa mga opsyong ito.</translation>

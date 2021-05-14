@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ตัวจับเวลา</translation>
 <translation id="3199563858620722075">ช่องตัวเลือกรวม</translation>
 <translation id="3220661731597678625">ขั้นตอนปัจจุบัน</translation>
+<translation id="3321030238473337787">ความเร็วในการเล่น</translation>
 <translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
 <translation id="3450233048674729344">ค่าต้องน้อยกว่าหรือเท่ากับ <ph name="MAXIMUM" /></translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">แถบเมนู</translation>
 <translation id="4293574643247337246">ส่วนหัวของหน้า</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
+<translation id="4371899966896349864">ซ่อนเมนูความเร็วในการเล่น</translation>
 <translation id="4384249794467006333">รูปภาพนี้ไม่มีป้ายกำกับ เปิดเมนู "ตัวเลือกเพิ่มเติม" ที่ด้านขวาบนเพื่อดูคำอธิบายรูปภาพ</translation>
 <translation id="4384583879834880242">ถามและตอบ</translation>
 <translation id="4444765639179266822">ดูเหมือนจะพูดว่า <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">รายการแบบต้นไม้</translation>
 <translation id="5466621249238537318">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
 <translation id="5468998798572797635">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">เครื่องมือเลือกวันที่</translation>
 <translation id="5537725057119320332">แคสต์</translation>
 <translation id="5546461542133609677">เปิดเสียง</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">ตัวเลือกเพิ่มเติม</translation>
 <translation id="576709008726043716">บทนำ</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
+<translation id="5786442179789148008">แสดงเมนูความเร็วในการเล่น</translation>
 <translation id="5787939484346677755">ขยายอยู่ มีตัวเลือกการเติมข้อความอัตโนมัติ</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="5966707198760109579">สัปดาห์</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">ปุ่มหมุน</translation>
 <translation id="6011459053400940133">แถบเลื่อนปรับระดับเสียง</translation>
 <translation id="6015796118275082299">ปี</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">ปิดเสียง</translation>
 <translation id="6885760532393684712">ไดเรกทอรี</translation>
 <translation id="689129560213475294">ข้อมูลทางบรรณานุกรม</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">ข้อความที่ยกมา</translation>
 <translation id="693476918119313863">ส่วนหัว</translation>
 <translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">ข้อมูลอ้างอิงหมายเหตุ</translation>
 <translation id="811583516810654505">กำลังโหลดคำอธิบาย...</translation>
 <translation id="8117451130807776954">สัปดาห์นี้</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ปปปป</translation>
 <translation id="8208673686607688524">เครื่องมือเลือกวันที่และเวลาในท้องถิ่น</translation>
 <translation id="8261464734335370856">มีการสะกดผิด</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">ควบคุมการเล่นระยะไกล</translation>
 <translation id="862370744433916922">คำบรรยาย</translation>
 <translation id="8634971699417195529">แสดงเครื่องมือเลือกเดือน</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">การตัดขึ้นบรรทัดใหม่</translation>
 <translation id="8711688047404765493">เอาต์พุต</translation>
 <translation id="8750798805984357768">โปรดเลือกตัวเลือกอย่างหนึ่งอย่างใดเหล่านี้</translation>

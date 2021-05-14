@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">ইনষ্টল কৰা থীম "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">আপুনি গৃহপৃষ্ঠা বুটামত ক্লিক কৰিলে কি পৃষ্ঠা দেখুওৱা হ’ব সেইয়া এই এক্সটেনশ্বনটোৱে সলনি কৰিছে।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />এ এটা <ph name="EXTENSION_TYPE" /> ইনষ্টল কৰিব বিচাৰে, যিটোৱে এয়া কৰিব পাৰে:</translation>
+<translation id="1547808936554660006">মই বুজি পাওঁ যে পাৱাৰৱাশ্ব কৰা টোৱে ইনষ্টল কৰি থোৱা ই-ছিমৰ প্ৰ'ফাইলসমূহ আঁতৰাই নিদিব।</translation>
 <translation id="1549275686094429035">ARC সক্ষম কৰা হৈছে</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />এ <ph name="VOLUME_NAME" />লৈ এক্সেছ কৰিব খুজিছে। ই আপোনাৰ ফাইল সংশোধন কৰিব বা মচিব পাৰে।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে <ph name="SEARCH_PROVIDER_DOMAIN" /> ব্যৱহাৰ কৰিবলৈ সন্ধানৰ সুবিধাটো সলনি কৰিছে</translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">সাধাৰণ</translation>
 <translation id="158849752021629804">গৃহ নেটৱৰ্কৰ আৱশ্যক</translation>
 <translation id="1588870296199743671">ইয়াৰ এটাৰ জৰিয়তে লিংকটো খোলক...</translation>
+<translation id="1588919647604819635">ক্ষিপ্ৰ উত্তৰ</translation>
 <translation id="1589055389569595240">বানান আৰু ব্যাকৰণ দেখুৱাওক</translation>
 <translation id="1591679663873027990">USB ডিভাইচসমূহ এক্সেছ কৰিবলৈ Parallels Desktopক অনুমতি দিয়ক। কোনো ইউএছবি ডিভাইচ আঁতৰোৱাৰ পাছত Parallels Desktopএ সেইটো মনত নাৰাখিব।</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />এ ADB ডিবাগিং অক্ষম কৰিছে, যি আপোনাৰ <ph name="DEVICE_TYPE" />টো ৰিছেট কৰিব। ৰিষ্টাৰ্ট কৰাৰ আগতে আপোনাৰ ফাইলৰ বেক আপ লওক।</translation>
@@ -993,6 +995,7 @@
 
 আপুনি নিজৰ ডিভাইচত Family Link এপ্‌টো ইনষ্টল কৰি এই একাউণ্টটোৰ ছেটিংসমূহ পৰিচালনা কৰিব পাৰে।  আমি এটা মেইলৰ জৰিয়তে আপোনালৈ নির্দেশনাৱলী পঠিয়াইছোঁ।</translation>
 <translation id="2040460856718599782">ওঁহ!  আপোনাৰ বিশ্বাসযোগ্যতা প্ৰমাণ কৰোঁতে কিবা ভুল হ’ল।  অনুগ্ৰহ কৰি আপোনাৰ ছাইন ইন কৰা ক্ৰেডেনশ্বিয়েলসমূহ ভালদৰে পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।</translation>
+<translation id="2042279886444479655">সক্ৰিয় প্ৰ'ফাইল</translation>
 <translation id="2044014337866019681">ছেশ্বনটো আনলক কৰিবলৈ অনুগ্ৰহ কৰি আপুনি <ph name="ACCOUNT" /> সত্যাপন কৰি থকাটো নিশ্চিত কৰক।</translation>
 <translation id="2044023416777079300">ম’ডেমটো পঞ্জীয়ন কৰা নাই</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1334,6 +1337,7 @@
 <translation id="2395616325548404795">আপোনাৰ <ph name="DEVICE_TYPE" /> এণ্টাৰপ্ৰাইজ পৰিচালনাৰ বাবে পঞ্জীয়ন কৰা হ’ল, কিন্তু ইয়াৰ সম্পত্তি আৰু অৱস্থানৰ তথ্য পঠিয়াব পৰা নগ’ল। অনুগ্ৰহ কৰি এই ডিভাইচটোৰ বাবে এই তথ্য আপোনাৰ প্ৰশাসক কনছ’লৰ পৰা মেনুৱেলী দিয়ক।</translation>
 <translation id="2396387085693598316">আপোনাৰ প্ৰশাসকে "<ph name="EXTENSION_NAME" />" অৱৰোধ কৰিছে</translation>
 <translation id="2396783860772170191">৪টা অংকৰ পিনটো দিয়ক (০০০০-৯৯৯৯)</translation>
+<translation id="2398546389094871088">আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্ব কৰাটোৱে আপোনাৰ ই-ছিমৰ প্ৰ'ফাইল আঁতৰাই নিদিব। এই প্ৰ'ফাইলসমূহ মেনুৱেলী আঁতৰাবলৈ <ph name="LINK_BEGIN" />ম'বাইলৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2399699884460174994">জাননী সক্ৰিয় কৰা হ’ল</translation>
 <translation id="2399939490305346086">সুৰক্ষা চাবিৰ ছাইন-ইন ডেটা</translation>
 <translation id="2400664245143453337">তাৎক্ষণিকভাৱে আপডে’ট কৰাৰ প্ৰয়োজন</translation>
@@ -1750,6 +1754,7 @@
 <translation id="2844809857160214557">প্ৰিণ্টিঙৰ কাৰ্যসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="2845382757467349449">বুকমাৰ্কৰ বাৰ সদায়েই দেখুৱাওক</translation>
 <translation id="284805635805850872">ক্ষতিকাৰক ছফ্টৱেৰ আঁতৰাবনে?</translation>
+<translation id="2849035674501872372">ওপৰলৈ চাওক</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">পৰিষ্কাৰ কৰিব পৰা নগ’ল</translation>
 <translation id="2849936225196189499">জটিল</translation>
@@ -2061,6 +2066,7 @@
 <translation id="3189187154924005138">ডাঙৰ কাৰ্ছৰ</translation>
 <translation id="3190558889382726167">পাছৱর্ড ছেভ কৰা হ'ল</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
+<translation id="3197453258332670132">এবাৰ ৰাইট-ক্লিক কৰি অথবা দীঘলীয়াকৈ টিপি, আপোনাৰ পৰৱৰ্তী পাঠৰ বাছনি সম্পৰ্কীয় তথ্য দেখুৱাওক</translation>
 <translation id="3199127022143353223">ছাৰ্ভাৰসমূহ</translation>
 <translation id="3201422919974259695">উপলব্ধ ইউএছবি ডিভাইচসমূহ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="3202131003361292969">পথ</translation>
@@ -2082,6 +2088,7 @@
 <translation id="3223531857777746191">ৰিছেট বুটাম</translation>
 <translation id="3225084153129302039">ডিফ’ল্ট বেঙুনীয়া অৱতাৰ</translation>
 <translation id="3225319735946384299">ক’ড ছাইনিং</translation>
+<translation id="3226487301970807183">বাওঁফালে শাৰীবিন্যাস কৰা ছাইডৰ পেনেল ট’গল কৰক</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3233271424239923319">Linux এপ্‌ আৰু ফাইলসমূহ বেক আপ কৰক</translation>
 <translation id="3238192140106069382">সংযোগ আৰু সত্যাপন কৰি থকা হৈছে</translation>
@@ -2351,6 +2358,7 @@
 <translation id="3515983984924808886">ৰিছেট কৰাটো নিশ্চিত কৰিবলৈ আপোনাৰ সুৰক্ষা চাবিটো পুনৰ স্পৰ্শ কৰক। সুৰক্ষা চাবিটোত ষ্ট’ৰ হৈ থকা ইয়াৰ পিনকে ধৰি সকলো তথ্য মচা হ’ব।</translation>
 <translation id="3518985090088779359">গ্ৰহণ কৰি আগুৱাওক</translation>
 <translation id="3519564332031442870">প্ৰিণ্ট বেকএণ্ড ছাৰ্ভিচ</translation>
+<translation id="3519938335881974273">এই হিচাপে পৃষ্ঠাখন ছেভ কৰক...</translation>
 <translation id="3521606918211282604">ডিস্কৰ আকাৰ সলনি কৰক</translation>
 <translation id="3522088408596898827">ডিস্কৰ ঠাই একেবাৰে কমি গৈছে। ডিস্কৰ ঠাই খালী কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3524965460886318643">ৰপ্তানি কার্যসমূহ</translation>
@@ -2374,6 +2382,7 @@
 <translation id="3550593477037018652">চেলুলাৰ নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="3550915441744863158">আপুনি সদায় সকলোতকৈ শেহতীয়া সংস্কৰণটো পাবলৈ Chrome স্বয়ংক্ৰিয়ভাৱে আপডে’ট হয়</translation>
 <translation id="3551320343578183772">টেব বন্ধ কৰক</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">বাহিৰ হওক-ত মচা হৈছে</translation>
 <translation id="3554493885489666172">আপোনাৰ ডিভাইচটো <ph name="PROFILE_NAME" />এ পৰিচালনা কৰে। প্ৰশাসকে এই ডিভাইচটোত থকা যিকোনো প্ৰ’ফাইলত ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="3555812735919707620">এক্সটেনশ্বন আঁতৰাওক</translation>
@@ -2426,6 +2435,7 @@
 <translation id="3604713164406837697">ৱালপেপাৰ সলনি কৰক</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3608576286259426129">ব্যৱহাৰকাৰীৰ প্ৰতিচ্ছবিৰ পূৰ্বদৰ্শন</translation>
+<translation id="3609277884604412258">ক্ষিপ্ৰ সন্ধান</translation>
 <translation id="3610369246614755442">ড’ক ফেনখন ছাৰ্ভিছিং কৰাৰ প্ৰয়োজন হৈছে</translation>
 <translation id="361106536627977100">Flashৰ ডেটা</translation>
 <translation id="3611655097742243705">অধিক এপ্ বিচাৰিবলৈ Play Storeলৈ যাওক</translation>
@@ -3366,6 +3376,7 @@
 <translation id="4636682061478263818">Driveত থকা ফাইল</translation>
 <translation id="4636930964841734540">তথ্য</translation>
 <translation id="4637083375689622795">অধিক কার্য, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">পুনৰ কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{পাঠ}one{# টা পাঠ}other{# টা পাঠ}}</translation>
 <translation id="4638930039313743000">ADB ডিবাগিং সক্ষম কৰক</translation>
 <translation id="4641539339823703554">Chromeএ ছিষ্টেমৰ সময় ছেট কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি তলৰ সময়টো পৰীক্ষা কৰক আৰু যদি ভুল আছে শুধৰাওক।</translation>
@@ -4116,6 +4127,7 @@
 <translation id="5499313591153584299">এই ফাইলটো আপোনাৰ কম্পিউটাৰৰ বাবে ক্ষতিকাৰক হ'ব পাৰে।</translation>
 <translation id="5499453227627332024">আপোনাৰ Linux কণ্টেইনাৰৰ বাবে এটা আপডে’ট উপলব্ধ। আপুনি পাছত ছেটিংসমূহৰ এপ্‌টোৰ পৰাও আপগ্ৰে’ড কৰিব পাৰে।</translation>
 <translation id="5500709606820808700">আজি সুৰক্ষা পৰীক্ষা চলোৱা হৈছে</translation>
+<translation id="5501322521654567960">বাওঁফালে শাৰীবিন্যাস কৰা ছাইডৰ পেনেল</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}one{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}other{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}}</translation>
 <translation id="5502500733115278303">Firefoxৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="5502915260472117187">এটি শিশু</translation>
@@ -5322,6 +5334,7 @@
 <translation id="6856348640027512653">ভাৰ্ছুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="6856623341093082836">ছেট আপ কৰক আৰু আপোনাৰ টাচ্চ্‌স্ক্রীণৰ সঠিকতা মিলাওক</translation>
+<translation id="6857145580237920905">পাৱাৰৱাশ্ব কৰাৰ পূৰ্বে ই-ছিমৰ প্ৰ'ফাইলসমূহ আঁতৰাওক</translation>
 <translation id="6857699260879628349">কনফিগাৰেশ্বনৰ তথ্য পাওক</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />ছেকেণ্ড</translation>
 <translation id="6860097299815761905">প্ৰক্সি ছেটিংসমূহ...</translation>
@@ -5765,6 +5778,7 @@
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />ক চলাবলৈ সোঁফালে ক্লিক কৰক</translation>
 <translation id="7362387053578559123">ছাইটে ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="7364591875953874521">এক্সেছৰ অনুৰোধ কৰা হৈছে</translation>
+<translation id="7364745943115323529">কাষ্ট কৰক...</translation>
 <translation id="7364796246159120393">ফাইল বাছনি কৰক</translation>
 <translation id="7365076891350562061">মনিটৰৰ আকাৰ</translation>
 <translation id="7366316827772164604">নিকটৱৰ্তী ডিভাইচৰ বাবে স্কেন কৰি থকা হৈছে...</translation>

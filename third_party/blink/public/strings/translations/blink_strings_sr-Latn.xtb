@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">tajmer</translation>
 <translation id="3199563858620722075">kombinovani okvir</translation>
 <translation id="3220661731597678625">aktuelni korak</translation>
+<translation id="3321030238473337787">Brzina reprodukcije</translation>
 <translation id="3329013043687509092">Zasićenost boja</translation>
 <translation id="3450233048674729344">Vrednost sme da bude najviše <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definicija</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">traka sa menijima</translation>
 <translation id="4293574643247337246">zaglavlje stranice</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">onemogućite prikaz menija brzine reprodukcije</translation>
 <translation id="4384249794467006333">Ova slika nema oznaku. Otvorite meni Još opcija u gornjem desnom uglu da biste videli opise slika.</translation>
 <translation id="4384583879834880242">Pitanja i odgovori</translation>
 <translation id="4444765639179266822">Izgleda da piše: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">stavka stabla</translation>
 <translation id="5466621249238537318">Izaberite jednu ili više datoteka.</translation>
 <translation id="5468998798572797635">izađite iz režima celog ekrana</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">birač datuma</translation>
 <translation id="5537725057119320332">Prebacuj</translation>
 <translation id="5546461542133609677">uključite zvuk</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">još opcija</translation>
 <translation id="576709008726043716">uvod</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
+<translation id="5786442179789148008">omogućite prikaz menija brzine reprodukcije</translation>
 <translation id="5787939484346677755">prošireno, dostupne su opcije za automatsko dovršavanje.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="588258955323874662">Ceo ekran</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5966707198760109579">Nedelja</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">dugme za promenu vrednosti</translation>
 <translation id="6011459053400940133">klizač za jačinu zvuka</translation>
 <translation id="6015796118275082299">Godina</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">isključi zvuk</translation>
 <translation id="6885760532393684712">katalog</translation>
 <translation id="689129560213475294">znak izdavača</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">izdvojeni citat</translation>
 <translation id="693476918119313863">zaglavlje</translation>
 <translation id="6941933287844615239">preuzmi medije</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">referenca napomene</translation>
 <translation id="811583516810654505">Preuzima se opis...</translation>
 <translation id="8117451130807776954">Ova nedelja</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">gggg</translation>
 <translation id="8208673686607688524">birač lokalnog datuma i vremena</translation>
 <translation id="8261464734335370856">Netačan pravopis</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">kontrolišite reprodukciju na udaljenom uređaju</translation>
 <translation id="862370744433916922">titl</translation>
 <translation id="8634971699417195529">Prikazuj birač meseca</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Prelom reda</translation>
 <translation id="8711688047404765493">izlaz</translation>
 <translation id="8750798805984357768">Izaberite neku od ovih opcija.</translation>

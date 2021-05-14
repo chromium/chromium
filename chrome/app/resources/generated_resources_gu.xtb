@@ -510,6 +510,7 @@
 <translation id="1545775234664667895">ઇન્સ્ટોલ કરેલી થીમ "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">જ્યારે તમે હોમ બટન ક્લિક કરો છો ત્યારે જે પૃષ્ઠ દર્શાવવામાં આવે છે તે આ એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> ઇન્સ્ટૉલ કરવા માગે છે, જે આ કરી શકે:</translation>
+<translation id="1547808936554660006">હું સમજું છું કે ઇન્સ્ટૉલ કરેલી ઇ-સિમની બધી પ્રોફાઇલ, પાવરવોશ કરવાથી કાઢી નાખવામાં આવશે નહીં.</translation>
 <translation id="1549275686094429035">ARC ચાલુ છે</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" />ને ઍક્સેસ કરવા માંગે છે. તે તમારી ફાઇલોમાં ફેરફાર કરી અથવા ડિલીટ કરી શકે છે.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા શોધને <ph name="SEARCH_PROVIDER_DOMAIN" />નો ઉપયોગ કરવા પર બદલવામાં આવ્યું</translation>
@@ -545,6 +546,7 @@
 <translation id="1588438908519853928">સામાન્ય</translation>
 <translation id="158849752021629804">હોમ નેટવર્કની આવશ્યકતા છે</translation>
 <translation id="1588870296199743671">આની સાથે લિંક ખોલો...</translation>
+<translation id="1588919647604819635">કાર્ડને રાઇટ ક્લિક કરો</translation>
 <translation id="1589055389569595240">જોડણી અને વ્યાકરણ બતાવો</translation>
 <translation id="1591679663873027990">USB ડિવાઇસને ઍક્સેસ કરવાની પરવાનગી Parallels Desktopને આપો. કોઈપણ USB ડિવાઇસને એકવાર કાઢી નાખવામાં આવે, પછી Parallels Desktop તેને યાદ રાખી શકતું નથી.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે, જેને કારણે તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. ફરી શરૂ કરતા પહેલાં તમારી ફાઇલોનું બૅકઅપ લો.</translation>
@@ -980,6 +982,7 @@
 
 તમે તમારા ડિવાઇસમાં Family Link ઍપ ઇન્સ્ટૉલ કરીને આ એકાઉન્ટનાં સેટિંગને મેનેજ કરી શકો છો.  અમે તમને ઇમેઇલમાં સૂચનાઓ મોકલી છે.</translation>
 <translation id="2040460856718599782">અરેરે! તમને પ્રમાણિત કરવાનો પ્રયાસ કરતી વખતે કંઈક ખોટું થયું. કૃપા કરીને તમારા સાઇન-ઇન ઓળખપત્રોને બીજીવાર તપાસો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="2042279886444479655">સક્રિય પ્રોફાઇલ</translation>
 <translation id="2044014337866019681">કૃપા કરીને ખાતરી કરો કે સત્રને અનલૉક કરવા માટે તમે <ph name="ACCOUNT" />ની ચકાસણી કરી રહ્યાં છો.</translation>
 <translation id="2044023416777079300">મૉડેમ રજિસ્ટર કરેલું નથી</translation>
 <translation id="204497730941176055">Microsoft પ્રમાણપત્ર નમૂના નામ</translation>
@@ -1319,6 +1322,7 @@
 <translation id="2395616325548404795">એન્ટરપ્રાઇઝ સંચાલન માટે તમારા <ph name="DEVICE_TYPE" /> ની સફળતાપૂર્વક નોંધણી કરવામાં આવી, પરંતુ તેની એસેટ અને સ્થાન માહિતી મોકલવામાં નિષ્ફળ થયાં. કૃપા કરીને આ ઉપકરણ માટે તમારા Admin console માંથી આ માહિતી જાતે દાખલ કરો.</translation>
 <translation id="2396387085693598316">તમારા વ્યવસ્થાપકે "<ph name="EXTENSION_NAME" />"ને બ્લૉક કરેલું છે</translation>
 <translation id="2396783860772170191">4 અંકનો પિન (0000-9999) દાખલ કરો</translation>
+<translation id="2398546389094871088">તમારા ડિવાઇસને પાવરવોશ કરવાથી તમારી ઇ-સિમની બધી પ્રોફાઇલ કાઢી નાખવામાં આવશે નહીં. આ બધી પ્રોફાઇલને મેન્યુઅલી કાઢી નાખવા માટે, <ph name="LINK_BEGIN" />મોબાઇલ સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="2399699884460174994">નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="2399939490305346086">સુરક્ષા કોડનો સાઇન ઇન ડેટા</translation>
 <translation id="2400664245143453337">તાત્કાલિક અપડેટ આવશ્યક છે</translation>
@@ -1736,6 +1740,7 @@
 <translation id="2844809857160214557">પ્રિન્ટ કરવાના કામો જુઓ અને મેનેજ કરો</translation>
 <translation id="2845382757467349449">બુકમાર્ક્સ બાર હંમેશા બતાવો</translation>
 <translation id="284805635805850872">નુકસાનકારક સૉફ્ટવેર દૂર કરીએ?</translation>
+<translation id="2849035674501872372">શોધો</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">ક્લીન અપ નિષ્ફળ થયું</translation>
 <translation id="2849936225196189499">ટીકાત્મક</translation>
@@ -2047,6 +2052,7 @@
 <translation id="3189187154924005138">મોટું કર્સર</translation>
 <translation id="3190558889382726167">પાસવર્ડ સાચવ્યો</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
+<translation id="3197453258332670132">તમારી ટેક્સ્ટની પસંદગી માટે, રાઇટ ક્લિક વડે અથવા થોડીવાર દબાવી રાખીને સંબંધિત માહિતી બતાવો</translation>
 <translation id="3199127022143353223">સર્વર્સ</translation>
 <translation id="3201422919974259695">ઉપલબ્ધ USB ડિવાઇસ અહીં દેખાશે.</translation>
 <translation id="3202131003361292969">પથ</translation>
@@ -2068,6 +2074,7 @@
 <translation id="3223531857777746191">રીસેટ કરો બટન</translation>
 <translation id="3225084153129302039">ડિફોલ્ટ જાંબલી અવતાર</translation>
 <translation id="3225319735946384299">કોડ સાઇનિંગ </translation>
+<translation id="3226487301970807183">ડાબેથી સંરેખિત બાજુની પૅનલ ટૉગલ કરો</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3233271424239923319">Linux ઍપ અને ફાઇલો</translation>
 <translation id="3238192140106069382">કનેક્ટ કરી રહ્યું છે અને ચકાસી રહ્યું છે</translation>
@@ -2337,6 +2344,7 @@
 <translation id="3515983984924808886">રીસેટ કન્ફર્મ કરવા માટે તમારી સિક્યુરિટી કીને સ્પર્શ કરો. સિક્યુરિટી કી પરની, તેના પિન સહિતની તેમાં સ્ટોર કરેલી બધી માહિતી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="3518985090088779359">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="3519564332031442870">બૅકએન્ડમાં પ્રિન્ટ કરવાની સેવા</translation>
+<translation id="3519938335881974273">પેજને આ રીતે સાચવો…</translation>
 <translation id="3521606918211282604">ડિસ્કનું કદ બદલો</translation>
 <translation id="3522088408596898827">ડિસ્કમાં સ્પેસ અત્યંત ઓછી છે. ડિસ્કમાં સ્પેસ ખાલી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="3524965460886318643">પ્રવૃત્તિઓ નિકાસ કરો</translation>
@@ -2360,6 +2368,7 @@
 <translation id="3550593477037018652">સેલ્યુલર નેટવર્ક ડિસકનેક્ટ કરો</translation>
 <translation id="3550915441744863158">Chrome ઑટોમૅટિક રીતે અપડેટ થાય છે, જેથી કરીને તમારી પાસે હંમેશાં સૌથી નવું વર્ઝન રહે છે.</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">બહાર નીકળવા પર સાફ કર્યું</translation>
 <translation id="3554493885489666172">તમારું ડિવાઇસ <ph name="PROFILE_NAME" /> દ્વારા મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો આ ડિવાઇસ પર કોઈપણ પ્રોફાઇલમાંનો ડેટા ઍક્સેસ કરી શકે છે.</translation>
 <translation id="3555812735919707620">એક્સ્ટેન્શન દૂર કરો</translation>
@@ -2412,6 +2421,7 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="3605780360466892872">બટનડાઉન</translation>
 <translation id="3608576286259426129">વપરાશકર્તા ફોટો પ્રીવ્યૂ</translation>
+<translation id="3609277884604412258">ઝડપી શોધ</translation>
 <translation id="3610369246614755442">ડૉકના પંખાને સર્વિસની જરૂર છે</translation>
 <translation id="361106536627977100">ફ્લૅશ ડેટા</translation>
 <translation id="3611655097742243705">વધુ ઍપ શોધવા માટે, Play સ્ટોરની મુલાકાત લો</translation>
@@ -3355,6 +3365,7 @@
 <translation id="4636682061478263818">Driveની ફાઇલો</translation>
 <translation id="4636930964841734540">માહિતી</translation>
 <translation id="4637083375689622795">વધુ ક્રિયાઓ, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">કૅમેરાનો ફરીથી ઉપયોગ કરો</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ટેક્સ્ટ}one{# ટેક્સ્ટ}other{# ટેક્સ્ટ}}</translation>
 <translation id="4638930039313743000">ADB ડિબગીંગ ચાલુ કરો</translation>
 <translation id="4641539339823703554">Chrome, સિસ્ટમ સમય સેટ કરવામાં અસમર્થ હતું. કૃપા કરીને નીચે સમય તપાસો અને જરૂર પડવા પર તેને ઠીક કરો.</translation>
@@ -4105,6 +4116,7 @@
 <translation id="5499313591153584299">આ ફાઇલ તમારા કમ્પ્યુટર માટે હાનિકારક હોઇ શકે છે.</translation>
 <translation id="5499453227627332024">તમારા Linux Container માટે કોઈ અપગ્રેડ ઉપલબ્ધ છે. તમે થોડા સમય પછી સેટિંગ ઍપમાંથી પણ અપગ્રેડ કરી શકશો.</translation>
 <translation id="5500709606820808700">સલામતી માટે તપાસ આજે કરવામાં આવી</translation>
+<translation id="5501322521654567960">ડાબેથી સંરેખિત બાજુની પૅનલ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}one{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}other{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}}</translation>
 <translation id="5502500733115278303">Firefox પરથી આયાત કરેલું</translation>
 <translation id="5502915260472117187">બાળક માટે</translation>
@@ -5318,6 +5330,7 @@ USB ડિવાઇસ</translation>
 <translation id="6856348640027512653">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ કે ડેટાનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="6856623341093082836">તમારી ટચસ્ક્રીનની સચોટતાને સેટ કરો અને સમાયોજિત કરો</translation>
+<translation id="6857145580237920905">પાવરવોશ કરવા પહેલાં, ઇ-સિમની બધી પ્રોફાઇલ કાઢી નાખો</translation>
 <translation id="6857699260879628349">ગોઠવણીની માહિતી મેળવો</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="6860097299815761905">પ્રૉક્સી સેટિંગ...</translation>

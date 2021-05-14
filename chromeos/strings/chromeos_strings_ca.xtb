@@ -299,6 +299,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -347,6 +348,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8372477600026034341">Amfitrions addicionals</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Nom del proveïdor domèstic</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>

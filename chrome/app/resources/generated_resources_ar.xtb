@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">تم تثبيت المظهر "<ph name="THEME_NAME" />".</translation>
 <translation id="1546280085599573572">غيّرت هذه الإضافة الصفحة التي تظهر عند النقر على زر الصفحة الرئيسية.</translation>
 <translation id="1546452108651444655">يريد <ph name="CHILD_NAME" /> تثبيت <ph name="EXTENSION_TYPE" /> يمكنها:</translation>
+<translation id="1547808936554660006">‏أدرك أنّ الملفات التعريفية المثبّتة لشرائح eSIM لن تتم إزالتها بعد إجراء عملية Powerwash</translation>
 <translation id="1549275686094429035">‏تم تفعيل "وقت تشغيل التطبيقات في Chrome"</translation>
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">عادي</translation>
 <translation id="158849752021629804">يلزم توفر الشبكة الرئيسية</translation>
 <translation id="1588870296199743671">فتح الرابط باستخدام...</translation>
+<translation id="1588919647604819635">النقر بزر الماوس الأيمن على البطاقة</translation>
 <translation id="1589055389569595240">إظهار التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1591679663873027990">‏يُرجى منح نظام Parallels Desktop إذن الوصول إلى أجهزة USB. لن يتذكر نظام Parallels Desktop جهاز USB بعد إزالته.</translation>
 <translation id="1592074621872221573">‏أوقَف <ph name="MANAGER" /> تفعيل إعداد "تصحيح الأخطاء عبر ADB"، وهذا سيؤدي إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" />. يُرجى الاحتفاظ بنسخة احتياطية من ملفاتك قبل إعادة التشغيل.</translation>
@@ -987,6 +989,7 @@
 
 يمكنك إدارة إعدادات هذا الحساب من خلال تثبيت تطبيق Family Link على جهازك.  ولقد أرسلنا لك التعليمات في رسالة إلكترونية.</translation>
 <translation id="2040460856718599782">عفوًا، حدث خطأ ما أثناء محاولة مصادقتك. يُرجى التحقق جيدًا من بيانات اعتماد تسجيل الدخول وإعادة المحاولة.</translation>
+<translation id="2042279886444479655">الملفات التعريفية النشطة</translation>
 <translation id="2044014337866019681">يُرجى إثبات ملكية الحساب <ph name="ACCOUNT" /> حتى تتمكّن من فتح قفل هذا الجهاز.</translation>
 <translation id="2044023416777079300">المودم غير مسجَّل.</translation>
 <translation id="204497730941176055">‏اسم قالب الشهادات لـ Microsoft</translation>
@@ -1325,6 +1328,7 @@
 <translation id="2395616325548404795">لقد تم تسجيل جهاز <ph name="DEVICE_TYPE" /> بنجاح لإدارة المؤسسة، لكن تعذّر إرسال بيانات الأصل والموقع. يُرجى إدخال هذه البيانات يدويًا من وحدة تحكُّم المشرف لهذا الجهاز.</translation>
 <translation id="2396387085693598316">حظَر مشرفك "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">أدخِل رقم التعريف الشخصي المكوَّن من 4 أرقام (0000-9999).</translation>
+<translation id="2398546389094871088">‏لن يؤدي إجراء عملية Powerwash لجهازك إلى إزالة الملفات التعريفية لشرائح eSIM. انتقِل إلى <ph name="LINK_BEGIN" />إعدادات الجوّال<ph name="LINK_END" /> لإزالة هذه الملفات التعريفية يدويًّا.</translation>
 <translation id="2399699884460174994">تم تفعيل الإشعارات</translation>
 <translation id="2399939490305346086">بيانات تسجيل الدخول على مفتاح الأمان</translation>
 <translation id="2400664245143453337">مطلوب التحديث فورًا</translation>
@@ -1743,6 +1747,7 @@
 <translation id="2844809857160214557">عرض مهام الطباعة وإدارتها</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
 <translation id="284805635805850872">هل تريد إزالة البرامج الضارة؟</translation>
+<translation id="2849035674501872372">بحث</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">تعذّرت إزالة البرامج.</translation>
 <translation id="2849936225196189499">مهمة</translation>
@@ -2054,6 +2059,7 @@
 <translation id="3189187154924005138">مؤشّر الماوس الكبير</translation>
 <translation id="3190558889382726167">تم حفظ كلمة المرور</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
+<translation id="3197453258332670132">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار لعرض المعلومات ذات الصلة بالنص الذي اختَرته.</translation>
 <translation id="3199127022143353223">الخوادم</translation>
 <translation id="3201422919974259695">‏ستظهر أجهزة USB المتاحة هنا.</translation>
 <translation id="3202131003361292969">المسار</translation>
@@ -2075,6 +2081,7 @@
 <translation id="3223531857777746191">الزر "إعادة الضبط"</translation>
 <translation id="3225084153129302039">الصورة الرمزية التلقائية الأرجوانية</translation>
 <translation id="3225319735946384299">التوقيع بالرمز</translation>
+<translation id="3226487301970807183">التبديل إلى اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="3233271424239923319">‏الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux</translation>
 <translation id="3238192140106069382">جارٍ الاتصال والتحقق</translation>
@@ -2345,6 +2352,7 @@
 <translation id="3515983984924808886">يُرجى لمس مفتاح الأمان مرة أخرى لتأكيد إعادة الضبط. سيتم حذف جميع المعلومات المحفوظة في مفتاح الأمان، بما في ذلك رقم التعريف الشخصي الخاص به.</translation>
 <translation id="3518985090088779359">القبول والمتابعة</translation>
 <translation id="3519564332031442870">الخدمة الخلفية للطباعة</translation>
+<translation id="3519938335881974273">حفظ الصفحة باسم...</translation>
 <translation id="3521606918211282604">تغيير حجم القرص</translation>
 <translation id="3522088408596898827">مساحة القرص منخفضة للغاية. يُرجى إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="3524965460886318643">تصدير الأنشطة</translation>
@@ -2368,6 +2376,7 @@
 <translation id="3550593477037018652">إلغاء الاتصال بشبكة الجوّال</translation>
 <translation id="3550915441744863158">‏يتم تحديث Chrome تلقائيًا، وبالتالي يتوفر لديك دومًا أحدث إصدار منه.</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">تم المحو عند الخروج</translation>
 <translation id="3554493885489666172">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />. يمكن للمشرفين الوصول إلى البيانات في أي ملف شخصي على هذا الجهاز.</translation>
 <translation id="3555812735919707620">إزالة الإضافة</translation>
@@ -2420,6 +2429,7 @@
 <translation id="3604713164406837697">تغيير الخلفية</translation>
 <translation id="3605780360466892872">الزر لأسفل</translation>
 <translation id="3608576286259426129">معاينة صورة المستخدم</translation>
+<translation id="3609277884604412258">بحث سريع</translation>
 <translation id="3610369246614755442">تحتاج مروحة تبريد محطة الإرساء إلى الصيانة.</translation>
 <translation id="361106536627977100">بيانات فلاش</translation>
 <translation id="3611655097742243705">‏يمكنك الانتقال إلى "متجر Play" للعثور على المزيد من التطبيقات.</translation>
@@ -3360,6 +3370,7 @@
 <translation id="4636682061478263818">‏ملفات Drive</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4637083375689622795">مزيد من الإجراءات، <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">استخدام الكاميرا مرّة أخرى</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
 <translation id="4638930039313743000">‏تفعيل خيار "تصحيح الأخطاء عبر ADB"</translation>
 <translation id="4641539339823703554">‏تعذر على Chrome تعيين وقت النظام. يُرجى التحقق من الوقت أدناه وإعادة ضبطه إذا لزم الأمر.</translation>
@@ -4110,6 +4121,7 @@
 <translation id="5499313591153584299">قد يلحق هذا الملف الضرر بجهاز الكمبيوتر.</translation>
 <translation id="5499453227627332024">‏هناك ترقية متاحة لحاوية نظام التشغيل Linux. يمكنك أيضًا الترقية لاحقًا من تطبيق "الإعدادات".</translation>
 <translation id="5500709606820808700">تم تفعيل ميزة "تأكيد السلامة" اليوم.</translation>
+<translation id="5501322521654567960">اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">تمّ الاستيراد من متصفّح فايرفوكس</translation>
 <translation id="5502915260472117187">طفل</translation>
@@ -5321,6 +5333,7 @@
 <translation id="6856348640027512653">المواقع الإلكترونية التي لا يُسمح لها باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
 <translation id="6856459657722366306">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="6856623341093082836">إعداد دقة الشاشة التي تعمل باللمس وضبطها</translation>
+<translation id="6857145580237920905">‏إزالة الملفات التعريفية لشرائح eSIM قبل إجراء عملية Powerwash</translation>
 <translation id="6857699260879628349">الحصول على معلومات الضبط</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
 <translation id="6860097299815761905">إعدادات الخادم الوكيل...</translation>

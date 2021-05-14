@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1096883626080133124">더욱 심플하고 안전하며 그 어느 때보다도 빠른 Chrome을 더욱 다양하게 활용하세요</translation>
 <translation id="1282031177488366470">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="1314663809820920746">북마크, 방문 기록, 비밀번호 및 기타 설정은 모두 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 Google 계정에 동기화되지는 않습니다.</translation>
 <translation id="1479202195792305274">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
@@ -8,6 +9,7 @@
 <translation id="1504372625950710826">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="1682483655351012182">Chrome 데이터 동기화</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">사용 통계 및 비정상 종료 보고서를 Google에 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="2009224836393115614">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2147651015520127414">Chrome이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
