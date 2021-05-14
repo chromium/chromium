@@ -1,8 +1,8 @@
 <!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <style>
-The test PASSES if it did not crash.</p>
-div {word-spacing: 94vw;}
-* {
+p {
     writing-mode:vertical-lr;
     text-combine-upright:all;
     font-size: 0in;
@@ -10,11 +10,7 @@ div {word-spacing: 94vw;}
 }
 </style>
 <p>Test for <a href="http://crbug.com/564698">bug 564698</a>.</p>
-<p>Zero size font should not crash.
-<div>
-Font size is 0in.
-</div>
+<p>Zero size font should not crash.</p>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
+test(() => {}, 'text-combine-upright:all with zero font size');
 </script>
