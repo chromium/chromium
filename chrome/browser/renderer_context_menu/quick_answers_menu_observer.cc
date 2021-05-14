@@ -43,8 +43,7 @@ constexpr int kMaxSurroundingTextLength = 300;
 QuickAnswersMenuObserver::QuickAnswersMenuObserver(
     RenderViewContextMenuProxy* proxy)
     : proxy_(proxy) {
-  auto* assistant_state = ash::AssistantState::Get();
-  if (assistant_state && proxy_ && proxy_->GetBrowserContext()) {
+  if (proxy_ && proxy_->GetBrowserContext()) {
     auto* browser_context = proxy_->GetBrowserContext();
     if (browser_context->IsOffTheRecord())
       return;
@@ -53,7 +52,7 @@ QuickAnswersMenuObserver::QuickAnswersMenuObserver(
         browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
-        assistant_state, /*delegate=*/this);
+        /*delegate=*/this);
     quick_answers_controller_ = ash::QuickAnswersController::Get();
     if (!quick_answers_controller_)
       return;
@@ -61,7 +60,7 @@ QuickAnswersMenuObserver::QuickAnswersMenuObserver(
         browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
-        assistant_state, quick_answers_controller_->GetQuickAnswersDelegate()));
+        quick_answers_controller_->GetQuickAnswersDelegate()));
   }
 }
 

@@ -93,7 +93,6 @@ class QuickAnswersClientTest : public testing::Test {
     mock_delegate_ = std::make_unique<MockQuickAnswersDelegate>();
 
     client_ = std::make_unique<QuickAnswersClient>(&test_url_loader_factory_,
-                                                   assistant_state_.get(),
                                                    mock_delegate_.get());
 
     result_loader_factory_callback_ = base::BindRepeating(

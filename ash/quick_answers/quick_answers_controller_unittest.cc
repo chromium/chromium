@@ -47,7 +47,7 @@ class QuickAnswersControllerTest : public AshTestBase {
 
     controller()->SetClient(
         std::make_unique<chromeos::quick_answers::QuickAnswersClient>(
-            &test_url_loader_factory_, ash::AssistantState::Get(),
+            &test_url_loader_factory_,
             controller()->GetQuickAnswersDelegate()));
 
     controller()->OnEligibilityChanged(true);
