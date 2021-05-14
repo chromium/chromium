@@ -236,6 +236,13 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
   }
 }
 
+void CartService::GetDiscountURL(
+    const GURL& cart_url,
+    base::OnceCallback<void(const ::GURL&)> callback) {
+  // TODO(crbug.com/1204146): Add logic here to fetch discount URL from service.
+  std::move(callback).Run(cart_url);
+}
+
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
   cart_db_->LoadCartsWithPrefix(
       kFakeDataPrefix,

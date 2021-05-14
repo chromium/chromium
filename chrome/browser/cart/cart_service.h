@@ -86,6 +86,11 @@ class CartService : public history::HistoryServiceObserver,
   bool IsCartDiscountEnabled();
   // Updates whether the rule-based discount feature is enabled.
   void SetCartDiscountEnabled(bool enabled);
+  // Gets called when cart with |cart_url| is clicked in NTP module. It is used
+  // to get discount URL and return it in the |callback|. It is only called when
+  // rule-based discount is enabled.
+  void GetDiscountURL(const GURL& cart_url,
+                      base::OnceCallback<void(const GURL&)> callback);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;

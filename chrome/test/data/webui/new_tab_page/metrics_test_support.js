@@ -53,5 +53,6 @@ export function fakeMetricsPrivate() {
   chrome.metricsPrivate.recordBoolean = (m, v) => metrics.record(m, v);
   chrome.metricsPrivate.recordValue = (m, v) => metrics.record(m.metricName, v);
   chrome.metricsPrivate.recordEnumerationValue = (m, v) => metrics.record(m, v);
+  chrome.metricsPrivate.recordSmallCount = (m, v) => metrics.record(m, v);
   return metrics;
 }

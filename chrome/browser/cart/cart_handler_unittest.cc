@@ -227,32 +227,6 @@ TEST_F(CartHandlerTest, TestRemoveCart) {
   run_loop[5].Run();
 }
 
-// Test cart click index histogram is properly recorded.
-TEST_F(CartHandlerTest, TestOnCartItemClicked) {
-  handler_->OnCartItemClicked(3);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
-  handler_->OnCartItemClicked(2);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 2));
-  handler_->OnCartItemClicked(3);
-  ASSERT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
-}
-
-// Test cart item count histogram is properly recorded.
-TEST_F(CartHandlerTest, TestOnModuleCreated) {
-  handler_->OnModuleCreated(0);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
-  handler_->OnModuleCreated(1);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 1));
-  handler_->OnModuleCreated(0);
-  ASSERT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
-}
-
 // Override CartHandlerTest so that we can initialize feature_list_ in our
 // constructor, before CartHandlerTest::SetUp is called.
 class CartHandlerNtpModuleFakeDataTest : public CartHandlerTest {

@@ -94,14 +94,9 @@ void CartHandler::GetWarmWelcomeVisible(
   std::move(callback).Run(cart_service_->ShouldShowWelcomeSurface());
 }
 
-// TODO(crbug.com/1174281): Below metrics collection can be moved to JS to avoid
-// cross-process calls.
-void CartHandler::OnCartItemClicked(uint32_t index) {
-  base::UmaHistogramCounts100("NewTabPage.Carts.ClickCart", index);
-}
-
-void CartHandler::OnModuleCreated(uint32_t count) {
-  base::UmaHistogramCounts100("NewTabPage.Carts.CartCount", count);
+void CartHandler::GetDiscountURL(const GURL& cart_url,
+                                 GetDiscountURLCallback callback) {
+  cart_service_->GetDiscountURL(cart_url, std::move(callback));
 }
 
 void CartHandler::GetDiscountConsentCardVisible(

@@ -40,10 +40,8 @@ interface CartHandler {
   RestoreRemovedCart(url.mojom.Url cart_url) => (bool success);
   // Returns whether to show welcome surface in the module.
   GetWarmWelcomeVisible() => (bool welcome_visible);
-  // Logs that cart at position |index| has been clicked.
-  OnCartItemClicked(uint32 index);
-  // Logs the number of carts when module is created.
-  OnModuleCreated(uint32 count);
+  // Passes |cart_url| to browser process to fetch discount URL.
+  GetDiscountURL(url.mojom.Url cart_url) => (url.mojom.Url discount_url);
   // Returns whether to show discount consent card in the module.
   GetDiscountConsentCardVisible() => (bool consent_visible);
   // Stores in profile prefs that user has acknowledged
