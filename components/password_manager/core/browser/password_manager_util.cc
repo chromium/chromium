@@ -87,11 +87,6 @@ password_manager::SyncState GetPasswordSyncState(
   return password_manager::SyncState::kAccountPasswordsActiveNormalEncryption;
 }
 
-bool IsSyncingWithNormalEncryption(const syncer::SyncService* sync_service) {
-  return GetPasswordSyncState(sync_service) ==
-         password_manager::SyncState::kSyncingNormalEncryption;
-}
-
 void TrimUsernameOnlyCredentials(
     std::vector<std::unique_ptr<PasswordForm>>* android_credentials) {
   // Remove username-only credentials which are not federated.
