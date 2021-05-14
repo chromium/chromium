@@ -167,7 +167,8 @@ std::u16string GetStringForCategory(ShortcutCategory category) {
   return l10n_util::GetStringUTF16(msg_id);
 }
 
-std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
+std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
+                                        bool remap_positional_key) {
   const base::Optional<std::u16string> key_label =
       GetSpecialStringForKeyboardCode(key_code);
   if (key_label)
@@ -185,7 +186,8 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
   // normally in the loop below. For the positional keys, the |DomCode| is
   // then mapped to the |DomKey| in the current layout which represents the
   // glyph/character that appears on the key (and usually when typed).
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+  if (remap_positional_key &&
+      ::features::IsImprovedKeyboardShortcutsEnabled()) {
     ui::DomCode dom_code =
         ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
     if (dom_code != ui::DomCode::NONE) {

@@ -31,9 +31,17 @@ std::u16string GetStringForCategory(ShortcutCategory category);
 // Returns the string of a DomKey for a given VKEY. VKEY needs to be mapped to
 // a physical key |dom_code| and then the |dom_code| needs to be mapped to a
 // meaning or character of |dom_key| based on the corresponding keyboard layout.
-// Returns empty string if the |dom_key| IsDeadKey or has no mapped meaning or
-// character.
-std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code);
+//
+// For shortcuts based on keys that use positional mapping, eg. plus, minus,
+// left/right bracket, comma, period, or slash the VKEY is mapped to the
+// glyph on the key with the same physical position as the US layout. This
+// remapping can be disabled by passing false to |remap_positional_key|. This
+// is currently used for the 2 browser shortcuts that use these keys but are
+// not remapped (page zoom in/out).
+//
+// Returns empty string if the |dom_key| has no mapped meaning or character.
+std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
+                                        bool remap_positional_key = true);
 
 // Certain punctuation is not verbalized by ChromeVox, i.e. ".". So, whenever
 // one of these is used in a keyboard shortcut, need to set the accessible name
