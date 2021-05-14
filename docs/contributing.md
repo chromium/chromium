@@ -103,11 +103,11 @@ contribution can be accepted:
 ## Creating a change
 
 First, create a new branch for your change in git. Here, we create a branch
-called `mychange` (use whatever name you want here), with `origin/master` as
+called `mychange` (use whatever name you want here), with `origin/main` as
 the upstream branch.
 
 ```
-git checkout -b mychange -t origin/master
+git checkout -b mychange -t origin/main
 ```
 
 Write and test your change.
@@ -460,9 +460,9 @@ formats.
     number.
 * **Cr-Branched-From:**
   * Automatically added by the git-numberer Gerrit plugin on changes
-    which are submitted to non-master branches.
-  * Aids those reading a non-master branch history in finding when a
-    given commit diverged from master.
+    which are submitted to non-main branches.
+  * Aids those reading a non-main branch history in finding when a
+    given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
 [checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/master/docs/#checking-out-and-building
