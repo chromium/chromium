@@ -167,8 +167,6 @@ RenderProcessImpl::RenderProcessImpl()
   constexpr char kAtomicsFlag[] = "--harmony-atomics";
   v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
 
-  bool enable_wasm_threads =
-      base::FeatureList::IsEnabled(features::kWebAssemblyThreads);
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
@@ -187,11 +185,6 @@ RenderProcessImpl::RenderProcessImpl()
         true);
   }
 #endif
-
-  // WebAssembly Threads require the feature flag.
-  if (enable_wasm_threads) {
-    blink::WebV8Features::EnableWasmThreads();
-  }
 
   // The following line enables V8 support for SharedArrayBuffer. Note that the
   // SharedArrayBuffer constructor will be added to every global object only if

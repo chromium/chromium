@@ -777,9 +777,9 @@ const base::Feature kTouchpadOverscrollHistoryNavigation {
 const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// This feature is for a reverse Origin Trial, enabling SharedArrayBuffer and
-// WebAssemblyThreads for sites as they migrate towards requiring cross-origin
-// isolation for these features.
+// This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
+// sites as they migrate towards requiring cross-origin isolation for these
+// features.
 // TODO(bbudge): Remove when the deprecation is complete.
 // https://developer.chrome.com/origintrials/#/view_trial/303992974847508481
 // https://crbug.com/1144104
@@ -843,15 +843,6 @@ const base::Feature kWebAssemblySimd{"WebAssemblySimd",
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable WebAssembly threads.
-// https://github.com/WebAssembly/threads
-// This feature is also enabled independently of this flag for cross-origin
-// isolated renderers.
-const base::Feature kWebAssemblyThreads {
-  "WebAssemblyThreads",
-      base::FEATURE_DISABLED_BY_DEFAULT
-};
 
 // Enable WebAssembly trap handler.
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \

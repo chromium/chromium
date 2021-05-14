@@ -32,14 +32,4 @@ void WebV8Features::EnableSharedArrayBuffer() {
   v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
 }
 
-void WebV8Features::EnableWasmThreads() {
-  static bool wasm_threads_enabled = false;
-  if (wasm_threads_enabled)
-    return;
-
-  wasm_threads_enabled = true;
-  constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
-  v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
-}
-
 }  // namespace blink

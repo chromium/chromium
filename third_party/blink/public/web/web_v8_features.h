@@ -26,9 +26,6 @@ class WebV8Features {
   // Enables SharedArrayBuffer for this process.
   BLINK_EXPORT static void EnableSharedArrayBuffer();
 
-  // Enables web assembly threads for this process.
-  BLINK_EXPORT static void EnableWasmThreads();
-
  private:
   WebV8Features() = delete;
 };

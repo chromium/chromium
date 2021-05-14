@@ -215,7 +215,6 @@ CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
 #endif  // defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
 CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
-CONTENT_EXPORT extern const base::Feature kWebAssemblyThreads;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTiering;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTrapHandler;
 CONTENT_EXPORT extern const base::Feature kWebAuth;

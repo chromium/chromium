@@ -162,7 +162,6 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
         // Disabled:
         {
             features::kSharedArrayBuffer,
-            features::kWebAssemblyThreads,
         });
   }
 
@@ -3060,7 +3059,6 @@ class UnrestrictedSharedArrayBufferOriginTrialBrowserTest
         {
             // Disabled
             features::kSharedArrayBuffer,
-            features::kWebAssemblyThreads,
         });
   }
 
@@ -3332,7 +3330,6 @@ class SharedArrayBufferOnDesktopBrowserTest
         {
             // Disabled
             features::kSharedArrayBuffer,
-            features::kWebAssemblyThreads,
         });
   }
 

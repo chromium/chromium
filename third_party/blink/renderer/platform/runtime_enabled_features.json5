@@ -1888,7 +1888,6 @@
     },
     {
       name: "SharedArrayBuffer",
-      status: "stable",
     },
     {
       name: "SharedArrayBufferOnDesktop",

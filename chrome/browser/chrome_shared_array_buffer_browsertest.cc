@@ -34,7 +34,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
         // Disabled:
         {
             features::kSharedArrayBuffer,
-            features::kWebAssemblyThreads,
             features::kSharedArrayBufferOnDesktop,
         });
   }

@@ -953,7 +953,6 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   // add support for extension opt-in into cross-origin isolation.
   if (extension->is_extension()) {
     blink::WebV8Features::EnableSharedArrayBuffer();
-    blink::WebV8Features::EnableWasmThreads();
   }
 
   active_extension_ids_.insert(extension_id);
