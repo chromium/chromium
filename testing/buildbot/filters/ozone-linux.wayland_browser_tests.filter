@@ -25,6 +25,7 @@
 
 # Fail on the bot, pass locally.
 -DesktopCaptureApiTest.ChooseDesktopMedia
+-IconLoaderBrowserTest.LoadGroup
 
 # TODO(https://crbug.com/1084469): fix these tests.
 
