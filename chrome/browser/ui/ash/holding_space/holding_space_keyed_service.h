@@ -112,7 +112,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   void AddItemOfType(HoldingSpaceItem::Type type,
                      const base::FilePath& file_path,
-                     const base::Optional<float>& progress = base::nullopt);
+                     const base::Optional<float>& progress = 1.f);
 
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }

@@ -169,9 +169,13 @@ bool HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
   return true;
 }
 
+bool HoldingSpaceItem::IsInProgress() const {
+  return progress_ != 1.f;
+}
+
 bool HoldingSpaceItem::UpdateProgress(const base::Optional<float>& progress) {
-  // NOTE: Once set to `1.f`, `progress_` becomes read-only.
-  if (progress_ == progress || progress_ == 1.f)
+  // NOTE: Progress can only be updated for in progress items.
+  if (progress_ == progress || !IsInProgress())
     return false;
 
   if (progress.has_value()) {

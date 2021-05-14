@@ -614,6 +614,134 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
   }
 }
 
+// Verifies that only finalized holding space items are persisted and that,
+// once finalized, previously in progress holding space items are persisted at
+// the appropriate index.
+TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
+  // Create a file system mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache the holding space model.
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  HoldingSpaceModel* const holding_space_model =
+      HoldingSpaceController::Get()->model();
+  EXPECT_EQ(holding_space_model, holding_space_service->model_for_testing());
+
+  // Initially, both the model and persistent storage should be empty.
+  EXPECT_EQ(holding_space_model->items().size(), 0u);
+  EXPECT_EQ(GetProfile()
+                ->GetPrefs()
+                ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
+                ->GetList()
+                .size(),
+            0u);
+
+  // Add a finalized item to holding space. Because the item is finalized, it
+  // should immediately be added to persistent storage.
+  base::FilePath file_path = downloads_mount->CreateArbitraryFile();
+  auto finalized_holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, file_path,
+      GetFileSystemUrl(GetProfile(), file_path),
+      base::BindOnce(&holding_space_util::ResolveImage,
+                     holding_space_service->thumbnail_loader_for_testing()));
+  auto* finalized_holding_space_item_ptr = finalized_holding_space_item.get();
+  holding_space_model->AddItem(std::move(finalized_holding_space_item));
+
+  base::ListValue persisted_holding_space_items;
+  persisted_holding_space_items.Append(
+      finalized_holding_space_item_ptr->Serialize());
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Add an in-progress item to holding space. Because the item is in progress,
+  // it should *not* be added to persistent storage.
+  file_path = downloads_mount->CreateArbitraryFile();
+  auto in_progress_holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, file_path,
+      GetFileSystemUrl(GetProfile(), file_path), /*progress=*/0.5f,
+      base::BindOnce(&holding_space_util::ResolveImage,
+                     holding_space_service->thumbnail_loader_for_testing()));
+  auto* in_progress_holding_space_item_ptr =
+      in_progress_holding_space_item.get();
+  holding_space_model->AddItem(std::move(in_progress_holding_space_item));
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Add another finalized item to holding space. Because the item is finalized,
+  // it should immediately be added to persistent storage.
+  file_path = downloads_mount->CreateArbitraryFile();
+  finalized_holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, file_path,
+      GetFileSystemUrl(GetProfile(), file_path),
+      base::BindOnce(&holding_space_util::ResolveImage,
+                     holding_space_service->thumbnail_loader_for_testing()));
+  finalized_holding_space_item_ptr = finalized_holding_space_item.get();
+  holding_space_model->AddItem(std::move(finalized_holding_space_item));
+
+  persisted_holding_space_items.Append(
+      finalized_holding_space_item_ptr->Serialize());
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Update the file path for a finalized item. Because the item is finalized,
+  // it should be updated immediately in persistent storage.
+  file_path = downloads_mount->CreateArbitraryFile();
+  holding_space_model->UpdateBackingFileForItem(
+      finalized_holding_space_item_ptr->id(), file_path,
+      GetFileSystemUrl(GetProfile(), file_path));
+
+  ASSERT_EQ(persisted_holding_space_items.GetList().size(), 2u);
+  persisted_holding_space_items.GetList()[1u] =
+      finalized_holding_space_item_ptr->Serialize();
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Update the file path for the in-progress item. Because the item is still in
+  // progress, it should not be added/updated to/in persistent storage.
+  file_path = downloads_mount->CreateArbitraryFile();
+  holding_space_model->UpdateBackingFileForItem(
+      in_progress_holding_space_item_ptr->id(), file_path,
+      GetFileSystemUrl(GetProfile(), file_path));
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Update the progress for the in-progress item. Because the item is still in
+  // progress it should not be added/updated to/in persistent storage.
+  holding_space_model->UpdateProgressForItem(
+      in_progress_holding_space_item_ptr->id(), 0.75f);
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  // Mark the in-progress item as finalized. Because the item is finalized, it
+  // should be added to persistent storage at the appropriate index.
+  holding_space_model->UpdateProgressForItem(
+      in_progress_holding_space_item_ptr->id(), 1.f);
+
+  ASSERT_EQ(persisted_holding_space_items.GetList().size(), 2u);
+  persisted_holding_space_items.Insert(
+      1u, base::Value::ToUniquePtrValue(
+              in_progress_holding_space_item_ptr->Serialize()));
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+}
+
 // Verifies that when a file backing a holding space item is moved, the holding
 // space item is updated in place and persistence storage is updated.
 TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {

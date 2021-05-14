@@ -106,9 +106,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   bool UpdateBackingFile(const base::FilePath& file_path,
                          const GURL& file_system_url);
 
+  // Returns whether the item is in progress.
+  bool IsInProgress() const;
+
   // Updates the `progress_` of the item, returning `false` to indicate no-op.
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
-  // NOTE: Once set to `1.f`, `progress_` becomes read-only.
+  // NOTE: Progress can only be updated for in progress items.
   bool UpdateProgress(const base::Optional<float>& progress);
 
   // Invalidates the current holding space image, so fresh image representations

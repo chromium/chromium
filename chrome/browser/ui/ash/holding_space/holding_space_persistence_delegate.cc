@@ -57,16 +57,17 @@ void HoldingSpacePersistenceDelegate::Init() {
   RestoreModelFromPersistence();
 }
 
-// TODO(crbug.com/1184438): Do not persist in-progress `items`.
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   if (is_restoring_persistence())
     return;
 
-  // Write the new `items` to persistent storage.
+  // Write the new finalized `items` to persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  for (const HoldingSpaceItem* item : items)
-    update->Append(item->Serialize());
+  for (const HoldingSpaceItem* item : items) {
+    if (!item->IsInProgress())
+      update->Append(item->Serialize());
+  }
 }
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
@@ -86,13 +87,16 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
   });
 }
 
-// TODO(crbug.com/1184438): Persist `items` no longer in-progress.
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   if (is_restoring_persistence())
     return;
 
-  // Update the `item` in persistent storage.
+  // Only finalized items are persisted.
+  if (item->IsInProgress())
+    return;
+
+  // Attempt to find the finalized `item` in persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   auto item_it = std::find_if(
       update->GetList().begin(), update->GetList().end(),
@@ -101,8 +105,26 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
                    persisted_item)) == item->id();
       });
 
-  DCHECK(item_it != update->GetList().end());
-  *item_it = item->Serialize();
+  // If the finalized `item` already exists in persistent storage, update it.
+  if (item_it != update->GetList().end()) {
+    *item_it = item->Serialize();
+    return;
+  }
+
+  // If the finalized `item` did not previously exist in persistent storage,
+  // insert it at the appropriate index.
+  item_it = update->GetList().begin();
+  for (const auto& candidate_item : model()->items()) {
+    if (candidate_item.get() == item) {
+      update->Insert(item_it, item->Serialize());
+      return;
+    }
+    if (!candidate_item->IsInProgress())
+      ++item_it;
+  }
+
+  // The finalized `item` should exist in the model and be handled above.
+  NOTREACHED();
 }
 
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
