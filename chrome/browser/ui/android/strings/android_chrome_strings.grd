@@ -2211,11 +2211,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CONTEXTMENU_PERFORMANCE_INFO_FAST" desc="This string is shown in the context sensitive menu for links and is shown underneath the link URL. It indicates to the user that the link's target page is fast-loading and responsive. [CHAR_LIMIT=30]">
         Fast page
       </message>
-      <message name="IDS_CONTEXTMENU_SHARE_HIGHLIGHTING" desc="This string is shown in the context menu for resharing the link-to-text.">
-        Share highlighting
+      <message name="IDS_CONTEXTMENU_SHARE_HIGHLIGHT" desc="This string is shown in the context menu for resharing the link-to-text.">
+        Share highlight
       </message>
-      <message name="IDS_CONTEXTMENU_REMOVE_HIGHLIGHTING" desc="This string is shown in the context menu for removing the scroll-to-text fragment.">
-        Remove highlighting
+      <message name="IDS_CONTEXTMENU_REMOVE_HIGHLIGHT" desc="This string is shown in the context menu for removing the scroll-to-text fragment.">
+        Remove highlight
       </message>
       <message name="IDS_CONTEXTMENU_LEARN_MORE" desc="This string is shown in the context menu for learning more about shared highlighting.">
         Learn more...

@@ -13667,6 +13667,9 @@ Called by update_net_error_codes.py.-->
   <int value="33" label="Read later"/>
   <int value="34" label="Shop with Google Lens Chip"/>
   <int value="35" label="Translate with Google Lens Chip"/>
+  <int value="36" label="Share an highlighted text"/>
+  <int value="37" label="Remove an highlighted text"/>
+  <int value="38" label="Learn more about the shared highlighting feature"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">

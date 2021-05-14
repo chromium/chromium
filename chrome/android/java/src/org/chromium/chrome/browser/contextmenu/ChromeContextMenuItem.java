@@ -130,8 +130,8 @@ class ChromeContextMenuItem {
             R.id.contextmenu_copy, // Item.COPY
             R.id.contextmenu_save_video, // Item.SAVE_VIDEO
             R.id.contextmenu_open_in_chrome, // Item.OPEN_IN_CHROME
-            R.id.contextmenu_share_highlighting, // Item.SHARE_HIGHLIGHT
-            R.id.contextmenu_remove_highlighting, // Item.REMOVE_HIGHLIGHT
+            R.id.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
+            R.id.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
             R.id.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
@@ -174,8 +174,8 @@ class ChromeContextMenuItem {
             R.string.contextmenu_copy, // Item.COPY:
             R.string.contextmenu_save_video, // Item.SAVE_VIDEO:
             R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
-            R.string.contextmenu_share_highlighting, // Item.SHARE_HIGHLIGHT
-            R.string.contextmenu_remove_highlighting, // Item.REMOVE_HIGHLIGHT
+            R.string.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
+            R.string.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
             R.string.contextmenu_learn_more, // Item.LEARN_MORE
     };
 

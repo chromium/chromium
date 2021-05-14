@@ -1145,8 +1145,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                 ()
                         -> mShareDelegate,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL, ExternalAuthUtils.getInstance());
-        Integer[] expectedItems = {R.id.contextmenu_share_highlighting,
-                R.id.contextmenu_remove_highlighting, R.id.contextmenu_learn_more};
+        Integer[] expectedItems = {R.id.contextmenu_share_highlight,
+                R.id.contextmenu_remove_highlight, R.id.contextmenu_learn_more};
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
                 assertMenuItemsAreEqual(coordinator, expectedItems);
