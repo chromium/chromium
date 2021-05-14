@@ -14,7 +14,7 @@
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 namespace {
@@ -111,4 +111,4 @@ void ReadDirectory::OnError(int /* request_id */,
 
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 
 #include "extensions/browser/event_router.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 namespace util {
@@ -33,4 +33,4 @@ void LogStatusCallback(StatusCallbackLog* log, base::File::Error result) {
 }  // namespace util
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

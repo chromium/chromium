@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 
@@ -51,4 +51,4 @@ void Configure::OnError(int /* request_id */,
 
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

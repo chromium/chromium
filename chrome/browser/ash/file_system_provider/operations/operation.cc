@@ -11,7 +11,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 namespace {
@@ -56,4 +56,4 @@ bool Operation::SendEvent(int request_id,
 
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash

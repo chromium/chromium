@@ -288,9 +288,12 @@ class ProvidedFileSystemInterface {
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 namespace file_system_provider {
+using ::chromeos::file_system_provider::Action;
+using ::chromeos::file_system_provider::Actions;
 using ::chromeos::file_system_provider::EntryMetadata;
 using ::chromeos::file_system_provider::OPEN_FILE_MODE_READ;
 using ::chromeos::file_system_provider::OPEN_FILE_MODE_WRITE;
+using ::chromeos::file_system_provider::OpenFileMode;
 using ::chromeos::file_system_provider::ProvidedFileSystemInterface;
 }  // namespace file_system_provider
 }  // namespace ash

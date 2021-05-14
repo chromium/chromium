@@ -17,14 +17,14 @@
 
 namespace base {
 class ListValue;
-}
+}  // namespace base
 
 namespace extensions {
 struct Event;
 class EventRouter;
-}
+}  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 
@@ -68,6 +68,6 @@ class Operation : public RequestManager::HandlerInterface {
 
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_OPERATION_H_

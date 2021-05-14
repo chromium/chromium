@@ -24,7 +24,7 @@ namespace extensions {
 class EventRouter;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 
@@ -68,6 +68,6 @@ class GetMetadata : public Operation {
 
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_GET_METADATA_H_

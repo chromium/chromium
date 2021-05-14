@@ -15,7 +15,7 @@ namespace extensions {
 struct Event;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 namespace file_system_provider {
 namespace operations {
 namespace util {
@@ -49,6 +49,6 @@ void LogStatusCallback(StatusCallbackLog* log, base::File::Error result);
 }  // namespace util
 }  // namespace operations
 }  // namespace file_system_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_TEST_UTIL_H_

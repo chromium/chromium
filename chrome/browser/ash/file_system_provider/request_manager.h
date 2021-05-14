@@ -194,4 +194,11 @@ class RequestManager {
 }  // namespace file_system_provider
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace file_system_provider {
+using ::chromeos::file_system_provider::RequestManager;
+}  // namespace file_system_provider
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_MANAGER_H_
