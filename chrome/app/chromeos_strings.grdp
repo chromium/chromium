@@ -367,7 +367,7 @@
     Your device EID
   </message>
   <message name="IDS_CELLULAR_SETUP_EID_POPUP_DESCRIPTION" desc="Label shown when veiwing EID and QR code popup describing what an EID number is used for">
-    A customer service rep can use the EID number to help you activate service.
+    A customer service rep can use this EID number to help you activate service
   </message>
   <message name="IDS_CELLULAR_SETUP_EID_POPUP_A11Y_LABEL" desc="A11y label for EID and QR code dialog describing what the device's EID number is and what it's used for">
     Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph>. A customer service rep can use the EID number to help you activate service.
