@@ -76,6 +76,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
   void AddTrustedRecoveryMethod(
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
+      int method_type_hint,
       AddTrustedRecoveryMethodCallback callback) override {
     if (!base::FeatureList::IsEnabled(
             switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
@@ -90,8 +91,8 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
       return;
     }
 
-    sync_service_->AddTrustedVaultRecoveryMethodFromWeb(gaia_id, public_key,
-                                                        std::move(callback));
+    sync_service_->AddTrustedVaultRecoveryMethodFromWeb(
+        gaia_id, public_key, method_type_hint, std::move(callback));
   }
 
  private:

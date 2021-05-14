@@ -248,13 +248,14 @@ void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
 void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
-                     backend_, gaia_id, public_key,
+                     backend_, gaia_id, public_key, method_type_hint,
                      BindToCurrentSequence(std::move(cb))));
 }
 

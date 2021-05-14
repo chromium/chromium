@@ -1675,9 +1675,10 @@ void ProfileSyncService::AddTrustedVaultDecryptionKeysFromWeb(
 void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure callback) {
   sync_client_->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
-      gaia_id, public_key, std::move(callback));
+      gaia_id, public_key, method_type_hint, std::move(callback));
 }
 
 base::WeakPtr<JsController> ProfileSyncService::GetJsController() {

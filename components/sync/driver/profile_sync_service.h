@@ -136,6 +136,7 @@ class ProfileSyncService : public SyncService,
   void AddTrustedVaultRecoveryMethodFromWeb(
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
+      int method_type_hint,
       base::OnceClosure callback) override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;

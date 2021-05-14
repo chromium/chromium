@@ -145,6 +145,7 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure cb) {
   // TODO(crbug.com/1100279): Needs implementation.
   NOTIMPLEMENTED();

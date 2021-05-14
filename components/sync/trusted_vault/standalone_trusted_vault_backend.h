@@ -95,6 +95,7 @@ class StandaloneTrustedVaultBackend
   // Registers a new trusted recovery method that can be used to retrieve keys.
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
+                                int method_type_hint,
                                 base::OnceClosure cb);
 
   base::Optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;

@@ -77,6 +77,7 @@ class MockSyncService : public SyncService {
               AddTrustedVaultRecoveryMethodFromWeb,
               (const std::string& gaia_id,
                const std::vector<uint8_t>& public_key,
+               int method_type_hint,
                base::OnceClosure callback),
               (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));

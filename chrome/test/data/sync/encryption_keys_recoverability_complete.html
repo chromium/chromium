@@ -4,7 +4,8 @@
 window.onload = function() {
   chrome.addTrustedSyncEncryptionRecoveryMethod(() => { window.close(); },
                                                 /*gaia_id=*/location.search.substring(1),
-                                                /*public_key=*/new ArrayBuffer(7));
+                                                /*public_key=*/new ArrayBuffer(7),
+                                                /*method_type_hint=*/2);
 }
 </script>
 </head>

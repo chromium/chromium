@@ -160,6 +160,7 @@ void FakeSyncService::AddTrustedVaultDecryptionKeysFromWeb(
 void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure callback) {}
 
 void FakeSyncService::Shutdown() {}

@@ -15,6 +15,9 @@ interface SyncEncryptionKeysExtension {
                     int32 last_key_version) => ();
 
   // Registers a new trusted recovery method that can be used by other clients
-  // to retrieve sync trusted vault encryption keys.
-  AddTrustedRecoveryMethod(string gaia_id, array<uint8> public_key) => ();
+  // to retrieve sync trusted vault encryption keys. |method_type_hint| is an
+  // opaque value provided server-side that may be used for related future
+  // interactions with the server.
+  AddTrustedRecoveryMethod(string gaia_id, array<uint8> public_key,
+                           int32 method_type_hint) => ();
 };

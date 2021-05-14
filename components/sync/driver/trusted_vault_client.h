@@ -86,9 +86,12 @@ class TrustedVaultClient {
 
   // Registers a new trusted recovery method that can be used to retrieve keys,
   // usually for the purpose of resolving a recoverability-degraded case
-  // surfaced by GetIsRecoverabilityDegraded().
+  // surfaced by GetIsRecoverabilityDegraded(). |method_type_hint| is an opaque
+  // value provided server-side that may be used for related future
+  // interactions with the server.
   virtual void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                         const std::vector<uint8_t>& public_key,
+                                        int method_type_hint,
                                         base::OnceClosure cb) = 0;
 
  private:

@@ -83,6 +83,7 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
 void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure callback) {
   // TODO(crbug.com/1100278): Needs implementation.
   std::move(callback).Run();

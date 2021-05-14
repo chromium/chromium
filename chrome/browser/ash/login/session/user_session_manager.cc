@@ -406,8 +406,9 @@ void SaveSyncTrustedVaultKeysToProfile(
 
   for (const std::vector<uint8_t>& trusted_public_key :
        trusted_vault_keys.trusted_public_keys()) {
+    // TODO(crbug.com/1081650): Add parsing of the method type.
     sync_service->AddTrustedVaultRecoveryMethodFromWeb(
-        gaia_id, trusted_public_key, base::DoNothing());
+        gaia_id, trusted_public_key, /*method_type_hint=*/0, base::DoNothing());
   }
 }
 

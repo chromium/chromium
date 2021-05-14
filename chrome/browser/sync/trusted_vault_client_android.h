@@ -63,6 +63,7 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
                                    base::OnceCallback<void(bool)> cb) override;
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
+                                int method_type_hint,
                                 base::OnceClosure cb) override;
 
  private:

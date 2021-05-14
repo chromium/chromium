@@ -216,6 +216,7 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
 void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
+    int method_type_hint,
     base::OnceClosure cb) {
   if (primary_account_->gaia == gaia_id) {
     // TODO(crbug.com/1081649): Implement logic.
