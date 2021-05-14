@@ -45,6 +45,9 @@ bool GpuFenceHandle::is_null() const {
 }
 
 GpuFenceHandle GpuFenceHandle::Clone() const {
+  if (is_null())
+    return GpuFenceHandle();
+
   gfx::GpuFenceHandle handle;
 #if defined(OS_POSIX)
   const int duped_handle = HANDLE_EINTR(dup(owned_fd.get()));
