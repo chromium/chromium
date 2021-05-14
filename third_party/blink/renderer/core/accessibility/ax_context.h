@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
@@ -21,7 +22,8 @@ class CORE_EXPORT AXContext {
   USING_FAST_MALLOC(AXContext);
 
  public:
-  explicit AXContext(Document& document);
+  explicit AXContext(Document& document,
+                     const ui::AXMode& mode = ui::kAXModeComplete);
   AXContext(const AXContext&) = delete;
   AXContext& operator=(const AXContext&) = delete;
   virtual ~AXContext();
@@ -36,8 +38,11 @@ class CORE_EXPORT AXContext {
 
   Document* GetDocument();
 
+  ui::AXMode GetAXMode() { return ax_mode_; }
+
  protected:
   WeakPersistent<Document> document_;
+  const ui::AXMode ax_mode_;
 };
 
 }  // namespace blink

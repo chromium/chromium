@@ -33,6 +33,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 
+namespace ui {
+class AXMode;
+}
+
 namespace blink {
 
 class AbstractInlineTextBox;
@@ -51,7 +55,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                                 BlinkAXEventIntentHash,
                                                 BlinkAXEventIntentHashTraits>;
 
-  static AXObjectCache* Create(Document&);
+  static AXObjectCache* Create(Document&, const ui::AXMode&);
 
   AXObjectCache(const AXObjectCache&) = delete;
   AXObjectCache& operator=(const AXObjectCache&) = delete;
@@ -59,6 +63,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Trace(Visitor*) const {}
 
   virtual void Dispose() = 0;
+
+  virtual const ui::AXMode& GetAXMode() = 0;
+  virtual void SetAXMode(const ui::AXMode&) = 0;
 
   // A Freeze() occurs during a serialization run.
   // Used here as a hint for DCHECKS to enforce the following behavior:
@@ -165,7 +172,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXID GetAXID(Node*) = 0;
   virtual Element* GetElementFromAXID(AXID) = 0;
 
-  typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&);
+  typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
+                                                        const ui::AXMode&);
   static void Init(AXObjectCacheCreateFunction);
 
   // Static helper functions.

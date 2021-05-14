@@ -50,9 +50,10 @@ void AXObjectCache::Init(AXObjectCacheCreateFunction function) {
   create_function_ = function;
 }
 
-AXObjectCache* AXObjectCache::Create(Document& document) {
+AXObjectCache* AXObjectCache::Create(Document& document,
+                                     const ui::AXMode& ax_mode) {
   DCHECK(create_function_);
-  return create_function_(document);
+  return create_function_(document, ax_mode);
 }
 
 namespace {

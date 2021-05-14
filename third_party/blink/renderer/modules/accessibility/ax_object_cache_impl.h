@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
@@ -65,14 +66,17 @@ class MODULES_EXPORT AXObjectCacheImpl
     : public AXObjectCacheBase,
       public mojom::blink::PermissionObserver {
  public:
-  static AXObjectCache* Create(Document&);
+  static AXObjectCache* Create(Document&, const ui::AXMode&);
 
-  explicit AXObjectCacheImpl(Document&);
+  AXObjectCacheImpl(Document&, const ui::AXMode&);
   ~AXObjectCacheImpl() override;
   void Trace(Visitor*) const override;
 
   Document& GetDocument() { return *document_; }
   AXObject* FocusedObject();
+
+  const ui::AXMode& GetAXMode() override;
+  void SetAXMode(const ui::AXMode&) override;
 
   void Dispose() override;
 
@@ -437,6 +441,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkElementDirtyWithCleanLayout(const Node*, bool subtree);
 
   Member<Document> document_;
+  ui::AXMode ax_mode_;
   HeapHashMap<AXID, Member<AXObject>> objects_;
   // LayoutObject and AbstractInlineTextBox are not on the Oilpan heap so we
   // do not use HeapHashMap for those mappings.
