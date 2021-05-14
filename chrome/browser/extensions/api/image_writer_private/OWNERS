@@ -1,0 +1,4 @@
+per-file *_messages.cc=set noparent
+per-file *_messages.cc=file://ipc/SECURITY_OWNERS
+per-file *_messages*.h=set noparent
+per-file *_messages*.h=file://ipc/SECURITY_OWNERS

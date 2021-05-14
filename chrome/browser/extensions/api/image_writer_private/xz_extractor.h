@@ -56,6 +56,7 @@ class XzExtractor : public SingleFileTarReader::Delegate {
   bool WriteContents(const char* data,
                      int size,
                      std::string* error_id) override;
+  bool SetContentsLength(uint64_t length, std::string* error_id) override;
 
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::XzFileExtractor> remote_xz_file_extractor_;
