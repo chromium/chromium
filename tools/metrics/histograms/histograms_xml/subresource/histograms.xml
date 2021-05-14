@@ -647,7 +647,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.Blink.Ineligibility"
-    enum="BlinkSubresourceRedirectIneligibility" expires_after="2021-10-10">
+    enum="BlinkSubresourceRedirectIneligibility" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -657,7 +657,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.BypassDuration" units="ms"
-    expires_after="M92">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -670,7 +670,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
-    enum="HttpResponseCode" expires_after="2021-10-25">
+    enum="HttpResponseCode" expires_after="M96">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -682,7 +682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
-    enum="Boolean" expires_after="M92">
+    enum="Boolean" expires_after="M96">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
-    expires_after="M92">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -703,7 +703,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
-    expires_after="2021-10-10">
+    expires_after="M96">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -713,7 +713,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
-    expires_after="2021-10-10">
+    expires_after="M96">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -723,7 +723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
-    enum="HttpsImageCompressionInfoBarAction" expires_after="2021-10-25">
+    enum="HttpsImageCompressionInfoBarAction" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
   <summary>
@@ -733,7 +733,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.LitePagesService.BypassResult"
-    enum="Boolean" expires_after="M92">
+    enum="Boolean" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -744,7 +744,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult"
-    enum="SubresourceRedirectRedirectResult" expires_after="M92">
+    enum="SubresourceRedirectRedirectResult" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -755,7 +755,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.PageLoad.BypassResult" enum="Boolean"
-    expires_after="M92">
+    expires_after="M96">
   <obsolete>
     Replaced by SubresourceRedirect.LitePagesService.BypassResult on 11/2020
   </obsolete>
@@ -768,7 +768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.ApplyDuration"
-    units="ms" expires_after="M92">
+    units="ms" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -780,7 +780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.Count" units="count"
-    expires_after="M92">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -791,7 +791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.ReceiveResult"
-    enum="SubresourceRedirectRobotsRulesReceiveResult" expires_after="M92">
+    enum="SubresourceRedirectRobotsRulesReceiveResult" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -802,7 +802,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit"
-    units="BooleanCacheHit" expires_after="M92">
+    units="BooleanCacheHit" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.CacheHit" units="ms"
-    expires_after="M92">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -823,7 +823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.NetErrorCode"
-    enum="NetErrorCodes" expires_after="M92">
+    enum="NetErrorCodes" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -833,7 +833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.ResponseCode"
-    units="HttpResponseCode" expires_after="M92">
+    units="HttpResponseCode" expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
