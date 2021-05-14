@@ -17,6 +17,10 @@
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 #include "url/gurl.h"
 
+namespace storage {
+class StorageKey;
+}  // namespace storage
+
 namespace content {
 
 class BrowserContext;
@@ -32,7 +36,8 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   BrowserContext* browser_context();
   PaymentManager* CreatePaymentManager(const GURL& scope_url,
                                        const GURL& sw_script_url);
-  void UnregisterServiceWorker(const GURL& scope_url);
+  void UnregisterServiceWorker(const GURL& scope_url,
+                               const storage::StorageKey& key);
 
   void ResetPaymentAppInvoked() const;
   int64_t last_sw_registration_id() const;

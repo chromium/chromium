@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -433,7 +434,9 @@ void GetNonWindowClients(
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it = controller->context()->GetClientContainerHostIterator(
-               controller->origin().GetURL(),
+               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
+               // implements StorageKey.
+               storage::StorageKey(controller->origin()),
                false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
@@ -476,7 +479,9 @@ void GetWindowClients(
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it = controller->context()->GetClientContainerHostIterator(
-               controller->origin().GetURL(),
+               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
+               // implements StorageKey.
+               storage::StorageKey(controller->origin()),
                false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
@@ -654,7 +659,10 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
 
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context->GetClientContainerHostIterator(
-               origin, true /* include_reserved_clients */,
+               // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
+               // implements StorageKey.
+               storage::StorageKey(url::Origin::Create(origin)),
+               true /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();

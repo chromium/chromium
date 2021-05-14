@@ -823,7 +823,9 @@ void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(
   // while they are in bfcache or after they are restored from bfcache.
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_->GetClientContainerHostIterator(
-               registration->scope().GetOrigin(),
+               // TODO(crbug.com/1199077): Update this when
+               // ServiceWorkerRegistration implements StorageKey.
+               storage::StorageKey(registration->origin()),
                true /* include_reserved_clients */,
                true /* include_back_forward_cached_clients */);
        !it->IsAtEnd(); it->Advance()) {

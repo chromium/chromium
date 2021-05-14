@@ -473,8 +473,11 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
       options.update_via_cache);
   // TODO(bashi): Pass a valid outside fetch client settings object. Perhaps
   // changing this method to take a settings object.
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
   context()->RegisterServiceWorker(
-      net::SimplifyUrlForRequest(script_url), options_to_pass,
+      net::SimplifyUrlForRequest(script_url),
+      storage::StorageKey(url::Origin::Create(options.scope)), options_to_pass,
       blink::mojom::FetchClientSettingsObject::New(
           network::mojom::ReferrerPolicy::kDefault,
           /*outgoing_referrer=*/script_url,
@@ -495,9 +498,11 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
-
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
   context()->UnregisterServiceWorker(
-      net::SimplifyUrlForRequest(scope), /*is_immediate=*/false,
+      net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)), /*is_immediate=*/false,
       WrapResultCallbackToTakeStatusCode(std::move(callback)));
 }
 
@@ -590,8 +595,10 @@ void ServiceWorkerContextWrapper::DeleteForOriginOnUIThread(
                               base::BindOnce(std::move(callback), false));
     return;
   }
-  context()->DeleteForOrigin(
-      origin,
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
+  context()->DeleteForStorageKey(
+      storage::StorageKey(origin),
       base::BindOnce(
           [](ResultCallback callback,
              scoped_refptr<base::TaskRunner> callback_runner,
@@ -615,8 +622,11 @@ void ServiceWorkerContextWrapper::CheckHasServiceWorker(
                                   ServiceWorkerCapability::NO_SERVICE_WORKER));
     return;
   }
-  context()->CheckHasServiceWorker(net::SimplifyUrlForRequest(url),
-                                   std::move(callback));
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
+  context()->CheckHasServiceWorker(
+      net::SimplifyUrlForRequest(url),
+      storage::StorageKey(url::Origin::Create(url)), std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::CheckOfflineCapability(
@@ -631,8 +641,11 @@ void ServiceWorkerContextWrapper::CheckOfflineCapability(
                        blink::mojom::kInvalidServiceWorkerRegistrationId));
     return;
   }
-  context()->CheckOfflineCapability(net::SimplifyUrlForRequest(url),
-                                    std::move(callback));
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
+  context()->CheckOfflineCapability(
+      net::SimplifyUrlForRequest(url),
+      storage::StorageKey(url::Origin::Create(url)), std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::ClearAllServiceWorkersForTest(
@@ -859,7 +872,10 @@ void ServiceWorkerContextWrapper::HasMainFrameWindowClient(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
-  context_core_->HasMainFrameWindowClient(origin, std::move(callback));
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
+  context_core_->HasMainFrameWindowClient(
+      storage::StorageKey(url::Origin::Create(origin)), std::move(callback));
 }
 
 std::unique_ptr<std::vector<GlobalFrameRoutingId>>
@@ -871,10 +887,12 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
       new std::vector<GlobalFrameRoutingId>());
   if (!context_core_)
     return frame_routing_ids;
-
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextWrapper
+  // implements StorageKey.
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_core_->GetWindowClientContainerHostIterator(
-               origin, /*include_reserved_clients=*/false);
+               storage::StorageKey(url::Origin::Create(origin)),
+               /*include_reserved_clients=*/false);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
     DCHECK(container_host->IsContainerForWindowClient());

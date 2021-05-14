@@ -107,12 +107,15 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   int64_t service_worker_registration_id =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
 
+  const storage::StorageKey key(origin);
+
   {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GetScopeForId(origin.GetURL().spec(), next_pattern_id_++);
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->RegisterServiceWorker(
-        script_url, options, blink::mojom::FetchClientSettingsObject::New(),
+        script_url, key, options,
+        blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&DidRegisterServiceWorker,
                        &service_worker_registration_id,
                        run_loop.QuitClosure()));
@@ -131,7 +134,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   {
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-        service_worker_registration_id, storage::StorageKey(origin),
+        service_worker_registration_id, key,
         base::BindOnce(&DidFindServiceWorkerRegistration,
                        &service_worker_registration, run_loop.QuitClosure()));
 
@@ -155,8 +158,11 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
 void BackgroundFetchTestBase::UnregisterServiceWorker(
     int64_t service_worker_registration_id) {
   base::RunLoop run_loop;
+  const GURL scope = GetScopeForId(kTestOrigin, service_worker_registration_id);
+  // TODO(crbug.com/1199077): Update this when background fetch implements
+  // StorageKey.
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
-      GetScopeForId(kTestOrigin, service_worker_registration_id),
+      scope, storage::StorageKey(url::Origin::Create(scope)),
       /*is_immediate=*/false,
       base::BindOnce(&DidUnregisterServiceWorker, run_loop.QuitClosure()));
   run_loop.Run();

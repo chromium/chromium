@@ -290,7 +290,9 @@ void ServiceWorkerRegistration::ClaimClients() {
   const bool include_back_forward_cached_clients = true;
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_->GetClientContainerHostIterator(
-               scope_.GetOrigin(), include_reserved_clients,
+               // TODO(crbug.com/1199077): Update this when
+               // ServiceWorkerRegistration implements StorageKey.
+               storage::StorageKey(origin_), include_reserved_clients,
                include_back_forward_cached_clients);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();

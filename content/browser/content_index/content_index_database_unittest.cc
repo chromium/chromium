@@ -240,9 +240,11 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
       options.scope = origin_.GetURL();
+      storage::StorageKey key(origin_);
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->RegisterServiceWorker(
-          script_url, options, blink::mojom::FetchClientSettingsObject::New(),
+          script_url, key, options,
+          blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(&DidRegisterServiceWorker,
                          &service_worker_registration_id,
                          run_loop.QuitClosure()));

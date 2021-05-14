@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -174,8 +175,9 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   bool called = false;
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL(kServiceWorkerScope);
+  storage::StorageKey key(url::Origin::Create(GURL(kServiceWorkerScope)));
   embedded_worker_helper_->context()->RegisterServiceWorker(
-      GURL(kServiceWorkerScript), options,
+      GURL(kServiceWorkerScript), key, options,
       blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called,
                      &sw_registration_id_));

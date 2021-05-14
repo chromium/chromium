@@ -259,9 +259,11 @@ void ServiceWorkerRegistrationObjectHost::Unregister(
               ServiceWorkerConsts::kServiceWorkerUnregisterErrorPrefix))) {
     return;
   }
-
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
+  // implements StorageKey.
   context_->UnregisterServiceWorker(
-      registration_->scope(), /*is_immediate=*/false,
+      registration_->scope(), storage::StorageKey(registration_->origin()),
+      /*is_immediate=*/false,
       base::AdaptCallbackForRepeating(base::BindOnce(
           &ServiceWorkerRegistrationObjectHost::UnregistrationComplete,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback))));

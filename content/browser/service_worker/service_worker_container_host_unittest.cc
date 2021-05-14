@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -275,7 +276,10 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   bool CanFindClientContainerHost(ServiceWorkerContainerHost* container_host) {
     for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
              context_->GetClientContainerHostIterator(
-                 container_host->url().GetOrigin(),
+                 // TODO(crbug.com/1199077): Update this when
+                 // ServiceWorkerContainerHost implements StorageKey.
+                 storage::StorageKey(
+                     url::Origin::Create(container_host->url())),
                  false /* include_reserved_clients */,
                  false /* include_back_forward_cached_clients */);
          !it->IsAtEnd(); it->Advance()) {

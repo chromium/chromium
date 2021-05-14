@@ -1267,7 +1267,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
 
   if (storage_key_state ==
       storage::mojom::ServiceWorkerStorageStorageKeyState::kDelete) {
-    context_->NotifyAllRegistrationsDeletedForOrigin(key.origin());
+    context_->NotifyAllRegistrationsDeletedForStorageKey(key);
     if (storage_policy_observer_)
       storage_policy_observer_->StopTrackingOrigin(key.origin());
   }

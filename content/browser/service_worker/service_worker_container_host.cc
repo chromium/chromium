@@ -207,8 +207,13 @@ void ServiceWorkerContainerHost::Register(
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::mojom::ServiceWorkerErrorType::kUnknown,
       std::string(), nullptr);
+
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
+  // implements StorageKey.
+  storage::StorageKey key(url::Origin::Create(options->scope));
   context_->RegisterServiceWorker(
-      script_url, *options, std::move(outside_fetch_client_settings_object),
+      script_url, key, *options,
+      std::move(outside_fetch_client_settings_object),
       base::BindOnce(&ServiceWorkerContainerHost::RegistrationComplete,
                      weak_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
