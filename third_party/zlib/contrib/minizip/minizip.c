@@ -28,7 +28,7 @@
         #endif
 #endif
 
-#if defined(__APPLE__) || defined(__Fuchsia__)
+#ifdef __APPLE__
 // In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
 #define FOPEN_FUNC(filename, mode) fopen(filename, mode)
 #define FTELLO_FUNC(stream) ftello(stream)
@@ -94,7 +94,7 @@ uLong filetime(f, tmzip, dt)
   return ret;
 }
 #else
-#if defined(unix) || defined(__APPLE__) || defined(__Fuchsia__)
+#ifdef unix || __APPLE__
 uLong filetime(f, tmzip, dt)
     char *f;               /* name of file to get info on */
     tm_zip *tmzip;         /* return value: access, modific. and creation times */
