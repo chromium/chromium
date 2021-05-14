@@ -327,7 +327,7 @@ void LastDownloadFinder::OnMetadataQuery(
                        weak_ptr_factory_.GetWeakPtr(), profile));
   } else {
     // else wait until history is loaded.
-    history_service_observer_.Add(history_service);
+    history_service_observations_.AddObservation(history_service);
   }
 }
 
@@ -436,7 +436,7 @@ void LastDownloadFinder::OnHistoryServiceLoaded(
 
 void LastDownloadFinder::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.Remove(history_service);
+  history_service_observations_.RemoveObservation(history_service);
 }
 
 }  // namespace safe_browsing
