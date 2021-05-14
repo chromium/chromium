@@ -62,6 +62,10 @@ DevToolsAgent* DevToolsAgentFromContext(ExecutionContext* execution_context) {
 
 }  // namespace
 
+// Used by the DevToolsAgent class to bind the passed |receiver| on the IO
+// thread. Lives on the IO thread and posts to |inspector_task_runner| to do
+// actual work. This class is used when DevToolsAgent runs on a worker so we
+// don't block its execution.
 class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
  public:
   IOAgent(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -84,9 +88,11 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
 
   void BindInterface(
       mojo::PendingReceiver<mojom::blink::DevToolsAgent> receiver) {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     receiver_.Bind(std::move(receiver), io_task_runner_);
   }
 
+  // May be called from any thread.
   void DeleteSoon() { io_task_runner_->DeleteSoon(FROM_HERE, this); }
 
   ~IOAgent() override = default;
@@ -100,6 +106,7 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
       const WTF::String& session_id) override {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
     inspector_task_runner_->AppendTask(CrossThreadBindOnce(
         &::blink::DevToolsAgent::AttachDevToolsSessionImpl, agent_,
@@ -116,10 +123,30 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
   void ReportChildWorkers(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
-    inspector_task_runner_->AppendTask(CrossThreadBindOnce(
-        &::blink::DevToolsAgent::ReportChildWorkersPostCallbackToIO, agent_,
-        report, wait_for_debugger, CrossThreadBindOnce(std::move(callback))));
+
+    // Splitting the mojo callback so we don't drop it if the
+    // inspector_task_runner_ has been disposed already.
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
+    bool did_append_task =
+        inspector_task_runner_->AppendTask(CrossThreadBindOnce(
+            &::blink::DevToolsAgent::ReportChildWorkersPostCallbackToIO, agent_,
+            report, wait_for_debugger,
+            CrossThreadBindOnce(std::move(split_callback.first))));
+
+    if (!did_append_task) {
+      // If the task runner is no longer processing tasks (typically during
+      // shutdown after InspectorTaskRunner::Dispose() has been called), `this`
+      // is expected to be destroyed shortly after by a task posted to the IO
+      // thread in DeleteSoon(). Until that task runs and tears down the Mojo
+      // endpoint, Mojo expects all reply callbacks to be properly handled and
+      // not simply dropped on the floor, so just invoke `callback` even though
+      // it's somewhat pointless. Note that even if InspectorTaskRunner did
+      // successfully append a task it's not guaranteed that it'll be executed
+      // but it also won't simply be dropped.
+      std::move(split_callback.second).Run();
+    }
   }
 
  private:

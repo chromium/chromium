@@ -43,14 +43,20 @@ class CORE_EXPORT InspectorTaskRunner final
   // Can be called from any thread other than isolate's thread.
   // This method appends a task, and both posts to the isolate's task runner
   // and requests interrupt. Whatever comes first - executes the task.
+  // Returns if the task has been appended or discarded if this runner has
+  // already been disposed. Note that successfully appending a task does not
+  // guarantee that it'll run, e.g. if Dispose() is called before it runs.
   using Task = CrossThreadOnceClosure;
-  void AppendTask(Task) LOCKS_EXCLUDED(mutex_);
+  bool AppendTask(Task) LOCKS_EXCLUDED(mutex_);
 
   // Can be called from any thread other than isolate's thread.
   // This method appends a task and posts to the isolate's task runner to
   // request that the next task be executed, but does not interrupt V8
   // execution.
-  void AppendTaskDontInterrupt(Task) LOCKS_EXCLUDED(mutex_);
+  // Returns if the task has been appended or discarded if this runner has
+  // already been disposed. Note that successfully appending a task does not
+  // guarantee that it'll run, e.g. if Dispose() is called before it runs.
+  bool AppendTaskDontInterrupt(Task) LOCKS_EXCLUDED(mutex_);
 
   scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner() {
     return isolate_task_runner_;

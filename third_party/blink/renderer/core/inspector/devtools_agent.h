@@ -30,6 +30,11 @@ class InspectorTaskRunner;
 class WorkerThread;
 struct WorkerDevToolsParams;
 
+// All public methods of this class are expected to be called on the same thread
+// that created the instance. That might be the main thread or a worker thread.
+// If used on a worker via BindReceiverForWorker() this class will delegate
+// internally to the IO thread to avoid blocking the worker thread. See
+// DevToolsAgent::IOAgent for more details.
 class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
                                   public mojom::blink::DevToolsAgent {
  public:

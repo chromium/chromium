@@ -109,6 +109,7 @@ _CONFIG = [
 
             # //base/callback_helpers.h.
             'base::DoNothing',
+            'base::SplitOnceCallback',
 
             # //base/callback.h is allowed, but you need to use WTF::Bind or
             # WTF::BindRepeating to create callbacks in Blink.
