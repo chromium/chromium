@@ -264,7 +264,7 @@ void CameraHalDelegate::GetSupportedFormats(
         continue;
       }
 
-      CAMERA_LOG(EVENT) << "Supported format: " << width << "x" << height
+      CAMERA_LOG(DEBUG) << "Supported format: " << width << "x" << height
                         << " fps=" << fps
                         << " format=" << cr_format.video_format;
       supported_formats->emplace_back(gfx::Size(width, height), fps,
