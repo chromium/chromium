@@ -173,8 +173,9 @@ class InstanceRegistry {
   std::map<const Instance::InstanceKey, InstancePtr> states_;
   Instances deltas_pending_;
 
-  // Maps from app id to app windows.
-  std::map<const std::string, std::set<aura::Window*>> app_id_to_app_windows_;
+  // Maps from app id to app instance key.
+  std::map<const std::string, std::set<const Instance::InstanceKey>>
+      app_id_to_app_instance_key_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
 };
