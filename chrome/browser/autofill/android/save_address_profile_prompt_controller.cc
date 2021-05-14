@@ -97,10 +97,12 @@ std::pair<std::u16string, std::u16string>
 SaveAddressProfilePromptController::GetDiffFromOldToNewProfile() {
   DCHECK(original_profile_);
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
-      differences =
-          AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-              original_profile_.value(), profile_,
-              g_browser_process->GetApplicationLocale());
+      differences = AutofillProfileComparator::GetProfileDifferenceMap(
+          original_profile_.value(), profile_,
+          autofill::ServerFieldTypeSet(
+              std::begin(kVisibleTypesForProfileDifferences),
+              std::end(kVisibleTypesForProfileDifferences)),
+          g_browser_process->GetApplicationLocale());
   std::vector<std::u16string> old_values;
   std::vector<std::u16string> new_values;
   for (auto type : kVisibleTypesForProfileDifferences) {

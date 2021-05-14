@@ -62,8 +62,7 @@ std::u16string GetDescriptionForProfileToUpdate(
 
 // Fields in order they should appear in differences for AutofillProfile update.
 static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
-    NAME_HONORIFIC_PREFIX,
-    NAME_FULL,
+    NAME_FULL_WITH_HONORIFIC_PREFIX,
     ADDRESS_HOME_STREET_ADDRESS,
     ADDRESS_HOME_DEPENDENT_LOCALITY,
     ADDRESS_HOME_CITY,

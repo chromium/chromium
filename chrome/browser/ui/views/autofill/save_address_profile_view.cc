@@ -38,6 +38,15 @@ int AddressDetailsIconSize() {
                                      views::style::STYLE_PRIMARY);
 }
 
+// Maps an AddressField to a ServerFieldType making sure
+// NAME_FULL_WITH_HONORIFIC_PREFIX is returned instead of NAME_FULL for
+// RECIPIENT type.
+ServerFieldType AddressFieldToServerFieldTypeWithHonorificPrefix(
+    ::i18n::addressinput::AddressField address_field) {
+  ServerFieldType type = autofill::AddressFieldToServerFieldType(address_field);
+  return type == NAME_FULL ? NAME_FULL_WITH_HONORIFIC_PREFIX : type;
+}
+
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
   // if the user changes the font size.
@@ -132,7 +141,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
       std::u16string field_value =
           component.literal.empty()
               ? profile.GetInfo(
-                    autofill::AddressFieldToServerFieldType(component.field),
+                    AddressFieldToServerFieldTypeWithHonorificPrefix(
+                        component.field),
                     locale)
               : base::UTF8ToUTF16(component.literal);
       if (!field_value.empty())

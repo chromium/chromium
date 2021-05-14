@@ -43,7 +43,8 @@ TEST_F(GetEnvelopeStyleAddressTest, Sanity) {
   // some more highlevel conditions that are less probable to change.
 
   // The full name should be part of the envelope style address.
-  EXPECT_NE(address.find(profile.GetInfo(NAME_FULL, GetLocale())),
+  EXPECT_NE(address.find(
+                profile.GetInfo(NAME_FULL_WITH_HONORIFIC_PREFIX, GetLocale())),
             std::string::npos);
 
   // City should be part of the envelope style address.

@@ -138,9 +138,11 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
         component.field == ::i18n::addressinput::RECIPIENT) {
       continue;
     }
-    address += base::UTF16ToUTF8(profile.GetInfo(
-        autofill::AddressFieldToServerFieldType(component.field),
-        ui_language_code));
+    ServerFieldType type =
+        autofill::AddressFieldToServerFieldType(component.field);
+    if (type == NAME_FULL)
+      type = NAME_FULL_WITH_HONORIFIC_PREFIX;
+    address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
   }
   if (include_country) {
     address += "\n";
@@ -152,10 +154,10 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
   // address.
   base::TrimString(address, base::kWhitespaceASCII, &address);
 
-  // Collpase new lines to remove empty lines.
+  // Collapse new lines to remove empty lines.
   re2::RE2::GlobalReplace(&address, re2::RE2("\\n+"), "\n");
 
-  // // Collpase white spaces.
+  // Collapse white spaces.
   re2::RE2::GlobalReplace(&address, re2::RE2("[ ]+"), " ");
 
   return base::UTF8ToUTF16(address);

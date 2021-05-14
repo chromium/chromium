@@ -39,8 +39,7 @@ int AddressDetailsIconSize() {
 const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
   // TODO(crbug.com/1167060): Update icons upon having final mocks.
   switch (type) {
-    case NAME_FULL:
-    case NAME_HONORIFIC_PREFIX:
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return kUserAccountAvatarIcon;
     case EMAIL_ADDRESS:
       return vector_icons::kEmailIcon;
@@ -210,11 +209,12 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       AddChildView(std::make_unique<views::View>());
 
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
-      profile_diff_map =
-          AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-              controller_->GetProfileToSave(),
-              *controller_->GetOriginalProfile(),
-              g_browser_process->GetApplicationLocale());
+      profile_diff_map = AutofillProfileComparator::GetProfileDifferenceMap(
+          controller_->GetProfileToSave(), *controller_->GetOriginalProfile(),
+          autofill::ServerFieldTypeSet(
+              std::begin(kVisibleTypesForProfileDifferences),
+              std::end(kVisibleTypesForProfileDifferences)),
+          g_browser_process->GetApplicationLocale());
 
   bool has_non_empty_original_values =
       HasNonEmptySecondValues(profile_diff_map);
