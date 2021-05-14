@@ -86,14 +86,14 @@
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with a toggle to turn off cellular. Alternate phrase for: 'Turn off cellular network'">
     Disable Cellular
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ADD_CELLULAR" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add cellular icon button. Alternate phrase for: 'Activate physical SIM', 'Set up eSIM'">
-    Add Cellular
+  <message name="IDS_OS_SETTINGS_TAG_ADD_ESIM" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add eSIM icon button. Alternate phrase for: 'Install eSIM profile', 'Download eSIM profile'">
+    Add eSIM profile
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT1" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add cellular icon button. Alternate phrase for: 'Add Cellular', 'Set up eSIM'">
-    Activate physical SIM
+  <message name="IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT1" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add eSIM icon button. Alternate phrase for: 'Add eSIM profile', 'Download eSIM profile'">
+    Install eSIM profile
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT2" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add cellular icon button. Alternate phrase for: 'Add Cellular', 'Activate physical SIM'">
-    Set up eSIM
+  <message name="IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT2" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add eSIM icon button. Alternate phrase for: 'Add eSIM profile', 'Install eSIM profile'">
+    Download eSIM profile
   </message>
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with a toggle to turn on cellular. Alternate phrase for: 'Enable cellular'">
     Turn on Cellular network

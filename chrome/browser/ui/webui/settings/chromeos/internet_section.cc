@@ -355,18 +355,16 @@ const std::vector<SearchConcept>& GetCellularConnectedSearchConcepts() {
   return *tags;
 }
 
-// TODO(1204440): Add "install eSIM profile" search result and show
-// appropriately.
 const std::vector<SearchConcept>& GetCellularESimCapableSearchTerms() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_ADD_CELLULAR,
+      {IDS_OS_SETTINGS_TAG_ADD_ESIM,
        mojom::kMobileDataNetworksSubpagePath,
        mojom::SearchResultIcon::kCellular,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kCellularAddNetwork},
-       {IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT1,
-        IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT2, SearchConcept::kAltTagEnd}},
+       {.setting = mojom::Setting::kAddESimNetwork},
+       {IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT1, IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT2,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -511,7 +509,6 @@ const std::vector<mojom::Setting>& GetCellularDetailsSettings() {
       mojom::Setting::kCellularProxy,
       mojom::Setting::kCellularAutoConnectToNetwork,
       mojom::Setting::kCellularMetered,
-      mojom::Setting::kCellularAddNetwork,
       mojom::Setting::kCellularRemoveESimNetwork,
       mojom::Setting::kCellularRenameESimNetwork,
   });
@@ -956,18 +953,15 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterNestedAltSetting(mojom::Setting::kForgetWifiNetwork,
                                       mojom::Subpage::kKnownNetworks);
 
-  // Mobile data. If Instant Tethering is available, a mobile data subpage is
-  // available which lists both Cellular and Instant Tethering networks. If
-  // Instant Tethering is not available, there is no mobile data subpage.
+  // Mobile data. Used for both Cellular and Instant Tethering networks.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_INTERNET_MOBILE_DATA_NETWORKS,
                                      mojom::Subpage::kMobileDataNetworks,
                                      mojom::SearchResultIcon::kCellular,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kMobileDataNetworksSubpagePath);
   static constexpr mojom::Setting kMobileDataNetworksSettings[] = {
-      mojom::Setting::kMobileOnOff,
-      mojom::Setting::kInstantTetheringOnOff,
-  };
+      mojom::Setting::kMobileOnOff, mojom::Setting::kInstantTetheringOnOff,
+      mojom::Setting::kAddESimNetwork};
   RegisterNestedSettingBulk(mojom::Subpage::kMobileDataNetworks,
                             kMobileDataNetworksSettings, generator);
   generator->RegisterTopLevelAltSetting(mojom::Setting::kMobileOnOff);

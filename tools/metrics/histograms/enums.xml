@@ -58762,7 +58762,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="Disconnect Tether Network"/>
   <int value="24" label="Wi-Fi: Metered Network"/>
   <int value="25" label="Cellular: Metered Network"/>
-  <int value="26" label="Cellular: Add Network"/>
+  <int value="26" label="Cellular: Add eSIM Network"/>
   <int value="27" label="Cellular: Remove Network eSIM Profile"/>
   <int value="28" label="Cellular: Rename Network eSIM Profile"/>
   <int value="29" label="Wi-Fi: Hidden Network"/>

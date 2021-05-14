@@ -179,7 +179,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kWifiAddNetwork,
         chromeos.settings.mojom.Setting.kMobileOnOff,
         chromeos.settings.mojom.Setting.kInstantTetheringOnOff,
-        chromeos.settings.mojom.Setting.kCellularAddNetwork,
+        chromeos.settings.mojom.Setting.kAddESimNetwork,
       ]),
     },
   },
@@ -229,7 +229,7 @@ Polymer({
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId === chromeos.settings.mojom.Setting.kCellularAddNetwork) {
+    if (settingId === chromeos.settings.mojom.Setting.kAddESimNetwork) {
       Polymer.RenderStatus.afterNextRender(this, () => {
         const deepLinkElement =
             this.$$('cellular-networks-list').getAddEsimButton();

@@ -35,7 +35,7 @@ enum Setting {
   kDisconnectTetherNetwork = 23,
   kWifiMetered = 24,
   kCellularMetered = 25,
-  kCellularAddNetwork = 26,
+  kAddESimNetwork = 26,
   kCellularRemoveESimNetwork = 27,
   kCellularRenameESimNetwork = 28,
   kWifiHidden = 29,
