@@ -1242,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     histogram_tester->ExpectBucketCount(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         optimization_guide::RaceNavigationFetchAttemptStatus::
-            kRaceNavigationFetchHost,
+            kRaceNavigationFetchNotAttempted,
         1);
   }
 
@@ -1449,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(
     histogram_tester->ExpectBucketCount(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         optimization_guide::RaceNavigationFetchAttemptStatus::
-            kRaceNavigationFetchHost,
+            kRaceNavigationFetchNotAttempted,
         1);
   }
 }

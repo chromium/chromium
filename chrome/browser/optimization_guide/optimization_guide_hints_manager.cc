@@ -1341,8 +1341,7 @@ void OptimizationGuideHintsManager::MaybeFetchHintsForNavigation(
   OptimizationGuideNavigationData* navigation_data =
       OptimizationGuideNavigationData::GetFromNavigationHandle(
           navigation_handle);
-  navigation_data->set_hints_fetch_start(base::TimeTicks::Now());
-  it->second->FetchOptimizationGuideServiceHints(
+  bool fetch_attempted = it->second->FetchOptimizationGuideServiceHints(
       hosts, urls, registered_optimization_types_,
       optimization_guide::proto::CONTEXT_PAGE_NAVIGATION,
       g_browser_process->GetApplicationLocale(),
@@ -1351,11 +1350,18 @@ void OptimizationGuideHintsManager::MaybeFetchHintsForNavigation(
           ui_weak_ptr_factory_.GetWeakPtr(), navigation_data->GetWeakPtr(), url,
           base::flat_set<GURL>({url}),
           base::flat_set<std::string>({url.host()})));
+  if (fetch_attempted) {
+    navigation_data->set_hints_fetch_start(base::TimeTicks::Now());
 
-  if (!hosts.empty() && !urls.empty()) {
+    if (!hosts.empty() && !urls.empty()) {
+      race_navigation_recorder.set_race_attempt_status(
+          optimization_guide::RaceNavigationFetchAttemptStatus::
+              kRaceNavigationFetchHostAndURL);
+    }
+  } else {
     race_navigation_recorder.set_race_attempt_status(
         optimization_guide::RaceNavigationFetchAttemptStatus::
-            kRaceNavigationFetchHostAndURL);
+            kRaceNavigationFetchNotAttempted);
   }
 }
 
