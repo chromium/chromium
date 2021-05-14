@@ -218,7 +218,9 @@ template <>
 void PrefMember<std::vector<std::string> >::UpdatePref(
     const std::vector<std::string>& value) {
   base::ListValue list_value;
-  list_value.AppendStrings(value);
+  for (const std::string& val : value)
+    list_value.Append(val);
+
   prefs()->Set(pref_name(), list_value);
 }
 
