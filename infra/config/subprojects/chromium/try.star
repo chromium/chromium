@@ -1141,9 +1141,9 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-1mbu-compile-fyi-rel",
     properties = {
-        "bot_update_experiments": {
-            "no_sync": True,
-        },
+        "bot_update_experiments": [
+            "no_sync",
+        ],
     },
 )
 
