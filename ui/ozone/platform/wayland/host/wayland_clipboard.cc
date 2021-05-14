@@ -120,9 +120,7 @@ class ClipboardImpl final : public Clipboard,
 
   void SetClipboardDataChangedCallback(
       ClipboardDataChangedCallback callback) final {
-    CHECK(clipboard_changed_callback_.is_null())
-        << "The callback can be installed only once.";
-    clipboard_changed_callback_ = callback;
+    clipboard_changed_callback_ = std::move(callback);
   }
 
  private:

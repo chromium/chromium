@@ -44,7 +44,4 @@
 # TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
 # the problems.
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
--RemoteCopyBrowserTest.ImageUrl
--RemoteCopyBrowserTest.Text
--RemoteCopyBrowserTest.TextThenImageUrl
 -BrowserNavigatorTest.SwitchToTabLatestWindow
