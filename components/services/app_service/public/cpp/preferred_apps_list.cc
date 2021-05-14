@@ -188,6 +188,15 @@ void PreferredAppsList::Init() {
 
 void PreferredAppsList::Init(PreferredApps& preferred_apps) {
   Clone(preferred_apps, &preferred_apps_);
+  auto iter = preferred_apps_.begin();
+  while (iter != preferred_apps_.end()) {
+    if (IsSupportedLink((*iter)->intent_filter)) {
+      for (auto& obs : observers_) {
+        obs.OnPreferredAppChanged((*iter)->app_id, true);
+      }
+    }
+    iter++;
+  }
   initialized_ = true;
 }
 
