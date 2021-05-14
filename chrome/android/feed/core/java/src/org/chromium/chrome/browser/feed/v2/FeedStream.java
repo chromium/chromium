@@ -332,7 +332,10 @@ public class FeedStream implements Stream {
 
         @Override
         public void share(String url, String title) {
+            assert ThreadUtils.runningOnUiThread();
             mShareHelper.share(url, title);
+            FeedStreamJni.get().reportOtherUserAction(
+                    mNativeFeedStream, FeedStream.this, FeedUserActionType.SHARE);
         }
 
         // Since the XSurface client strings are slightly different than the Feed strings, convert

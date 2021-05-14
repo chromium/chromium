@@ -32812,6 +32812,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="26" label="Opened native back-of-card pulldown menu. (iOS Only)"/>
   <int value="27" label="Closed native back-of-card pulldown menu. (iOS Only)"/>
   <int value="28" label="Tapped manage reactions"/>
+  <int value="29" label="Tapped on share for an article"/>
 </enum>
 
 <enum name="FeedUserCommandType">

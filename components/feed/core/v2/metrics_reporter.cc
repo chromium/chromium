@@ -335,7 +335,13 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
           "ContentSuggestions.Feed.CardAction.ManageReactions"));
       RecordInteraction(stream_type);
       break;
+    case FeedUserActionType::kShare:
+      base::RecordAction(
+          base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Share"));
+      RecordInteraction(stream_type);
+      break;
     case FeedUserActionType::kEphemeralChange:
+      FALLTHROUGH;
     case FeedUserActionType::kEphemeralChangeRejected:
     case FeedUserActionType::kTappedTurnOn:
     case FeedUserActionType::kTappedTurnOff:

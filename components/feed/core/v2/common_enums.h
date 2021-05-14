@@ -88,8 +88,10 @@ enum class FeedUserActionType {
   kClosedNativePulldownMenu = 27,
   // User tapped feed header menu item 'Manage reactions'.
   kTappedManageReactions = 28,
+  // User tapped on share.
+  kShare = 29,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kTappedManageReactions,
+  kMaxValue = kShare,
 };
 
 }  // namespace feed
