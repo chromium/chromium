@@ -1886,8 +1886,10 @@ bool XRSession::CanEnableAntiAliasing() const {
 
 base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
     device::mojom::blink::XRReferenceSpaceType space_type) const {
-  if (!CanReportPoses())
+  if (!CanReportPoses()) {
+    DVLOG(2) << __func__ << ": cannot report poses, returning nullopt";
     return base::nullopt;
+  }
 
   switch (space_type) {
     case device::mojom::blink::XRReferenceSpaceType::kViewer:

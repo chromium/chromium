@@ -86,6 +86,8 @@ void XRReferenceSpace::SetMojoFromFloor() {
 }
 
 base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
+  DVLOG(3) << __func__ << ": type_=" << type_;
+
   switch (type_) {
     case ReferenceSpaceType::kViewer:
     case ReferenceSpaceType::kLocal:
@@ -98,7 +100,8 @@ base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
         // it's not tracked; but for any other type if it's not locatable, we
         // return nullopt.
         return type_ == ReferenceSpaceType::kViewer
-                   ? base::Optional<TransformationMatrix>({})
+                   ? base::Optional<TransformationMatrix>(
+                         TransformationMatrix{})
                    : base::nullopt;
       }
 
