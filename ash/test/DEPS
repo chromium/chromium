@@ -3,6 +3,7 @@ include_rules = [
   "+cc/test",
   "+components/viz/test",
   "+mojo/core/embedder",
+   "+third_party/googletest/src/googletest/include/gtest/gtest.h",
 ]
 
 specific_include_rules = {

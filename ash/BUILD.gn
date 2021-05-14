@@ -2748,6 +2748,8 @@ static_library("test_support") {
     "test/ash_test_views_delegate.h",
     "test/fake_android_intent_helper.cc",
     "test/fake_android_intent_helper.h",
+    "test/layer_animation_verifier.cc",
+    "test/layer_animation_verifier.h",
     "test/test_widget_builder.cc",
     "test/test_widget_builder.h",
     "test/test_window_builder.cc",

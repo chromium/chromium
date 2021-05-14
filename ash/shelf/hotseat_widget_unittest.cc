@@ -37,11 +37,13 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_verifier.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -2575,6 +2577,67 @@ TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
 
   // And we should now be back where we started.
   EXPECT_EQ(shown_hotseat_bounds, hotseat->GetWindowBoundsInScreen());
+}
+
+class HotseatWidgetRTLTest : public ShelfLayoutManagerTestBase,
+                             public testing::WithParamInterface<bool> {
+ public:
+  // Use MOCK_TIME to increase number of commits during animation.
+  HotseatWidgetRTLTest()
+      : ShelfLayoutManagerTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        scoped_locale_(GetParam() ? "ar" : "") {}
+  HotseatWidgetRTLTest(const HotseatWidgetRTLTest&) = delete;
+  HotseatWidgetRTLTest& operator=(const HotseatWidgetRTLTest&) = delete;
+  ~HotseatWidgetRTLTest() override = default;
+
+ private:
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+};
+
+INSTANTIATE_TEST_SUITE_P(RTL, HotseatWidgetRTLTest, testing::Bool());
+
+// The test to verify the hotseat transition animation from the extended state
+// to the home launcher state.
+TEST_P(HotseatWidgetRTLTest, VerifyTransitionFromExtendedModeToHomeLauncher) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  const auto app_id =
+      ShelfTestUtil::AddAppShortcut("fake_app", TYPE_PINNED_APP);
+
+  // Open a window so the hotseat transitions to hidden state.
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  // Swipe the hotseat up to enter the extended mode.
+  SwipeUpOnShelf();
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+
+  // Animation should be long enough in order to collect sufficient data.
+  // TODO(https://crbug.com/1208651): remove this line when we solve that issue.
+  ui::ScopedAnimationDurationScaleMode animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Wait until shelf animation completes.
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  ShelfViewTestAPI shelf_test_api(shelf_view);
+  shelf_test_api.RunMessageLoopUntilAnimationsDone();
+
+  // Observe a shelf icon.
+  auto* observed_view = shelf_view->GetShelfAppButton(app_id.id);
+  LayerAnimationVerifier verifier(
+      GetPrimaryShelf()->hotseat_widget()->GetNativeView()->layer(),
+      observed_view);
+
+  // Transit the hotseat from the extended state to the home launcher state.
+  // Wait until the transition animation finishes.
+  views::WidgetAnimationWaiter waiter(GetPrimaryShelf()->hotseat_widget());
+  FlingUpOnShelf();
+  waiter.WaitForAnimation();
+
+  // Verify the hotseat state at the end of the animation.
+  EXPECT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
 }
 
 }  // namespace ash
