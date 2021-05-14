@@ -452,7 +452,7 @@ cr.define('cellular_setup', function() {
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
             backward: cellularSetup.ButtonState.HIDDEN,
-            cancel: cancelButtonStateIfDisabled,
+            cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
