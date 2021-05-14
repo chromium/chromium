@@ -161,8 +161,10 @@ class BackForwardCacheMetrics
   static void RecordEvictedAfterDocumentRestored(
       EvictedAfterDocumentRestoredReason reason);
 
-  // Sets the reason why the browsing instance is not swapped.
-  void SetBrowsingInstanceSwapResult(ShouldSwapBrowsingInstance reason);
+  // Sets the reason why the browsing instance is not swapped. Passing
+  // base::nullopt resets the reason.
+  void SetBrowsingInstanceSwapResult(
+      base::Optional<ShouldSwapBrowsingInstance> reason);
 
   // Notifies that the main frame has started a navigation to an entry
   // associated with |this|.

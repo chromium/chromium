@@ -61,6 +61,23 @@
 namespace content {
 namespace {
 
+enum class BackForwardCacheType {
+  kDisabled,
+  kEnabled,
+  kEnabledWithSameSite,
+};
+
+std::string ToString(const testing::TestParamInfo<BackForwardCacheType>& info) {
+  switch (info.param) {
+    case BackForwardCacheType::kDisabled:
+      return "Disabled";
+    case BackForwardCacheType::kEnabled:
+      return "Enabled";
+    case BackForwardCacheType::kEnabledWithSameSite:
+      return "EnabledWithSameSite";
+  }
+}
+
 RenderFrameHost* FindRenderFrameHost(RenderFrameHost& root, const GURL& url) {
   std::vector<RenderFrameHost*> rfhs = root.GetFramesInSubtree();
   for (auto* rfh : rfhs) {
@@ -773,26 +790,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
   // However, we don't check the existence of the prerender host here unlike
   // other activation tests because navigating the frame that triggered
   // prerendering abandons the prerendered page regardless of activation.
-}
-
-// Tests that back-forward history is preserved after activation.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HistoryAfterActivation) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make and activate a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
-
-  // Navigate back to the initial page.
-  content::TestNavigationObserver observer(web_contents());
-  shell()->GoBackOrForward(-1);
-  observer.Wait();
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 }
 
 // Tests that all RenderFrameHostImpls in the prerendering page know the
@@ -1803,6 +1800,116 @@ IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
 
   // Activating the prerendered page should not issue a request.
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+}
+
+class PrerenderWithBackForwardCacheBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<BackForwardCacheType> {
+ public:
+  PrerenderWithBackForwardCacheBrowserTest() {
+    // Set up the common params for the BFCache.
+    base::FieldTrialParams feature_params;
+    feature_params["TimeToLiveInBackForwardCacheInSeconds"] = "3600";
+
+    // Allow the BFCache for all devices regardless of their memory.
+    std::vector<base::Feature> disabled_features{
+        features::kBackForwardCacheMemoryControls};
+
+    switch (GetParam()) {
+      case BackForwardCacheType::kDisabled:
+        feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+        break;
+      case BackForwardCacheType::kEnabled:
+        feature_list_.InitWithFeaturesAndParameters(
+            {{features::kBackForwardCache, feature_params}}, disabled_features);
+        break;
+      case BackForwardCacheType::kEnabledWithSameSite:
+        feature_params["enable_same_site"] = "true";
+        feature_list_.InitWithFeaturesAndParameters(
+            {{features::kBackForwardCache, feature_params}}, disabled_features);
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderWithBackForwardCacheBrowserTest,
+    testing::Values(BackForwardCacheType::kDisabled,
+                    BackForwardCacheType::kEnabled,
+                    BackForwardCacheType::kEnabledWithSameSite),
+    ToString);
+
+// Tests that history navigation works after activation. This runs with variaous
+// BFCache configurations that may modify behavior of history navigation.
+// This is a regression test for https://crbug.com/1201914.
+IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
+                       HistoryNavigationAfterActivation) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  RenderFrameHostImpl* initial_frame_host = current_frame_host();
+  blink::LocalFrameToken initial_frame_token =
+      initial_frame_host->GetFrameToken();
+
+  // When the BFCache is disabled, activation will destroy the initial frame
+  // host. This observer will be used for confirming it.
+  RenderFrameDeletedObserver delete_observer(initial_frame_host);
+
+  // Make and activate a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Check if the initial page is in the BFCache.
+  switch (GetParam()) {
+    case BackForwardCacheType::kDisabled:
+      EXPECT_NE(current_frame_host(), initial_frame_host);
+      // The initial frame host should be deleted after activation because it is
+      // not cached in the BFCache.
+      delete_observer.WaitUntilDeleted();
+      break;
+    case BackForwardCacheType::kEnabled:
+      // Same-origin prerender activation should allow the initial page to be
+      // cached in the BFCache even if the BFCache for same-site (same-origin)
+      // is not enabled. This is because prerender activation always swaps
+      // BrowsingInstance and it makes the previous page cacheacble unlike
+      // regular same-origin navigation.
+      ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
+      EXPECT_TRUE(initial_frame_host->IsInBackForwardCache());
+      break;
+    case BackForwardCacheType::kEnabledWithSameSite:
+      // Same-origin prerender activation should allow the initial page to be
+      // cached in the BFCache.
+      ASSERT_TRUE(IsSameSiteBackForwardCacheEnabled());
+      EXPECT_TRUE(initial_frame_host->IsInBackForwardCache());
+      break;
+  }
+
+  // Navigate back to the initial page.
+  content::TestNavigationObserver observer(web_contents());
+  shell()->GoBackOrForward(-1);
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Check if the back navigation is served from the BFCache.
+  switch (GetParam()) {
+    case BackForwardCacheType::kDisabled:
+      // The frame host should be created again.
+      EXPECT_NE(current_frame_host()->GetFrameToken(), initial_frame_token);
+      break;
+    case BackForwardCacheType::kEnabled:
+    case BackForwardCacheType::kEnabledWithSameSite:
+      // The frame host should be restored.
+      EXPECT_EQ(current_frame_host()->GetFrameToken(), initial_frame_token);
+      EXPECT_FALSE(initial_frame_host->IsInBackForwardCache());
+      break;
+  }
 }
 
 }  // namespace

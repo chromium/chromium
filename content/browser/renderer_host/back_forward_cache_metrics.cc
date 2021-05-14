@@ -439,7 +439,7 @@ uint64_t BackForwardCacheMetrics::MetricValue(
 }
 
 void BackForwardCacheMetrics::SetBrowsingInstanceSwapResult(
-    ShouldSwapBrowsingInstance reason) {
+    base::Optional<ShouldSwapBrowsingInstance> reason) {
   browsing_instance_swap_result_ = reason;
 }
 

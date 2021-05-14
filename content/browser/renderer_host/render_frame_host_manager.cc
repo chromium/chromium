@@ -706,6 +706,14 @@ void RenderFrameHostManager::ActivatePrerender(
   DCHECK(blink::features::IsPrerender2Enabled());
   if (speculative_render_frame_host_)
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
+
+  // Reset the swap result of BrowsingInstance as prerender activation always
+  // swaps BrowsingInstance.
+  BackForwardCacheMetrics* back_forward_cache_metrics =
+      render_frame_host_->GetBackForwardCacheMetrics();
+  if (back_forward_cache_metrics)
+    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(base::nullopt);
+
   RestoreFromBackForwardCache(std::move(entry));
 }
 
