@@ -37,6 +37,9 @@ void PowerModeVoter::ResetVoteAfterTimeout(base::TimeDelta timeout) {
   delegate_->ResetVoteAfterTimeout(this, timeout);
 }
 
+// static
+constexpr int FrameProductionPowerModeVoter::kMinFramesSkippedForIdleAnimation;
+
 FrameProductionPowerModeVoter::FrameProductionPowerModeVoter(const char* name)
     : voter_(PowerModeArbiter::GetInstance()->NewVoter(name)) {}
 
@@ -54,6 +57,17 @@ void FrameProductionPowerModeVoter::OnNeedsBeginFramesChanged(
 
 void FrameProductionPowerModeVoter::OnFrameProduced() {
   consecutive_frames_skipped_ = 0;
+
+  // If we were in no-op mode, only go back into animation mode if there were at
+  // least two frames produced within kAnimationTimeout.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (last_frame_produced_timestamp_ + PowerModeVoter::kAnimationTimeout <
+      now) {
+    last_frame_produced_timestamp_ = now;
+    return;
+  }
+
+  last_frame_produced_timestamp_ = now;
   voter_->VoteFor(PowerMode::kAnimation);
 }
 
@@ -69,14 +83,33 @@ void FrameProductionPowerModeVoter::OnFrameSkipped(bool frame_completed,
   if (!frame_completed && !waiting_on_main)
     return;
 
-  static constexpr int kMinFramesSkippedForIdleAnimation = 4;
-
   if (consecutive_frames_skipped_ < kMinFramesSkippedForIdleAnimation) {
     consecutive_frames_skipped_++;
     return;
   }
 
   voter_->VoteFor(PowerMode::kNopAnimation);
+}
+
+DebouncedPowerModeVoter::DebouncedPowerModeVoter(const char* name,
+                                                 base::TimeDelta timeout)
+    : voter_(PowerModeArbiter::GetInstance()->NewVoter(name)),
+      timeout_(timeout) {}
+
+DebouncedPowerModeVoter::~DebouncedPowerModeVoter() = default;
+
+void DebouncedPowerModeVoter::VoteFor(PowerMode vote) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!last_vote_ || vote != *last_vote_ ||
+      last_vote_timestamp_ + timeout_ < now) {
+    last_vote_ = vote;
+    last_vote_timestamp_ = now;
+    return;
+  }
+
+  DCHECK_EQ(*last_vote_, vote);
+  last_vote_timestamp_ = now;
+  voter_->VoteFor(vote);
 }
 
 }  // namespace power_scheduler

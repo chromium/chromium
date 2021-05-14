@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -22,12 +23,11 @@ static void JNI_ChromePowerModeVoter_OnChromeActivityStateChange(
 }
 
 static void JNI_ChromePowerModeVoter_OnViewTreeDraw(JNIEnv* env) {
-  static base::NoDestructor<std::unique_ptr<power_scheduler::PowerModeVoter>>
-      voter(power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-          "PowerModeVoter.Animation.Java"));
-  (*voter)->VoteFor(power_scheduler::PowerMode::kAnimation);
-  (*voter)->ResetVoteAfterTimeout(
+  static base::NoDestructor<power_scheduler::DebouncedPowerModeVoter> voter(
+      "PowerModeVoter.Animation.Java",
       power_scheduler::PowerModeVoter::kAnimationTimeout);
+  voter->VoteFor(power_scheduler::PowerMode::kAnimation);
+  voter->ResetVoteAfterTimeout();
 }
 
 static void JNI_ChromePowerModeVoter_OnCoordinatorTouchEvent(JNIEnv* env) {

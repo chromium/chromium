@@ -37,11 +37,11 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   // timeout is applied before resetting animation votes to avoid frequent vote
   // reversals.
   static constexpr base::TimeDelta kAnimationTimeout =
-      base::TimeDelta::FromMilliseconds(50);
+      base::TimeDelta::FromMilliseconds(100);
   static constexpr base::TimeDelta kVideoTimeout = kAnimationTimeout;
 
-  // Software draws can take longer than the rest of animations, so the timeout
-  // value for them is higher.
+  // Software draws can take longer than the rest of animations. We use a
+  // different timeout constant for them to allow individual tweaking.
   static constexpr base::TimeDelta kSoftwareDrawTimeout =
       base::TimeDelta::FromMilliseconds(100);
 
@@ -97,8 +97,33 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   void OnFrameSkipped(bool frame_completed, bool waiting_on_main);
 
  private:
+  // 10 Frames: 166ms on 60fps, 111ms on 90fps, 83ms on 120fps. This should be a
+  // reasonable compromise to avoid frequent flip-flopping between different
+  // animation modes.
+  static constexpr int kMinFramesSkippedForIdleAnimation = 10;
+
   std::unique_ptr<PowerModeVoter> voter_;
   int consecutive_frames_skipped_ = 0;
+  base::TimeTicks last_frame_produced_timestamp_;
+};
+
+// PowerModeVoter that requires two consecutive votes for the same PowerMode
+// within a given timeout to move out of idle.
+class COMPONENT_EXPORT(POWER_SCHEDULER) DebouncedPowerModeVoter {
+ public:
+  DebouncedPowerModeVoter(const char* name, base::TimeDelta timeout);
+  ~DebouncedPowerModeVoter();
+
+  void VoteFor(PowerMode vote);
+
+  void ResetVoteAfterTimeout() { voter_->ResetVoteAfterTimeout(timeout_); }
+
+ private:
+  std::unique_ptr<PowerModeVoter> voter_;
+  const base::TimeDelta timeout_;
+
+  base::Optional<PowerMode> last_vote_;
+  base::TimeTicks last_vote_timestamp_;
 };
 
 }  // namespace power_scheduler

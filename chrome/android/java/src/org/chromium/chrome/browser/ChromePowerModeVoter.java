@@ -25,6 +25,8 @@ public class ChromePowerModeVoter
     @SuppressLint("StaticFieldLeak")
     private static ChromePowerModeVoter sInstance;
 
+    private boolean mOnDrawListenerAdded;
+
     public static ChromePowerModeVoter getInstance() {
         if (sInstance == null) {
             sInstance = new ChromePowerModeVoter();
@@ -43,10 +45,12 @@ public class ChromePowerModeVoter
         if (window != null) {
             View rootView = window.getDecorView().getRootView();
             ViewTreeObserver treeObserver = rootView.getViewTreeObserver();
-            if (active) {
+            if (active && !mOnDrawListenerAdded) {
                 treeObserver.addOnDrawListener(this);
-            } else {
+                mOnDrawListenerAdded = true;
+            } else if (!active && mOnDrawListenerAdded) {
                 treeObserver.removeOnDrawListener(this);
+                mOnDrawListenerAdded = false;
             }
         }
 
