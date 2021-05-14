@@ -46,6 +46,15 @@ class AppListPresenterImplTest : public AshTestBase {
                       base::TimeTicks());
   }
 
+  // Shows the Assistant UI.
+  void ShowAssistantUI() {
+    presenter()->ShowEmbeddedAssistantUI(/*show=*/true);
+  }
+
+  bool IsShowingAssistantUI() {
+    return presenter()->IsShowingEmbeddedAssistantUI();
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AppListPresenterImplTest);
 };
@@ -141,6 +150,30 @@ TEST_F(AppListPresenterImplTest,
               shelf_layout_manager->GetShelfBackgroundType());
     EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   }
+}
+
+// Tests that Assistant UI in tablet mode is closed when open another window.
+TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
+  // Enter tablet mode to display the home launcher.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(presenter()->IsVisibleDeprecated());
+  EXPECT_FALSE(IsShowingAssistantUI());
+
+  // Open a window to cover Home Launcher.
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
+
+  // Open Assistant UI.
+  ShowAssistantUI();
+  // Assistant UI is visible but Home Launcher is considered not visible.
+  EXPECT_TRUE(IsShowingAssistantUI());
+  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
+
+  // Open another window should close Assistant UI.
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  EXPECT_FALSE(IsShowingAssistantUI());
+  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
 }
 
 }  // namespace

@@ -513,6 +513,11 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
         view_->OnHomeLauncherGainingFocusWithoutAnimation();
 
       OnVisibilityChanged(visible, GetDisplayId());
+    } else {
+      // In tablet mode, when Assistant UI lost focus after other new App window
+      // opened, we should reset the view.
+      if (app_list_lost_focus && IsShowingEmbeddedAssistantUI())
+        view_->Back();
     }
   }
 
