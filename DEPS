@@ -1423,6 +1423,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/aemu-linux-arm64': {
+      'packages': [
+          {
+              'package': 'fuchsia/third_party/aemu/linux-arm64',
+              'version': 'r2LsKQPbfi0NYEO8tfocwaJ1MMACXPDLkgCI0IjJq-YC'
+          },
+      ],
+      'condition': 'host_os == "linux" and checkout_fuchsia',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/aemu-linux-x64': {
       'packages': [
           {

@@ -159,8 +159,8 @@ template("fuchsia_package_runner") {
         "//third_party/qemu-${host_os}-${test_host_cpu}/",
       ]
 
-      # Include AEMU for x64 emulator hosts.
-      if (test_host_cpu == "x64") {
+      # Include AEMU for x64 emulator hosts and for arm64 hosts.
+      if (test_host_cpu == "x64" || test_host_cpu == "arm64") {
         data += [ "${aemu_root}/" ]
       }
     }
