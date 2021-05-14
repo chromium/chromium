@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
@@ -1807,9 +1808,14 @@ BrowserView::ShowQRCodeGeneratorBubble(
     content::WebContents* contents,
     qrcode_generator::QRCodeGeneratorBubbleController* controller,
     const GURL& url) {
+  base::OnceClosure on_closing = base::BindOnce(
+      &qrcode_generator::QRCodeGeneratorBubbleController::OnBubbleClosed,
+      // Unretained is safe: controller is a WebContentsUserData, owned by
+      // WebContents, and the bubble can't outlive the WebContents.
+      base::Unretained(controller));
   qrcode_generator::QRCodeGeneratorBubble* bubble =
-      new qrcode_generator::QRCodeGeneratorBubble(GetLocationBarView(),
-                                                  contents, controller, url);
+      new qrcode_generator::QRCodeGeneratorBubble(
+          GetLocationBarView(), contents, std::move(on_closing), url);
 
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(

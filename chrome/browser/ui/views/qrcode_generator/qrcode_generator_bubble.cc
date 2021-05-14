@@ -90,16 +90,15 @@ void AddSmallPaddingRow(views::GridLayout* layout) {
 
 namespace qrcode_generator {
 
-QRCodeGeneratorBubble::QRCodeGeneratorBubble(
-    views::View* anchor_view,
-    content::WebContents* web_contents,
-    QRCodeGeneratorBubbleController* controller,
-    const GURL& url)
+QRCodeGeneratorBubble::QRCodeGeneratorBubble(views::View* anchor_view,
+                                             content::WebContents* web_contents,
+                                             base::OnceClosure on_closing,
+                                             const GURL& url)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
       url_(url),
-      controller_(controller),
+      on_closing_(std::move(on_closing)),
       web_contents_(web_contents) {
-  DCHECK(controller);
+  DCHECK(on_closing_);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TITLE);
@@ -117,10 +116,8 @@ void QRCodeGeneratorBubble::Show() {
 }
 
 void QRCodeGeneratorBubble::Hide() {
-  if (controller_) {
-    controller_->OnBubbleClosed();
-    controller_ = nullptr;
-  }
+  if (on_closing_)
+    std::move(on_closing_).Run();
   CloseBubble();
 }
 
@@ -162,6 +159,10 @@ void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
   qr_code_image_->SetImage(qr_image);
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  qr_code_image_->SetPreferredSize(GetQRCodeImageSize() +
+                                   gfx::Size(border_radius, border_radius));
   qr_code_image_->SetVisible(true);
 }
 
@@ -197,10 +198,8 @@ bool QRCodeGeneratorBubble::ShouldShowCloseButton() const {
 }
 
 void QRCodeGeneratorBubble::WindowClosing() {
-  if (controller_) {
-    controller_->OnBubbleClosed();
-    controller_ = nullptr;
-  }
+  if (on_closing_)
+    std::move(on_closing_).Run();
 }
 
 void QRCodeGeneratorBubble::Init() {
@@ -350,7 +349,8 @@ void QRCodeGeneratorBubble::Init() {
   // End controls row
 
   // Initialize Service
-  qr_code_service_remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
+  if (!qr_code_service_remote_)
+    qr_code_service_remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
 }
 
 void QRCodeGeneratorBubble::ContentsChanged(
@@ -414,6 +414,11 @@ gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
       CreateBackgroundImageSkia(background_size), image);
   DCHECK(IsSquare(gfx::Size(final_image.width(), final_image.height())));
   return final_image;
+}
+
+void QRCodeGeneratorBubble::SetQRCodeServiceForTesting(
+    mojo::Remote<mojom::QRCodeGeneratorService>&& remote) {
+  qr_code_service_remote_ = std::move(remote);
 }
 
 void QRCodeGeneratorBubble::DownloadButtonPressed() {

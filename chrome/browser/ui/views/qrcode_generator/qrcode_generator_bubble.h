@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -33,8 +34,6 @@ class View;
 
 namespace qrcode_generator {
 
-class QRCodeGeneratorBubbleController;
-
 // Dialog that displays a QR code used to share a page or image.
 class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
                               public LocationBarBubbleDelegateView,
@@ -43,10 +42,11 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   METADATA_HEADER(QRCodeGeneratorBubble);
   QRCodeGeneratorBubble(views::View* anchor_view,
                         content::WebContents* web_contents,
-                        QRCodeGeneratorBubbleController* controller,
+                        base::OnceClosure on_closing,
                         const GURL& url);
   QRCodeGeneratorBubble(const QRCodeGeneratorBubble&) = delete;
   QRCodeGeneratorBubble& operator=(const QRCodeGeneratorBubble&) = delete;
+  ~QRCodeGeneratorBubble() override;
 
   void Show();
 
@@ -64,9 +64,13 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   static gfx::ImageSkia AddQRCodeQuietZone(const gfx::ImageSkia& image,
                                            const gfx::Size& size);
 
- private:
-  ~QRCodeGeneratorBubble() override;
+  views::ImageView* image_for_testing() { return qr_code_image_; }
+  views::Textfield* textfield_for_testing() { return textfield_url_; }
 
+  void SetQRCodeServiceForTesting(
+      mojo::Remote<mojom::QRCodeGeneratorService>&& remote);
+
+ private:
   // Updates and formats QR code, text, and controls.
   void UpdateQRContent();
 
@@ -118,7 +122,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   views::Label* center_error_label_ = nullptr;
   views::Label* bottom_error_label_ = nullptr;
 
-  QRCodeGeneratorBubbleController* controller_;  // weak.
+  base::OnceClosure on_closing_;
   content::WebContents* web_contents_;           // weak.
 };
 
