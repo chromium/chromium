@@ -17,12 +17,14 @@ var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
     '^((' + priceCleanupPrefix + ')\\s+)|' + priceCleanupPostfix + '$', 'i');
 var cartItemHTMLRegex = new RegExp(
-    '(cart|basket|bundle)[-_]?(item|product)', 'i')
+    '(cart|basket|bundle)[-_]?(item|product)', 'i');
 var cartItemTextContentRegex = new RegExp(
     'remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?',
-    'i')
-var moveToCartRegex = new RegExp('move to (cart|bag)', 'i')
-var addToCartRegex = new RegExp('add to cart', 'i')
+    'i');
+var moveToCartRegex = new RegExp('move to (cart|bag)', 'i');
+var addToCartRegex = new RegExp('add to cart', 'i');
+var productIdHTMLRegex = new RegExp('<a href="#modal-(\\w+)', 'i');
+var productIdURLRegex = new RegExp('(\\w+)-\\d+-medium', 'i');
 
 function getLazyLoadingURL(image) {
   // FIXME: some lazy images in Nordstrom and Staples don't have URLs in the
@@ -537,7 +539,19 @@ function extractItem(item) {
       console.warn('no price found', item);
     return null;
   }
-  return {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
+  let extractionResult =
+      {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
+  // productId is an optional field for extraction.
+  productId = item.outerHTML.match(productIdHTMLRegex);
+  if (productId !== null && productId.length >= 2) {
+    extractionResult['productId'] = productId[1];
+    return extractionResult;
+  }
+  productId = imageUrl.match(productIdURLRegex);
+  if (productId !== null && productId.length >= 2) {
+    extractionResult['productId'] = productId[1];
+  }
+  return extractionResult;
 }
 
 function commonAncestor(a, b) {

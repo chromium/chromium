@@ -44,7 +44,7 @@ void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
     if (product->image_url.spec().size() != 0) {
       proto->add_product_image_urls(product->image_url.spec());
     }
-    if (product->product_id.size() != 0) {
+    if (!product->product_id.empty()) {
       cart_db::ChromeCartProductProto product_proto;
       product_proto.set_product_id(std::move(product->product_id));
       cart_db::ChromeCartProductProto* added_product =

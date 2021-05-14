@@ -162,12 +162,6 @@ bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
   return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re);
 }
 
-bool GetPartialMatchString(base::StringPiece str,
-                           const re2::RE2& re,
-                           std::string* res) {
-  return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re, res);
-}
-
 // This is based on top 30 US shopping sites.
 // TODO(crbug/1164236): cover more shopping sites.
 const re2::RE2& GetAddToCartPattern() {
@@ -294,18 +288,13 @@ const re2::RE2& GetPurchaseTextPattern() {
   return *instance;
 }
 
-const re2::RE2& GetProductIdPatternFromRequest() {
+bool GetProductIdFromRequest(base::StringPiece request,
+                             std::string* product_id) {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance("product_id=(\\w+)", options);
-  return *instance;
-}
-
-const re2::RE2& GetProductIdPatternFromURL() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance("(\\w+)-\\d+-medium", options);
-  return *instance;
+  static base::NoDestructor<re2::RE2> re("(product_id|pr1id)=(\\w+)", options);
+  return RE2::PartialMatch(re2::StringPiece(request.data(), request.size()),
+                           *re, nullptr, product_id);
 }
 
 const re2::RE2& GetPartnerMerchantPattern() {
@@ -345,6 +334,7 @@ void DetectAddToCart(content::RenderFrame* render_frame,
   }
 
   bool is_add_to_cart = false;
+  std::string product_id;
   if (navigation_url.DomainIs("dickssportinggoods.com")) {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
   } else if (url.DomainIs("rei.com")) {
@@ -352,12 +342,15 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     // 'neo-product/rs/cart/item' that are missed here. Figure out a more
     // comprehensive solution.
     is_add_to_cart = url.path_piece() == "/rest/cart/item";
+  } else if (IsPartnerMerchant(navigation_url)) {
+    GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), &product_id);
+    is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }
   if (is_add_to_cart) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
-    OnAddToCart(render_frame);
+    OnAddToCart(render_frame, std::move(product_id));
     return;
   }
 
@@ -394,8 +387,7 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     if (CommerceHintAgent::IsAddToCart(str)) {
       std::string product_id;
       if (IsPartnerMerchant(url)) {
-        GetPartialMatchString(str.substr(0, kLengthLimit),
-                              GetProductIdPatternFromRequest(), &product_id);
+        GetProductIdFromRequest(str.substr(0, kLengthLimit), &product_id);
       }
       RecordCommerceEvent(CommerceEvent::kAddToCartByForm);
       DVLOG(2) << "Matched add-to-cart. Request from \"" << navigation_url
@@ -542,11 +534,14 @@ void CommerceHintAgent::OnProductsExtracted(
       DVLOG(1) << "skipped";
       continue;
     }
-    std::string product_id;
-    if (is_partner &&
-        GetPartialMatchString(image_url->GetString().substr(0, kLengthLimit),
-                              GetProductIdPatternFromURL(), &product_id)) {
+    if (is_partner) {
+      std::string product_id;
+      const auto* extracted_id = product.FindKey("productId");
+      if (extracted_id) {
+        product_id = extracted_id->GetString();
+      }
       DVLOG(1) << "product_id = " << product_id;
+      DCHECK(!product_id.empty());
       product_ptr->product_id = std::move(product_id);
     }
     products.push_back(std::move(product_ptr));

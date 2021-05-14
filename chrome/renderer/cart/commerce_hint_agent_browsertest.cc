@@ -93,6 +93,8 @@ const char kMockExampleFallbackURL[] = "https://www.guitarcenter.com/cart";
 const char kMockExampleLinkURL[] =
     "https://www.guitarcenter.com/shopping-cart/";
 const char kMockExampleURL[] = "https://www.guitarcenter.com/cart.html";
+const char kMockExampleURL2[] =
+    "https://www.guitarcenter.com/shopping-cart.html";
 
 const cart_db::ChromeCartContentProto kMockExampleProtoFallbackCart =
     BuildProto(kMockExample, kMockExampleFallbackURL);
@@ -132,6 +134,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
   if (request.relative_url == "/product.html")
     return nullptr;
   if (request.relative_url == "/cart.html")
+    return nullptr;
+  if (request.relative_url == "/shopping-cart.html")
     return nullptr;
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -544,7 +548,19 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, AddToCartByForm_CaptureId) {
   WaitForProductCount(expected_carts);
 }
 
-IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, ExtractCart_CaptureId) {
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, AddToCartByURL_CaptureId) {
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/add-to-cart?pr1id=id_foo", "");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(kMockExample, kMockExampleFallbackURL, {},
+                             {"id_foo"});
+  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       ExtractCart_CaptureId_FromURL) {
   // This page has two products.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
@@ -553,6 +569,21 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, ExtractCart_CaptureId) {
           kMockExample, kMockExampleURL,
           {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
            "https://static.guitarcenter.com/product-image/bar_456-0-medium"},
+          {"foo_123", "bar_456"});
+  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
+                       ExtractCart_CaptureId_FromElement) {
+  // This page has two products.
+  NavigateToURL("https://www.guitarcenter.com/shopping-cart.html");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(
+          kMockExample, kMockExampleURL2,
+          {"https://static.guitarcenter.com/product-image/foo",
+           "https://static.guitarcenter.com/product-image/bar"},
           {"foo_123", "bar_456"});
   const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
   WaitForProductCount(expected_carts);
