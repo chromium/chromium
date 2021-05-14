@@ -6204,11 +6204,6 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_navigation_bundle_->SetIPAddressSpace(
       CalculateIPAddressSpace(common_params_->url, response_head_.get()));
 
-  if (response_head_ && !devtools_instrumentation::ShouldBypassCSP(*this)) {
-    policy_container_navigation_bundle_->AddContentSecurityPolicies(
-        mojo::Clone(response_head_->parsed_headers->content_security_policy));
-  }
-
   // Use the unchecked / non-sandboxed origin to calculate potential
   // trustworthiness. Indeed, the potential trustworthiness check should apply
   // to the origin of the creation URL, prior to opaquification.
@@ -6217,18 +6212,17 @@ void NavigationRequest::ComputePoliciesToCommit() {
           GetOriginForURLLoaderFactoryUnchecked(this)));
   policy_container_navigation_bundle_->ComputePolicies(common_params_->url);
 
-  ComputeSandboxFlagsToCommit();
+  ComputeSandboxFlagsToCommit(/*for_error=*/false);
 }
 
 void NavigationRequest::ComputePoliciesToCommitForError() {
   policy_container_navigation_bundle_->ComputePoliciesForError();
-  ComputeSandboxFlagsToCommit();
+  ComputeSandboxFlagsToCommit(/*for_error=*/true);
 }
 
-void NavigationRequest::ComputeSandboxFlagsToCommit() {
+void NavigationRequest::ComputeSandboxFlagsToCommit(bool for_error) {
   DCHECK(commit_params_);
   DCHECK(!HasCommitted());
-  DCHECK(!IsErrorPage());
   DCHECK(!sandbox_flags_to_commit_);
 
   // Inherit sandbox from the frame.
@@ -6239,6 +6233,14 @@ void NavigationRequest::ComputeSandboxFlagsToCommit() {
       policy_container_navigation_bundle_->FinalPolicies();
   for (const auto& csp : policies_to_commit.content_security_policies)
     *sandbox_flags_to_commit_ |= csp->sandbox;
+
+  if (!for_error && response_head_ &&
+      !devtools_instrumentation::ShouldBypassCSP(*this)) {
+    for (const auto& csp :
+         response_head_->parsed_headers->content_security_policy) {
+      *sandbox_flags_to_commit_ |= csp->sandbox;
+    }
+  }
 
   // The URL of a document loaded from a MHTML archive is controlled by the
   // Content-Location header. This can be set to an arbitrary URL. This is
