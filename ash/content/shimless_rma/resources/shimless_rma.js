@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './onboarding_landing_page.js';
+import './onboarding_update_page.js';
 import './shimless_rma_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,6 +29,7 @@ let PageInfo;
 const StateComponentMapping = {
   [RmaState.kUnknown]: {componentIs: 'badcomponent'},
   [RmaState.kWelcomeScreen]: {componentIs: 'onboarding-landing-page'},
+  [RmaState.kUpdateChrome]: {componentIs: 'onboarding-update-page'},
 };
 
 /**

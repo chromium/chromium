@@ -29,6 +29,10 @@ function setupFakeShimlessRmaService_() {
   ];
   service.setStates(states);
 
+  // TODO(joonbug): Set up shimless_rma_fakes module
+  service.setGetCurrentChromeVersionResult('90.4430.0.143');
+  service.setCheckForChromeUpdatesResult(true);
+
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);
 }

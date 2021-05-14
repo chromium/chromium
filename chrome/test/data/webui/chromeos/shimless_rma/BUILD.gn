@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":fake_shimless_rma_service_test",
+    ":onboarding_update_page_test",
     ":shimless_rma_app_test",
     ":shimless_rma_unified_test",
   ]
@@ -30,6 +31,14 @@ js_library("shimless_rma_app_test") {
   deps = [
     "../..:chai_assert",
     "//ash/content/shimless_rma/resources:shimless_rma",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("onboarding_update_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/content/shimless_rma/resources:onboarding_update_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

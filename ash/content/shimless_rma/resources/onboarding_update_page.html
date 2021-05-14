@@ -1,0 +1,27 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(joonbug): Update strings for i18n -->
+    <h1>Make sure Chrome OS is up to date</h1>
+    <p>Update to the latest version of Chrome OS for an optimized repair process.</p>
+    <p id="versionInfo">{{currentVersionText_}}</p>
+    <p id="networkUnavailable" hidden$="{{networkAvailable}}">
+      To check if OS is up to date, connect to the internet in previous screen
+    </p>
+    <p hidden$="{{!checkInProgress_}}">Checking OS version...</p>
+    <cr-button disabled="{{checkInProgress_}}"
+        hidden$="{{updateCheckBtnHidden_(networkAvailable, updateAvailable_)}}"
+        id="checkUpdate" on-click="onUpdateCheckBtnClicked_">
+      Check for updates
+    </cr-button>
+    <cr-button hidden$="{{!updateAvailable_}}"
+        id="performUpdate" on-click="onUpdateBtnClicked_">
+      Update version and restart
+    </cr-button>
+  </div>
+  <div slot="body">
+    <!-- TODO(joonbug): Fill with image -->
+  </div>
+</base-page>

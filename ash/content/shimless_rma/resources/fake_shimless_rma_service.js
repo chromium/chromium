@@ -68,7 +68,7 @@ export class FakeShimlessRmaService {
      */
     this.setSkuResult_ = RmadErrorCode.kOk;
 
-    this.reset_();
+    this.reset();
   }
 
   /**
@@ -549,9 +549,8 @@ export class FakeShimlessRmaService {
 
   /**
    * Disables all observers and resets provider to its initial state.
-   * @private
    */
-  reset_() {
+  reset() {
     this.methods_ = new FakeMethodResolver();
     this.registerMethods_();
 
