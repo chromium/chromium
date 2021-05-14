@@ -3838,10 +3838,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ForceDarkVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
-    {"enable-android-dark-search", flag_descriptions::kAndroidDarkSearchName,
-     flag_descriptions::kAndroidDarkSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidDarkSearch)},
-
     {"enable-android-layout-change-tab-reparenting",
      flag_descriptions::kAndroidLayoutChangeTabReparentingName,
      flag_descriptions::kAndroidLayoutChangeTabReparentingDescription,

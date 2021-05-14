@@ -189,21 +189,6 @@
             ]
         }
     ],
-    "AndroidDarkSearch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidDarkSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDynamicWideColorGamut": [
         {
             "platforms": [

@@ -571,6 +571,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.DarkTheme.DarkSearchRequested" enum="Boolean"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed April 2021; experiment is done and the feature code was removed.
+  </obsolete>
   <owner>wylieb@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>

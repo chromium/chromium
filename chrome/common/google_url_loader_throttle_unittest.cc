@@ -32,60 +32,12 @@ class GoogleURLLoaderThrottleTest : public testing::Test {
 };
 
 #if defined(OS_ANDROID)
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleHomepage) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
 
-  network::ResourceRequest request;
-  request.url = GURL("https://www.google.com");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_NE(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleSearch) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
-
-  network::ResourceRequest request;
-  request.url = GURL("https://www.google.com/search?q=test");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_NE(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleSource) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
-
-  network::ResourceRequest request;
-  request.url = GURL("https://code.google.com/");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForLargeScreen) {
+TEST_F(GoogleURLLoaderThrottleTest, RequestDesktopHeaderForLargeScreen) {
   scoped_feature_list().Reset();
   scoped_feature_list().InitAndEnableFeature(
       features::kRequestDesktopSiteForTablets);
   GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ false,
                                    /* is_tab_large_enough= */ true,
                                    chrome::mojom::DynamicParams());
 
@@ -105,12 +57,11 @@ TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForLargeScreen) {
   }
 }
 
-TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForSmallScreen) {
+TEST_F(GoogleURLLoaderThrottleTest, RequestDesktopHeaderForSmallScreen) {
   scoped_feature_list().Reset();
   scoped_feature_list().InitAndEnableFeature(
       features::kRequestDesktopSiteForTablets);
   GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ false,
                                    /* is_tab_large_enough= */ false,
                                    chrome::mojom::DynamicParams());
 

@@ -228,8 +228,8 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
     std::u16string new_url_search_terms;
 
     // Check that search terms still match. Google URLs can be changed by
-    // AndroidDarkSearch (and in other cases like safe search). Make sure the
-    // URL still has the same search terms for the DSE.
+    // by safe search (and other features as well) Make sure the URL still has
+    // the same search terms for the DSE.
     default_search->ExtractSearchTermsFromURL(
         resource_request->url, template_url_service->search_terms_data(),
         &new_url_search_terms);

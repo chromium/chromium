@@ -3482,11 +3482,6 @@ const char kInlineUpdateFlowDescription[] =
     "flow where they do not have to leave Chrome until the update is ready "
     "to install.";
 
-const char kAndroidDarkSearchName[] = "Show darkened search pages on Android";
-const char kAndroidDarkSearchDescription[] =
-    "If enabled, users will see a darkened search page if Chrome is in "
-    "nightmode as well.";
-
 const char kSwipeToMoveCursorName[] = "Swipe to move cursor";
 const char kSwipeToMoveCursorDescription[] =
     "Allows user to use touch gestures to move the text cursor around. This "

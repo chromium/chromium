@@ -2000,9 +2000,6 @@ extern const char kPrefetchNotificationSchedulingIntegrationDescription[];
 extern const char kInlineUpdateFlowName[];
 extern const char kInlineUpdateFlowDescription[];
 
-extern const char kAndroidDarkSearchName[];
-extern const char kAndroidDarkSearchDescription[];
-
 extern const char kSwipeToMoveCursorName[];
 extern const char kSwipeToMoveCursorDescription[];
 
