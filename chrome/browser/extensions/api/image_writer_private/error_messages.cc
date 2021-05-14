@@ -26,7 +26,6 @@ const char kDownloadHashError[] = "DOWNLOAD_HASH_MISMATCH";
 const char kDownloadInterrupted[] = "DOWNLOAD_INTERRUPTED";
 const char kTempDirError[] = "TEMP_DIR_CREATION_ERROR";
 const char kTempFileError[] = "TEMP_FILE_CREATION_ERROR";
-const char kTempFileNoSpace[] = "TEMP_FILE_NO_SPACE";
 const char kUrlInvalid[] = "URL_INVALID";
 
 // Unzip errors

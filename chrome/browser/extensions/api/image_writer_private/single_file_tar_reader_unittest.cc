@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,23 +49,12 @@ class SingleFileTarReaderTest : public testing::Test,
     return true;
   }
 
-  bool SetContentsLength(uint64_t length, std::string* error_id) override {
-    if (no_space_) {
-      *error_id = error::kTempFileNoSpace;
-      return false;
-    }
-    return true;
-  }
-
   SingleFileTarReader& reader() { return reader_; }
   const std::vector<char>& contents() const { return contents_; }
-
-  void set_no_space(bool no_space) { no_space_ = no_space; }
 
  private:
   std::unique_ptr<base::File> infile_;
   std::vector<char> contents_;
-  bool no_space_ = false;
 
   SingleFileTarReader reader_;
 };
@@ -83,16 +71,6 @@ TEST_F(SingleFileTarReaderTest, ExtractTarFile) {
   EXPECT_EQ(4u, reader().total_bytes());
   EXPECT_EQ(4u, reader().curr_bytes());
   EXPECT_EQ((std::vector<char>{'f', 'o', 'o', '\n'}), contents());
-}
-
-TEST_F(SingleFileTarReaderTest, TempFileNoSpace) {
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
-  ASSERT_TRUE(OpenTarFile(test_data_dir.AppendASCII("test.tar")));
-
-  set_no_space(true);
-  EXPECT_EQ(SingleFileTarReader::Result::kFailure, reader().ExtractChunk());
-  EXPECT_EQ(error::kTempFileNoSpace, reader().error_id());
 }
 
 TEST_F(SingleFileTarReaderTest, ReadOctalNumber) {

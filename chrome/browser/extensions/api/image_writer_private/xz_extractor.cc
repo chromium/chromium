@@ -9,10 +9,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 #include "chrome/browser/file_util_service.h"
@@ -208,16 +206,6 @@ bool XzExtractor::WriteContents(const char* data,
     *error_id = error::kTempFileError;
     return false;
   }
-  return true;
-}
-
-bool XzExtractor::SetContentsLength(uint64_t length, std::string* error_id) {
-#if defined(OS_POSIX)
-  if (!base::AllocateFileRegion(&outfile_, 0, length)) {
-    *error_id = error::kTempFileNoSpace;
-    return false;
-  }
-#endif
   return true;
 }
 

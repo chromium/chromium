@@ -45,13 +45,6 @@ class SingleFileTarReader {
     virtual bool WriteContents(const char* data,
                                int size,
                                std::string* error_id) = 0;
-
-    // Sets the full length of the data written by WriteContents(). If the OS
-    // supports the functionality, it allocates the region on the disk and fails
-    // when the disk is out of space.
-    // Returns kFailure and sets |error_id| if it fails.
-    // Always returns true if the functionality is not supported.
-    virtual bool SetContentsLength(uint64_t length, std::string* error_id) = 0;
   };
 
   explicit SingleFileTarReader(Delegate* delegate);

@@ -27,7 +27,6 @@ extern const char kDownloadHashError[];
 extern const char kDownloadInterrupted[];
 extern const char kTempDirError[];
 extern const char kTempFileError[];
-extern const char kTempFileNoSpace[];
 extern const char kUrlInvalid[];
 
 // Unzip errors

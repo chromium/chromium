@@ -44,10 +44,6 @@ SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
     // Read the actual file size.
     total_bytes_ = ReadOctalNumber(buffer_.data() + 124, 12);
 
-    if (!delegate_->SetContentsLength(total_bytes_, &error_id_)) {
-      return Result::kFailure;
-    }
-
     // Skip the rest of the header.
     offset += 512;
   }

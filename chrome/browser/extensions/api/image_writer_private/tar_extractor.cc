@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 
 namespace extensions {
@@ -74,16 +72,6 @@ bool TarExtractor::WriteContents(const char* data,
     *error_id = error::kTempFileError;
     return false;
   }
-  return true;
-}
-
-bool TarExtractor::SetContentsLength(uint64_t length, std::string* error_id) {
-#if defined(OS_POSIX)
-  if (!base::AllocateFileRegion(&outfile_, 0, length)) {
-    *error_id = error::kTempFileNoSpace;
-    return false;
-  }
-#endif
   return true;
 }
 
