@@ -19,6 +19,10 @@ class Ranker {
   Ranker(const Ranker&) = delete;
   Ranker& operator=(const Ranker&) = delete;
 
+  // Called each time a new search session begins, eg. when the user types a
+  // character.
+  virtual void Start() {}
+
   // Called each time a search provider sets new results. Passed the |provider|
   // type that triggered this call, and all |results| received so far for this
   // search session.

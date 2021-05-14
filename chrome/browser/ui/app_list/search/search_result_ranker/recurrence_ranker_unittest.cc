@@ -207,6 +207,19 @@ TEST_F(RecurrenceRankerTest, RankTopN) {
                           Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
 }
 
+TEST_F(RecurrenceRankerTest, RankSorted) {
+  auto ranker = MakeSimpleRanker();
+
+  const std::vector<std::string> targets = {"B", "A", "A", "B", "C",
+                                            "B", "D", "C", "A", "A"};
+  for (auto target : targets)
+    ranker->Record(target);
+
+  EXPECT_THAT(ranker->RankSorted(),
+              ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f)),
+                          Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
+}
+
 TEST_F(RecurrenceRankerTest, Empty) {
   auto ranker = MakeSimpleRanker();
 

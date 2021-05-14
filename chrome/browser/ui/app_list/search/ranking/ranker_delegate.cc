@@ -11,6 +11,11 @@ RankerDelegate::RankerDelegate(Profile* profile,
 
 RankerDelegate::~RankerDelegate() {}
 
+void RankerDelegate::Start() {
+  for (auto& ranker : rankers_)
+    ranker->Start();
+}
+
 void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {
   for (auto& ranker : rankers_)
     ranker->Rank(results, provider);

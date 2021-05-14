@@ -1835,6 +1835,8 @@ static_library("ui") {
       "app_list/search/omnibox_result.h",
       "app_list/search/os_settings_provider.cc",
       "app_list/search/os_settings_provider.h",
+      "app_list/search/ranking/category_ranker.cc",
+      "app_list/search/ranking/category_ranker.h",
       "app_list/search/ranking/ranker.h",
       "app_list/search/ranking/ranker_delegate.cc",
       "app_list/search/ranking/ranker_delegate.h",

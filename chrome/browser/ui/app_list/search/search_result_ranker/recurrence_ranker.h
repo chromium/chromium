@@ -64,14 +64,21 @@ class RecurrenceRanker {
   std::map<std::string, float> Rank(
       const std::string& condition = std::string());
 
+  // Returns a sorted vector of at most N <target, score> pairs.
+  //  - Higher scores are better.
+  //  - Score are guaranteed to be in the range [0,1].
+  //  - Pairs are sorted in descending order of score.
+  // The user-supplied |condition| can be ignored if it isn't needed.
+  std::vector<std::pair<std::string, float>> RankTopN(
+      int n,
+      const std::string& condition = std::string());
+
   // Returns a sorted vector of <target, score> pairs.
   //  - Higher scores are better.
   //  - Score are guaranteed to be in the range [0,1].
   //  - Pairs are sorted in descending order of score.
-  //  - At most n results will be returned.
   // The user-supplied |condition| can be ignored if it isn't needed.
-  std::vector<std::pair<std::string, float>> RankTopN(
-      int n,
+  std::vector<std::pair<std::string, float>> RankSorted(
       const std::string& condition = std::string());
 
   // Returns whether this ranker contains no targets.
