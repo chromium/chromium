@@ -1260,6 +1260,9 @@ mojom("mojom_broadcastchannel_bindings") {
 
   overridden_deps = [ ":mojom_core" ]
   component_deps = [ "//third_party/blink/public/common" ]
+  overridden_deps_blink = []
+  component_deps_blink =
+      [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
 
   component_output_prefix = "blink_mojom_broadcastchannel_bindings"
 
