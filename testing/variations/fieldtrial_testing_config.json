@@ -5497,11 +5497,89 @@
                     ]
                 },
                 {
-                    "name": "NonAdaptiveMic_Actions_20210423",
+                    "name": "IPH_TrackingOnly_20210513",
+                    "params": {
+                        "availability": ">=10",
+                        "colorful_mic": "true",
+                        "event_trigger": "name:mic_toolbar_iph_would_have_triggered;comparator:==0;window:90;storage:90",
+                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
+                        "generic_message": "true",
+                        "min_agsa_version": "12.18",
+                        "session_rate": "<1",
+                        "tracking_only": "true"
+                    },
+                    "enable_features": [
+                        "IPH_MicToolbar",
+                        "OmniboxAssistantVoiceSearch",
+                        "ToolbarMicIphAndroid",
+                        "VoiceButtonInTopToolbar",
+                        "VoiceSearchAudioCapturePolicy"
+                    ],
+                    "disable_features": [
+                        "AssistantIntentExperimentId",
+                        "AssistantIntentPageUrl",
+                        "AssistantIntentTranslateInfo",
+                        "TranslateIntent"
+                    ]
+                },
+                {
+                    "name": "IPH_GenericMessage_20210513",
+                    "params": {
+                        "availability": ">=10",
+                        "colorful_mic": "true",
+                        "event_trigger": "name:mic_toolbar_iph_triggered;comparator:==0;window:90;storage:90",
+                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
+                        "generic_message": "true",
+                        "min_agsa_version": "12.18",
+                        "session_rate": "<1",
+                        "tracking_only": "false"
+                    },
+                    "enable_features": [
+                        "IPH_MicToolbar",
+                        "OmniboxAssistantVoiceSearch",
+                        "ToolbarMicIphAndroid",
+                        "VoiceButtonInTopToolbar",
+                        "VoiceSearchAudioCapturePolicy"
+                    ],
+                    "disable_features": [
+                        "AssistantIntentExperimentId",
+                        "AssistantIntentPageUrl",
+                        "AssistantIntentTranslateInfo",
+                        "TranslateIntent"
+                    ]
+                },
+                {
+                    "name": "IPH_ExampleQuery_20210513",
+                    "params": {
+                        "availability": ">=10",
+                        "colorful_mic": "true",
+                        "event_trigger": "name:mic_toolbar_iph_triggered;comparator:==0;window:90;storage:90",
+                        "event_used": "name:successful_voice_search;comparator:==0;window:10;storage:90",
+                        "generic_message": "false",
+                        "min_agsa_version": "12.18",
+                        "session_rate": "<1",
+                        "tracking_only": "false"
+                    },
+                    "enable_features": [
+                        "IPH_MicToolbar",
+                        "OmniboxAssistantVoiceSearch",
+                        "ToolbarMicIphAndroid",
+                        "VoiceButtonInTopToolbar",
+                        "VoiceSearchAudioCapturePolicy"
+                    ],
+                    "disable_features": [
+                        "AssistantIntentExperimentId",
+                        "AssistantIntentPageUrl",
+                        "AssistantIntentTranslateInfo",
+                        "TranslateIntent"
+                    ]
+                },
+                {
+                    "name": "VoiceButton_Actions_20210513",
                     "params": {
                         "colorful_mic": "true",
-                        "experiment_id": "47453836",
-                        "min_agsa_version": "12.15"
+                        "experiment_id": "47453835",
+                        "min_agsa_version": "12.18"
                     },
                     "enable_features": [
                         "AssistantIntentExperimentId",
