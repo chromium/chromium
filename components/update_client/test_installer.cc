@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -96,11 +97,12 @@ void VersionedTestInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback progress_callback,
     Callback callback) {
-  const auto manifest = update_client::ReadManifest(unpack_path);
-  std::string version_string;
-  manifest->GetStringASCII("version", &version_string);
-  const base::Version version(version_string);
+  const base::Value manifest = update_client::ReadManifest(unpack_path);
+  const std::string* version_string = manifest.FindStringKey("version");
+  if (!version_string || !base::IsStringASCII(*version_string))
+    return;
 
+  const base::Version version(*version_string);
   const base::FilePath path =
       install_directory_.AppendASCII(version.GetString());
   base::CreateDirectory(path.DirName());

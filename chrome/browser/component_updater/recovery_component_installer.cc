@@ -19,20 +19,16 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "build/branding_buildflags.h"
-#include "content/public/browser/browser_task_traits.h"
-#if defined(OS_MAC)
-#include "base/mac/authorization_util.h"
-#include "base/mac/scoped_authorizationref.h"
-#endif
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -44,8 +40,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
+
+#if defined(OS_MAC)
+#include "base/mac/authorization_util.h"
+#include "base/mac/scoped_authorizationref.h"
+#endif
 
 using content::BrowserThread;
 
@@ -421,16 +423,16 @@ void RecoveryComponentInstaller::Install(
 
 bool RecoveryComponentInstaller::DoInstall(
     const base::FilePath& unpack_path) {
-  const auto manifest = update_client::ReadManifest(unpack_path);
-  if (!manifest)
+  const base::Value manifest = update_client::ReadManifest(unpack_path);
+  if (!manifest.is_dict())
     return false;
-  std::string name;
-  manifest->GetStringASCII("name", &name);
-  if (name != kRecoveryManifestName)
+  const std::string* name = manifest.FindStringKey("name");
+  if (!name || *name != kRecoveryManifestName)
     return false;
-  std::string proposed_version;
-  manifest->GetStringASCII("version", &proposed_version);
-  base::Version version(proposed_version);
+  const std::string* proposed_version = manifest.FindStringKey("version");
+  if (!proposed_version || !base::IsStringASCII(*proposed_version))
+    return false;
+  base::Version version(*proposed_version);
   if (!version.IsValid())
     return false;
   if (current_version_.CompareTo(version) >= 0)
@@ -468,7 +470,8 @@ bool RecoveryComponentInstaller::DoInstall(
   // Run the recovery component.
   const bool is_deferred_run = false;
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, *manifest, is_deferred_run, current_version_);
+      main_file, base::Value::AsDictionaryValue(manifest), is_deferred_run,
+      current_version_);
 
   if (!RunInstallCommand(cmdline, path)) {
     return false;

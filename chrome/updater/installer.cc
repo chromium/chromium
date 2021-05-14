@@ -124,13 +124,15 @@ Installer::Result Installer::InstallHelper(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  auto local_manifest = update_client::ReadManifest(unpack_path);
-  if (!local_manifest)
+  base::Value local_manifest = update_client::ReadManifest(unpack_path);
+  if (!local_manifest.is_dict())
     return Result(update_client::InstallError::BAD_MANIFEST);
 
-  std::string version_ascii;
-  local_manifest->GetStringASCII("version", &version_ascii);
-  const base::Version manifest_version(version_ascii);
+  const std::string* version_ascii = local_manifest.FindStringKey("version");
+  if (!version_ascii || !base::IsStringASCII(*version_ascii))
+    return Result(update_client::InstallError::INVALID_VERSION);
+
+  const base::Version manifest_version(*version_ascii);
 
   VLOG(1) << "Installed version=" << pv_
           << ", installing version=" << manifest_version.GetString();
