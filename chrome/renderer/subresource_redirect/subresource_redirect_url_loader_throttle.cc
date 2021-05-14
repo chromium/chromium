@@ -129,6 +129,20 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(request->destination, network::mojom::RequestDestination::kImage);
   DCHECK(request->url.SchemeIs(url::kHttpsScheme));
 
+  if (redirect_result_ ==
+      SubresourceRedirectResult::kIneligibleBlinkDisallowed) {
+    if (auto* public_resource_decider_agent =
+            GetPublicResourceDeciderAgent(render_frame_id_)) {
+      public_resource_decider_agent
+          ->NotifyIneligibleBlinkDisallowedSubresource();
+    }
+    if (login_robots_compression_metrics_) {
+      login_robots_compression_metrics_->NotifyRequestStart();
+      login_robots_compression_metrics_->NotifyRequestSent();
+    }
+    return;
+  }
+
   if (redirect_result_ != SubresourceRedirectResult::kRedirectable)
     return;
 

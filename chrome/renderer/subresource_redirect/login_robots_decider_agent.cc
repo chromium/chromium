@@ -160,4 +160,8 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
   NOTREACHED();
 }
 
+void LoginRobotsDeciderAgent::NotifyIneligibleBlinkDisallowedSubresource() {
+  num_should_redirect_checks_++;
+}
+
 }  // namespace subresource_redirect

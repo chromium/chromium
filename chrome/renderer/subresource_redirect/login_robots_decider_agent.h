@@ -50,6 +50,7 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
       const GURL& url,
       int64_t content_length,
       SubresourceRedirectResult redirect_result) override;
+  void NotifyIneligibleBlinkDisallowedSubresource() override;
 
   // Callback invoked when should redirect check result is available.
   void OnShouldRedirectSubresourceResult(

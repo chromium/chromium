@@ -67,6 +67,8 @@ class PublicResourceDecider {
 
   // Returns the start time of the current navigation.
   virtual base::TimeTicks GetNavigationStartTime() const = 0;
+
+  virtual void NotifyIneligibleBlinkDisallowedSubresource() {}
 };
 
 }  // namespace subresource_redirect
