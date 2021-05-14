@@ -109,6 +109,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kNetworkServiceInProcess,
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
+    &shared_highlighting::kSharedHighlightingV2,
     &features::kPrivacySandboxSettings,
     &features::kPrivacySandboxSettings2,
     &features::kPrioritizeBootstrapTasks,
