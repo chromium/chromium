@@ -599,6 +599,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "chrome-tips-in-main-menu-new-badge",
+    "owners": [ "dfried" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "chromeos-direct-video-decoder",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // TODO(b/159825227): remove when the "old" video decoder is fully launched.

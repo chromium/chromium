@@ -4830,6 +4830,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-tips-in-main-menu", flag_descriptions::kChromeTipsInMainMenuName,
      flag_descriptions::kChromeTipsInMainMenuDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeTipsInMainMenu)},
+
+    {"chrome-tips-in-main-menu-new-badge",
+     flag_descriptions::kChromeTipsInMainMenuNewBadgeName,
+     flag_descriptions::kChromeTipsInMainMenuNewBadgeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeTipsInMainMenuNewBadge)},
 #endif
 
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,

@@ -113,13 +113,6 @@ namespace {
 
 constexpr size_t kMaxAppNameLength = 30;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Put "New" badge behind a separate flag so it can be enabled separately during
-// the experiment and early rollout to stable, then deprecated.
-const base::Feature kChromeTipsInMainMenuNewBadge{
-    "ChromeTipsInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Conditionally return the update app menu item title based on upgrade detector
 // state.
 std::u16string GetUpgradeDialogMenuItemName() {
@@ -197,7 +190,7 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
       AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
-      if (base::FeatureList::IsEnabled(kChromeTipsInMainMenuNewBadge))
+      if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenuNewBadge))
         SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS), true);
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

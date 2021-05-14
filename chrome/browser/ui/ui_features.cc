@@ -20,6 +20,10 @@ const base::Feature kCommander{"Commander", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables "Tips for Chrome" in Main Chrome Menu | Help.
 const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables "Tips for Chrome" in Main Chrome Menu | Help.
+const base::Feature kChromeTipsInMainMenuNewBadge{
+    "ChromeTipsInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Enables showing the EV certificate details in the Page Info bubble.

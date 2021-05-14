@@ -451,6 +451,12 @@ const char kChromeTipsInMainMenuDescription[] =
     "Enables 'Tips for Chrome' in main menu; the menu item will take users to "
     "an official Google site with information about the latest and most "
     "popular Chrome features.";
+
+const char kChromeTipsInMainMenuNewBadgeName[] =
+    "Show 'New' promo badge on 'Tips for Chrome' in Help portion of main menu.";
+const char kChromeTipsInMainMenuNewBadgeDescription[] =
+    "Enables 'New' promo badge on 'Tips for Chrome' in main menu; experiment to"
+    " test the value of this user education feature.";
 #endif
 
 const char kDarkLightTestName[] = "Dark/light mode of system UI";
