@@ -1147,6 +1147,14 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     SerializeTableAttributes(node_data);
   }
 
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    // Whether it has ARIA attributes at all.
+    if (HasAriaAttribute()) {
+      node_data->AddBoolAttribute(
+          ax::mojom::blink::BoolAttribute::kHasAriaAttribute, true);
+    }
+  }
+
   if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
     // Return early. None of the following attributes are needed for PDFs.
     return;

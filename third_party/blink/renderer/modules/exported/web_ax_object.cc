@@ -344,13 +344,6 @@ bool WebAXObject::IsVisited() const {
   return private_->IsVisited();
 }
 
-bool WebAXObject::HasAriaAttribute() const {
-  if (IsDetached())
-    return false;
-
-  return private_->HasAriaAttribute();
-}
-
 WebString WebAXObject::AccessKey() const {
   if (IsDetached())
     return WebString();

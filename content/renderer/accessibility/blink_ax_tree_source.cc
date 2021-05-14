@@ -524,10 +524,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   if (!node.IsNull() && node.IsElementNode()) {
     WebElement element = node.To<WebElement>();
     is_iframe = element.HasHTMLTagName("iframe");
-
-    // Presence of other ARIA attributes.
-    if (src.HasAriaAttribute())
-      dst->AddBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute, true);
   }
 
   if (dst->id == image_data_node_id_) {
