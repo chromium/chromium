@@ -6841,7 +6841,8 @@ crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/i
 # Sheriff 2021-05-07
 crbug.com/1206734 [ Mac10.13 ] external/wpt/websockets/Send-binary-blob.any.worker.html?wpt_flags=h2 [ Timeout ]
 
-crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html [ Pass Failure ]
+### external/wpt/pointerevents/
+crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Pass ]
 
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 crbug.com/1207843 virtual/plz-service-worker/external/wpt/service-workers/service-worker/xhr-content-length.https.window.html [ Pass Failure Crash ]
