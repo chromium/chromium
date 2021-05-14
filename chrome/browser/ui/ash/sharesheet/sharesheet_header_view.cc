@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/optional.h"
@@ -51,13 +52,14 @@ const std::u16string ConcatenateFileNames(
   return base::ASCIIToUTF16(all_file_names);
 }
 
-gfx::ImageSkia CreatePlaceholderIcon(const gfx::VectorIcon& icon,
-                                     const gfx::Size& size) {
+gfx::ImageSkia CreateMimeTypeIcon(const gfx::VectorIcon& icon,
+                                  const gfx::Size& image_size) {
   gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
       icon, ash::sharesheet::kImagePreviewPlaceholderIconContentSize,
-      ash::sharesheet::kImagePreviewPlaceholderIconColor);
+      ash::ColorProvider::Get()->GetContentLayerColor(
+          ash::ColorProvider::ContentLayerType::kIconColorProminent));
   return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon,
-                                                           size);
+                                                           image_size);
 }
 
 gfx::Size GetImagePreviewSize(size_t index, int grid_icon_count) {
@@ -238,10 +240,9 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
     if (has_files) {
       ResolveImages();
     } else {
-      // TODO(crbug.com/2650014): Update to text icon.
       DCHECK_GT(image_preview_->GetImageViewCount(), 0);
-      image_preview_->GetImageViewAt(0)->SetImage(CreatePlaceholderIcon(
-          chromeos::kFiletypeGenericIcon, kImagePreviewFullSize));
+      image_preview_->GetImageViewAt(0)->SetImage(
+          CreateMimeTypeIcon(GetTextVectorIcon(), kImagePreviewFullSize));
     }
   }
 }
@@ -324,6 +325,7 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     GURL drive_share_url = intent_->drive_share_url.value();
     if (drive_share_url.is_valid()) {
       text_fields.push_back(base::ASCIIToUTF16(drive_share_url.spec()));
+      text_icon_ = TextPlaceholderIcon::kLink;
     }
   }
 
@@ -346,13 +348,24 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     if (!extracted_text.empty())
       text_fields.push_back(base::ASCIIToUTF16(extracted_text));
 
-    if (extracted_url.is_valid())
+    if (extracted_url.is_valid()) {
       text_fields.push_back(base::ASCIIToUTF16(extracted_url.spec()));
+      text_icon_ = TextPlaceholderIcon::kLink;
+    }
   }
 
   // There will always be at least 1 text field.
   DCHECK_NE(text_fields.size(), 0);
   return text_fields;
+}
+
+const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
+  switch (text_icon_) {
+    case (TextPlaceholderIcon::kGenericText):
+      return kSharesheetTextIcon;
+    case (TextPlaceholderIcon::kLink):
+      return kSharesheetLinkIcon;
+  }
 }
 
 void SharesheetHeaderView::ResolveImages() {
@@ -376,7 +389,7 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
                           weak_ptr_factory_.GetWeakPtr()),
       base::Optional<gfx::ImageSkia>(
-          CreatePlaceholderIcon(chromeos::kFiletypeImageIcon, size)));
+          CreateMimeTypeIcon(chromeos::kFiletypeImageIcon, size)));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
   image_subscription_.push_back(image->AddImageSkiaChangedCallback(

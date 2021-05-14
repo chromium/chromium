@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -36,6 +37,11 @@ class SharesheetHeaderView : public views::View {
  private:
   class SharesheetImagePreview;
 
+  enum class TextPlaceholderIcon {
+    kGenericText = 0,
+    kLink,
+  };
+
   // Adds the view for text preview.
   void ShowTextPreview();
 
@@ -49,6 +55,7 @@ class SharesheetHeaderView : public views::View {
   // TODO(crbug.com/2650014): Move the existing ExtractSharedFields function
   // from share_target_utils.h to a common place and reuse the function here.
   std::vector<std::u16string> ExtractShareText();
+  const gfx::VectorIcon& GetTextVectorIcon();
 
   void ResolveImages();
   void ResolveImage(size_t index);
@@ -60,6 +67,9 @@ class SharesheetHeaderView : public views::View {
   // Contains the share title and text preview views.
   views::View* text_view_ = nullptr;
   SharesheetImagePreview* image_preview_;
+  // |text_icon_| is only used when we have no icons to show in the image
+  // preview.
+  TextPlaceholderIcon text_icon_ = TextPlaceholderIcon::kGenericText;
 
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
