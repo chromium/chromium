@@ -12,17 +12,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 #include "base/base_export.h"
-#include "base/cpu.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -42,6 +36,16 @@
 #if defined(OS_WIN)
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_AIX)
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/cpu.h"
+#include "base/threading/platform_thread.h"
 #endif
 
 namespace base {
