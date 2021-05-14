@@ -360,7 +360,7 @@ void RealTimeUrlLookupServiceBase::SendRequest(
                                     access_token_string.has_value());
 
   SendRequestInternal(std::move(resource_request), req_data, url,
-                      std::move(response_callback));
+                      access_token_string, std::move(response_callback));
 
   GetTaskRunner(ThreadID::IO)
       ->PostTask(FROM_HERE,
@@ -374,6 +374,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
     const GURL& url,
+    base::Optional<std::string> access_token_string,
     RTLookupResponseCallback response_callback) {
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
@@ -387,13 +388,15 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
   owned_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnURLLoaderComplete,
-                     GetWeakPtr(), url, loader, base::TimeTicks::Now()));
+                     GetWeakPtr(), url, access_token_string, loader,
+                     base::TimeTicks::Now()));
 
   pending_requests_[owned_loader.release()] = std::move(response_callback);
 }
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     const GURL& url,
+    base::Optional<std::string> access_token_string,
     network::SimpleURLLoader* url_loader,
     base::TimeTicks request_start_time,
     std::unique_ptr<std::string> response_body) {
@@ -413,6 +416,11 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   RecordNetworkResultWithAndWithoutSuffix("SafeBrowsing.RT.Network.Result",
                                           GetMetricSuffix(), net_error,
                                           response_code);
+
+  if (response_code == net::HTTP_UNAUTHORIZED &&
+      access_token_string.has_value()) {
+    OnResponseUnauthorized(access_token_string.value());
+  }
 
   auto response = std::make_unique<RTLookupResponse>();
   bool is_rt_lookup_successful = (net_error == net::OK) &&
@@ -474,6 +482,9 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
 
   return request;
 }
+
+void RealTimeUrlLookupServiceBase::OnResponseUnauthorized(
+    const std::string& invalid_access_token) {}
 
 void RealTimeUrlLookupServiceBase::Shutdown() {
   for (auto& pending : pending_requests_) {

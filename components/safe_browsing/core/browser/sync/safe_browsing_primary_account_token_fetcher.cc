@@ -49,6 +49,14 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
           signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
+void SafeBrowsingPrimaryAccountTokenFetcher::OnInvalidAccessToken(
+    const std::string& invalid_access_token) {
+  CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  identity_manager_->RemoveAccessTokenFromCache(account_id, {kAPIScope},
+                                                invalid_access_token);
+}
+
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
     int request_id,
     GoogleServiceAuthError error,

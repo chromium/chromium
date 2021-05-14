@@ -21,6 +21,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -53,6 +54,8 @@ class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
   void RunAccessTokenCallback(std::string token) {
     std::move(callback_).Run(token);
   }
+
+  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
 
  private:
   Callback callback_;
@@ -188,6 +191,10 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
                                          expected_response_str);
   }
 
+  void SetUpFailureResponse(net::HttpStatusCode status) {
+    test_url_loader_factory_.AddResponse(kRealTimeLookupUrlPrefix, "", status);
+  }
+
   RealTimeUrlLookupService* rt_service() { return rt_service_.get(); }
 
   void EnableMbb() {
@@ -220,6 +227,10 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
 
   void FulfillAccessTokenRequest(std::string token) {
     raw_token_fetcher_->RunAccessTokenCallback(token);
+  }
+
+  TestSafeBrowsingTokenFetcher* raw_token_fetcher() {
+    return raw_token_fetcher_;
   }
 
   bool AreTokenFetchesConfiguredInClient(
@@ -682,6 +693,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
                                      /* is_cached_response */ false, _));
 
   FulfillAccessTokenRequest("access_token_string");
+  EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
   task_environment_->RunUntilIdle();
 
   // Check the response is cached.
@@ -756,6 +768,51 @@ TEST_F(RealTimeUrlLookupServiceTest,
   std::unique_ptr<RTLookupResponse> cache_response =
       GetCachedRealTimeUrlVerdict(url);
   EXPECT_NE(nullptr, cache_response);
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_OnInvalidAccessTokenCalledResponseCodeUnauthorized) {
+  EnableRealTimeUrlLookup(
+      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+  SetUpFailureResponse(net::HTTP_UNAUTHORIZED);
+
+  base::MockCallback<RTLookupRequestCallback> request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(url, request_callback.Get(),
+                            response_callback.Get());
+
+  EXPECT_CALL(request_callback, Run(_, _)).Times(1);
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+
+  FulfillAccessTokenRequest("invalid_token_string");
+  EXPECT_CALL(*raw_token_fetcher(),
+              OnInvalidAccessToken("invalid_token_string"))
+      .Times(1);
+  task_environment_->RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_OnInvalidAccessTokenNotCalledResponseCodeForbidden) {
+  EnableRealTimeUrlLookup(
+      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+  SetUpFailureResponse(net::HTTP_FORBIDDEN);
+
+  base::MockCallback<RTLookupRequestCallback> request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(url, request_callback.Get(),
+                            response_callback.Get());
+
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+
+  FulfillAccessTokenRequest("invalid_token_string");
+  EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
+  task_environment_->RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {

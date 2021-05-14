@@ -85,7 +85,12 @@ void RealTimeUrlLookupService::OnGetAccessToken(
               std::move(response_callback));
 }
 
-RealTimeUrlLookupService::~RealTimeUrlLookupService() {}
+void RealTimeUrlLookupService::OnResponseUnauthorized(
+    const std::string& invalid_access_token) {
+  token_fetcher_->OnInvalidAccessToken(invalid_access_token);
+}
+
+RealTimeUrlLookupService::~RealTimeUrlLookupService() = default;
 
 bool RealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformFullURLLookup(

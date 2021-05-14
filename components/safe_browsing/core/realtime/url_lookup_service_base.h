@@ -140,6 +140,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
                               RTLookupRequestCallback request_callback,
                               RTLookupResponseCallback response_callback) = 0;
 
+  // Called when the response from the server is unauthorized, so child classes
+  // can add extra handling when this happens.
+  virtual void OnResponseUnauthorized(const std::string& invalid_access_token);
+
   // Gets a dm token string to be set in a request proto.
   virtual base::Optional<std::string> GetDMTokenString() const = 0;
 
@@ -182,14 +186,17 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& req_data,
       const GURL& url,
+      base::Optional<std::string> access_token_string,
       RTLookupResponseCallback response_callback);
 
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
   // request. |request_start_time| is the time when the request was sent.
   // |response_body| is the response received. |url| is used for calling
-  // |MayBeCacheRealTimeUrlVerdict|.
+  // |MayBeCacheRealTimeUrlVerdict|. |access_token_string| is used for calling
+  // |OnResponseUnauthorized| in case the response code is HTTP_UNAUTHORIZED.
   void OnURLLoaderComplete(const GURL& url,
+                           base::Optional<std::string> access_token_string,
                            network::SimpleURLLoader* url_loader,
                            base::TimeTicks request_start_time,
                            std::unique_ptr<std::string> response_body);

@@ -41,6 +41,12 @@ void SafeBrowsingTokenFetcherImpl::Start(Callback callback) {
                      weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
+void SafeBrowsingTokenFetcherImpl::OnInvalidAccessToken(
+    const std::string& invalid_access_token) {
+  // TODO(crbug.com/1209050): The embedders can reset the cache for the token if
+  // applicable, but this is currently not implemented yet.
+}
+
 void SafeBrowsingTokenFetcherImpl::OnTokenFetched(
     int request_id,
     const std::string& access_token) {

@@ -86,6 +86,7 @@ class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
   ~MockSafeBrowsingTokenFetcher() override = default;
 
   MOCK_METHOD1(Start, void(Callback));
+  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingTokenFetcher);

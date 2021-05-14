@@ -35,6 +35,7 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
 
   // SafeBrowsingTokenFetcher:
   void Start(Callback callback) override;
+  void OnInvalidAccessToken(const std::string& invalid_access_token) override;
 
  private:
   void OnTokenFetched(int request_id,
