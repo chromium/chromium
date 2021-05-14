@@ -193,6 +193,9 @@ void BlinkAXTreeSource::Freeze() {
 void BlinkAXTreeSource::Thaw() {
   CHECK(frozen_);
   WebAXObject::Thaw(document_);
+  document_ = WebDocument();
+  focus_ = WebAXObject();
+  root_ = WebAXObject();
   frozen_ = false;
 }
 
