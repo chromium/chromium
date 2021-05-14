@@ -1419,10 +1419,9 @@ export function scanningAppTest() {
         new Date(scannerToKeep.lastScanDate) >
         new Date(scannerToEvict.lastScanDate));
 
-
+    /** @type {!Array<!ScannerSetting>} */
     const scannersToKeep =
-        /** @type {!Array<ScannerSetting>} */ (
-            new Array(MAX_NUM_SAVED_SCANNERS).fill(scannerToKeep));
+        new Array(MAX_NUM_SAVED_SCANNERS).fill(scannerToKeep);
 
     // Put |scannerToEvict| in the front of |scannersToKeep| to test that it
     // get correctly sorted to the back of the array when evicting scanners.
@@ -1456,8 +1455,8 @@ export function scanningAppTest() {
       return;
     }
 
-    const scanners = /** @type {!Array<ScannerSetting>} */ (
-        new Array(MAX_NUM_SAVED_SCANNERS));
+    /** @type {!Array<!ScannerSetting>} */
+    const scanners = new Array(MAX_NUM_SAVED_SCANNERS);
     for (let i = 0; i < MAX_NUM_SAVED_SCANNERS; i++) {
       scanners[i] = {
         name: 'Scanner ' + (i + 1),
