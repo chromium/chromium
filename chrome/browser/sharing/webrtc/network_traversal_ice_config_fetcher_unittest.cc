@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/webrtc/ice_config_fetcher.h"
+#include "chrome/browser/sharing/webrtc/network_traversal_ice_config_fetcher.h"
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -19,14 +19,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class IceConfigFetcherTest : public testing::Test {
+class NetworkTraversalIceConfigFetcherTest : public testing::Test {
  public:
-  IceConfigFetcherTest()
+  NetworkTraversalIceConfigFetcherTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         ice_config_fetcher_(test_shared_loader_factory_) {}
-  ~IceConfigFetcherTest() override = default;
+  ~NetworkTraversalIceConfigFetcherTest() override = default;
 
   std::string GetApiUrl() const {
     return base::StrCat(
@@ -62,11 +62,11 @@ class IceConfigFetcherTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  IceConfigFetcher ice_config_fetcher_;
+  NetworkTraversalIceConfigFetcher ice_config_fetcher_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(IceConfigFetcherTest, ResponseSuccessful) {
+TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseSuccessful) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
       [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
@@ -89,7 +89,7 @@ TEST_F(IceConfigFetcherTest, ResponseSuccessful) {
   histogram_tester_.ExpectBucketCount(metric_name, 2, 1);
 }
 
-TEST_F(IceConfigFetcherTest, ResponseError) {
+TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseError) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
       [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
@@ -111,7 +111,7 @@ TEST_F(IceConfigFetcherTest, ResponseError) {
   histogram_tester_.ExpectBucketCount(metric_name, 0, 1);
 }
 
-TEST_F(IceConfigFetcherTest, OverlappingCalls) {
+TEST_F(NetworkTraversalIceConfigFetcherTest, OverlappingCalls) {
   base::RunLoop run_loop;
   int counter = 2;
   auto callback = [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {

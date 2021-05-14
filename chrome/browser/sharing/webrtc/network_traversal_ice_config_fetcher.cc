@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/webrtc/ice_config_fetcher.h"
+#include "chrome/browser/sharing/webrtc/network_traversal_ice_config_fetcher.h"
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
@@ -15,7 +15,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace {
-const char kIceConfigApiUrl[] =
+
+const char kNetworkTraversalIceConfigApiUrl[] =
     "https://networktraversal.googleapis.com/v1alpha/iceconfig?key=";
 
 // Response with 2 ice server configs takes ~1KB. A loose upper bound of 16KB is
@@ -24,9 +25,10 @@ const char kIceConfigApiUrl[] =
 constexpr int kMaxBodySize = 16 * 1024;
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("ice_config_fetcher", R"(
+    net::DefineNetworkTrafficAnnotation("network_traversal_ice_config_fetcher",
+                                        R"(
         semantics {
-          sender: "IceConfigFetcher"
+          sender: "NetworkTraversalIceConfigFetcher"
           description:
             "Fetches ice server configurations for p2p webrtc connection as "
             "described in "
@@ -53,13 +55,14 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader) {
   DCHECK(loader);
 
   if (loader->NetError() != net::OK) {
-    LOG(ERROR) << "IceConfigFetcher url loader network error: "
+    LOG(ERROR) << "NetworkTraversalIceConfigFetcher url loader network error: "
                << loader->NetError();
     return false;
   }
 
   if (!loader->ResponseInfo() || !loader->ResponseInfo()->headers) {
-    LOG(ERROR) << "IceConfigFetcher invalid response or missing headers";
+    LOG(ERROR) << "NetworkTraversalIceConfigFetcher invalid response or "
+                  "missing headers";
     return false;
   }
 
@@ -67,8 +70,9 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader) {
   bool is_successful_response_code =
       (loader->ResponseInfo()->headers->response_code() / 100) == 2;
   if (!is_successful_response_code) {
-    LOG(ERROR) << "IceConfigFetcher non-successful response code: "
-               << loader->ResponseInfo()->headers->response_code();
+    LOG(ERROR)
+        << "NetworkTraversalIceConfigFetcher non-successful response code: "
+        << loader->ResponseInfo()->headers->response_code();
   }
   return is_successful_response_code;
 }
@@ -142,7 +146,7 @@ void OnIceServersResponse(
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 
   if (ice_servers.empty()) {
-    VLOG(1) << "IceConfigFetcher returning default ice servers";
+    VLOG(1) << "NetworkTraversalIceConfigFetcher returning default ice servers";
     ice_servers = GetDefaultIceServers();
   }
 
@@ -151,16 +155,17 @@ void OnIceServersResponse(
 
 }  // namespace
 
-IceConfigFetcher::IceConfigFetcher(
+NetworkTraversalIceConfigFetcher::NetworkTraversalIceConfigFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)) {}
 
-IceConfigFetcher::~IceConfigFetcher() = default;
+NetworkTraversalIceConfigFetcher::~NetworkTraversalIceConfigFetcher() = default;
 
-void IceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
+void NetworkTraversalIceConfigFetcher::GetIceServers(
+    GetIceServersCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      GURL(base::StrCat({kIceConfigApiUrl, google_apis::GetSharingAPIKey()}));
+  resource_request->url = GURL(base::StrCat(
+      {kNetworkTraversalIceConfigApiUrl, google_apis::GetSharingAPIKey()}));
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
