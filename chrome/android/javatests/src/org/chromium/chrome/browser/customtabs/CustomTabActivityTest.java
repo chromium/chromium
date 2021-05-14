@@ -82,6 +82,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -135,11 +137,13 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
@@ -2198,6 +2202,46 @@ public class CustomTabActivityTest {
                 token, Uri.parse("https://www.google.com"), extrasBundle, null));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { assertTrue(CustomTabsTestUtils.hasVariationId(101)); });
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+            "ignore-certificate-errors", "ignore-google-port-numbers"})
+    public void
+    testMayLaunchUrlAddsClientDataHeader() throws Exception {
+        mWebServer.setServerHost("www.google.com");
+        final String expectedHeader = "test-header";
+        String url = mWebServer.setResponse("/ok.html", "<html>ok</html>", null);
+        AppHooks.setInstanceForTesting(new AppHooksImpl() {
+            @Override
+            public CustomTabsConnection createCustomTabsConnection() {
+                return new CustomTabsConnection() {
+                    @Override
+                    public void setClientDataHeaderForNewTab(
+                            CustomTabsSessionToken session, WebContents webContents) {
+                        setClientDataHeader(webContents, expectedHeader);
+                    }
+                };
+            }
+        });
+        CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, url);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        connection.newSession(token);
+        setCanUseHiddenTabForSession(connection, token, true);
+        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(connection.getHiddenTab(), Matchers.notNullValue()); });
+        Tab hiddenTab =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return connection.getHiddenTab(); });
+        ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
+        String actualHeader =
+                mWebServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
+        assertEquals(expectedHeader, actualHeader);
     }
 
     private void verifyHistoryAfterHiddenTab(boolean speculationWasAHit) throws Exception {

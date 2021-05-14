@@ -514,6 +514,11 @@ public class CustomTabsConnection {
         return true;
     }
 
+    @VisibleForTesting
+    public Tab getHiddenTab() {
+        return mHiddenTabHolder != null ? mHiddenTabHolder.getHiddenTab() : null;
+    }
+
     private boolean preconnectUrls(List<Bundle> likelyBundles) {
         boolean atLeastOneUrl = false;
         if (likelyBundles == null) return false;
@@ -1494,7 +1499,10 @@ public class CustomTabsConnection {
     private void launchUrlInHiddenTab(
             CustomTabsSessionToken session, String url, @Nullable Bundle extras) {
         ThreadUtils.assertOnUiThread();
-        mHiddenTabHolder.launchUrlInHiddenTab(session, mClientManager, url, extras);
+        mHiddenTabHolder.launchUrlInHiddenTab(
+                (Tab tab)
+                        -> setClientDataHeaderForNewTab(session, tab.getWebContents()),
+                session, mClientManager, url, extras);
     }
 
     @VisibleForTesting
