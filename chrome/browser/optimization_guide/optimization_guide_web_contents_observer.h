@@ -71,6 +71,10 @@ class OptimizationGuideWebContentsObserver
   void DocumentOnLoadCompletedInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
 
+  // Ask OptimizationGuideHintsManager to fetch hints for navigations that were
+  // predicted for the current page load.
+  void FetchHints();
+
   // For testing.
   void FetchHintsUsingManagerForTesting(
       OptimizationGuideHintsManager* hints_manager);

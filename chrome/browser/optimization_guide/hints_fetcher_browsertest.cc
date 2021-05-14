@@ -502,7 +502,8 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
         {
             {optimization_guide::features::kOptimizationHints, {}},
             {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"}}},
+             {{"max_concurrent_page_navigation_fetches", "2"},
+              {"onload_delay_for_hints_fetching_ms", "200"}}},
             {optimization_guide::features::kOptimizationHintsFieldTrials,
              {{"allowed_field_trial_names",
                "scoped_feature_list_trial_for_OptimizationHintsFetching"}}},
@@ -1538,9 +1539,8 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
-// TODO(crbug.com/1208585): Test is flaky.
 IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
-                       DISABLED_HintsFetcher_SRP_Slow_Connection) {
+                       HintsFetcher_SRP_Slow_Connection) {
   g_browser_process->network_quality_tracker()
       ->ReportEffectiveConnectionTypeForTesting(
           net::EFFECTIVE_CONNECTION_TYPE_2G);

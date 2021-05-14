@@ -145,8 +145,17 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
     return;
   }
 
-  OptimizationGuideHintsManager* hints_manager =
-      optimization_guide_keyed_service_->GetHintsManager();
+  // Give the renderer some time to send us predictions that might have come
+  // at onload.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&OptimizationGuideWebContentsObserver::FetchHints,
+                     weak_factory_.GetWeakPtr()),
+      optimization_guide::features::GetOnloadDelayForHintsFetching());
+}
+
+void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
+    OptimizationGuideHintsManager* hints_manager) {
   DCHECK(hints_manager);
   sent_batched_hints_request_ = true;
   hints_manager->FetchHintsForPredictions(
@@ -154,9 +163,13 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
   hints_target_urls_.clear();
 }
 
-void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
-    OptimizationGuideHintsManager* hints_manager) {
-  DCHECK(hints_manager);
+void OptimizationGuideWebContentsObserver::FetchHints() {
+  if (!optimization_guide_keyed_service_) {
+    return;
+  }
+
+  OptimizationGuideHintsManager* hints_manager =
+      optimization_guide_keyed_service_->GetHintsManager();
   sent_batched_hints_request_ = true;
   hints_manager->FetchHintsForPredictions(
       std::move(hints_target_urls_.vector()));

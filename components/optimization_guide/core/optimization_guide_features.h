@@ -212,6 +212,10 @@ bool ShouldWriteContentAnnotationsToHistoryService();
 // loaded for each execution, and then unloaded once complete.
 bool LoadModelFileForEachExecution();
 
+// The time to wait beyond the onload event before sending the hints request for
+// link predictions.
+base::TimeDelta GetOnloadDelayForHintsFetching();
+
 }  // namespace features
 }  // namespace optimization_guide
 
