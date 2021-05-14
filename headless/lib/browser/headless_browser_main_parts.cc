@@ -13,11 +13,15 @@
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/os_crypt/os_crypt.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service_factory.h"
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #endif
 
@@ -103,19 +107,19 @@ void HeadlessBrowserMainParts::QuitMainMessageLoop() {
 
 #if defined(HEADLESS_USE_PREFS)
 void HeadlessBrowserMainParts::CreatePrefService() {
+  scoped_refptr<PersistentPrefStore> pref_store;
   if (browser_->options()->user_data_dir.empty()) {
-    LOG(WARNING) << "Cannot create Pref Service with no user data dir.";
-    return;
+    pref_store = base::MakeRefCounted<InMemoryPrefStore>();
+  } else {
+    base::FilePath local_state_file =
+        browser_->options()->user_data_dir.Append(kLocalStateFilename);
+    pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
+    auto result = pref_store->ReadPrefs();
+    CHECK(result == JsonPrefStore::PREF_READ_ERROR_NONE ||
+          result == JsonPrefStore::PREF_READ_ERROR_NO_FILE);
   }
 
-  base::FilePath local_state_file =
-      browser_->options()->user_data_dir.Append(kLocalStateFilename);
-  auto pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
-  auto result = pref_store->ReadPrefs();
-  CHECK(result == JsonPrefStore::PREF_READ_ERROR_NONE ||
-        result == JsonPrefStore::PREF_READ_ERROR_NO_FILE);
-
-  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+  auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 #if defined(OS_WIN)
   OSCrypt::RegisterLocalPrefs(pref_registry.get());
 #endif
@@ -124,12 +128,16 @@ void HeadlessBrowserMainParts::CreatePrefService() {
 
 #if defined(HEADLESS_USE_POLICY)
   policy::HeadlessModePolicy::RegisterLocalPrefs(pref_registry.get());
+  policy::URLBlocklistManager::RegisterProfilePrefs(pref_registry.get());
 
   policy_connector_ =
       std::make_unique<policy::HeadlessBrowserPolicyConnector>();
 
   factory.set_managed_prefs(
       policy_connector_->CreatePrefStore(policy::POLICY_LEVEL_MANDATORY));
+
+  BrowserContextDependencyManager::GetInstance()
+      ->RegisterProfilePrefsForServices(pref_registry.get());
 #endif  // defined(HEADLESS_USE_POLICY)
 
   factory.set_user_prefs(pref_store);
@@ -144,5 +152,13 @@ void HeadlessBrowserMainParts::CreatePrefService() {
 #endif  // defined(OS_WIN)
 }
 #endif  // defined(HEADLESS_USE_PREFS)
+
+#if defined(HEADLESS_USE_POLICY)
+
+policy::PolicyService* HeadlessBrowserMainParts::GetPolicyService() {
+  return policy_connector_ ? policy_connector_->GetPolicyService() : nullptr;
+}
+
+#endif  // defined(HEADLESS_USE_POLICY)
 
 }  // namespace headless

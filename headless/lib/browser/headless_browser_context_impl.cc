@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,6 +25,10 @@
 #include "headless/lib/browser/headless_permission_manager.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if defined(HEADLESS_USE_POLICY)
+#include "components/user_prefs/user_prefs.h"
+#endif
 
 namespace headless {
 
@@ -47,6 +52,10 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
   profile_metrics::SetBrowserProfileType(
       this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
                              : profile_metrics::BrowserProfileType::kRegular);
+#if defined(HEADLESS_USE_POLICY)
+  if (PrefService* pref_service = browser->GetPrefs())
+    user_prefs::UserPrefs::Set(this, pref_service);
+#endif
 }
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
@@ -63,6 +72,9 @@ HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   }
 
   ShutdownStoragePartitions();
+
+  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
+      this);
 }
 
 // static

@@ -57,6 +57,10 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   PrefService* GetPrefs() { return local_state_.get(); }
 #endif
 
+#if defined(HEADLESS_USE_POLICY)
+  policy::PolicyService* GetPolicyService();
+#endif
+
  private:
 #if defined(HEADLESS_USE_PREFS)
   void CreatePrefService();

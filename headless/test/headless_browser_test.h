@@ -70,8 +70,10 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   // FinishAsynchronousTest() to notify that the test should finish.
   void RunAsynchronousTest();
 
-  // Synchronously waits for a tab to finish loading.
-  bool WaitForLoad(HeadlessWebContents* web_contents);
+  // Synchronously waits for a tab to finish loading and optionally retrieves
+  // an error.
+  bool WaitForLoad(HeadlessWebContents* web_contents,
+                   net::Error* error = nullptr);
 
   // Synchronously waits for a tab to finish loading and to gain focus.
   void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents);

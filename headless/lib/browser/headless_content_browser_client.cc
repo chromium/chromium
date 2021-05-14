@@ -51,6 +51,13 @@
 #include "content/public/common/content_descriptors.h"
 #endif  // defined(HEADLESS_USE_BREAKPAD)
 
+#if defined(HEADLESS_USE_POLICY)
+#include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/core/common/policy_service.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#endif  // defined(HEADLESS_USE_POLICY)
+
 namespace headless {
 
 namespace {
@@ -384,5 +391,23 @@ HeadlessContentBrowserClient::GetGeolocationManager() {
   return nullptr;
 #endif
 }
+
+#if defined(HEADLESS_USE_POLICY)
+std::vector<std::unique_ptr<content::NavigationThrottle>>
+HeadlessContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationHandle* handle) {
+  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+
+  // Avoid creating naviagtion throttle if preferences are not available
+  // (happens in tests).
+  if (browser_->GetPrefs()) {
+    policy::PolicyService* policy_service = browser_->GetPolicyService();
+    throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
+        handle, handle->GetWebContents()->GetBrowserContext(), policy_service));
+  }
+
+  return throttles;
+}
+#endif  // defined(HEADLESS_USE_POLICY)
 
 }  // namespace headless

@@ -22,8 +22,8 @@ if (headless_use_policy) {
          "'headless_use_policy' requires 'headless_use_prefs'.")
 }
 
-# Headless Policy config applied to every target below.
-config("headless_policy_config") {
+# Headless defines config applied to every target below.
+config("headless_defines_config") {
   defines = []
 
   if (headless_use_prefs) {
@@ -316,7 +316,7 @@ source_set("headless_shared_sources") {
   }
 
   configs += [ ":inside_headless_component" ]
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 # Code that is needed in a renderer process.
@@ -432,6 +432,7 @@ component("headless_non_renderer") {
     "//base:base_static",
     "//build:chromeos_buildflags",
     "//components/cookie_config",
+    "//components/keyed_service/content",
     "//components/profile_metrics",
     "//components/security_state/core",
     "//content/public/browser",
@@ -502,6 +503,10 @@ component("headless_non_renderer") {
         "//components/services/print_compositor/public/mojom",
       ]
     }
+
+    if (headless_use_policy) {
+      deps += [ "//components/policy/content" ]
+    }
   }
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
@@ -553,7 +558,7 @@ component("headless_non_renderer") {
   }
 
   configs += [ ":inside_headless_component" ]
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 # Headless renderer is a convenience library for non component builds that
@@ -597,7 +602,7 @@ if (!is_component_build) {
         "//components/services/print_compositor/public/mojom",
       ]
     }
-    configs += [ ":headless_policy_config" ]
+    configs += [ ":headless_defines_config" ]
     if (headless_use_embedded_resources) {
       defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
       deps += [ ":embed_resources" ]
@@ -656,7 +661,7 @@ test("headless_unittests") {
     ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 if (is_mac) {
@@ -750,7 +755,7 @@ test("headless_browsertests") {
     deps += [ "//components/policy/core/common:test_support" ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 if (is_win) {
@@ -773,7 +778,7 @@ if (is_win) {
       "//net",
       "//sandbox",
     ]
-    configs += [ ":headless_policy_config" ]
+    configs += [ ":headless_defines_config" ]
   }
 }
 
@@ -825,6 +830,10 @@ static_library("headless_shell_lib") {
     ]
   }
 
+  if (headless_use_policy && !is_component_build) {
+    deps += [ "//components/policy/content" ]
+  }
+
   if (is_win) {
     defines = [ "HEADLESS_USE_CRASHPAD" ]
 
@@ -840,7 +849,7 @@ static_library("headless_shell_lib") {
     deps += [ "//components/os_crypt" ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 if (is_fuchsia) {
@@ -874,7 +883,7 @@ executable("headless_shell") {
     deps += [ "//sandbox/mac:seatbelt" ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 process_version("version_header") {
@@ -895,5 +904,5 @@ executable("headless_example") {
     "//skia",  # we need this to override font render hinting in headless build
   ]
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }

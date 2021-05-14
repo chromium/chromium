@@ -184,12 +184,17 @@ HeadlessBrowser::Options* HeadlessBrowserTest::options() const {
   return HeadlessContentMainDelegate::GetInstance()->browser()->options();
 }
 
-bool HeadlessBrowserTest::WaitForLoad(HeadlessWebContents* web_contents) {
+bool HeadlessBrowserTest::WaitForLoad(HeadlessWebContents* web_contents,
+                                      net::Error* error) {
   HeadlessWebContentsImpl* web_contents_impl =
       HeadlessWebContentsImpl::From(web_contents);
   content::TestNavigationObserver observer(web_contents_impl->web_contents(),
                                            1);
   observer.Wait();
+
+  if (error)
+    *error = observer.last_net_error_code();
+
   return observer.last_navigation_succeeded();
 }
 
