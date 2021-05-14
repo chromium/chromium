@@ -48,7 +48,7 @@ bool Manifest::IsEmpty() const {
          related_applications.empty() && file_handlers.empty() &&
          !prefer_related_applications && !theme_color && !background_color &&
          !gcm_sender_id && scope.is_empty() && protocol_handlers.empty() &&
-         url_handlers.empty();
+         url_handlers.empty() && !note_taking.has_value();
 }
 
 }  // namespace blink

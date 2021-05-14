@@ -138,6 +138,11 @@ struct BLINK_COMMON_EXPORT
     return manifest.url_handlers;
   }
 
+  static const base::Optional<::blink::Manifest::NoteTaking>& note_taking(
+      const ::blink::Manifest& manifest) {
+    return manifest.note_taking;
+  }
+
   static const std::vector<::blink::Manifest::RelatedApplication>&
   related_applications(const ::blink::Manifest& manifest) {
     return manifest.related_applications;
@@ -361,6 +366,19 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
                    ::blink::Manifest::ProtocolHandler* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestNoteTakingDataView,
+                 ::blink::Manifest::NoteTaking> {
+  static const GURL new_note_url(
+      const ::blink::Manifest::NoteTaking& note_taking) {
+    return note_taking.new_note_url;
+  }
+
+  static bool Read(blink::mojom::ManifestNoteTakingDataView data,
+                   ::blink::Manifest::NoteTaking* out);
 };
 
 }  // namespace mojo

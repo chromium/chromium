@@ -121,6 +121,12 @@ struct BLINK_COMMON_EXPORT Manifest {
     bool has_origin_wildcard;
   };
 
+  struct BLINK_COMMON_EXPORT NoteTaking {
+    // A URL for taking a new note in the web application. If valid, this web
+    // application is a note-taking application.
+    GURL new_note_url;
+  };
+
   // Structure representing a related application.
   struct BLINK_COMMON_EXPORT RelatedApplication {
     RelatedApplication();
@@ -208,6 +214,12 @@ struct BLINK_COMMON_EXPORT Manifest {
   // Empty if the parsing failed, the field was not present, empty or all the
   // entries inside the array were invalid.
   std::vector<UrlHandler> url_handlers;
+
+  // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
+  // incubation. See:
+  // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
+  // Null if parsing failed or the field was not present.
+  base::Optional<NoteTaking> note_taking;
 
   // Empty if the parsing failed, the field was not present, empty or all the
   // applications inside the array were invalid. The order of the array

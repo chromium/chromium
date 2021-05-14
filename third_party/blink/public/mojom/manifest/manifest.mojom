@@ -54,6 +54,11 @@ struct Manifest {
 
   array<ManifestUrlHandler> url_handlers;
 
+  // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
+  // incubation. See:
+  // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
+  ManifestNoteTaking? note_taking;
+
   array<ManifestRelatedApplication> related_applications;
 
   // A boolean that is used as a hint for the user agent to say that related
@@ -144,6 +149,13 @@ struct ManifestUrlHandler {
   // If true, the application indicates that it wants to handle all subdomains
   // of |origin|. If false, the application only wants to handle |origin|.
   bool has_origin_wildcard;
+};
+
+// Structure representing note-taking application capabilities.
+struct ManifestNoteTaking {
+  // A URL for taking a new note in the web application. If valid, this web
+  // application is a note-taking application.
+  url.mojom.Url new_note_url;
 };
 
 // Structure representing a related application.

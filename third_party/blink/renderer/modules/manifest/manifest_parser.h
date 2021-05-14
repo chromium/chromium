@@ -337,6 +337,19 @@ class MODULES_EXPORT ManifestParser {
   base::Optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 
+  // Parses the 'new_note_url' field of the 'note_taking' field of a Manifest,
+  // as defined in:
+  // https://wicg.github.io/manifest-incubations/#dfn-new_note_url
+  // Returns the parsed KURL if any, or an empty KURL if parsing failed.
+  KURL ParseNoteTakingNewNoteUrl(const JSONObject* note_taking);
+
+  // Parses the 'note_taking' field of a Manifest, as defined in:
+  // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
+  // Returns a parsed ManifestNoteTakingPtr, or nullptr if not present or
+  // parsing failed.
+  mojom::blink::ManifestNoteTakingPtr ParseNoteTaking(
+      const JSONObject* manifest);
+
   // Parses the 'platform' field of a related application, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-platform-member-of-an-application
   // Returns the parsed string if any, a null string if the parsing failed.

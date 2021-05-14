@@ -114,6 +114,9 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
   if (!data.ReadUrlHandlers(&out->url_handlers))
     return false;
 
+  if (!data.ReadNoteTaking(&out->note_taking))
+    return false;
+
   if (!data.ReadRelatedApplications(&out->related_applications))
     return false;
 
@@ -312,6 +315,16 @@ bool StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
     return false;
 
   if (!data.ReadUrl(&out->url))
+    return false;
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::ManifestNoteTakingDataView,
+                  ::blink::Manifest::NoteTaking>::
+    Read(blink::mojom::ManifestNoteTakingDataView data,
+         ::blink::Manifest::NoteTaking* out) {
+  if (!data.ReadNewNoteUrl(&out->new_note_url))
     return false;
 
   return true;

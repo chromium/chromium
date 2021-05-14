@@ -81,6 +81,13 @@ struct TypeConverter<blink::Manifest::UrlHandler,
 };
 
 template <>
+struct TypeConverter<blink::Manifest::NoteTaking,
+                     blink::mojom::blink::ManifestNoteTakingPtr> {
+  static blink::Manifest::NoteTaking Convert(
+      const blink::mojom::blink::ManifestNoteTakingPtr& input);
+};
+
+template <>
 struct TypeConverter<blink::Manifest::RelatedApplication,
                      blink::mojom::blink::ManifestRelatedApplicationPtr> {
   static blink::Manifest::RelatedApplication Convert(

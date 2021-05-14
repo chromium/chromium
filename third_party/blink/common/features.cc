@@ -825,6 +825,15 @@ const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
 const base::Feature kWebAppEnableProtocolHandlers{
     "WebAppEnableProtocolHandlers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether web apps are able to be treated as note-taking apps. Controls parsing
+// of "note_taking" dictionary field and "new_note_url" entry in web app
+// manifests. Also controls whether the parsed field is used in browser. See
+// incubation spec:
+// https://wicg.github.io/manifest-incubations/#note_taking-member
+// TODO(crbug.com/1185678): Enable by default after M92 branches.
+const base::Feature kWebAppNoteTaking{"WebAppNoteTaking",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled NV12 frames on a GPU will be forwarded to libvpx encoders
 // without conversion to I420.
 const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",

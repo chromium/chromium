@@ -138,6 +138,7 @@ void ManifestParser::Parse() {
   manifest_->file_handlers = ParseFileHandlers(root_object.get());
   manifest_->protocol_handlers = ParseProtocolHandlers(root_object.get());
   manifest_->url_handlers = ParseUrlHandlers(root_object.get());
+  manifest_->note_taking = ParseNoteTaking(root_object.get());
   manifest_->related_applications = ParseRelatedApplications(root_object.get());
   manifest_->prefer_related_applications =
       ParsePreferRelatedApplications(root_object.get());
@@ -1197,6 +1198,40 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
 
   url_handler->origin = origin;
   return std::move(url_handler);
+}
+
+KURL ManifestParser::ParseNoteTakingNewNoteUrl(const JSONObject* note_taking) {
+  if (!note_taking->Get("new_note_url")) {
+    return KURL();
+  }
+  KURL new_note_url = ParseURL(note_taking, "new_note_url", manifest_url_,
+                               ParseURLRestrictions::kWithinScope);
+  if (!new_note_url.IsValid()) {
+    // Error already reported by ParseURL.
+    return KURL();
+  }
+
+  return new_note_url;
+}
+
+mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(
+    const JSONObject* manifest) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
+    return nullptr;
+  }
+  if (!manifest->Get("note_taking")) {
+    return nullptr;
+  }
+
+  const JSONObject* note_taking_object = manifest->GetJSONObject("note_taking");
+  if (!note_taking_object) {
+    AddErrorInfo("property 'note_taking' ignored, type object expected.");
+    return nullptr;
+  }
+  auto note_taking = mojom::blink::ManifestNoteTaking::New();
+  note_taking->new_note_url = ParseNoteTakingNewNoteUrl(note_taking_object);
+
+  return note_taking;
 }
 
 String ManifestParser::ParseRelatedApplicationPlatform(

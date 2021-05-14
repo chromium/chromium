@@ -59,6 +59,8 @@ TypeConverter<blink::Manifest, blink::mojom::blink::ManifestPtr>::Convert(
         url_handler.To<blink::Manifest::UrlHandler>());
   }
 
+  output.note_taking = input->note_taking.To<blink::Manifest::NoteTaking>();
+
   for (auto& related_application : input->related_applications) {
     output.related_applications.push_back(
         related_application.To<blink::Manifest::RelatedApplication>());
@@ -232,6 +234,20 @@ TypeConverter<blink::Manifest::UrlHandler,
     output.origin = input->origin->ToUrlOrigin();
     output.has_origin_wildcard = input->has_origin_wildcard;
   }
+
+  return output;
+}
+
+blink::Manifest::NoteTaking
+TypeConverter<blink::Manifest::NoteTaking,
+              blink::mojom::blink::ManifestNoteTakingPtr>::
+    Convert(const blink::mojom::blink::ManifestNoteTakingPtr& input) {
+  blink::Manifest::NoteTaking output;
+  if (input.is_null())
+    return output;
+
+  if (!input->new_note_url.IsEmpty())
+    output.new_note_url = input->new_note_url;
 
   return output;
 }
