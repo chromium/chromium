@@ -1191,11 +1191,6 @@ const char kExperimentalAccessibilityLabelsDescription[] =
     "Enables experimental accessibility labels feature. Note that this only "
     "enables the feature, and enabling the service is a profile preference.";
 
-const char kExperimentalExtensionApisName[] = "Experimental Extension APIs";
-const char kExperimentalExtensionApisDescription[] =
-    "Enables experimental extension APIs. Note that the extension gallery "
-    "doesn't allow you to upload extensions that use experimental APIs.";
-
 const char kExperimentalWebPlatformFeaturesName[] =
     "Experimental Web Platform features";
 const char kExperimentalWebPlatformFeaturesDescription[] =

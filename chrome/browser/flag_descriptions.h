@@ -696,9 +696,6 @@ extern const char kExpensiveBackgroundTimerThrottlingDescription[];
 extern const char kExperimentalAccessibilityLabelsName[];
 extern const char kExperimentalAccessibilityLabelsDescription[];
 
-extern const char kExperimentalExtensionApisName[];
-extern const char kExperimentalExtensionApisDescription[];
-
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 

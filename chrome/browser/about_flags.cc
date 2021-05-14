@@ -2663,9 +2663,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableNaCl)},
 #endif  // ENABLE_NACL
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"extension-apis", flag_descriptions::kExperimentalExtensionApisName,
-     flag_descriptions::kExperimentalExtensionApisDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(extensions::switches::kEnableExperimentalExtensionApis)},
     {"extension-checkup", flag_descriptions::kExtensionsCheckupName,
      flag_descriptions::kExtensionsCheckupDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(extensions_features::kExtensionsCheckup,

@@ -2807,11 +2807,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "extension-apis",
-    "owners": [ "rdevlin.cronin" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "extension-checkup",
     "owners": [ "archanasimha" ],
     "expiry_milestone": 82
