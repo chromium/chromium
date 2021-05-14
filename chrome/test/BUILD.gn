@@ -1009,9 +1009,12 @@ if (!is_android) {
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
+      "//chrome/browser/resources/gaia_auth_host:modulize_runtime_data",
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/test/data:web_ui_test_mojom_js_module",
-      "//chrome/test/data/webui:modulize",
+      "//chrome/test/data/webui:modulize_local_runtime_data",
+      "//chrome/test/data/webui/js/cr:modulize_local_runtime_data",
+      "//chrome/test/data/webui/js/cr/ui:modulize_runtime_data",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
       "//third_party/private_membership:private_membership_proto",
@@ -1027,6 +1030,10 @@ if (!is_android) {
       "//third_party/mesa_headers",
       "//third_party/widevine/cdm:widevine_test_license_server",
       "//tools/media_engagement_preload:generator",
+      "//ui/webui/resources/cr_elements:modulize_runtime_data",
+      "//ui/webui/resources/js:modulize_local_runtime_data",
+      "//ui/webui/resources/js/cr:modulize_local_runtime_data",
+      "//ui/webui/resources/js/cr/ui:modulize_runtime_data",
     ]
 
     if (!is_component_build) {
@@ -1855,8 +1862,26 @@ if (!is_android) {
       data_deps += [
         "//ash/keyboard/ui:resources",
         "//chrome",
+        "//chrome/test/data/webui/cr_components/chromeos/cellular_setup:modulize_runtime_data",
+        "//chrome/test/data/webui/cr_components/chromeos/network_health:modulize_runtime_data",
+        "//chrome/test/data/webui/nearby_share/shared:modulize_runtime_data",
+        "//chrome/test/data/webui/settings/chromeos:modulize_runtime_data",
         "//testing/buildbot/filters:chromeos_filters",
         "//ui/file_manager:unit_test_data",
+        "//ui/file_manager/audio_player/js:modulize_runtime_data",
+        "//ui/file_manager/file_manager/background/js:modulize_runtime_data",
+        "//ui/file_manager/file_manager/common/js:modulize_runtime_data",
+        "//ui/file_manager/file_manager/cws_widget:modulize_runtime_data",
+        "//ui/file_manager/file_manager/externs:modulize_runtime_data",
+        "//ui/file_manager/file_manager/externs/background:modulize_runtime_data",
+        "//ui/file_manager/file_manager/foreground/elements:modulize_runtime_data",
+        "//ui/file_manager/file_manager/foreground/js:modulize_runtime_data",
+        "//ui/file_manager/file_manager/foreground/js/metadata:modulize_runtime_data",
+        "//ui/file_manager/file_manager/foreground/js/ui:modulize_runtime_data",
+        "//ui/file_manager/file_manager/foreground/js/ui/table:modulize_runtime_data",
+        "//ui/file_manager/gallery/js/image_editor:modulize_runtime_data",
+        "//ui/file_manager/image_loader:modulize_runtime_data",
+        "//ui/file_manager/video_player/js:modulize_runtime_data",
       ]
 
       if (use_dbus) {
@@ -1954,6 +1979,8 @@ if (!is_android) {
           "//chromeos/components/personalization_app:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
+
+        data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
 
         if (!is_official_build) {
           deps += [
