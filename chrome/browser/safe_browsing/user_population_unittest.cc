@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/user_population.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -11,9 +12,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,5 +144,30 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
   EXPECT_FALSE(population.is_under_advanced_protection());
 }
 #endif
+
+TEST(GetUserPopulationTest, PopulatesUserAgent) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /* enabled_features = */ {},
+        /* disabled_features = */ {kBetterTelemetryAcrossReports});
+    ChromeUserPopulation population = GetUserPopulation(&profile);
+    EXPECT_EQ(population.user_agent(), "");
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /* enabled_features = */ {kBetterTelemetryAcrossReports},
+        /* disabled_features = */ {});
+    std::string user_agent =
+        version_info::GetProductNameAndVersionForUserAgent() + "/" +
+        version_info::GetOSType();
+    ChromeUserPopulation population = GetUserPopulation(&profile);
+    EXPECT_EQ(population.user_agent(), user_agent);
+  }
+}
 
 }  // namespace safe_browsing

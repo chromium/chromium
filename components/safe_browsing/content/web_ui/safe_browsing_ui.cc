@@ -616,6 +616,15 @@ base::Value SerializeChromeUserPopulation(
   population_dict.SetKey("is_incognito",
                          base::Value(population.is_incognito()));
 
+  population_dict.SetKey("user_agent", base::Value(population.user_agent()));
+
+  population_dict.SetKey("number_of_profiles",
+                         base::Value(population.number_of_profiles()));
+  population_dict.SetKey("number_of_loaded_profiles",
+                         base::Value(population.number_of_loaded_profiles()));
+  population_dict.SetKey("number_of_open_profiles",
+                         base::Value(population.number_of_open_profiles()));
+
   return std::move(population_dict);
 }
 

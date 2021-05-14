@@ -30,6 +30,10 @@ const base::Feature kAdRedirectTriggerFeature{
 const base::Feature kAdSamplerTriggerFeature{"SafeBrowsingAdSamplerTrigger",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBetterTelemetryAcrossReports{
+    "SafeBrowsingBetterTelemetryAcrossReports",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kCaptureInlineJavascriptForGoogleAds{
     "CaptureInlineJavascriptForGoogleAds", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -138,6 +142,7 @@ constexpr struct {
     {&kAdPopupTriggerFeature, true},
     {&kAdRedirectTriggerFeature, true},
     {&kAdSamplerTriggerFeature, false},
+    {&kBetterTelemetryAcrossReports, true},
     {&kCaptureInlineJavascriptForGoogleAds, true},
     {&kClientSideDetectionForAndroid, true},
     {&kClientSideDetectionWithToken, true},
@@ -146,6 +151,7 @@ constexpr struct {
     {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
+    {&kPromptEsbForDeepScanning, true},
     {&kRealTimeUrlLookupEnabled, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},

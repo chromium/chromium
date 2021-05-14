@@ -29,6 +29,10 @@ extern const base::Feature kAdRedirectTriggerFeature;
 
 extern const base::Feature kAdSamplerTriggerFeature;
 
+// Enables including some information in protection requests sent to Safe
+// Browsing.
+extern const base::Feature kBetterTelemetryAcrossReports;
+
 // Controls whether we sample inline JavaScript for ads in RIND
 // reports.
 extern const base::Feature kCaptureInlineJavascriptForGoogleAds;

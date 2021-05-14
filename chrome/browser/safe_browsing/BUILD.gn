@@ -178,6 +178,7 @@ static_library("safe_browsing") {
       "//components/sync_user_events",
       "//components/unified_consent",
       "//components/variations/service",
+      "//components/version_info",
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/safe_browsing/user_population.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -13,8 +15,10 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/version_info/version_info.h"
 
 namespace safe_browsing {
 
@@ -57,6 +61,23 @@ ChromeUserPopulation GetUserPopulation(Profile* profile) {
 
   population.set_profile_management_status(GetProfileManagementStatus(
       g_browser_process->browser_policy_connector()));
+
+  if (base::FeatureList::IsEnabled(kBetterTelemetryAcrossReports)) {
+    std::string user_agent =
+        version_info::GetProductNameAndVersionForUserAgent() + "/" +
+        version_info::GetOSType();
+    population.set_user_agent(user_agent);
+
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    // |profile_manager| may be null in tests.
+    if (profile_manager) {
+      population.set_number_of_profiles(profile_manager->GetNumberOfProfiles());
+      population.set_number_of_loaded_profiles(
+          profile_manager->GetLoadedProfiles().size());
+      population.set_number_of_open_profiles(
+          profile_manager->GetLastOpenedProfiles().size());
+    }
+  }
 
   return population;
 }
