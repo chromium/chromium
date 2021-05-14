@@ -2327,6 +2327,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.ShouldDestroyIncognitoProfileOnStartup"
     units="Boolean" expires_after="2021-10-10">
+  <obsolete>
+    Removed as of 05/2021.
+  </obsolete>
   <owner>rhalavati@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

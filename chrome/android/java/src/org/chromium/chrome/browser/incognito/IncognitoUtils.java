@@ -18,7 +18,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
@@ -52,16 +51,6 @@ public class IncognitoUtils {
      */
     @SuppressLint("NewApi")
     public static boolean shouldDestroyIncognitoProfileOnStartup(
-            boolean selectedTabModelIsIncognito) {
-        boolean result =
-                shouldDestroyIncognitoProfileOnStartupInternal(selectedTabModelIsIncognito);
-        RecordHistogram.recordBooleanHistogram(
-                "Android.ShouldDestroyIncognitoProfileOnStartup", result);
-        return result;
-    }
-
-    @SuppressLint("NewApi")
-    public static boolean shouldDestroyIncognitoProfileOnStartupInternal(
             boolean selectedTabModelIsIncognito) {
         if (!Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
             return false;
