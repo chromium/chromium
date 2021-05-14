@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -44,8 +43,6 @@ class ZipWriter {
                                            const base::FilePath& root_dir,
                                            FileAccessor* file_accessor);
   ~ZipWriter();
-
-  using Paths = base::span<const base::FilePath>;
 
   // Writes the files at |paths| to the ZIP file and closes this ZIP file.
   // The file paths must be relative to |root_dir| specified in the

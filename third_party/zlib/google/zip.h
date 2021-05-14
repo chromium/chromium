@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_ZLIB_GOOGLE_ZIP_H_
 #define THIRD_PARTY_ZLIB_GOOGLE_ZIP_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/platform_file.h"
 #include "base/time/time.h"
@@ -48,72 +50,44 @@ class FileAccessor {
   virtual base::Time GetLastModifiedTime(const base::FilePath& path) = 0;
 };
 
-class ZipParams {
- public:
-  ZipParams(const base::FilePath& src_dir, const base::FilePath& dest_file);
-#if defined(OS_POSIX)
-  // Does not take ownership of |dest_fd|.
-  ZipParams(const base::FilePath& src_dir, int dest_fd);
+using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 
-  int dest_fd() const { return dest_fd_; }
+using Paths = base::span<const base::FilePath>;
+
+// ZIP creation parameters and options.
+struct ZipParams {
+  // Source directory.
+  base::FilePath src_dir;
+
+  // Destination file path.
+  // Either dest_file or dest_fd should be set, but not both.
+  base::FilePath dest_file;
+
+#if defined(OS_POSIX)
+  // Destination file passed a file descriptor.
+  // Either dest_file or dest_fd should be set, but not both.
+  int dest_fd = base::kInvalidPlatformFile;
 #endif
 
-  const base::FilePath& src_dir() const { return src_dir_; }
-
-  const base::FilePath& dest_file() const { return dest_file_; }
-
-  // Restricts the files actually zipped to the paths listed in
-  // |src_relative_paths|. They must be relative to the |src_dir| passed in the
-  // constructor and will be used as the file names in the created zip file. All
-  // source paths must be under |src_dir| in the file system hierarchy.
-  void set_files_to_zip(const std::vector<base::FilePath>& src_relative_paths) {
-    src_files_ = src_relative_paths;
-  }
-  const std::vector<base::FilePath>& files_to_zip() const { return src_files_; }
-
-  using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
-  void set_filter_callback(FilterCallback filter_callback) {
-    filter_callback_ = filter_callback;
-  }
-  const FilterCallback& filter_callback() const { return filter_callback_; }
-
-  void set_include_hidden_files(bool include_hidden_files) {
-    include_hidden_files_ = include_hidden_files;
-  }
-  bool include_hidden_files() const { return include_hidden_files_; }
-
-  // Sets a custom file accessor for file operations. Default is to directly
-  // access the files (with fopen and the rest).
-  // Useful in cases where running in a sandbox process and file access has to
-  // go through IPC, for example.
-  void set_file_accessor(std::unique_ptr<FileAccessor> file_accessor) {
-    file_accessor_ = std::move(file_accessor);
-  }
-  FileAccessor* file_accessor() const { return file_accessor_.get(); }
-
- private:
-  base::FilePath src_dir_;
-
-  base::FilePath dest_file_;
-#if defined(OS_POSIX)
-  int dest_fd_ = base::kInvalidPlatformFile;
-#endif
-
-  // The relative paths to the files that should be included in the zip file. If
-  // this is empty, all files in |src_dir_| are included.
-  std::vector<base::FilePath> src_files_;
+  // The relative paths to the files that should be included in the ZIP file. If
+  // this is empty, all files in |src_dir| are included.
+  //
+  // These paths must be relative to |src_dir| and will be used as the file
+  // names in the created zip file. All files must be under |src_dir| in the
+  // file system hierarchy.
+  Paths src_files;
 
   // Filter used to exclude files from the ZIP file. Only effective when
-  // |src_files_| is empty.
-  FilterCallback filter_callback_;
+  // |src_files| is empty.
+  FilterCallback filter_callback;
 
   // Whether hidden files should be included in the ZIP file. Only effective
-  // when |src_files_| is empty.
-  bool include_hidden_files_ = true;
+  // when |src_files| is empty.
+  bool include_hidden_files = true;
 
-  // Abstraction around file system access used to read files. An implementation
-  // that accesses files directly is provided by default.
-  std::unique_ptr<FileAccessor> file_accessor_;
+  // Abstraction around file system access used to read files. If left null, an
+  // implementation that accesses files directly is used.
+  FileAccessor* file_accessor = nullptr;  // Not owned
 };
 
 // Zip files specified into a ZIP archives. The source files and ZIP destination
@@ -125,15 +99,15 @@ bool Zip(const ZipParams& params);
 // of src_dir will be at the root level of the created zip. For each file in
 // src_dir, include it only if the callback |filter_cb| returns true. Otherwise
 // omit it.
-using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 bool ZipWithFilterCallback(const base::FilePath& src_dir,
                            const base::FilePath& dest_file,
-                           const FilterCallback& filter_cb);
+                           FilterCallback filter_cb);
 
 // Convenience method for callers who don't need to set up the filter callback.
 // If |include_hidden_files| is true, files starting with "." are included.
 // Otherwise they are omitted.
-bool Zip(const base::FilePath& src_dir, const base::FilePath& dest_file,
+bool Zip(const base::FilePath& src_dir,
+         const base::FilePath& dest_file,
          bool include_hidden_files);
 
 #if defined(OS_POSIX)
@@ -143,7 +117,7 @@ bool Zip(const base::FilePath& src_dir, const base::FilePath& dest_file,
 // file names in the created zip file. All source paths must be under |src_dir|
 // in the file system hierarchy.
 bool ZipFiles(const base::FilePath& src_dir,
-              const std::vector<base::FilePath>& src_relative_paths,
+              Paths src_relative_paths,
               int dest_fd);
 #endif  // defined(OS_POSIX)
 
@@ -152,10 +126,9 @@ bool ZipFiles(const base::FilePath& src_dir,
 // returns true. Otherwise omit it.
 // If |log_skipped_files| is true, files skipped during extraction are printed
 // to debug log.
-using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 bool UnzipWithFilterCallback(const base::FilePath& zip_file,
                              const base::FilePath& dest_dir,
-                             const FilterCallback& filter_cb,
+                             FilterCallback filter_cb,
                              bool log_skipped_files);
 
 // Unzip the contents of zip_file, using the writers provided by writer_factory.
@@ -168,9 +141,9 @@ typedef base::RepeatingCallback<std::unique_ptr<WriterDelegate>(
     WriterFactory;
 typedef base::RepeatingCallback<bool(const base::FilePath&)> DirectoryCreator;
 bool UnzipWithFilterAndWriters(const base::PlatformFile& zip_file,
-                               const WriterFactory& writer_factory,
-                               const DirectoryCreator& directory_creator,
-                               const FilterCallback& filter_cb,
+                               WriterFactory writer_factory,
+                               DirectoryCreator directory_creator,
+                               FilterCallback filter_cb,
                                bool log_skipped_files);
 
 // Unzip the contents of zip_file into dest_dir.

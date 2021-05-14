@@ -167,7 +167,7 @@ void ZipFileCreator::CreateZipFile(
     CreateZipFileCallback callback) {
   DCHECK(zip_file.IsValid());
 
-  for (const auto& path : source_relative_paths) {
+  for (const base::FilePath& path : source_relative_paths) {
     if (path.IsAbsolute() || path.ReferencesParent()) {
       // Paths are expected to be relative. If there are not, the API is used
       // incorrectly and this is an error.
@@ -176,11 +176,13 @@ void ZipFileCreator::CreateZipFile(
     }
   }
 
-  zip::ZipParams zip_params(source_dir, zip_file.GetPlatformFile());
-  zip_params.set_files_to_zip(source_relative_paths);
-  zip_params.set_file_accessor(std::make_unique<MojoFileAccessor>(
-      source_dir, std::move(source_dir_remote)));
-  bool success = zip::Zip(zip_params);
+  MojoFileAccessor file_accessor(source_dir, std::move(source_dir_remote));
+  const bool success = zip::Zip({
+      .src_dir = source_dir,
+      .dest_fd = zip_file.GetPlatformFile(),
+      .src_files = source_relative_paths,
+      .file_accessor = &file_accessor,
+  });
   std::move(callback).Run(success);
 }
 
