@@ -112,15 +112,7 @@ ClientSidePhishingComponentInstallerPolicy::GetInstallerAttributes() const {
 
   // Pass the tag parameter to the installer as the "tag" attribute; it will
   // be used to choose which binary is downloaded.
-  constexpr char kTagParamName[] = "reporter_omaha_tag";
-  std::string tag_value = "default";
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionModelTag)) {
-    tag_value = variations::GetVariationParamValueByFeature(
-        safe_browsing::kClientSideDetectionModelTag, kTagParamName);
-  }
-
-  attributes["tag"] = tag_value;
+  attributes["tag"] = safe_browsing::GetClientSideDetectionTag();
   return update_client::InstallerAttributes();
 }
 

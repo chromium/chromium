@@ -13,6 +13,18 @@ static_library("features") {
   deps = [
     "//base:base",
     "//components/safe_browsing:buildflags",
+    "//components/variations",
+  ]
+}
+
+source_set("features_unittest") {
+  testonly = true
+  sources = [ "features_unittest.cc" ]
+
+  deps = [
+    ":features",
+    "//base/test:test_support",
+    "//testing/gtest:gtest",
   ]
 }
 

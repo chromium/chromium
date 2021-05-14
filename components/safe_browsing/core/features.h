@@ -47,6 +47,11 @@ extern const base::Feature kClientSideDetectionModelVersion;
 // Determines the tag to pass to Omaha to get a client side detection model.
 extern const base::Feature kClientSideDetectionModelTag;
 
+// Determines the tag to pass to Omaha to get a client side detection model.
+// This is used for high-memory devices, when `kClientSideDetectionModelTag` is
+// disabled.
+extern const base::Feature kClientSideDetectionModelHighMemoryTag;
+
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
@@ -144,6 +149,10 @@ base::ListValue GetFeatureStatusList();
 // ReusedPasswordType enums. This is used in the
 // |kPasswordProtectionForSignedInUsers| experiment.
 bool GetShouldFillOldPhishGuardProto();
+
+// Returns the tag used for Client Side Phishing Detection models, as
+// computed from the current feature flags.
+std::string GetClientSideDetectionTag();
 
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_FEATURES_H_
