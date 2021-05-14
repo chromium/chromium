@@ -1,1 +1,1 @@
-postMessage('loaded');
+postMessage('readyToActivate');

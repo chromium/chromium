@@ -18,8 +18,8 @@ if (!isPrerendering) {
   const testChannel = new BroadcastChannel('test-channel');
 
   window.addEventListener('load', () => {
-    // Inform the initiator page that this page was loaded.
-    prerenderChannel.postMessage('loaded');
+    // Inform the initiator page that this page is ready to be activated.
+    prerenderChannel.postMessage('readyToActivate');
     prerenderChannel.close();
   });
 

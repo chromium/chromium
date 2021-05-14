@@ -11,7 +11,7 @@
  *  On prerendering page, prerender-promise-test.html?prerendering:
  *    const promise = {a promise that should be deferred during prerendering};
  *    const prerenderEventCollector =
- *        new PrerenderEventCollector({supportReadyToActivate: bool});
+ *        new PrerenderEventCollector({customizedReadyToActivate: bool});
  *    prerenderEventCollector.start(promise, {promise name});
  *
  *  On the initiator page, prerender-promise-test.html:
@@ -26,13 +26,13 @@
 // 3. the promise passed to start() is resolved.
 // 4. addEvent() is called manually.
 class PrerenderEventCollector {
-  constructor(options = { supportReadyToActivate: false }) {
+  constructor(options = { customizedReadyToActivate: false }) {
     // Used to communicate with the initiator page.
     this.prerenderChannel_ = new BroadcastChannel('prerender-channel');
     // Used to communicate with the main test page.
     this.testChannel_ = new BroadcastChannel('test-channel');
     this.eventsSeen_ = [];
-    this.supportReadyToActivate = options.supportReadyToActivate;
+    this.customizedReadyToActivate_ = options.customizedReadyToActivate;
   }
 
   // Adds an event to `eventsSeen_` along with the prerendering state of the
@@ -76,7 +76,7 @@ class PrerenderEventCollector {
       this.addEvent('prerendering change');
     });
 
-    if (!this.supportReadyToActivate_) {
+    if (!this.customizedReadyToActivate_) {
       // TODO(crbug.com/1201119): Can we remove this 'load' event listener
       // after all tests send 'readyToActivate' signal explicitly?
       window.addEventListener('load', () => {

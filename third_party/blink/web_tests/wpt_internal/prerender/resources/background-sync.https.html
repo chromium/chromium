@@ -17,7 +17,7 @@ if (!isPrerendering) {
 } else {
   async function loadPrerenderPage() {
     const prerenderEventCollector =
-        new PrerenderEventCollector({supportReadyToActivate: true});
+        new PrerenderEventCollector({customizedReadyToActivate: true});
     const scope = `resources/`;
     const registration = await navigator.serviceWorker.getRegistration(scope);
     const register_promise = registration.periodicSync.register(
