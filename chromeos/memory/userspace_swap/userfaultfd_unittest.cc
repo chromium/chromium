@@ -15,7 +15,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"

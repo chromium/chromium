@@ -14,7 +14,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

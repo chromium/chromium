@@ -7,11 +7,11 @@
 #include <atomic>
 
 #include "base/bind.h"
+#include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"

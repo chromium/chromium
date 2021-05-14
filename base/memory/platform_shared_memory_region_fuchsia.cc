@@ -10,7 +10,7 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 
 namespace base {
 namespace subtle {

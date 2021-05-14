@@ -8,7 +8,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

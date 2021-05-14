@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_internal.h"
+#include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/numerics/safe_math.h"
-#include "base/process/process_metrics.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 

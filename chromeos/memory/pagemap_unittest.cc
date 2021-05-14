@@ -13,8 +13,8 @@
 #include <random>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

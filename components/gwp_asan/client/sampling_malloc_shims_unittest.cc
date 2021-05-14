@@ -11,7 +11,7 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/callback_helpers.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"

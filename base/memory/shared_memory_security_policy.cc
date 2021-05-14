@@ -8,9 +8,9 @@
 #include <atomic>
 
 #include "base/bits.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/checked_math.h"
 #include "base/optional.h"
-#include "base/process/process_metrics.h"
 #include "build/build_config.h"
 
 namespace base {

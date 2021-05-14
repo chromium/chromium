@@ -9,8 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

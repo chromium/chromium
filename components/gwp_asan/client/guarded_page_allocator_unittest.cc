@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"

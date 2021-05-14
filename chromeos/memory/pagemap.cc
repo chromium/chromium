@@ -11,8 +11,8 @@
 
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 

@@ -24,8 +24,8 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
 #include "third_party/lss/lss.h"
 #include "util/linux/scoped_ptrace_attach.h"
 #include "util/misc/memory_sanitizer.h"

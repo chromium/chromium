@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/stl_util.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/crosscall_client.h"

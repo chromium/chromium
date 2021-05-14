@@ -8,10 +8,10 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
 #include "third_party/ashmem/ashmem.h"
 
 namespace base {

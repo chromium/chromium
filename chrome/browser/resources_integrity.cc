@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"

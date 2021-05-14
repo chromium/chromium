@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/bits.h"
+#include "base/memory/page_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/time/time.h"

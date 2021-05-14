@@ -14,6 +14,7 @@
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/discardable_shared_memory.h"
+#include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"

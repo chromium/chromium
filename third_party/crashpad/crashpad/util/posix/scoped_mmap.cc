@@ -20,9 +20,9 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
-#include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

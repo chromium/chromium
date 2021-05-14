@@ -5,7 +5,7 @@
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

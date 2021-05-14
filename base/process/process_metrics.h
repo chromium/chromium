@@ -21,9 +21,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-// TODO(thestig): Update GetPageSize() callers and remove.
-#include "base/memory/page_size.h"
-
 #if defined(OS_APPLE)
 #include <mach/mach.h>
 #include "base/process/port_provider_mac.h"

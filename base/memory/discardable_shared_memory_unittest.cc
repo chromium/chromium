@@ -7,8 +7,8 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/discardable_shared_memory.h"
+#include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
-#include "base/process/process_metrics.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

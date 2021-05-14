@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/discardable_shared_memory.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 

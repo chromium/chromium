@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"

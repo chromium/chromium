@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/page_size.h"
 #include "base/process/process_handle.h"
-#include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
