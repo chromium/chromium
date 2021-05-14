@@ -601,7 +601,13 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
       v8_scope.GetIsolate(), ToV8(DOMUint8Array::Create(data_ptr, data->size()),
                                   v8_scope.GetScriptState())));
 
-  base::RunLoop().RunUntilIdle();
+  // Wait for metadata so we know the append has occurred.
+  {
+    auto promise = decoder->tracks().ready(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
 
   // Attempt to decode a frame greater than the first.
   auto bad_promise = decoder->decode(MakeOptions(1, true));

@@ -556,10 +556,11 @@ void ImageDecoderExternal::OnMetadata(
   --pending_metadata_requests_;
   DCHECK_GE(pending_metadata_requests_, 0);
 
-  const bool was_complete = data_complete_;
+  const bool did_complete = !data_complete_ && metadata.data_complete;
+
   // Set public value before resolving.
   data_complete_ = metadata.data_complete;
-  if (!was_complete && data_complete_)
+  if (did_complete)
     completed_property_->ResolveWithUndefined();
 
   if (metadata.failed || failed_) {
@@ -578,6 +579,8 @@ void ImageDecoderExternal::OnMetadata(
   if (!tracks_->IsEmpty()) {
     tracks_->selectedTrack().value()->UpdateTrack(metadata.frame_count,
                                                   metadata.repetition_count);
+    if (did_complete)
+      MaybeSatisfyPendingDecodes();
     return;
   }
 
@@ -609,6 +612,8 @@ void ImageDecoderExternal::OnMetadata(
   }
 
   tracks_->OnTracksReady();
+  if (did_complete)
+    MaybeSatisfyPendingDecodes();
 }
 
 void ImageDecoderExternal::SetFailed() {
