@@ -344,6 +344,9 @@ public class EditorDialog
         mDoneButton = (Button) mLayout.findViewById(R.id.button_primary);
         mDoneButton.setId(R.id.editor_dialog_done_button);
         mDoneButton.setOnClickListener(this);
+        if (mEditorModel.getCustomDoneButtonText() != null) {
+            mDoneButton.setText(mEditorModel.getCustomDoneButtonText());
+        }
 
         Button cancelButton = (Button) mLayout.findViewById(R.id.button_secondary);
         cancelButton.setId(R.id.payments_edit_cancel_button);

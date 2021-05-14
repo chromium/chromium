@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class EditorModel {
     private final String mTitle;
+    @Nullable
+    private final String mCustomDoneButtonText;
     private final List<EditorFieldModel> mFields;
     @Nullable
     private Runnable mDoneCallback;
@@ -21,18 +23,36 @@ public class EditorModel {
     private Runnable mCancelCallback;
 
     /**
-     * Constructs an editor model.
+     * Constructs an editor model with default done button text.
      *
      * @param title The title for the editor window.
      */
     public EditorModel(String title) {
+        this(title, null);
+    }
+
+    /**
+     * Constructs an editor model.
+     *
+     * @param title The title for the editor window.
+     * @param customDoneButtonText The text to display on the done button. If null, the default
+     *        value will be used.
+     */
+    public EditorModel(String title, @Nullable String customDoneButtonText) {
         mTitle = title;
+        mCustomDoneButtonText = customDoneButtonText;
         mFields = new ArrayList<>();
     }
 
     /** @return The title of the editor window. */
     public String getTitle() {
         return mTitle;
+    }
+
+    /** @return The custom text on the done button or null if the default value should be used. */
+    @Nullable
+    public String getCustomDoneButtonText() {
+        return mCustomDoneButtonText;
     }
 
     /** @return The input fields for the editor. */

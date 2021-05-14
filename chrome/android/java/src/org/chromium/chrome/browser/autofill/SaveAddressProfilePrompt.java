@@ -38,6 +38,7 @@ public class SaveAddressProfilePrompt {
     private final PropertyModel mDialogModel;
     private final View mDialogView;
     private final EditorDialog mEditorDialog;
+    private final AddressEditor mAddressEditor;
 
     /**
      * Save prompt to confirm saving an address profile imported from a form submission.
@@ -65,12 +66,12 @@ public class SaveAddressProfilePrompt {
         mDialogModel = builder.build();
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
-        AddressEditor addressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_SETTINGS,
+        mAddressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_SETTINGS,
                 /*saveToDisk=*/false);
-        addressEditor.setEditorDialog(mEditorDialog);
+        mAddressEditor.setEditorDialog(mEditorDialog);
         AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
-            addressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
+            mAddressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
                     /*cancelCallback=*/unused -> {});
         });
     }
@@ -119,6 +120,8 @@ public class SaveAddressProfilePrompt {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
+        // The text in the editor should match the text in the dialog.
+        mAddressEditor.setCustomDoneButtonText(positiveButtonText);
     }
 
     /**

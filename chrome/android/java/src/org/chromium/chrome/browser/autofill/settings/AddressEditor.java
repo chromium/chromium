@@ -70,6 +70,8 @@ public class AddressEditor
     private EditorFieldModel mEmailField;
     @Nullable
     private List<AddressUiComponent> mAddressUiComponents;
+    @Nullable
+    private String mCustomDoneButtonText;
     private boolean mAdminAreasLoaded;
     private String mRecentlySelectedCountry;
     private Runnable mCountryChangeCallback;
@@ -101,6 +103,16 @@ public class AddressEditor
      */
     public void addPhoneNumberIfValid(@Nullable CharSequence phoneNumber) {
         if (!TextUtils.isEmpty(phoneNumber)) mPhoneNumbers.add(phoneNumber.toString());
+    }
+
+    /**
+     * Sets the custom text to be shown on the done button.
+     *
+     * @param customDoneButtonText The text to display on the done button. If null, the default
+     *        value will be used.
+     */
+    public void setCustomDoneButtonText(@Nullable String customDoneButtonText) {
+        mCustomDoneButtonText = customDoneButtonText;
     }
 
     private boolean isUIForHonorificPrefixesEnabled() {
@@ -150,7 +162,7 @@ public class AddressEditor
             editTitle = mContext.getString(R.string.payments_edit_address);
         }
 
-        mEditor = new EditorModel(editTitle);
+        mEditor = new EditorModel(editTitle, mCustomDoneButtonText);
         mProfile = address.getProfile();
 
         // When edit is called, a new form is started, so the country on the
