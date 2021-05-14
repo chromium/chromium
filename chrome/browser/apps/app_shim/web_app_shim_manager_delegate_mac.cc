@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

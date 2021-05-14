@@ -36,6 +36,7 @@
 #include "content/public/common/origin_util.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
 

@@ -5,6 +5,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
 #include "components/embedder_support/switches.h"

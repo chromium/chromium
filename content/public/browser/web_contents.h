@@ -5,16 +5,17 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_H_
 #define CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
@@ -26,25 +27,20 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/save_page_type.h"
-#include "content/public/browser/screen_orientation_delegate.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/web_bundler.mojom.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
-#include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_tree_update.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -52,7 +48,6 @@
 
 namespace base {
 class FilePath;
-class TimeTicks;
 }  // namespace base
 
 namespace blink {
@@ -80,6 +75,7 @@ class InterfaceProvider;
 
 namespace ui {
 struct AXPropertyFilter;
+struct AXTreeUpdate;
 }
 
 namespace content {
@@ -89,6 +85,8 @@ class BrowserPluginGuestDelegate;
 class RenderFrameHost;
 class RenderViewHost;
 class RenderWidgetHostView;
+class ScreenOrientationDelegate;
+class SiteInstance;
 class WebContentsDelegate;
 class WebUI;
 struct DropData;

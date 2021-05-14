@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
