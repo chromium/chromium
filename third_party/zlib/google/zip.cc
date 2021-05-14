@@ -4,7 +4,7 @@
 
 #include "third_party/zlib/google/zip.h"
 
-#include <list>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -113,35 +113,25 @@ bool Zip(const ZipParams& params) {
 
   std::vector<base::FilePath> all_files;
   if (files_to_add.empty()) {
-    // Include all files from the src_dir (modulo the src_dir itself and
-    // filtered and hidden files).
+    // Perform a Breadth First Search (BFS) of the source tree. Note that the
+    // BFS order might not be optimal when storing files in a ZIP (either for
+    // the storing side, or for the program that will extract this ZIP).
+    for (std::queue<base::FilePath> q({params.src_dir}); !q.empty(); q.pop()) {
+      for (FileAccessor::DirectoryContentEntry& entry :
+           file_accessor->ListDirectoryContent(q.front())) {
+        // Skip hidden and filtered files.
+        if ((!params.include_hidden_files && IsHiddenFile(entry.path)) ||
+            (params.filter_callback && !params.filter_callback.Run(entry.path)))
+          continue;
 
-    // Using a list so we can call push_back while iterating.
-    std::list<FileAccessor::DirectoryContentEntry> entries;
-    entries.push_back(FileAccessor::DirectoryContentEntry(
-        params.src_dir, true /* is directory*/));
-    for (auto iter = entries.begin(); iter != entries.end(); ++iter) {
-      const base::FilePath& entry_path = iter->path;
-      if (iter != entries.begin() &&  // Don't filter the root dir.
-          ((!params.include_hidden_files && IsHiddenFile(entry_path)) ||
-           (params.filter_callback &&
-            !params.filter_callback.Run(entry_path)))) {
-        continue;
-      }
-
-      if (iter != entries.begin()) {  // Exclude the root dir from the ZIP file.
-        // Make the path relative for AddEntryToZip.
-        base::FilePath relative_path;
-        bool success =
-            params.src_dir.AppendRelativePath(entry_path, &relative_path);
+        // Store relative path.
+        all_files.emplace_back();
+        const bool success =
+            params.src_dir.AppendRelativePath(entry.path, &all_files.back());
         DCHECK(success);
-        all_files.push_back(relative_path);
-      }
 
-      if (iter->is_directory) {
-        std::vector<FileAccessor::DirectoryContentEntry> subentries =
-            file_accessor->ListDirectoryContent(entry_path);
-        entries.insert(entries.end(), subentries.begin(), subentries.end());
+        if (entry.is_directory)
+          q.push(std::move(entry.path));
       }
     }
 
