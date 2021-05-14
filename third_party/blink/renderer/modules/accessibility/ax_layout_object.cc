@@ -318,6 +318,11 @@ bool AXLayoutObject::IsLineBreakingObject() const {
   if (IsPresentational())
     return false;
 
+  // Without this condition, LayoutNG reports list markers as line breaking
+  // objects (legacy layout does not).
+  if (RoleValue() == ax::mojom::blink::Role::kListMarker)
+    return false;
+
   const LayoutObject* layout_object = GetLayoutObject();
   if (layout_object->IsBR() || layout_object->IsLayoutBlock() ||
       layout_object->IsTableSection() || layout_object->IsAnonymousBlock() ||
