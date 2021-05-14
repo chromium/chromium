@@ -176,7 +176,8 @@ class HomeAndExtendedTransitionAnimation
     // Save initial and target padding insets.
     initial_padding_insets_ = scrollable_shelf_view->edge_padding_insets();
     target_padding_insets_ =
-        scrollable_shelf_view->CalculateEdgePadding(/*use_target_bounds=*/true);
+        scrollable_shelf_view->CalculateMirroredEdgePadding(
+            /*use_target_bounds=*/true);
 
     // Save initial opacity.
     start_opacity_ = hotseat_widget_->GetNativeView()->layer()->opacity();
@@ -297,7 +298,7 @@ class HomeAndHiddenTransitionAnimation
       // animation when hotseat is going to show in home launcher.
       animation_target_bounds_ = target_widget_bounds_;
       const gfx::Insets target_padding_insets =
-          scrollable_shelf_view->CalculateEdgePadding(
+          scrollable_shelf_view->CalculateMirroredEdgePadding(
               /*use_target_bounds=*/true);
       scrollable_shelf_view->SetEdgePaddingInsets(target_padding_insets);
       delegate->SetBoundsFromAnimation(

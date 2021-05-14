@@ -105,12 +105,14 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   bool RequiresScrollingForItemSize(const gfx::Size& target_size,
                                     int button_size) const;
 
-  // Sets padding insets.
+  // Sets padding insets. `padding_insets` should adapt to RTL for the
+  // horizontal shelf.
   void SetEdgePaddingInsets(const gfx::Insets& padding_insets);
 
   // Returns the edge padding insets based on the scrollable shelf view's
-  // target bounds or the current bounds, indicated by |use_target_bounds|.
-  gfx::Insets CalculateEdgePadding(bool use_target_bounds) const;
+  // target bounds or the current bounds, indicated by |use_target_bounds|. Note
+  // that the returned value is mirrored for the horizontal shelf under RTL.
+  gfx::Insets CalculateMirroredEdgePadding(bool use_target_bounds) const;
 
   views::View* GetShelfContainerViewForTest();
   bool ShouldAdjustForTest() const;
@@ -291,8 +293,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   gfx::Rect GetAvailableLocalBounds(bool use_target_bounds) const;
 
   // Calculates padding for display centering alignment depending on which view
-  // bounds are used: actual view bounds or target view bounds.
-  gfx::Insets CalculatePaddingForDisplayCentering(bool use_target_bounds) const;
+  // bounds are used: actual view bounds or target view bounds. The returned
+  // value is mirrored for the horizontal shelf under RTL.
+  gfx::Insets CalculateMirroredPaddingForDisplayCentering(
+      bool use_target_bounds) const;
 
   // Returns whether the received gesture event should be handled here.
   bool ShouldHandleGestures(const ui::GestureEvent& event);
@@ -476,13 +480,15 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   ScrollArrowView* right_arrow_ = nullptr;
   ShelfContainerView* shelf_container_view_ = nullptr;
 
-  // Available space to accommodate child views.
+  // Available space to accommodate child views. It is mirrored for the
+  // horizontal shelf under RTL.
   gfx::Rect available_space_;
 
   ShelfView* shelf_view_ = nullptr;
 
   // Defines the padding space inside the scrollable shelf. It is decided by the
-  // current padding strategy.
+  // current padding strategy. Note that `edge_padding_insets_` is mirrored
+  // for the horizontal shelf under RTL.
   gfx::Insets edge_padding_insets_;
 
   // Indicates whether |edge_padding_insets_| is configured externally.

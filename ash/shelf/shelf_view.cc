@@ -2490,6 +2490,11 @@ int ShelfView::CalculateAppIconsLayoutOffset() const {
   const gfx::Insets& edge_padding_insets =
       scrollable_shelf_view->edge_padding_insets();
 
+  // Note that `edge_padding_insets` fetched from `scrollable_shelf_view` is
+  // mirrored under RTL.
+  if (scrollable_shelf_view->ShouldAdaptToRTL())
+    return edge_padding_insets.right();
+
   return shelf_->IsHorizontalAlignment() ? edge_padding_insets.left()
                                          : edge_padding_insets.top();
 }

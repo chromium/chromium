@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/i18n/rtl.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -578,12 +579,29 @@ TEST_P(ScrollableShelfViewRTLTest, CheckTappableIndicesOnSecondDisplay) {
 
 // Verifies that the scrollable shelf in oveflow mode has the correct layout
 // after switching to tablet mode (https://crbug.com/1017979).
-TEST_F(ScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
+TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
   // Add enough app shortcuts to ensure that at least three pages of icons show.
   for (int i = 0; i < 25; i++)
     AddAppShortcut();
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
+
+  // Calculate the hotseat background's screen bounds.
+  gfx::Rect hotseat_background =
+      scrollable_shelf_view_->GetHotseatBackgroundBounds();
+  views::View::ConvertRectToScreen(scrollable_shelf_view_, &hotseat_background);
+
+  // Verify that the right arrow button has the correct end padding.
+  const gfx::Rect right_arrow_bounds =
+      scrollable_shelf_view_->right_arrow()->GetBoundsInScreen();
+  if (base::i18n::IsRTL()) {
+    EXPECT_EQ(scrollable_shelf_constants::kArrowButtonEndPadding,
+              right_arrow_bounds.x() - hotseat_background.x());
+  } else {
+    EXPECT_EQ(scrollable_shelf_constants::kArrowButtonEndPadding,
+              hotseat_background.right() - right_arrow_bounds.right());
+  }
+
   GetEventGenerator()->GestureTapAt(
       scrollable_shelf_view_->right_arrow()->GetBoundsInScreen().CenterPoint());
   ASSERT_EQ(ScrollableShelfView::kShowButtons,
@@ -600,8 +618,58 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
   // icon is expected.
   const gfx::Rect left_arrow_bounds =
       scrollable_shelf_view_->left_arrow()->GetBoundsInScreen();
-  EXPECT_EQ(left_arrow_bounds.right() + 2,
-            first_tappable_view->GetBoundsInScreen().x());
+
+  // Activate a shelf icon's ink drop. Verify that no crash happens.
+  auto* ink_drop = test_api_->GetButton(0)->ink_drop()->GetInkDrop();
+  ink_drop->SnapToActivated();
+  EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  if (base::i18n::IsRTL()) {
+    EXPECT_EQ(left_arrow_bounds.x() -
+                  scrollable_shelf_constants::kDistanceToArrowButton,
+              first_tappable_view->GetBoundsInScreen().right());
+  } else {
+    EXPECT_EQ(left_arrow_bounds.right() +
+                  scrollable_shelf_constants::kDistanceToArrowButton,
+              first_tappable_view->GetBoundsInScreen().x());
+  }
+}
+
+// Verifies that the scrollable shelf without overflow has the correct layout in
+// tablet mode.
+TEST_P(ScrollableShelfViewRTLTest, CorrectUIInTabletWithoutOverflow) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  for (int i = 0; i < 3; i++)
+    AddAppShortcut();
+  ASSERT_EQ(ScrollableShelfView::kNotShowArrowButtons,
+            scrollable_shelf_view_->layout_strategy_for_test());
+
+  gfx::Rect hotseat_background =
+      scrollable_shelf_view_->GetHotseatBackgroundBounds();
+  views::View::ConvertRectToScreen(scrollable_shelf_view_, &hotseat_background);
+
+  views::ViewModel* view_model = shelf_view_->view_model();
+  const gfx::Rect first_tappable_icon_bounds =
+      view_model->view_at(scrollable_shelf_view_->first_tappable_app_index())
+          ->GetBoundsInScreen();
+  const gfx::Rect last_tappable_icon_bounds =
+      view_model->view_at(scrollable_shelf_view_->last_tappable_app_index())
+          ->GetBoundsInScreen();
+
+  if (base::i18n::IsRTL()) {
+    EXPECT_EQ(hotseat_background.x() + scrollable_shelf_constants::kEndPadding,
+              last_tappable_icon_bounds.x());
+    EXPECT_EQ(
+        hotseat_background.right() - scrollable_shelf_constants::kEndPadding,
+        first_tappable_icon_bounds.right());
+  } else {
+    EXPECT_EQ(hotseat_background.x() + scrollable_shelf_constants::kEndPadding,
+              first_tappable_icon_bounds.x());
+    EXPECT_EQ(
+        hotseat_background.right() - scrollable_shelf_constants::kEndPadding,
+        last_tappable_icon_bounds.right());
+  }
 }
 
 // Verifies that activating a shelf icon's ripple ring does not bring crash
@@ -616,32 +684,6 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyActivateIconRippleOnVerySmallDisplay) {
   auto* ink_drop = test_api_->GetButton(0)->ink_drop()->GetInkDrop();
   ink_drop->SnapToActivated();
   EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
-}
-
-// Verifies that the scrollable shelf without overflow has the correct layout in
-// tablet mode.
-TEST_F(ScrollableShelfViewTest, CorrectUIInTabletWithoutOverflow) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  for (int i = 0; i < 3; i++)
-    AddAppShortcut();
-  ASSERT_EQ(ScrollableShelfView::kNotShowArrowButtons,
-            scrollable_shelf_view_->layout_strategy_for_test());
-
-  gfx::Rect hotseat_background =
-      scrollable_shelf_view_->GetHotseatBackgroundBounds();
-  views::View::ConvertRectToScreen(scrollable_shelf_view_, &hotseat_background);
-
-  views::ViewModel* view_model = shelf_view_->view_model();
-  const gfx::Rect first_tappable_view_bounds =
-      view_model->view_at(scrollable_shelf_view_->first_tappable_app_index())
-          ->GetBoundsInScreen();
-  const gfx::Rect last_tappable_view_bounds =
-      view_model->view_at(scrollable_shelf_view_->last_tappable_app_index())
-          ->GetBoundsInScreen();
-
-  EXPECT_EQ(hotseat_background.x() + 4, first_tappable_view_bounds.x());
-  EXPECT_EQ(hotseat_background.right() - 4, last_tappable_view_bounds.right());
 }
 
 // Verifies that the scrollable shelf without overflow has the correct layout in

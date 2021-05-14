@@ -73,6 +73,11 @@ void ReportSmoothness(bool tablet_mode, bool launcher_visible, int smoothness) {
   }
 }
 
+gfx::Insets GetMirroredInsets(const gfx::Insets& insets) {
+  return gfx::Insets(/*top=*/insets.top(), /*left=*/insets.right(),
+                     /*bottom=*/insets.bottom(), /*right=*/insets.left());
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -462,7 +467,7 @@ views::View* ScrollableShelfView::GetDefaultFocusableChild() {
 }
 
 gfx::Rect ScrollableShelfView::GetHotseatBackgroundBounds() const {
-  return GetMirroredRect(available_space_);
+  return available_space_;
 }
 
 bool ScrollableShelfView::ShouldAdaptToRTL() const {
@@ -477,18 +482,24 @@ bool ScrollableShelfView::NeedUpdateToTargetBounds() const {
 gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
     const ShelfID& id) const {
   // Calculates the available space for child views based on the target bounds.
-  const gfx::Insets target_edge_padding =
-      CalculateEdgePadding(/*use_target_bounds=*/true);
-  gfx::Rect target_space = GetAvailableLocalBounds(/*use_target_bounds=*/true);
-  target_space.Inset(target_edge_padding);
+  // To ease coding, we use the variables before mirroring in computation.
+  const gfx::Insets target_edge_padding_RTL_mirrored =
+      CalculateMirroredEdgePadding(/*use_target_bounds=*/true);
+  const gfx::Insets target_edge_padding_before_RTL_mirror =
+      ShouldAdaptToRTL() ? GetMirroredInsets(target_edge_padding_RTL_mirrored)
+                         : target_edge_padding_RTL_mirrored;
+  gfx::Rect target_space_before_RTL_mirror =
+      GetAvailableLocalBounds(/*use_target_bounds=*/true);
+  target_space_before_RTL_mirror.Inset(target_edge_padding_before_RTL_mirror);
 
-  const int target_scroll_offset =
-      CalculateScrollOffsetForTargetAvailableSpace(target_space);
-
+  const gfx::Insets current_edge_padding_RTL_mirrored = edge_padding_insets_;
+  const gfx::Insets current_edge_padding_before_RTL_mirror =
+      ShouldAdaptToRTL() ? GetMirroredInsets(current_edge_padding_RTL_mirrored)
+                         : current_edge_padding_RTL_mirrored;
   gfx::Rect icon_bounds = shelf_view_->view_model()->ideal_bounds(
       shelf_view_->model()->ItemIndexByID(id));
-
-  icon_bounds.Offset(target_edge_padding.left() - edge_padding_insets_.left(),
+  icon_bounds.Offset(target_edge_padding_before_RTL_mirror.left() -
+                         current_edge_padding_before_RTL_mirror.left(),
                      0);
 
   // Transforms |icon_bounds| from shelf view's coordinates to scrollable shelf
@@ -498,6 +509,8 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
   const int shelf_view_container_offset =
       is_horizontal_alignment ? shelf_container_view_->bounds().x()
                               : shelf_container_view_->bounds().y();
+  const int target_scroll_offset = CalculateScrollOffsetForTargetAvailableSpace(
+      target_space_before_RTL_mirror);
   const int delta =
       -target_scroll_offset + shelf_view_container_offset + shelf_view_offset;
   const gfx::Vector2d bounds_offset = is_horizontal_alignment
@@ -508,12 +521,14 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
   // If the icon is invisible under the target view bounds, replaces the actual
   // icon's bounds with the rectangle centering on the edge of |target_space|.
   const gfx::Point icon_bounds_center = icon_bounds.CenterPoint();
-  if (icon_bounds_center.x() > target_space.right()) {
-    icon_bounds.Offset(target_space.right_center().OffsetFromOrigin() -
-                       icon_bounds_center.OffsetFromOrigin());
-  } else if (icon_bounds_center.x() < target_space.x()) {
-    icon_bounds.Offset(target_space.left_center().OffsetFromOrigin() -
-                       icon_bounds_center.OffsetFromOrigin());
+  if (icon_bounds_center.x() > target_space_before_RTL_mirror.right()) {
+    icon_bounds.Offset(
+        target_space_before_RTL_mirror.right_center().OffsetFromOrigin() -
+        icon_bounds_center.OffsetFromOrigin());
+  } else if (icon_bounds_center.x() < target_space_before_RTL_mirror.x()) {
+    icon_bounds.Offset(
+        target_space_before_RTL_mirror.left_center().OffsetFromOrigin() -
+        icon_bounds_center.OffsetFromOrigin());
   }
 
   // Hotseat's target bounds may differ from the actual bounds. So it has to
@@ -555,11 +570,11 @@ void ScrollableShelfView::SetEdgePaddingInsets(
   shelf_view_->LayoutIfAppIconsOffsetUpdates();
 }
 
-gfx::Insets ScrollableShelfView::CalculateEdgePadding(
+gfx::Insets ScrollableShelfView::CalculateMirroredEdgePadding(
     bool use_target_bounds) const {
   // Tries display centering strategy.
   const gfx::Insets display_centering_edge_padding =
-      CalculatePaddingForDisplayCentering(use_target_bounds);
+      CalculateMirroredPaddingForDisplayCentering(use_target_bounds);
   if (!display_centering_edge_padding.IsEmpty()) {
     // Returns early if the value is legal.
     return display_centering_edge_padding;
@@ -590,6 +605,8 @@ gfx::Insets ScrollableShelfView::CalculateEdgePadding(
   if (GetShelf()->IsHorizontalAlignment()) {
     padding_insets =
         gfx::Insets(/*top=*/0, before_padding, /*bottom=*/0, after_padding);
+    if (ShouldAdaptToRTL())
+      padding_insets = GetMirroredInsets(padding_insets);
   } else {
     padding_insets =
         gfx::Insets(before_padding, /*left=*/0, after_padding, /*right=*/0);
@@ -740,10 +757,21 @@ void ScrollableShelfView::Layout() {
   gfx::Rect left_arrow_bounds;
   gfx::Rect right_arrow_bounds;
 
-  const int before_padding =
-      is_horizontal ? edge_padding_insets_.left() : edge_padding_insets_.top();
-  const int after_padding = is_horizontal ? edge_padding_insets_.right()
-                                          : edge_padding_insets_.bottom();
+  int before_padding;
+  if (ShouldAdaptToRTL()) {
+    before_padding = edge_padding_insets_.right();
+  } else {
+    before_padding = is_horizontal ? edge_padding_insets_.left()
+                                   : edge_padding_insets_.top();
+  }
+
+  int after_padding;
+  if (ShouldAdaptToRTL()) {
+    after_padding = edge_padding_insets_.left();
+  } else {
+    after_padding = is_horizontal ? edge_padding_insets_.right()
+                                  : edge_padding_insets_.bottom();
+  }
 
   // Calculates the bounds of the left arrow button. If the left arrow button
   // should not show, |left_arrow_bounds| should be empty.
@@ -1304,7 +1332,7 @@ gfx::Rect ScrollableShelfView::GetAvailableLocalBounds(
              : GetLocalBounds();
 }
 
-gfx::Insets ScrollableShelfView::CalculatePaddingForDisplayCentering(
+gfx::Insets ScrollableShelfView::CalculateMirroredPaddingForDisplayCentering(
     bool use_target_bounds) const {
   const int icons_size =
       shelf_view_->GetSizeOfAppButtons(shelf_view_->number_of_visible_apps(),
@@ -1342,6 +1370,8 @@ gfx::Insets ScrollableShelfView::CalculatePaddingForDisplayCentering(
   if (GetShelf()->IsHorizontalAlignment()) {
     padding_insets =
         gfx::Insets(/*top=*/0, before_padding, /*bottom=*/0, after_padding);
+    if (ShouldAdaptToRTL())
+      padding_insets = GetMirroredInsets(padding_insets);
   } else {
     padding_insets =
         gfx::Insets(before_padding, /*left=*/0, after_padding, /*right=*/0);
@@ -1991,7 +2021,8 @@ int ScrollableShelfView::CalculateScrollDistanceAfterAdjustment(
 
 void ScrollableShelfView::UpdateAvailableSpace() {
   if (!is_padding_configured_externally_) {
-    edge_padding_insets_ = CalculateEdgePadding(/*use_target_bounds=*/false);
+    edge_padding_insets_ =
+        CalculateMirroredEdgePadding(/*use_target_bounds=*/false);
   }
 
   available_space_ = GetLocalBounds();
