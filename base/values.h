@@ -294,7 +294,7 @@ class BASE_EXPORT Value {
   Value* FindKeyOfType(StringPiece key, Type type);
   const Value* FindKeyOfType(StringPiece key, Type type) const;
 
-  // These are convenience forms of `FindKey`. They return `base`:nullopt| if
+  // These are convenience forms of `FindKey`. They return base::nullopt if
   // the value is not found or doesn't have the type specified in the
   // function's name.
   base::Optional<bool> FindBoolKey(StringPiece key) const;
@@ -635,7 +635,7 @@ class BASE_EXPORT Value {
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"
 // parsing for recursive access; see the comment at the top of the file. Keys
-// are `std`:string|s and should be UTF-8 encoded.
+// are std::string's and should be UTF-8 encoded.
 class BASE_EXPORT DictionaryValue : public Value {
  public:
   // Returns `value` if it is a dictionary, nullptr otherwise.
