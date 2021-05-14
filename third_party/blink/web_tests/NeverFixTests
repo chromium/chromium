@@ -259,7 +259,6 @@ crbug.com/753080 external/wpt/css/css-transforms/transform3d-perspective-005.htm
 crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-002.html [ Skip ]
 crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-004.html [ Skip ]
 crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-006.html [ Skip ]
-crbug.com/753080 external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle-mismatch.html [ Skip ]
 crbug.com/753080 external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html [ Skip ]
 
 # On Linux bold emoji are already supported.
