@@ -20,6 +20,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -141,7 +143,8 @@ public class ShareSheetPropertyModelBuilder {
 
     protected List<PropertyModel> selectThirdPartyApps(ShareSheetBottomSheetContent bottomSheet,
             Set<Integer> contentTypes, ShareParams params, boolean saveLastUsed,
-            WindowAndroid window, long shareStartTime) {
+            WindowAndroid window, long shareStartTime,
+            @LinkGeneration int linkGenerationStatusForMetrics) {
         List<String> thirdPartyActivityNames = getThirdPartyActivityNames();
         final ShareParams.TargetChosenCallback callback = params.getCallback();
         List<ResolveInfo> resolveInfoList =
@@ -180,7 +183,8 @@ public class ShareSheetPropertyModelBuilder {
             final int logIndex = i;
             OnClickListener onClickListener = v -> {
                 onThirdPartyAppSelected(bottomSheet, params, window, callback, saveLastUsed,
-                        info.activityInfo, logIndex, shareStartTime);
+                        info.activityInfo, logIndex, shareStartTime,
+                        linkGenerationStatusForMetrics);
             };
             PropertyModel propertyModel =
                     createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
@@ -194,12 +198,17 @@ public class ShareSheetPropertyModelBuilder {
 
     private void onThirdPartyAppSelected(ShareSheetBottomSheetContent bottomSheet,
             ShareParams params, WindowAndroid window, ShareParams.TargetChosenCallback callback,
-            boolean saveLastUsed, ActivityInfo ai, int logIndex, long shareStartTime) {
+            boolean saveLastUsed, ActivityInfo ai, int logIndex, long shareStartTime,
+            @LinkGeneration int linkGenerationStatusForMetrics) {
         // Record all metrics.
         RecordUserAction.record("SharingHubAndroid.ThirdPartyAppSelected");
         RecordHistogram.recordEnumeratedHistogram(
                 "Sharing.SharingHubAndroid.ThirdPartyAppUsage", logIndex, MAX_NUM_APPS + 1);
         ChromeProvidedSharingOptionsProvider.recordTimeToShare(shareStartTime);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+            LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
+                    linkGenerationStatusForMetrics);
+        }
         ComponentName component = new ComponentName(ai.applicationInfo.packageName, ai.name);
         if (callback != null) {
             callback.onTargetChosen(component);

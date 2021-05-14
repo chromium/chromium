@@ -14059,6 +14059,16 @@ should be kept until we remove incident reporting. -->
   <summary>Win32 APIs that error out during setup.</summary>
 </histogram>
 
+<histogram name="SharedHighlights.AndroidShareSheet.SharedState"
+    enum="LinkGenerationSharedStatus" expires_after="2021-11-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of the link generation when a user shares content using
+    the feature on Android.
+  </summary>
+</histogram>
+
 <histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
     expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>

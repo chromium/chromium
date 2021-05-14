@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Matchers.any;
@@ -91,7 +92,7 @@ public final class ShareSheetCoordinatorTest {
         ArrayList<PropertyModel> thirdPartyPropertyModels =
                 new ArrayList<>(Arrays.asList(testModel1, testModel2));
         when(mPropertyModelBuilder.selectThirdPartyApps(
-                     any(), anySet(), any(), anyBoolean(), any(), anyLong()))
+                     any(), anySet(), any(), anyBoolean(), any(), anyLong(), anyInt()))
                 .thenReturn(thirdPartyPropertyModels);
 
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher, null,

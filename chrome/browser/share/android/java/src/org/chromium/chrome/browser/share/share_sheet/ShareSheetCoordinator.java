@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -72,7 +73,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
-    private String mShareDetailsForMetrics;
+    private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -154,7 +155,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         mShareStartTime = shareStartTime;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-            setShareMetrics(mBottomSheet.getLinkGenerationState());
+            mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();
         }
         updateShareSheet();
 
@@ -180,25 +181,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         mShareParams = mLinkToTextCoordinator.getShareParams(state);
         mBottomSheet.updateShareParams(mShareParams);
-        setShareMetrics(state);
+        mLinkGenerationStatusForMetrics = state;
         updateShareSheet();
-    }
-
-    private void setShareMetrics(@LinkGeneration int state) {
-        switch (state) {
-            case LinkGeneration.LINK:
-                mShareDetailsForMetrics =
-                        "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared";
-                break;
-            case LinkGeneration.TEXT:
-                mShareDetailsForMetrics = "SharingHubAndroid.LinkGeneration.Success.TextShared";
-                break;
-            case LinkGeneration.FAILURE:
-                mShareDetailsForMetrics = "SharingHubAndroid.LinkGeneration.Failure.TextShared";
-                break;
-            default:
-                break;
-        }
     }
 
     private void updateShareSheet() {
@@ -257,7 +241,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
                                                            : ""),
-                mShareDetailsForMetrics);
+                mLinkGenerationStatusForMetrics);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -269,7 +253,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             Set<Integer> contentTypes, boolean saveLastUsed) {
         if (params == null) return null;
         List<PropertyModel> models = mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet,
-                contentTypes, params, saveLastUsed, params.getWindow(), mShareStartTime);
+                contentTypes, params, saveLastUsed, params.getWindow(), mShareStartTime,
+                mLinkGenerationStatusForMetrics);
         // More...
         PropertyModel morePropertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
@@ -278,9 +263,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                         -> {
                     RecordUserAction.record("SharingHubAndroid.MoreSelected");
                     if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                            && mShareDetailsForMetrics != null) {
-                        RecordUserAction.record(mShareDetailsForMetrics);
+                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+                        LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
+                                mLinkGenerationStatusForMetrics);
                     }
                     mBottomSheetController.hideContent(mBottomSheet, true);
                     ShareHelper.showDefaultShareUi(params, saveLastUsed);

@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -139,7 +141,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @FlakyTest(message = "crbug.com/1207314")
     public void getPropertyModels_screenshotEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
@@ -161,7 +163,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @FlakyTest(message = "crbug.com/1207314")
     public void getPropertyModels_printingEnabled_includesPrinting() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
@@ -184,7 +186,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void
     getPropertyModels_sharingHub15Enabled_includesCopyText() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.TEXT), /*isMultiWindow=*/false);
@@ -200,7 +202,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void
     getPropertyModels_linkAndTextShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -222,7 +224,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void
     getPropertyModels_linkShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -243,7 +245,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void
     getPropertyModels_textShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -260,7 +262,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     public void getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -280,7 +282,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     public void getPropertyModels_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
@@ -298,7 +300,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     public void getPropertyModels_multipleTypes_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/true, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE),
@@ -319,7 +321,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     public void getPropertyModels_highlightsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/null);
+                /*printingEnabled=*/false, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
@@ -334,18 +336,19 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     public void getShareDetailsMetrics_LinkGeneration() {
-        String detailMetrics = "LinkGeneration.DetailsMetrics";
+        @LinkGeneration
+        int linkGenerationStatus = LinkGeneration.LINK;
         setUpChromeProvidedSharingOptionsProviderTest(
-                /*printingEnabled=*/false, /*sharedDetailsMetrics=*/detailMetrics);
+                /*printingEnabled=*/false, linkGenerationStatus);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
 
-        assertCorrectMetrics(propertyModels, detailMetrics);
+        assertCorrectMetrics(propertyModels, linkGenerationStatus);
     }
 
     private void setUpChromeProvidedSharingOptionsProviderTest(
-            boolean printingEnabled, String sharedDetailsMetrics) {
+            boolean printingEnabled, @LinkGeneration int linkGenerationStatus) {
         Mockito.when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
 
         ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
@@ -359,7 +362,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*settingsLauncher=*/null,
                 /*syncState=*/false,
                 /*shareStartTime=*/0, mShareSheetCoordinator,
-                /*imageEditorModuleProvider*/ null, mTracker, URL, sharedDetailsMetrics);
+                /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus);
     }
 
     private void assertCorrectModelsAreInTheRightOrder(
@@ -373,7 +376,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     private void assertCorrectMetrics(
-            List<PropertyModel> propertyModels, String sharedDetailsMetrics) {
+            List<PropertyModel> propertyModels, @LinkGeneration int linkGenerationStatus) {
         Looper.prepare();
         mActionTester = new UserActionTester();
         View view = Mockito.mock(View.class);
@@ -381,7 +384,35 @@ public class ChromeProvidedSharingOptionsProviderTest {
             View.OnClickListener listener =
                     propertyModel.get(ShareSheetItemViewProperties.CLICK_LISTENER);
             listener.onClick(view);
-            assertTrue(mActionTester.getActions().contains(sharedDetailsMetrics));
+
+            switch (linkGenerationStatus) {
+                case LinkGeneration.LINK:
+                    assertTrue(mActionTester.getActions().contains(
+                            "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared"));
+                    assertEquals(1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    "SharedHighlights.AndroidShareSheet.SharedState",
+                                    LinkGeneration.LINK));
+                    break;
+                case LinkGeneration.TEXT:
+                    assertTrue(mActionTester.getActions().contains(
+                            "SharingHubAndroid.LinkGeneration.Success.TextShared"));
+                    assertEquals(1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    "SharedHighlights.AndroidShareSheet.SharedState",
+                                    LinkGeneration.TEXT));
+                    break;
+                case LinkGeneration.FAILURE:
+                    assertTrue(mActionTester.getActions().contains(
+                            "SharingHubAndroid.LinkGeneration.Failure.TextShared"));
+                    assertEquals(1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    "SharedHighlights.AndroidShareSheet.SharedState",
+                                    LinkGeneration.FAILURE));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

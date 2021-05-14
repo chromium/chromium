@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.share.link_to_text;
+
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+
+/**
+ * Helper for metrics related to the Link to Text feature.
+ */
+public final class LinkToTextMetricsHelper {
+    /**
+     *  Private constructor since all the methods in this class are static.
+     */
+    private LinkToTextMetricsHelper() {}
+
+    /**
+     * Records the metrics about the state of the link generation when users are sharing it.
+     *
+     * @param linkGenerationStatus The state of the link generation that ended up being shared.
+     */
+    public static void recordSharedHighlightStateMetrics(@LinkGeneration int linkGenerationStatus) {
+        switch (linkGenerationStatus) {
+            case LinkGeneration.LINK:
+                RecordUserAction.record(
+                        "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared");
+                break;
+            case LinkGeneration.TEXT:
+                RecordUserAction.record("SharingHubAndroid.LinkGeneration.Success.TextShared");
+                break;
+            case LinkGeneration.FAILURE:
+                RecordUserAction.record("SharingHubAndroid.LinkGeneration.Failure.TextShared");
+                break;
+            default:
+                break;
+        }
+        RecordHistogram.recordEnumeratedHistogram("SharedHighlights.AndroidShareSheet.SharedState",
+                linkGenerationStatus, LinkGeneration.MAX);
+    }
+}

@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -246,8 +247,8 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), shareParams, /*saveLastUsed=*/false,
-                /*WindowAndroid=*/null,
-                /*shareStartTime=*/0);
+                /*WindowAndroid=*/null, /*shareStartTime=*/0,
+                /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(
@@ -262,7 +263,8 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.IMAGE), shareParams, /*saveLastUsed=*/false,
-                /*WindowAndroid=*/null, /*shareStartTime=*/0);
+                /*WindowAndroid=*/null, /*shareStartTime=*/0,
+                /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(
@@ -277,7 +279,8 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE, ContentType.IMAGE), shareParams,
-                /*saveLastUsed=*/false, /*WindowAndroid=*/null, /*shareStartTime=*/0);
+                /*saveLastUsed=*/false, /*WindowAndroid=*/null, /*shareStartTime=*/0,
+                /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
 
         assertEquals("Incorrect number of property models.", 4, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,

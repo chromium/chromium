@@ -43647,6 +43647,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="12" label="BlockList"/>
 </enum>
 
+<enum name="LinkGenerationSharedStatus">
+  <int value="0" label="Generation succeeded, shared text"/>
+  <int value="1" label="Generation succeeded, shared link"/>
+  <int value="2" label="Generation failed (shared text)"/>
+</enum>
+
 <enum name="LinkMonitorFailureType">
   <int value="0" label="Local MAC Address Not Found"/>
   <int value="1" label="Client Startup Failure"/>
