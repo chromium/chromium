@@ -2042,7 +2042,6 @@ external/wpt/serial/serialPort_loopback_BufferOverrunError-manual.https.html [ S
 external/wpt/serial/serialPort_disconnect-manual.https.html [ Skip ]
 
 # CPU test is enough for this one as there are gradient issues on the GPU
-virtual/gpu/fast/canvas/conic-gradient.html [ Skip ]
 crbug.com/626703 [ Linux ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw-manual.https.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw-manual.https.html [ Skip ]
 crbug.com/626703 [ Win ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw-manual.https.html [ Skip ]

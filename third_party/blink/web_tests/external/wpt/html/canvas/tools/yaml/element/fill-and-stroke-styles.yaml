@@ -1195,34 +1195,43 @@
   expected: green
 
 - name: 2d.gradient.conic.positive.rotation
-  desc: Conic gradient function exists
+  desc: Conic gradient with positive rotation
   code: |
-    const g = ctx.createConicGradient(3*Math.PI/2, 0, 25);
-    g.addColorStop(0, "#0f0");
-    g.addColorStop(0.5, "#0f0");
-    g.addColorStop(0.51, "#f00");
-    g.addColorStop(1, "#f00");
+    const g = ctx.createConicGradient(3*Math.PI/2, 50, 25);
+    // It's red in the upper right region and green on the lower left region
+    g.addColorStop(0, "#f00");
+    g.addColorStop(0.25, "#0f0");
+    g.addColorStop(0.50, "#0f0");
+    g.addColorStop(0.75, "#f00");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,15 == 255,0,0,255;
+    @assert pixel 75,40 == 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.conic.negative.rotation
-  desc: Conic gradient function exists
+  desc: Conic gradient with negative rotation
   code: |
-    const g = ctx.createConicGradient(-Math.PI/2, 0, 25);
-    g.addColorStop(0, "#0f0");
-    g.addColorStop(0.5, "#0f0");
-    g.addColorStop(0.51, "#f00");
-    g.addColorStop(1, "#f00");
+    const g = ctx.createConicGradient(-Math.PI/2, 50, 25);
+    // It's red in the upper right region and green on the lower left region
+    g.addColorStop(0, "#f00");
+    g.addColorStop(0.25, "#0f0");
+    g.addColorStop(0.50, "#0f0");
+    g.addColorStop(0.75, "#f00");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,15 == 255,0,0,255;
+    @assert pixel 75,40 == 0,255,0,255;
   expected: green
+
+- name: 2d.gradient.conic.invalid.inputs
+  desc: Conic gradient function with invalid inputs
+  code: |
+    @nonfinite @assert throws TypeError ctx.createConicGradient(<0 Infinity -Infinity NaN>, <0 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>);
+
+    const g = ctx.createConicGradient(0, 0, 25);
+    @nonfinite @assert throws TypeError g.addColorStop(<Infinity -Infinity NaN>, <'#f00'>);
+    @nonfinite @assert throws SYNTAX_ERR g.addColorStop(<0>, <Infinity -Infinity NaN>);
 
 - name: 2d.pattern.basic.type
   testing:

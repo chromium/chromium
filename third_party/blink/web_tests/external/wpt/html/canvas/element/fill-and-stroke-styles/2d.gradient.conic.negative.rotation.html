@@ -8,7 +8,7 @@
 <body class="show_output">
 
 <h1>2d.gradient.conic.negative.rotation</h1>
-<p class="desc">Conic gradient function exists</p>
+<p class="desc">Conic gradient with negative rotation</p>
 
 
 <p class="output">Actual output:</p>
@@ -16,19 +16,19 @@
 <p class="output expectedtext">Expected output:<p><img src="/images/green-100x50.png" class="output expected" id="expected" alt="">
 <ul id="d"></ul>
 <script>
-var t = async_test("Conic gradient function exists");
+var t = async_test("Conic gradient with negative rotation");
 _addTest(function(canvas, ctx) {
 
-const g = ctx.createConicGradient(-Math.PI/2, 0, 25);
-g.addColorStop(0, "#0f0");
-g.addColorStop(0.5, "#0f0");
-g.addColorStop(0.51, "#f00");
-g.addColorStop(1, "#f00");
+const g = ctx.createConicGradient(-Math.PI/2, 50, 25);
+// It's red in the upper right region and green on the lower left region
+g.addColorStop(0, "#f00");
+g.addColorStop(0.25, "#0f0");
+g.addColorStop(0.50, "#0f0");
+g.addColorStop(0.75, "#f00");
 ctx.fillStyle = g;
 ctx.fillRect(0, 0, 100, 50);
-_assertPixel(canvas, 25,25, 0,255,0,255, "25,25", "0,255,0,255");
-_assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
-_assertPixel(canvas, 75,25, 0,255,0,255, "75,25", "0,255,0,255");
+_assertPixel(canvas, 25,15, 255,0,0,255, "25,15", "255,0,0,255");
+_assertPixel(canvas, 75,40, 0,255,0,255, "75,40", "0,255,0,255");
 
 
 });
