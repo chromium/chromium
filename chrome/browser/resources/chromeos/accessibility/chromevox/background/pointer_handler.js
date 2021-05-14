@@ -21,8 +21,6 @@ PointerHandler = class extends BaseAutomationHandler {
   constructor() {
     super(null);
 
-    /** @private {boolean|undefined} */
-    this.hasPendingEvents_;
     /** @private {number|undefined} */
     this.mouseX_;
     /** @private {number|undefined} */
@@ -57,10 +55,8 @@ PointerHandler = class extends BaseAutomationHandler {
 
         this.expectingHoverCount_--;
         this.handleHitTestResult(evt.target);
-        this.runHitTest();
       });
 
-      this.hasPendingEvents_ = false;
       this.mouseX_ = 0;
       this.mouseY_ = 0;
     });
@@ -78,16 +74,11 @@ PointerHandler = class extends BaseAutomationHandler {
   /**
    * Performs a hit test using the most recent mouse coordinates received in
    * onMouseMove or onMove (a e.g. for touch explore).
-   *
-   * Note that runHitTest only ever does a hit test when |hasPendingEvents| is
-   * true.
    * @param {boolean} isTouch
+   * @param {AutomationNode} specificNode
    */
-  runHitTest(isTouch = false) {
+  runHitTest(isTouch = false, specificNode = null) {
     if (this.mouseX_ === undefined || this.mouseY_ === undefined) {
-      return;
-    }
-    if (!this.hasPendingEvents_) {
       return;
     }
 
@@ -100,12 +91,10 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    this.node_.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
+    const actOnNode = specificNode ? specificNode : this.node_;
+    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
       this.handleHitTestResult(target);
-      this.runHitTest();
     });
-
-    this.hasPendingEvents_ = false;
   }
 
   /**
@@ -134,7 +123,6 @@ PointerHandler = class extends BaseAutomationHandler {
   onMove(x, y, isTouch = false) {
     this.mouseX_ = x;
     this.mouseY_ = y;
-    this.hasPendingEvents_ = true;
     this.runHitTest(isTouch);
   }
 
@@ -176,13 +164,8 @@ PointerHandler = class extends BaseAutomationHandler {
       const appNode = walker.next().node;
       if (appNode) {
         // This means we've gotten the app, which is technically in a different
-        // tree so hit tests will be delivered to it properly and come back in
-        // our hover event handler.
-        // TODO: switch to hitTestWithReply once OnActionResult gets hooked up
-        // from Lacros.
-        appNode.hitTest(this.mouseX_, this.mouseY_, EventType.HOVER);
-        this.expectingHoverCount_++;
-        this.lastHoverRequested_ = new Date();
+        // tree so hit tests will be delivered to it properly.
+        this.runHitTest(false, appNode);
       } else {
         // Otherwise, we're in ARC++, which still requires a synthesized mouse
         // event.
