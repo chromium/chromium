@@ -668,6 +668,14 @@ Polymer({
     }
     const type = this.managedProperties_.type;
     this.networkConfig_.getDeviceStateList().then(response => {
+      // If there is no GUID, the page was closed between requesting the device
+      // state and receiving it. If this occurs, there is no need to process the
+      // response. Note that if this subpage is reopened later, we'll request
+      // this data again.
+      if (!this.guid) {
+        return;
+      }
+
       const devices = response.result;
       const newDeviceState =
           devices.find(device => device.type === type) || null;

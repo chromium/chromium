@@ -64,6 +64,9 @@
       serviceGuid: '',
     };
 
+    /** @type {!Function} */
+    this.beforeGetDeviceStateList = null;
+
     this.resetForTest();
   }
 
@@ -375,6 +378,10 @@
           devices.push(state);
         }
       });
+      if (this.beforeGetDeviceStateList) {
+        this.beforeGetDeviceStateList();
+        this.beforeGetDeviceStateList = null;
+      }
       this.methodCalled('getDeviceStateList');
       resolve({result: devices});
     });

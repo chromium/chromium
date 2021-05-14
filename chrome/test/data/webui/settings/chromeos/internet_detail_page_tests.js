@@ -470,6 +470,37 @@ suite('InternetDetailPage', function() {
       });
     });
 
+    // Regression test for https://crbug.com/1201449.
+    test('Page closed while device is updating', function() {
+      init();
+
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      mojoApi_.setDeviceStateForTest({
+        type: mojom.NetworkType.kCellular,
+        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+        scanning: true,
+      });
+
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+
+      return flushAsync().then(() => {
+        // Close the page as soon as getDeviceStateList() is invoked, before the
+        // callback returns.
+        mojoApi_.beforeGetDeviceStateList = () => {
+          internetDetailPage.close();
+        };
+
+        mojoApi_.onDeviceStateListChanged();
+
+        return flushAsync();
+      });
+    });
+
     test('Cellular roaming subtext', async function() {
       init();
       const mojom = chromeos.networkConfig.mojom;
