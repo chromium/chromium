@@ -127,19 +127,12 @@ void DoSplitviewClipRectAnimation(
 // snapped windows based on the MRU windows snapped states.
 void MaybeRestoreSplitView(bool refresh_snapped_windows);
 
-// Returns true if we allow dragging an overview window to snap to split view in
-// clamshell mode.
-ASH_EXPORT bool IsClamshellSplitViewModeEnabled();
-
-// Checks multi-display support for overview and split view.
-ASH_EXPORT bool AreMultiDisplayOverviewAndSplitViewEnabled();
-
 // Returns true if split view mode is supported.
 ASH_EXPORT bool ShouldAllowSplitView();
 
 // Displays a toast notifying users the application selected for split view is
 // not compatible.
-ASH_EXPORT void ShowAppCannotSnapToast();
+void ShowAppCannotSnapToast();
 
 // Calculates the snap position for a dragged window at |location_in_screen|,
 // ignoring any properties of the window itself. The |root_window| is of the
@@ -151,7 +144,7 @@ ASH_EXPORT void ShowAppCannotSnapToast();
 // it's dragged into a suitable edge of the work area of |root_window| (i.e.,
 // |horizontal_edge_inset| if dragged horizontally to snap, or
 // |vertical_edge_inset| if dragged vertically).
-ASH_EXPORT SplitViewController::SnapPosition GetSnapPositionForLocation(
+SplitViewController::SnapPosition GetSnapPositionForLocation(
     aura::Window* root_window,
     const gfx::Point& location_in_screen,
     const base::Optional<gfx::Point>& initial_location_in_screen,

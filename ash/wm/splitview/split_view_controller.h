@@ -97,9 +97,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // window and it does not matter. For code that only applies to tablet mode,
   // you may simply use the primary root (see |Shell::GetPrimaryRootWindow|).
   // The user actually can go to the display settings while in tablet mode and
-  // choose extend; we just are not yet trying to support it really well. When
-  // the |ash::features::kMultiDisplayOverviewAndSplitView| feature flag is
-  // disabled, |window| is ignored as there is only one |SplitViewController|.
+  // choose extend; we just are not yet trying to support it really well.
   static SplitViewController* Get(const aura::Window* window);
 
   // The return values of these two functions together indicate what actual

@@ -275,8 +275,8 @@ class WindowCycleView : public views::WidgetDelegateView,
                         public ui::ImplicitAnimationObserver,
                         public ui::CompositorAnimationObserver {
  public:
-  explicit WindowCycleView(aura::Window* root_window,
-                           const WindowCycleList::WindowList& windows)
+  WindowCycleView(aura::Window* root_window,
+                  const WindowCycleList::WindowList& windows)
       : root_window_(root_window) {
     const bool is_interactive_alt_tab_mode_allowed =
         Shell::Get()

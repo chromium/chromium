@@ -134,7 +134,32 @@ int GetOffsetY(int offset) {
   return offset;
 }
 
+const WindowCycleList* GetCycleList() {
+  return Shell::Get()->window_cycle_controller()->window_cycle_list();
+}
+
 }  // namespace
+
+// Wrapper for WindowCycleList that exposes internal state to test functions.
+class WindowCycleListTestApi {
+ public:
+  explicit WindowCycleListTestApi(const WindowCycleList* cycle_list)
+      : cycle_list_(cycle_list) {}
+  WindowCycleListTestApi(const WindowCycleListTestApi&) = delete;
+  WindowCycleListTestApi& operator=(const WindowCycleListTestApi&) = delete;
+  ~WindowCycleListTestApi() = default;
+
+  const aura::Window::Windows& windows() const { return cycle_list_->windows_; }
+
+  const views::Widget* widget() const { return cycle_list_->cycle_ui_widget_; }
+
+  WindowCycleView* cycle_view() const { return cycle_list_->cycle_view_; }
+
+  int current_index() const { return cycle_list_->current_index_; }
+
+ private:
+  const WindowCycleList* const cycle_list_;
+};
 
 using aura::Window;
 using aura::test::CreateTestWindowWithId;
@@ -157,56 +182,35 @@ class WindowCycleControllerTest : public AshTestBase {
   }
 
   const aura::Window::Windows GetWindows(WindowCycleController* controller) {
-    return controller->window_cycle_list()->windows();
+    return WindowCycleListTestApi(controller->window_cycle_list()).windows();
   }
 
   const views::Widget* GetWindowCycleListWidget() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->widget();
+    return WindowCycleListTestApi(GetCycleList()).widget();
   }
 
   const views::View::Views& GetWindowCycleItemViews() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetWindowCycleItemViewsForTesting();
+    return GetCycleList()->GetWindowCycleItemViewsForTesting();
   }
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetWindowCycleTabSliderButtonsForTesting();
+    return GetCycleList()->GetWindowCycleTabSliderButtonsForTesting();
   }
 
   const views::Label* GetWindowCycleNoRecentItemsLabel() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetWindowCycleNoRecentItemsLabelForTesting();
+    return GetCycleList()->GetWindowCycleNoRecentItemsLabelForTesting();
   }
 
   const aura::Window* GetTargetWindow() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetTargetWindowForTesting();
+    return GetCycleList()->GetTargetWindowForTesting();
   }
 
   bool CycleViewExists() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->cycle_view_for_testing();
+    return WindowCycleListTestApi(GetCycleList()).cycle_view();
   }
 
   int GetCurrentIndex() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->current_index_for_testing();
+    return WindowCycleListTestApi(GetCycleList()).current_index();
   }
 
   void CompleteCycling(WindowCycleController* controller) {
@@ -2851,28 +2855,19 @@ class MultiUserWindowCycleControllerTest
   }
 
   const aura::Window::Windows GetWindows(WindowCycleController* controller) {
-    return controller->window_cycle_list()->windows();
+    return WindowCycleListTestApi(controller->window_cycle_list()).windows();
   }
 
   const views::View::Views& GetWindowCycleItemViews() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetWindowCycleItemViewsForTesting();
+    return GetCycleList()->GetWindowCycleItemViewsForTesting();
   }
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetWindowCycleTabSliderButtonsForTesting();
+    return GetCycleList()->GetWindowCycleTabSliderButtonsForTesting();
   }
 
   const aura::Window* GetTargetWindow() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->GetTargetWindowForTesting();
+    return GetCycleList()->GetTargetWindowForTesting();
   }
 
   void CompleteCycling(WindowCycleController* controller) {

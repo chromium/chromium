@@ -138,8 +138,7 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   }
 
   // Activate the target desk and take a screenshot.
-  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
-  CHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  DCHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
   PrepareDeskForScreenshot(new_ending_desk_index);
   for (auto* animator : pending_animators)
     animator->TakeEndingDeskScreenshot();

@@ -100,18 +100,13 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
     user_did_accept_ = user_did_accept;
   }
 
-  bool HasWindowTargeter() { return !!window_targeter_; }
-
  private:
-  friend class WindowCycleControllerTest;
-  friend class MultiUserWindowCycleControllerTest;
-  friend class InteractiveWindowCycleListGestureHandlerTest;
   friend class ModeSelectionWindowCycleControllerTest;
+  friend class MultiUserWindowCycleControllerTest;
+  friend class WindowCycleListTestApi;
+  friend class WindowCycleControllerTest;
 
   static void DisableInitialDelayForTesting();
-
-  const WindowList& windows() const { return windows_; }
-  const views::Widget* widget() const { return cycle_ui_widget_; }
 
   // aura::WindowObserver:
   // There is a chance a window is destroyed, for example by JS code. We need to
@@ -165,10 +160,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns whether the cycle view is animating.
   bool IsCycleViewAnimatingForTesting() const;
-
-  WindowCycleView* cycle_view_for_testing() const { return cycle_view_; }
-
-  int current_index_for_testing() const { return current_index_; }
 
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the

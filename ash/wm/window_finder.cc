@@ -53,14 +53,15 @@ aura::Window* GetTopmostWindowAtPointWithinWindow(
     const gfx::Point& screen_point,
     aura::Window* window,
     aura::WindowTargeter* targeter,
-    const std::set<aura::Window*> ignore) {
+    const std::set<aura::Window*>& ignore) {
   if (!window->IsVisible())
     return nullptr;
 
-  if (window->GetId() == ash::kShellWindowId_PhantomWindow ||
-      window->GetId() == ash::kShellWindowId_OverlayContainer ||
-      window->GetId() == ash::kShellWindowId_MouseCursorContainer)
+  if (window->GetId() == kShellWindowId_PhantomWindow ||
+      window->GetId() == kShellWindowId_OverlayContainer ||
+      window->GetId() == kShellWindowId_MouseCursorContainer) {
     return nullptr;
+  }
 
   if (IsTopLevelWindow(window)) {
     if (IsWindowTargeted(window, screen_point, targeter))
@@ -88,12 +89,11 @@ aura::Window* GetTopmostWindowAtPointWithinWindow(
 aura::Window* GetToplevelWindowInOverviewAtPoint(
     const gfx::Point& screen_point,
     const std::set<aura::Window*>& ignore) {
-  ash::OverviewController* overview_controller =
-      ash::Shell::Get()->overview_controller();
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession())
     return nullptr;
 
-  ash::OverviewGrid* grid =
+  OverviewGrid* grid =
       overview_controller->overview_session()->GetGridWithRootWindow(
           window_util::GetRootWindowAt(screen_point));
   if (!grid)
