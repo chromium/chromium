@@ -126,7 +126,7 @@ class MockInputApi(object):
       if file_.LocalPath() == filename:
         return '\n'.join(file_.NewContents())
     # Otherwise, file is not in our mock API.
-    raise IOError, "No such file or directory: '%s'" % filename
+    raise IOError("No such file or directory: '%s'" % filename)
 
 
 class MockOutputApi(object):
