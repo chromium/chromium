@@ -1606,6 +1606,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br-disable-ng-layout.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableFontSize) {
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
+                       AccessibilityContenteditableFontSize) {
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
+}
+
 #if defined(OS_ANDROID) || defined(OS_MAC)
 // Flaky failures: http://crbug.com/445929.
 // Mac failures: http://crbug.com/571712.

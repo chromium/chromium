@@ -1096,10 +1096,21 @@ void NGInlineCursor::MoveToNextInlineLeafOnLine() {
   NGInlineCursor cursor = CursorForDescendants();
   cursor.MoveTo(last_item);
   // Note: AX requires this for AccessibilityLayoutTest.NextOnLine.
-  if (!cursor.Current().IsInlineLeaf())
+  // If the cursor is on a container, move to the next content
+  // not within the container.
+  if (cursor.Current().IsInlineLeaf()) {
     cursor.MoveToNextInlineLeaf();
-  cursor.MoveToNextInlineLeaf();
+  } else {
+    // Skip over descendants.
+    cursor.MoveToNextSkippingChildren();  // Skip over descendants.
+    // Ensure that a leaf is returned.
+    if (cursor.Current() && !cursor.Current().IsInlineLeaf())
+      cursor.MoveToNextInlineLeaf();
+  }
   MoveTo(cursor);
+  DCHECK(!cursor.Current() || cursor.Current().IsInlineLeaf())
+      << "Must return an empty or inline leaf position, returned: "
+      << cursor.CurrentMutableLayoutObject();
 }
 
 void NGInlineCursor::MoveToNextLine() {
@@ -1133,9 +1144,6 @@ void NGInlineCursor::MoveToPreviousInlineLeafOnLine() {
   MoveToContainingLine();
   NGInlineCursor cursor = CursorForDescendants();
   cursor.MoveTo(first_item);
-  // Note: AX requires this for AccessibilityLayoutTest.NextOnLine.
-  if (!cursor.Current().IsInlineLeaf())
-    cursor.MoveToPreviousInlineLeaf();
   cursor.MoveToPreviousInlineLeaf();
   MoveTo(cursor);
 }

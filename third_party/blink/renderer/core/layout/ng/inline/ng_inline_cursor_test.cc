@@ -575,6 +575,28 @@ TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
       << "we don't have 'abc' and items in second line.";
 }
 
+TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
+  // Never return a descendant for AXLayoutObject::NextOnLine().
+  // Instead, if NextOnLine() is called on a container, return the first
+  // content from a sibling subtree.
+  NGInlineCursor cursor = SetupCursor(
+      "<div id=root>"
+      "<span id=start>"
+      "Test<span style=font-size:13px>descendant</span>"
+      "</span>"
+      "<span>next</span>"
+      "</div>");
+  cursor.MoveToIncludingCulledInline(
+      *GetElementById("start")->GetLayoutObject());
+  Vector<String> list;
+  while (cursor) {
+    list.push_back(ToDebugString(cursor));
+    cursor.MoveToNextInlineLeafOnLine();
+  }
+  EXPECT_THAT(list, ElementsAre("#start", "next"))
+      << "next on line doesn't return descendant.";
+}
+
 TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
@@ -1028,8 +1050,30 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
     list.push_back(ToDebugString(cursor));
     cursor.MoveToPreviousInlineLeafOnLine();
   }
-  EXPECT_THAT(list, ElementsAre("#start", "ABC"))
+  EXPECT_THAT(list, ElementsAre("#start", "", "ABC"))
       << "We don't have 'DEF' and items in first line.";
+}
+
+TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
+  // Never return a descendant for AXLayoutObject::PreviousOnLine().
+  // Instead, if PreviousOnLine() is called on a container, return a previpus
+  // item from the previous siblings subtree.
+  NGInlineCursor cursor = SetupCursor(
+      "<div id=root>"
+      "<span>previous</span>"
+      "<span id=start>"
+      "Test<span style=font-size:13px>descendant</span>"
+      "</span>"
+      "</div>");
+  cursor.MoveToIncludingCulledInline(
+      *GetElementById("start")->GetLayoutObject());
+  Vector<String> list;
+  while (cursor) {
+    list.push_back(ToDebugString(cursor));
+    cursor.MoveToPreviousInlineLeafOnLine();
+  }
+  EXPECT_THAT(list, ElementsAre("#start", "previous"))
+      << "previous on line doesn't return descendant.";
 }
 
 TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {

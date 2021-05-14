@@ -736,7 +736,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
     if (cursor)
       break;
 
-    // No cursor found: will try get cursor from first layout child.
+    // No cursor found: will try getting the cursor from the last layout child.
     // This can happen on an inline element.
     LayoutObject* layout_child = layout_object->SlowLastChild();
     if (!layout_child)
@@ -769,7 +769,23 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
   }
 
   // Fallback: Use AX parent's next on line.
-  return ax_object.ParentObject()->NextOnLine();
+  AXObject* ax_parent = ax_object.ParentObject();
+  AXObject* ax_result = ax_parent->NextOnLine();
+  if (!ax_result)
+    return nullptr;
+
+#if DCHECK_IS_ON()
+  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object)) {
+    DCHECK_NE(ax_result->ParentObject(), &ax_object)
+        << "NextOnLine() must not point to a child of the current object. "
+           "Because inline objects without try to return a result from their "
+           "parents, using a descendant can cause a previous position to be "
+           "reused, which appears as a loop in the nextOnLine data, and "
+           "can cause an infinite loop in consumers of the nextOnLine data";
+  }
+#endif
+
+  return ax_result;
 }
 
 AXObject* AXLayoutObject::NextOnLine() const {
@@ -902,8 +918,24 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
     return nullptr;
   }
 
-  // Fallback: Use AX parent's next on line.
-  return ax_object.ParentObject()->PreviousOnLine();
+  // Fallback: Use AX parent's previous on line.
+  AXObject* ax_parent = ax_object.ParentObject();
+  AXObject* ax_result = ax_parent->PreviousOnLine();
+  if (!ax_result)
+    return nullptr;
+
+#if DCHECK_IS_ON()
+  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object)) {
+    DCHECK_NE(ax_result->ParentObject(), &ax_object)
+        << "PreviousOnLine() must not point to a child of the current object. "
+           "Because inline objects without try to return a result from their "
+           "parents, using a descendant can cause a previous position to be "
+           "reused, which appears as a loop in the previousOnLine data, and "
+           "can cause an infinite loop in consumers of the previousOnLine data";
+  }
+#endif
+
+  return ax_result;
 }
 
 AXObject* AXLayoutObject::PreviousOnLine() const {

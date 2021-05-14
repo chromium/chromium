@@ -1,0 +1,15 @@
+<!--
+@BLINK-ALLOW:next*
+@BLINK-ALLOW:prev*
+@BLINK-ALLOW:class*
+-->
+<!-- Adding a font-size rule prevents layout from culling descendant inline text
+boxes, altering the code paths taken by nextOnLine/previousOnLine.
+For performance and memory consumption, LayoutInline culls (ignores)
+inline-boxes during line layout because they don't actually impact layout. -->
+<style>
+  .inner { font-size:13px; }
+</style>
+<div contenteditable>
+<span id="outer" class="outer">Test<span id="inner" class="inner">x</span></span>y
+</div>

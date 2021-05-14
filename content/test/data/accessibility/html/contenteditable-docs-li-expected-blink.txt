@@ -94,10 +94,10 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++++++inlineTextBox name='9. ' nextOnLineId=inlineTextBox:"Hello"
 ++++++++++++staticText name='Hello' previousOnLineId=inlineTextBox:"9. "
 ++++++++++++++inlineTextBox name='Hello' previousOnLineId=inlineTextBox:"9. "
-++++++++++++staticText name=' '
+++++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
 ++++++++++++staticText name='world this'
 ++++++++++++++inlineTextBox name='world this'
-++++++++++++staticText name=' '
+++++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++++staticText name='is just like docs, and your kitchen sink'
 ++++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
 ++++++++paragraph isLineBreakingObject=true
