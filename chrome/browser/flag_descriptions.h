@@ -2469,6 +2469,9 @@ extern const char kEnableGoogleAssistantAecDescription[];
 extern const char kEnableHeuristicStylusPalmRejectionName[];
 extern const char kEnableHeuristicStylusPalmRejectionDescription[];
 
+extern const char kEnableInputInDiagnosticsAppName[];
+extern const char kEnableInputInDiagnosticsAppDescription[];
+
 extern const char kEnableInputNoiseCancellationUiName[];
 extern const char kEnableInputNoiseCancellationUiDescription[];
 

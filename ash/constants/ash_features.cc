@@ -290,6 +290,10 @@ const base::Feature kEnableDnsProxy{"EnableDnsProxy",
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the input device cards will be shown in the diagnostics app.
+const base::Feature kEnableInputInDiagnosticsApp{
+    "EnableInputInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables LocalSearchService to be initialized.
 const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -843,6 +847,10 @@ bool IsGaiaCloseViewMessageEnabled() {
 
 bool IsGaiaReauthEndpointEnabled() {
   return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
+}
+
+bool IsInputInDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableInputInDiagnosticsApp);
 }
 
 bool IsInputNoiseCancellationUiEnabled() {

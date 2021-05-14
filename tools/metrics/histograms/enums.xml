@@ -45849,6 +45849,7 @@ from previous Chrome versions.
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
+  <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
   <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
   <int value="-943304570" label="PaintHolding:enabled"/>
@@ -48584,6 +48585,7 @@ from previous Chrome versions.
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
+  <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
   <int value="1464610065" label="TabbedAppOverflowMenuRegroup:disabled"/>
   <int value="1465624446" label="disable-zero-copy"/>
   <int value="1466380480" label="enable-device-discovery-notifications"/>

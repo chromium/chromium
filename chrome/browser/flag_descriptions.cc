@@ -4274,6 +4274,11 @@ const char kEnableHeuristicStylusPalmRejectionDescription[] =
     "Enable additional heuristic palm rejection logic when interacting with "
     "stylus usage. Not intended for all devices.";
 
+const char kEnableInputInDiagnosticsAppName[] =
+    "Enable input device cards in the Diagnostics App";
+const char kEnableInputInDiagnosticsAppDescription[] =
+    "Enable input device cards in the Diagnostics App";
+
 const char kEnableInputNoiseCancellationUiName[] =
     "Enable Input Noise Cancellation UI.";
 const char kEnableInputNoiseCancellationUiDescription[] =

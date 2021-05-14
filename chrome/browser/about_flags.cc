@@ -7212,7 +7212,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          blink::features::
-             kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes)}
+             kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes)},
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-input-in-diagnostics-app",
+     flag_descriptions::kEnableInputInDiagnosticsAppName,
+     flag_descriptions::kEnableInputInDiagnosticsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnableInputInDiagnosticsApp)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

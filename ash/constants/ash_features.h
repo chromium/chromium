@@ -137,6 +137,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableDnsProxy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableHostnameSetting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableInputInDiagnosticsApp;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableNetworkingInDiagnosticsApp;
@@ -372,6 +374,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaCloseViewMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImeSandboxEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKerberosSettingsSectionEnabled();
