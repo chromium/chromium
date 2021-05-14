@@ -131,9 +131,12 @@ void HoldingSpaceKeyedService::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+// TODO(crbug.com/1208910): Support incognito.
 void HoldingSpaceKeyedService::AddPrintedPdf(
-    const base::FilePath& printed_pdf_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
+    const base::FilePath& printed_pdf_path,
+    bool from_incognito_profile) {
+  if (!from_incognito_profile)
+    AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
 }
 
 void HoldingSpaceKeyedService::AddPinnedFiles(

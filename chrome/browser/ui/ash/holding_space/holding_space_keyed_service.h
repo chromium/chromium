@@ -63,7 +63,8 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver);
 
   // crosapi::mojom::HoldingSpaceKeyedService:
-  void AddPrintedPdf(const base::FilePath& printed_pdf_path) override;
+  void AddPrintedPdf(const base::FilePath& printed_pdf_path,
+                     bool from_incognito_profile) override;
 
   // Adds multiple pinned file items identified by the provided file system
   // URLs.

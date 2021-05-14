@@ -1617,7 +1617,8 @@ class HoldingSpaceKeyedServiceAddItemTest
                      profile, file_path))});
         break;
       case HoldingSpaceItem::Type::kPrintedPdf:
-        holding_space_service->AddPrintedPdf(file_path);
+        holding_space_service->AddPrintedPdf(file_path,
+                                             /*from_incognito_profile=*/false);
         break;
       case HoldingSpaceItem::Type::kScreenRecording:
         holding_space_service->AddScreenRecording(file_path);
@@ -1817,9 +1818,11 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->text());
 }
 
-// Base class for tests of print-to-PDF integration.
+// Base class for tests of print-to-PDF integration. Parameterized by whether
+// tests should use an incognito browser.
 class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
-    : public HoldingSpaceKeyedServiceTest {
+    : public HoldingSpaceKeyedServiceTest,
+      public testing::WithParamInterface<bool> {
  public:
   // Starts a job to print an empty PDF to the specified `file_path`.
   // NOTE: This method will not return until the print job completes.
@@ -1837,22 +1840,49 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
     run_loop.Run();
   }
 
+  // Returns true if the test should use an incognito browser, false otherwise.
+  bool UseIncognitoBrowser() const { return GetParam(); }
+
  private:
   // HoldingSpaceKeyedServiceTest:
   void SetUp() override {
     HoldingSpaceKeyedServiceTest::SetUp();
 
     // Create the PDF printer handler.
+    Browser* browser = GetBrowserForPdfPrinterHandler();
     pdf_printer_handler_ = std::make_unique<printing::PdfPrinterHandler>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents(),
+        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
         /*sticky_settings=*/nullptr);
   }
 
+  void TearDown() override {
+    incognito_browser_.reset();
+    HoldingSpaceKeyedServiceTest::TearDown();
+  }
+
+  Browser* GetBrowserForPdfPrinterHandler() {
+    if (!UseIncognitoBrowser())
+      return browser();
+    if (!incognito_browser_) {
+      incognito_browser_ =
+          CreateBrowserWithTestWindowForParams(Browser::CreateParams(
+              profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+              /*user_gesture=*/true));
+    }
+    return incognito_browser_.get();
+  }
+
   std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
+  std::unique_ptr<Browser> incognito_browser_;
 };
 
-// Verifies that print-to-PDF adds an associated item to holding space.
-TEST_F(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServicePrintToPdfIntegrationTest,
+                         testing::Bool());
+
+// Verifies that print-to-PDF adds an associated item to holding space unless
+// the print job was from an incognito profile.
+TEST_P(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> mount_point =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -1871,7 +1901,14 @@ TEST_F(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
   base::FilePath file_path = mount_point->GetRootPath().Append("foo.pdf");
   StartPrintToPdfAndWaitForSave(u"job_title", file_path);
 
-  // Verify that the holding space is now populated with the expected item.
+  // If the print job was from an incognito profile, no item should have been
+  // added to holding space.
+  if (UseIncognitoBrowser()) {
+    ASSERT_EQ(model->items().size(), 0u);
+    return;
+  }
+
+  // Otherwise, verify that holding space is populated with the expected item.
   ASSERT_EQ(model->items().size(), 1u);
   EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kPrintedPdf);
   EXPECT_EQ(model->items()[0]->file_path(), file_path);

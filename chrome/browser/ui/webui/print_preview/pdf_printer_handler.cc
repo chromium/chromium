@@ -164,6 +164,7 @@ void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
 
 // Callback that runs after `PrintToPdfCallback()` returns.
 void OnPdfPrintedCallback(const AccountId& account_id,
+                          bool from_incognito_profile,
                           const base::FilePath& path,
                           base::OnceClosure pdf_file_saved_closure) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -174,13 +175,13 @@ void OnPdfPrintedCallback(const AccountId& account_id,
         ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
             profile);
     if (holding_space_keyed_service)
-      holding_space_keyed_service->AddPrintedPdf(path);
+      holding_space_keyed_service->AddPrintedPdf(path, from_incognito_profile);
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* service = chromeos::LacrosService::Get();
   if (service && service->IsAvailable<crosapi::mojom::HoldingSpaceService>()) {
     service->GetRemote<crosapi::mojom::HoldingSpaceService>()->AddPrintedPdf(
-        path);
+        path, from_incognito_profile);
   }
 #endif
   if (!pdf_file_saved_closure.is_null())
@@ -440,7 +441,8 @@ void PdfPrinterHandler::PostPrintToPdfTask() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&PrintToPdfCallback, print_data_, print_to_pdf_path_),
       base::BindOnce(&OnPdfPrintedCallback, GetAccountId(profile_),
-                     print_to_pdf_path_, std::move(pdf_file_saved_closure_)));
+                     profile_->IsIncognitoProfile(), print_to_pdf_path_,
+                     std::move(pdf_file_saved_closure_)));
 
   print_to_pdf_path_.clear();
 

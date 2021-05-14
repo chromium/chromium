@@ -25,7 +25,10 @@ namespace {
 class MockHoldingSpaceService : public crosapi::mojom::HoldingSpaceService {
  public:
   // crosapi::mojom::HoldingSpaceService:
-  MOCK_METHOD(void, AddPrintedPdf, (const base::FilePath&), (override));
+  MOCK_METHOD(void,
+              AddPrintedPdf,
+              (const base::FilePath& file_path, bool from_incognito_profile),
+              (override));
 };
 
 }  // namespace
@@ -71,9 +74,10 @@ class HoldingSpaceServiceBrowserTest : public InProcessBrowserTest {
 // HoldingSpaceServicePrintToPdfIntegrationBrowserTest -------------------------
 
 // Base class for tests of print-to-PDF integration with the holding space
-// service.
+// service. Parameterized by whether tests should use an incognito browser.
 class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
-    : public HoldingSpaceServiceBrowserTest {
+    : public HoldingSpaceServiceBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   // Starts a job to print an empty PDF to the specified `file_path`.
   // NOTE: This method will not return until the print job completes.
@@ -91,6 +95,9 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
     run_loop.Run();
   }
 
+  // Returns true if the test should use an incognito browser, false otherwise.
+  bool UseIncognitoBrowser() const { return GetParam(); }
+
  private:
   // HoldingSpaceServiceBrowserTest:
   void SetUpOnMainThread() override {
@@ -102,17 +109,30 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
       return;
 
     // Create the PDF printer handler.
+    Browser* browser = GetBrowserForPdfPrinterHandler();
     pdf_printer_handler_ = std::make_unique<printing::PdfPrinterHandler>(
-        browser()->profile(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
         /*sticky_settings=*/nullptr);
   }
 
+  Browser* GetBrowserForPdfPrinterHandler() {
+    if (!UseIncognitoBrowser())
+      return browser();
+    if (!incognito_browser_)
+      incognito_browser_ = CreateIncognitoBrowser(browser()->profile());
+    return incognito_browser_;
+  }
+
   std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
+  Browser* incognito_browser_ = nullptr;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceServicePrintToPdfIntegrationBrowserTest,
+                         testing::Bool());
+
 // Verifies that print-to-PDF adds an associated item to holding space.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceServicePrintToPdfIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(HoldingSpaceServicePrintToPdfIntegrationBrowserTest,
                        AddPrintedPdfItem) {
   // If holding space service interface is not available on this version of
   // ash-chrome, this test suite will no-op.
@@ -128,6 +148,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceServicePrintToPdfIntegrationBrowserTest,
   // expected that this will result in an interaction with the holding space
   // `service()` to create a printed PDF item.
   base::FilePath file_path = temp_dir.GetPath().Append("foo.pdf");
-  EXPECT_CALL(service(), AddPrintedPdf(testing::Eq(file_path)));
+  EXPECT_CALL(service(), AddPrintedPdf(testing::Eq(file_path),
+                                       /*from_incognito_profile=*/testing::Eq(
+                                           UseIncognitoBrowser())));
   StartPrintToPdfAndWaitForSave(u"job_title", file_path);
 }
