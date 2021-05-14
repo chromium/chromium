@@ -49,6 +49,15 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   gfx::ColorTransform* GetColorTransformForTesting();
 
+  // Exposes the internal function ValidateClapProperty() for testing. Uses only
+  // the following members of |image|: image->clap, image->width, image->height,
+  // image->yuvFormat.
+  static bool ValidateClapPropertyForTesting(const avifImage* image,
+                                             int& clap_width,
+                                             int& clap_height,
+                                             int& clap_leftmost,
+                                             int& clap_topmost);
+
  private:
   struct AvifIOData {
     blink::SegmentReader* reader = nullptr;
@@ -83,6 +92,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.
   void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
 
+  // Crops |image| and stores the result in |cropped_image|.
+  void CropImage(const avifImage* image, avifImage& cropped_image);
+
   // Renders |image| in |buffer|. Returns whether |image| was rendered
   // successfully.
   bool RenderImage(const avifImage* image, ImageFrame* buffer);
@@ -92,6 +104,13 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   void ColorCorrectImage(ImageFrame* buffer);
 
   bool have_parsed_current_data_ = false;
+  // The image width and height (before cropping, if any) from the container.
+  //
+  // Note: container_width_, container_height_, decoder_->image->width, and
+  // decoder_->image->height are the width and height of the full image. Size()
+  // returns the size of the cropped image (the clean aperture).
+  uint32_t container_width_ = 0;
+  uint32_t container_height_ = 0;
   // The bit depth from the container.
   uint8_t bit_depth_ = 0;
   bool decode_to_half_float_ = false;
@@ -101,6 +120,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+  // The leftmost pixel and topmost line of the clean aperture. Used only when
+  // the image has a 'clap' (clean aperture) property.
+  int clap_leftmost_ = 0;
+  int clap_topmost_ = 0;
   std::unique_ptr<avifDecoder, void (*)(avifDecoder*)> decoder_{nullptr,
                                                                 nullptr};
   avifIO avif_io_ = {};
