@@ -41,7 +41,7 @@ struct BidiIsolatedRun {
   BidiIsolatedRun(LineLayoutItem object,
                   unsigned position,
                   LineLayoutItem& root,
-                  BidiRun* run_to_replace,
+                  BidiRun& run_to_replace,
                   unsigned char level)
       : object(object),
         root(root),
@@ -49,11 +49,9 @@ struct BidiIsolatedRun {
         position(position),
         level(level) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(run_to_replace); }
-
   LineLayoutItem object;
   LineLayoutItem root;
-  Member<BidiRun> run_to_replace;
+  BidiRun& run_to_replace;
   unsigned position;
   unsigned char level;
 };
@@ -602,7 +600,7 @@ inline BidiRun* InlineBidiResolver::AddTrailingRun(
     BidiContext* context,
     TextDirection direction) const {
   DCHECK(context);
-  BidiRun* new_trailing_run = MakeGarbageCollected<BidiRun>(
+  BidiRun* new_trailing_run = new BidiRun(
       context->Override(), context->Level(), start, stop,
       run->line_layout_item_, WTF::unicode::kOtherNeutral, context->Dir());
   if (direction == TextDirection::kLtr)
@@ -663,15 +661,15 @@ static inline BidiRun* AddPlaceholderRunForIsolatedInline(
     unsigned pos,
     LineLayoutItem root) {
   DCHECK(obj);
-  BidiRun* isolated_run = MakeGarbageCollected<BidiRun>(
-      resolver.Context()->Override(), resolver.Context()->Level(), pos, pos,
-      obj, resolver.Dir(), resolver.Context()->Dir());
+  BidiRun* isolated_run =
+      new BidiRun(resolver.Context()->Override(), resolver.Context()->Level(),
+                  pos, pos, obj, resolver.Dir(), resolver.Context()->Dir());
   resolver.Runs().AddRun(isolated_run);
   // FIXME: isolatedRuns() could be a hash of object->run and then we could
   // cheaply ASSERT here that we didn't create multiple objects for the same
   // inline.
   resolver.IsolatedRuns().push_back(BidiIsolatedRun(
-      obj, pos, root, isolated_run, resolver.Context()->Level()));
+      obj, pos, root, *isolated_run, resolver.Context()->Level()));
   return isolated_run;
 }
 
@@ -679,9 +677,9 @@ static inline BidiRun* CreateRun(int start,
                                  int end,
                                  LineLayoutItem obj,
                                  InlineBidiResolver& resolver) {
-  return MakeGarbageCollected<BidiRun>(
-      resolver.Context()->Override(), resolver.Context()->Level(), start, end,
-      obj, resolver.Dir(), resolver.Context()->Dir());
+  return new BidiRun(resolver.Context()->Override(),
+                     resolver.Context()->Level(), start, end, obj,
+                     resolver.Dir(), resolver.Context()->Dir());
 }
 
 enum AppendRunBehavior { kAppendingFakeRun, kAppendingRunsForObject };

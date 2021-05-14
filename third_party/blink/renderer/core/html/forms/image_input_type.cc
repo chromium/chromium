@@ -109,11 +109,11 @@ LayoutObject* ImageInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   if (use_fallback_content_) {
     if (style.Display() == EDisplay::kInline)
-      return MakeGarbageCollected<LayoutInline>(&GetElement());
+      return new LayoutInline(&GetElement());
 
     return LayoutObjectFactory::CreateBlockFlow(GetElement(), style, legacy);
   }
-  LayoutImage* image = MakeGarbageCollected<LayoutImage>(&GetElement());
+  LayoutImage* image = new LayoutImage(&GetElement());
   image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
   return image;
 }

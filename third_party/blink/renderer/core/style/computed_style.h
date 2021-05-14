@@ -147,7 +147,7 @@ class WebkitTextStrokeColor;
 // Blink. It acts as a container where the computed value of every CSS property
 // can be stored and retrieved:
 //
-//   auto* style = ComputedStyle::CreateInitialStyleSingleton();
+//   auto style = ComputedStyle::CreateInitialStyleSingleton();
 //   style->SetDisplay(EDisplay::kNone); //'display' keyword property
 //   style->Display();
 //
@@ -196,8 +196,8 @@ class WebkitTextStrokeColor;
 //
 // Since this class is huge, do not mark all of it CORE_EXPORT.  Instead,
 // export only the methods you need below.
-class ComputedStyle final : public GarbageCollected<ComputedStyle>,
-                            public ComputedStyleBase {
+class ComputedStyle : public ComputedStyleBase,
+                      public RefCounted<ComputedStyle> {
   // Needed to allow access to private/protected getters of fields to allow diff
   // generation
   friend class ComputedStyleBase;
@@ -273,7 +273,7 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   friend class StyleResolver;
 
  protected:
-  mutable Member<StyleCachedData> cached_data_;
+  mutable std::unique_ptr<StyleCachedData> cached_data_;
 
   StyleCachedData& EnsureCachedData() const;
 
@@ -291,14 +291,13 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
 
   ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
-  CORE_EXPORT void Trace(Visitor*) const;
 
   // Create the per-document/context singleton that is used for shallow-copying
   // into new instances.
-  CORE_EXPORT static ComputedStyle* CreateInitialStyleSingleton();
+  CORE_EXPORT static scoped_refptr<ComputedStyle> CreateInitialStyleSingleton();
 
   // Shallow copy into a new instance sharing DataPtrs.
-  CORE_EXPORT static ComputedStyle* Clone(const ComputedStyle&);
+  CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
 
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are
@@ -381,7 +380,8 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(
       PseudoId,
       const AtomicString& pseudo_argument = g_null_atom) const;
-  const ComputedStyle* AddCachedPseudoElementStyle(const ComputedStyle*) const;
+  const ComputedStyle* AddCachedPseudoElementStyle(
+      scoped_refptr<const ComputedStyle>) const;
   void ClearCachedPseudoElementStyles() const;
 
   /**

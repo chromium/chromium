@@ -31,6 +31,8 @@ NGFlexChildIterator::NGFlexChildIterator(const NGBlockNode node) {
                        return c1.order < c2.order;
                      });
   }
+
+  iterator_ = children_.begin();
 }
 
 }  // namespace blink

@@ -140,7 +140,7 @@ void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGFilterElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGResourceFilter>(this);
+  return new LayoutSVGResourceFilter(this);
 }
 
 bool SVGFilterElement::SelfHasRelativeLengths() const {

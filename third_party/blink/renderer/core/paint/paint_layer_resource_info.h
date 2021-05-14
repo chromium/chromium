@@ -65,11 +65,9 @@ class PaintLayerResourceInfo final
 
   void ResourceContentChanged(SVGResource*) override;
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(layer_); }
-
  private:
   // |ClearLayer| must be called before *layer_ becomes invalid.
-  Member<PaintLayer> layer_;
+  PaintLayer* layer_;
   FloatRect filter_reference_box_;
 };
 

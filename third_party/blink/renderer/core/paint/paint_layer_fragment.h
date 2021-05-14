@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -51,8 +50,6 @@ struct PaintLayerFragment {
   DISALLOW_NEW();
 
  public:
-  void Trace(Visitor*) const;
-
   // See |root_fragment_data| for the coordinate space of |layer_bounds|,
   // |background_rect| and |foreground_rect|.
 
@@ -84,18 +81,16 @@ struct PaintLayerFragment {
   // Defines the coordinate space of the above rects:
   // root_fragment_data->LocalBorderBoxProperties().Transform() +
   // root_fragment_data.PaintOffset().
-  Member<const FragmentData> root_fragment_data = nullptr;
+  const FragmentData* root_fragment_data = nullptr;
 
   // The corresponding FragmentData of this structure.
-  Member<const FragmentData> fragment_data = nullptr;
+  const FragmentData* fragment_data = nullptr;
 
-  Member<const NGPhysicalBoxFragment> physical_fragment;
+  const NGPhysicalBoxFragment* physical_fragment = nullptr;
 };
 
-typedef HeapVector<PaintLayerFragment, 1> PaintLayerFragments;
+typedef Vector<PaintLayerFragment, 1> PaintLayerFragments;
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PaintLayerFragment)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_

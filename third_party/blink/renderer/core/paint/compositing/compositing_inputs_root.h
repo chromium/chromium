@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_ROOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_ROOT_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -21,10 +20,8 @@ class CompositingInputsRoot {
   void Update(PaintLayer* new_root_layer);
   void Clear() { root_layer_ = nullptr; }
 
-  void Trace(Visitor* visitor) const;
-
  private:
-  Member<PaintLayer> root_layer_ = nullptr;
+  PaintLayer* root_layer_ = nullptr;
 };
 
 }  // namespace blink

@@ -25,19 +25,18 @@ enum class NGOutlineType;
 
 class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
-  static const NGPhysicalBoxFragment* Create(
+  static scoped_refptr<const NGPhysicalBoxFragment> Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
   // Creates a copy of |other| but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
-  static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
-      const NGPhysicalBoxFragment& other,
-      const base::Optional<PhysicalRect> updated_layout_overflow =
-          base::nullopt);
+  static scoped_refptr<const NGPhysicalBoxFragment>
+  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
+                               const base::Optional<PhysicalRect>
+                                   updated_layout_overflow = base::nullopt);
 
   using MulticolCollection =
-      HeapHashMap<Member<LayoutBox>,
-                  Member<NGMulticolWithPendingOOFs<PhysicalOffset>>>;
+      HashMap<LayoutBox*, NGMulticolWithPendingOOFs<PhysicalOffset>>;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
@@ -58,7 +57,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         const PhysicalRect& layout_overflow,
                         bool recalculate_layout_overflow);
 
-  const NGLayoutResult* CloneAsHiddenForPaint() const;
+  scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
 
   ~NGPhysicalBoxFragment() {
     ink_overflow_.Reset(InkOverflowType());
@@ -66,9 +65,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       ComputeItemsAddress()->~NGFragmentItems();
     if (const_has_rare_data_)
       ComputeRareDataAddress()->~RareData();
+    if (ChildrenValid()) {
+      for (const NGLink& child : Children()) {
+        if (child.fragment)
+          child.fragment->Release();
+      }
+    }
   }
-
-  void TraceAfterDispatch(Visitor* visitor) const;
 
   const NGPhysicalBoxFragment* PostLayout() const;
 
@@ -140,7 +143,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    return ComputeRareDataAddress()->table_collapsed_borders;
+    return ComputeRareDataAddress()->table_collapsed_borders.get();
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*
@@ -199,8 +202,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   OutOfFlowPositionedFragmentainerDescendants() const {
     if (!const_has_rare_data_)
       return base::span<NGPhysicalOOFNodeForFragmentation>();
-    HeapVector<NGPhysicalOOFNodeForFragmentation>& descendants =
-        const_cast<HeapVector<NGPhysicalOOFNodeForFragmentation>&>(
+    Vector<NGPhysicalOOFNodeForFragmentation>& descendants =
+        const_cast<Vector<NGPhysicalOOFNodeForFragmentation>&>(
             ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
   }
@@ -426,23 +429,19 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #endif
 
  private:
-  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
-                                   wtf_size_t num_children,
-                                   bool has_layout_overflow,
-                                   bool has_borders,
-                                   bool has_padding,
-                                   bool has_inflow_bounds,
-                                   bool has_rare_data);
+  static size_t ByteSize(wtf_size_t num_fragment_items,
+                         wtf_size_t num_children,
+                         bool has_layout_overflow,
+                         bool has_borders,
+                         bool has_padding,
+                         bool has_inflow_bounds,
+                         bool has_rare_data);
 
   struct RareData {
-    DISALLOW_NEW();
-
-   public:
     RareData(const RareData&);
     RareData(NGBoxFragmentBuilder*, PhysicalSize size);
-    void Trace(Visitor*) const;
 
-    HeapVector<NGPhysicalOOFNodeForFragmentation>
+    Vector<NGPhysicalOOFNodeForFragmentation>
         oof_positioned_fragmentainer_descendants;
     MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
@@ -450,7 +449,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     // TablesNG rare data.
     PhysicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
-    Member<const NGTableBorders> table_collapsed_borders;
+    scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         table_collapsed_borders_geometry;
     wtf_size_t table_cell_column_index;

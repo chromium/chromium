@@ -42,7 +42,6 @@ class CORE_EXPORT LayoutImageResource
   LayoutImageResource(const LayoutImageResource&) = delete;
   LayoutImageResource& operator=(const LayoutImageResource&) = delete;
   virtual ~LayoutImageResource();
-  virtual void Trace(Visitor* visitor) const;
 
   virtual void Initialize(LayoutObject*);
   virtual void Shutdown();
@@ -73,13 +72,15 @@ class CORE_EXPORT LayoutImageResource
   virtual RespectImageOrientationEnum ImageOrientation() const;
   virtual WrappedImagePtr ImagePtr() const { return cached_image_.Get(); }
 
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(cached_image_); }
+
  protected:
   // Device scale factor for the associated LayoutObject.
   float DeviceScaleFactor() const;
   // Returns an image based on the passed device scale factor.
   static Image* BrokenImage(float device_scale_factor);
 
-  Member<LayoutObject> layout_object_;
+  LayoutObject* layout_object_;
   Member<ImageResourceContent> cached_image_;
 };
 

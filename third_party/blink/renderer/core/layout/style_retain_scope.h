@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_STYLE_RETAIN_SCOPE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -30,7 +29,7 @@ class CORE_EXPORT StyleRetainScope {
   }
 
  private:
-  HeapVector<Member<const ComputedStyle>> styles_retained_during_layout_;
+  Vector<scoped_refptr<const ComputedStyle>> styles_retained_during_layout_;
   StyleRetainScope* parent_;
 };
 

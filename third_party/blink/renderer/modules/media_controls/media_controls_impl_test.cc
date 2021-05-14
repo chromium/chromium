@@ -94,6 +94,17 @@ class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
   WebTimeRanges seekable_;
 };
 
+class MockLayoutObject : public LayoutObject {
+ public:
+  MockLayoutObject(Node* node) : LayoutObject(node) {}
+
+  const char* GetName() const override { return "MockLayoutObject"; }
+  void UpdateLayout() override {}
+  FloatRect LocalBoundingBoxRectForAccessibility() const override {
+    return FloatRect();
+  }
+};
+
 class StubLocalFrameClientForImpl : public EmptyLocalFrameClient {
  public:
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(
@@ -960,8 +971,6 @@ TEST_F(MediaControlsImplTest,
   auto& video =
       To<HTMLVideoElement>(*page_holder->GetDocument().QuerySelector("video"));
   WeakPersistent<HTMLMediaElement> weak_persistent_video = &video;
-  WeakPersistent<LayoutObject> weak_persistent_layout_object =
-      video.GetLayoutObject();
 
   video.remove();
   page_holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -969,7 +978,6 @@ TEST_F(MediaControlsImplTest,
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(nullptr, weak_persistent_video);
-  EXPECT_EQ(nullptr, weak_persistent_layout_object);
 }
 
 TEST_F(MediaControlsImplTest,

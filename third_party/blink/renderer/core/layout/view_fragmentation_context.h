@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_VIEW_FRAGMENTATION_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/layout/fragmentation_context.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
@@ -20,7 +19,7 @@ class ViewFragmentationContext final : public FragmentationContext {
   LayoutUnit RemainingLogicalHeightAt(LayoutUnit block_offset) final;
 
  private:
-  UntracedMember<LayoutView> view_;
+  LayoutView* const view_;
 };
 
 }  // namespace blink

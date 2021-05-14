@@ -1075,7 +1075,7 @@ void Node::SetLayoutObject(LayoutObject* layout_object) {
   }
 }
 
-void Node::SetComputedStyle(const ComputedStyle* computed_style) {
+void Node::SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style) {
   // We don't set computed style for text nodes.
   DCHECK(IsElementNode());
 

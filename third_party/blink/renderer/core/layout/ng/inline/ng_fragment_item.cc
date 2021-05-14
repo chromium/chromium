@@ -21,15 +21,13 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGFragmentItem {
-  Member<void*> member;
-  union {
-    NGFragmentItem::TextItem text_;
-    NGFragmentItem::GeneratedTextItem generated_text_;
-    NGFragmentItem::LineItem line_;
-    NGFragmentItem::BoxItem box_;
-  };
+  struct {
+    void* pointer;
+    NGTextOffset text_offset;
+  } type_data;
   PhysicalRect rect;
   NGInkOverflow ink_overflow;
+  void* pointer;
   wtf_size_t sizes[2];
   unsigned flags;
 };
@@ -136,11 +134,8 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
 }
 
-// |type_| will be re-initialized in another constructor called inside
-// this one.
 NGFragmentItem::NGFragmentItem(NGLogicalLineItem&& line_item,
-                               WritingMode writing_mode)
-    : type_(0) {
+                               WritingMode writing_mode) {
   DCHECK(line_item.CanCreateFragmentItem());
 
   if (line_item.inline_item) {
@@ -370,13 +365,11 @@ NGFragmentItem::BoxItem::BoxItem(const BoxItem& other)
     : box_fragment(other.box_fragment->PostLayout()),
       descendants_count(other.descendants_count) {}
 
-NGFragmentItem::BoxItem::BoxItem(const NGPhysicalBoxFragment* box_fragment,
-                                 wtf_size_t descendants_count)
-    : box_fragment(box_fragment), descendants_count(descendants_count) {}
-
-void NGFragmentItem::BoxItem::Trace(Visitor* visitor) const {
-  visitor->Trace(box_fragment);
-}
+NGFragmentItem::BoxItem::BoxItem(
+    scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
+    wtf_size_t descendants_count)
+    : box_fragment(std::move(box_fragment)),
+      descendants_count(descendants_count) {}
 
 const NGPhysicalBoxFragment* NGFragmentItem::BoxItem::PostLayout() const {
   if (box_fragment)
@@ -406,10 +399,8 @@ inline const LayoutBox* NGFragmentItem::InkOverflowOwnerBox() const {
 }
 
 inline LayoutBox* NGFragmentItem::MutableInkOverflowOwnerBox() {
-  if (Type() == kBox) {
-    return DynamicTo<LayoutBox>(
-        const_cast<LayoutObject*>(layout_object_.Get()));
-  }
+  if (Type() == kBox)
+    return DynamicTo<LayoutBox>(const_cast<LayoutObject*>(layout_object_));
   return nullptr;
 }
 
@@ -908,15 +899,6 @@ unsigned NGFragmentItem::TextOffsetForPoint(
                                  : size.inline_size - point_in_line_direction;
   DCHECK_EQ(1u, TextLength());
   return inline_offset <= size.inline_size / 2 ? StartOffset() : EndOffset();
-}
-
-void NGFragmentItem::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object_);
-  // Looking up Type() inside Trace() here is safe since |type_| is const.
-  if (Type() == kLine)
-    visitor->Trace(line_);
-  else if (Type() == kBox)
-    visitor->Trace(box_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {

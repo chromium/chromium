@@ -129,12 +129,9 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-  Member<void*> result;
-  HeapVector<Member<const NGLayoutResult>, 1> layout_results;
-  void* pointers[2];
-  Member<void*> inline_box_wrapper;
-  wtf_size_t first_fragment_item_index_;
-  Member<void*> rare_data;
+  void* pointers[4];
+  Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
+  Persistent<void*> rare_data;
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -400,13 +397,12 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
 
 }  // namespace
 
-BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& layout_box)
-    : box(&layout_box) {
-  box->SetBoxLayoutExtraInput(this);
+BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& box) : box(box) {
+  box.SetBoxLayoutExtraInput(this);
 }
 
 BoxLayoutExtraInput::~BoxLayoutExtraInput() {
-  box->SetBoxLayoutExtraInput(nullptr);
+  box.SetBoxLayoutExtraInput(nullptr);
 }
 
 LayoutBoxRareData::LayoutBoxRareData()
@@ -419,13 +415,10 @@ LayoutBoxRareData::LayoutBoxRareData()
       has_override_percentage_resolution_block_size_(false),
       has_previous_content_box_rect_(false),
       percent_height_container_(nullptr),
-      snap_container_(nullptr) {}
+      snap_container_(nullptr),
+      snap_areas_(nullptr) {}
 
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(spanner_placeholder_);
-  visitor->Trace(percent_height_container_);
-  visitor->Trace(snap_container_);
-  visitor->Trace(snap_areas_);
   visitor->Trace(layout_child_);
 }
 
@@ -437,14 +430,6 @@ LayoutBox::LayoutBox(ContainerNode* node)
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
-}
-
-void LayoutBox::Trace(Visitor* visitor) const {
-  visitor->Trace(measure_result_);
-  visitor->Trace(layout_results_);
-  visitor->Trace(inline_box_wrapper_);
-  visitor->Trace(rare_data_);
-  LayoutBoxModelObject::Trace(visitor);
 }
 
 LayoutBox::~LayoutBox() = default;
@@ -3167,7 +3152,7 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
 
 InlineBox* LayoutBox::CreateInlineBox() {
   NOT_DESTROYED();
-  return MakeGarbageCollected<InlineBox>(LineLayoutItem(this));
+  return new InlineBox(LineLayoutItem(this));
 }
 
 void LayoutBox::DirtyLineBoxes(bool full_layout) {
@@ -3238,7 +3223,8 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
-void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
+void LayoutBox::SetCachedLayoutResult(
+    scoped_refptr<const NGLayoutResult> result) {
   NOT_DESTROYED();
   DCHECK(!result->PhysicalFragment().BreakToken());
   DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
@@ -3274,7 +3260,7 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
   AddLayoutResult(std::move(result), 0);
 }
 
-void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
+void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
                                 wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -3289,7 +3275,7 @@ void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
   AddLayoutResult(std::move(result));
 }
 
-void LayoutBox::AddLayoutResult(const NGLayoutResult* result) {
+void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
@@ -3300,12 +3286,12 @@ void LayoutBox::AddLayoutResult(const NGLayoutResult* result) {
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
+void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
                                     wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_LE(index, layout_results_.size());
-  const NGLayoutResult* old_result = layout_results_[index];
-  if (old_result == result)
+  const NGLayoutResult* old_result = layout_results_[index].get();
+  if (old_result == result.get())
     return;
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   bool got_new_fragment = &old_result->PhysicalFragment() != &fragment;
@@ -3335,7 +3321,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
+void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
                                     const NGPhysicalBoxFragment& old_fragment) {
   DCHECK_EQ(this, old_fragment.OwnerLayoutBox());
   DCHECK_EQ(result->PhysicalFragment().GetSelfOrContainerLayoutObject(),
@@ -3396,7 +3382,7 @@ const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
   if (layout_results_.IsEmpty())
     return nullptr;
   // Only return re-usable results.
-  const NGLayoutResult* result = layout_results_[0];
+  const NGLayoutResult* result = layout_results_[0].get();
   if (!To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode())
     return nullptr;
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
@@ -3414,10 +3400,10 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
            .IsOnlyForNode())
     return nullptr;
 
-  return measure_result_;
+  return measure_result_.get();
 }
 
-const NGLayoutResult* LayoutBox::CachedLayoutResult(
+scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     const NGConstraintSpace& new_space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
@@ -3642,7 +3628,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       NeedsLayoutOverflowRecalc() &&
       RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled()) {
 #if DCHECK_IS_ON()
-    const NGLayoutResult* cloned_cached_layout_result =
+    scoped_refptr<const NGLayoutResult> cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
 #endif
     RecalcLayoutOverflow();
@@ -3690,9 +3676,10 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  const NGLayoutResult* new_result = MakeGarbageCollected<NGLayoutResult>(
-      *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
-      bfc_block_offset, block_offset_delta);
+  scoped_refptr<const NGLayoutResult> new_result =
+      base::AdoptRef(new NGLayoutResult(*cached_layout_result, new_space,
+                                        end_margin_strut, bfc_line_offset,
+                                        bfc_block_offset, block_offset_delta));
 
   if (needs_cached_result_update)
     SetCachedLayoutResult(new_result);
@@ -8073,7 +8060,7 @@ void LayoutBox::SetSnapContainer(LayoutBox* new_container) {
 void LayoutBox::ClearSnapAreas() {
   NOT_DESTROYED();
   if (SnapAreaSet* areas = SnapAreas()) {
-    for (const auto& snap_area : *areas)
+    for (auto* const snap_area : *areas)
       snap_area->rare_data_->snap_container_ = nullptr;
     areas->clear();
   }
@@ -8081,15 +8068,15 @@ void LayoutBox::ClearSnapAreas() {
 
 void LayoutBox::AddSnapArea(LayoutBox& snap_area) {
   NOT_DESTROYED();
-  EnsureRareData().snap_areas_.insert(&snap_area);
+  EnsureRareData().EnsureSnapAreas().insert(&snap_area);
 }
 
 void LayoutBox::RemoveSnapArea(const LayoutBox& snap_area) {
   NOT_DESTROYED();
   // const_cast is safe here because we only need to modify the type to match
   // the key type, and not actually mutate the object.
-  if (rare_data_)
-    rare_data_->snap_areas_.erase(const_cast<LayoutBox*>(&snap_area));
+  if (rare_data_ && rare_data_->snap_areas_)
+    rare_data_->snap_areas_->erase(const_cast<LayoutBox*>(&snap_area));
 }
 
 void LayoutBox::ReassignSnapAreas(LayoutBox& new_container) {
@@ -8097,7 +8084,7 @@ void LayoutBox::ReassignSnapAreas(LayoutBox& new_container) {
   SnapAreaSet* areas = SnapAreas();
   if (!areas)
     return;
-  for (const auto& snap_area : *areas) {
+  for (auto* const snap_area : *areas) {
     snap_area->rare_data_->snap_container_ = &new_container;
     new_container.AddSnapArea(*snap_area);
   }
@@ -8118,7 +8105,7 @@ bool LayoutBox::AllowedToPropagateRecursiveScrollToParentFrame(
 
 SnapAreaSet* LayoutBox::SnapAreas() const {
   NOT_DESTROYED();
-  return rare_data_ ? &rare_data_->snap_areas_ : nullptr;
+  return rare_data_ ? rare_data_->snap_areas_.get() : nullptr;
 }
 
 CustomLayoutChild* LayoutBox::GetCustomLayoutChild() const {

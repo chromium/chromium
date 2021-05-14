@@ -96,7 +96,7 @@ static void IterateGridItemsInTrackIndices(const Grid& grid,
                                            Vector<size_t>& track_indices,
                                            F callback) {
 #if DCHECK_IS_ON()
-  HeapHashSet<Member<LayoutBox>> items_set;
+  HashSet<LayoutBox*> items_set;
 #endif
   for (size_t i = 0; i < track_indices.size(); ++i) {
     auto iterator = grid.CreateIterator(direction, track_indices[i]);
@@ -1147,7 +1147,7 @@ class GridItemWithSpan {
   }
 
  private:
-  UntracedMember<LayoutBox> grid_item_;
+  LayoutBox* grid_item_;
   GridSpan grid_span_;
 };
 
@@ -1759,7 +1759,7 @@ void GridTrackSizingAlgorithm::ComputeBaselineAlignmentContext() {
   BaselineItemsCache& baseline_items_cache = axis == kGridColumnAxis
                                                  ? column_baseline_items_map_
                                                  : row_baseline_items_map_;
-  for (auto& child : baseline_items_cache.Keys()) {
+  for (auto* child : baseline_items_cache.Keys()) {
     // TODO (jfernandez): We may have to get rid of the baseline participation
     // flag (hence just using a HashSet) depending on the CSS WG resolution on
     // https://github.com/w3c/csswg-drafts/issues/3046

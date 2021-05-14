@@ -40,9 +40,4 @@ void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
 }
 #endif
 
-void NGInlineItemResult::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_result);
-  visitor->Trace(positioned_float);
-}
-
 }  // namespace blink

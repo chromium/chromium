@@ -89,9 +89,10 @@ bool LengthArraysEqual(CSSLengthArray& a, CSSLengthArray& b) {
 }
 
 TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
-  ComputedStyle* style = ComputedStyle::CreateInitialStyleSingleton();
+  scoped_refptr<ComputedStyle> style =
+      ComputedStyle::CreateInitialStyleSingleton();
   style->SetEffectiveZoom(5);
-  CSSToLengthConversionData conversion_data(style, style, nullptr,
+  CSSToLengthConversionData conversion_data(style.get(), style.get(), nullptr,
                                             style->EffectiveZoom());
 
   TestAccumulatePixelsAndPercent(

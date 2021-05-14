@@ -39,8 +39,6 @@ class SVGContentContainer {
   LayoutObjectChildList& Children() { return children_; }
   const LayoutObjectChildList& Children() const { return children_; }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(children_); }
-
  private:
   LayoutObjectChildList children_;
 

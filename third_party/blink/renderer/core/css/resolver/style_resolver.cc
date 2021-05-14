@@ -253,7 +253,7 @@ StyleResolver::StyleResolver(Document& document)
 StyleResolver::~StyleResolver() = default;
 
 void StyleResolver::Dispose() {
-  initial_style_.Clear();
+  initial_style_.reset();
   matched_properties_cache_.Clear();
 }
 
@@ -662,8 +662,8 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
                              : element.GetTreeScope());
 }
 
-ComputedStyle* StyleResolver::StyleForViewport() {
-  ComputedStyle* viewport_style = InitialStyleForElement();
+scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
+  scoped_refptr<ComputedStyle> viewport_style = InitialStyleForElement();
 
   viewport_style->SetZIndex(0);
   viewport_style->SetIsStackingContextWithoutContainment(true);
@@ -737,7 +737,7 @@ static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
   }
 }
 
-ComputedStyle* StyleResolver::ResolveStyle(
+scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& style_request) {
@@ -810,7 +810,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     const StyleRequest& style_request,
     StyleResolverState& state) {
   if (AllowsInheritance(style_request, state.ParentStyle())) {
-    ComputedStyle* style = CreateComputedStyle();
+    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
     style->InheritFrom(
         *state.ParentStyle(),
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
@@ -1020,17 +1020,17 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
                                                 offset);
 }
 
-const ComputedStyle* StyleResolver::StyleForPage(
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     uint32_t page_index,
     const AtomicString& page_name) {
-  const ComputedStyle* initial_style = InitialStyleForElement();
+  scoped_refptr<const ComputedStyle> initial_style = InitialStyleForElement();
   if (!GetDocument().documentElement())
     return initial_style;
 
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
-                           StyleRequest(initial_style));
+                           StyleRequest(initial_style.get()));
 
-  ComputedStyle* style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   const ComputedStyle* root_element_style =
       state.RootElementStyle() ? state.RootElementStyle()
                                : GetDocument().GetComputedStyle();
@@ -1060,14 +1060,14 @@ const ComputedStyle& StyleResolver::InitialStyle() const {
   return *initial_style_;
 }
 
-ComputedStyle* StyleResolver::CreateComputedStyle() const {
+scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
   return ComputedStyle::Clone(*initial_style_);
 }
 
-ComputedStyle* StyleResolver::InitialStyleForElement() const {
+scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   const LocalFrame* frame = GetDocument().GetFrame();
 
-  ComputedStyle* initial_style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
 
   initial_style->SetRtlOrdering(
       GetDocument().VisuallyOrdered() ? EOrder::kVisual : EOrder::kLogical);
@@ -1097,7 +1097,8 @@ ComputedStyle* StyleResolver::InitialStyleForElement() const {
   return initial_style;
 }
 
-const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForText(
+    Text* text_node) {
   DCHECK(text_node);
   if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*text_node)) {
     const ComputedStyle* style = parent_node->GetComputedStyle();
@@ -1496,7 +1497,7 @@ const CSSValue* StyleResolver::ComputeValue(
                                                    *state.Style());
 }
 
-ComputedStyle* StyleResolver::StyleForInterpolations(
+scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
   StyleRequest style_request;
@@ -1519,7 +1520,8 @@ void StyleResolver::ApplyInterpolations(
   cascade.Apply();
 }
 
-ComputedStyle* StyleResolver::BeforeChangeStyleForTransitionUpdate(
+scoped_refptr<ComputedStyle>
+StyleResolver::BeforeChangeStyleForTransitionUpdate(
     Element& element,
     const ComputedStyle& base_style,
     ActiveInterpolationsMap& transition_interpolations) {
@@ -1642,7 +1644,6 @@ void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(matched_properties_cache_);
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
-  visitor->Trace(initial_style_);
   visitor->Trace(tracker_);
 }
 
@@ -1656,17 +1657,18 @@ bool StyleResolver::IsForcedColorsModeEnabled(
          state.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone;
 }
 
-ComputedStyle* StyleResolver::CreateAnonymousStyleWithDisplay(
+scoped_refptr<ComputedStyle> StyleResolver::CreateAnonymousStyleWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  ComputedStyle* new_style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
   new_style->InheritFrom(parent_style);
   new_style->SetUnicodeBidi(parent_style.GetUnicodeBidi());
   new_style->SetDisplay(display);
   return new_style;
 }
 
-ComputedStyle* StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
+scoped_refptr<ComputedStyle>
+StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
     const ComputedStyle& parent_style,
     const ComputedStyle& layout_parent_style) {
   if (parent_style.InheritedEqual(layout_parent_style))
@@ -1727,7 +1729,8 @@ void StyleResolver::PropagateStyleToViewport() {
 
   const ComputedStyle& viewport_style =
       GetDocument().GetLayoutView()->StyleRef();
-  ComputedStyle* new_viewport_style = ComputedStyle::Clone(viewport_style);
+  scoped_refptr<ComputedStyle> new_viewport_style =
+      ComputedStyle::Clone(viewport_style);
   bool changed = false;
   bool update_scrollbar_style = false;
 
@@ -1889,7 +1892,7 @@ void StyleResolver::PropagateStyleToViewport() {
   }
 
   changed |= PropagateScrollSnapStyleToViewport(
-      GetDocument(), document_element_style, new_viewport_style);
+      GetDocument(), document_element_style, new_viewport_style.get());
 
   if (changed) {
     new_viewport_style->UpdateFontOrientation();

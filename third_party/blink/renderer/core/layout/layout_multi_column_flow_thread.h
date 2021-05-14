@@ -146,7 +146,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
       public FragmentationContext {
  public:
   ~LayoutMultiColumnFlowThread() override;
-  void Trace(Visitor*) const override;
 
   static LayoutMultiColumnFlowThread* CreateAnonymous(
       Document&,
@@ -326,11 +325,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return "LayoutMultiColumnFlowThread";
   }
 
-  // Note: We call this constructor only in |CreateAnonymous()|, but mark this
-  // "public" for |MakeGarbageCollected<T>|.
-  explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);
-
  private:
+  explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);
   void UpdateLayout() override;
 
   void CalculateColumnHeightAvailable();
@@ -373,7 +369,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // concept of a "current set" is difficult, since layout may jump back and
   // forth in the tree, due to wrong top location estimates (due to e.g. margin
   // collapsing), and possibly for other reasons.
-  Member<LayoutMultiColumnSet> last_set_worked_on_;
+  LayoutMultiColumnSet* last_set_worked_on_;
 
 #if DCHECK_IS_ON()
   // Used to check consistency between calls to

@@ -30,13 +30,12 @@ class NGSVGTextLayoutAttributesBuilder final {
  public:
   explicit NGSVGTextLayoutAttributesBuilder(NGInlineNode ifc);
 
-  void Build(const String& ifc_text_content,
-             const HeapVector<NGInlineItem>& items);
+  void Build(const String& ifc_text_content, const Vector<NGInlineItem>& items);
 
   // This function can be called just once after Build().
   Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
   // This function can be called just once after Build().
-  HeapVector<SVGTextPathRange> TextPathRangeList();
+  Vector<SVGTextPathRange> TextPathRangeList();
 
  private:
   LayoutBlockFlow* block_flow_;
@@ -51,7 +50,7 @@ class NGSVGTextLayoutAttributesBuilder final {
   // A list of a pair of start addressable character index and end
   // addressable character index (inclusive) for a <textPath>.
   // This is used in "8. Position on path".
-  HeapVector<SVGTextPathRange> text_path_range_list_;
+  Vector<SVGTextPathRange> text_path_range_list_;
 };
 
 }  // namespace blink

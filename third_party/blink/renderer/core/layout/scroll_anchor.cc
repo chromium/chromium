@@ -43,11 +43,6 @@ ScrollAnchor::ScrollAnchor(ScrollableArea* scroller) : ScrollAnchor() {
 
 ScrollAnchor::~ScrollAnchor() = default;
 
-void ScrollAnchor::Trace(Visitor* visitor) const {
-  visitor->Trace(scroller_);
-  visitor->Trace(anchor_object_);
-}
-
 void ScrollAnchor::SetScroller(ScrollableArea* scroller) {
   DCHECK_NE(scroller_, scroller);
   DCHECK(scroller);

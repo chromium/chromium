@@ -88,13 +88,14 @@ class ComputedStyle;
 // We create PaintLayerStackingNode only for real stacking contexts with stacked
 // children. PaintLayerPaintOrder[Reverse]Iterator can iterate normal flow
 // children in paint order with or without a stacking node.
-class CORE_EXPORT PaintLayerStackingNode
-    : public GarbageCollected<PaintLayerStackingNode> {
+class CORE_EXPORT PaintLayerStackingNode {
+  USING_FAST_MALLOC(PaintLayerStackingNode);
+
  public:
-  explicit PaintLayerStackingNode(PaintLayer*);
+  explicit PaintLayerStackingNode(PaintLayer&);
   PaintLayerStackingNode(const PaintLayerStackingNode&) = delete;
   PaintLayerStackingNode& operator=(const PaintLayerStackingNode&) = delete;
-  ~PaintLayerStackingNode() = default;
+  ~PaintLayerStackingNode();
 
   void DirtyZOrderLists();
   void UpdateZOrderLists();
@@ -103,7 +104,7 @@ class CORE_EXPORT PaintLayerStackingNode
   static bool StyleDidChange(PaintLayer& paint_layer,
                              const ComputedStyle* old_style);
 
-  using PaintLayers = HeapVector<Member<PaintLayer>>;
+  using PaintLayers = Vector<PaintLayer*>;
 
   const PaintLayers& PosZOrderList() const {
     DCHECK(!z_order_lists_dirty_);
@@ -120,7 +121,7 @@ class CORE_EXPORT PaintLayerStackingNode
     auto it = layer_to_overlay_overflow_controls_painting_after_.find(layer);
     return it == layer_to_overlay_overflow_controls_painting_after_.end()
                ? nullptr
-               : it->value;
+               : &it->value;
   }
 
   const PaintLayers& OverlayOverflowControlsReorderedList() const {
@@ -130,17 +131,20 @@ class CORE_EXPORT PaintLayerStackingNode
 
   void ClearNeedsReorderOverlayOverflowControls();
 
-  void Trace(Visitor* visitor) const;
-
  private:
   void RebuildZOrderLists();
 
   struct HighestLayers;
   void CollectLayers(PaintLayer&, HighestLayers*);
 
+#if DCHECK_IS_ON()
+  void UpdateStackingParentForZOrderLists(
+      PaintLayerStackingNode* stacking_parent);
+#endif
+
   PaintLayerCompositor* Compositor() const;
 
-  Member<PaintLayer> layer_;
+  PaintLayer& layer_;
 
   // Holds a sorted list of all the descendant nodes within that have z-indices
   // of 0 (or is treated as 0 for positioned objects) or greater.
@@ -187,7 +191,7 @@ class CORE_EXPORT PaintLayerStackingNode
   // the map). The value of the map is a list of PaintLayers because there may
   // be more than one scrolling or resizing container in the same stacking
   // context with overlay overflow controls.
-  HeapHashMap<Member<const PaintLayer>, Member<PaintLayers>>
+  HashMap<const PaintLayer*, PaintLayers>
       layer_to_overlay_overflow_controls_painting_after_;
 
   // All PaintLayers (just in current stacking context, child stacking contexts

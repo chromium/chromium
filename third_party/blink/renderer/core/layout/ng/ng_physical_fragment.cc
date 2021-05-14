@@ -25,12 +25,14 @@
 namespace blink {
 namespace {
 
-struct SameSizeAsNGPhysicalFragment : GarbageCollected<NGPhysicalFragment> {
-  Member<void*> layout_object;
+struct SameSizeAsNGPhysicalFragment
+    : RefCounted<const NGPhysicalFragment, NGPhysicalFragmentTraits> {
+  void* layout_object;
   PhysicalSize size;
   unsigned flags;
-  Member<void*> break_token;
-  Member<Vector<NGPhysicalOutOfFlowPositionedNode>> oof_positioned_descendants_;
+  scoped_refptr<void*> break_token;
+  std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
+      oof_positioned_descendants_;
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -182,7 +184,7 @@ class FragmentTreeDumper {
       if (!descendant->IsLayoutNGObject()) {
         if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
           if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto& positioned_object : *positioned_descendants) {
+            for (const auto* positioned_object : *positioned_descendants) {
               if (positioned_object->IsLayoutNGObject())
                 AppendNGRootInLegacySubtree(*positioned_object, indent);
               else
@@ -310,8 +312,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       oof_positioned_descendants_(
           builder->oof_positioned_descendants_.IsEmpty()
               ? nullptr
-              : MakeGarbageCollected<
-                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>()) {
+              : new Vector<NGPhysicalOutOfFlowPositionedNode>()) {
   CHECK(builder->layout_object_);
   has_floating_descendants_for_paint_ =
       builder->has_floating_descendants_for_paint_;
@@ -369,8 +370,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       break_token_(other.break_token_),
       oof_positioned_descendants_(
           other.oof_positioned_descendants_
-              ? MakeGarbageCollected<
-                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>(
+              ? new Vector<NGPhysicalOutOfFlowPositionedNode>(
                     *other.oof_positioned_descendants_)
               : nullptr) {
   CHECK(layout_object_);
@@ -532,8 +532,8 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-const HeapVector<NGInlineItem>&
-NGPhysicalFragment::InlineItemsOfContainingBlock() const {
+const Vector<NGInlineItem>& NGPhysicalFragment::InlineItemsOfContainingBlock()
+    const {
   DCHECK(IsInline());
   DCHECK(GetLayoutObject());
   LayoutBlockFlow* block_flow = GetLayoutObject()->ContainingNGBlockFlow();
@@ -652,25 +652,6 @@ void NGPhysicalFragment::ShowFragmentTree(const LayoutObject& root) {
 }
 #endif
 
-void NGPhysicalFragment::Trace(Visitor* visitor) const {
-  switch (Type()) {
-    case kFragmentBox:
-      static_cast<const NGPhysicalBoxFragment*>(this)->TraceAfterDispatch(
-          visitor);
-      break;
-    case kFragmentLineBox:
-      static_cast<const NGPhysicalLineBoxFragment*>(this)->TraceAfterDispatch(
-          visitor);
-      break;
-  }
-}
-
-void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(layout_object_);
-  visitor->Trace(break_token_);
-  visitor->Trace(oof_positioned_descendants_);
-}
-
 // TODO(dlibby): remove `Children` and `PostLayoutChildren` and move the
 // casting and/or branching to the callers.
 base::span<const NGLink> NGPhysicalFragment::Children() const {
@@ -693,7 +674,7 @@ void NGPhysicalFragment::SetChildrenInvalid() const {
     return;
 
   for (const NGLink& child : Children()) {
-    const_cast<NGLink&>(child).fragment = nullptr;
+    const_cast<NGLink&>(child).fragment->Release();
   }
   children_valid_ = false;
 }

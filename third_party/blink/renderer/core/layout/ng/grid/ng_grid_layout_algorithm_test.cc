@@ -46,8 +46,7 @@ class NGGridLayoutAlgorithmTest
   void BuildGridItemsAndTrackCollections(
       const NGGridLayoutAlgorithm& algorithm) {
     // Measure items.
-    algorithm.ConstructAndAppendGridItems(&items_->grid_items_,
-                                          &items_->out_of_flow_items_);
+    algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
 
     NGGridPlacement grid_placement(
         algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
@@ -57,7 +56,7 @@ class NGGridLayoutAlgorithmTest
     NGGridBlockTrackCollection column_block_track_collection(kForColumns);
     NGGridBlockTrackCollection row_block_track_collection(kForRows);
     algorithm.BuildBlockTrackCollections(
-        &items_->grid_items_, &column_block_track_collection,
+        &grid_items_, &column_block_track_collection,
         &row_block_track_collection, &grid_placement);
 
     // Build algorithm track collections from the block track collections.
@@ -71,11 +70,11 @@ class NGGridLayoutAlgorithmTest
 
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(column_track_collection_,
-                                                &items_->grid_items_);
+                                                &grid_items_);
     algorithm.CacheGridItemsTrackSpanProperties(row_track_collection_,
-                                                &items_->grid_items_);
+                                                &grid_items_);
 
-    for (auto& grid_item : items_->grid_items_) {
+    for (auto& grid_item : grid_items_) {
       grid_item.ComputeSetIndices(column_track_collection_);
       grid_item.ComputeSetIndices(row_track_collection_);
     }
@@ -87,11 +86,11 @@ class NGGridLayoutAlgorithmTest
     bool unused;
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &column_track_collection_, &items_->grid_items_, &unused);
+        &column_track_collection_, &grid_items_, &unused);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &row_track_collection_, &items_->grid_items_, &unused);
+        &row_track_collection_, &grid_items_, &unused);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -103,7 +102,7 @@ class NGGridLayoutAlgorithmTest
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     LayoutUnit offset, size;
-    algorithm.ComputeGridItemOffsetAndSize(items_->grid_items_.item_data[index],
+    algorithm.ComputeGridItemOffsetAndSize(grid_items_.item_data[index],
                                            grid_geometry_.row_geometry,
                                            kForRows, &offset, &size);
     return size;
@@ -111,11 +110,11 @@ class NGGridLayoutAlgorithmTest
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
   // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
-  wtf_size_t GridItemCount() { return items_->grid_items_.item_data.size(); }
+  wtf_size_t GridItemCount() { return grid_items_.item_data.size(); }
 
   Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
     Vector<GridArea> results;
-    for (const auto& item : items_->grid_items_.item_data)
+    for (const auto& item : grid_items_.item_data)
       results.push_back(item.resolved_position);
     return results;
   }
@@ -125,8 +124,7 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (items_->grid_items_.item_data[i].column_span_properties.HasProperty(
-              property))
+      if (grid_items_.item_data[i].column_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
@@ -137,8 +135,7 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (items_->grid_items_.item_data[i].row_span_properties.HasProperty(
-              property))
+      if (grid_items_.item_data[i].row_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
@@ -170,7 +167,8 @@ class NGGridLayoutAlgorithmTest
     return growth_limits;
   }
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
+  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
+      Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -179,8 +177,8 @@ class NGGridLayoutAlgorithmTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto* fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment);
+    auto fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment.get());
   }
 
   String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {
@@ -192,18 +190,8 @@ class NGGridLayoutAlgorithmTest
     return fragment->DumpFragmentTree(flags);
   }
 
-  struct GCedGridItems final : public GarbageCollected<GCedGridItems> {
-   public:
-    NGGridLayoutAlgorithm::GridItems grid_items_;
-    HeapVector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
-
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(grid_items_);
-      visitor->Trace(out_of_flow_items_);
-    }
-  };
-
-  Persistent<GCedGridItems> items_ = MakeGarbageCollected<GCedGridItems>();
+  NGGridLayoutAlgorithm::GridItems grid_items_;
+  Vector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
