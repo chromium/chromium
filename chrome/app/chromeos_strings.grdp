@@ -5258,6 +5258,82 @@
   <message name="IDS_VM_STATUS_PAGE_EXPLANATION_LABEL" desc="The heading for the 'explanation' column in a VM status page table. This column provides additional information for checks that have failed.">
     Explanation
   </message>
+  <message name="IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_REQUIREMENT" desc="The requirement that the device being used supports the VM software (e.g. Parallels Desktop).">
+    Device is supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_EXPLANATION" desc="The explanation that the device being used does not support the VM software (e.g. Parallels Desktop).">
+    <ph name="DEVICE_NAME">$1<ex>Drallion</ex></ph> is not supported.
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_PROFILE_IS_SUPPORTED_REQUIREMENT" desc="The requirement that the profile the user has logged in to supports the VM software (e.g. Parallels Desktop).">
+    Profile is supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_SECONDARY_PROFILE_EXPLANATION" desc="The explanation that secondary profiles cannot use the VM software (e.g. Parallels Desktop). The user has logged in to multiple accounts at the same time and only the account logged in to first can be used.">
+    Secondary profiles are not supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_CHILD_PROFILE_EXPLANATION" desc="The explanation that child accounts cannot use the VM software (e.g. Parallels Desktop).">
+    Child accounts are not supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_GUEST_PROFILE_EXPLANATION" desc="The explanation that guest accounts cannot use the VM software (e.g. Parallels Desktop). The user must be signed in.">
+    Guest profiles are not supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION" desc="The explanation that device is set up to use 'ephemeral mode' so the user cannot use the VM software (e.g. Parallels Desktop).">
+    Ephemeral mode is not supported. Please contact your administrator
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_UNSUPPORTED_PROFILE_EXPLANATION" desc="The explanation that the current user profile cannot use the VM software (e.g. Parallels Desktop).">
+    The profile is not supported
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_POLICIES_REQUIREMENT" desc="The requirement that policies must be configured correctly before the VM software (e.g. Parallels Desktop) can be used.">
+    Policies are configured correctly
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR" desc="The error message shown when some policies are not configured correctly.">
+    One or more policies are not configured correctly. Please contact your administrator
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION" desc="The message explaining that the policy specifying the virtual machine image's URL is not configured correctly">
+    Image url is invalid
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION" desc="The message explaining that the policy specifying the virtual machine image's hash (i.e. checksum) is not configured correctly">
+    Image hash is not set
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION" desc="The message explaining that we are not able to check policies">
+    Unable to check policies
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION" desc="The message explaining that the device is not enterprise enrolled">
+    Device is not enrolled
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR" desc="The error message shown when the device is not enterprise enrolled">
+    You must be on an enterprise-enrolled device
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION" desc="The message explaining that the user is not affiliated with the enterprise domain">
+    User is not affiliated with domain
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION" desc="The message explaining that we encountered an error when checking whether the device is allowed by enterprise policy to run the VM (virtual machine)">
+    Unable to check whether the device is allowed
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION" desc="The message explaining that the enterprise policy does not allow running the VM (virtual machine) on the device being used.">
+    Device is not allowed
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION" desc="The message explaining that the enterprise policy does not allow the current user to run the VM (virtual machine)">
+    User is not allowed
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION" desc="The message explaining that the the license for running the VM (virtual machine) is not set up">
+    License is not set up
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT" desc="The message for the requirement that a VM (virtual machine) with the default name should exist">
+    VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR" desc="The error message shown when the default VM (virtual machine) does not exist">
+    A required virtual machine does not exist. Please try setting up <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> to continue
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION" desc="The message explaining that we failed to enumerate existing VMs (virtual machine)">
+    Failed to check VMs
+  </message>
+  <message name="IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_EXPLANATION" desc="When the default VM is missing, we want to show a message listing the VM(s) that we did find. Examples are: 'No Parallels Desktop VMs found', '1 Parallels Desktop VM found: vm_name1', '3 Parallels Desktop VMs found: vm_name1, vm_name2, vm_name3' ">
+    {NUM_VMS, plural,
+      =0 {No <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> VMs found}
+      =1 {1 <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> VM found: <ph name="VM_NAME_LIST">$2<ex>vm_name1</ex></ph>}
+      other {{NUM_VMS} <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> VMs found: <ph name="VM_NAME_LIST">$2<ex>vm_name1, vm_name2, vm_name3</ex></ph>}
+    }
+  </message>
 
   <!-- Strings for Plugin VM -->
   <message name="IDS_PLUGIN_VM_APP_NAME" desc="Product name for 'Parallels Desktop'. Should not be translated as it is a third party name." translateable="false">

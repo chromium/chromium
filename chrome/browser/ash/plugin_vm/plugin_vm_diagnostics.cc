@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
@@ -18,10 +20,12 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace plugin_vm {
 
@@ -75,45 +79,52 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     // `is_allowed_diagnostics.GetTopError()` so that we can reuse it.
 
     {
-      EntryBuilder entry("Device is supported");
+      EntryBuilder entry(l10n_util::GetStringUTF8(
+          IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_REQUIREMENT));
       if (!is_allowed_diagnostics.device_supported) {
-        entry.SetFail(
-            base::StrCat({CapitalizedBoardName(), " is not supported"}));
+        entry.SetFail(l10n_util::GetStringFUTF8(
+            IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_EXPLANATION,
+            base::UTF8ToUTF16(CapitalizedBoardName())));
       }
       builder_.AddEntry(std::move(entry));
     }
 
     {
-      EntryBuilder entry("Profile is supported");
+      EntryBuilder entry(l10n_util::GetStringUTF8(
+          IDS_VM_STATUS_PAGE_PROFILE_IS_SUPPORTED_REQUIREMENT));
 
       switch (is_allowed_diagnostics.profile_supported) {
         case ProfileSupported::kOk:
           break;
         case ProfileSupported::kErrorNonPrimary:
-          entry.SetFail("Secondary profiles are not supported");
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_SECONDARY_PROFILE_EXPLANATION));
           break;
         case ProfileSupported::kErrorChildAccount:
-          entry.SetFail("Child accounts are not supported");
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_CHILD_PROFILE_EXPLANATION));
           break;
         case ProfileSupported::kErrorOffTheRecord:
-          entry.SetFail("Guest profiles are not supported");
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_GUEST_PROFILE_EXPLANATION));
           break;
         case ProfileSupported::kErrorEphemeral:
-          entry.SetFail(
-              "Ephemeral user profiles are not supported. Contact your admin");
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION));
           break;
         case ProfileSupported::kErrorNotSupported:
-          entry.SetFail("The profile is not supported");
+          entry.SetFail(l10n_util::GetStringUTF8(
+              IDS_VM_STATUS_PAGE_UNSUPPORTED_PROFILE_EXPLANATION));
           break;
       }
       builder_.AddEntry(std::move(entry));
     }
 
     {
-      EntryBuilder entry("Policies are configured correctly");
+      EntryBuilder entry(
+          l10n_util::GetStringUTF8(IDS_VM_STATUS_PAGE_POLICIES_REQUIREMENT));
       const std::string standard_top_error =
-          "One or more policies are not configured correctly. Please contact "
-          "your administrator";
+          l10n_util::GetStringUTF8(IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR);
       switch (is_allowed_diagnostics.policy_configured) {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
@@ -124,34 +135,52 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           const base::Value* hash =
               image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
           if (!url || !GURL(url->GetString()).is_valid()) {
-            entry.SetFail("Image url is invalid", standard_top_error);
+            entry.SetFail(l10n_util::GetStringUTF8(
+                              IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION),
+                          standard_top_error);
           } else if (!hash || hash->GetString().empty()) {
-            entry.SetFail("Image hash is not set", standard_top_error);
+            entry.SetFail(l10n_util::GetStringUTF8(
+                              IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION),
+                          standard_top_error);
           }
         } break;
         case PolicyConfigured::kErrorUnableToCheckPolicy:
-          entry.SetFail("Unable to check policies", standard_top_error);
+          entry.SetFail(
+              l10n_util::GetStringUTF8(
+                  IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION),
+              standard_top_error);
           break;
         case PolicyConfigured::kErrorNotEnterpriseEnrolled:
-          entry.SetFail("Device is not enrolled", /*top_error_message=*/
-                        "You must be on an enterprise-enrolled device");
+          entry.SetFail(l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION),
+                        /*top_error_message=*/l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR));
           break;
         case PolicyConfigured::kErrorUserNotAffiliated:
-          entry.SetFail("User is not affiliated with domain",
+          entry.SetFail(l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION),
                         standard_top_error);
           break;
         case PolicyConfigured::kErrorUnableToCheckDevicePolicy:
-          entry.SetFail("Unable to check whether device is allowed",
-                        standard_top_error);
+          entry.SetFail(
+              l10n_util::GetStringUTF8(
+                  IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION),
+              standard_top_error);
           break;
         case PolicyConfigured::kErrorNotAllowedByDevicePolicy:
-          entry.SetFail("Device is not allowed", standard_top_error);
+          entry.SetFail(l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION),
+                        standard_top_error);
           break;
         case PolicyConfigured::kErrorNotAllowedByUserPolicy:
-          entry.SetFail("User is not allowed", standard_top_error);
+          entry.SetFail(l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION),
+                        standard_top_error);
           break;
         case PolicyConfigured::kErrorLicenseNotSetUp:
-          entry.SetFail("License is not set up", standard_top_error);
+          entry.SetFail(l10n_util::GetStringUTF8(
+                            IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION),
+                        standard_top_error);
           break;
       }
       builder_.AddEntry(std::move(entry));
@@ -182,17 +211,20 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   void OnListVmDisks(
       bool plugin_vm_is_allowed,
       base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
-    EntryBuilder entry(
-        base::StrCat({"VM \"", plugin_vm::kPluginVmName, "\" exists"}));
+    EntryBuilder entry(l10n_util::GetStringFUTF8(
+        IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT,
+        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 
     if (plugin_vm_is_allowed) {
       if (!response.has_value()) {
-        entry.SetFail("Failed to check VMs");
+        entry.SetFail(l10n_util::GetStringUTF8(
+            IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION));
       } else if (!HasDefaultVm(response->images())) {
         entry.SetFail(GetMissingDefaultVmExplanation(response->images()),
                       /*top_error_message=*/
-                      "A required virtual machine does not exist. Please try "
-                      "setting up Parallels to continue.");
+                      l10n_util::GetStringFUTF8(
+                          IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
+                          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
       } else {
         // Everything is good. Do nothing.
       }
@@ -220,27 +252,32 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   }
 
   std::string GetMissingDefaultVmExplanation(const ImageListType& images) {
-    if (images.empty()) {
-      return "No Parallels Desktop VMs found";
-    }
+    std::string string_template = l10n_util::GetPluralStringFUTF8(
+        IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_EXPLANATION, images.size());
+    std::vector<std::string> subs{
+        l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME)};
 
-    std::stringstream stream;
-    // The string looks like this:
-    //
-    // n Parallels Desktop VM(s) found: "vm1", "vm2"
-    stream << images.size() << " Parallels Desktop VM"
-           << (images.size() >= 2 ? "s" : "") << " found: ";
-    bool first_vm = true;
-    for (auto& image : images) {
-      if (!first_vm) {
-        stream << ", ";
+    if (images.size() > 0) {
+      // In this case, we have a second placeholder VM_NAME_LIST. The substitute
+      // should looke like this: `"vm1", "vm2"`. Note that the l10n tooling does
+      // not support formatting a list of strings, which is why we have to do
+      // the formatting by ourselves here. The formatting might not be ideal for
+      // all languages, but it should be good enough for its purpose.
+      std::stringstream stream;
+      bool first_vm = true;
+      for (auto& image : images) {
+        if (!first_vm) {
+          stream << ", ";
+        }
+        stream << '"' << image.name() << '"';
+
+        first_vm = false;
       }
-      stream << '"' << image.name() << '"';
 
-      first_vm = false;
+      subs.push_back(stream.str());
     }
 
-    return stream.str();
+    return base::ReplaceStringPlaceholders(string_template, subs, nullptr);
   }
 
   Profile* const active_profile_;
