@@ -242,7 +242,7 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
             // about:blank we should remove it to avoid leaving behind a blank
             // tab.
             if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage())
-              web_contents->Close();
+              web_contents->ClosePage();
 
             return content::NavigationThrottle::CANCEL_AND_IGNORE;
           }

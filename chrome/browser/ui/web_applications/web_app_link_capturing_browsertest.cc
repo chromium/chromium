@@ -47,7 +47,9 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(https_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
+    out_of_scope_ = https_server().GetURL("/");
   }
 
   void InstallTestApp(const char* path, bool await_metric) {
@@ -92,9 +94,11 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     observer.Wait();
   }
 
-  void Navigate(Browser* browser, const GURL& url) {
+  void Navigate(Browser* browser,
+                const GURL& url,
+                LinkTarget link_target = LinkTarget::SELF) {
     ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
-                     LinkTarget::SELF, "");
+                     link_target, "");
   }
 
   Browser* GetNewBrowserFromNavigation(Browser* browser, const GURL& url) {
@@ -144,9 +148,9 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   GURL in_scope_1_;
   GURL in_scope_2_;
   GURL scope_;
+  GURL out_of_scope_;
 
   const GURL about_blank_{"about:blank"};
-  const GURL out_of_scope_{"https://other-domain.org/"};
 
   ScopedOsHooksSuppress os_hooks_supress_;
 };
@@ -429,11 +433,16 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_2_});
 
-  // In scope navigation should navigate the existing app window.
-  Navigate(browser(), in_scope_1_);
-  EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_1_});
+  // target=_blank in scope navigation should navigate the existing app window.
+  Navigate(browser(), in_scope_1_, LinkTarget::BLANK);
+  // TODO(crbug.com/1209082): The app window should now be focused.
+  // EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
+  // TODO(crbug.com/1209096): With IntentPickerPWAPersistence we don't close the
+  // new about:blank tab after capturing.
+  if (!IsIntentPickerPersistenceEnabled()) {
+    ExpectTabs(browser(), {out_of_scope_});
+    ExpectTabs(app_browser, {in_scope_1_});
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
