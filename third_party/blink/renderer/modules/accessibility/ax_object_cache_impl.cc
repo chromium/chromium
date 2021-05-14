@@ -2048,7 +2048,10 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     if (new_object) {
       // Any owned objects need to reset their parent_ to point to the
       // new object.
-      relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
+      if (AXObject::HasARIAOwns(DynamicTo<Element>(node)) &&
+          AXRelationCache::IsValidOwner(new_object)) {
+        relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
+      }
     } else {
       // Failed to create, so remove object completely.
       RemoveAXID(current);
