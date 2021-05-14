@@ -509,9 +509,11 @@ class TracingHandler::PerfettoTracingSession {
   base::WeakPtrFactory<PerfettoTracingSession> weak_factory_{this};
 };
 
-TracingHandler::TracingHandler(DevToolsIOContext* io_context)
+TracingHandler::TracingHandler(FrameTreeNode* frame_tree_node,
+                               DevToolsIOContext* io_context)
     : DevToolsDomainHandler(Tracing::Metainfo::domainName),
       io_context_(io_context),
+      frame_tree_node_(frame_tree_node),
       did_initiate_recording_(false),
       return_as_stream_(false),
       gzip_compression_(false),
@@ -539,7 +541,6 @@ std::vector<TracingHandler*> TracingHandler::ForAgentHost(
 
 void TracingHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
-  frame_host_ = frame_host;
   if (!video_consumer_ || !frame_host)
     return;
   video_consumer_->SetFrameSinkId(
@@ -850,7 +851,7 @@ perfetto::TraceConfig TracingHandler::CreatePerfettoConfiguration(
 void TracingHandler::SetupProcessFilter(
     base::ProcessId gpu_pid,
     RenderFrameHost* new_render_frame_host) {
-  if (!frame_host_)
+  if (!frame_tree_node_)
     return;
 
   base::ProcessId browser_pid = base::Process::Current().Pid();
@@ -862,9 +863,10 @@ void TracingHandler::SetupProcessFilter(
   if (new_render_frame_host)
     AppendProcessId(new_render_frame_host, &included_process_ids);
 
-  DCHECK(!frame_host_->GetParent());
-  for (FrameTreeNode* node : frame_host_->frame_tree()->Nodes()) {
-    if (RenderFrameHost* frame_host = node->current_frame_host())
+  for (FrameTreeNode* node :
+       frame_tree_node_->frame_tree()->SubtreeNodes(frame_tree_node_)) {
+    RenderFrameHost* frame_host = node->current_frame_host();
+    if (frame_host)
       AppendProcessId(frame_host, &included_process_ids);
   }
 
@@ -899,7 +901,7 @@ void TracingHandler::AttemptAdoptStartupSession(
     bool gzip_compression,
     bool proto_format,
     perfetto::BackendType tracing_backend) {
-  if (frame_host_ != nullptr)
+  if (frame_tree_node_ != nullptr)
     return;
   auto* startup_config = tracing::TraceStartupConfig::GetInstance();
   if (!startup_config->AttemptAdoptBySessionOwner(
@@ -1119,13 +1121,13 @@ bool TracingHandler::IsTracing() const {
 
 void TracingHandler::EmitFrameTree() {
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  if (frame_host_) {
-    DCHECK(!frame_host_->GetParent());
-    data->SetInteger("frameTreeNodeId",
-                     frame_host_->frame_tree_node()->frame_tree_node_id());
+  if (frame_tree_node_) {
+    data->SetInteger("frameTreeNodeId", frame_tree_node_->frame_tree_node_id());
     data->SetBoolean("persistentIds", true);
     data->BeginArray("frames");
-    for (FrameTreeNode* node : frame_host_->frame_tree()->Nodes()) {
+    FrameTree::NodeRange subtree =
+        frame_tree_node_->frame_tree()->SubtreeNodes(frame_tree_node_);
+    for (FrameTreeNode* node : subtree) {
       data->BeginDictionary();
       FillFrameData(data.get(), node, node->current_frame_host(),
                     node->current_url());

@@ -40,6 +40,7 @@ namespace content {
 class DevToolsAgentHostImpl;
 class DevToolsVideoConsumer;
 class DevToolsIOContext;
+class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -48,7 +49,8 @@ namespace protocol {
 
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
-  CONTENT_EXPORT explicit TracingHandler(DevToolsIOContext* io_context);
+  CONTENT_EXPORT TracingHandler(FrameTreeNode* frame_tree_node,
+                                DevToolsIOContext* io_context);
   CONTENT_EXPORT ~TracingHandler() override;
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -148,9 +150,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   std::unique_ptr<Tracing::Frontend> frontend_;
   DevToolsIOContext* io_context_;
-  // This will be null in agents not attached to a frame host,
-  // or while WebContents is detached.
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  FrameTreeNode* frame_tree_node_;
   bool did_initiate_recording_;
   bool return_as_stream_;
   bool gzip_compression_;
