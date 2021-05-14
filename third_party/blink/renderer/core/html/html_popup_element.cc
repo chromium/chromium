@@ -261,9 +261,8 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
     if (const auto* invoker = popup->invoker_.Get())
       anchors_and_invokers.Set(invoker, popup);
   }
-  // TODO(masonf) Should this be a flat tree parent traversal?
   for (Node* current_node = start_node; current_node;
-       current_node = current_node->ParentOrShadowHostNode()) {
+       current_node = FlatTreeTraversal::Parent(*current_node)) {
     // Parent popup element (or the start_node itself, if <popup>).
     if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
       if (popup->open())

@@ -100,7 +100,7 @@
     <template shadowroot=open>
       <button id=t3b1 onclick='showPopup("test3",0)'>Test 3 Popup 1</button>
       <popup anchor=t3b1>
-        <p>This popup will be hidden when popup2 shows.</p>
+        <p>This popup will stay open when popup2 shows.</p>
         <slot></slot>
       </popup>
     </template>
@@ -115,15 +115,17 @@
     popup1.show();
     assert_true(popup1.open);
     assert_true(popupVisible(popup1));
-    // Showing popup2 will close popup1, since it is not a DOM
+    // Showing popup2 should not close popup1, since it is a flat
     // tree ancestor of popup2's anchor button.
     popup2.show();
     assert_true(popup2.open);
     assert_true(popupVisible(popup2));
+    assert_true(popup1.open);
+    assert_true(popupVisible(popup1));
+    popup1.hide();
+    assert_false(popup2.open);
     assert_false(popup1.open);
-    assert_false(popupVisible(popup1));
-    popup2.hide();
-  }, "anchor references use the DOM tree not the flat tree");
+  }, "anchor references use the flat tree not the DOM tree");
 </script>
 
 
