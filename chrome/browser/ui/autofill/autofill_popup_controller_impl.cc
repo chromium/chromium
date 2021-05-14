@@ -139,7 +139,7 @@ void AutofillPopupControllerImpl::Show(
              const content::NativeWebKeyboardEvent& event) {
             return weak_this && weak_this->HandleKeyPressEvent(event);
           },
-          GetWeakPtr()));
+          weak_this));
 
   delegate_->OnPopupShown();
 }
