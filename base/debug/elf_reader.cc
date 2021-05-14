@@ -191,8 +191,8 @@ size_t GetRelocationOffset(const void* elf_mapped_base) {
 
   // Assume the virtual addresses in the image start at 0, so the offset is
   // from 0 to the actual mapped base address.
-  return static_cast<size_t>(reinterpret_cast<const char*>(elf_mapped_base) -
-                             reinterpret_cast<const char*>(0));
+  return static_cast<size_t>(reinterpret_cast<uintptr_t>(elf_mapped_base) -
+                             reinterpret_cast<uintptr_t>(nullptr));
 }
 
 }  // namespace debug
