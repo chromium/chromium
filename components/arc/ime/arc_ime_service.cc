@@ -628,7 +628,7 @@ bool ArcImeService::ShouldDoLearning() {
 bool ArcImeService::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  if (!range.IsBoundedBy(text_range_))
+  if (text_range_.IsValid() && !range.IsBoundedBy(text_range_))
     return false;
 
   InvalidateSurroundingTextAndSelectionRange();
