@@ -6,6 +6,7 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
@@ -55,6 +56,16 @@ void QRCodeGeneratorIconView::UpdateImpl() {
   const OmniboxView* omnibox_view = delegate()->GetOmniboxView();
   if (!omnibox_view)
     return;
+
+  // If desktop sharing hub is enabled, only show if the bubble is visible.
+  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox)) {
+    QRCodeGeneratorBubbleController* controller =
+        QRCodeGeneratorBubbleController::Get(web_contents);
+    bool visible =
+        controller && controller->qrcode_generator_bubble_view() != nullptr;
+    SetVisible(visible);
+    return;
+  }
 
   bool feature_available =
       QRCodeGeneratorBubbleController::IsGeneratorAvailable(

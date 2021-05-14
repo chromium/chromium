@@ -7,6 +7,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
@@ -57,25 +58,33 @@ void SendTabToSelfIconView::UpdateImpl() {
     return;
   }
 
+  SendTabToSelfBubbleController* controller = GetController();
+  // If desktop sharing hub is enabled, only show if the bubble is visible.
+  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox)) {
+    bool visible =
+        controller && controller->send_tab_to_self_bubble_view() != nullptr;
+    SetVisible(visible);
+    return;
+  }
+
   if (!is_animating_label() && !omnibox_view->model()->has_focus()) {
     sending_animation_state_ = AnimationState::kNotShown;
   }
-    SendTabToSelfBubbleController* controller = GetController();
-    if (controller && controller->show_message()) {
-      if (!GetVisible()) {
-        SetVisible(true);
-      }
-      controller->set_show_message(false);
-      if (initial_animation_state_ == AnimationState::kShowing &&
-          label()->GetVisible()) {
-        initial_animation_state_ = AnimationState::kShown;
-        SetLabel(l10n_util::GetStringUTF16(
-            IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
-      } else {
-        AnimateIn(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL);
-      }
-      sending_animation_state_ = AnimationState::kShowing;
+  if (controller && controller->show_message()) {
+    if (!GetVisible()) {
+      SetVisible(true);
     }
+    controller->set_show_message(false);
+    if (initial_animation_state_ == AnimationState::kShowing &&
+        label()->GetVisible()) {
+      initial_animation_state_ = AnimationState::kShown;
+      SetLabel(
+          l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
+    } else {
+      AnimateIn(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL);
+    }
+    sending_animation_state_ = AnimationState::kShowing;
+  }
   if (!GetVisible() && omnibox_view->model()->has_focus() &&
       !omnibox_view->model()->user_input_in_progress()) {
     SendTabToSelfBubbleController* controller = GetController();

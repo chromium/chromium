@@ -51,6 +51,8 @@ class QRCodeGeneratorBubbleController
 
   friend class content::WebContentsUserData<QRCodeGeneratorBubbleController>;
 
+  void UpdateIcon();
+
   // The web_contents associated with this controller.
   content::WebContents* web_contents_;
 

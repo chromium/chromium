@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -41,7 +42,7 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url) {
   qrcode_generator_bubble_ =
       browser->window()->ShowQRCodeGeneratorBubble(web_contents_, this, url);
 
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kQRCodeGenerator);
+  UpdateIcon();
 }
 
 void QRCodeGeneratorBubbleController::HideBubble() {
@@ -58,6 +59,15 @@ QRCodeGeneratorBubbleController::qrcode_generator_bubble_view() const {
 
 void QRCodeGeneratorBubbleController::OnBubbleClosed() {
   qrcode_generator_bubble_ = nullptr;
+
+  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox)) {
+    UpdateIcon();
+  }
+}
+
+void QRCodeGeneratorBubbleController::UpdateIcon() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  browser->window()->UpdatePageActionIcon(PageActionIconType::kQRCodeGenerator);
 }
 
 QRCodeGeneratorBubbleController::QRCodeGeneratorBubbleController() = default;
