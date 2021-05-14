@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/blink.h"
 

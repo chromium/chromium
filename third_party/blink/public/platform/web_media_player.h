@@ -44,6 +44,7 @@
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace cc {
 class PaintCanvas;

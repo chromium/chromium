@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "v8/include/v8.h"
 
@@ -40,6 +39,12 @@ class BinderMap;
 }
 
 namespace blink {
+
+namespace scheduler {
+class WebThreadScheduler;
+}  // namespace scheduler
+
+class Platform;
 
 // Initialize the entire Blink (wtf, platform, core, modules and web).
 // If you just need wtf and platform, use Platform::Initialize instead.

@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
 #include "cc/paint/paint_recorder.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 

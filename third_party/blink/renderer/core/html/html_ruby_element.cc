@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_ruby_element.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"

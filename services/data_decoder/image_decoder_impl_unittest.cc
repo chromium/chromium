@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/data_decoder/image_decoder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"

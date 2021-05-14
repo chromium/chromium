@@ -7,7 +7,7 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/record_paint_canvas.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
