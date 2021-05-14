@@ -673,7 +673,7 @@ void WriteFDWrapper(const int fd,
                     const char* buf,
                     int size,
                     WaitableEvent* event) {
-  ASSERT_TRUE(WriteFileDescriptor(fd, buf, size));
+  ASSERT_TRUE(WriteFileDescriptor(fd, StringPiece(buf, size)));
 }
 
 }  // namespace

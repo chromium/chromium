@@ -175,8 +175,8 @@ class ProcessOutputWatcherTest : public testing::Test {
       ssize_t test_size = test_str.length() * sizeof(*test_str.c_str());
       if (test_cases[i].should_send_terminating_null)
         test_size += sizeof(*test_str.c_str());
-      EXPECT_TRUE(base::WriteFileDescriptor(pt_pipe[1], test_str.c_str(),
-                                            test_size));
+      EXPECT_TRUE(base::WriteFileDescriptor(
+          pt_pipe[1], base::StringPiece(test_str.c_str(), test_size)));
 
       run_loop.Run();
       EXPECT_TRUE(expectations_.IsDone());

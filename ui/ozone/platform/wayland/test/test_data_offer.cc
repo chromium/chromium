@@ -21,8 +21,7 @@ namespace {
 
 void WriteDataOnWorkerThread(base::ScopedFD fd,
                              ui::PlatformClipboard::Data data) {
-  if (!base::WriteFileDescriptor(fd.get(), data->front_as<char>(),
-                                 data->size())) {
+  if (!base::WriteFileDescriptor(fd.get(), data->data())) {
     LOG(ERROR) << "Failed to write selection data to clipboard.";
   }
 }

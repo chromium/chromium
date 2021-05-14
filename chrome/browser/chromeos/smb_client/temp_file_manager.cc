@@ -32,9 +32,7 @@ base::ScopedFD TempFileManager::CreateTempFile(
   base::ScopedFD temp_fd = CreateTempFile();
 
   // Write the data into the newly created file.
-  if (!base::WriteFileDescriptor(temp_fd.get(),
-                                 reinterpret_cast<const char*>(data.data()),
-                                 data.size())) {
+  if (!base::WriteFileDescriptor(temp_fd.get(), data)) {
     LOG(ERROR) << "Error writing to temporary file";
     temp_fd.reset();
     return temp_fd;

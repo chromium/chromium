@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -110,9 +111,8 @@ base::ScopedFD CreatePasswordPipe(const std::string& data) {
   const size_t data_size = data.size();
 
   base::WriteFileDescriptor(pipe_write_end.get(),
-                            reinterpret_cast<const char*>(&data_size),
-                            sizeof(data_size));
-  base::WriteFileDescriptor(pipe_write_end.get(), data.c_str(), data.size());
+                            base::as_bytes(base::make_span(&data_size, 1)));
+  base::WriteFileDescriptor(pipe_write_end.get(), data);
 
   return pipe_read_end;
 }

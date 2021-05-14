@@ -92,7 +92,7 @@ std::unique_ptr<gfx::GpuFence> FakeFenceFD::GetGpuFence() const {
 }
 
 void FakeFenceFD::Signal() const {
-  base::WriteFileDescriptor(write_fd.get(), "a", 1);
+  base::WriteFileDescriptor(write_fd.get(), "a");
 }
 
 class HardwareDisplayControllerTest : public testing::Test {
@@ -213,7 +213,7 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
 
         plane.properties.push_back(
             {/* .id = */ pair.first, /*.value = */ value});
-      };
+      }
 
       drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
           kInFormatsBlobPropId, {DRM_FORMAT_XRGB8888}, {}));

@@ -592,16 +592,11 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   base::FilePath ppd_file_path;
   base::ScopedFD ppd_fd =
       base::CreateAndOpenFdForTemporaryFileInDir(temp_dir, &ppd_file_path);
-  if (!ppd_fd.is_valid())
-    return false;
-
-  if (!base::WriteFileDescriptor(ppd_fd.get(), printer_capabilities.data(),
-                                 printer_capabilities.size())) {
+  if (!ppd_fd.is_valid() ||
+      !base::WriteFileDescriptor(ppd_fd.get(), printer_capabilities) ||
+      lseek(ppd_fd.get(), 0, SEEK_SET) == -1) {
     return false;
   }
-
-  if (lseek(ppd_fd.get(), 0, SEEK_SET) == -1)
-    return false;
 
   ppd_file_t* ppd = ppdOpenFd(ppd_fd.get());
   if (!ppd) {

@@ -34,8 +34,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   void OnDataSourceDestroying(DataSource* source) override {}
   void OnTarget(const base::Optional<std::string>& mime_type) override {}
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    ASSERT_TRUE(
-        base::WriteFileDescriptor(fd.get(), kTestData, strlen(kTestData)));
+    ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), kTestData));
   }
   void OnCancelled() override {}
   void OnDndDropPerformed() override {}

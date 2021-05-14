@@ -182,7 +182,7 @@ bool CreateShortcutAtLocation(const base::FilePath location_path,
     return false;
   }
 
-  if (!base::WriteFileDescriptor(fd, contents.c_str(), contents.size())) {
+  if (!base::WriteFileDescriptor(fd, contents)) {
     // Delete the file. No shortcut is better than corrupted one. Use unlinkat
     // to make sure we're deleting the file in the directory we think we are.
     // Even if an attacker manager to put something other at

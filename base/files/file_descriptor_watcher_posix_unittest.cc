@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -126,8 +127,8 @@ class FileDescriptorWatcherTest
 
   void WriteByte() {
     constexpr char kByte = '!';
-    ASSERT_TRUE(
-        WriteFileDescriptor(write_file_descriptor(), &kByte, sizeof(kByte)));
+    ASSERT_TRUE(WriteFileDescriptor(write_file_descriptor(),
+                                    as_bytes(make_span(&kByte, 1))));
   }
 
   void ReadByte() {

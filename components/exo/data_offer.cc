@@ -50,9 +50,7 @@ constexpr char kUTF16[] = "utf16";
 void WriteFileDescriptorOnWorkerThread(
     base::ScopedFD fd,
     scoped_refptr<base::RefCountedMemory> memory) {
-  if (!base::WriteFileDescriptor(fd.get(),
-                                 reinterpret_cast<const char*>(memory->front()),
-                                 memory->size()))
+  if (!base::WriteFileDescriptor(fd.get(), *memory))
     DLOG(ERROR) << "Failed to write drop data";
 }
 

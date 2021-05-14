@@ -197,8 +197,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   base::File read_file(pipe_handles[0]);
   std::string formatted_message = FormatMessage(kTestMessage);
   ASSERT_GT(base::GetPageSize(), formatted_message.size());
-  ASSERT_TRUE(base::WriteFileDescriptor(
-      pipe_handles[1], formatted_message.data(), formatted_message.size()));
+  ASSERT_TRUE(base::WriteFileDescriptor(pipe_handles[1], formatted_message));
   base::File write_file(pipe_handles[1]);
   std::unique_ptr<NativeProcessLauncher> launcher =
       FakeLauncher::CreateWithPipeInput(std::move(read_file), temp_output_file);

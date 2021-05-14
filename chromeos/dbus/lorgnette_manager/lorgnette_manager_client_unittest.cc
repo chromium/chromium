@@ -359,7 +359,7 @@ class LorgnetteManagerClientTest : public testing::Test {
   // only be called when a scan job exists.
   void WriteDataToScanJob(const std::string& data) {
     ASSERT_TRUE(fd_.is_valid());
-    EXPECT_TRUE(base::WriteFileDescriptor(fd_.get(), data.data(), data.size()));
+    EXPECT_TRUE(base::WriteFileDescriptor(fd_.get(), data));
     fd_.reset();
     task_environment_.RunUntilIdle();
   }

@@ -162,9 +162,7 @@ void SmbFsMounter::OnMountDone(
     base::ScopedFD pipe_read_end(pipe_fds[0]);
     base::ScopedFD pipe_write_end(pipe_fds[1]);
     // Write password to pipe.
-    CHECK(base::WriteFileDescriptor(pipe_write_end.get(),
-                                    options_.password.c_str(),
-                                    options_.password.size()));
+    CHECK(base::WriteFileDescriptor(pipe_write_end.get(), options_.password));
 
     mojom::PasswordPtr password = mojom::Password::New();
     password->length = static_cast<int32_t>(options_.password.size());

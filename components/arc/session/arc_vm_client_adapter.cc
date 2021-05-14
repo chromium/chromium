@@ -444,7 +444,7 @@ bool SendUpgradePropsToArcVmBootNotificationServer(
   if (!fd.is_valid())
     return false;
 
-  if (!base::WriteFileDescriptor(fd.get(), props.c_str(), props.size())) {
+  if (!base::WriteFileDescriptor(fd.get(), props)) {
     PLOG(ERROR) << "Unable to write props to "
                 << kArcVmBootNotificationServerSocketPath;
     return false;

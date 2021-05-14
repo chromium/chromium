@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -121,16 +122,16 @@ void RecordAuthenticationMethod(AuthMethod method) {
 base::ScopedFD MakeFdWithContents(const std::string& contents) {
   const size_t content_size = contents.size();
 
-  base::ScopedFD read_fd, write_fd;
+  base::ScopedFD read_fd;
+  base::ScopedFD write_fd;
   if (!base::CreatePipe(&read_fd, &write_fd, true /* non_blocking */)) {
     LOG(ERROR) << "Unable to create pipe";
     return {};
   }
   bool success =
-      base::WriteFileDescriptor(write_fd.get(),
-                                reinterpret_cast<const char*>(&content_size),
-                                sizeof(content_size)) &&
-      base::WriteFileDescriptor(write_fd.get(), contents.data(), content_size);
+      base::WriteFileDescriptor(
+          write_fd.get(), base::as_bytes(base::make_span(&content_size, 1))) &&
+      base::WriteFileDescriptor(write_fd.get(), contents);
   if (!success) {
     PLOG(ERROR) << "Unable to write contents to pipe";
     return {};

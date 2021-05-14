@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -335,10 +336,9 @@ bool MetafileSkia::SaveToFileDescriptor(int fd) const {
     if (read_size == 0u)
       break;
     DCHECK_GE(buffer.size(), read_size);
-    if (!base::WriteFileDescriptor(
-            fd, reinterpret_cast<const char*>(buffer.data()), read_size)) {
+    buffer.resize(read_size);
+    if (!base::WriteFileDescriptor(fd, buffer))
       return false;
-    }
   } while (!asset->isAtEnd());
 
   return true;

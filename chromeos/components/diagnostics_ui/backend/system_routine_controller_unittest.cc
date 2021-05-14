@@ -214,8 +214,7 @@ class SystemRoutineControllerTest : public testing::Test {
     base::ScopedFD fd =
         base::CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(), &path);
     DCHECK(fd.is_valid());
-    const bool write_success =
-        base::WriteFileDescriptor(fd.get(), contents.data(), contents.size());
+    const bool write_success = base::WriteFileDescriptor(fd.get(), contents);
     DCHECK(write_success);
     return mojo::WrapPlatformFile(std::move(fd));
   }

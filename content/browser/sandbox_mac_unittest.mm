@@ -19,6 +19,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -250,9 +251,10 @@ TEST_F(SandboxMacTest, FontLoadingTest) {
       result->font_data->Map(font_data_size);
   ASSERT_TRUE(mapping);
 
-  base::WriteFileDescriptor(fileno(temp_file.get()),
-                            static_cast<const char*>(mapping.get()),
-                            font_data_size);
+  base::WriteFileDescriptor(
+      fileno(temp_file.get()),
+      base::StringPiece(static_cast<const char*>(mapping.get()),
+                        font_data_size));
 
   extra_data_ = temp_file_path.value();
   ExecuteWithParams("FontLoadingProcess",

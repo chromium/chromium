@@ -124,8 +124,7 @@ void CreateTempFileWithContents(const char* contents, base::ScopedFILE* file) {
   *file = CreateAndOpenTemporaryStream(&temp_path);
   ASSERT_TRUE(*file);
 
-  ASSERT_TRUE(base::WriteFileDescriptor(fileno(file->get()), contents,
-                                        strlen(contents)));
+  ASSERT_TRUE(base::WriteFileDescriptor(fileno(file->get()), contents));
 }
 
 }  // namespace

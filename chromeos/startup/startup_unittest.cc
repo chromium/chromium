@@ -31,7 +31,7 @@ base::ScopedFD CreateMemoryFile(const base::StringPiece content) {
     return base::ScopedFD();
   }
 
-  if (!base::WriteFileDescriptor(file.get(), content.data(), content.size())) {
+  if (!base::WriteFileDescriptor(file.get(), content)) {
     LOG(ERROR) << "Failed to write the data";
     return base::ScopedFD();
   }

@@ -882,20 +882,26 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
   if (fd < 0)
     return -1;
 
-  int bytes_written = WriteFileDescriptor(fd, data, size) ? size : -1;
+  int bytes_written =
+      WriteFileDescriptor(fd, StringPiece(data, size)) ? size : -1;
   if (IGNORE_EINTR(close(fd)) < 0)
     return -1;
   return bytes_written;
 }
 
-bool WriteFileDescriptor(const int fd, const char* data, int size) {
+bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
+  return WriteFileDescriptor(
+      fd, StringPiece(reinterpret_cast<const char*>(data.data()), data.size()));
+}
+
+bool WriteFileDescriptor(int fd, StringPiece data) {
   // Allow for partial writes.
   ssize_t bytes_written_total = 0;
+  ssize_t size = checked_cast<ssize_t>(data.size());
   for (ssize_t bytes_written_partial = 0; bytes_written_total < size;
        bytes_written_total += bytes_written_partial) {
-    bytes_written_partial =
-        HANDLE_EINTR(write(fd, data + bytes_written_total,
-                           size - bytes_written_total));
+    bytes_written_partial = HANDLE_EINTR(write(
+        fd, data.data() + bytes_written_total, size - bytes_written_total));
     if (bytes_written_partial < 0)
       return false;
   }
@@ -993,8 +999,7 @@ bool AppendToFile(const FilePath& filename, StringPiece data) {
   }
 
   // This call will either write all of the data or return false.
-  int size = checked_cast<int>(data.size());
-  if (!WriteFileDescriptor(fd, data.data(), size)) {
+  if (!WriteFileDescriptor(fd, data)) {
     VPLOG(1) << "Error while writing to file " << filename.value();
     ret = false;
   }

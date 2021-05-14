@@ -37,7 +37,7 @@ template <typename T>
 void DataSource<T>::HandleSendEvent(const std::string& mime_type, int32_t fd) {
   std::string contents;
   delegate_->OnDataSourceSend(mime_type, &contents);
-  bool done = base::WriteFileDescriptor(fd, contents.data(), contents.length());
+  bool done = base::WriteFileDescriptor(fd, contents);
   DCHECK(done);
   close(fd);
 }

@@ -559,9 +559,7 @@ base::ScopedFD CreateStartupData(
     return base::ScopedFD();
   }
 
-  if (!base::WriteFileDescriptor(
-          fd.get(), reinterpret_cast<const char*>(serialized.data()),
-          serialized.size())) {
+  if (!base::WriteFileDescriptor(fd.get(), serialized)) {
     LOG(ERROR) << "Failed to dump the serialized startup data";
     return base::ScopedFD();
   }

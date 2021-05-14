@@ -43,8 +43,7 @@ bool FileProviderImpl::WriteFile(const std::string& path,
     return false;
 
   // Write to the tmp file.
-  const bool success =
-      base::WriteFileDescriptor(fd.get(), data.data(), data.size());
+  const bool success = base::WriteFileDescriptor(fd.get(), data);
   if (!success)
     return false;
 

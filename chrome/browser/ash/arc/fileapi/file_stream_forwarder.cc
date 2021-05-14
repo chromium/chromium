@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -118,8 +119,8 @@ void FileStreamForwarder::OnReadCompleted(int result) {
       task_runner_.get(), FROM_HERE,
       base::BindOnce(
           [](int fd, scoped_refptr<net::IOBuffer> buf, int size) {
-            const bool result =
-                base::WriteFileDescriptor(fd, buf->data(), size);
+            const bool result = base::WriteFileDescriptor(
+                fd, base::StringPiece(buf->data(), size));
             PLOG_IF(ERROR, !result) << "Write failed.";
             return result;
           },

@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -205,15 +206,14 @@ bool SerializationUtils::WriteMetricToFile(const MetricSample& sample,
   // The file containing the metrics samples will only be read by programs on
   // the same device so we do not check endianness.
   uint32_t encoded_size = base::checked_cast<uint32_t>(size);
-  if (!base::WriteFileDescriptor(file_descriptor.get(),
-                                 reinterpret_cast<char*>(&encoded_size),
-                                 sizeof(uint32_t))) {
+  if (!base::WriteFileDescriptor(
+          file_descriptor.get(),
+          base::as_bytes(base::make_span(&encoded_size, 1)))) {
     DPLOG(ERROR) << "error writing message length: " << filename;
     return false;
   }
 
-  if (!base::WriteFileDescriptor(
-          file_descriptor.get(), msg.c_str(), msg.size())) {
+  if (!base::WriteFileDescriptor(file_descriptor.get(), msg)) {
     DPLOG(ERROR) << "error writing message: " << filename;
     return false;
   }

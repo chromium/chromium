@@ -788,8 +788,7 @@ base::ScopedFD FakeFileSystemInstance::CreateStreamFileDescriptorToRead(
   DCHECK_EQ(0, ret);
   base::ScopedFD fd_read(fds[0]);
   base::ScopedFD fd_write(fds[1]);
-  bool write_success =
-      base::WriteFileDescriptor(fd_write.get(), content.data(), content.size());
+  bool write_success = base::WriteFileDescriptor(fd_write.get(), content);
   DCHECK(write_success);
   return fd_read;
 }

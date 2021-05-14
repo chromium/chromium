@@ -33,7 +33,7 @@ void CopyResult(base::RunLoop* run_loop,
 
 // Writes the |data| to |fd|, then close |fd|.
 void WriteData(base::ScopedFD fd, const std::string& data) {
-  EXPECT_TRUE(base::WriteFileDescriptor(fd.get(), data.data(), data.size()));
+  EXPECT_TRUE(base::WriteFileDescriptor(fd.get(), data));
 }
 
 }  // namespace

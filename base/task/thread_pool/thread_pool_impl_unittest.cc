@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cfi_buildflags.h"
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -913,7 +914,7 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   thread_pool_->Shutdown();
 
   constexpr char kByte = '!';
-  ASSERT_TRUE(WriteFileDescriptor(pipes[1], &kByte, sizeof(kByte)));
+  ASSERT_TRUE(WriteFileDescriptor(pipes[1], as_bytes(make_span(&kByte, 1))));
 
   // Give a chance for the file watcher to fire before closing the handles.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());

@@ -58,8 +58,7 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
       base::ScopedFD pipe_write_end;
       CHECK(base::CreatePipe(&pipe_read_end, &pipe_write_end,
                              true /* non_blocking */));
-      CHECK(base::WriteFileDescriptor(pipe_write_end.get(), password.c_str(),
-                                      password.size()));
+      CHECK(base::WriteFileDescriptor(pipe_write_end.get(), password));
 
       creds->password = mojom::Password::New(
           mojo::WrapPlatformHandle(

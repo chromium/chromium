@@ -187,7 +187,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
         }
         plane_prop.properties.push_back(
             {/* .id = */ pair.first, /* .value = */ value});
-      };
+      }
 
       plane_properties_.emplace_back(std::move(plane_prop));
     }
@@ -1213,7 +1213,7 @@ std::unique_ptr<gfx::GpuFence> FakeFenceFD::GetGpuFence() const {
 }
 
 void FakeFenceFD::Signal() const {
-  base::WriteFileDescriptor(write_fd.get(), "a", 1);
+  base::WriteFileDescriptor(write_fd.get(), "a");
 }
 
 class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {

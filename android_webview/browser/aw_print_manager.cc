@@ -29,10 +29,8 @@ uint32_t SaveDataToFd(int fd,
                       scoped_refptr<base::RefCountedSharedMemoryMapping> data) {
   bool result = fd > base::kInvalidFd &&
                 base::IsValueInRangeForNumericType<int>(data->size());
-  if (result) {
-    int size = data->size();
-    result = base::WriteFileDescriptor(fd, data->front_as<char>(), size);
-  }
+  if (result)
+    result = base::WriteFileDescriptor(fd, *data);
   return result ? page_count : 0;
 }
 
