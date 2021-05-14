@@ -278,9 +278,9 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi lock_contents(contents);
   SetUserCount(3);
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Returns the distance between the auth user view and the user view.
   auto calculate_distance = [&]() {
@@ -298,13 +298,11 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
           widget->GetNativeWindow());
   for (int i = 2; i < 10; ++i) {
     SetUserCount(i);
-    SCOPED_TRACE(testing::Message() << "User count: " << i);
 
     // Start at 0 degrees (landscape).
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
     int distance_0deg = calculate_distance();
     EXPECT_NE(distance_0deg, 0);
 
@@ -312,18 +310,16 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
     int distance_90deg = calculate_distance();
-    EXPECT_LT(distance_90deg, distance_0deg);
+    EXPECT_GT(distance_0deg, distance_90deg);
 
     // Rotate the display back to 0 degrees (landscape).
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
-    widget->LayoutRootViewIfNecessary();
-    int distance_0deg_2 = calculate_distance();
-    EXPECT_EQ(distance_0deg_2, distance_0deg);
-    EXPECT_NE(distance_0deg_2, distance_90deg);
+    int distance_180deg = calculate_distance();
+    EXPECT_EQ(distance_0deg, distance_180deg);
+    EXPECT_NE(distance_0deg, distance_90deg);
   }
 }
 
@@ -333,10 +329,10 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutExtraSmallUsersListAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(9);
   ScrollableUsersListView* users_list =
       LockContentsView::TestApi(contents).users_list();
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Users list in extra small layout should adjust its height to parent.
   EXPECT_EQ(contents->height(), users_list->height());
@@ -370,10 +366,10 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutSmallUsersListAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(4);
   ScrollableUsersListView* users_list =
       LockContentsView::TestApi(contents).users_list();
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Calculate top spacing between users list and lock screen contents.
   auto top_margin = [&]() {
@@ -551,11 +547,11 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryAuthUser) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi lock_contents(contents);
   SetUserCount(5);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
   EXPECT_EQ(users().size() - 1, users_list.user_views().size());
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
@@ -1900,9 +1896,9 @@ TEST_F(LockContentsViewUnitTest, UserListUserSwapFocusesPassword) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi contents_test_api(contents);
   AddUsers(3);
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LoginPasswordView* password_view =
       LoginAuthUserView::TestApi(
@@ -1926,8 +1922,8 @@ TEST_F(LockContentsViewUnitTest, BadDetachableBaseUnfocusesPasswordView) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(), std::move(fake_detachable_base_model));
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(3);
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LockContentsView::TestApi test_api(contents);
   LoginBigUserView* primary_view = test_api.primary_big_view();
@@ -2676,8 +2672,8 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetWidget(CreateWidgetWithContent(contents));
   SetUserCount(3);
+  SetWidget(CreateWidgetWithContent(contents));
 
   LockContentsView::TestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());

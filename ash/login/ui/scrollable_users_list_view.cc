@@ -353,16 +353,6 @@ LoginUserView* ScrollableUsersListView::GetUserView(
   return nullptr;
 }
 
-void ScrollableUsersListView::UpdateUserViewHostLayoutInsets() {
-  DCHECK(GetWidget());
-  bool should_show_landscape =
-      login_views_utils::ShouldShowLandscape(GetWidget());
-  LayoutParams layout_params = BuildLayoutForStyle(display_style_);
-  user_view_host_layout_->set_inside_border_insets(
-      should_show_landscape ? layout_params.insets_landscape
-                            : layout_params.insets_portrait);
-}
-
 void ScrollableUsersListView::Layout() {
   DCHECK(user_view_host_layout_);
 
@@ -374,7 +364,13 @@ void ScrollableUsersListView::Layout() {
       PreferredSizeChanged();
   }
 
-  UpdateUserViewHostLayoutInsets();
+  // Update the user view layout.
+  bool should_show_landscape =
+      login_views_utils::ShouldShowLandscape(GetWidget());
+  LayoutParams layout_params = BuildLayoutForStyle(display_style_);
+  user_view_host_layout_->set_inside_border_insets(
+      should_show_landscape ? layout_params.insets_landscape
+                            : layout_params.insets_portrait);
 
   // Layout everything.
   ScrollView::Layout();

@@ -2539,9 +2539,6 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(PressInput(tab_1_center));
   ASSERT_TRUE(DragInputTo(tab_1_center +
                           gfx::Vector2d(TabStyle::GetStandardWidth(), 0)));
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
   EXPECT_EQ(tab_strip_width + TabStyle::GetStandardWidth(), tab_strip->width());
   ASSERT_TRUE(ReleaseInput());
 }

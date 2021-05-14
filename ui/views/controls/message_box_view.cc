@@ -109,11 +109,11 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
   } else {
     add_label(message, true, gfx::ALIGN_LEFT);
   }
-  scroll_view_ = AddChildView(std::make_unique<ScrollView>());
-  scroll_view_->ClipHeightTo(
-      0,
-      provider->GetDistanceMetric(DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-  scroll_view_->SetContents(std::move(message_contents));
+  auto scroll_view = std::make_unique<ScrollView>();
+  scroll_view->ClipHeightTo(0, provider->GetDistanceMetric(
+                                   DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
+  scroll_view->SetContents(std::move(message_contents));
+  scroll_view_ = AddChildView(std::move(scroll_view));
   // Don't enable text selection if multiple labels are used, since text
   // selection can't span multiple labels.
   if (message_labels_.size() == 1u)

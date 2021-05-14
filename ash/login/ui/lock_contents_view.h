@@ -390,6 +390,11 @@ class ASH_EXPORT LockContentsView
   // Returns the user view for |user|.
   LoginUserView* TryToFindUserView(const AccountId& user);
 
+  // Returns scrollable view with initialized size and rows for all |users|.
+  std::unique_ptr<ScrollableUsersListView> BuildScrollableUsersListView(
+      const std::vector<LoginUserInfo>& users,
+      LoginDisplayStyle display_style);
+
   // Change the visibility of child views based on the |style|.
   void SetDisplayStyle(DisplayStyle style);
 

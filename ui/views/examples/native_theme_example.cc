@@ -39,13 +39,11 @@ namespace {
 void InsertColorRow(GridLayout* layout,
                     base::StringPiece16 label_string,
                     ui::NativeTheme::ColorId color_id) {
-  layout->StartRow(GridLayout::kFixedSize, 0);
-  auto* label_view =
-      layout->AddView(std::make_unique<Label>(std::u16string(label_string)));
+  auto label_view = std::make_unique<Label>(std::u16string(label_string));
   label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_view->SetSelectable(true);
 
-  auto* color_view = layout->AddView(std::make_unique<Label>());
+  auto color_view = std::make_unique<Label>();
   color_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   auto background_color =
       color_view->GetNativeTheme()->GetSystemColor(color_id);
@@ -59,12 +57,16 @@ void InsertColorRow(GridLayout* layout,
   color_view->SetBackgroundColor(background_color);
   color_view->SetBackground(CreateSolidBackground(background_color));
   color_view->SetSelectable(true);
+
+  layout->StartRow(GridLayout::kFixedSize, 0);
+  layout->AddView(std::move(label_view));
+  layout->AddView(std::move(color_view));
 }
 
 // Returns a view of two columns where the first contains the identifier names
 // of ui::NativeTheme::ColorId and the second contains the color.
-void CreateAllColorsView(ScrollView* scroll_view) {
-  auto* container = scroll_view->SetContents(std::make_unique<View>());
+std::unique_ptr<View> CreateAllColorsView() {
+  auto container = std::make_unique<View>();
   auto* layout = container->SetLayoutManager(std::make_unique<GridLayout>());
   auto* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
@@ -161,21 +163,8 @@ void CreateAllColorsView(ScrollView* scroll_view) {
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_DefaultIconColor));
   // Expands the view to allow for scrolling.
   container->SizeToPreferredSize();
+  return container;
 }
-
-class AllColorsScrollView : public ScrollView {
- public:
-  AllColorsScrollView() {
-    constexpr int kMaxHeight = 300;
-    ClipHeightTo(0, kMaxHeight);
-  }
-
- protected:
-  void OnThemeChanged() override {
-    ScrollView::OnThemeChanged();
-    CreateAllColorsView(this);
-  }
-};
 
 }  // namespace
 
@@ -186,7 +175,9 @@ NativeThemeExample::~NativeThemeExample() = default;
 
 void NativeThemeExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
-  container->AddChildView(std::make_unique<AllColorsScrollView>());
+  auto scroll_view = std::make_unique<ScrollView>();
+  scroll_view->SetContents(CreateAllColorsView());
+  container->AddChildView(std::move(scroll_view));
 }
 
 }  // namespace examples
