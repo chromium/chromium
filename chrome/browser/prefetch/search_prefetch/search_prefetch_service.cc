@@ -541,18 +541,14 @@ bool SearchPrefetchService::LoadFromPrefs() {
     return dictionary->DictSize() > 0;
   }
 
-  for (const auto& element : *dictionary) {
+  for (const auto& element : dictionary->DictItems()) {
     GURL navigation_url(element.first);
     if (!navigation_url.is_valid()) {
       continue;
     }
 
-    if (!element.second) {
-      continue;
-    }
-
     base::Value::ConstListView const prefetch_url_and_time =
-        base::Value::AsListValue(*element.second).GetList();
+        base::Value::AsListValue(element.second).GetList();
 
     if (prefetch_url_and_time.size() != 2 ||
         !prefetch_url_and_time[0].is_string() ||

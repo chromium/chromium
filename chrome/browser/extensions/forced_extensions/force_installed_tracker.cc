@@ -108,11 +108,11 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
       pref_service_->GetDictionary(pref_names::kInstallForceList);
   if (value) {
     // Add each extension to |extensions_|.
-    for (const auto& entry : *value) {
+    for (const auto& entry : value->DictItems()) {
       const ExtensionId& extension_id = entry.first;
-      std::string* update_url = nullptr;
-      if (entry.second->is_dict()) {
-        update_url = entry.second->FindStringKey(
+      const std::string* update_url = nullptr;
+      if (entry.second.is_dict()) {
+        update_url = entry.second.FindStringKey(
             ExternalProviderImpl::kExternalUpdateUrl);
       }
       bool is_from_store =

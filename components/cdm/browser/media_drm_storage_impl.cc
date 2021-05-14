@@ -613,7 +613,7 @@ std::set<GURL> MediaDrmStorageImpl::GetAllOrigins(
     return std::set<GURL>();
 
   std::set<GURL> origin_set;
-  for (const auto& key_value : *storage_dict) {
+  for (const auto& key_value : storage_dict->DictItems()) {
     GURL origin(key_value.first);
     if (origin.is_valid())
       origin_set.insert(origin);

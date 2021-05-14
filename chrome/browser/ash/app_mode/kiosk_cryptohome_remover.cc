@@ -59,9 +59,9 @@ void UpdateFromDictValue(const char* dict_pref_name) {
   {
     DictionaryPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    for (auto& element : *users_to_remove) {
+    for (const auto& element : users_to_remove->DictItems()) {
       std::string app_id;
-      element.second->GetAsString(&app_id);
+      element.second.GetAsString(&app_id);
       dict_update->SetKey(element.first, base::Value(app_id));
     }
   }
@@ -113,9 +113,9 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* const dict =
       local_state->GetDictionary(prefs::kAllKioskUsersToRemove);
-  for (auto& it : *dict) {
+  for (const auto& it : dict->DictItems()) {
     std::string app_id;
-    it.second->GetAsString(&app_id);
+    it.second.GetAsString(&app_id);
     VLOG(1) << "Removing obsolete cryptohome for " << app_id;
 
     const cryptohome::Identification cryptohome_id(

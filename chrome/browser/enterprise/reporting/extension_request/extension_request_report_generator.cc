@@ -36,7 +36,7 @@ bool IsRequestInDict(const std::string& extension_id,
 // add-request.
 std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
     const std::string& extension_id,
-    base::Value* request_data) {
+    const base::Value* request_data) {
   auto report = std::make_unique<ExtensionsWorkflowEvent>();
   report->set_id(extension_id);
   if (request_data) {
@@ -116,8 +116,8 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   const base::DictionaryValue* uploaded_requests =
       profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
 
-  for (const auto& it : *pending_requests) {
-    std::string extension_id = it.first;
+  for (const auto& it : pending_requests->DictItems()) {
+    const std::string& extension_id = it.first;
     if (!ShouldUploadExtensionRequest(extension_id, webstore_update_url,
                                       extension_management)) {
       continue;
@@ -128,11 +128,11 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
       continue;
 
     reports.push_back(
-        GenerateReport(extension_id, /*request_data = */ it.second.get()));
+        GenerateReport(extension_id, /*request_data=*/&it.second));
   }
 
-  for (const auto& it : *uploaded_requests) {
-    std::string extension_id = it.first;
+  for (const auto& it : uploaded_requests->DictItems()) {
+    const std::string& extension_id = it.first;
 
     // Request is still pending, no need to send remove request.
     if (IsRequestInDict(extension_id, pending_requests))

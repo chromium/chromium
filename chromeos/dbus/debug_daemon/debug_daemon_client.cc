@@ -87,8 +87,8 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
     }
 
     std::map<std::string, std::string> data;
-    for (const auto& entry : *logs)
-      data[entry.first] = entry.second->GetString();
+    for (const auto& entry : logs->DictItems())
+      data[entry.first] = entry.second.GetString();
     RunCallbackAndDestroy(std::move(data));
   }
 

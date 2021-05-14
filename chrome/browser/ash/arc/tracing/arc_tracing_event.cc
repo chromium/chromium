@@ -255,22 +255,22 @@ std::string ArcTracingEvent::ToString() const {
   const base::DictionaryValue* args = GetArgs();
   if (args) {
     bool first_arg = true;
-    for (const auto& arg : *args) {
+    for (const auto& arg : args->DictItems()) {
       if (first_arg) {
         result += "|";
         first_arg = false;
       } else {
         result += ",";
       }
-      if (arg.second->is_string()) {
+      if (arg.second.is_string()) {
         result += base::StringPrintf("%s=%s", arg.first.c_str(),
-                                     arg.second->GetString().c_str());
-      } else if (arg.second->is_int()) {
-        result += base::StringPrintf("%s=%i", arg.first.c_str(),
-                                     arg.second->GetInt());
-      } else if (arg.second->is_double()) {
+                                     arg.second.GetString().c_str());
+      } else if (arg.second.is_int()) {
+        result +=
+            base::StringPrintf("%s=%i", arg.first.c_str(), arg.second.GetInt());
+      } else if (arg.second.is_double()) {
         result += base::StringPrintf("%s=%f", arg.first.c_str(),
-                                     arg.second->GetDouble());
+                                     arg.second.GetDouble());
       } else {
         result += base::StringPrintf("%s=?", arg.first.c_str());
       }

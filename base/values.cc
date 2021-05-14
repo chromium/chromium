@@ -1493,7 +1493,7 @@ void DictionaryValue::Swap(DictionaryValue* other) {
 }
 
 DictionaryValue::Iterator::Iterator(const DictionaryValue& target)
-    : target_(target), it_(target.dict().begin()) {}
+    : target_(target), it_(target.DictItems().begin()) {}
 
 DictionaryValue::Iterator::Iterator(const Iterator& other) = default;
 

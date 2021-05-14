@@ -99,8 +99,8 @@ void ExtensionRequestObserver::ShowNotification(
   std::string web_store_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  for (auto& request : *pending_requests) {
-    std::string id = request.first;
+  for (const auto& request : pending_requests->DictItems()) {
+    const std::string& id = request.first;
     extensions::ExtensionManagement::InstallationMode mode =
         extension_management->GetInstallationMode(id, web_store_update_url);
     if ((type == ExtensionRequestNotification::kApproved &&

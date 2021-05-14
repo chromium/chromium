@@ -84,7 +84,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
       pref_service_->GetDictionary(prefetch::prefs::kRetryAfterPrefPath);
   DCHECK(dictionary);
 
-  for (const auto& element : *dictionary) {
+  for (const auto& element : dictionary->DictItems()) {
     GURL url_origin(element.first);
     if (!url_origin.is_valid()) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
@@ -93,7 +93,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
       continue;
     }
 
-    base::Optional<base::Time> retry_after = util::ValueToTime(*element.second);
+    base::Optional<base::Time> retry_after = util::ValueToTime(element.second);
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.

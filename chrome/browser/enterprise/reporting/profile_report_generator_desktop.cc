@@ -86,7 +86,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
   int number_of_requests = 0;
-  for (const auto& it : *pending_requests) {
+  for (const auto& it : pending_requests->DictItems()) {
     if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
             it.first, webstore_update_url, extension_management)) {
       continue;
@@ -101,7 +101,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     auto* request = report->add_extension_requests();
     request->set_id(it.first);
     base::Optional<base::Time> timestamp = ::util::ValueToTime(
-        it.second->FindKey(extension_misc::kExtensionRequestTimestamp));
+        it.second.FindKey(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());
   }

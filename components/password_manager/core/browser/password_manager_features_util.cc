@@ -87,9 +87,8 @@ int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
   const base::DictionaryValue* global_pref =
       pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings);
   int count = 0;
-  for (const std::pair<std::string, std::unique_ptr<base::Value>>& entry :
-       *global_pref) {
-    if (entry.second->FindBoolKey(kAccountStorageOptedInKey).value_or(false))
+  for (const auto& entry : global_pref->DictItems()) {
+    if (entry.second.FindBoolKey(kAccountStorageOptedInKey).value_or(false))
       ++count;
   }
   return count;
@@ -232,9 +231,10 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
   // Show the opt-in if any known previous user opted into using the account
   // storage before and might want to access it again.
   return base::ranges::any_of(
-      *pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings),
-      [](const std::pair<std::string, std::unique_ptr<base::Value>>& p) {
-        return p.second->FindBoolKey(kAccountStorageOptedInKey).value_or(false);
+      pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings)
+          ->DictItems(),
+      [](const std::pair<std::string, const base::Value&>& p) {
+        return p.second.FindBoolKey(kAccountStorageOptedInKey).value_or(false);
       });
 }
 

@@ -382,8 +382,8 @@ void PolicyUITest::VerifyExportingPolicies(
   // The |chrome_metadata| we compare against will have the actual values so
   // those will be cleared to empty values so that the equals comparison below
   // will just compare key existence and value types.
-  for (auto& key_value : *chrome_metadata_dict)
-    *(key_value.second) = base::Value(key_value.second->type());
+  for (auto key_value : chrome_metadata_dict->DictItems())
+    key_value.second = base::Value(key_value.second.type());
 
   // Check that this dictionary is the same as expected.
   EXPECT_EQ(expected, *actual_policies);

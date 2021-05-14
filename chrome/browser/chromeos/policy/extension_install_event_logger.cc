@@ -63,7 +63,7 @@ void ExtensionInstallEventLogger::OnForcedExtensionsPrefChanged() {
   if (!value)
     return;
   std::set<extensions::ExtensionId> current_requested;
-  for (const auto& entry : *value)
+  for (const auto& entry : value->DictItems())
     current_requested.insert(entry.first);
   const std::set<extensions::ExtensionId> previous_pending =
       pending_extensions_;
