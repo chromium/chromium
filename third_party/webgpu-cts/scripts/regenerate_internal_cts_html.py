@@ -11,6 +11,7 @@ import os
 import shutil
 import subprocess
 import sys
+import logging
 
 third_party_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -36,7 +37,7 @@ def generate_internal_cts_html(check):
     js_out_dir = tempfile.mkdtemp()
     contents = None
     try:
-        print('WebGPU CTS: Extracting expectation names...')
+        logging.info('WebGPU CTS: Extracting expectation names...')
         old_sys_path = sys.path
         try:
             sys.path = old_sys_path + [
@@ -53,7 +54,7 @@ def generate_internal_cts_html(check):
             web_test_expectations = split_cts_expectations_and_web_test_expectations(
                 f.read())['web_test_expectations']['expectations']
 
-        print('WebGPU CTS: Reading manual test splits...')
+        logging.info('WebGPU CTS: Reading manual test splits...')
         with open(
                 os.path.join(third_party_dir, 'blink', 'web_tests', 'webgpu',
                              'internal_cts_test_splits.pyl')) as f:
@@ -66,7 +67,7 @@ def generate_internal_cts_html(check):
             for test in manual_splits:
                 split_list_out.write('%s\n' % test)
 
-        print('WebGPU CTS: Transpiling tools...')
+        logging.info('WebGPU CTS: Transpiling tools...')
         compile_src_for_node(js_out_dir)
 
         old_sys_path = sys.path
@@ -76,7 +77,7 @@ def generate_internal_cts_html(check):
         finally:
             sys.path = old_sys_path
 
-        print('WebGPU CTS: Generating cts.html...')
+        logging.info('WebGPU CTS: Generating cts.html...')
         cmd = [
             os.path.join(js_out_dir,
                          'common/tools/gen_wpt_cts_html.js'), cts_html_fname,
@@ -86,7 +87,7 @@ def generate_internal_cts_html(check):
                          'argsprefixes.txt'), split_list_fname,
             'wpt_internal/webgpu/cts.html', 'webgpu'
         ]
-        print(RunNode(cmd))
+        logging.info(RunNode(cmd))
 
         with open(cts_html_fname, 'rb') as f:
             contents = f.read()
@@ -117,7 +118,7 @@ def generate_reftest_html(check):
 
         if not check:
             shutil.rmtree(wpt_internal_dir)
-        print('WebGPU CTS: Generating HTML tests from %s...' % html_search_dir)
+        logging.info('WebGPU CTS: Generating HTML tests from %s...' % html_search_dir)
         for root, dirnames, filenames in os.walk(html_search_dir):
             for filename in filenames:
                 if filename.endswith('.html'):

@@ -10,6 +10,7 @@ import sys
 from tempfile import mkstemp
 import threading
 import os
+import logging
 
 # This script is run via //third_party/blink/tools/run_webgpu_cts.py which
 # adds blinkpy to the Python path.
@@ -78,7 +79,7 @@ class ExpectationsServer(BaseHTTPServer.HTTPServer):
                     'http://%s:%d/_start' %
                     (self.server_address[0], self.server_address[1])).read()
             except IOError as e:
-                print(e)
+                logging.warning(e)
                 continue
             return
 
@@ -90,7 +91,7 @@ class ExpectationsServer(BaseHTTPServer.HTTPServer):
                 'http://%s:%d/_stop' %
                 (self.server_address[0], self.server_address[1])).read()
         except IOError as e:
-            print(e)
+            logging.warning(e)
         self._thread.join()
         self._thread = None
 
@@ -241,14 +242,14 @@ def main(args, stderr):
     server = ExpectationsServer(split_result['cts_expectations_js'],
                                 ('127.0.0.1', 3000))
 
-    print('Starting expectations server...')
+    logging.info('Starting expectations server...')
     server.start()
 
     try:
         run_web_tests.main(forwarded_args, stderr)
 
     finally:
-        print('Stopping expectations server...')
+        logging.info('Stopping expectations server...')
         server.stop()
         os.close(web_test_expectations_fd)
 
