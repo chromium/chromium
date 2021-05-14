@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.shared;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +34,16 @@ public final class FeedFeatures {
     public static boolean isWebFeedUIEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
                 && getPrefService().getBoolean(Pref.ENABLE_WEB_FEED_UI);
+    }
+
+    /**
+     * @return Whether the feed should automatically scroll down when it first loads so that the
+     *         first card is at the top of the screen. This is for use with screenshot utilities.
+     */
+    public static boolean isAutoScrollToTopEnabled() {
+        CommandLine commandLine = CommandLine.getInstance();
+        if (commandLine == null) return false;
+        return commandLine.hasSwitch("feed_auto_scroll_to_top");
     }
 
     private static PrefService getPrefService() {

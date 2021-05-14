@@ -537,6 +537,11 @@ public class FeedSurfaceMediator
         }
         mCurrentStream = stream;
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
+
+        if (FeedFeatures.isAutoScrollToTopEnabled() && mRestoreScrollState == null) {
+            mRestoreScrollState = getScrollStateForAutoScrollToTop();
+        }
+
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
                 mCoordinator.getHybridListRenderer());
@@ -1015,6 +1020,12 @@ public class FeedSurfaceMediator
         StartSurfaceConfiguration.recordHistogram(FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                 mContentFirstAvailableTimeMs - mActivityCreationTimeMs, mIsInstantStart);
         return true;
+    }
+
+    private ScrollState getScrollStateForAutoScrollToTop() {
+        ScrollState state = new ScrollState();
+        state.position = 1;
+        return state;
     }
 
     // Detects animation finishes in RecyclerView.
