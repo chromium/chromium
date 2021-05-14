@@ -81,8 +81,8 @@ DownloadShelfPageHandler::GetDownloadItemFromUIModel(
   download_item->allow_download_feedback =
       download_model->ShouldAllowDownloadFeedback();
   download_item->danger_type = download_model->GetDangerType();
-  download_item->file_name_to_report_user =
-      download_model->GetFileNameToReportUser();
+  download_item->file_name_display_string =
+      download_model->GetFileNameToReportUser().AsUTF8Unsafe();
   download_item->id = download->GetId();
   download_item->is_dangerous = download_model->IsDangerous();
   download_item->is_paused = download->IsPaused();

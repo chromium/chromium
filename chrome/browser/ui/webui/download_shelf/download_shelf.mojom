@@ -121,8 +121,8 @@ struct DownloadItem {
   // Danger type associated with this download.
   DangerType danger_type;
 
-  // Filename that should be reported to the user.
-  mojo_base.mojom.FilePath file_name_to_report_user;
+  // Platform agnostic filename display string.
+  string file_name_display_string;
 
   // Download identifier.
   uint32 id;

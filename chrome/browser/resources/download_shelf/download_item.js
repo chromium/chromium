@@ -66,9 +66,7 @@ export class DownloadItemElement extends CustomElement {
       return;
     }
     const downloadElement = this.$('.download-item');
-    // Convert the value to a string as it might be a uint16 array for some
-    // platforms.
-    const filePath = String(item.fileNameToReportUser.path);
+    const filePath = item.fileNameDisplayString;
     this.$('#filename').innerText =
         filePath.substring(filePath.lastIndexOf('/') + 1);
 

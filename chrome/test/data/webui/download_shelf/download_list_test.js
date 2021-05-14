@@ -30,7 +30,7 @@ suite('DownloadListTest', function() {
       isDangerous: false,
       isMalicious: false,
       id,
-      fileNameToReportUser: {path: 'test.exe'},
+      fileNameDisplayString: 'test.exe',
       isPaused,
       mixedContentStatus: MixedContentStatus.kSafe,
       mode: DownloadMode.kNormal,
