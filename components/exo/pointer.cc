@@ -129,6 +129,8 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
 }
 
 Pointer::~Pointer() {
+  WMHelper* helper = WMHelper::GetInstance();
+  helper->RemovePreTargetHandler(this);
   delegate_->OnPointerDestroying(this);
   if (focus_surface_)
     focus_surface_->RemoveSurfaceObserver(this);
@@ -144,8 +146,6 @@ Pointer::~Pointer() {
   }
   if (stylus_delegate_)
     stylus_delegate_->OnPointerDestroying(this);
-  WMHelper* helper = WMHelper::GetInstance();
-  helper->RemovePreTargetHandler(this);
   // TODO(sky): CursorClient does not exist in mash
   // yet. https://crbug.com/631103.
   aura::client::CursorClient* cursor_client = helper->GetCursorClient();
@@ -371,6 +371,9 @@ void Pointer::OnSurfaceDestroying(Surface* surface) {
 // ui::EventHandler overrides:
 
 void Pointer::OnMouseEvent(ui::MouseEvent* event) {
+  if (seat_->was_shutdown())
+    return;
+
   // Nothing to report to a client nor have to update the pointer when capture
   // changes.
   if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)

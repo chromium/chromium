@@ -43,11 +43,11 @@ Touch::Touch(TouchDelegate* delegate, Seat* seat)
 }
 
 Touch::~Touch() {
+  WMHelper::GetInstance()->RemovePreTargetHandler(this);
   delegate_->OnTouchDestroying(this);
   if (HasStylusDelegate())
     stylus_delegate_->OnTouchDestroying(this);
   CancelAllTouches();
-  WMHelper::GetInstance()->RemovePreTargetHandler(this);
 }
 
 void Touch::SetStylusDelegate(TouchStylusDelegate* delegate) {
@@ -62,6 +62,9 @@ bool Touch::HasStylusDelegate() const {
 // ui::EventHandler overrides:
 
 void Touch::OnTouchEvent(ui::TouchEvent* event) {
+  if (seat_->was_shutdown())
+    return;
+
   seat_->SetLastPointerLocation(event->root_location_f());
 
   bool send_details = false;

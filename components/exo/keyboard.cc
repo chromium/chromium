@@ -169,6 +169,7 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
 }
 
 Keyboard::~Keyboard() {
+  RemoveEventHandler();
   for (KeyboardObserver& observer : observer_list_)
     observer.OnKeyboardDestroying(this);
   if (focus_)
@@ -177,7 +178,6 @@ Keyboard::~Keyboard() {
   ash::Shell::Get()->ime_controller()->RemoveObserver(this);
   ash::KeyboardController::Get()->RemoveObserver(this);
   seat_->RemoveObserver(this);
-  RemoveEventHandler();
 }
 
 bool Keyboard::HasDeviceConfigurationDelegate() const {
@@ -230,7 +230,7 @@ void Keyboard::AckKeyboardKey(uint32_t serial, bool handled) {
 // ui::EventHandler overrides:
 
 void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
-  if (!focus_)
+  if (!focus_ || seat_->was_shutdown())
     return;
 
   DCHECK(GetShellRootSurface(static_cast<aura::Window*>(event->target())) ||

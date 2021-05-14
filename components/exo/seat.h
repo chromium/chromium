@@ -143,6 +143,8 @@ class Seat : public aura::client::FocusChangeObserver,
     return drag_drop_operation_;
   }
 
+  bool was_shutdown() const { return was_shutdown_; }
+
  private:
   class RefCountedScopedClipboardWriter;
 
@@ -198,7 +200,7 @@ class Seat : public aura::client::FocusChangeObserver,
 
   FocusChangedCallback focus_changed_callback_;
 
-  bool shutdown_ = false;
+  bool was_shutdown_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<UILockController> ui_lock_controller_;

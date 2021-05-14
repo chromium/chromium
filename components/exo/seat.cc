@@ -82,9 +82,9 @@ void Seat::SetFocusChangedCallback(FocusChangedCallback callback) {
 }
 
 void Seat::Shutdown() {
-  if (shutdown_)
+  if (was_shutdown_)
     return;
-  shutdown_ = true;
+  was_shutdown_ = true;
   DCHECK(!selection_source_) << "DataSource must be released before Seat";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::Shell::Get()->ime_controller()->RemoveObserver(this);
