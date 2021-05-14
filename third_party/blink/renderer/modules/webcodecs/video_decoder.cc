@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
@@ -351,6 +352,8 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       std::vector<MediaConfigType>{media_config});
   MEDIA_LOG(INFO, media_log)
       << "Initialized VideoDecoder: " << media_config.AsHumanReadableString();
+  UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoDecoder.Codec",
+                            media_config.codec(), media::kVideoCodecMax + 1);
 }
 
 // static

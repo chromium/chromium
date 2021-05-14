@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -451,7 +452,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
   auto done_callback = [](VideoEncoder* self, Request* req,
-                          media::Status status) {
+                          media::VideoCodec codec, media::Status status) {
     if (!self || self->reset_count_ != req->reset_count)
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -460,6 +461,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     if (!status.is_ok()) {
       self->HandleError(self->logger_->MakeException(
           "Encoder initialization error.", status));
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
+                                media::kVideoCodecMax + 1);
     }
 
     self->stall_request_processing_ = false;
@@ -470,7 +474,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       active_config_->profile, active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, WrapCrossThreadWeakPersistent(this),
-          WrapCrossThreadPersistent(request))));
+          WrapCrossThreadPersistent(request), active_config_->codec)));
 }
 
 bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,

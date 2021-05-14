@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -91,6 +92,8 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       std::vector<MediaConfigType>{media_config});
   MEDIA_LOG(INFO, media_log)
       << "Initialized AudioDecoder: " << media_config.AsHumanReadableString();
+  UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.AudioDecoder.Codec",
+                            media_config.codec(), media::kAudioCodecMax + 1);
 }
 
 // static

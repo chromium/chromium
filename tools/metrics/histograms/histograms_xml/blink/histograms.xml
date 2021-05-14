@@ -3059,6 +3059,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.WebCodecs.{AudioCodecApi}.Codec" enum="AudioCodec"
+    expires_after="2022-02-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The codec type used with {AudioCodecApi}. Recorded for every successful
+    configure() call.
+  </summary>
+  <token key="AudioCodecApi">
+    <variant name="AudioDecoder"/>
+    <variant name="AudioEncoder"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.WebCodecs.{CodecApi}.FinalStatus" enum="MediaStatusCode"
     expires_after="2022-02-01">
   <owner>dalecurtis@chromium.org</owner>
@@ -3071,6 +3085,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="CodecApi">
     <variant name="AudioDecoder"/>
     <variant name="AudioEncoder"/>
+    <variant name="VideoDecoder"/>
+    <variant name="VideoEncoder"/>
+  </token>
+</histogram>
+
+<histogram name="Blink.WebCodecs.{VideoCodecApi}.Codec" enum="VideoCodec"
+    expires_after="2022-02-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The codec type used with {VideoCodecApi}. Recorded for every successful
+    configure() call.
+  </summary>
+  <token key="VideoCodecApi">
     <variant name="VideoDecoder"/>
     <variant name="VideoEncoder"/>
   </token>
