@@ -511,9 +511,6 @@
         'swarming': {
           'shards': 40,
         },
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
-        ],
       },
       'Linux ASan Tests (sandboxed)': {
         'swarming': {
@@ -537,15 +534,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
-      'Linux Tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
-        ],
-      },
       'Linux Tests (dbg)(1)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
-        ],
         # crbug.com/1066161
         'swarming': {
           'shards': 20,
@@ -613,9 +602,6 @@
         },
       },
       'linux-chromeos-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
-        ],
         'swarming': {
           'shards': 30,
         },
@@ -631,9 +617,6 @@
         ],
       },
       'linux-chromeos-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
-        ],
         'swarming': {
           'shards': 20,
           'dimension_sets': [
@@ -658,12 +641,12 @@
       },
       'linux-lacros-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
         ],
       },
       'linux-lacros-tester-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
         ],
       },
       'linux-trusty-rel': {
