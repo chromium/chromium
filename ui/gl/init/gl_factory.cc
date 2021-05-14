@@ -92,6 +92,13 @@ GLImplementationParts GetRequestedGLImplementation(
                (requested_implementation_gl_name ==
                 kGLImplementationSwiftShaderForWebGLName)) {
       impl = GLImplementationParts(kGLImplementationSwiftShaderGL);
+    } else if ((requested_implementation_gl_name ==
+                kGLImplementationANGLEName) &&
+               ((requested_implementation_angle_name ==
+                 kANGLEImplementationSwiftShaderName) ||
+                (requested_implementation_angle_name ==
+                 kANGLEImplementationSwiftShaderForWebGLName))) {
+      impl = GLImplementationParts(ANGLEImplementation::kSwiftShader);
     } else {
       impl = GetNamedGLImplementation(requested_implementation_gl_name,
                                       requested_implementation_angle_name);
