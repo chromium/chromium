@@ -872,6 +872,31 @@ TEST(StaticAVIFTests, YUV) {
   }
 }
 
+TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
+  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SegmentReader> segment_reader =
+      SegmentReader::CreateFromSharedBuffer(stream_buffer);
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
+      "image/avif", segment_reader, /*data_complete=*/false,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/red-limited-range-420-8bpc.avif");
+  ASSERT_TRUE(data.get());
+  stream_buffer->Append(data->Data(), data->size());
+  EXPECT_EQ(stream_buffer->size(), 318u);
+  decoder->SetData(stream_buffer, /*all_data_received=*/false);
+  // All bytes are appended so we should have size, even though we pass
+  // all_data_received=false.
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+
+  decoder->SetData(stream_buffer, /*all_data_received=*/true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+}
+
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
 
 INSTANTIATE_TEST_CASE_P(Parameterized,
