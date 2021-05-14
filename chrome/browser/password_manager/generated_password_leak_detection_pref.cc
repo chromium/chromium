@@ -168,6 +168,13 @@ void GeneratedPasswordLeakDetectionPref::OnStateChanged(
   NotifyObservers(kGeneratedPasswordLeakDetectionPref);
 }
 
+void GeneratedPasswordLeakDetectionPref::OnSyncCycleCompleted(
+    syncer::SyncService* sync) {
+  // The base implementation of this calls OnStateChanged, however the pref will
+  // only change based on events reported directly to OnStateChanged, and so
+  // calling it here is unrequired and causes observer noise.
+}
+
 void GeneratedPasswordLeakDetectionPref::OnSyncShutdown(
     syncer::SyncService* sync) {
   sync_service_observer_.Reset();

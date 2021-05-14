@@ -46,6 +46,7 @@ class GeneratedPasswordLeakDetectionPref
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
