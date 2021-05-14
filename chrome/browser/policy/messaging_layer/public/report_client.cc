@@ -255,9 +255,13 @@ void ReportingClient::ClientInitializingContext::OnStart() {
 void ReportingClient::ClientInitializingContext::OnCloudPolicyClientConfigured(
     StatusOr<policy::CloudPolicyClient*> client_result) {
   if (!client_result.ok()) {
-    Complete(Status(error::FAILED_PRECONDITION,
-                    base::StrCat({"Unable to build CloudPolicyClient: ",
-                                  client_result.status().message()})));
+    client_->uploaders_queue_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ClientInitializingContext::Complete, base::Unretained(this),
+            Status(error::FAILED_PRECONDITION,
+                   base::StrCat({"Unable to build CloudPolicyClient: ",
+                                 client_result.status().message()}))));
     return;
   }
   cloud_policy_client_ = client_result.ValueOrDie();
@@ -278,16 +282,22 @@ void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
 void ReportingClient::ClientInitializingContext::OnStorageModuleConfigured(
     StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
   if (!storage_result.ok()) {
-    Complete(Status(error::FAILED_PRECONDITION,
-                    base::StrCat({"Unable to build StorageModule: ",
-                                  storage_result.status().message()})));
+    client_->uploaders_queue_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ClientInitializingContext::Complete, base::Unretained(this),
+            Status(error::FAILED_PRECONDITION,
+                   base::StrCat({"Unable to build StorageModule: ",
+                                 storage_result.status().message()}))));
     return;
   }
 
   storage_ = storage_result.ValueOrDie();
   if (!cloud_policy_client_) {
     // No policy client - no uploader needed (uploads will not be forwarded).
-    Complete(Status::StatusOK());
+    client_->uploaders_queue_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ClientInitializingContext::Complete,
+                                  base::Unretained(this), Status::StatusOK()));
     return;
   }
 
@@ -303,19 +313,24 @@ void ReportingClient::ClientInitializingContext::OnStorageModuleConfigured(
 void ReportingClient::ClientInitializingContext::OnUploadClientCreated(
     StatusOr<std::unique_ptr<UploadClient>> upload_client_result) {
   if (!upload_client_result.ok()) {
-    Complete(Status(error::FAILED_PRECONDITION,
-                    base::StrCat({"Unable to create UploadClient: ",
-                                  upload_client_result.status().message()})));
+    client_->uploaders_queue_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ClientInitializingContext::Complete, base::Unretained(this),
+            Status(error::FAILED_PRECONDITION,
+                   base::StrCat({"Unable to create UploadClient: ",
+                                 upload_client_result.status().message()}))));
     return;
   }
   upload_client_ = std::move(upload_client_result.ValueOrDie());
   // All done, return success.
-  base::ThreadPool::PostTask(
+  client_->uploaders_queue_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ClientInitializingContext::Complete,
                                 base::Unretained(this), Status::StatusOK()));
 }
 
 void ReportingClient::ClientInitializingContext::OnCompleted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_->uploaders_queue_sequence_checker_);
   if (cloud_policy_client_) {
     DCHECK(client_->cloud_policy_client_ == nullptr)
         << "Cloud policy client already recorded";
@@ -344,6 +359,7 @@ ReportingClient::ReportingClient()
       chromeos::ProfileHelper::Get()->GetActiveUserProfileDir());
 #endif
   reporting_path_ = user_data_dir.Append(kReportingDirectory);
+  DETACH_FROM_SEQUENCE(uploaders_queue_sequence_checker_);
 }
 
 ReportingClient::~ReportingClient() = default;
@@ -387,6 +403,8 @@ void ReportingClient::DeliverAsyncStartUploader(
           [](Priority priority, bool need_encryption_key,
              UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
              ReportingClient* instance) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(
+                instance->uploaders_queue_sequence_checker_);
             if (instance->upload_client_) {
               auto uploader = Uploader::Create(
                   need_encryption_key,
@@ -405,6 +423,7 @@ void ReportingClient::DeliverAsyncStartUploader(
 }
 
 void ReportingClient::FlushAsyncStartUploaderQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
   // Executed on sequential task runner.
   while (!async_start_uploaders_queue_.empty()) {
     auto& request = async_start_uploaders_queue_.front();
@@ -419,6 +438,7 @@ void ReportingClient::FlushAsyncStartUploaderQueue() {
 
 void ReportingClient::SetUploadClient(
     std::unique_ptr<UploadClient> upload_client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
   // This can only happen once.
   DCHECK(!upload_client_);
   upload_client_ = std::move(upload_client);
