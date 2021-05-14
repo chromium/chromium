@@ -466,10 +466,9 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      if not BuildTestTargetsWithNinja(out_dir, targets, args.dry_run):
-        sys.exit(1)
-  else:  # cache still valid, quit if the build failed
-    if not build_ok: sys.exit(1)
+      build_ok = BuildTestTargetsWithNinja(out_dir, targets, args.dry_run)
+
+  if not build_ok: sys.exit(1)
 
   RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run,
                  args.no_try_android_wrappers)
