@@ -453,11 +453,159 @@ bool MimeUtil::MatchesMimeType(const std::string& mime_type_pattern,
   return MatchesMimeTypeParameters(mime_type_pattern, mime_type);
 }
 
-// See https://www.iana.org/assignments/media-types/media-types.xhtml
-static const char* const kLegalTopLevelTypes[] = {
-    "application", "audio", "example",   "font", "image",
-    "message",     "model", "multipart", "text", "video",
-};
+void ParseContentType(const std::string& content_type_str,
+                      std::string* mime_type,
+                      std::string* charset,
+                      bool* had_charset,
+                      std::string* boundary) {
+  const std::string::const_iterator begin = content_type_str.begin();
+
+  // Trim leading and trailing whitespace from type.  We include '(' in
+  // the trailing trim set to catch media-type comments, which are not at all
+  // standard, but may occur in rare cases.
+  size_t type_val = content_type_str.find_first_not_of(HTTP_LWS);
+  type_val = std::min(type_val, content_type_str.length());
+  size_t type_end = content_type_str.find_first_of(HTTP_LWS ";(", type_val);
+  if (type_end == std::string::npos)
+    type_end = content_type_str.length();
+
+  std::string charset_value;
+  bool type_has_charset = false;
+  bool type_has_boundary = false;
+
+  // Iterate over parameters. Can't split the string around semicolons
+  // preemptively because quoted strings may include semicolons. Mostly matches
+  // logic in https://mimesniff.spec.whatwg.org/. Main differences: Does not
+  // validate characters are HTTP token code points / HTTP quoted-string token
+  // code points, and ignores spaces after "=" in parameters.
+  std::string::size_type offset = content_type_str.find_first_of(';', type_end);
+  while (offset < content_type_str.size()) {
+    DCHECK_EQ(';', content_type_str[offset]);
+    // Trim off the semicolon.
+    ++offset;
+
+    // Trim off any following spaces.
+    offset = content_type_str.find_first_not_of(HTTP_LWS, offset);
+    std::string::size_type param_name_start = offset;
+
+    // Extend parameter name until run into a semicolon or equals sign.  Per
+    // spec, trailing spaces are not removed.
+    offset = content_type_str.find_first_of(";=", offset);
+
+    // Nothing more to do if at end of string, or if there's no parameter
+    // value, since names without values aren't allowed.
+    if (offset == std::string::npos || content_type_str[offset] == ';')
+      continue;
+
+    auto param_name =
+        base::MakeStringPiece(content_type_str.begin() + param_name_start,
+                              content_type_str.begin() + offset);
+
+    // Now parse the value.
+    DCHECK_EQ('=', content_type_str[offset]);
+    // Trim off the '='.
+    offset++;
+
+    // Remove leading spaces. This violates the spec, though it matches
+    // pre-existing behavior.
+    //
+    // TODO(mmenke): Consider doing this (only?) after parsing quotes, which
+    // seems to align more with the spec - not the content-type spec, but the
+    // GET spec's way of getting an encoding, and the spec for handling
+    // boundary values as well.
+    // See https://encoding.spec.whatwg.org/#names-and-labels.
+    offset = content_type_str.find_first_not_of(HTTP_LWS, offset);
+
+    std::string param_value;
+    if (offset == std::string::npos || content_type_str[offset] == ';') {
+      // Nothing to do here - an unquoted string of only whitespace should be
+      // skipped.
+      continue;
+    } else if (content_type_str[offset] != '"') {
+      // If the first character is not a quotation mark, copy data directly.
+      std::string::size_type value_start = offset;
+      offset = content_type_str.find_first_of(';', offset);
+      std::string::size_type value_end = offset;
+
+      // Remove terminal whitespace. If ran off the end of the string, have to
+      // update |value_end| first.
+      if (value_end == std::string::npos)
+        value_end = content_type_str.size();
+      while (value_end > value_start &&
+             HttpUtil::IsLWS(content_type_str[value_end - 1])) {
+        --value_end;
+      }
+
+      param_value =
+          content_type_str.substr(value_start, value_end - value_start);
+    } else {
+      // Otherwise, append data, with special handling for backslashes, until
+      // a close quote.
+
+      // Skip open quote.
+      DCHECK_EQ('"', content_type_str[offset]);
+      ++offset;
+
+      while (offset < content_type_str.size() &&
+             content_type_str[offset] != '"') {
+        // Skip over backslash and append the next character, when not at
+        // the end of the string. Otherwise, copy the next character (Which may
+        // be a backslash).
+        if (content_type_str[offset] == '\\' &&
+            offset + 1 < content_type_str.size()) {
+          ++offset;
+        }
+        param_value += content_type_str[offset];
+        ++offset;
+      }
+
+      param_value = std::string(HttpUtil::TrimLWS(param_value));
+
+      offset = content_type_str.find_first_of(';', offset);
+    }
+
+    // TODO(mmenke): Check that name has only valid characters.
+    if (!type_has_charset &&
+        base::LowerCaseEqualsASCII(param_name, "charset")) {
+      type_has_charset = true;
+      charset_value = param_value;
+      continue;
+    }
+
+    if (boundary && !type_has_boundary &&
+        base::LowerCaseEqualsASCII(param_name, "boundary")) {
+      type_has_boundary = true;
+      boundary->assign(std::move(param_value));
+      continue;
+    }
+  }
+
+  // If the server sent "*/*", it is meaningless, so do not store it.
+  // Also, reject a mime-type if it does not include a slash.
+  // Some servers give junk after the charset parameter, which may
+  // include a comma, so this check makes us a bit more tolerant.
+  if (content_type_str.length() == 0 || content_type_str == "*/*" ||
+      content_type_str.find_first_of('/') == std::string::npos) {
+    return;
+  }
+
+  // If type_val is the same as mime_type, then just update the charset.
+  // However, if charset is empty and mime_type hasn't changed, then don't
+  // wipe-out an existing charset.
+  // It is common that mime_type is empty.
+  bool eq = !mime_type->empty() &&
+            base::LowerCaseEqualsASCII(
+                base::MakeStringPiece(begin + type_val, begin + type_end),
+                mime_type->data());
+  if (!eq) {
+    *mime_type = base::ToLowerASCII(
+        base::MakeStringPiece(begin + type_val, begin + type_end));
+  }
+  if ((!eq && *had_charset) || type_has_charset) {
+    *had_charset = true;
+    *charset = base::ToLowerASCII(charset_value);
+  }
+}
 
 bool MimeUtil::ParseMimeTypeWithoutParameter(
     const std::string& type_string,
@@ -478,6 +626,12 @@ bool MimeUtil::ParseMimeTypeWithoutParameter(
     *subtype = components[1];
   return true;
 }
+
+// See https://www.iana.org/assignments/media-types/media-types.xhtml
+static const char* const kLegalTopLevelTypes[] = {
+    "application", "audio", "example",   "font", "image",
+    "message",     "model", "multipart", "text", "video",
+};
 
 bool MimeUtil::IsValidTopLevelMimeType(const std::string& type_string) const {
   std::string lower_type = base::ToLowerASCII(type_string);

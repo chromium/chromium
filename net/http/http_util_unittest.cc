@@ -975,6 +975,17 @@ TEST(HttpUtilTest, ParseContentType) {
       true,
       ""
     },
+    // Empty subtype should be accepted.
+    { "text/",
+      "text/",
+      "",
+      false,
+      ""
+    },
+    // "*/*" is ignored unless it has params, or is not an exact match.
+    { "*/*", "", "", false, "" },
+    { "*/*; charset=utf-8", "*/*", "utf-8", true, "" },
+    { "*/* ", "*/*", "", false, "" },
     // TODO(abarth): Add more interesting test cases.
   };
   // clang-format on
