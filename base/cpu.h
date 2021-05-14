@@ -6,7 +6,6 @@
 #define BASE_CPU_H_
 
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "base/base_export.h"
@@ -18,11 +17,16 @@ namespace base {
 #if defined(ARCH_CPU_X86_FAMILY)
 namespace internal {
 
+struct X86ModelInfo {
+  int family;
+  int model;
+  int ext_family;
+  int ext_model;
+};
+
 // Compute the CPU family and model based on the vendor and CPUID signature.
-// Returns in order: family, model, extended family, extended model.
-BASE_EXPORT std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
-    const std::string& vendor,
-    int signature);
+BASE_EXPORT X86ModelInfo ComputeX86FamilyAndModel(const std::string& vendor,
+                                                  int signature);
 
 }  // namespace internal
 #endif  // defined(ARCH_CPU_X86_FAMILY)

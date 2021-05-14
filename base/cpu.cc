@@ -63,13 +63,13 @@ namespace base {
 #if defined(ARCH_CPU_X86_FAMILY)
 namespace internal {
 
-std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
-    const std::string& vendor,
-    int signature) {
-  int family = (signature >> 8) & 0xf;
-  int model = (signature >> 4) & 0xf;
-  int ext_family = 0;
-  int ext_model = 0;
+X86ModelInfo ComputeX86FamilyAndModel(const std::string& vendor,
+                                      int signature) {
+  X86ModelInfo results;
+  results.family = (signature >> 8) & 0xf;
+  results.model = (signature >> 4) & 0xf;
+  results.ext_family = 0;
+  results.ext_model = 0;
 
   // The "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
   // specifies the Extended Model is defined only when the Base Family is
@@ -78,21 +78,22 @@ std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
   // defined only when Base Family is 0Fh.
   // Both manuals define the display model as
   // {ExtendedModel[3:0],BaseModel[3:0]} in that case.
-  if (family == 0xf || (family == 0x6 && vendor == "GenuineIntel")) {
-    ext_model = (signature >> 16) & 0xf;
-    model += ext_model << 4;
+  if (results.family == 0xf ||
+      (results.family == 0x6 && vendor == "GenuineIntel")) {
+    results.ext_model = (signature >> 16) & 0xf;
+    results.model += results.ext_model << 4;
   }
   // Both the "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
   // and the "AMD CPUID Specification" specify that the Extended Family is
   // defined only when the Base Family is 0Fh.
   // Both manuals define the display family as {0000b,BaseFamily[3:0]} +
   // ExtendedFamily[7:0] in that case.
-  if (family == 0xf) {
-    ext_family = (signature >> 20) & 0xff;
-    family += ext_family;
+  if (results.family == 0xf) {
+    results.ext_family = (signature >> 20) & 0xff;
+    results.family += results.ext_family;
   }
 
-  return {family, model, ext_family, ext_model};
+  return results;
 }
 
 }  // namespace internal
@@ -255,8 +256,12 @@ void CPU::Initialize(bool require_branding) {
     signature_ = cpu_info[0];
     stepping_ = cpu_info[0] & 0xf;
     type_ = (cpu_info[0] >> 12) & 0x3;
-    std::tie(family_, model_, ext_family_, ext_model_) =
+    internal::X86ModelInfo results =
         internal::ComputeX86FamilyAndModel(cpu_vendor_, signature_);
+    family_ = results.family;
+    model_ = results.model;
+    ext_family_ = results.ext_family;
+    ext_model_ = results.ext_model;
     has_mmx_ =   (cpu_info[3] & 0x00800000) != 0;
     has_sse_ =   (cpu_info[3] & 0x02000000) != 0;
     has_sse2_ =  (cpu_info[3] & 0x04000000) != 0;

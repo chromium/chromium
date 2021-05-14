@@ -153,42 +153,35 @@ TEST(CPU, BrandAndVendorContainsNoNUL) {
 // Tests that we compute the correct CPU family and model based on the vendor
 // and CPUID signature.
 TEST(CPU, X86FamilyAndModel) {
-  int family;
-  int model;
-  int ext_family;
-  int ext_model;
+  base::internal::X86ModelInfo info;
 
   // Check with an Intel Skylake signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406e3);
-  EXPECT_EQ(family, 6);
-  EXPECT_EQ(model, 78);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 4);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406e3);
+  EXPECT_EQ(info.family, 6);
+  EXPECT_EQ(info.model, 78);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 4);
 
   // Check with an Intel Airmont signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406c2);
-  EXPECT_EQ(family, 6);
-  EXPECT_EQ(model, 76);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 4);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406c2);
+  EXPECT_EQ(info.family, 6);
+  EXPECT_EQ(info.model, 76);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 4);
 
   // Check with an Intel Prescott signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x00000f31);
-  EXPECT_EQ(family, 15);
-  EXPECT_EQ(model, 3);
-  EXPECT_EQ(ext_family, 0);
-  EXPECT_EQ(ext_model, 0);
+  info = base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x00000f31);
+  EXPECT_EQ(info.family, 15);
+  EXPECT_EQ(info.model, 3);
+  EXPECT_EQ(info.ext_family, 0);
+  EXPECT_EQ(info.ext_model, 0);
 
   // Check with an AMD Excavator signature.
-  std::tie(family, model, ext_family, ext_model) =
-      base::internal::ComputeX86FamilyAndModel("AuthenticAMD", 0x00670f00);
-  EXPECT_EQ(family, 21);
-  EXPECT_EQ(model, 112);
-  EXPECT_EQ(ext_family, 6);
-  EXPECT_EQ(ext_model, 7);
+  info = base::internal::ComputeX86FamilyAndModel("AuthenticAMD", 0x00670f00);
+  EXPECT_EQ(info.family, 21);
+  EXPECT_EQ(info.model, 112);
+  EXPECT_EQ(info.ext_family, 6);
+  EXPECT_EQ(info.ext_model, 7);
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
