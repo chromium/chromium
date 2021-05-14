@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
@@ -4233,6 +4234,11 @@ void AXObject::ClearChildren() const {
                                    << ToString(true, true);
 
   for (const auto& child : children_) {
+    // Check parent first, as the child might be several levels down if there
+    // are unincluded nodes in between, in which case the cached parent will
+    // also be a descendant (unlike children_, parent_ does not skip levels).
+    // Another case where the parent is not the same is when the child has been
+    // reparented using aria-owns.
     if (child->CachedParentObject() == this)
       child->DetachFromParent();
   }
@@ -4241,6 +4247,13 @@ void AXObject::ClearChildren() const {
 
   if (!GetNode())
     return;
+
+  if (GetDocument()->IsFlatTreeTraversalForbidden() ||
+      GetDocument()->IsSlotAssignmentRecalcForbidden()) {
+    // Cannot use layout tree builder traversal now, will have to rely on
+    // RepairParent() at a later point.
+    return;
+  }
 
   // <slot> content is always included in the tree, so there is no need to
   // iterate through the nodes. This also protects us against slot use "after
@@ -4256,9 +4269,16 @@ void AXObject::ClearChildren() const {
   // information with their original location in the DOM. Therefore, we need to
   // ensure that in the accessibility tree no remnant information from the
   // unflattened DOM tree remains, such as the cached parent.
-  if (IsA<HTMLSlotElement>(GetNode()))
+
+  // TODO(crbug.com/1209216): Figure out why removing this causes a
+  // use-after-poison and possibly replace it with a better check.
+  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(GetNode());
+  if (slot && slot->SupportsAssignment())
     return;
 
+  // Detach children that were not cleared from first loop.
+  // These must have been an unincluded node who's parent is this,
+  // although it may now be included since the children were last updated.
   for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
@@ -4266,9 +4286,6 @@ void AXObject::ClearChildren() const {
     AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
-      // Child was not cleared from first loop.
-      // It must have been an unincluded node who's parent is this,
-      // although it may now be included since the children were last updated.
       // Check current parent first. It may be owned by another node.
       ax_child_from_node->DetachFromParent();
     }

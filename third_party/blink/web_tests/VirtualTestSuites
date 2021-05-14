@@ -1020,7 +1020,8 @@
   },
   {
     "prefix": "force-renderer-accessibility",
-    "bases": ["accessibility/slot-poison.html"],
+    "bases": ["accessibility/slot-poison.html",
+              "accessibility/details-summary-crash.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
