@@ -1,5 +1,2 @@
-# TODO(crbug.com/1204709) Enable following tests on lacros.
--*/WaylandWindowTest.SetsPropertiesOnShow/*
-
 # TODO(crbug.com/1204707) Enable following tests on lacros.
 -*/WaylandInputMethodContextTest.*
