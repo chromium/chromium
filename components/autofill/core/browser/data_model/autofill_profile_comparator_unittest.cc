@@ -57,15 +57,6 @@ using autofill::NameInfo;
 using autofill::PhoneNumber;
 using autofill::ServerFieldType;
 
-namespace autofill {
-
-bool operator==(const ProfileValueDifference& left,
-                const ProfileValueDifference& right) {
-  return left.second_value == right.second_value &&
-         left.first_value == right.first_value && left.type == right.type;
-}
-
-}  // namespace autofill
 namespace {
 
 const char kLocale[] = "en-US";

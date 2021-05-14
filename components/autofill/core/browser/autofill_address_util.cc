@@ -10,10 +10,12 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -214,6 +216,47 @@ std::u16string GetDescriptionForProfileToUpdate(
   // TODO(crbug.com/1135178): Replace the separator with proper localized
   // string.
   return base::JoinString(description_components, u" — ");
+}
+
+std::vector<ProfileValueDifference> GetProfileDifferenceForUI(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  static constexpr ServerFieldType kTypeToCompare[] = {
+      NAME_FULL_WITH_HONORIFIC_PREFIX, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER};
+
+  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+      differences = AutofillProfileComparator::GetProfileDifferenceMap(
+          first_profile, second_profile,
+          autofill::ServerFieldTypeSet(std::begin(kTypeToCompare),
+                                       std::end(kTypeToCompare)),
+          app_locale);
+
+  std::u16string first_address = GetEnvelopeStyleAddress(
+      first_profile, app_locale, /*include_recipient=*/false,
+      /*include_country=*/true);
+  std::u16string second_address = GetEnvelopeStyleAddress(
+      second_profile, app_locale, /*include_recipient=*/false,
+      /*include_country=*/true);
+
+  std::vector<ProfileValueDifference> differences_for_ui;
+  for (ServerFieldType type : kTypeToCompare) {
+    // Address is handled seprately.
+    if (type == ADDRESS_HOME_ADDRESS) {
+      if (first_address != second_address) {
+        differences_for_ui.emplace_back(
+            ProfileValueDifference{type, first_address, second_address});
+      }
+      continue;
+    }
+    auto it = differences.find(type);
+    if (it == differences.end())
+      continue;
+    differences_for_ui.emplace_back(
+        ProfileValueDifference{type, it->second.first, it->second.second});
+  }
+  return differences_for_ui;
 }
 
 }  // namespace autofill

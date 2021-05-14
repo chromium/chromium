@@ -6,10 +6,13 @@
 
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
+
+using ::testing::ElementsAre;
 
 class GetEnvelopeStyleAddressTest : public ::testing::Test {
  public:
@@ -120,6 +123,42 @@ TEST_F(GetEnvelopeStyleAddressTest,
                               /*include_country=*/true);
   // There should be no consecutive white spaces.
   EXPECT_EQ(address.find(u"  "), std::string::npos);
+}
+
+TEST_F(GetEnvelopeStyleAddressTest, NoDifferencesBetweenIdenticalProfiles) {
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_TRUE(GetProfileDifferenceForUI(profile, profile, "en-US").empty());
+}
+
+TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUIWhenFullnameDiffers) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.SetInfo(NAME_FULL, u"John H. Doe", "en-US");
+
+  AutofillProfile profile2 = profile1;
+  profile2.SetInfo(NAME_FULL, u"John Doe", "en-US");
+
+  EXPECT_THAT(
+      GetProfileDifferenceForUI(profile1, profile2, "en-US"),
+      ElementsAre(ProfileValueDifference{NAME_FULL_WITH_HONORIFIC_PREFIX,
+                                         u"John H. Doe", u"John Doe"}));
+}
+
+TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUIWhenZipcodeDiffers) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.SetInfo(ADDRESS_HOME_ZIP, u"91111", "en-US");
+
+  AutofillProfile profile2 = profile1;
+  profile2.SetInfo(ADDRESS_HOME_ZIP, u"90000", "en-US");
+
+  EXPECT_THAT(GetProfileDifferenceForUI(profile1, profile2, "en-US"),
+              ElementsAre(ProfileValueDifference{
+                  ADDRESS_HOME_ADDRESS,
+                  GetEnvelopeStyleAddress(profile1, "en-US",
+                                          /*include_recipient=*/false,
+                                          /*include_country=*/true),
+                  GetEnvelopeStyleAddress(profile2, "en-US",
+                                          /*include_recipient=*/false,
+                                          /*include_country=*/true)}));
 }
 
 TEST(GetDescriptionForProfileToSave, NameAndAddress) {

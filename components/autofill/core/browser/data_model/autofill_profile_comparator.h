@@ -26,6 +26,7 @@ struct ProfileValueDifference {
   std::u16string first_value;
   // The new value.
   std::u16string second_value;
+  bool operator==(const ProfileValueDifference& right) const;
 };
 
 // A utility class to assist in the comparison of AutofillProfile data.

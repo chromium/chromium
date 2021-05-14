@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 
@@ -63,6 +64,7 @@ std::u16string GetDescriptionForProfileToUpdate(
 // Fields in order they should appear in differences for AutofillProfile update.
 static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
     NAME_FULL_WITH_HONORIFIC_PREFIX,
+    COMPANY_NAME,
     ADDRESS_HOME_STREET_ADDRESS,
     ADDRESS_HOME_DEPENDENT_LOCALITY,
     ADDRESS_HOME_CITY,
@@ -70,8 +72,18 @@ static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
     ADDRESS_HOME_ZIP,
     ADDRESS_HOME_COUNTRY,
     EMAIL_ADDRESS,
-    PHONE_HOME_WHOLE_NUMBER,
-    COMPANY_NAME};
+    PHONE_HOME_WHOLE_NUMBER};
+
+// Gets the difference of two profiles in name, address, email and phone number
+// in that order. Differences in name, email and phone number are computed and
+// keyed by NAME_FULL_WITH_HONORIFIC_PREFIX, EMAIL_ADDRESS and
+// PHONE_HOME_WHOLE_NUMBER respectively. Address differences are computed by
+// difference in the envelope style address of both profile, and keyed by
+// ADDRESS_HOME_ADDRESS. All computations are done against `app_locale`.
+std::vector<ProfileValueDifference> GetProfileDifferenceForUI(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale);
 
 }  // namespace autofill
 
