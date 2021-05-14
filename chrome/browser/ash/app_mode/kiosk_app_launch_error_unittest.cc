@@ -99,7 +99,7 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
 
 TEST_F(KioskAppLaunchErrorTest, SaveError) {
   // No launch error is stored before it is saved.
-  EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyLaunchError));
+  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyLaunchError), nullptr);
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kCount);
 
   // The launch error can be retrieved.
@@ -110,13 +110,13 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
 
   // The launch error is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
-  EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyLaunchError));
+  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyLaunchError), nullptr);
   EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kNone);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   // No cryptohome failure is stored before it is saved.
-  EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyCryptohomeFailure));
+  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyCryptohomeFailure), nullptr);
   AuthFailure auth_failure(AuthFailure::FailureReason::AUTH_DISABLED);
   KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
 
@@ -128,7 +128,7 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
 
   // The cryptohome failure is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
-  EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyCryptohomeFailure));
+  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyCryptohomeFailure), nullptr);
 }
 
 }  // namespace ash
