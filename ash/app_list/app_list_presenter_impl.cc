@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_presenter_event_filter.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/apps_container_view.h"
@@ -66,6 +67,38 @@ void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
   }
 }
 
+// Whether the shelf is oriented on the side, not on the bottom.
+bool IsSideShelf(Shelf* shelf) {
+  switch (shelf->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return false;
+    case ShelfAlignment::kLeft:
+    case ShelfAlignment::kRight:
+      return true;
+  }
+  return false;
+}
+
+// Whether the shelf background type indicates that shelf has rounded corners.
+bool IsShelfBackgroundTypeWithRoundedCorners(
+    ShelfBackgroundType background_type) {
+  switch (background_type) {
+    case ShelfBackgroundType::kDefaultBg:
+    case ShelfBackgroundType::kAppList:
+    case ShelfBackgroundType::kOverview:
+      return true;
+    case ShelfBackgroundType::kMaximized:
+    case ShelfBackgroundType::kMaximizedWithAppList:
+    case ShelfBackgroundType::kOobe:
+    case ShelfBackgroundType::kHomeLauncher:
+    case ShelfBackgroundType::kLogin:
+    case ShelfBackgroundType::kLoginNonBlurredWallpaper:
+    case ShelfBackgroundType::kInApp:
+      return false;
+  }
+}
+
 // Implicit animation observer that runs a scoped closure runner, and deletes
 // itself when the observed implicit animations complete.
 class CallbackRunnerLayerAnimationObserver
@@ -91,13 +124,10 @@ class CallbackRunnerLayerAnimationObserver
 constexpr std::array<int, 7>
     AppListPresenterImpl::kIdsOfContainersThatWontHideAppList;
 
-AppListPresenterImpl::AppListPresenterImpl(
-    AppListControllerImpl* controller,
-    std::unique_ptr<AppListPresenterDelegate> delegate)
-    : controller_(controller), delegate_(std::move(delegate)) {
+AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)
+    : controller_(controller) {
   DCHECK(controller_);
-  DCHECK(delegate_);
-  delegate_->SetPresenter(this);
+  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AppListPresenterImpl::~AppListPresenterImpl() {
@@ -109,7 +139,7 @@ AppListPresenterImpl::~AppListPresenterImpl() {
     if (view_->GetWidget())
       view_->GetWidget()->CloseNow();
   }
-  CHECK(!IsInObserverList());
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 aura::Window* AppListPresenterImpl::GetWindow() const {
@@ -141,12 +171,40 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
 
   if (!view_) {
     AppListView* view = new AppListView(controller_);
-    delegate_->SetView(view);
     view->InitView(controller_->GetContainerForDisplayId(display_id));
     SetView(view);
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
-  delegate_->ShowForDisplay(preferred_state, display_id);
+
+  is_visible_ = true;
+
+  controller_->UpdateLauncherContainer(display_id);
+
+  // App list needs to know the new shelf layout in order to calculate its
+  // UI layout when AppListView visibility changes.
+  Shelf* shelf =
+      Shelf::ForWindow(view_->GetWidget()->GetNativeView()->GetRootWindow());
+  shelf->shelf_layout_manager()->UpdateAutoHideState();
+
+  // Observe the shelf for changes to rounded corners.
+  if (!shelf_observation_.IsObservingSource(shelf))
+    shelf_observation_.AddObservation(shelf);
+
+  // By setting us as a drag-and-drop recipient, the app list knows that we can
+  // handle items. Do this on every show because |view_| can be reused after a
+  // monitor is disconnected but that monitor's ShelfView and
+  // ScrollableShelfView are deleted. https://crbug.com/1163332
+  view_->SetDragAndDropHostOfCurrentAppList(
+      shelf->shelf_widget()->GetDragAndDropHostForAppList());
+  view_->SetShelfHasRoundedCorners(
+      IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
+  view_->Show(preferred_state, IsSideShelf(shelf));
+
+  SnapAppListBoundsToDisplayEdge();
+
+  event_filter_ =
+      std::make_unique<AppListPresenterEventFilter>(controller_, this, view_);
+  controller_->ViewShown(display_id);
 
   OnVisibilityChanged(GetTargetVisibility(), display_id);
 }
@@ -190,7 +248,9 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   if (view_->GetWidget()->IsActive())
     view_->GetWidget()->Deactivate();
 
-  delegate_->OnClosing();
+  is_visible_ = false;
+  event_filter_.reset();
+  controller_->ViewClosing();
 
   OnVisibilityWillChange(GetTargetVisibility(), GetDisplayId());
   view_->SetState(AppListViewState::kClosed);
@@ -404,6 +464,12 @@ void AppListPresenterImpl::OnVisibilityWillChange(bool visible,
   controller_->OnVisibilityWillChange(visible, display_id);
 }
 
+void AppListPresenterImpl::OnClosed() {
+  if (!is_visible_)
+    shelf_observation_.RemoveAllObservations();
+  controller_->ViewClosed();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AppListPresenterImpl,  aura::client::FocusChangeObserver implementation:
 
@@ -471,7 +537,7 @@ void AppListPresenterImpl::OnImplicitAnimationsCompleted() {
   } else {
     // Hide the widget so it can be re-shown without re-creating it.
     view_->GetWidget()->Hide();
-    delegate_->OnClosed();
+    OnClosed();
   }
 }
 
@@ -486,7 +552,7 @@ void AppListPresenterImpl::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void AppListPresenterImpl::OnWidgetDestroyed(views::Widget* widget) {
-  delegate_->OnClosed();
+  OnClosed();
 }
 
 void AppListPresenterImpl::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -521,6 +587,34 @@ void AppListPresenterImpl::RequestPresentationTime(
   compositor->RequestPresentationTimeForNextFrame(
       base::BindOnce(&DidPresentCompositorFrame, event_time_stamp,
                      is_target_visibility_show_));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// display::DisplayObserver implementation:
+
+void AppListPresenterImpl::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (!GetWindow())
+    return;
+
+  view_->OnParentWindowBoundsChanged();
+  SnapAppListBoundsToDisplayEdge();
+}
+
+void AppListPresenterImpl::OnBackgroundTypeChanged(
+    ShelfBackgroundType background_type,
+    AnimationChangeType change_type) {
+  view_->SetShelfHasRoundedCorners(
+      IsShelfBackgroundTypeWithRoundedCorners(background_type));
+}
+
+void AppListPresenterImpl::SnapAppListBoundsToDisplayEdge() {
+  CHECK(view_ && view_->GetWidget());
+  aura::Window* window = view_->GetWidget()->GetNativeView();
+  const gfx::Rect bounds =
+      controller_->SnapBoundsToDisplayEdge(window->bounds());
+  window->SetBounds(bounds);
 }
 
 }  // namespace ash

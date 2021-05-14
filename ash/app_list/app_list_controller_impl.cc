@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/app_list_presenter_delegate_impl.h"
 #include "ash/app_list/bubble/app_list_bubble.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
@@ -259,7 +258,7 @@ GetTransitionFromMetricsAnimationInfo(
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
       color_provider_(AppListColorProviderImpl()),
-      presenter_(this, std::make_unique<AppListPresenterDelegateImpl>(this)),
+      presenter_(this),
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
   if (features::IsAppListBubbleEnabled())
