@@ -100,10 +100,11 @@ some setup.
 
        echo mac-arm64 > $(dirname $(which gclient))/.cipd_client_platform
 
-   (If you want to build `tools/metrics:histograms_xml`, you also need to
-   `echo mac-arm64 > third_party/depot_tools/.cipd_client_platform` in your
-   chromium checkout. This isn't needed for building chromium or any test
-   targets.)
+   and later
+
+       echo mac-arm64 > third_party/depot_tools/.cipd_client_platform 
+       
+   in your chromium checkout.
 
 2. opt out of vpython by running
 
