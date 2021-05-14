@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -86,7 +87,7 @@ std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
  public:
   explicit FaviconUpdateWaiter(content::WebContents* web_contents) {
-    scoped_observer_.Add(
+    scoped_observation_.Observe(
         favicon::ContentFaviconDriver::FromWebContents(web_contents));
   }
   ~FaviconUpdateWaiter() override = default;
@@ -100,7 +101,7 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
     run_loop.Run();
   }
 
-  void StopObserving() { scoped_observer_.RemoveAll(); }
+  void StopObserving() { scoped_observation_.Reset(); }
 
  private:
   void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
@@ -114,8 +115,9 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
   }
 
   bool updated_ = false;
-  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<favicon::FaviconDriver,
+                          favicon::FaviconDriverObserver>
+      scoped_observation_{this};
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(FaviconUpdateWaiter);
