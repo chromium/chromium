@@ -34,7 +34,7 @@ class PermissionMenuModelTest : public testing::Test {
 
  protected:
   TestingProfile* profile() { return &profile_; }
-  PageInfoUiDelegate* delegate() { return delegate_.get(); }
+  ChromePageInfoUiDelegate* delegate() { return delegate_.get(); }
 
   void SetOffTheRecordProfile() {
     delegate_ = std::make_unique<ChromePageInfoUiDelegate>(
@@ -50,7 +50,7 @@ class PermissionMenuModelTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<PageInfoUiDelegate> delegate_;
+  std::unique_ptr<ChromePageInfoUiDelegate> delegate_;
 };
 
 }  // namespace

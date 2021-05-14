@@ -157,7 +157,7 @@ void PermissionCombobox::PermissionChanged() {
 ///////////////////////////////////////////////////////////////////////////////
 
 PermissionSelectorRow::PermissionSelectorRow(
-    PageInfoUiDelegate* delegate,
+    ChromePageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission,
     views::GridLayout* layout) {
   const int list_item_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -182,43 +182,20 @@ PermissionSelectorRow::PermissionSelectorRow(
   // Create the permission combobox.
   InitializeComboboxView(layout, permission);
 
+  // Add extra details as sublabel.
+  std::u16string detail = delegate->GetPermissionDetail(permission.type);
+  if (!detail.empty())
+    AddSecondaryLabelRow(layout, detail);
+
   // Show the permission decision reason, if it was not the user.
   std::u16string reason =
       PageInfoUI::PermissionDecisionReasonToUIString(delegate, permission);
-  if (!reason.empty()) {
-    layout->StartRow(1.0, PageInfoBubbleView::kPermissionColumnSetId);
-    layout->SkipColumns(1);
-    auto secondary_label = std::make_unique<views::Label>(reason);
-    secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    secondary_label->SetEnabledColor(PageInfoUI::GetSecondaryTextColor());
-    // The |secondary_label| should wrap when it's too long instead of
-    // stretching its parent view horizontally, but also ensure long strings
-    // aren't wrapped too early.
-    int preferred_width = secondary_label->GetPreferredSize().width();
-    secondary_label->SetMultiLine(true);
+  if (!reason.empty())
+    AddSecondaryLabelRow(layout, reason);
 
-    views::ColumnSet* column_set =
-        layout->GetColumnSet(PageInfoBubbleView::kPermissionColumnSetId);
-    DCHECK(column_set);
-    // Secondary labels in Harmony may not overlap into space shared with the
-    // combobox column.
-    const int column_span = 1;
-
-    // Long labels that cannot fit in the existing space under the permission
-    // label should be allowed to use up to |kMaxSecondaryLabelWidth| for
-    // display.
-    constexpr int kMaxSecondaryLabelWidth = 140;
-    if (preferred_width > kMaxSecondaryLabelWidth) {
-      layout->AddView(std::move(secondary_label), column_span, 1.0,
-                      views::GridLayout::LEADING, views::GridLayout::CENTER,
-                      kMaxSecondaryLabelWidth, 0);
-    } else {
-      layout->AddView(std::move(secondary_label), column_span, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::CENTER);
-    }
-  }
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        CalculatePaddingBeneathPermissionRow(!reason.empty()));
+  layout->AddPaddingRow(
+      views::GridLayout::kFixedSize,
+      CalculatePaddingBeneathPermissionRow(!detail.empty() || !reason.empty()));
 }
 
 PermissionSelectorRow::~PermissionSelectorRow() {
@@ -230,6 +207,40 @@ PermissionSelectorRow::~PermissionSelectorRow() {
   // ComboboxModel. This hack ensures the Combobox is deleted before its
   // ComboboxModel.
   delete combobox_;
+}
+
+void PermissionSelectorRow::AddSecondaryLabelRow(views::GridLayout* layout,
+                                                 const std::u16string& text) {
+  layout->StartRow(1.0, PageInfoBubbleView::kPermissionColumnSetId);
+  layout->SkipColumns(1);
+  auto sublabel = std::make_unique<views::Label>(text);
+  sublabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sublabel->SetEnabledColor(PageInfoUI::GetSecondaryTextColor());
+  // The |sublabel| should wrap when it's too long instead of
+  // stretching its parent view horizontally, but also ensure long strings
+  // aren't wrapped too early.
+  int preferred_width = sublabel->GetPreferredSize().width();
+  sublabel->SetMultiLine(true);
+
+  views::ColumnSet* column_set =
+      layout->GetColumnSet(PageInfoBubbleView::kPermissionColumnSetId);
+  DCHECK(column_set);
+  // Secondary labels in Harmony may not overlap into space shared with the
+  // combobox column.
+  const int column_span = 1;
+
+  // Long labels that cannot fit in the existing space under the permission
+  // label should be allowed to use up to |kMaxSecondaryLabelWidth| for
+  // display.
+  constexpr int kMaxSecondaryLabelWidth = 140;
+  if (preferred_width > kMaxSecondaryLabelWidth) {
+    layout->AddView(std::move(sublabel), column_span, 1.0,
+                    views::GridLayout::LEADING, views::GridLayout::CENTER,
+                    kMaxSecondaryLabelWidth, 0);
+  } else {
+    layout->AddView(std::move(sublabel), column_span, 1.0,
+                    views::GridLayout::FILL, views::GridLayout::CENTER);
+  }
 }
 
 int PermissionSelectorRow::CalculatePaddingBeneathPermissionRow(

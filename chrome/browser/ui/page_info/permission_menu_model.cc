@@ -36,7 +36,7 @@ std::tuple<ContentSetting, bool> DecodeCommandId(int encoded_command_id) {
 }
 }  // namespace
 
-PermissionMenuModel::PermissionMenuModel(PageInfoUiDelegate* delegate,
+PermissionMenuModel::PermissionMenuModel(ChromePageInfoUiDelegate* delegate,
                                          const PageInfo::PermissionInfo& info,
                                          ChangeCallback callback)
     : ui::SimpleMenuModel(this),

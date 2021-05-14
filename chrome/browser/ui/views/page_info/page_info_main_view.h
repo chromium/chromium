@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view.h"
 
+class ChromePageInfoUiDelegate;
 class PageInfoSecurityContentView;
 class PageInfoNavigationHandler;
 
@@ -30,7 +31,7 @@ class PageInfoMainView : public views::View,
   static constexpr int kIconColumnWidth = 16;
 
   PageInfoMainView(PageInfo* presenter,
-                   PageInfoUiDelegate* ui_delegate,
+                   ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler);
   ~PageInfoMainView() override;
 
@@ -91,7 +92,7 @@ class PageInfoMainView : public views::View,
 
   PageInfo* presenter_;
 
-  PageInfoUiDelegate* ui_delegate_;
+  ChromePageInfoUiDelegate* ui_delegate_;
 
   PageInfoNavigationHandler* navigation_handler_;
 

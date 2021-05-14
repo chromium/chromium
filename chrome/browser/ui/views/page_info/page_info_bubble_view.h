@@ -30,6 +30,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget.h"
 
+class ChromePageInfoUiDelegate;
 class GURL;
 class Profile;
 
@@ -169,7 +170,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   SecurityInformationView* header_ = nullptr;
 
   // The raw details of the status of the identity check for this site.
-  std::u16string details_text_ = std::u16string();
+  std::u16string details_text_;
 
   // The view that contains the certificate, cookie, and permissions sections.
   views::View* site_settings_view_ = nullptr;
@@ -203,7 +204,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   PageInfoUI::SecurityDescriptionType security_description_type_ =
       PageInfoUI::SecurityDescriptionType::CONNECTION;
 
-  std::unique_ptr<PageInfoUiDelegate> ui_delegate_;
+  std::unique_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
   base::WeakPtrFactory<PageInfoBubbleView> weak_factory_{this};
 };

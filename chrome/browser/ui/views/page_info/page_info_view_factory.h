@@ -7,15 +7,15 @@
 
 #include "ui/views/view.h"
 
+class ChromePageInfoUiDelegate;
 class PageInfo;
-class PageInfoUiDelegate;
 class PageInfoNavigationHandler;
 
 // A factory class that creates pages and individual views for page info.
 class PageInfoViewFactory {
  public:
   PageInfoViewFactory(PageInfo* presenter,
-                      PageInfoUiDelegate* ui_delegate,
+                      ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler);
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -48,7 +48,7 @@ class PageInfoViewFactory {
       WARN_UNUSED_RESULT;
 
   PageInfo* presenter_;
-  PageInfoUiDelegate* ui_delegate_;
+  ChromePageInfoUiDelegate* ui_delegate_;
   PageInfoNavigationHandler* navigation_handler_;
 };
 

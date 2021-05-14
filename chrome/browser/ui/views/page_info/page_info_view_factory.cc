@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
@@ -55,7 +56,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateLabelWrapper() {
 
 PageInfoViewFactory::PageInfoViewFactory(
     PageInfo* presenter,
-    PageInfoUiDelegate* ui_delegate,
+    ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),

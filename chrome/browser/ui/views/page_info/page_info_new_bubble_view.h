@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 
+class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoViewFactory;
 
@@ -47,7 +48,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
 
   PageInfoClosingCallback closing_callback_;
 
-  std::unique_ptr<PageInfoUiDelegate> ui_delegate_;
+  std::unique_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
   std::unique_ptr<PageInfoViewFactory> view_factory_;
 

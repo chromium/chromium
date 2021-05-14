@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
-#include "components/page_info/page_info_ui_delegate.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -58,7 +58,7 @@ int GetImageButtonRightPadding() {
 
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
-    PageInfoUiDelegate* ui_delegate,
+    ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),

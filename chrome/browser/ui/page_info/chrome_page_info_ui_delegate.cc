@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -18,23 +19,6 @@
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(Profile* profile,
                                                    const GURL& site_url)
     : profile_(profile), site_url_(site_url) {}
-
-permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
-    ContentSettingsType type) {
-  return PermissionManagerFactory::GetForProfile(profile_)->GetPermissionStatus(
-      type, site_url_, site_url_);
-}
-
-#if !defined(OS_ANDROID)
-
-bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
-  return profile_->GetPrefs()->GetBoolean(prefs::kBlockAutoplayEnabled);
-}
-
-bool ChromePageInfoUiDelegate::ShouldShowSiteSettings() {
-  return !profile_->IsGuestSession();
-}
-#endif
 
 bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
   switch (type) {
@@ -74,4 +58,25 @@ bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
     default:
       return false;
   }
+}
+
+#if !defined(OS_ANDROID)
+bool ChromePageInfoUiDelegate::ShouldShowSiteSettings() {
+  return !profile_->IsGuestSession();
+}
+
+std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
+    ContentSettingsType type) {
+  return content_settings::GetPermissionDetailString(profile_, type, site_url_);
+}
+
+bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kBlockAutoplayEnabled);
+}
+#endif
+
+permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
+    ContentSettingsType type) {
+  return PermissionManagerFactory::GetForProfile(profile_)->GetPermissionStatus(
+      type, site_url_, site_url_);
 }

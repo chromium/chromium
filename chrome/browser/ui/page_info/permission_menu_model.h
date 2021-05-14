@@ -12,6 +12,8 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
+class ChromePageInfoUiDelegate;
+
 class PermissionMenuModel : public ui::SimpleMenuModel,
                             public ui::SimpleMenuModel::Delegate {
  public:
@@ -19,7 +21,7 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
       ChangeCallback;
 
   // Create a new menu model for permission settings.
-  PermissionMenuModel(PageInfoUiDelegate* delegate,
+  PermissionMenuModel(ChromePageInfoUiDelegate* delegate,
                       const PageInfo::PermissionInfo& info,
                       ChangeCallback callback);
   ~PermissionMenuModel() override;
