@@ -23,16 +23,9 @@ let last_event = null;
 const overflowElement = document.getElementById("overflow");
 overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
 
-let expectedScrollLeft, expectedScrollTop;
-if (isPercentBasedScrollingEnabled()) {
-  ({
-      x: expectedScrollLeft,
-      y: expectedScrollTop
-  } = calculateExpectedScroll(overflowElement, SCROLL_LEFT, SCROLL_TOP));
-} else {
-  expectedScrollLeft = SCROLL_LEFT;
-  expectedScrollTop = SCROLL_TOP;
-}
+const { x: expectedScrollLeft, y: expectedScrollTop } = calculateExpectedScroll(
+  overflowElement, SCROLL_LEFT, SCROLL_TOP
+);
 
 function mousewheelHandler(e) {
     last_event = e;

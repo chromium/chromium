@@ -18,11 +18,14 @@ function isPercentBasedScrollingEnabled() {
 }
 
 // Calculates expected scrollX/scrollY for a given container or window and
-// amount pixels to scroll via x/y axes when the percent-based scrolling
-// feature is enabled
-function calculateExpectedScroll(
-  container, pixelsToScrollX, pixelsToScrollY, isWindow = false
-) {
+// amount pixels to scroll for x/y axes when the percent-based scrolling
+// feature is enabled.
+// Returns unchanged pixelsToScrollX/pixelsToScrollY if the feature is disabled.
+function calculateExpectedScroll(container, pixelsToScrollX, pixelsToScrollY) {
+  if (!isPercentBasedScrollingEnabled()) {
+    return {x: pixelsToScrollX, y: pixelsToScrollY};
+  }
+
   let expectedScrollX = (
     pixelsToScrollX * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
   );
@@ -30,15 +33,51 @@ function calculateExpectedScroll(
     pixelsToScrollY * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
   );
 
-  if (isWindow) {
-    expectedScrollX *= window.innerWidth;
-    expectedScrollY *= window.innerHeight;
+  if (container === document.scrollingElement) {
+    expectedScrollX *= window.visualViewport.width;
+    expectedScrollY *= window.visualViewport.height;
   } else {
-    expectedScrollX *= Math.min(container.clientWidth, window.innerWidth);
-    expectedScrollY *= Math.min(container.clientHeight, window.innerHeight);
+    expectedScrollX *= Math.min(
+      container.clientWidth, window.visualViewport.width
+    );
+    expectedScrollY *= Math.min(
+      container.clientHeight, window.visualViewport.height
+    );
   }
 
   return {x: expectedScrollX, y: expectedScrollY};
+}
+
+// This is an inverse of the above function.
+// Calculates amount of pixels to scroll for x/y axes when the percent-based
+// scrolling feature is enabled to match expected scrollX/scrollY for a given
+// container or window.
+// Returns unchanged expectedScrollX/expectedScrollY if the feature is disabled.
+function calculatePixelsToScroll(container, expectedScrollX, expectedScrollY) {
+  if (!isPercentBasedScrollingEnabled()) {
+    return {x: expectedScrollX, y: expectedScrollY};
+  }
+
+  let pixelsToScrollX = (
+    expectedScrollX * pixelsPerTick() / SCROLL_PERCENT_PER_LINE_OR_CHAR
+  );
+  let pixelsToScrollY = (
+    expectedScrollY * pixelsPerTick() / SCROLL_PERCENT_PER_LINE_OR_CHAR
+  );
+
+  if (container === document.scrollingElement) {
+    pixelsToScrollX /= window.visualViewport.width;
+    pixelsToScrollY /= window.visualViewport.height;
+  } else {
+    pixelsToScrollX /= Math.min(
+      container.clientWidth, window.visualViewport.width
+    );
+    pixelsToScrollY /= Math.min(
+      container.clientHeight, window.visualViewport.height
+    );
+  }
+
+  return {x: Math.floor(pixelsToScrollX), y: Math.floor(pixelsToScrollY)};
 }
 
 // Scrollbar Arrows Tests

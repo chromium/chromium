@@ -169,7 +169,7 @@ function waitForScrollEvent(eventTarget, timeoutMs = 1000) {
   return waitForEvent(eventTarget, 'scroll', timeoutMs);
 }
 
-function waitForScrollendEvent(eventTarget, timeoutMs = 1000) {
+function waitForScrollendEvent(eventTarget, timeoutMs = 2000) {
   return waitForEvent(eventTarget, 'scrollend', timeoutMs);
 }
 

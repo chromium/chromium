@@ -3,6 +3,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="resources/scroll-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #targetDiv {
   width: 200px;
@@ -32,6 +33,11 @@ var rect = target_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
 
+const pixelsToScroll = 800;
+const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
+  target_div, pixelsToScroll, pixelsToScroll
+);
+
 async function test_scrollend_event_fire(t, source_device,
                                          precise_scrolling_delta) {
   await waitForCompositorCommit();
@@ -43,7 +49,7 @@ async function test_scrollend_event_fire(t, source_device,
 
   // Scroll left on target div and wait for the doc to get scrollend event.
   let scrollendPromise = waitForScrollendEvent(document);
-  await scrollLeft(source_device, precise_scrolling_delta);
+  await scrollLeft(pixelsToScrollX, source_device, precise_scrolling_delta);
   await scrollendPromise.then((event) => {
     assert_false(event.cancelable);
     // scrollend events are bubbled when the target node is document.
@@ -53,7 +59,7 @@ async function test_scrollend_event_fire(t, source_device,
 
   // Scroll up on target div and wait for the doc to get scrollend event.
   scrollendPromise = waitForScrollendEvent(document);
-  await scrollUp(source_device, precise_scrolling_delta);
+  await scrollUp(pixelsToScrollY, source_device, precise_scrolling_delta);
   await scrollendPromise.then((event) => {
     assert_false(event.cancelable);
     // scrollend events are bubbled when the target node is document.

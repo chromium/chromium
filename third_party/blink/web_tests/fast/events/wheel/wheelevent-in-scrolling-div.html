@@ -18,16 +18,9 @@
   const EXPECTED_DELTA = isPercentBasedScrollingEnabled() ?
     WHEEL_DELTA : SCROLL_AMOUNT;
 
-  let expectedScrollTop, expectedScrollLeft;
-  if (isPercentBasedScrollingEnabled()) {
-    ({
-      x: expectedScrollLeft,
-      y: expectedScrollTop
-    } = calculateExpectedScroll(overflowElement, SCROLL_AMOUNT, SCROLL_AMOUNT));
-  } else {
-    expectedScrollLeft = SCROLL_AMOUNT;
-    expectedScrollTop = SCROLL_AMOUNT;
-  }
+  const { x: expectedScrollLeft, y: expectedScrollTop } = (
+    calculateExpectedScroll(overflowElement, SCROLL_AMOUNT, SCROLL_AMOUNT)
+  );
 
   var eventHandlerResolve;
   eventHandlerPromise = new Promise(function(resolve) {

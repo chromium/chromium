@@ -3,6 +3,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="resources/scroll-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #scrollableDiv {
   width: 200px;
@@ -32,6 +33,11 @@ var rect = scrolling_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
 
+const pixelsToScroll = 2400;
+const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
+  scrolling_div, pixelsToScroll, pixelsToScroll
+);
+
 var overscrolled_x_delta = 0;
 var overscrolled_y_delta = 0;
 function onOverscroll(event) {
@@ -50,9 +56,10 @@ async function test_overscroll_event_fire(source_device,
   await waitForCompositorCommit();
 
   // Do a horizontal scroll and wait for overscroll event.
-  await scrollRight(source_device, precise_scrolling_delta);
+  await scrollRight(pixelsToScrollX, source_device, precise_scrolling_delta);
   await waitFor(() => { return overscrolled_x_delta > 0; },
       'Scroller did not receive overscroll event after horizontal scroll.');
+  await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollLeft });
   assert_equals(scrolling_div.scrollWidth - scrolling_div.scrollLeft,
               scrolling_div.clientWidth);
 
@@ -60,9 +67,10 @@ async function test_overscroll_event_fire(source_device,
   overscrolled_y_delta = 0;
 
   // Do a vertical scroll and wait for overscroll event.
-  await scrollDown(source_device, precise_scrolling_delta);
+  await scrollDown(pixelsToScrollY, source_device, precise_scrolling_delta);
   await waitFor(() => { return overscrolled_y_delta > 0; },
       'Scroller did not receive overscroll event after vertical scroll.');
+  await waitForAnimationEndTimeBased(() => { return scrolling_div.scrollTop });
   assert_equals(scrolling_div.scrollHeight - scrolling_div.scrollTop,
               scrolling_div.clientHeight);
 }
