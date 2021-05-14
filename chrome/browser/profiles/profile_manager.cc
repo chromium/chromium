@@ -1683,8 +1683,6 @@ void ProfileManager::RemoveProfile(const base::FilePath& profile_dir) {
                              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                              base::BindOnce(&NukeProfileFromDisk, profile_dir));
-
-  GetProfileAttributesStorage().RemoveProfile(profile_dir);
 }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1831,11 +1829,6 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
     // Clean-up pref data that won't be cleaned up by deleting the profile dir.
     profile->GetPrefs()->OnStoreDeletionFromDisk();
 
-    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-      // Allow the Profile* to be deleted, even if it had no browser windows.
-      ClearFirstBrowserWindowKeepAlive(profile);
-      return;
-    }
   } else {
     // We failed to load the profile, but it's safe to delete a not yet loaded
     // Profile from disk.
@@ -1847,6 +1840,12 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
   }
 
   storage.RemoveProfile(profile_dir);
+
+  if (profile &&
+      base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // Allow the Profile* to be deleted, even if it had no browser windows.
+    ClearFirstBrowserWindowKeepAlive(profile);
+  }
 }
 
 void ProfileManager::FinishDeletingProfile(
