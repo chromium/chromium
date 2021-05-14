@@ -2,6 +2,7 @@
 <script src='../../../resources/gesture-util.js'></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <script>
   let t;
   if (window.internals && chrome && chrome.gpuBenchmarking) {
@@ -46,7 +47,13 @@
     // Scroll horizontally first. Ensure we scrolled the div since otherwise we
     // may pass the test vacuously. See crbug.com/801381 for the case we're
     // guarding against.
-    await smoothScroll(10, 50, 50, WHEEL_SOURCE_TYPE, 'right', 1000);
+    const expectedScroll = 10;
+    const { x: pixelsToScrollX, y: pixelsToScrollY } = calculatePixelsToScroll(
+      document.scrollingElement, expectedScroll, expectedScroll
+    );
+    await smoothScroll(
+      pixelsToScrollX, 50, 50, WHEEL_SOURCE_TYPE, 'right', 1000
+    );
 
     // Wait a bit since the scroll gesture resolves when the ScrollEnd is sent
     // from the browser, not when it's processed by the renderer.
@@ -54,17 +61,22 @@
 
     t.step(() => {
       // Approx because smoothScrollBy isn't perfectly accurate.
-      assert_approx_equals(
-          document.getElementById("scroller").scrollLeft, 10, 1,
+      const scroller = document.getElementById("scroller");
+      const { x: expectedScrollLeft } = (
+        calculateExpectedScroll(scroller, pixelsToScrollX, 0)
+      );
+      assert_approx_equals(scroller.scrollLeft, expectedScrollLeft, 0.1,
           "Sanity check, if this fails the test isn't in the correct state.");
     });
 
     // Now scroll vertically. The scroller shouldn't have any vertical scroll
     // extent so the window should scroll.
-    await smoothScroll(10, 50, 50, WHEEL_SOURCE_TYPE, 'down', 1000);
+    await smoothScroll(
+      pixelsToScrollY, 50, 50, WHEEL_SOURCE_TYPE, 'down', 1000
+    );
     await nFrames(2);
     t.step(() => {
-      assert_approx_equals(window.scrollY, 10, 1);
+      assert_approx_equals(window.scrollY, expectedScroll, 0.1);
     });
     t.done();
   }

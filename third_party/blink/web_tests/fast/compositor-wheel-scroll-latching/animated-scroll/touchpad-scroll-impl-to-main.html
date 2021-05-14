@@ -2,6 +2,7 @@
 <script src='../../../resources/gesture-util.js'></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
   body {
     margin: 0px;
@@ -35,37 +36,20 @@ function changeStyleToScrollOnMain() {
 }
 div.addEventListener("wheel", changeStyleToScrollOnMain, {passive: true});
 
-let last_scroll_offset = div.scrollTop;
-var last_changed_count = 0;
-var raf_count = 0;
-function waitForAnimationEnd() {
-  return new Promise((resolve, reject) => {
-    function tick() {
-    // We requestAnimationFrame until either 70 frames with no change observed
-    // or the div is fully scrolled.
-      if (raf_count - last_changed_count > 70 ||
-          div.scrollTop == div.scrollHeight - div.clientHeight) {
-        resolve();
-      } else {
-        if (div.scrollTop != last_scroll_offset) {
-          last_changed_count = raf_count;
-          last_scroll_offset = div.scrollTop;
-        }
-        requestAnimationFrame(tick.bind(this));
-      }
-      raf_count++;
-    }
-    tick();
+promise_test(async () => {
+  const expectedScrollY = 500;
+  const pixelsToScrollY = calculatePixelsToScroll(div, 0, expectedScrollY).y;
+  const x = (rect.left + rect.right) / 2;
+  const y = (rect.top + rect.bottom) / 2;
+  await smoothScroll(
+    pixelsToScrollY, x, y, GESTURE_SOURCE_TYPE, 'down', SPEED_INSTANT
+  );
+  await waitForAnimationEndTimeBased(() => {
+    return div.scrollTop;
   });
-}
-
-promise_test(() => {
-  return smoothScroll(500, (rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, GESTURE_SOURCE_TYPE, 'down', 2000)
-    .then(waitForAnimationEnd)
-    .then(() => {
-      assert_equals(div.scrollTop, div.scrollHeight - div.clientHeight,
-        "div must be fully scrolled");
-  });
+  assert_equals(div.scrollTop, div.scrollHeight - div.clientHeight,
+    "div must be fully scrolled"
+  );
 }, "Scroller should continue to scroll when MT takes over scroll handling.");
 
 </script>

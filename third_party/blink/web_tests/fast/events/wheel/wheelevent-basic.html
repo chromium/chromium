@@ -42,24 +42,19 @@ promise_test(async () => {
   var x = testDiv.offsetLeft + 5;
   var y = testDiv.offsetTop + 5;
   await mouseMoveTo(x, y);
-  const SCROLL_VALUE = isPercentBasedScrollingEnabled() ?
-    pixelsPerTick() / 2 : 60;
+  const pixelsToScroll = 40;
   await smoothScroll(
-    SCROLL_VALUE, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT
+    pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT
   );
 
   if (isPercentBasedScrollingEnabled()) {
-    await waitForAnimationEndTimeBased(() => {
-      return testDiv.scrollTop;
-    });
-    await waitForAnimationEndTimeBased(() => {
-      return testDiv.scrollLeft;
-    });
+    await waitForAnimationEndTimeBased(() => { return testDiv.scrollTop; });
+    await waitForAnimationEndTimeBased(() => { return testDiv.scrollLeft; });
 
     const {
       x: expectedScrollLeft,
       y: expectedScrollTop,
-    } = calculateExpectedScroll(testDiv, SCROLL_VALUE, SCROLL_VALUE);
+    } = calculateExpectedScroll(testDiv, pixelsToScroll, pixelsToScroll);
 
     // Windows and Linux values appear to be slightly different
     assert_approx_equals(testDiv.scrollTop, expectedScrollTop, 0.05);

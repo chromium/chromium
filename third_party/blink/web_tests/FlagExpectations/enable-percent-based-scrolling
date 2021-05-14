@@ -7,26 +7,11 @@
 # external/wpt/css/css-overscroll-behavior
 crbug.com/1204176 external/wpt/css/css-overscroll-behavior/overscroll-behavior.html [ Failure ]
 
-# fast/compositor-wheel-scroll-latching
-crbug.com/1204176 fast/compositor-wheel-scroll-latching/non-animated-scroll/subpixel-accumulation.html [ Failure ]
-crbug.com/1204176 fast/compositor-wheel-scroll-latching/animated-scroll/touchpad-scroll-impl-to-main.html [ Failure ]
-
 # fast/events/wheel
 crbug.com/1204176 fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 fast/events/wheel/wheelevent-ctrl.html [ Failure ]
-crbug.com/1204176 fast/events/wheel/wheelevent-in-horizontal-scrollbar-in-rtl.html [ Failure ]
-crbug.com/1204176 fast/events/wheel/wheelevent-in-vertical-scrollbar-in-rtl.html [ Failure ]
 # Timeout only for compositor-threaded
 crbug.com/1204176 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Pass Timeout ]
-
-# fast/scroll-behavior
-crbug.com/1204176 fast/scroll-behavior/overscroll-behavior.html [ Failure ]
-
-# fast/scroll-behavior/smooth-scroll
-crbug.com/1204176 fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Timeout ]
-crbug.com/1204176 fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Timeout ]
-crbug.com/1204176 fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Timeout ]
-crbug.com/1204176 fast/scroll-behavior/smooth-scroll/scroll-during-selection.html [ Failure ]
 
 # fast/scrolling
 crbug.com/1204176 fast/scrolling/hover-during-scroll.html [ Failure ]

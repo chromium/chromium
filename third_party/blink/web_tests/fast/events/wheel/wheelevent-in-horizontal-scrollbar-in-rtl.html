@@ -2,12 +2,21 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <script>
-  var testScrolls = [
-    {distance: 10, expectedX: -90, expectedY: 100, direction: 'right'},
-    {distance: 30, expectedX: -120, expectedY: 100, direction: 'left'},
-    {distance: 10, expectedX: -120, expectedY: 110, direction: 'down'},
-    {distance: 30, expectedX: -120, expectedY: 80, direction: 'up'},
+  const pixelsToScroll1 = 10;
+  const { x: pixelsToScrollX1, y: pixelsToScrollY1 } = calculatePixelsToScroll(
+    document.scrollingElement, pixelsToScroll1, pixelsToScroll1
+  );
+  const pixelsToScroll2 = 30;
+  const { x: pixelsToScrollX2, y: pixelsToScrollY2 } = calculatePixelsToScroll(
+    document.scrollingElement, pixelsToScroll2, pixelsToScroll2
+  );
+  const testScrolls = [
+    {distance: pixelsToScrollX1, expectedX: -90, expectedY: 100, direction: 'right'},
+    {distance: pixelsToScrollX2, expectedX: -120, expectedY: 100, direction: 'left'},
+    {distance: pixelsToScrollY1, expectedX: -120, expectedY: 110, direction: 'down'},
+    {distance: pixelsToScrollY2, expectedX: -120, expectedY: 80, direction: 'up'},
   ];
   var currentTest = -1;
 
@@ -21,10 +30,10 @@
       await mouseMoveTo(100, 100);
       await smoothScroll(testCase.distance, 100, 100,
           GestureSourceType.MOUSE_INPUT, testCase.direction, SPEED_INSTANT);
-      await waitFor( () => {
-        return window.scrollX == testCase.expectedX &&
-            window.scrollY == testCase.expectedY;
-      });
+      await waitForAnimationEndTimeBased(() => { return window.scrollX; });
+      await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+      assert_approx_equals(window.scrollX, testCase.expectedX, 1);
+      assert_approx_equals(window.scrollY, testCase.expectedY, 1);
       startNextTestCase();
     }, 'scroll ' + testCase.direction);
   }

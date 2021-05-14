@@ -5835,12 +5835,8 @@ crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.ht
 # fast/events/wheel
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure ]
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-horizontal-scrollbar-in-rtl.html [ Failure ]
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-vertical-scrollbar-in-rtl.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-horizontal-scrollbar-in-rtl.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-vertical-scrollbar-in-rtl.html [ Failure ]
 # Timeout only for compositor-threaded
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Timeout ]
 

@@ -1,6 +1,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
   body {
     margin: 0px;
@@ -29,7 +30,9 @@
   // Initital scroll position.
   var initialY = 10;
   // Amount to smooth scroll by.
-  var userScrollY = 205;
+  const { y: userScrollY } = calculatePixelsToScroll(
+    document.scrollingElement, 0, 205
+  );
   // Amount to change the height of the element above the viewport.
   var changerY =  100;
   // End position: height of ch + userScroll.
@@ -37,7 +40,8 @@
   var source = GestureSourceType.MOUSE_INPUT;
 
   function scrollListener() {
-    if (window.scrollY == endY) {
+    // The value on Linux appears to be slightly different
+    if (approx_equals(window.scrollY, endY, 0.5)) {
       asyncTest.done();
       return;
     }
@@ -51,7 +55,7 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    smoothScroll(userScrollY, 100, 100, source, 'down', SPEED_INSTANT, false /* precise_scrolling_deltas */);
+    smoothScroll(userScrollY, 100, 100, source, 'down', SPEED_INSTANT);
     await raf();
     document.getElementById('anchor').scrollIntoView();
   }
