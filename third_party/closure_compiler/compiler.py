@@ -60,7 +60,8 @@ class Compiler(object):
     self._log_debug("Running jar: %s" % shell_command)
 
     devnull = open(os.devnull, "w")
-    kwargs = {"stdout": devnull, "stderr": subprocess.PIPE, "shell": True}
-    process = subprocess.Popen(shell_command, **kwargs)
+    process = subprocess.Popen(shell_command, universal_newlines=True,
+                               shell=True, stdout=devnull,
+                               stderr=subprocess.PIPE)
     _, stderr = process.communicate()
     return process.returncode, stderr
