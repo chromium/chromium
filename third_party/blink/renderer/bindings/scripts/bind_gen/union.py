@@ -247,8 +247,13 @@ def make_factory_methods(cg_context):
         assert isinstance(cond_text, str) or cond_text is True
         assert value_symbol is None or isinstance(value_symbol, SymbolNode)
         assert isinstance(target_node, SequenceNode)
-        scope_node = SymbolScopeNode(
-            [T("return MakeGarbageCollected<${class_name}>(${blink_value});")])
+        if member.type_info and member.type_info.is_move_effective:
+            text = ("return MakeGarbageCollected<${class_name}>"
+                    "(std::move(${blink_value}));")
+        else:
+            text = ("return MakeGarbageCollected<${class_name}>"
+                    "(${blink_value});")
+        scope_node = SymbolScopeNode([T(text)])
         if not value_symbol:
             value_symbol = make_v8_to_blink_value(
                 "blink_value",
@@ -473,7 +478,8 @@ def make_constructors(cg_context):
                                           "content_type_({})".format(
                                               member.content_type()),
                                       ])
-        else:
+            decls.append(func_def)
+        if not member.is_null:
             func_def = CxxFuncDefNode(
                 name=cg_context.class_name,
                 arg_decls=["{} value".format(member.type_info.member_ref_t)],
@@ -485,7 +491,20 @@ def make_constructors(cg_context):
                 ])
             func_def.body.append(
                 make_check_assignment_value(cg_context, member, "value"))
-        decls.append(func_def)
+            decls.append(func_def)
+        if not member.is_null and member.type_info.is_move_effective:
+            func_def = CxxFuncDefNode(
+                name=cg_context.class_name,
+                arg_decls=["{}&& value".format(member.type_info.value_t)],
+                return_type="",
+                explicit=True,
+                member_initializer_list=[
+                    "content_type_({})".format(member.content_type()),
+                    "{}(std::move(value))".format(member.var_name),
+                ])
+            func_def.body.append(
+                make_check_assignment_value(cg_context, member, "value"))
+            decls.append(func_def)
 
     return decls, None
 
@@ -545,7 +564,24 @@ def make_accessor_functions(cg_context):
             F("{} = value;", member.var_name),
             F("content_type_ = {};", member.content_type()),
         ])
-        return func_def
+
+        if not member.type_info.is_move_effective:
+            return func_def
+
+        decls = ListNode([func_def])
+        func_def = CxxFuncDefNode(
+            name=member.api_set,
+            arg_decls=["{}&& value".format(member.type_info.value_t)],
+            return_type="void")
+        func_def.set_base_template_vars(cg_context.template_bindings())
+        func_def.body.extend([
+            make_check_assignment_value(cg_context, member, "value"),
+            T("Clear();"),
+            F("{} = std::move(value);", member.var_name),
+            F("content_type_ = {};", member.content_type()),
+        ])
+        decls.append(func_def)
+        return decls
 
     def make_api_set_null(member):
         func_def = CxxFuncDefNode(name=member.api_set,
