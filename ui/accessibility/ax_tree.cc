@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/activity_tracker.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -257,9 +258,10 @@ enum class AXTreePendingStructureStatus {
 
 // Intermediate state to keep track of during a tree update.
 struct AXTreeUpdateState {
-  explicit AXTreeUpdateState(const AXTree& tree)
+  AXTreeUpdateState(const AXTree& tree, const AXTreeUpdate& pending_tree_update)
       : pending_update_status(AXTreePendingStructureStatus::kNotStarted),
         root_will_be_created(false),
+        pending_tree_update(pending_tree_update),
         tree(tree) {}
 
   // Returns whether this update removes |node|.
@@ -542,6 +544,11 @@ struct AXTreeUpdateState {
   // Optional copy of the old tree data, only populated when the tree
   // data has changed.
   base::Optional<AXTreeData> old_tree_data;
+
+  // Keep track of the pending tree update to help create useful error messages.
+  // TODO(crbug.com/1156601) Revert this once we have the crash data we need
+  // (crrev.com/c/2892259).
+  const AXTreeUpdate& pending_tree_update;
 
  private:
   PendingStructureChanges* GetPendingStructureChanges(AXNodeID node_id) const {
@@ -934,7 +941,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
       [](std::vector<AXEventIntent>* event_intents) { event_intents->clear(); },
       &event_intents_));
 
-  AXTreeUpdateState update_state(*this);
+  AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
 
   // Accumulates the work that will be required to update the AXTree.
@@ -1914,9 +1921,37 @@ bool AXTree::CreateNewChildVector(AXNode* node,
         // This is a serious error - nodes should never be reparented.
         // If this case occurs, continue so this node isn't left in an
         // inconsistent state, but return failure at the end.
-        RecordError(base::StringPrintf(
-            "Node %d reparented from %d to %d", child->id(),
-            child->parent() ? child->parent()->id() : 0, node->id()));
+        if (child->parent()) {
+          RecordError(base::StringPrintf("Node %d reparented from %d to %d",
+                                         child->id(), child->parent()->id(),
+                                         node->id()));
+        } else {
+          // --- Begin temporary change ---
+          // TODO(crbug.com/1156601) Revert this once we have the crash data we
+          // need (crrev.com/c/2892259)
+          // Diagnose strange errors "Node 1 reparented from 0 to 2", which
+          // sounds like the root node is getting the <html> element as a parent
+          // -- in the normal case, the root is 1 and <html> is 2.
+          std::ostringstream error;
+          error << "Node did not have a previous parent, but "
+                   "reparenting error triggered:"
+                << "\n* Child = " << *child << "\n* New parent = " << *node
+                << "\n* root_will_be_created = "
+                << update_state->root_will_be_created
+                << "\n* pending_root_id = "
+                << (update_state->pending_root_id
+                        ? *update_state->pending_root_id
+                        : kInvalidAXNodeID)
+                << "\nTree update: "
+                << update_state->pending_tree_update.ToString();
+          // Add the error message to "breadcrumbs" in crash reports:
+          base::debug::ScopedActivity scoped_activity;
+          base::debug::ActivityUserData& user_data =
+              scoped_activity.user_data();
+          user_data.SetString("ax_reparenting_error", error.str());
+          CHECK(false) << error.str();
+          // --- End temporary change ---
+        }
         success = false;
         continue;
       }
