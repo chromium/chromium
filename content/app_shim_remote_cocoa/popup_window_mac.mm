@@ -16,10 +16,10 @@
 
 @implementation RenderWidgetPopupWindow
 
-- (id)initWithContentRect:(NSRect)contentRect
-                styleMask:(NSUInteger)windowStyle
-                  backing:(NSBackingStoreType)bufferingType
-                    defer:(BOOL)deferCreation {
+- (instancetype)initWithContentRect:(NSRect)contentRect
+                          styleMask:(NSUInteger)windowStyle
+                            backing:(NSBackingStoreType)bufferingType
+                              defer:(BOOL)deferCreation {
   if (self = [super initWithContentRect:contentRect
                               styleMask:windowStyle
                                 backing:bufferingType

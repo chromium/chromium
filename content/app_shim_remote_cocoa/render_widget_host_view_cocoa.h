@@ -273,7 +273,8 @@ struct DidOverscrollParams;
 - (void)setAccessibilityParentElement:(id)accessibilityParent;
 
 // Methods previously marked as private.
-- (id)initWithHost:(remote_cocoa::mojom::RenderWidgetHostNSViewHost*)host
+- (instancetype)
+      initWithHost:(remote_cocoa::mojom::RenderWidgetHostNSViewHost*)host
     withHostHelper:(remote_cocoa::RenderWidgetHostNSViewHostHelper*)hostHelper;
 - (void)setResponderDelegate:
     (NSObject<RenderWidgetHostViewMacDelegate>*)delegate;

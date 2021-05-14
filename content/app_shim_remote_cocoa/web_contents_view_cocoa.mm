@@ -38,7 +38,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   BOOL _inFullScreenTransition;
 }
 
-- (id)initWithViewsHostableView:(ui::ViewsHostableView*)v {
+- (instancetype)initWithViewsHostableView:(ui::ViewsHostableView*)v {
   self = [super initWithFrame:NSZeroRect];
   if (self != nil) {
     _viewsHostableView = v;
@@ -98,13 +98,11 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
 // Registers for the view for the appropriate drag types.
 - (void)registerDragTypes {
-  NSArray* types =
-      [NSArray arrayWithObjects:ui::kChromeDragDummyPboardType,
-                                kWebURLsWithTitlesPboardType, NSURLPboardType,
-                                NSStringPboardType, NSHTMLPboardType,
-                                NSRTFPboardType, NSFilenamesPboardType,
-                                ui::kWebCustomDataPboardType, nil];
-  [self registerForDraggedTypes:types];
+  [self registerForDraggedTypes:@[
+    ui::kChromeDragDummyPboardType, kWebURLsWithTitlesPboardType,
+    NSURLPboardType, NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
+    NSFilenamesPboardType, ui::kWebCustomDataPboardType
+  ]];
 }
 
 - (void)mouseEvent:(NSEvent*)theEvent {
@@ -252,9 +250,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   if (![[self subviews] containsObject:view])
     return;
 
-  NSSelectionDirection ns_direction =
-      static_cast<NSSelectionDirection>([[[notification userInfo]
-          objectForKey:kSelectionDirection] unsignedIntegerValue]);
+  NSSelectionDirection ns_direction = static_cast<NSSelectionDirection>(
+      [[notification userInfo][kSelectionDirection] unsignedIntegerValue]);
 
   SelectionDirection direction;
   switch (ns_direction) {

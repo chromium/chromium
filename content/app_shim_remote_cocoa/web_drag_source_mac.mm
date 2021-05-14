@@ -50,13 +50,13 @@ using content::DropData;
 
 @implementation WebDragSource
 
-- (id)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-              view:(NSView*)contentsView
-          dropData:(const DropData*)dropData
-             image:(NSImage*)image
-            offset:(NSPoint)offset
-        pasteboard:(NSPasteboard*)pboard
- dragOperationMask:(NSDragOperation)dragOperationMask {
+- (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
+                        view:(NSView*)contentsView
+                    dropData:(const DropData*)dropData
+                       image:(NSImage*)image
+                      offset:(NSPoint)offset
+                  pasteboard:(NSPasteboard*)pboard
+           dragOperationMask:(NSDragOperation)dragOperationMask {
   if ((self = [super init])) {
     _host = host;
 
@@ -236,7 +236,7 @@ using content::DropData;
       gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y));
 
   // Make sure the pasteboard owner isn't us.
-  [_pasteboard declareTypes:[NSArray array] owner:nil];
+  [_pasteboard declareTypes:@[] owner:nil];
 }
 
 - (NSString*)dragPromisedFileTo:(NSString*)path {

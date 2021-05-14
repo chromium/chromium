@@ -130,10 +130,9 @@ void ExtractUnderlines(NSAttributedString* string,
     NSDictionary* attrs = [string attributesAtIndex:i
                               longestEffectiveRange:&range
                                             inRange:NSMakeRange(i, length - i)];
-    if (NSNumber* style = [attrs objectForKey:NSUnderlineStyleAttributeName]) {
+    if (NSNumber* style = attrs[NSUnderlineStyleAttributeName]) {
       SkColor color = SK_ColorBLACK;
-      if (NSColor* colorAttr =
-              [attrs objectForKey:NSUnderlineColorAttributeName]) {
+      if (NSColor* colorAttr = attrs[NSUnderlineColorAttributeName]) {
         color = SkColorFromNSColor(
             [colorAttr colorUsingColorSpaceName:NSDeviceRGBColorSpace]);
       }
@@ -214,8 +213,8 @@ void ExtractUnderlines(NSAttributedString* string,
   RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
 }
 
-- (id)initWithHost:(RenderWidgetHostNSViewHost*)host
-    withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
+- (instancetype)initWithHost:(RenderWidgetHostNSViewHost*)host
+              withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
   self = [super initWithFrame:NSZeroRect];
   if (self) {
     self.acceptsTouchEvents = YES;
@@ -1040,7 +1039,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // Sends key down events to input method first, then we can decide what should
   // be done according to input method's feedback.
-  [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+  [self interpretKeyEvents:@[ theEvent ]];
 
   _handlingKeyDown = NO;
 
@@ -1490,14 +1489,11 @@ void ExtractUnderlines(NSAttributedString* string,
   // See http://crbug.com/47209
   [self cancelComposition];
 
-  NSNumber* direction = [NSNumber
-      numberWithUnsignedInteger:[[self window] keyViewSelectionDirection]];
-  NSDictionary* userInfo =
-      [NSDictionary dictionaryWithObject:direction forKey:kSelectionDirection];
+  NSNumber* direction = @([[self window] keyViewSelectionDirection]);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kViewDidBecomeFirstResponder
                     object:self
-                  userInfo:userInfo];
+                  userInfo:@{kSelectionDirection : direction}];
 
   return YES;
 }

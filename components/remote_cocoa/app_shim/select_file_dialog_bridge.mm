@@ -101,7 +101,8 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
   base::scoped_nsobject<NSArray> _fileTypeLists;
 }
 
-- (id)initWithDialog:(NSSavePanel*)dialog fileTypeLists:(NSArray*)fileTypeLists;
+- (instancetype)initWithDialog:(NSSavePanel*)dialog
+                 fileTypeLists:(NSArray*)fileTypeLists;
 
 - (void)popupAction:(id)sender;
 @end
@@ -128,8 +129,8 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
 
 @implementation ExtensionDropdownHandler
 
-- (id)initWithDialog:(NSSavePanel*)dialog
-       fileTypeLists:(NSArray*)fileTypeLists {
+- (instancetype)initWithDialog:(NSSavePanel*)dialog
+                 fileTypeLists:(NSArray*)fileTypeLists {
   if ((self = [super init])) {
     _dialog = dialog;
     _fileTypeLists.reset([fileTypeLists retain]);
