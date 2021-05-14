@@ -543,9 +543,13 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
   InsertItemAt(curr_model_index, command_id,
                title.empty() ? base::UTF8ToUTF16(item.url.spec()) : title);
   AddTabFavicon(command_id, item.url);
+  int header_index = GetIndexOfCommandId(kRecentlyClosedHeaderCommandId);
+  // We shouldn't get here if there is no recently closed header.
+  DCHECK_GT(header_index, -1);
   // visual_data should only be populated if the tab was part of a tab group
-  // when closed.
-  if (visual_data.has_value()) {
+  // when closed. We shouldn't set the minor icon for the item most recently
+  // closed, as this creates visual clutter alongside the shortcut text.
+  if (visual_data.has_value() && curr_model_index > header_index + 1) {
     const auto& theme =
         ThemeService::GetThemeProviderForProfile(browser_->profile());
     const int color_id =
