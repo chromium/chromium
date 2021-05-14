@@ -125,16 +125,21 @@ void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
   }
 }
 
-void ListMarker::UpdateMarkerText(LayoutObject& marker) {
+void ListMarker::UpdateMarkerText(LayoutObject& marker, LayoutText* text) {
   DCHECK_EQ(Get(&marker), this);
+  DCHECK(text);
   DCHECK_EQ(marker_text_type_, kUnresolved);
-  LayoutText* const text = To<LayoutText>(marker.SlowFirstChild());
   StringBuilder marker_text_builder;
   marker_text_type_ =
       MarkerText(marker, &marker_text_builder, kWithPrefixSuffix);
   text->SetTextIfNeeded(marker_text_builder.ToString().ReleaseImpl());
   DCHECK_NE(marker_text_type_, kNotText);
   DCHECK_NE(marker_text_type_, kUnresolved);
+}
+
+void ListMarker::UpdateMarkerText(LayoutObject& marker) {
+  DCHECK_EQ(Get(&marker), this);
+  UpdateMarkerText(marker, To<LayoutText>(marker.SlowFirstChild()));
 }
 
 ListMarker::MarkerTextType ListMarker::MarkerText(
