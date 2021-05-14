@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 component("metrics_cpp") {
@@ -57,8 +56,7 @@ source_set("tests") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("gen_ukm_builders") {
+action("gen_ukm_builders") {
   script = "//tools/metrics/ukm/gen_builders.py"
 
   # Re-generate the outputs if the codegen code changes:
