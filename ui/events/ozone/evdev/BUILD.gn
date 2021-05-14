@@ -205,6 +205,7 @@ source_set("unittests") {
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "microphone_mute_switch_event_converter_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",
     "testing/fake_cursor_delegate_evdev.h",
@@ -217,10 +218,6 @@ source_set("unittests") {
     "touch_filter/open_palm_detection_filter_unittest.cc",
     "touch_filter/palm_detection_filter_factory_unittest.cc",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [ "microphone_mute_switch_event_converter_evdev_unittest.cc" ]
-  }
 
   deps = [
     ":evdev",
