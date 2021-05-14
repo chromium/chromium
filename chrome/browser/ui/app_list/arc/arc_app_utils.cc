@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
-#include "chrome/browser/ash/arc/notification/arc_supervision_transition_notification.h"
+#include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
@@ -324,7 +324,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     VLOG(1) << "Attempt to launch " << app_id
             << " while supervision transition " << supervision_transition
             << " is in progress.";
-    arc::ShowSupervisionTransitionNotification(profile);
+    arc::ShowManagementTransitionNotification(profile);
     return false;
   }
 

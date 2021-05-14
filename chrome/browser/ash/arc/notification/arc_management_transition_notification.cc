@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/notification/arc_supervision_transition_notification.h"
+#include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -29,11 +29,11 @@ namespace arc {
 namespace {
 
 // Id of the notifier.
-constexpr char kNotifierId[] = "arc_supervision_transition";
+constexpr char kNotifierId[] = "arc_management_transition";
 
-// Observes following ARC++ events that dismisses notification.
-//   * ARC++ opted out.
-//   * supervision transition completed.
+// Observes following ARC events that dismisses notification.
+//   * ARC opted out.
+//   * management transition completed.
 // If one of these events happens notification is automatically dismissed.
 class NotificationDelegate : public message_center::NotificationDelegate,
                              public ArcSessionManagerObserver {
@@ -49,7 +49,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override {
-    // ARC++ Play Store can be only opted out in case notifcation is shown.
+    // ARC Play Store can be only opted out in case notifcation is shown.
     DCHECK(!enabled);
     Dismiss();
   }
@@ -63,7 +63,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
   void Dismiss() {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT,
-        kSupervisionTransitionNotificationId);
+        kManagementTransitionNotificationId);
   }
 
   // Called in case transition state is changed.
@@ -84,10 +84,10 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
 }  // namespace
 
-const char kSupervisionTransitionNotificationId[] =
-    "arc_supervision_transition/notification";
+const char kManagementTransitionNotificationId[] =
+    "arc_management_transition/notification";
 
-void ShowSupervisionTransitionNotification(Profile* profile) {
+void ShowManagementTransitionNotification(Profile* profile) {
   const ArcSupervisionTransition transition = GetSupervisionTransition(profile);
   DCHECK(transition == ArcSupervisionTransition::CHILD_TO_REGULAR ||
          transition == ArcSupervisionTransition::REGULAR_TO_CHILD);
@@ -100,7 +100,7 @@ void ShowSupervisionTransitionNotification(Profile* profile) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
-          kSupervisionTransitionNotificationId,
+          kManagementTransitionNotificationId,
           l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_TITLE),
           l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
           l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
