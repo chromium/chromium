@@ -31,6 +31,7 @@ SodaInstaller* SodaInstaller::GetInstance() {
 // static
 void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
+  SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
 }
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() = default;
@@ -71,6 +72,7 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
+  SodaInstaller::RegisterLanguage(language, global_prefs);
   // Clear cached path in case this is a reinstallation (path could
   // change).
   SetLanguagePath(base::FilePath());
@@ -114,6 +116,7 @@ void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
       kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
                                    base::Unretained(this), kSodaDlcName));
   language_installed_ = false;
+  SodaInstaller::UnregisterLanguages(global_prefs);
   SetLanguagePath(base::FilePath());
   chromeos::DlcserviceClient::Get()->Uninstall(
       kSodaEnglishUsDlcName,

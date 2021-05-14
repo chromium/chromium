@@ -107,6 +107,9 @@ class SodaInstaller {
   void NotifySodaInstalledForTesting();
 
  protected:
+  // Registers the preference tracking the installed SODA language packs.
+  static void RegisterRegisteredLanguagePackPref(PrefRegistrySimple* registry);
+
   // Installs the SODA binary. `global_prefs` is passed as part of component
   // registration for the non-chromeos implementation.
   virtual void InstallSoda(PrefService* global_prefs) = 0;
@@ -140,6 +143,14 @@ class SodaInstaller {
   // installed. Progress is the download percentage out of 100.
   void NotifyOnSodaLanguagePackProgress(int language_progress,
                                         LanguageCode language_code);
+
+  // Registers a language pack by adding it to the preference tracking the
+  // installed SODA language packs.
+  void RegisterLanguage(const std::string& language, PrefService* global_prefs);
+
+  // Unregisters all language packs by clearing the preference tracking the
+  // installed SODA language packs.
+  void UnregisterLanguages(PrefService* global_prefs);
 
   base::ObserverList<Observer> observers_;
   bool soda_binary_installed_ = false;

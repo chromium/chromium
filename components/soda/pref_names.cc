@@ -38,4 +38,9 @@ const char kSodaFrFrConfigPath[] =
 const char kSodaItItConfigPath[] =
     "accessibility.captions.soda_it_it_config_path";
 
+// The list of Speech On-Device API (SODA) language packs installed or
+// registered to be installed.
+const char kSodaRegisteredLanguagePacks[] =
+    "accessibility.captions.soda_registered_language_packs";
+
 }  // namespace prefs

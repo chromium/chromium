@@ -66,6 +66,8 @@ void speech::SodaInstaller::RegisterLocalStatePrefs(
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
   registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
 
+  SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
+
   // Register language pack config path preferences.
   for (const speech::SodaLanguagePackComponentConfig& config :
        speech::kLanguageComponentConfigs) {
@@ -108,6 +110,7 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
 void SodaInstallerImpl::InstallLanguage(const std::string& language,
                                         PrefService* global_prefs) {
   language_installed_ = false;
+  SodaInstaller::RegisterLanguage(language, global_prefs);
   component_updater::RegisterSodaLanguageComponent(
       g_browser_process->component_updater(), language, global_prefs,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
@@ -134,6 +137,7 @@ bool SodaInstallerImpl::IsLanguageInstalled(
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
+  SodaInstaller::UnregisterLanguages(global_prefs);
   base::DeletePathRecursively(speech::GetSodaDirectory());
   base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
   global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());

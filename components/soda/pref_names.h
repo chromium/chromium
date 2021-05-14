@@ -17,6 +17,7 @@ extern const char kSodaEsEsConfigPath[];
 extern const char kSodaFrFrConfigPath[];
 extern const char kSodaItItConfigPath[];
 
+extern const char kSodaRegisteredLanguagePacks[];
 }  // namespace prefs
 
 #endif  // COMPONENTS_SODA_PREF_NAMES_H_
