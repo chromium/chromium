@@ -3,12 +3,19 @@
 // found in the LICENSE file.
 
 package org.chromium.components.language;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A bridge to language metrics functions that require access to native code.
  */
 public class AndroidLanguageMetricsBridge {
+    @VisibleForTesting
+    public static final String OVERRIDE_LANGUAGE_HISTOGRAM =
+            "LanguageUsage.UI.Android.OverrideLanguage";
+
     /**
      * Called when a user adds or removes a language from the list of languages they
      * can read using the Explicit Language Ask prompt at 2nd run.
@@ -20,8 +27,19 @@ public class AndroidLanguageMetricsBridge {
                 language, added);
     }
 
+    /**
+     * Report the app override language code in a sparse histogram.
+     * @param language ISO-639 code of the app override language.
+     */
+    public static void reportAppOverrideLanguage(String language) {
+        AndroidLanguageMetricsBridgeJni.get().reportHashMetricName(
+                OVERRIDE_LANGUAGE_HISTOGRAM, language);
+    }
+
     @NativeMethods
     interface Natives {
         void reportExplicitLanguageAskStateChanged(String language, boolean added);
+        // report the hash of value in |histogramName| sparse histogram.
+        void reportHashMetricName(String histogramName, String value);
     }
 }

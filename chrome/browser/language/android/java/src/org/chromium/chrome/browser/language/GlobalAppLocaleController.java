@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
 import java.util.Locale;
 
@@ -93,6 +94,15 @@ public class GlobalAppLocaleController {
      */
     public boolean isOverridden() {
         return mIsOverridden;
+    }
+
+    /**
+     * Record the value of the override language if one is set. Otherwise
+     * record the empty string.
+     */
+    public void recordOverrideLangauge() {
+        String language = (mIsOverridden) ? mOverrideLanguage : "";
+        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(language);
     }
 
     /**

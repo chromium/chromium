@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
@@ -407,6 +408,8 @@ public class ProcessInitializationHandler {
                 ()
                         -> AssistantVoiceSearchService.reportStartupUserEligibility(
                                 ContextUtils.getApplicationContext()));
+        deferredStartupHandler.addDeferredTask(
+                () -> GlobalAppLocaleController.getInstance().recordOverrideLangauge());
     }
 
     private void initChannelsAsync() {

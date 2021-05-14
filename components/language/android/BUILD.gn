@@ -30,6 +30,27 @@ android_library("language_bridge_java") {
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
   ]
 
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("language_bridge_javatests") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/language/AndroidLanguageMetricsBridgeTest.java" ]
+  deps = [
+    ":language_bridge_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
 }
