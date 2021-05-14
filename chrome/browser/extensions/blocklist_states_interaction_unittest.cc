@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "components/safe_browsing/buildflags.h"
+#include "extensions/browser/blocklist_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The interaction tests rely on the safe-browsing database.
@@ -146,10 +147,41 @@ TEST_F(BlocklistStatesInteractionUnitTest,
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", true);
+  EXPECT_EQ(BLOCKLISTED_MALWARE,
+            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
+                kTestExtensionId));
   EXPECT_TRUE(blocklisted_extensions.Contains(kTestExtensionId));
   EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", false);
+  // TODO(crbug.com/1193695): Ideally this should be set to the original Safe
+  // Browsing greylist state BLOCKLISTED_POTENTIALLY_UNWANTED. However, this is
+  // not possible with the current implementation, because the Omaha blocklist
+  // state (malware) overrides the Safe Browsing blocklist state, and there is
+  // no way to preserve the original Safe Browsing greylist state (potentially
+  // unwanted). This should happen pretty rare - only when the extension is
+  // removed from the Omaha attribute blocklist but stays in the Safe Browsing
+  // greylist. It will be fixed after we decouple Safe Browsing blocklist state
+  // and Omaha attribute blocklist state.
+  EXPECT_EQ(NOT_BLOCKLISTED,
+            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
+                kTestExtensionId));
+  EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
+  // TODO(crbug.com/1193695): The extension is still disabled with
+  // DISABLE_GREYLIST reason even though the blocklist state is cleared. This
+  // should be fixed when we start to consume Omaha attribute greylist.
+  EXPECT_FALSE(enabled_extensions.Contains(kTestExtensionId));
+  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+      kTestExtensionId, disable_reason::DISABLE_GREYLIST));
+
+  // The Safe Browsing greylist state should be set correctly after the Safe
+  // Browsing blocklist is refreshed.
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
+                                            BLOCKLISTED_POTENTIALLY_UNWANTED);
+  EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED,
+            ExtensionPrefs::Get(profile())->GetExtensionBlocklistState(
+                kTestExtensionId));
+
   EXPECT_FALSE(blocklisted_extensions.Contains(kTestExtensionId));
   // The extension should be kept disabled because it's still in the Safe
   // Browsing greylist.
