@@ -515,7 +515,7 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
 
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return {
-          "SharedArrayBufferConstructedWithoutIsolation", kM91,
+          "SharedArrayBufferConstructedWithoutIsolation", kM92,
           String::Format(
               "SharedArrayBuffer will require cross-origin isolation as of "
               "%s. See "
