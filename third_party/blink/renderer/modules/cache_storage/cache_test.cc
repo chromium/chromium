@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -60,16 +61,30 @@ class ScopedFetcherForTests final
   ScopedFetcherForTests() = default;
 
   ScriptPromise Fetch(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                      const V8RequestInfo* request_info,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                       const RequestInfo& request_info,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                       const RequestInit*,
                       ExceptionState& exception_state) override {
     ++fetch_count_;
     if (expected_url_) {
-      String fetched_url;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      switch (request_info->GetContentType()) {
+        case V8RequestInfo::ContentType::kRequest:
+          EXPECT_EQ(*expected_url_, request_info->GetAsRequest()->url());
+          break;
+        case V8RequestInfo::ContentType::kUSVString:
+          EXPECT_EQ(*expected_url_, request_info->GetAsUSVString());
+          break;
+      }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (request_info.IsRequest())
         EXPECT_EQ(*expected_url_, request_info.GetAsRequest()->url());
       else
         EXPECT_EQ(*expected_url_, request_info.GetAsUSVString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     }
 
     if (response_) {
@@ -374,6 +389,15 @@ class CacheStorageTest : public PageTestBase {
       receiver_;
 };
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8RequestInfo* RequestToRequestInfo(Request* value) {
+  return MakeGarbageCollected<V8RequestInfo>(value);
+}
+
+V8RequestInfo* StringToRequestInfo(const String& value) {
+  return MakeGarbageCollected<V8RequestInfo>(value);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 RequestInfo StringToRequestInfo(const String& value) {
   RequestInfo info;
   info.SetUSVString(value);
@@ -385,6 +409,7 @@ RequestInfo RequestToRequestInfo(Request* value) {
   info.SetRequest(value);
   return info;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 TEST_F(CacheStorageTest, Basics) {
   ScriptState::Scope scope(GetScriptState());
@@ -820,7 +845,11 @@ TEST_F(CacheStorageTest, AddAllAbortOne) {
   Response* response = Response::error(GetScriptState());
   fetcher->SetResponse(response);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  HeapVector<Member<V8RequestInfo>> info_list;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<RequestInfo> info_list;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   info_list.push_back(RequestToRequestInfo(request));
 
   ScriptPromise promise =
@@ -849,7 +878,11 @@ TEST_F(CacheStorageTest, AddAllAbortMany) {
   Response* response = Response::error(GetScriptState());
   fetcher->SetResponse(response);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  HeapVector<Member<V8RequestInfo>> info_list;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<RequestInfo> info_list;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   info_list.push_back(RequestToRequestInfo(request));
   info_list.push_back(RequestToRequestInfo(request));
 

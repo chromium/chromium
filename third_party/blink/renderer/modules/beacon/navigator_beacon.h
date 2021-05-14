@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BEACON_NAVIGATOR_BEACON_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BEACON_NAVIGATOR_BEACON_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -27,21 +28,37 @@ class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
   explicit NavigatorBeacon(Navigator&);
   virtual ~NavigatorBeacon();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static bool sendBeacon(
+      ScriptState* script_state,
+      Navigator& navigator,
+      const String& url_string,
+      const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static bool sendBeacon(
       ScriptState*,
       Navigator&,
       const String&,
       const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 
  private:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  bool SendBeaconImpl(ScriptState* script_state,
+                      const String& url_string,
+                      const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+                      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool SendBeaconImpl(
       ScriptState*,
       const String&,
       const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool CanSendBeacon(ExecutionContext*, const KURL&, ExceptionState&);
 };
 

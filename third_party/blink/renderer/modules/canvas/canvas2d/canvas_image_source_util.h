@@ -6,18 +6,26 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_IMAGE_SOURCE_UTIL_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/canvas_image_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
 class CanvasImageSource;
 
 using CanvasImageSourceUnion =
     CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvasOrVideoFrame;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+MODULES_EXPORT CanvasImageSource* ToCanvasImageSource(
+    const V8CanvasImageSource* value,
+    ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 MODULES_EXPORT CanvasImageSource* ToCanvasImageSource(
     const CanvasImageSourceUnion& value,
     ExceptionState& exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink
 

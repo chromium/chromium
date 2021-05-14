@@ -90,6 +90,7 @@ class ImageBitmap;
 class ImageData;
 class IntSize;
 class OESVertexArrayObject;
+class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
 class WebGLBuffer;
@@ -637,7 +638,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void SetFilterQuality(SkFilterQuality) override;
   bool IsWebGL2() { return context_type_ == Platform::kWebGL2ContextType; }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void getHTMLOrOffscreenCanvas(HTMLCanvasElementOrOffscreenCanvas&) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void commit();
 

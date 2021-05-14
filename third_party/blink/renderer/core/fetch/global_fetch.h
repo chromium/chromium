@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_GLOBAL_FETCH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 
@@ -26,7 +27,11 @@ class CORE_EXPORT GlobalFetch {
     virtual ~ScopedFetcher();
 
     virtual ScriptPromise Fetch(ScriptState*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                const V8RequestInfo*,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const RequestInfo&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const RequestInit*,
                                 ExceptionState&) = 0;
 
@@ -40,6 +45,18 @@ class CORE_EXPORT GlobalFetch {
     void Trace(Visitor*) const override;
   };
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static ScriptPromise fetch(ScriptState* script_state,
+                             LocalDOMWindow& window,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
+  static ScriptPromise fetch(ScriptState* script_state,
+                             WorkerGlobalScope& worker,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static ScriptPromise fetch(ScriptState*,
                              LocalDOMWindow&,
                              const RequestInfo&,
@@ -50,6 +67,7 @@ class CORE_EXPORT GlobalFetch {
                              const RequestInfo&,
                              const RequestInit*,
                              ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

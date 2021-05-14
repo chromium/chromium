@@ -31,6 +31,7 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/double_or_auto_keyword.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -73,10 +74,12 @@ static_assert(base::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
 
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static const String& AutoKeyword() {
   DEFINE_STATIC_LOCAL(const String, auto_string, ("auto"));
   return auto_string;
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 static const String& StartKeyword() {
   DEFINE_STATIC_LOCAL(const String, start, ("start"));
@@ -320,6 +323,44 @@ bool VTTCue::LineIsAuto() const {
   return std::isnan(line_position_);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8UnionAutoKeywordOrDouble* VTTCue::line() const {
+  if (LineIsAuto()) {
+    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
+        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+  }
+  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(line_position_);
+}
+
+void VTTCue::setLine(const V8UnionAutoKeywordOrDouble* position) {
+  // http://dev.w3.org/html5/webvtt/#dfn-vttcue-line
+  // On setting, the WebVTT cue line must be set to the new value; if the new
+  // value is the string "auto", then it must be interpreted as the special
+  // value auto.  ("auto" is translated to NaN.)
+  double line_position = 0;
+  switch (position->GetContentType()) {
+    case V8UnionAutoKeywordOrDouble::ContentType::kAutoKeyword: {
+      if (LineIsAuto())
+        return;
+      line_position = std::numeric_limits<double>::quiet_NaN();
+      break;
+    }
+    case V8UnionAutoKeywordOrDouble::ContentType::kDouble: {
+      line_position = position->GetAsDouble();
+      if (line_position_ == line_position)
+        return;
+      break;
+    }
+  }
+
+  CueWillChange();
+  line_position_ = line_position;
+  CueDidChange();
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void VTTCue::line(DoubleOrAutoKeyword& result) const {
   if (LineIsAuto())
     result.SetAutoKeyword(AutoKeyword());
@@ -348,9 +389,53 @@ void VTTCue::setLine(const DoubleOrAutoKeyword& position) {
   CueDidChange();
 }
 
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 bool VTTCue::TextPositionIsAuto() const {
   return std::isnan(text_position_);
 }
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8UnionAutoKeywordOrDouble* VTTCue::position() const {
+  if (TextPositionIsAuto()) {
+    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
+        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+  }
+  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(text_position_);
+}
+
+void VTTCue::setPosition(const V8UnionAutoKeywordOrDouble* position,
+                         ExceptionState& exception_state) {
+  // http://dev.w3.org/html5/webvtt/#dfn-vttcue-position
+  // On setting, if the new value is negative or greater than 100, then an
+  // IndexSizeError exception must be thrown. Otherwise, the WebVTT cue
+  // position must be set to the new value; if the new value is the string
+  // "auto", then it must be interpreted as the special value auto.
+  double text_position = 0;
+  switch (position->GetContentType()) {
+    case V8UnionAutoKeywordOrDouble::ContentType::kAutoKeyword: {
+      if (TextPositionIsAuto())
+        return;
+      text_position = std::numeric_limits<double>::quiet_NaN();
+      break;
+    }
+    case V8UnionAutoKeywordOrDouble::ContentType::kDouble: {
+      text_position = position->GetAsDouble();
+      if (IsInvalidPercentage(text_position, exception_state))
+        return;
+      if (text_position_ == text_position)
+        return;
+      break;
+    }
+  }
+
+  CueWillChange();
+  text_position_ = text_position;
+  CueDidChange();
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void VTTCue::position(DoubleOrAutoKeyword& result) const {
   if (TextPositionIsAuto())
@@ -384,6 +469,8 @@ void VTTCue::setPosition(const DoubleOrAutoKeyword& position,
   text_position_ = text_position;
   CueDidChange();
 }
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void VTTCue::setSize(double size, ExceptionState& exception_state) {
   // http://dev.w3.org/html5/webvtt/#dfn-vttcue-size

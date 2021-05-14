@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/record_test.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_bytestringbytestringrecord.h"
+
 namespace blink {
 
 RecordTest::RecordTest() = default;
@@ -71,10 +73,17 @@ RecordTest::returnStringByteStringSequenceRecord() {
   return record;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool RecordTest::unionReceivedARecord(
+    const V8UnionBooleanOrByteStringByteStringRecord* arg) {
+  return arg->IsByteStringByteStringRecord();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool RecordTest::unionReceivedARecord(
     const BooleanOrByteStringByteStringRecord& arg) {
   return arg.IsByteStringByteStringRecord();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void RecordTest::Trace(Visitor* visitor) const {
   visitor->Trace(string_element_record_);

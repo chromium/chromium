@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -274,7 +275,12 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ("20px", ComputedValue("font-size", *StyleForId("target")));
 
   // Bump the animation time to ensure a transition reversal.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  transition->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(50),
+                             ASSERT_NO_EXCEPTION);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->setCurrentTime(CSSNumberish::FromDouble(50));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->pause();
   UpdateAllLifecyclePhasesForTest();
   const String before_reversal_font_size =
@@ -318,7 +324,12 @@ TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
   EXPECT_TRUE(transition);
 
   // Advance to the midpoint of the transition.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  transition->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
+                             ASSERT_NO_EXCEPTION);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   transition->setCurrentTime(CSSNumberish::FromDouble(500));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("rgb(0, 64, 0)", ComputedValue("color", *StyleForId("target")));
   EXPECT_TRUE(element_animations->BaseComputedStyle());

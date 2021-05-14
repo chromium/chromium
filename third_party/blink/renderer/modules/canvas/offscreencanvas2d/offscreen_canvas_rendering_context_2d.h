@@ -8,6 +8,7 @@
 #include <memory>
 #include <random>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
@@ -58,11 +59,16 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool IsRenderingContext2D() const override { return true; }
   bool IsComposited() const override { return false; }
   bool IsAccelerated() const override;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8RenderingContext* AsV8RenderingContext() final;
+  V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void SetCanvasGetContextResult(RenderingContext&) final {}
   void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void SetIsInHiddenPage(bool) final { NOTREACHED(); }
   void SetIsBeingDisplayed(bool) final { NOTREACHED(); }
   void Stop() final { NOTREACHED(); }
-  void SetCanvasGetContextResult(RenderingContext&) final {}
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }

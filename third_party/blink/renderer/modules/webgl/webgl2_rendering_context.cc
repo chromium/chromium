@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 
 #include <memory>
+
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/offscreen_rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -130,6 +133,19 @@ WebGL2RenderingContext::WebGL2RenderingContext(
                                  requested_attributes,
                                  Platform::kWebGL2ContextType) {}
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8RenderingContext* WebGL2RenderingContext::AsV8RenderingContext() {
+  return MakeGarbageCollected<V8RenderingContext>(this);
+}
+
+V8OffscreenRenderingContext*
+WebGL2RenderingContext::AsV8OffscreenRenderingContext() {
+  return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void WebGL2RenderingContext::SetCanvasGetContextResult(
     RenderingContext& result) {
   result.SetWebGL2RenderingContext(this);
@@ -139,6 +155,8 @@ void WebGL2RenderingContext::SetOffscreenCanvasGetContextResult(
     OffscreenRenderingContext& result) {
   result.SetWebGL2RenderingContext(this);
 }
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
     ScriptState* script_state) {

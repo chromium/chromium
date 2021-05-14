@@ -18,8 +18,13 @@ class CORE_EXPORT CSSMathMin final : public CSSMathVariadic {
 
  public:
   // The constructor defined in the IDL.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CSSMathMin* Create(const HeapVector<Member<V8CSSNumberish>>& args,
+                            ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSMathMin* Create(const HeapVector<CSSNumberish>& args,
                             ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Blink-internal constructor.
   static CSSMathMin* Create(CSSNumericValueVector);
 

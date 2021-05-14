@@ -21,9 +21,18 @@ StringView FindVariableName(CSSParserTokenRange& range) {
   return range.Consume().Value();
 }
 
-CSSUnparsedSegment VariableReferenceValue(
-    const StringView& variable_name,
-    const HeapVector<CSSUnparsedSegment>& tokens) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSUnparsedSegment*
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+CSSUnparsedSegment
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+VariableReferenceValue(const StringView& variable_name,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                       const HeapVector<Member<V8CSSUnparsedSegment>>& tokens
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                       const HeapVector<CSSUnparsedSegment>& tokens
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   CSSUnparsedValue* unparsed_value;
   if (tokens.size() == 0)
     unparsed_value = nullptr;
@@ -33,18 +42,35 @@ CSSUnparsedSegment VariableReferenceValue(
   CSSStyleVariableReferenceValue* variable_reference =
       CSSStyleVariableReferenceValue::Create(variable_name.ToString(),
                                              unparsed_value);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return MakeGarbageCollected<V8CSSUnparsedSegment>(variable_reference);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return CSSUnparsedSegment::FromCSSVariableReferenceValue(variable_reference);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
-HeapVector<CSSUnparsedSegment> ParserTokenRangeToTokens(
-    CSSParserTokenRange range) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+HeapVector<Member<V8CSSUnparsedSegment>>
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+HeapVector<CSSUnparsedSegment>
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+ParserTokenRangeToTokens(CSSParserTokenRange range) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  HeapVector<Member<V8CSSUnparsedSegment>> tokens;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<CSSUnparsedSegment> tokens;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringBuilder builder;
   while (!range.AtEnd()) {
     if (range.Peek().FunctionId() == CSSValueID::kVar ||
         range.Peek().FunctionId() == CSSValueID::kEnv) {
       if (!builder.IsEmpty()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+        tokens.push_back(
+            MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ToString()));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
         tokens.push_back(CSSUnparsedSegment::FromString(builder.ToString()));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
         builder.Clear();
       }
       CSSParserTokenRange block = range.ConsumeBlock();
@@ -59,7 +85,12 @@ HeapVector<CSSUnparsedSegment> ParserTokenRangeToTokens(
     }
   }
   if (!builder.IsEmpty()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    tokens.push_back(
+        MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ToString()));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     tokens.push_back(CSSUnparsedSegment::FromString(builder.ToString()));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   }
   return tokens;
 }
@@ -85,6 +116,40 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
     const CSSVariableData& value) {
   return CSSUnparsedValue::Create(ParserTokenRangeToTokens(value.TokenRange()));
 }
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
+    uint32_t index,
+    ExceptionState& exception_state) const {
+  if (index < tokens_.size()) {
+    return tokens_[index];
+  }
+  return nullptr;
+}
+
+IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
+    uint32_t index,
+    V8CSSUnparsedSegment* segment,
+    ExceptionState& exception_state) {
+  if (index < tokens_.size()) {
+    tokens_[index] = segment;
+    return IndexedPropertySetterResult::kIntercepted;
+  }
+
+  if (index == tokens_.size()) {
+    tokens_.push_back(segment);
+    return IndexedPropertySetterResult::kIntercepted;
+  }
+
+  exception_state.ThrowRangeError(
+      ExceptionMessages::IndexOutsideRange<unsigned>(
+          "index", index, 0, ExceptionMessages::kInclusiveBound, tokens_.size(),
+          ExceptionMessages::kInclusiveBound));
+  return IndexedPropertySetterResult::kIntercepted;
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void CSSUnparsedValue::AnonymousIndexedGetter(
     unsigned index,
@@ -118,6 +183,8 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
   return IndexedPropertySetterResult::kIntercepted;
 }
 
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   CSSTokenizer tokenizer(ToString());
   const auto tokens = tokenizer.TokenizeToEOF();
@@ -134,6 +201,36 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
           false /* needs_variable_resolution */, KURL(), WTF::TextEncoding()));
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+String CSSUnparsedValue::ToString() const {
+  StringBuilder input;
+
+  for (unsigned i = 0; i < tokens_.size(); i++) {
+    if (i) {
+      input.Append("/**/");
+    }
+    switch (tokens_[i]->GetContentType()) {
+      case V8CSSUnparsedSegment::ContentType::kCSSVariableReferenceValue: {
+        const auto* reference_value =
+            tokens_[i]->GetAsCSSVariableReferenceValue();
+        input.Append("var(");
+        input.Append(reference_value->variable());
+        if (reference_value->fallback()) {
+          input.Append(",");
+          input.Append(reference_value->fallback()->ToString());
+        }
+        input.Append(")");
+        break;
+      }
+      case V8CSSUnparsedSegment::ContentType::kString:
+        input.Append(tokens_[i]->GetAsString());
+        break;
+    }
+  }
+
+  return input.ToString();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 String CSSUnparsedValue::ToString() const {
   StringBuilder input;
 
@@ -159,5 +256,6 @@ String CSSUnparsedValue::ToString() const {
 
   return input.ToString();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

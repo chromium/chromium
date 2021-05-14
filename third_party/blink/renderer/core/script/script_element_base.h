@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_ELEMENT_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_ELEMENT_BASE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
 class Document;
 class Element;
 class ExecutionContext;
@@ -91,8 +93,12 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   virtual Document& GetDocument() const = 0;
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  virtual V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() = 0;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual void SetScriptElementForBinding(
       HTMLScriptElementOrSVGScriptElement&) = 0;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   virtual void DispatchLoadEvent() = 0;
   virtual void DispatchErrorEvent() = 0;

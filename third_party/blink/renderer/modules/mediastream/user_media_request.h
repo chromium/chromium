@@ -32,8 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/renderer/bindings/modules/v8/dom_exception_or_overconstrained_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_success_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
@@ -80,8 +82,13 @@ class MODULES_EXPORT UserMediaRequest final
 
     virtual void OnSuccess(ScriptWrappable* callback_this_value,
                            MediaStream*) = 0;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    virtual void OnError(ScriptWrappable* callback_this_value,
+                         const V8MediaStreamError* error) = 0;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     virtual void OnError(ScriptWrappable* callback_this_value,
                          DOMExceptionOrOverconstrainedError) = 0;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     virtual void Trace(Visitor*) const {}
 

@@ -67,9 +67,15 @@ class CORE_EXPORT ScriptCustomElementDefinition final
                                  HTMLFormElement* nullable_form) override;
   void RunFormResetCallback(Element& element) override;
   void RunFormDisabledCallback(Element& element, bool is_disabled) override;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void RunFormStateRestoreCallback(Element& element,
+                                   const V8ControlValue* value,
+                                   const String& mode) override;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void RunFormStateRestoreCallback(Element& element,
                                    const FileOrUSVStringOrFormData& value,
                                    const String& mode) override;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   // Implementations of |CustomElementDefinition|

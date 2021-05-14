@@ -27,6 +27,7 @@
 
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_track_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_audiotrack_texttrack_videotrack.h"
 #include "third_party/blink/renderer/bindings/core/v8/video_track_or_audio_track_or_text_track.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
@@ -60,6 +61,27 @@ const AtomicString& TrackEvent::InterfaceName() const {
   return event_interface_names::kTrackEvent;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8UnionAudioTrackOrTextTrackOrVideoTrack* TrackEvent::track() {
+  if (!track_)
+    return nullptr;
+
+  switch (track_->GetType()) {
+    case WebMediaPlayer::kTextTrack:
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<TextTrack>(track_.Get()));
+    case WebMediaPlayer::kAudioTrack:
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<AudioTrack>(track_.Get()));
+    case WebMediaPlayer::kVideoTrack:
+      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
+          To<VideoTrack>(track_.Get()));
+  }
+
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void TrackEvent::track(VideoTrackOrAudioTrackOrTextTrack& return_value) {
   if (!track_)
     return;
@@ -78,6 +100,7 @@ void TrackEvent::track(VideoTrackOrAudioTrackOrTextTrack& return_value) {
       NOTREACHED();
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void TrackEvent::Trace(Visitor* visitor) const {
   visitor->Trace(track_);

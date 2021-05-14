@@ -12,7 +12,10 @@
 
 namespace blink {
 
+class V8UnionInt32ArrayOrLongSequence;
+class V8UnionUint32ArrayOrUnsignedLongSequence;
 class WebGLExtensionScopedContext;
+
 class WebGLMultiDrawCommon {
  protected:
   bool ValidateDrawcount(WebGLExtensionScopedContext* scoped,
@@ -26,11 +29,21 @@ class WebGLMultiDrawCommon {
                      GLuint offset,
                      GLsizei drawcount);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static base::span<const int32_t> MakeSpan(
+      const V8UnionInt32ArrayOrLongSequence* array);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static base::span<const int32_t> MakeSpan(
       const Int32ArrayOrLongSequence& array);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static base::span<const uint32_t> MakeSpan(
+      const V8UnionUint32ArrayOrUnsignedLongSequence* array);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static base::span<const uint32_t> MakeSpan(
       const Uint32ArrayOrUnsignedLongSequence& array);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

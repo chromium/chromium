@@ -17,7 +17,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -172,8 +175,15 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
       visitor->Trace(alpha_gradient_);
     }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>
+        opaque_gradient_;
+    Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>
+        alpha_gradient_;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     StringOrCanvasGradientOrCanvasPatternOrCSSColorValue opaque_gradient_;
     StringOrCanvasGradientOrCanvasPatternOrCSSColorValue alpha_gradient_;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   };
 
   // TODO(Oilpan): avoid tedious part-object wrapper by supporting on-heap
@@ -188,12 +198,23 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
   FakeImageSource alpha_bitmap_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>&
+  OpaqueGradient() {
+    return wrap_gradients_->opaque_gradient_;
+  }
+  Member<V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>&
+  AlphaGradient() {
+    return wrap_gradients_->alpha_gradient_;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& OpaqueGradient() {
     return wrap_gradients_->opaque_gradient_;
   }
   StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& AlphaGradient() {
     return wrap_gradients_->alpha_gradient_;
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
@@ -243,7 +264,13 @@ void CanvasRenderingContext2DTest::SetUp() {
   EXPECT_FALSE(exception_state.HadException());
   opaque_gradient->addColorStop(1, String("blue"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  OpaqueGradient() = MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
+      opaque_gradient);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   OpaqueGradient().SetCanvasGradient(opaque_gradient);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto* alpha_gradient =
       MakeGarbageCollected<CanvasGradient>(FloatPoint(0, 0), FloatPoint(10, 0));
@@ -253,7 +280,13 @@ void CanvasRenderingContext2DTest::SetUp() {
                                exception_state);
   EXPECT_FALSE(exception_state.HadException());
   StringOrCanvasGradientOrCanvasPatternOrCSSColorValue wrapped_alpha_gradient;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  AlphaGradient() = MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
+      alpha_gradient);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   AlphaGradient().SetCanvasGradient(alpha_gradient);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   global_memory_cache_ =
       ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
@@ -600,8 +633,13 @@ TEST_F(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   CanvasRenderingContext2D* context = static_cast<CanvasRenderingContext2D*>(
       canvas->GetCanvasRenderingContext("2d", attributes));
   DummyExceptionStateForTesting exception_state;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* image_source =
+      MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_derived);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasImageSourceUnion image_source;
   image_source.SetImageBitmap(image_bitmap_derived);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   context->drawImage(GetScriptState(), image_source, 0, 0, exception_state);
 }
 
@@ -781,15 +819,25 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
 
   context->clearRect(0, 0, 2, 2);
   NonThrowableExceptionState exception_state;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* image_union = MakeGarbageCollected<V8CanvasImageSource>(image_element);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasImageSourceUnion image_union;
   image_union.SetHTMLImageElement(image_element);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   context->drawImage(script_state, image_union, 0, 0, exception_state);
 
   ImageData* image_data =
       context->getImageData(0, 0, 2, 2, color_setting, exception_state);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const V8ImageDataArray* data_array = image_data->data();
+  ASSERT_TRUE(data_array->IsFloat32Array());
+  DOMArrayBufferView* buffer_view = data_array->GetAsFloat32Array().Get();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ImageDataArray data_array = image_data->data();
   ASSERT_TRUE(data_array.IsFloat32Array());
   DOMArrayBufferView* buffer_view = data_array.GetAsFloat32Array().Get();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ASSERT_EQ(16u, buffer_view->byteLength() / buffer_view->TypeSize());
   float* actual_pixels = static_cast<float*>(buffer_view->BaseAddress());
 

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -64,10 +65,10 @@ class MediaStreamTrack;
 class MediaStreamTrackOrString;
 class RTCAnswerOptions;
 class RTCConfiguration;
-class RTCDtlsTransport;
 class RTCDTMFSender;
 class RTCDataChannel;
 class RTCDataChannelInit;
+class RTCDtlsTransport;
 class RTCIceCandidateInit;
 class RTCIceTransport;
 class RTCOfferOptions;
@@ -82,6 +83,7 @@ class ScriptState;
 class V8RTCPeerConnectionErrorCallback;
 class V8RTCSessionDescriptionCallback;
 class V8RTCStatsCallback;
+class V8UnionMediaStreamTrackOrString;
 class V8VoidFunction;
 
 extern const char kOnlySupportedInUnifiedPlanMessage[];
@@ -205,10 +207,17 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Certificate management
   // http://w3c.github.io/webrtc-pc/#sec.cert-mgmt
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static ScriptPromise generateCertificate(
+      ScriptState* script_state,
+      const V8AlgorithmIdentifier* keygen_algorithm,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static ScriptPromise generateCertificate(
       ScriptState*,
       const AlgorithmIdentifier& keygen_algorithm,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ScriptPromise addIceCandidate(ScriptState*,
                                 const RTCIceCandidateInit*,
@@ -269,9 +278,16 @@ class MODULES_EXPORT RTCPeerConnection final
   const HeapVector<Member<RTCRtpTransceiver>>& getTransceivers() const;
   const HeapVector<Member<RTCRtpSender>>& getSenders() const;
   const HeapVector<Member<RTCRtpReceiver>>& getReceivers() const;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  RTCRtpTransceiver* addTransceiver(
+      const V8UnionMediaStreamTrackOrString* track_or_kind,
+      const RTCRtpTransceiverInit* init,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   RTCRtpTransceiver* addTransceiver(const MediaStreamTrackOrString&,
                                     const RTCRtpTransceiverInit*,
                                     ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   RTCRtpSender* addTrack(MediaStreamTrack*, MediaStreamVector, ExceptionState&);
   void removeTrack(RTCRtpSender*, ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(track, kTrack)

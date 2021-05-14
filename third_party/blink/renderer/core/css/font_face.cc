@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/binary_data_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
@@ -122,6 +123,31 @@ const CSSValue* ConvertSizeAdjustValue(const CSSValue* parsed_value) {
 
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+FontFace* FontFace::Create(
+    ExecutionContext* execution_context,
+    const AtomicString& family,
+    const V8UnionArrayBufferOrArrayBufferViewOrString* source,
+    const FontFaceDescriptors* descriptors) {
+  DCHECK(source);
+
+  switch (source->GetContentType()) {
+    case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kArrayBuffer:
+      return Create(execution_context, family, source->GetAsArrayBuffer(),
+                    descriptors);
+    case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::
+        kArrayBufferView:
+      return Create(execution_context, family,
+                    source->GetAsArrayBufferView().Get(), descriptors);
+    case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kString:
+      return Create(execution_context, family, source->GetAsString(),
+                    descriptors);
+  }
+
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 FontFace* FontFace::Create(ExecutionContext* context,
                            const AtomicString& family,
                            StringOrArrayBufferOrArrayBufferView& source,
@@ -137,6 +163,7 @@ FontFace* FontFace::Create(ExecutionContext* context,
   NOTREACHED();
   return nullptr;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 FontFace* FontFace::Create(ExecutionContext* context,
                            const AtomicString& family,

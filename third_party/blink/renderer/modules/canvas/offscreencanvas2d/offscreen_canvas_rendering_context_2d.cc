@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/offscreen_rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
@@ -251,10 +252,25 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
   return image;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
+  return nullptr;
+}
+
+V8OffscreenRenderingContext*
+OffscreenCanvasRenderingContext2D::AsV8OffscreenRenderingContext() {
+  return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void OffscreenCanvasRenderingContext2D::SetOffscreenCanvasGetContextResult(
     OffscreenRenderingContext& result) {
   result.SetOffscreenCanvasRenderingContext2D(this);
 }
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool OffscreenCanvasRenderingContext2D::ParseColorOrCurrentColor(
     Color& color,

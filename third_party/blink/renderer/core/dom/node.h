@@ -82,6 +82,8 @@ using StaticNodeList = StaticNodeTypeList<Node>;
 class StringOrTrustedScript;
 class StyleChangeReasonForTracing;
 class V8ScrollStateCallback;
+class V8UnionNodeOrStringOrTrustedScript;
+class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
 struct PhysicalRect;
 
@@ -238,6 +240,26 @@ class CORE_EXPORT Node : public EventTarget {
   // https://dom.spec.whatwg.org/#concept-closed-shadow-hidden
   bool IsClosedShadowHiddenFrom(const Node&) const;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void Prepend(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+  void Append(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+  void Before(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+  void After(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+  void ReplaceWith(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+  void ReplaceChildren(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void Prepend(const HeapVector<NodeOrStringOrTrustedScript>&, ExceptionState&);
   void Append(const HeapVector<NodeOrStringOrTrustedScript>&, ExceptionState&);
   void Before(const HeapVector<NodeOrStringOrTrustedScript>&, ExceptionState&);
@@ -246,6 +268,7 @@ class CORE_EXPORT Node : public EventTarget {
                    ExceptionState&);
   void ReplaceChildren(const HeapVector<NodeOrStringOrTrustedScript>&,
                        ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void remove(ExceptionState&);
   void remove();
 
@@ -281,8 +304,16 @@ class CORE_EXPORT Node : public EventTarget {
 
   String textContent(bool convert_brs_to_newlines = false) const;
   virtual void setTextContent(const String&);
-  void textContent(StringOrTrustedScript& result);
-  virtual void setTextContent(const StringOrTrustedScript&, ExceptionState&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionStringOrTrustedScript* textContentForBinding() const;
+  virtual void setTextContentForBinding(
+      const V8UnionStringOrTrustedScript* value,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void textContentForBinding(StringOrTrustedScript& result);
+  virtual void setTextContentForBinding(const StringOrTrustedScript&,
+                                        ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   bool SupportsAltText();
 

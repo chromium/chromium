@@ -215,7 +215,11 @@ void NDEFReader::ReadAbort() {
 // https://w3c.github.io/web-nfc/#writing-content
 // https://w3c.github.io/web-nfc/#the-write-method
 ScriptPromise NDEFReader::write(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                const V8NDEFMessageSource* write_message,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const NDEFMessageSource& write_message,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                 const NDEFWriteOptions* options,
                                 ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#security-policies

@@ -17,6 +17,7 @@ class CSSProperty;
 class CSSPropertyName;
 class CSSValue;
 class ExecutionContext;
+class V8UnionCSSStyleValueOrString;
 
 class CORE_EXPORT StyleValueFactory {
   STATIC_ONLY(StyleValueFactory);
@@ -32,11 +33,19 @@ class CORE_EXPORT StyleValueFactory {
   static CSSStyleValueVector CssValueToStyleValueVector(const CSSPropertyName&,
                                                         const CSSValue&);
   // Returns an empty vector on error conditions.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CSSStyleValueVector CoerceStyleValuesOrStrings(
+      const CSSProperty& property,
+      const AtomicString& custom_property_name,
+      const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+      const ExecutionContext& execution_context);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSStyleValueVector CoerceStyleValuesOrStrings(
       const CSSProperty& property,
       const AtomicString& custom_property_name,
       const HeapVector<CSSStyleValueOrString>& values,
       const ExecutionContext&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Reify a CSSStyleValue without the context of a CSS property. For most
   // CSSValues, this will result in a CSSUnsupportedStyleValue. Note that the
   // CSSUnsupportedStyleValue returned from this function (unlike regular

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -165,9 +166,15 @@ void PageTestBase::LoadAhem(LocalFrame& frame) {
   Document& document = *frame.DomWindow()->document();
   scoped_refptr<SharedBuffer> shared_buffer =
       test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* buffer =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          DOMArrayBuffer::Create(shared_buffer));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringOrArrayBufferOrArrayBufferView buffer =
       StringOrArrayBufferOrArrayBufferView::FromArrayBuffer(
           DOMArrayBuffer::Create(shared_buffer));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   FontFace* ahem = FontFace::Create(frame.DomWindow(), "Ahem", buffer,
                                     FontFaceDescriptors::Create());
 

@@ -38,6 +38,7 @@
 namespace blink {
 
 class OverconstrainedError;
+class V8UnionDOMExceptionOrOverconstrainedError;
 
 // A class that is able to be used like ExceptionState for carrying
 // information about an error up the stack, but it is up to the higher
@@ -56,7 +57,11 @@ class MediaErrorState {
   bool CanGenerateException();
   void RaiseException(ExceptionState&);
   String GetErrorMessage();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionDOMExceptionOrOverconstrainedError* CreateError();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DOMExceptionOrOverconstrainedError CreateError();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   enum ErrorType { kNoError, kTypeError, kDOMException, kConstraintError };

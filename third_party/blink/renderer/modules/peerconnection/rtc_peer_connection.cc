@@ -48,6 +48,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/modules/v8/media_stream_track_or_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
@@ -1789,12 +1791,22 @@ void RTCPeerConnection::setConfiguration(
 
 ScriptPromise RTCPeerConnection::generateCertificate(
     ScriptState* script_state,
-    const AlgorithmIdentifier& keygen_algorithm,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8AlgorithmIdentifier* keygen_algorithm_arg,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const AlgorithmIdentifier& keygen_algorithm_arg,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const V8AlgorithmIdentifier* keygen_algorithm = keygen_algorithm_arg;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const AlgorithmIdentifier* keygen_algorithm = &keygen_algorithm_arg;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
   // Normalize |keygenAlgorithm| with WebCrypto, making sure it is a recognized
   // AlgorithmIdentifier.
   WebCryptoAlgorithm crypto_algorithm;
-  if (!NormalizeAlgorithm(script_state->GetIsolate(), keygen_algorithm,
+  if (!NormalizeAlgorithm(script_state->GetIsolate(), keygen_algorithm_arg,
                           kWebCryptoOperationGenerateKey, crypto_algorithm,
                           exception_state)) {
     return ScriptPromise();
@@ -1803,9 +1815,9 @@ ScriptPromise RTCPeerConnection::generateCertificate(
   // Check if |keygenAlgorithm| contains the optional DOMTimeStamp |expires|
   // attribute.
   base::Optional<DOMTimeStamp> expires;
-  if (keygen_algorithm.IsObject()) {
+  if (keygen_algorithm->IsObject()) {
     Dictionary keygen_algorithm_dict(script_state->GetIsolate(),
-                                     keygen_algorithm.GetAsObject().V8Value(),
+                                     keygen_algorithm->GetAsObject().V8Value(),
                                      exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
@@ -2372,7 +2384,11 @@ const HeapVector<Member<RTCRtpReceiver>>& RTCPeerConnection::getReceivers()
 }
 
 RTCRtpTransceiver* RTCPeerConnection::addTransceiver(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionMediaStreamTrackOrString* track_or_kind,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const MediaStreamTrackOrString& track_or_kind,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const RTCRtpTransceiverInit* init,
     ExceptionState& exception_state) {
   if (sdp_semantics_ != webrtc::SdpSemantics::kUnifiedPlan) {
@@ -2399,6 +2415,36 @@ RTCRtpTransceiver* RTCPeerConnection::addTransceiver(
   }
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>> result =
       webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (track_or_kind->GetContentType()) {
+    case V8UnionMediaStreamTrackOrString::ContentType::kMediaStreamTrack: {
+      MediaStreamTrack* track = track_or_kind->GetAsMediaStreamTrack();
+      RegisterTrack(track);
+      result = peer_handler_->AddTransceiverWithTrack(track->Component(),
+                                                      std::move(webrtc_init));
+      break;
+    }
+    case V8UnionMediaStreamTrackOrString::ContentType::kString: {
+      const String& kind_string = track_or_kind->GetAsString();
+      // TODO(hbos): Make cricket::MediaType an allowed identifier in
+      // rtc_peer_connection.cc and use that instead of a boolean.
+      String kind;
+      if (kind_string == "audio") {
+        kind = webrtc::MediaStreamTrackInterface::kAudioKind;
+      } else if (kind_string == "video") {
+        kind = webrtc::MediaStreamTrackInterface::kVideoKind;
+      } else {
+        exception_state.ThrowTypeError(
+            "The argument provided as parameter 1 is not a valid "
+            "MediaStreamTrack kind ('audio' or 'video').");
+        return nullptr;
+      }
+      result = peer_handler_->AddTransceiverWithKind(std::move(kind),
+                                                     std::move(webrtc_init));
+      break;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (track_or_kind.IsMediaStreamTrack()) {
     MediaStreamTrack* track = track_or_kind.GetAsMediaStreamTrack();
     RegisterTrack(track);
@@ -2422,6 +2468,7 @@ RTCRtpTransceiver* RTCPeerConnection::addTransceiver(
     result = peer_handler_->AddTransceiverWithKind(std::move(kind),
                                                    std::move(webrtc_init));
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (!result.ok()) {
     ThrowExceptionFromRTCError(result.error(), exception_state);
     return nullptr;

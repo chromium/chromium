@@ -114,11 +114,19 @@ class TestCustomElementDefinition : public CustomElementDefinition {
     NOTREACHED() << "definition does not have disabledStateChangedCallback";
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void RunFormStateRestoreCallback(Element& element,
+                                   const V8ControlValue* value,
+                                   const String& mode) override {
+    NOTREACHED() << "definition does not have restoreValueCallback";
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void RunFormStateRestoreCallback(Element& element,
                                    const FileOrUSVStringOrFormData& value,
                                    const String& mode) override {
     NOTREACHED() << "definition does not have restoreValueCallback";
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinition);
 };

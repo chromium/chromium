@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
@@ -71,10 +72,15 @@ SharedWorker::SharedWorker(ExecutionContext* context)
           SchedulingPolicy::Feature::kSharedWorker,
           {SchedulingPolicy::DisableBackForwardCache()})) {}
 
-SharedWorker* SharedWorker::Create(ExecutionContext* context,
-                                   const String& url,
-                                   const StringOrWorkerOptions& name_or_options,
-                                   ExceptionState& exception_state) {
+SharedWorker* SharedWorker::Create(
+    ExecutionContext* context,
+    const String& url,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionStringOrWorkerOptions* name_or_options,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const StringOrWorkerOptions& name_or_options,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   // We don't currently support nested workers, so workers can only be created
@@ -110,6 +116,26 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
   }
 
   auto options = mojom::blink::WorkerOptions::New();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (name_or_options->GetContentType()) {
+    case V8UnionStringOrWorkerOptions::ContentType::kString:
+      options->name = name_or_options->GetAsString();
+      break;
+    case V8UnionStringOrWorkerOptions::ContentType::kWorkerOptions: {
+      WorkerOptions* worker_options = name_or_options->GetAsWorkerOptions();
+      options->name = worker_options->name();
+      base::Optional<mojom::blink::ScriptType> type_result =
+          Script::ParseScriptType(worker_options->type());
+      DCHECK(type_result);
+      options->type = type_result.value();
+      base::Optional<network::mojom::CredentialsMode> credentials_result =
+          Request::ParseCredentialsMode(worker_options->credentials());
+      DCHECK(credentials_result);
+      options->credentials = credentials_result.value();
+      break;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (name_or_options.IsString()) {
     options->name = name_or_options.GetAsString();
   } else if (name_or_options.IsWorkerOptions()) {
@@ -126,6 +152,7 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
   } else {
     NOTREACHED();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(!options->name.IsNull());
   if (options->type == mojom::blink::ScriptType::kClassic)
     UseCounter::Count(window, WebFeature::kClassicSharedWorker);

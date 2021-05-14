@@ -50,7 +50,11 @@ IDBOpenDBRequest::IDBOpenDBRequest(
     IDBRequest::AsyncTraceState metrics,
     mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
     : IDBRequest(script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                 nullptr,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                  IDBRequest::Source(),
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                  nullptr,
                  std::move(metrics)),
       callbacks_receiver_(std::move(callbacks_receiver)),

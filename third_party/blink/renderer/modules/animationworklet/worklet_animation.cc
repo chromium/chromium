@@ -8,6 +8,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_documenttimeline_scrolltimeline.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/bindings/modules/v8/animation_effect_or_animation_effect_sequence.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -34,12 +37,50 @@ namespace blink {
 namespace {
 
 bool ConvertAnimationEffects(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const AnimationEffectOrAnimationEffectSequence& effects,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     HeapVector<Member<KeyframeEffect>>& keyframe_effects,
     String& error_string) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(effects);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(keyframe_effects.IsEmpty());
 
   // Currently we only support KeyframeEffect.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (effects->GetContentType()) {
+    case V8UnionAnimationEffectOrAnimationEffectSequence::ContentType::
+        kAnimationEffect: {
+      AnimationEffect* effect = effects->GetAsAnimationEffect();
+      KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(effect);
+      if (!keyframe_effect) {
+        error_string = "Effect must be a KeyframeEffect object";
+        return false;
+      }
+      keyframe_effects.push_back(keyframe_effect);
+      break;
+    }
+    case V8UnionAnimationEffectOrAnimationEffectSequence::ContentType::
+        kAnimationEffectSequence: {
+      const HeapVector<Member<AnimationEffect>>& effect_sequence =
+          effects->GetAsAnimationEffectSequence();
+      keyframe_effects.ReserveInitialCapacity(effect_sequence.size());
+      for (const auto& effect : effect_sequence) {
+        KeyframeEffect* keyframe_effect =
+            DynamicTo<KeyframeEffect>(effect.Get());
+        if (!keyframe_effect) {
+          error_string = "Effects must all be KeyframeEffect objects";
+          return false;
+        }
+        keyframe_effects.push_back(keyframe_effect);
+      }
+      break;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (effects.IsAnimationEffect()) {
     auto* const effect = effects.GetAsAnimationEffect();
     auto* key_frame = DynamicTo<KeyframeEffect>(effect);
@@ -61,6 +102,7 @@ bool ConvertAnimationEffects(
       keyframe_effects.push_back(key_frame);
     }
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (keyframe_effects.IsEmpty()) {
     error_string = "Effects array must be non-empty";
@@ -91,6 +133,22 @@ bool IsActive(const Animation::AnimationPlayState& state) {
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool ValidateTimeline(const V8UnionDocumentTimelineOrScrollTimeline* timeline,
+                      String& error_string) {
+  if (!timeline)
+    return true;
+  if (timeline->IsScrollTimeline()) {
+    V8UnionDoubleOrScrollTimelineAutoKeyword* time_range =
+        timeline->GetAsScrollTimeline()->timeRange();
+    if (time_range->IsScrollTimelineAutoKeyword()) {
+      error_string = "ScrollTimeline timeRange must have non-auto value";
+      return false;
+    }
+  }
+  return true;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool ValidateTimeline(const DocumentTimelineOrScrollTimeline& timeline,
                       String& error_string) {
   if (timeline.IsScrollTimeline()) {
@@ -103,7 +161,25 @@ bool ValidateTimeline(const DocumentTimelineOrScrollTimeline& timeline,
   }
   return true;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+AnimationTimeline* ConvertAnimationTimeline(
+    const Document& document,
+    const V8UnionDocumentTimelineOrScrollTimeline* timeline) {
+  if (!timeline)
+    return &document.Timeline();
+  switch (timeline->GetContentType()) {
+    case V8UnionDocumentTimelineOrScrollTimeline::ContentType::
+        kDocumentTimeline:
+      return timeline->GetAsDocumentTimeline();
+    case V8UnionDocumentTimelineOrScrollTimeline::ContentType::kScrollTimeline:
+      return timeline->GetAsScrollTimeline();
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 AnimationTimeline* ConvertAnimationTimeline(
     const Document& document,
     const DocumentTimelineOrScrollTimeline& timeline) {
@@ -115,6 +191,7 @@ AnimationTimeline* ConvertAnimationTimeline(
 
   return &document.Timeline();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool CheckElementComposited(const Node& target) {
   return target.GetLayoutObject() &&
@@ -181,6 +258,16 @@ base::Optional<base::TimeDelta> CalculateStartTime(
 }
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+WorkletAnimation* WorkletAnimation::Create(
+    ScriptState* script_state,
+    const String& animator_name,
+    const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+    ExceptionState& exception_state) {
+  return Create(script_state, animator_name, effects, nullptr, ScriptValue(),
+                exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WorkletAnimation* WorkletAnimation::Create(
     ScriptState* script_state,
     String animator_name,
@@ -190,7 +277,19 @@ WorkletAnimation* WorkletAnimation::Create(
                 DocumentTimelineOrScrollTimeline(), ScriptValue(),
                 exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+WorkletAnimation* WorkletAnimation::Create(
+    ScriptState* script_state,
+    const String& animator_name,
+    const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+    const V8UnionDocumentTimelineOrScrollTimeline* timeline,
+    ExceptionState& exception_state) {
+  return Create(script_state, animator_name, effects, timeline, ScriptValue(),
+                exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WorkletAnimation* WorkletAnimation::Create(
     ScriptState* script_state,
     String animator_name,
@@ -200,11 +299,19 @@ WorkletAnimation* WorkletAnimation::Create(
   return Create(script_state, animator_name, effects, timeline, ScriptValue(),
                 exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 WorkletAnimation* WorkletAnimation::Create(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const String& animator_name,
+    const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+    const V8UnionDocumentTimelineOrScrollTimeline* timeline,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     String animator_name,
     const AnimationEffectOrAnimationEffectSequence& effects,
     DocumentTimelineOrScrollTimeline timeline,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ScriptValue& options,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());

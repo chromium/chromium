@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/document_or_xml_http_request_body_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_document_formdata_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -762,6 +763,34 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
   return true;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void XMLHttpRequest::send(const V8UnionDocumentOrXMLHttpRequestBodyInit* body,
+                          ExceptionState& exception_state) {
+  probe::WillSendXMLHttpOrFetchNetworkRequest(GetExecutionContext(), Url());
+
+  if (!body)
+    return send(String(), exception_state);
+
+  switch (body->GetContentType()) {
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kArrayBuffer:
+      return send(body->GetAsArrayBuffer(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kArrayBufferView:
+      return send(body->GetAsArrayBufferView().Get(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kBlob:
+      return send(body->GetAsBlob(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kDocument:
+      return send(body->GetAsDocument(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kFormData:
+      return send(body->GetAsFormData(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kURLSearchParams:
+      return send(body->GetAsURLSearchParams(), exception_state);
+    case V8UnionDocumentOrXMLHttpRequestBodyInit::ContentType::kUSVString:
+      return send(body->GetAsUSVString(), exception_state);
+  }
+
+  NOTREACHED();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void XMLHttpRequest::send(
     const DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&
         body,
@@ -806,6 +835,7 @@ void XMLHttpRequest::send(
   DCHECK(body.IsUSVString());
   send(body.GetAsUSVString(), exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool XMLHttpRequest::AreMethodAndURLValidForSend() {
   return method_ != http_names::kGET && method_ != http_names::kHEAD &&

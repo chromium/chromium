@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/orientation_sensor.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_dommatrix_float32array_float64array.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -98,6 +99,25 @@ void OrientationSensor::PopulateMatrixInternal(
   DoPopulateMatrix(target_matrix, quat.x, quat.y, quat.z, quat.w);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void OrientationSensor::populateMatrix(
+    const V8RotationMatrixType* target_buffer,
+    ExceptionState& exception_state) {
+  switch (target_buffer->GetContentType()) {
+    case V8RotationMatrixType::ContentType::kDOMMatrix:
+      PopulateMatrixInternal(target_buffer->GetAsDOMMatrix(), exception_state);
+      break;
+    case V8RotationMatrixType::ContentType::kFloat32Array:
+      PopulateMatrixInternal(target_buffer->GetAsFloat32Array().Get(),
+                             exception_state);
+      break;
+    case V8RotationMatrixType::ContentType::kFloat64Array:
+      PopulateMatrixInternal(target_buffer->GetAsFloat64Array().Get(),
+                             exception_state);
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void OrientationSensor::populateMatrix(
     Float32ArrayOrFloat64ArrayOrDOMMatrix& matrix,
     ExceptionState& exception_state) {
@@ -110,6 +130,7 @@ void OrientationSensor::populateMatrix(
   else
     NOTREACHED() << "Unexpected rotation matrix type.";
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool OrientationSensor::isReadingDirty() const {
   return reading_dirty_ || !hasReading();

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_COLOR_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_COLOR_VALUE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
@@ -31,8 +32,13 @@ class CORE_EXPORT CSSColorValue : public CSSStyleValue {
   virtual Color ToColor() const = 0;
 
  protected:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CSSNumericValue* ToNumberOrPercentage(const V8CSSNumberish*);
+  static CSSNumericValue* ToPercentage(const V8CSSNumberish*);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSNumericValue* ToNumberOrPercentage(const CSSNumberish&);
   static CSSNumericValue* ToPercentage(const CSSNumberish&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static float ComponentToColorInput(CSSNumericValue*);
 };
 

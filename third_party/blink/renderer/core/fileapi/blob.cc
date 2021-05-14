@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_property_bag.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
@@ -112,12 +113,16 @@ Blob::Blob(scoped_refptr<BlobDataHandle> data_handle)
 Blob::~Blob() = default;
 
 // static
-Blob* Blob::Create(
-    ExecutionContext* context,
-    const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>& blob_parts,
-    const BlobPropertyBag* options) {
+Blob* Blob::Create(ExecutionContext* context,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const HeapVector<Member<V8BlobPart>>& blob_parts,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const HeapVector<
+                       ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&
+                       blob_parts,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const BlobPropertyBag* options) {
   DCHECK(options->hasType());
-
   DCHECK(options->hasEndings());
   bool normalize_line_endings_to_native = (options->endings() == "native");
   if (normalize_line_endings_to_native)
@@ -149,6 +154,38 @@ Blob* Blob::Create(const unsigned char* data,
       BlobDataHandle::Create(std::move(blob_data), blob_size));
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
+void Blob::PopulateBlobData(BlobData* blob_data,
+                            const HeapVector<Member<V8BlobPart>>& parts,
+                            bool normalize_line_endings_to_native) {
+  for (const auto& item : parts) {
+    switch (item->GetContentType()) {
+      case V8BlobPart::ContentType::kArrayBuffer: {
+        DOMArrayBuffer* array_buffer = item->GetAsArrayBuffer();
+        blob_data->AppendBytes(array_buffer->Data(),
+                               array_buffer->ByteLength());
+        break;
+      }
+      case V8BlobPart::ContentType::kArrayBufferView: {
+        auto&& array_buffer_view = item->GetAsArrayBufferView();
+        blob_data->AppendBytes(array_buffer_view->BaseAddress(),
+                               array_buffer_view->byteLength());
+        break;
+      }
+      case V8BlobPart::ContentType::kBlob: {
+        item->GetAsBlob()->AppendTo(*blob_data);
+        break;
+      }
+      case V8BlobPart::ContentType::kUSVString: {
+        blob_data->AppendText(item->GetAsUSVString(),
+                              normalize_line_endings_to_native);
+        break;
+      }
+    }
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 void Blob::PopulateBlobData(
     BlobData* blob_data,
@@ -172,6 +209,7 @@ void Blob::PopulateBlobData(
     }
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // static
 void Blob::ClampSliceOffsets(uint64_t size, int64_t& start, int64_t& end) {

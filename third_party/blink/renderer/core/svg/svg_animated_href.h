@@ -26,8 +26,14 @@ class SVGAnimatedHref final : public SVGAnimatedString {
   SVGString* CurrentValue();
   const SVGString* CurrentValue() const;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionStringOrTrustedScriptURL* baseVal() override;
+  void setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
+                  ExceptionState& exception_state) override;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void baseVal(StringOrTrustedScriptURL&) override;
   void setBaseVal(const StringOrTrustedScriptURL&, ExceptionState&) override;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   String animVal() override;
 
   bool IsSpecified() const {

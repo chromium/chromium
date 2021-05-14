@@ -7,6 +7,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/css_numeric_value_or_string_or_css_keyword_value_or_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
@@ -209,6 +210,19 @@ base::Optional<double> ScrollTimelineOffset::ResolveOffset(
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8ScrollTimelineOffset* ScrollTimelineOffset::ToV8ScrollTimelineOffset() const {
+  if (length_based_offset_) {
+    return MakeGarbageCollected<V8ScrollTimelineOffset>(
+        CSSNumericValue::FromCSSValue(*length_based_offset_.Get()));
+  } else if (element_based_offset_) {
+    return MakeGarbageCollected<V8ScrollTimelineOffset>(element_based_offset_);
+  }
+  // This is the default value (i.e., 'auto' value)
+  return MakeGarbageCollected<V8ScrollTimelineOffset>(
+      CSSKeywordValue::Create("auto"));
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScrollTimelineOffsetValue ScrollTimelineOffset::ToScrollTimelineOffsetValue()
     const {
   ScrollTimelineOffsetValue result;
@@ -224,6 +238,7 @@ ScrollTimelineOffsetValue ScrollTimelineOffset::ToScrollTimelineOffsetValue()
 
   return result;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool ScrollTimelineOffset::operator==(const ScrollTimelineOffset& o) const {
   return DataEquivalent(length_based_offset_, o.length_based_offset_) &&

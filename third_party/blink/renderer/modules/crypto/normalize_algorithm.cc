@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -496,6 +497,34 @@ bool GetOptionalUint8(const Dictionary& raw,
   return true;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8AlgorithmIdentifier* GetAlgorithmIdentifier(v8::Isolate* isolate,
+                                              const Dictionary& raw,
+                                              const char* property_name,
+                                              const ErrorContext& context,
+                                              ExceptionState& exception_state) {
+  // FIXME: This is not correct: http://crbug.com/438060
+  //   (1) It may retrieve the property twice from the dictionary, whereas it
+  //       should be reading the v8 value once to avoid issues with getters.
+  //   (2) The value is stringified (whereas the spec says it should be an
+  //       instance of DOMString).
+  Dictionary dictionary;
+  if (raw.Get(property_name, dictionary) && dictionary.IsObject()) {
+    return MakeGarbageCollected<V8AlgorithmIdentifier>(
+        ScriptValue(isolate, dictionary.V8Value()));
+  }
+
+  String algorithm_name;
+  if (!DictionaryHelper::Get(raw, property_name, algorithm_name)) {
+    SetTypeError(context.ToString(property_name,
+                                  "Missing or not an AlgorithmIdentifier"),
+                 exception_state);
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<V8AlgorithmIdentifier>(algorithm_name);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool GetAlgorithmIdentifier(v8::Isolate* isolate,
                             const Dictionary& raw,
                             const char* property_name,
@@ -524,6 +553,7 @@ bool GetAlgorithmIdentifier(v8::Isolate* isolate,
   value.SetString(algorithm_name);
   return true;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // Defined by the WebCrypto spec as:
 //
@@ -560,7 +590,11 @@ bool ParseAesKeyGenParams(const Dictionary& raw,
 }
 
 bool ParseAlgorithmIdentifier(v8::Isolate*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                              const V8AlgorithmIdentifier&,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const AlgorithmIdentifier&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               WebCryptoOperation,
                               WebCryptoAlgorithm&,
                               ErrorContext,
@@ -571,6 +605,18 @@ bool ParseHash(v8::Isolate* isolate,
                WebCryptoAlgorithm& hash,
                ErrorContext context,
                ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8AlgorithmIdentifier* raw_hash =
+      GetAlgorithmIdentifier(isolate, raw, "hash", context, exception_state);
+  if (!raw_hash) {
+    DCHECK(exception_state.HadException());
+    return false;
+  }
+
+  context.Add("hash");
+  return ParseAlgorithmIdentifier(isolate, *raw_hash, kWebCryptoOperationDigest,
+                                  hash, context, exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   AlgorithmIdentifier raw_hash;
   if (!GetAlgorithmIdentifier(isolate, raw, "hash", raw_hash, context,
                               exception_state))
@@ -579,6 +625,7 @@ bool ParseHash(v8::Isolate* isolate,
   context.Add("hash");
   return ParseAlgorithmIdentifier(isolate, raw_hash, kWebCryptoOperationDigest,
                                   hash, context, exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 // Defined by the WebCrypto spec as:
@@ -1170,7 +1217,11 @@ bool ParseAlgorithmDictionary(v8::Isolate* isolate,
 }
 
 bool ParseAlgorithmIdentifier(v8::Isolate* isolate,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                              const V8AlgorithmIdentifier& raw,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const AlgorithmIdentifier& raw,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               WebCryptoOperation op,
                               WebCryptoAlgorithm& algorithm,
                               ErrorContext context,
@@ -1203,12 +1254,22 @@ bool ParseAlgorithmIdentifier(v8::Isolate* isolate,
 }  // namespace
 
 bool NormalizeAlgorithm(v8::Isolate* isolate,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                        const V8AlgorithmIdentifier* raw,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                         const AlgorithmIdentifier& raw,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                         WebCryptoOperation op,
                         WebCryptoAlgorithm& algorithm,
                         ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(raw);
+  return ParseAlgorithmIdentifier(isolate, *raw, op, algorithm, ErrorContext(),
+                                  exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return ParseAlgorithmIdentifier(isolate, raw, op, algorithm, ErrorContext(),
                                   exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 }  // namespace blink

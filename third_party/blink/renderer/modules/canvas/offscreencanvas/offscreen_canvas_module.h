@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS_OFFSCREEN_CANVAS_MODULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS_OFFSCREEN_CANVAS_MODULE_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -20,12 +21,21 @@ class MODULES_EXPORT OffscreenCanvasModule {
   STATIC_ONLY(OffscreenCanvasModule);
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static V8OffscreenRenderingContext* getContext(
+      ExecutionContext* execution_context,
+      OffscreenCanvas& offscreen_canvas,
+      const String& context_id,
+      const CanvasContextCreationAttributesModule* attributes,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static void getContext(ExecutionContext*,
                          OffscreenCanvas&,
                          const String&,
                          const CanvasContextCreationAttributesModule*,
                          OffscreenRenderingContext&,
                          ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

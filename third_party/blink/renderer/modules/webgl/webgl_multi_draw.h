@@ -23,6 +23,17 @@ class WebGLMultiDraw final : public WebGLExtension,
   explicit WebGLMultiDraw(WebGLRenderingContextBase*);
   WebGLExtensionName GetName() const override;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void multiDrawArraysWEBGL(GLenum mode,
+                            const V8UnionInt32ArrayOrLongSequence* firstsList,
+                            GLuint firstsOffset,
+                            const V8UnionInt32ArrayOrLongSequence* countsList,
+                            GLuint countsOffset,
+                            GLsizei drawcount) {
+    multiDrawArraysImpl(mode, MakeSpan(firstsList), firstsOffset,
+                        MakeSpan(countsList), countsOffset, drawcount);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawArraysWEBGL(GLenum mode,
                             Int32ArrayOrLongSequence firstsList,
                             GLuint firstsOffset,
@@ -32,7 +43,21 @@ class WebGLMultiDraw final : public WebGLExtension,
     multiDrawArraysImpl(mode, MakeSpan(firstsList), firstsOffset,
                         MakeSpan(countsList), countsOffset, drawcount);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void multiDrawElementsWEBGL(
+      GLenum mode,
+      const V8UnionInt32ArrayOrLongSequence* countsList,
+      GLuint countsOffset,
+      GLenum type,
+      const V8UnionInt32ArrayOrLongSequence* offsetsList,
+      GLuint offsetsOffset,
+      GLsizei drawcount) {
+    multiDrawElementsImpl(mode, MakeSpan(countsList), countsOffset, type,
+                          MakeSpan(offsetsList), offsetsOffset, drawcount);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawElementsWEBGL(GLenum mode,
                               Int32ArrayOrLongSequence countsList,
                               GLuint countsOffset,
@@ -43,7 +68,24 @@ class WebGLMultiDraw final : public WebGLExtension,
     multiDrawElementsImpl(mode, MakeSpan(countsList), countsOffset, type,
                           MakeSpan(offsetsList), offsetsOffset, drawcount);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void multiDrawArraysInstancedWEBGL(
+      GLenum mode,
+      const V8UnionInt32ArrayOrLongSequence* firstsList,
+      GLuint firstsOffset,
+      const V8UnionInt32ArrayOrLongSequence* countsList,
+      GLuint countsOffset,
+      const V8UnionInt32ArrayOrLongSequence* instanceCountsList,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount) {
+    multiDrawArraysInstancedImpl(mode, MakeSpan(firstsList), firstsOffset,
+                                 MakeSpan(countsList), countsOffset,
+                                 MakeSpan(instanceCountsList),
+                                 instanceCountsOffset, drawcount);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawArraysInstancedWEBGL(
       GLenum mode,
       Int32ArrayOrLongSequence firstsList,
@@ -58,7 +100,25 @@ class WebGLMultiDraw final : public WebGLExtension,
                                  MakeSpan(instanceCountsList),
                                  instanceCountsOffset, drawcount);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void multiDrawElementsInstancedWEBGL(
+      GLenum mode,
+      const V8UnionInt32ArrayOrLongSequence* countsList,
+      GLuint countsOffset,
+      GLenum type,
+      const V8UnionInt32ArrayOrLongSequence* offsetsList,
+      GLuint offsetsOffset,
+      const V8UnionInt32ArrayOrLongSequence* instanceCountsList,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount) {
+    multiDrawElementsInstancedImpl(mode, MakeSpan(countsList), countsOffset,
+                                   type, MakeSpan(offsetsList), offsetsOffset,
+                                   MakeSpan(instanceCountsList),
+                                   instanceCountsOffset, drawcount);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void multiDrawElementsInstancedWEBGL(
       GLenum mode,
       Int32ArrayOrLongSequence countsList,
@@ -74,6 +134,7 @@ class WebGLMultiDraw final : public WebGLExtension,
                                    MakeSpan(instanceCountsList),
                                    instanceCountsOffset, drawcount);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
  private:
   void multiDrawArraysImpl(GLenum mode,

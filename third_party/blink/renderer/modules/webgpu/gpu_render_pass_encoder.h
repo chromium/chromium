@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PASS_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PASS_ENCODER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
@@ -56,10 +57,16 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
     GetProcs().renderPassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void setBlendConstant(const V8GPUColor* color,
+                        ExceptionState& exception_state);
+  void setBlendColor(const V8GPUColor* color, ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setBlendConstant(DoubleSequenceOrGPUColorDict& color,
                         ExceptionState& exception_state);
   void setBlendColor(DoubleSequenceOrGPUColorDict& color,
                      ExceptionState& exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setStencilReference(uint32_t reference) {
     GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
   }

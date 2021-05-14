@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/sequence_test.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
+
 namespace blink {
 
 SequenceTest::SequenceTest() = default;
@@ -43,9 +45,16 @@ void SequenceTest::setElementSequence(const HeapVector<Member<Element>>& arg) {
   element_sequence_ = arg;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool SequenceTest::unionReceivedSequence(
+    const V8UnionDoubleOrDoubleSequence* arg) {
+  return arg->IsDoubleSequence();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool SequenceTest::unionReceivedSequence(const DoubleOrDoubleSequence& arg) {
   return arg.IsDoubleSequence();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void SequenceTest::Trace(Visitor* visitor) const {
   visitor->Trace(element_sequence_);

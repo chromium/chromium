@@ -47,6 +47,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
@@ -142,9 +143,9 @@ class FloatRect;
 class FontMatchingMetrics;
 class FormController;
 class FrameCallback;
+class FrameScheduler;
 class HTMLAllCollection;
 class HTMLBodyElement;
-class FrameScheduler;
 class HTMLCollection;
 class HTMLDialogElement;
 class HTMLElement;
@@ -162,9 +163,9 @@ class LayoutView;
 class LazyLoadImageObserver;
 class LiveNodeListBase;
 class LocalDOMWindow;
-class Locale;
 class LocalFrame;
 class LocalFrameView;
+class Locale;
 class Location;
 class MediaQueryListListener;
 class MediaQueryMatcher;
@@ -179,18 +180,16 @@ class QualifiedName;
 class Range;
 class ResourceFetcher;
 class RootScrollerController;
-class ScriptValue;
-class ScriptedIdleTaskController;
 class SVGDocumentExtensions;
 class SVGUseElement;
-class Text;
-class TrustedHTML;
 class ScriptElementBase;
 class ScriptPromise;
 class ScriptRegexp;
 class ScriptRunner;
+class ScriptValue;
 class ScriptableDocumentParser;
 class ScriptedAnimationController;
+class ScriptedIdleTaskController;
 class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
@@ -199,13 +198,16 @@ class SlotAssignmentEngine;
 class SnapCoordinator;
 class StringOrElementCreationOptions;
 class StyleEngine;
-class StyleResolver;
 class StylePropertyMapReadOnly;
+class StyleResolver;
 class StyleSheetList;
+class Text;
 class TextAutosizer;
 class TransformSource;
 class TreeWalker;
+class TrustedHTML;
 class V8NodeFilter;
+class V8UnionElementCreationOptionsOrString;
 class ViewportData;
 class VisitedLinkState;
 class WebComputedAXTree;
@@ -367,16 +369,31 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Element* CreateElementForBinding(const AtomicString& local_name,
                                    ExceptionState& = ASSERT_NO_EXCEPTION);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Element* CreateElementForBinding(
+      const AtomicString& local_name,
+      const V8UnionElementCreationOptionsOrString* string_or_options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* CreateElementForBinding(const AtomicString& local_name,
                                    const StringOrElementCreationOptions&,
                                    ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* createElementNS(const AtomicString& namespace_uri,
                            const AtomicString& qualified_name,
                            ExceptionState&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Element* createElementNS(
+      const AtomicString& namespace_uri,
+      const AtomicString& qualified_name,
+      const V8UnionElementCreationOptionsOrString* string_or_options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* createElementNS(const AtomicString& namespace_uri,
                            const AtomicString& qualified_name,
                            const StringOrElementCreationOptions&,
                            ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DocumentFragment* createDocumentFragment();
   Text* createTextNode(const String& data);
   Comment* createComment(const String& data);
@@ -1159,7 +1176,11 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ScriptRunner* GetScriptRunner() { return script_runner_.Get(); }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8HTMLOrSVGScriptElement* currentScriptForBinding() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void currentScriptForBinding(HTMLScriptElementOrSVGScriptElement&) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void PushCurrentScript(ScriptElementBase*);
   void PopCurrentScript(ScriptElementBase*);
 

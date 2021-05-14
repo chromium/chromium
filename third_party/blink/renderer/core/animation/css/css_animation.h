@@ -51,7 +51,12 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void play(ExceptionState& = ASSERT_NO_EXCEPTION) override;
   void reverse(ExceptionState& = ASSERT_NO_EXCEPTION) override;
   void setTimeline(AnimationTimeline*) override;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void setStartTime(const V8CSSNumberish* start_time,
+                    ExceptionState& exception_state) override;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setStartTime(CSSNumberish, ExceptionState&) override;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // When set, subsequent changes to animation-play-state no longer affect the
   // play state.

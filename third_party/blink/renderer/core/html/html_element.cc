@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -831,8 +832,38 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
   return fragment;
 }
 
-void HTMLElement::setInnerText(
-    const StringOrTrustedScript& string_or_trusted_script,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+HTMLElement::innerTextForBinding() {
+  return MakeGarbageCollected<
+      V8UnionStringTreatNullAsEmptyStringOrTrustedScript>(innerText());
+}
+
+void HTMLElement::setInnerTextForBinding(
+    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+        string_or_trusted_script,
+    ExceptionState& exception_state) {
+  String value;
+  switch (string_or_trusted_script->GetContentType()) {
+    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
+        kStringTreatNullAsEmptyString:
+      value = string_or_trusted_script->GetAsStringTreatNullAsEmptyString();
+      break;
+    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
+        kTrustedScript:
+      value = string_or_trusted_script->GetAsTrustedScript()->toString();
+      break;
+  }
+  setInnerText(value, exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLElement::innerTextForBinding(
+    StringTreatNullAsEmptyStringOrTrustedScript& result) {
+  result.SetString(innerText());
+}
+
+void HTMLElement::setInnerTextForBinding(
+    const StringTreatNullAsEmptyStringOrTrustedScript& string_or_trusted_script,
     ExceptionState& exception_state) {
   String value;
   if (string_or_trusted_script.IsString())
@@ -841,26 +872,7 @@ void HTMLElement::setInnerText(
     value = string_or_trusted_script.GetAsTrustedScript()->toString();
   setInnerText(value, exception_state);
 }
-
-void HTMLElement::setInnerText(
-    const StringTreatNullAsEmptyStringOrTrustedScript& string_or_trusted_script,
-    ExceptionState& exception_state) {
-  StringOrTrustedScript tmp;
-  if (string_or_trusted_script.IsString())
-    tmp.SetString(string_or_trusted_script.GetAsString());
-  else if (string_or_trusted_script.IsTrustedScript())
-    tmp.SetTrustedScript(string_or_trusted_script.GetAsTrustedScript());
-  setInnerText(tmp, exception_state);
-}
-
-void HTMLElement::innerText(
-    StringTreatNullAsEmptyStringOrTrustedScript& result) {
-  result.SetString(innerText());
-}
-
-void HTMLElement::innerText(StringOrTrustedScript& result) {
-  result.SetString(innerText());
-}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String HTMLElement::innerText() {
   return Element::innerText();

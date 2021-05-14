@@ -40,6 +40,7 @@
 namespace blink {
 
 class ExceptionState;
+class V8UnionDOMPointOrUnrestrictedDouble;
 
 class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
   DISALLOW_NEW();
@@ -86,12 +87,22 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
             double double_y,
             double double_width,
             double double_height);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void roundRect(
+      double double_x,
+      double double_y,
+      double double_width,
+      double double_height,
+      const HeapVector<Member<V8UnionDOMPointOrUnrestrictedDouble>>& radii,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void roundRect(double double_x,
                  double double_y,
                  double double_width,
                  double double_height,
                  const HeapVector<UnrestrictedDoubleOrDOMPoint, 0> radii,
                  ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   virtual bool IsTransformInvertible() const { return true; }
   virtual TransformationMatrix GetTransform() const {
@@ -104,6 +115,7 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
   CanvasPath(const Path& path) : path_(path) { path_.SetIsVolatile(true); }
   Path path_;
 };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_

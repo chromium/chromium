@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NFC_NDEF_MESSAGE_H_
 
 #include "services/device/public/mojom/nfc.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -30,9 +31,15 @@ class MODULES_EXPORT NDEFMessage final : public ScriptWrappable {
                              const NDEFMessageInit*,
                              ExceptionState&,
                              bool is_embedded = false);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static NDEFMessage* Create(const ExecutionContext* execution_context,
+                             const V8NDEFMessageSource* source,
+                             ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static NDEFMessage* Create(const ExecutionContext*,
                              const NDEFMessageSource&,
                              ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static NDEFMessage* CreateAsPayloadOfSmartPoster(const ExecutionContext*,
                                                    const NDEFMessageInit*,
                                                    ExceptionState&);

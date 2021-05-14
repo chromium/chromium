@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/beacon/navigator_beacon.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/readable_stream_or_xml_http_request_body_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -60,6 +61,17 @@ bool NavigatorBeacon::CanSendBeacon(ExecutionContext* context,
   return GetSupplementable()->DomWindow();
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool NavigatorBeacon::sendBeacon(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const String& url_string,
+    const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+    ExceptionState& exception_state) {
+  return NavigatorBeacon::From(navigator).SendBeaconImpl(
+      script_state, url_string, data, exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool NavigatorBeacon::sendBeacon(
     ScriptState* script_state,
     Navigator& navigator,
@@ -70,7 +82,98 @@ bool NavigatorBeacon::sendBeacon(
   return NavigatorBeacon::From(navigator).SendBeaconImpl(
       script_state, urlstring, data, exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool NavigatorBeacon::SendBeaconImpl(
+    ScriptState* script_state,
+    const String& url_string,
+    const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+    ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  KURL url = execution_context->CompleteURL(url_string);
+  if (!CanSendBeacon(execution_context, url, exception_state)) {
+    // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
+    VLOG(1) << "Cannot send a beacon to " << url.ElidedString()
+            << ", initiator = " << execution_context->Url();
+    return false;
+  }
+
+  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
+  VLOG(1) << "Send a beacon to " << url.ElidedString()
+          << ", initiator = " << execution_context->Url();
+
+  bool allowed;
+  LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
+  if (data) {
+    switch (data->GetContentType()) {
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kArrayBuffer: {
+        auto* data_buffer = data->GetAsArrayBuffer();
+        if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLength())
+                 .IsValid()) {
+          // At the moment the PingLoader::SendBeacon implementation cannot deal
+          // with huge ArrayBuffers.
+          exception_state.ThrowRangeError(
+              "The data provided to sendBeacon() exceeds the maximally "
+              "possible length, which is 4294967295.");
+          return false;
+        }
+        allowed =
+            PingLoader::SendBeacon(*script_state, frame, url, data_buffer);
+        break;
+      }
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kArrayBufferView: {
+        auto* data_view = data->GetAsArrayBufferView().Get();
+        if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLength())
+                 .IsValid()) {
+          // At the moment the PingLoader::SendBeacon implementation cannot deal
+          // with huge ArrayBuffers.
+          exception_state.ThrowRangeError(
+              "The data provided to sendBeacon() exceeds the maximally "
+              "possible length, which is 4294967295.");
+          return false;
+        }
+        allowed = PingLoader::SendBeacon(*script_state, frame, url, data_view);
+        break;
+      }
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kBlob:
+        allowed = PingLoader::SendBeacon(*script_state, frame, url,
+                                         data->GetAsBlob());
+        break;
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kFormData:
+        allowed = PingLoader::SendBeacon(*script_state, frame, url,
+                                         data->GetAsFormData());
+        break;
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kReadableStream:
+        exception_state.ThrowTypeError(
+            "sendBeacon cannot have a ReadableStream body.");
+        return false;
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kURLSearchParams:
+        allowed = PingLoader::SendBeacon(*script_state, frame, url,
+                                         data->GetAsURLSearchParams());
+        break;
+      case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+          kUSVString:
+        allowed = PingLoader::SendBeacon(*script_state, frame, url,
+                                         data->GetAsUSVString());
+        break;
+    }
+  } else {
+    allowed = PingLoader::SendBeacon(*script_state, frame, url, String());
+  }
+
+  if (!allowed) {
+    UseCounter::Count(execution_context, WebFeature::kSendBeaconQuotaExceeded);
+  }
+
+  return allowed;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool NavigatorBeacon::SendBeaconImpl(
     ScriptState* script_state,
     const String& urlstring,
@@ -142,5 +245,6 @@ bool NavigatorBeacon::SendBeaconImpl(
 
   return true;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

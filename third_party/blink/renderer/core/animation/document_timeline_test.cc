@@ -33,6 +33,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -370,6 +371,14 @@ TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
   Animation* animation2 = timeline->Play(anim2);
   timeline->PauseAnimationsForTesting(seek_time);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8CSSNumberish* current_time = animation1->currentTime();
+  EXPECT_NEAR(seek_time.InMillisecondsF(), current_time->GetAsDouble(),
+              Animation::kTimeToleranceMs);
+  current_time = animation2->currentTime();
+  EXPECT_NEAR(seek_time.InMillisecondsF(), current_time->GetAsDouble(),
+              Animation::kTimeToleranceMs);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CSSNumberish current_time;
   animation1->currentTime(current_time);
   EXPECT_NEAR(seek_time.InMillisecondsF(), current_time.GetAsDouble(),
@@ -377,6 +386,7 @@ TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
   animation2->currentTime(current_time);
   EXPECT_NEAR(seek_time.InMillisecondsF(), current_time.GetAsDouble(),
               Animation::kTimeToleranceMs);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 TEST_F(AnimationDocumentTimelineTest, DelayBeforeAnimationStart) {
@@ -411,7 +421,12 @@ TEST_F(AnimationDocumentTimelineTest, UseAnimationAfterTimelineDeref) {
   Animation* animation = timeline->Play(nullptr);
   timeline.Clear();
   // Test passes if this does not crash.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
+                          ASSERT_NO_EXCEPTION);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   animation->setStartTime(CSSNumberish::FromDouble(0));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 TEST_F(AnimationDocumentTimelineTest, PlayAfterDocumentDeref) {

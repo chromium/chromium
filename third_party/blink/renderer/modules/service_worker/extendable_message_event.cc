@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/extendable_message_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_client_messageport_serviceworker.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
@@ -77,6 +78,22 @@ ScriptValue ExtendableMessageEvent::data(ScriptState* script_state) const {
   return ScriptValue(script_state->GetIsolate(), value);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8UnionClientOrMessagePortOrServiceWorker* ExtendableMessageEvent::source()
+    const {
+  if (source_as_client_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
+        source_as_client_);
+  } else if (source_as_service_worker_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
+        source_as_service_worker_);
+  } else if (source_as_message_port_) {
+    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
+        source_as_message_port_);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ExtendableMessageEvent::source(
     ClientOrServiceWorkerOrMessagePort& result) const {
   if (source_as_client_)
@@ -90,6 +107,7 @@ void ExtendableMessageEvent::source(
   else
     result = ClientOrServiceWorkerOrMessagePort();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 MessagePortArray ExtendableMessageEvent::ports() const {
   // TODO(bashi): Currently we return a copied array because the binding

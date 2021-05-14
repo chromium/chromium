@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
@@ -23,7 +24,11 @@
 namespace blink {
 
 XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const V8XRWebGLRenderingContext* context,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                        const XRWebGLRenderingContext& context,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                        ExceptionState& exception_state) {
   if (session->ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -57,8 +62,13 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
     return nullptr;
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return MakeGarbageCollected<XRWebGLBinding>(
+      session, webgl_context, context->IsWebGL2RenderingContext());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MakeGarbageCollected<XRWebGLBinding>(
       session, webgl_context, context.IsWebGL2RenderingContext());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 XRWebGLBinding::XRWebGLBinding(XRSession* session,

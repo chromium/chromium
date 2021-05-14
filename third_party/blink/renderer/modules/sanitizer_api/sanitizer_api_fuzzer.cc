@@ -19,6 +19,8 @@
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_trusted_html_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
@@ -93,12 +95,22 @@ void TextProtoFuzzer(const SanitizerConfigProto& proto,
   // Sanitize string given in proto. Method depends on sanitize_to_string.
   String str = proto.html_string().c_str();
   if (proto.sanitize_to_string()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* str1 = MakeGarbageCollected<
+        V8UnionDocumentOrDocumentFragmentOrStringOrTrustedHTML>(str);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     StringOrTrustedHTMLOrDocumentFragmentOrDocument str1 =
         StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(str);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
   } else {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* str2 =
+        MakeGarbageCollected<V8UnionDocumentOrDocumentFragmentOrString>(str);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     StringOrDocumentFragmentOrDocument str2 =
         StringOrDocumentFragmentOrDocument::FromString(str);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     sanitizer->sanitizeToString(script_state, str2,
                                 IGNORE_EXCEPTION_FOR_TESTING);
   }

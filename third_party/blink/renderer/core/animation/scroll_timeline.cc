@@ -8,6 +8,9 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -294,6 +297,33 @@ bool ScrollTimeline::ScrollOffsetsEqual(
   return true;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSNumberish* ScrollTimeline::currentTime() {
+  // time returns either in milliseconds or a 0 to 100 value representing the
+  // progress of the timeline
+  auto current_time = timeline_state_snapshotted_.current_time;
+
+  // TODO(crbug.com/1140602): Support progress based animations
+  // We are currently abusing the intended use of the "auto" keyword. We are
+  // using it here as a signal to use progress based timeline instead of having
+  // a range based current time.
+  // We are doing this maintain backwards compatibility with existing tests.
+  if (time_range_) {
+    // not using progress based, return time as double
+    if (current_time) {
+      return MakeGarbageCollected<V8CSSNumberish>(
+          current_time->InMillisecondsF());
+    }
+    return nullptr;
+  } else {
+    if (current_time) {
+      return MakeGarbageCollected<V8CSSNumberish>(
+          CSSUnitValues::percent(current_time->InSecondsF()));
+    }
+    return nullptr;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ScrollTimeline::currentTime(CSSNumberish& currentTime) {
   // time returns either in milliseconds or a 0 to 100 value representing the
   // progress of the timeline
@@ -316,7 +346,17 @@ void ScrollTimeline::currentTime(CSSNumberish& currentTime) {
                       : CSSNumberish();
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSNumberish* ScrollTimeline::duration() {
+  if (time_range_) {
+    return MakeGarbageCollected<V8CSSNumberish>(time_range_.value());
+  }
+  return MakeGarbageCollected<V8CSSNumberish>(
+      CSSUnitValues::percent(kScrollTimelineDuration));
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ScrollTimeline::duration(CSSNumberish& duration) {
   if (time_range_) {
     duration = CSSNumberish::FromDouble(time_range_.value());
@@ -325,6 +365,7 @@ void ScrollTimeline::duration(CSSNumberish& duration) {
         CSSUnitValues::percent(kScrollTimelineDuration));
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
 ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
@@ -459,6 +500,18 @@ String ScrollTimeline::orientation() {
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+const HeapVector<Member<V8ScrollTimelineOffset>> ScrollTimeline::scrollOffsets()
+    const {
+  HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets;
+  for (auto& offset : scroll_offsets_) {
+    scroll_offsets.push_back(offset->ToV8ScrollTimelineOffset());
+    // 'auto' can only be the end offset.
+    DCHECK(!offset->IsDefaultValue() || scroll_offsets.size() == 2);
+  }
+  return scroll_offsets;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 const HeapVector<ScrollTimelineOffsetValue> ScrollTimeline::scrollOffsets()
     const {
   HeapVector<ScrollTimelineOffsetValue> scroll_offsets;
@@ -469,7 +522,23 @@ const HeapVector<ScrollTimelineOffsetValue> ScrollTimeline::scrollOffsets()
   }
   return scroll_offsets;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8UnionDoubleOrScrollTimelineAutoKeyword* ScrollTimeline::timeRange() const {
+  // TODO(crbug.com/1140602): Support progress based animations
+  // We are currently abusing the intended use of the "auto" keyword. We are
+  // using it here as a signal to use progress based timeline instead of having
+  // a range based current time.
+  // We are doing this maintain backwards compatibility with existing tests.
+  if (time_range_) {
+    return MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+        time_range_.value());
+  }
+  return MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+      V8ScrollTimelineAutoKeyword(V8ScrollTimelineAutoKeyword::Enum::kAuto));
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void ScrollTimeline::timeRange(DoubleOrScrollTimelineAutoKeyword& result) {
   // TODO(crbug.com/1140602): Support progress based animations
   // We are currently abusing the intended use of the "auto" keyword. We are
@@ -482,6 +551,7 @@ void ScrollTimeline::timeRange(DoubleOrScrollTimelineAutoKeyword& result) {
     result.SetScrollTimelineAutoKeyword("auto");
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
                                             double& current_offset,

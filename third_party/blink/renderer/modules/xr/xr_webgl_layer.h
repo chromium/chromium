@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_LAYER_H_
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
@@ -39,7 +40,11 @@ class XRWebGLLayer final : public XRLayer {
   ~XRWebGLLayer() override;
 
   static XRWebGLLayer* Create(XRSession*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                              const V8XRWebGLRenderingContext*,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const XRWebGLRenderingContext&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                               const XRWebGLLayerInit*,
                               ExceptionState&);
 

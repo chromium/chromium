@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
@@ -93,10 +94,16 @@ class CORE_EXPORT CustomElementDefinition
                                          HTMLFormElement* nullable_form) = 0;
   virtual void RunFormResetCallback(Element& element) = 0;
   virtual void RunFormDisabledCallback(Element& element, bool is_disabled) = 0;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  virtual void RunFormStateRestoreCallback(Element& element,
+                                           const V8ControlValue* value,
+                                           const String& mode) = 0;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual void RunFormStateRestoreCallback(
       Element& element,
       const FileOrUSVStringOrFormData& value,
       const String& mode) = 0;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void EnqueueUpgradeReaction(Element&);
   void EnqueueConnectedCallback(Element&);

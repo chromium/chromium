@@ -31,6 +31,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_2d_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/path_2d_or_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_path2d_string.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
@@ -46,6 +47,19 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static Path2D* Create(const V8UnionPath2DOrString* path) {
+    DCHECK(path);
+    switch (path->GetContentType()) {
+      case V8UnionPath2DOrString::ContentType::kPath2D:
+        return MakeGarbageCollected<Path2D>(path->GetAsPath2D());
+      case V8UnionPath2DOrString::ContentType::kString:
+        return MakeGarbageCollected<Path2D>(path->GetAsString());
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Path2D* Create(Path2DOrString pathorstring) {
     DCHECK(!pathorstring.IsNull());
     if (pathorstring.IsPath2D())
@@ -55,6 +69,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
     NOTREACHED();
     return nullptr;
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static Path2D* Create() { return MakeGarbageCollected<Path2D>(); }
   static Path2D* Create(const Path& path) {
     return MakeGarbageCollected<Path2D>(path);

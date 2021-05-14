@@ -45,6 +45,10 @@ namespace blink {
 class CanvasImageSource;
 class HTMLCanvasElement;
 class ImageBitmap;
+class
+    V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext;
+class
+    V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext;
 
 class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
                                            public Thread::TaskObserver {
@@ -121,11 +125,25 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   // called when the context is first displayed.
   virtual void SetIsBeingDisplayed(bool) = 0;
   virtual bool isContextLost() const { return true; }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
+  virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*
+  AsV8RenderingContext() {
+    NOTREACHED();
+    return nullptr;
+  }
+  virtual V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext*
+  AsV8OffscreenRenderingContext() {
+    NOTREACHED();
+    return nullptr;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // TODO(fserb): remove SetCanvasGetContextResult.
   virtual void SetCanvasGetContextResult(RenderingContext&) { NOTREACHED(); }
   virtual void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) {
     NOTREACHED();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual bool IsPaintable() const = 0;
   virtual void DidDraw(const SkIRect& dirty_rect);
   virtual void DidDraw();

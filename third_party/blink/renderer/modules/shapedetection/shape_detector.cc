@@ -8,6 +8,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -25,9 +26,18 @@
 
 namespace blink {
 
-ScriptPromise ShapeDetector::detect(
-    ScriptState* script_state,
-    const ImageBitmapSourceUnion& image_source) {
+ScriptPromise ShapeDetector::detect(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                    const V8ImageBitmapSource* image_source_ptr
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                    const ImageBitmapSourceUnion& image_source
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(image_source_ptr);
+  const V8ImageBitmapSource& image_source = *image_source_ptr;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 

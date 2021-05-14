@@ -35,6 +35,8 @@
 
 namespace blink {
 
+class V8UnionStringOrStringSequence;
+
 enum IDBKeyPathParseError {
   kIDBKeyPathParseErrorNone,
   kIDBKeyPathParseErrorIdentifier,
@@ -51,6 +53,10 @@ class MODULES_EXPORT IDBKeyPath {
   IDBKeyPath() : type_(mojom::IDBKeyPathType::Null) {}
   explicit IDBKeyPath(const String&);
   explicit IDBKeyPath(const Vector<String>& array);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  explicit IDBKeyPath(const V8UnionStringOrStringSequence* key_path);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  // TODO(crbug.com/1181288): Remove the old IDL union version.
   explicit IDBKeyPath(const StringOrStringSequence& key_path);
 
   mojom::IDBKeyPathType GetType() const { return type_; }

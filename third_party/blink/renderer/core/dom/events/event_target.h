@@ -61,6 +61,8 @@ class PortalHost;
 class ScriptState;
 class ServiceWorker;
 class V8EventListener;
+class V8UnionAddEventListenerOptionsOrBoolean;
+class V8UnionBooleanOrEventListenerOptions;
 
 struct FiringEventIterator {
   DISALLOW_NEW();
@@ -134,9 +136,16 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   static EventTarget* Create(ScriptState*);
 
   bool addEventListener(const AtomicString& event_type, V8EventListener*);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  bool addEventListener(
+      const AtomicString& event_type,
+      V8EventListener* listener,
+      const V8UnionAddEventListenerOptionsOrBoolean* bool_or_options);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool addEventListener(const AtomicString& event_type,
                         V8EventListener*,
                         const AddEventListenerOptionsOrBoolean&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool addEventListener(const AtomicString& event_type,
                         EventListener*,
                         bool use_capture = false);
@@ -145,9 +154,16 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
                         AddEventListenerOptionsResolved*);
 
   bool removeEventListener(const AtomicString& event_type, V8EventListener*);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  bool removeEventListener(
+      const AtomicString& event_type,
+      V8EventListener* listener,
+      const V8UnionBooleanOrEventListenerOptions* bool_or_options);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool removeEventListener(const AtomicString& event_type,
                            V8EventListener*,
                            const EventListenerOptionsOrBoolean&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool removeEventListener(const AtomicString& event_type,
                            const EventListener*,
                            bool use_capture = false);

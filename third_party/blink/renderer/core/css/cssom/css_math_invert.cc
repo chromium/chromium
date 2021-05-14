@@ -4,11 +4,18 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSNumberish* CSSMathInvert::value() {
+  return MakeGarbageCollected<V8CSSNumberish>(value_);
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 base::Optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
   auto sum = value_->SumValue();

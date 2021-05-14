@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
@@ -1068,6 +1069,24 @@ void Element::setNonce(const AtomicString& nonce) {
   EnsureElementRareData().SetNonce(nonce);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void Element::scrollIntoView(const V8UnionBooleanOrScrollIntoViewOptions* arg) {
+  ScrollIntoViewOptions* options = nullptr;
+  switch (arg->GetContentType()) {
+    case V8UnionBooleanOrScrollIntoViewOptions::ContentType::kBoolean:
+      options = ScrollIntoViewOptions::Create();
+      options->setBlock(arg->GetAsBoolean() ? "start" : "end");
+      options->setInlinePosition("nearest");
+      break;
+    case V8UnionBooleanOrScrollIntoViewOptions::ContentType::
+        kScrollIntoViewOptions:
+      options = arg->GetAsScrollIntoViewOptions();
+      break;
+  }
+  DCHECK(options);
+  scrollIntoViewWithOptions(options);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void Element::scrollIntoView(ScrollIntoViewOptionsOrBoolean arg) {
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   if (arg.IsBoolean()) {
@@ -1081,10 +1100,16 @@ void Element::scrollIntoView(ScrollIntoViewOptionsOrBoolean arg) {
   }
   scrollIntoViewWithOptions(options);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void Element::scrollIntoView(bool align_to_top) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* arg =
+      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(align_to_top);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScrollIntoViewOptionsOrBoolean arg;
   arg.SetBoolean(align_to_top);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   scrollIntoView(arg);
 }
 
@@ -3785,20 +3810,29 @@ bool Element::ParseAttributeName(QualifiedName& out,
   return true;
 }
 
-void Element::setAttributeNS(
-    const AtomicString& namespace_uri,
-    const AtomicString& qualified_name,
-    const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL&
-        string_or_trusted,
-    ExceptionState& exception_state) {
+void Element::setAttributeNS(const AtomicString& namespace_uri,
+                             const AtomicString& qualified_name,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             const V8TrustedString* trusted_string,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL&
+                                 string_or_trusted,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             ExceptionState& exception_state) {
   QualifiedName parsed_name = g_any_name;
   if (!ParseAttributeName(parsed_name, namespace_uri, qualified_name,
                           exception_state))
     return;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  AtomicString value(TrustedTypesCheckFor(
+      ExpectedTrustedTypeForAttribute(parsed_name), trusted_string,
+      GetExecutionContext(), exception_state));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(parsed_name), string_or_trusted,
       GetExecutionContext(), exception_state));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (exception_state.HadException())
     return;
 

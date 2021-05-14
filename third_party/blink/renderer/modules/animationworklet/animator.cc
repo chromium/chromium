@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_state_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_workletanimationeffect_workletgroupeffect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/worklet_animation_effect_or_worklet_group_effect.h"
 #include "third_party/blink/renderer/modules/animationworklet/animator_definition.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -48,12 +49,25 @@ bool Animator::Animate(
   if (IsUndefinedOrNull(instance))
     return false;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionWorkletAnimationEffectOrWorkletGroupEffect* effect = nullptr;
+  if (group_effect_->getChildren().size() == 1) {
+    effect =
+        MakeGarbageCollected<V8UnionWorkletAnimationEffectOrWorkletGroupEffect>(
+            group_effect_->getChildren()[0]);
+  } else {
+    effect =
+        MakeGarbageCollected<V8UnionWorkletAnimationEffectOrWorkletGroupEffect>(
+            group_effect_);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WorkletAnimationEffectOrWorkletGroupEffect effect;
   if (group_effect_->getChildren().size() == 1) {
     effect.SetWorkletAnimationEffect(group_effect_->getChildren()[0]);
   } else {
     effect.SetWorkletGroupEffect(group_effect_);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);

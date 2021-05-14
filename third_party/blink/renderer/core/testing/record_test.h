@@ -17,6 +17,9 @@
 
 namespace blink {
 
+class V8UnionBooleanOrByteStringByteStringRecord;
+class V8UnionFloatOrStringElementRecord;
+
 class RecordTest final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -48,9 +51,19 @@ class RecordTest final : public ScriptWrappable {
   Vector<std::pair<String, Vector<String>>>
   returnStringByteStringSequenceRecord();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  bool unionReceivedARecord(
+      const V8UnionBooleanOrByteStringByteStringRecord* arg);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool unionReceivedARecord(const BooleanOrByteStringByteStringRecord& arg);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void setFloatOrStringElementRecord(const V8UnionFloatOrStringElementRecord*) {
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setFloatOrStringElementRecord(const FloatOrStringElementRecord&) {}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

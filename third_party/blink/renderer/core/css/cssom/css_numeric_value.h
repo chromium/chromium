@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_NUMERIC_VALUE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/double_or_css_numeric_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
@@ -36,12 +37,32 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   static CSSNumericValue* parse(const String& css_text, ExceptionState&);
   // Blink-internal ways of creating CSSNumericValues.
   static CSSNumericValue* FromCSSValue(const CSSPrimitiveValue&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // https://drafts.css-houdini.org/css-typed-om/#rectify-a-numberish-value
-  static CSSNumericValue* FromNumberish(const CSSNumberish& value);
+  static CSSNumericValue* FromNumberish(const V8CSSNumberish* value);
   // https://drafts.css-houdini.org/css-typed-om/#rectify-a-percentish-value
+  static CSSNumericValue* FromPercentish(const V8CSSNumberish* value);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CSSNumericValue* FromNumberish(const CSSNumberish& value);
   static CSSNumericValue* FromPercentish(const CSSNumberish& value);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Methods defined in the IDL.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  CSSNumericValue* add(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  CSSNumericValue* sub(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  CSSNumericValue* mul(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  CSSNumericValue* div(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  CSSNumericValue* min(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  CSSNumericValue* max(const HeapVector<Member<V8CSSNumberish>>& numberishes,
+                       ExceptionState& exception_state);
+  bool equals(const HeapVector<Member<V8CSSNumberish>>& numberishes);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CSSNumericValue* add(const HeapVector<CSSNumberish>&, ExceptionState&);
   CSSNumericValue* sub(const HeapVector<CSSNumberish>&, ExceptionState&);
   CSSNumericValue* mul(const HeapVector<CSSNumberish>&, ExceptionState&);
@@ -49,6 +70,7 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   CSSNumericValue* min(const HeapVector<CSSNumberish>&, ExceptionState&);
   CSSNumericValue* max(const HeapVector<CSSNumberish>&, ExceptionState&);
   bool equals(const HeapVector<CSSNumberish>&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Converts between compatible types, as defined in the IDL.
   CSSUnitValue* to(const String&, ExceptionState&);
@@ -87,8 +109,13 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   CSSNumericValueType type_;
 };
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+CSSNumericValueVector CSSNumberishesToNumericValues(
+    const HeapVector<Member<V8CSSNumberish>>& values);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSNumericValueVector CSSNumberishesToNumericValues(
     const HeapVector<CSSNumberish>&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink
 

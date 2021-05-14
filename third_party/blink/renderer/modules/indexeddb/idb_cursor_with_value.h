@@ -45,7 +45,11 @@ class IDBCursorWithValue final : public IDBCursor {
   IDBCursorWithValue(std::unique_ptr<WebIDBCursor>,
                      mojom::IDBCursorDirection,
                      IDBRequest*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                     const Source*,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      const Source&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      IDBTransaction*);
   ~IDBCursorWithValue() override;
 

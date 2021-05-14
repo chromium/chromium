@@ -36,6 +36,7 @@
 #include "base/location.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -79,6 +80,56 @@ enum CreateImageBitmapSource {
 
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+inline ImageBitmapSource* ToImageBitmapSourceInternal(
+    const V8ImageBitmapSource* value,
+    const ImageBitmapOptions* options,
+    bool has_crop_rect) {
+  DCHECK(value);
+
+  switch (value->GetContentType()) {
+    case V8ImageBitmapSource::ContentType::kBlob:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceBlob);
+      return value->GetAsBlob();
+    case V8ImageBitmapSource::ContentType::kHTMLCanvasElement:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceHTMLCanvasElement);
+      return value->GetAsHTMLCanvasElement();
+    case V8ImageBitmapSource::ContentType::kHTMLImageElement:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceHTMLImageElement);
+      return value->GetAsHTMLImageElement();
+    case V8ImageBitmapSource::ContentType::kHTMLVideoElement:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceHTMLVideoElement);
+      return value->GetAsHTMLVideoElement();
+    case V8ImageBitmapSource::ContentType::kImageBitmap:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceImageBitmap);
+      return value->GetAsImageBitmap();
+    case V8ImageBitmapSource::ContentType::kImageData:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceImageData);
+      return value->GetAsImageData();
+    case V8ImageBitmapSource::ContentType::kOffscreenCanvas:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceOffscreenCanvas);
+      return value->GetAsOffscreenCanvas();
+    case V8ImageBitmapSource::ContentType::kSVGImageElement:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceSVGImageElement);
+      return value->GetAsSVGImageElement();
+    case V8ImageBitmapSource::ContentType::kVideoFrame:
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                                kCreateImageBitmapSourceVideoFrame);
+      return value->GetAsVideoFrame();
+  }
+
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static inline ImageBitmapSource* ToImageBitmapSourceInternal(
     const ImageBitmapSourceUnion& value,
     const ImageBitmapOptions* options,
@@ -131,6 +182,7 @@ static inline ImageBitmapSource* ToImageBitmapSourceInternal(
   NOTREACHED();
   return nullptr;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
     ScriptState* script_state,
@@ -148,7 +200,11 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
 
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8ImageBitmapSource* bitmap_source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ImageBitmapSourceUnion& bitmap_source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   WebFeature feature = WebFeature::kCreateImageBitmap;
@@ -163,7 +219,11 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
 
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8ImageBitmapSource* bitmap_source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ImageBitmapSourceUnion& bitmap_source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     int sx,
     int sy,
     int sw,

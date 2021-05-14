@@ -55,6 +55,7 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
+class V8UnionStringOrStringSequence;
 
 class MODULES_EXPORT IDBDatabase final
     : public EventTargetWithInlineData,
@@ -96,6 +97,17 @@ class MODULES_EXPORT IDBDatabase final
     return createObjectStore(name, IDBKeyPath(options->keyPath()),
                              options->autoIncrement(), exception_state);
   }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  IDBTransaction* transaction(ScriptState* script_state,
+                              const V8UnionStringOrStringSequence* store_names,
+                              const String& mode,
+                              ExceptionState& exception_state);
+  IDBTransaction* transaction(ScriptState* script_state,
+                              const V8UnionStringOrStringSequence* store_names,
+                              const String& mode,
+                              const IDBTransactionOptions* options,
+                              ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBTransaction* transaction(ScriptState*,
                               const StringOrStringSequence& store_names,
                               const String& mode,
@@ -105,6 +117,7 @@ class MODULES_EXPORT IDBDatabase final
                               const String& mode,
                               const IDBTransactionOptions* options,
                               ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void deleteObjectStore(const String& name, ExceptionState&);
   void close();
 

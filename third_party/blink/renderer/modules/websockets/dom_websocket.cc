@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_string_sequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -203,14 +204,26 @@ void DOMWebSocket::LogError(const String& message) {
 DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
                                    const String& url,
                                    ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return Create(
+      context, url,
+      MakeGarbageCollected<V8UnionStringOrStringSequence>(Vector<String>()),
+      exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringOrStringSequence protocols;
   return Create(context, url, protocols, exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
-DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
-                                   const String& url,
-                                   const StringOrStringSequence& protocols,
-                                   ExceptionState& exception_state) {
+DOMWebSocket* DOMWebSocket::Create(
+    ExecutionContext* context,
+    const String& url,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionStringOrStringSequence* protocols,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const StringOrStringSequence& protocols,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ExceptionState& exception_state) {
   if (url.IsNull()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -221,6 +234,21 @@ DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
   DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
   websocket->UpdateStateIfNeeded();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(protocols);
+  switch (protocols->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString: {
+      Vector<String> protocols_vector;
+      protocols_vector.push_back(protocols->GetAsString());
+      websocket->Connect(url, protocols_vector, exception_state);
+      break;
+    }
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+      websocket->Connect(url, protocols->GetAsStringSequence(),
+                         exception_state);
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (protocols.IsNull()) {
     Vector<String> protocols_vector;
     websocket->Connect(url, protocols_vector, exception_state);
@@ -232,6 +260,7 @@ DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
     DCHECK(protocols.IsStringSequence());
     websocket->Connect(url, protocols.GetAsStringSequence(), exception_state);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (exception_state.HadException())
     return nullptr;

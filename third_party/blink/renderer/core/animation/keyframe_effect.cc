@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -87,7 +88,11 @@ KeyframeEffect* KeyframeEffect::Create(
     ScriptState* script_state,
     Element* element,
     const ScriptValue& keyframes,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const UnrestrictedDoubleOrKeyframeEffectOptions& options,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   Document* document = element ? &element->GetDocument() : nullptr;
   Timing timing = TimingInput::Convert(options, document, exception_state);
@@ -96,8 +101,18 @@ KeyframeEffect* KeyframeEffect::Create(
 
   EffectModel::CompositeOperation composite = EffectModel::kCompositeReplace;
   String pseudo = String();
-  if (options.IsKeyframeEffectOptions()) {
+  if (
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      options->IsKeyframeEffectOptions()
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      options.IsKeyframeEffectOptions()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* effect_options = options->GetAsKeyframeEffectOptions();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto* effect_options = options.GetAsKeyframeEffectOptions();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     composite =
         EffectModel::StringToCompositeOperation(effect_options->composite())
             .value();

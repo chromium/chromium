@@ -16,6 +16,8 @@
 
 namespace blink {
 
+class V8UnionDoubleOrDoubleSequence;
+
 class SequenceTest final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -35,7 +37,11 @@ class SequenceTest final : public ScriptWrappable {
   HeapVector<Member<Element>> getElementSequence() const;
   void setElementSequence(const HeapVector<Member<Element>>& arg);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  bool unionReceivedSequence(const V8UnionDoubleOrDoubleSequence* arg);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool unionReceivedSequence(const DoubleOrDoubleSequence& arg);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

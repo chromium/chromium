@@ -155,11 +155,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   ServiceWorkerRegistration* registration();
   ::blink::ServiceWorker* serviceWorker();
 
-  ScriptPromise fetch(ScriptState*,
-                      const RequestInfo&,
-                      const RequestInit*,
-                      ExceptionState&);
-
   ScriptPromise skipWaiting(ScriptState*);
 
   void BindServiceWorker(mojo::PendingReceiver<mojom::blink::ServiceWorker>);

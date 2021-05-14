@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_advertising_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -20,12 +21,28 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
     : Event(event_type, initializer),
       device_(initializer->device()),
       name_(initializer->name()),
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       uuids_(initializer->uuids()),
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       appearance_(initializer->hasAppearance() ? initializer->appearance() : 0),
       txPower_(initializer->hasTxPower() ? initializer->txPower() : 0),
       rssi_(initializer->hasRssi() ? initializer->rssi() : 0),
       manufacturer_data_map_(initializer->manufacturerData()),
-      service_data_map_(initializer->serviceData()) {}
+      service_data_map_(initializer->serviceData()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  for (const auto& uuid : initializer->uuids()) {
+    if (uuid.IsString()) {
+      uuids_.push_back(
+          MakeGarbageCollected<V8UnionUUIDOrUnsignedLong>(uuid.GetAsString()));
+    } else if (uuid.IsUnsignedLong()) {
+      uuids_.push_back(MakeGarbageCollected<V8UnionUUIDOrUnsignedLong>(
+          uuid.GetAsUnsignedLong()));
+    } else {
+      NOTREACHED();
+    }
+  }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+}
 
 BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
     const AtomicString& event_type,
@@ -42,9 +59,13 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
       service_data_map_(MakeGarbageCollected<BluetoothServiceDataMap>(
           advertising_event->service_data)) {
   for (const String& uuid : advertising_event->uuids) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    uuids_.push_back(MakeGarbageCollected<V8UnionUUIDOrUnsignedLong>(uuid));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     StringOrUnsignedLong value;
     value.SetString(uuid);
     uuids_.push_back(value);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   }
 }  // namespace blink
 
@@ -70,10 +91,17 @@ const String& BluetoothAdvertisingEvent::name() const {
   return name_;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+const HeapVector<Member<V8UnionUUIDOrUnsignedLong>>&
+BluetoothAdvertisingEvent::uuids() const {
+  return uuids_;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 const HeapVector<StringOrUnsignedLong>& BluetoothAdvertisingEvent::uuids()
     const {
   return uuids_;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 BluetoothManufacturerDataMap* BluetoothAdvertisingEvent::manufacturerData()
     const {

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_uint8_clamped_array.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -367,6 +368,19 @@ ImageDataSettings* ImageData::getSettings() const {
 }
 
 bool ImageData::IsBufferBaseDetached() const {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (data_->GetContentType()) {
+    case V8ImageDataArray::ContentType::kFloat32Array:
+      return data_->GetAsFloat32Array()->BufferBase()->IsDetached();
+    case V8ImageDataArray::ContentType::kUint16Array:
+      return data_->GetAsUint16Array()->BufferBase()->IsDetached();
+    case V8ImageDataArray::ContentType::kUint8ClampedArray:
+      return data_->GetAsUint8ClampedArray()->BufferBase()->IsDetached();
+  }
+
+  NOTREACHED();
+  return false;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (data_.IsUint8ClampedArray())
     return data_.GetAsUint8ClampedArray()->BufferBase()->IsDetached();
   if (data_.IsUint16Array())
@@ -374,12 +388,29 @@ bool ImageData::IsBufferBaseDetached() const {
   if (data_.IsFloat32Array())
     return data_.GetAsFloat32Array()->BufferBase()->IsDetached();
   return false;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 SkPixmap ImageData::GetSkPixmap() const {
   CHECK(!IsBufferBaseDetached());
   SkColorType color_type = kRGBA_8888_SkColorType;
   const void* data = nullptr;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (data_->GetContentType()) {
+    case V8ImageDataArray::ContentType::kFloat32Array:
+      color_type = kRGBA_F32_SkColorType;
+      data = data_->GetAsFloat32Array()->Data();
+      break;
+    case V8ImageDataArray::ContentType::kUint16Array:
+      color_type = kR16G16B16A16_unorm_SkColorType;
+      data = data_->GetAsUint16Array()->Data();
+      break;
+    case V8ImageDataArray::ContentType::kUint8ClampedArray:
+      color_type = kRGBA_8888_SkColorType;
+      data = data_->GetAsUint8ClampedArray()->Data();
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (data_.IsUint8ClampedArray()) {
     color_type = kRGBA_8888_SkColorType;
     data = data_.GetAsUint8ClampedArray()->Data();
@@ -390,6 +421,7 @@ SkPixmap ImageData::GetSkPixmap() const {
     color_type = kRGBA_F32_SkColorType;
     data = data_.GetAsFloat32Array()->Data();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   SkImageInfo info =
       SkImageInfo::Make(width(), height(), color_type, kUnpremul_SkAlphaType,
                         CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace()));
@@ -412,6 +444,30 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
   wrapper = ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type_info,
                                                   wrapper);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  if (data_->IsUint8ClampedArray()) {
+    // Create a V8 object with |data_| and set the "data" property
+    // of the ImageData object to the created v8 object, eliminating the
+    // C++ callback when accessing the "data" property.
+    //
+    // This is a perf hack breaking the web interop.
+
+    v8::Local<v8::Value> v8_data;
+    ScriptState* script_state = ScriptState::From(wrapper->CreationContext());
+    if (!ToV8Traits<V8ImageDataArray>::ToV8(script_state, data_)
+             .ToLocal(&v8_data)) {
+      return wrapper;
+    }
+    bool defined_property;
+    if (!wrapper
+             ->DefineOwnProperty(isolate->GetCurrentContext(),
+                                 V8AtomicString(isolate, "data"), v8_data,
+                                 v8::ReadOnly)
+             .To(&defined_property)) {
+      return wrapper;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (data_.IsUint8ClampedArray()) {
     // Create a V8 object with |data_| and set the "data" property
     // of the ImageData object to the created v8 object, eliminating the
@@ -434,6 +490,7 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
       return wrapper;
     }
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   return wrapper;
 }
@@ -465,30 +522,42 @@ ImageData::ImageData(const IntSize& size,
                 DOMArrayBufferView::ViewType::kTypeUint8Clamped);
       data_u8_ = data;
       DCHECK(data_u8_);
-      data_.SetUint8ClampedArray(data_u8_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsUint8ClampedArray()->length());
+              .ValueOrDie() <= data_u8_->length());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_ = MakeGarbageCollected<V8ImageDataArray>(data_u8_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_.SetUint8ClampedArray(data_u8_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       break;
 
     case kUint16ArrayStorageFormat:
       DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeUint16);
       data_u16_ = data;
       DCHECK(data_u16_);
-      data_.SetUint16Array(data_u16_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsUint16Array()->length());
+              .ValueOrDie() <= data_u16_->length());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_ = MakeGarbageCollected<V8ImageDataArray>(data_u16_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_.SetUint16Array(data_u16_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       break;
 
     case kFloat32ArrayStorageFormat:
       DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeFloat32);
       data_f32_ = data;
       DCHECK(data_f32_);
-      data_.SetFloat32Array(data_f32_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsFloat32Array()->length());
+              .ValueOrDie() <= data_f32_->length());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_ = MakeGarbageCollected<V8ImageDataArray>(data_f32_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      data_.SetFloat32Array(data_f32_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       break;
 
     default:

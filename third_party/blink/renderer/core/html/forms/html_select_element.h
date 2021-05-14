@@ -42,14 +42,16 @@ namespace blink {
 class AXObject;
 class AutoscrollController;
 class ExceptionState;
+class HTMLElementOrLong;
 class HTMLHRElement;
 class HTMLOptGroupElement;
 class HTMLOptionElement;
 class HTMLOptionElementOrHTMLOptGroupElement;
-class HTMLElementOrLong;
 class LayoutUnit;
 class PopupMenu;
 class SelectType;
+class V8UnionHTMLElementOrLong;
+class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 
 class CORE_EXPORT HTMLSelectElement final
     : public HTMLFormControlElementWithState,
@@ -85,9 +87,15 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool UsesMenuList() const { return uses_menu_list_; }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void add(const V8UnionHTMLOptGroupElementOrHTMLOptionElement* element,
+           const V8UnionHTMLElementOrLong* before,
+           ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void add(const HTMLOptionElementOrHTMLOptGroupElement&,
            const HTMLElementOrLong&,
            ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   using Node::remove;
   void remove(int index);

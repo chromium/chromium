@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_file_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -142,6 +143,21 @@ void FormData::deleteEntry(const String& name) {
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8FormDataEntryValue* FormData::get(const String& name) {
+  for (const auto& entry : Entries()) {
+    if (entry->name() == name) {
+      if (entry->IsString()) {
+        return MakeGarbageCollected<V8FormDataEntryValue>(entry->Value());
+      } else {
+        DCHECK(entry->isFile());
+        return MakeGarbageCollected<V8FormDataEntryValue>(entry->GetFile());
+      }
+    }
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void FormData::get(const String& name, FormDataEntryValue& result) {
   for (const auto& entry : Entries()) {
     if (entry->name() == name) {
@@ -155,7 +171,27 @@ void FormData::get(const String& name, FormDataEntryValue& result) {
     }
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+HeapVector<Member<V8FormDataEntryValue>> FormData::getAll(const String& name) {
+  HeapVector<Member<V8FormDataEntryValue>> results;
+
+  for (const auto& entry : Entries()) {
+    if (entry->name() != name)
+      continue;
+    V8FormDataEntryValue* value;
+    if (entry->IsString()) {
+      value = MakeGarbageCollected<V8FormDataEntryValue>(entry->Value());
+    } else {
+      DCHECK(entry->isFile());
+      value = MakeGarbageCollected<V8FormDataEntryValue>(entry->GetFile());
+    }
+    results.push_back(value);
+  }
+  return results;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 HeapVector<FormDataEntryValue> FormData::getAll(const String& name) {
   HeapVector<FormDataEntryValue> results;
 
@@ -173,6 +209,7 @@ HeapVector<FormDataEntryValue> FormData::getAll(const String& name) {
   }
   return results;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool FormData::has(const String& name) {
   for (const auto& entry : Entries()) {

@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_H_
 
 #include <memory>
+
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -48,8 +49,9 @@ namespace blink {
 class Blob;
 class ExceptionState;
 class ExecutionContext;
-enum class FileErrorCode;
 class StringOrArrayBuffer;
+class V8UnionArrayBufferOrString;
+enum class FileErrorCode;
 
 class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
                                      public ActiveScriptWrappable<FileReader>,
@@ -74,7 +76,11 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   ReadyState getReadyState() const { return state_; }
   DOMException* error() { return error_; }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionArrayBufferOrString* result() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void result(StringOrArrayBuffer& result_attribute) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 
   // ExecutionContextLifecycleObserver

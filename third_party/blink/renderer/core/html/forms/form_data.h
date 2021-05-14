@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -75,8 +76,13 @@ class CORE_EXPORT FormData final
               Blob*,
               const String& filename = String());
   void deleteEntry(const String& name);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8FormDataEntryValue* get(const String& name);
+  HeapVector<Member<V8FormDataEntryValue>> getAll(const String& name);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void get(const String& name, FormDataEntryValue& result);
   HeapVector<FormDataEntryValue> getAll(const String& name);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool has(const String& name);
   void set(const String& name, const String& value);
   void set(const String& name, Blob*, const String& filename = String());

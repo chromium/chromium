@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
@@ -37,10 +38,17 @@ class CacheStorage final : public ScriptWrappable,
   ScriptPromise has(ScriptState*, const String& cache_name);
   ScriptPromise Delete(ScriptState*, const String& cache_name);
   ScriptPromise keys(ScriptState*);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise match(ScriptState* script_state,
+                      const V8RequestInfo* request,
+                      const MultiCacheQueryOptions* options,
+                      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise match(ScriptState*,
                       const RequestInfo&,
                       const MultiCacheQueryOptions*,
                       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   bool HasPendingActivity() const override;
   void Trace(Visitor*) const override;

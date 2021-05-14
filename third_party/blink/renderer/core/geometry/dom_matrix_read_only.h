@@ -16,20 +16,28 @@
 
 namespace blink {
 
+class DOMMatrix2DInit;
 class DOMMatrix;
 class DOMMatrixInit;
-class DOMMatrix2DInit;
 class DOMPoint;
 class DOMPointInit;
+class V8UnionStringOrUnrestrictedDoubleSequence;
 
 class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static DOMMatrixReadOnly* Create(ExecutionContext*, ExceptionState&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static DOMMatrixReadOnly* Create(
+      ExecutionContext* execution_context,
+      const V8UnionStringOrUnrestrictedDoubleSequence* init,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrixReadOnly* Create(ExecutionContext*,
                                    const StringOrUnrestrictedDoubleSequence&,
                                    ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrixReadOnly* fromFloat32Array(NotShared<DOMFloat32Array>,
                                              ExceptionState&);
   static DOMMatrixReadOnly* fromFloat64Array(NotShared<DOMFloat64Array>,

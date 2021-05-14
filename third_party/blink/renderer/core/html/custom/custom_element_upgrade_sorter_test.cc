@@ -27,8 +27,13 @@ class CustomElementUpgradeSorterTest : public PageTestBase {
 
   Element* CreateElementWithId(const char* local_name, const char* id) {
     NonThrowableExceptionState no_exceptions;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    Element* element = GetDocument().CreateElementForBinding(
+        local_name, nullptr, no_exceptions);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     Element* element = GetDocument().CreateElementForBinding(
         local_name, StringOrElementCreationOptions(), no_exceptions);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     element->setAttribute(html_names::kIdAttr, id);
     return element;
   }
@@ -40,8 +45,13 @@ class CustomElementUpgradeSorterTest : public PageTestBase {
 
 TEST_F(CustomElementUpgradeSorterTest, inOtherDocument_notInSet) {
   NonThrowableExceptionState no_exceptions;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Element* element =
+      GetDocument().CreateElementForBinding("a-a", nullptr, no_exceptions);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* element = GetDocument().CreateElementForBinding(
       "a-a", StringOrElementCreationOptions(), no_exceptions);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   auto* other_document = HTMLDocument::CreateForTest();
   other_document->AppendChild(element);
@@ -59,8 +69,13 @@ TEST_F(CustomElementUpgradeSorterTest, inOtherDocument_notInSet) {
 
 TEST_F(CustomElementUpgradeSorterTest, oneCandidate) {
   NonThrowableExceptionState no_exceptions;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Element* element =
+      GetDocument().CreateElementForBinding("a-a", nullptr, no_exceptions);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Element* element = GetDocument().CreateElementForBinding(
       "a-a", StringOrElementCreationOptions(), no_exceptions);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   GetDocument().documentElement()->AppendChild(element);
 
   CustomElementUpgradeSorter sorter;

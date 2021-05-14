@@ -1002,7 +1002,10 @@ struct ToV8Traits<
     std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* value) {
-    DCHECK(value);
+    // TODO(crbug.com/1185018): nullptr shouldn't be passed.  This should be
+    // DCHECK(value);
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
     return value->ToV8Value(script_state);
   }
 };

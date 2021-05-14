@@ -16,11 +16,13 @@
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_le_scan_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_manufacturer_data_filter_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_request_device_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -44,7 +46,6 @@
 
 namespace blink {
 
-namespace {
 // Per the Bluetooth Spec: The name is a user-friendly name associated with the
 // device and consists of a maximum of 248 bytes coded according to the UTF-8
 // standard.
@@ -54,6 +55,24 @@ const char kDeviceNameTooLong[] =
 const char kInactiveDocumentError[] = "Document not active";
 const char kHandleGestureForPermissionRequest[] =
     "Must be handling a user gesture to show a permission request.";
+
+namespace {
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// TODO(crbug.com/1181288): Remove the old IDL union version.
+V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
+    const StringOrUnsignedLong& uuid) {
+  if (uuid.IsString()) {
+    return MakeGarbageCollected<V8BluetoothServiceUUID>(uuid.GetAsString());
+  } else if (uuid.IsUnsignedLong()) {
+    return MakeGarbageCollected<V8BluetoothServiceUUID>(
+        uuid.GetAsUnsignedLong());
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 }  // namespace
 
 // Remind developers when they are using Web Bluetooth on unsupported platforms.
@@ -90,8 +109,13 @@ static void CanonicalizeFilter(
     }
     canonicalized_filter->services.emplace();
     for (const StringOrUnsignedLong& service : filter->services()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      const String& validated_service = BluetoothUUID::getService(
+          ToV8BluetoothServiceUUID(service), exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const String& validated_service =
           BluetoothUUID::getService(service, exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (exception_state.HadException())
         return;
       canonicalized_filter->services->push_back(validated_service);
@@ -232,8 +256,13 @@ static void ConvertRequestDeviceOptions(
   if (options->hasOptionalServices()) {
     for (const StringOrUnsignedLong& optional_service :
          options->optionalServices()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      const String& validated_optional_service = BluetoothUUID::getService(
+          ToV8BluetoothServiceUUID(optional_service), exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       const String& validated_optional_service =
           BluetoothUUID::getService(optional_service, exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (exception_state.HadException())
         return;
       result->optional_services.push_back(validated_optional_service);

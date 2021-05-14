@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
@@ -250,10 +251,18 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
   auto* options = ReadableStreamGetReaderOptions::Create();
   options->setMode("byob");
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ReadableStreamBYOBReader* reader = nullptr;
+  if (const auto* result =
+          stream->getReader(script_state, options, ASSERT_NO_EXCEPTION)) {
+    reader = result->GetAsReadableStreamBYOBReader();
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ReadableStreamDefaultReaderOrReadableStreamBYOBReader return_value;
   stream->getReader(script_state, options, return_value, ASSERT_NO_EXCEPTION);
   ReadableStreamBYOBReader* reader =
       return_value.GetAsReadableStreamBYOBReader();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ASSERT_TRUE(reader);
 
   EXPECT_TRUE(stream->locked());

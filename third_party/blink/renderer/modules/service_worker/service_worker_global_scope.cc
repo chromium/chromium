@@ -857,13 +857,6 @@ ServiceWorkerGlobalScope::CreateWorkerScriptCachedMetadataHandler(
       this, script_url, std::move(meta_data));
 }
 
-ScriptPromise ServiceWorkerGlobalScope::fetch(ScriptState* script_state,
-                                              const RequestInfo& input,
-                                              const RequestInit* init,
-                                              ExceptionState& exception_state) {
-  return GlobalFetch::fetch(script_state, *this, input, init, exception_state);
-}
-
 void ServiceWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
   WorkerGlobalScope::ExceptionThrown(event);
   if (WorkerThreadDebugger* debugger =

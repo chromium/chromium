@@ -22,6 +22,15 @@ class CORE_EXPORT CSSScale final : public CSSTransformComponent {
 
  public:
   // Constructors defined in the IDL.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CSSScale* Create(const V8CSSNumberish* x,
+                          const V8CSSNumberish* y,
+                          ExceptionState& exception_state);
+  static CSSScale* Create(const V8CSSNumberish* x,
+                          const V8CSSNumberish* y,
+                          const V8CSSNumberish* z,
+                          ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CSSScale* Create(const CSSNumberish&,
                           const CSSNumberish&,
                           ExceptionState&);
@@ -29,6 +38,7 @@ class CORE_EXPORT CSSScale final : public CSSTransformComponent {
                           const CSSNumberish&,
                           const CSSNumberish&,
                           ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Blink-internal ways of creating CSSScales.
   static CSSScale* Create(CSSNumericValue* x, CSSNumericValue* y) {
@@ -50,12 +60,21 @@ class CORE_EXPORT CSSScale final : public CSSTransformComponent {
   CSSScale& operator=(const CSSScale&) = delete;
 
   // Getters and setters for attributes defined in the IDL.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8CSSNumberish* x();
+  V8CSSNumberish* y();
+  V8CSSNumberish* z();
+  void setX(const V8CSSNumberish* x, ExceptionState& exception_state);
+  void setY(const V8CSSNumberish* y, ExceptionState& exception_state);
+  void setZ(const V8CSSNumberish* z, ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void x(CSSNumberish& x) { x.SetCSSNumericValue(x_); }
   void y(CSSNumberish& y) { y.SetCSSNumericValue(y_); }
   void z(CSSNumberish& z) { z.SetCSSNumericValue(z_); }
   void setX(const CSSNumberish&, ExceptionState&);
   void setY(const CSSNumberish&, ExceptionState&);
   void setZ(const CSSNumberish&, ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DOMMatrix* toMatrix(ExceptionState&) const final;
 

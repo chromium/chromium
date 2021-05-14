@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trust_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_search_params.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -710,6 +711,25 @@ Request* Request::CreateRequestWithRequestOrString(
   return r;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+Request* Request::Create(ScriptState* script_state,
+                         const V8RequestInfo* input,
+                         const RequestInit* init,
+                         ExceptionState& exception_state) {
+  DCHECK(input);
+
+  switch (input->GetContentType()) {
+    case V8RequestInfo::ContentType::kRequest:
+      return Create(script_state, input->GetAsRequest(), init, exception_state);
+    case V8RequestInfo::ContentType::kUSVString:
+      return Create(script_state, input->GetAsUSVString(), init,
+                    exception_state);
+  }
+
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Request* Request::Create(ScriptState* script_state,
                          const RequestInfo& input,
                          const RequestInit* init,
@@ -719,6 +739,7 @@ Request* Request::Create(ScriptState* script_state,
     return Create(script_state, input.GetAsUSVString(), init, exception_state);
   return Create(script_state, input.GetAsRequest(), init, exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 Request* Request::Create(ScriptState* script_state,
                          const String& input,

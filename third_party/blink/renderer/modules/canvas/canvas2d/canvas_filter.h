@@ -13,6 +13,7 @@
 namespace blink {
 
 class ExceptionState;
+class V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray;
 
 // This class stores an unresolved filter on CanvasRenderingContext2DState that
 // has been created from the CanvasFilter javascript object. It will be parsed
@@ -21,10 +22,17 @@ class MODULES_EXPORT CanvasFilter final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CanvasFilter* Create(
+      ScriptState* script_state,
+      const V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray* init,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CanvasFilter* Create(
       ScriptState*,
       CanvasFilterDictionaryOrCanvasFilterDictionaryArray&,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   explicit CanvasFilter(FilterOperations filter_operations);
 

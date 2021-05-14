@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -141,30 +142,38 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
   return value - timing->navigationStart();
 }
 
-double UserTiming::GetTimeOrFindMarkTime(const AtomicString& measure_name,
-                                         const StringOrDouble& mark_or_time,
-                                         ExceptionState& exception_state) {
-  if (mark_or_time.IsString()) {
-    return FindExistingMarkStartTime(AtomicString(mark_or_time.GetAsString()),
-                                     exception_state);
+double UserTiming::GetTimeOrFindMarkTime(
+    const AtomicString& measure_name,
+    const V8UnionDoubleOrString* mark_or_time,
+    ExceptionState& exception_state) {
+  DCHECK(mark_or_time);
+
+  switch (mark_or_time->GetContentType()) {
+    case V8UnionDoubleOrString::ContentType::kDouble: {
+      const double time = mark_or_time->GetAsDouble();
+      if (time < 0.0) {
+        exception_state.ThrowTypeError("'" + measure_name +
+                                       "' cannot have a negative time stamp.");
+      }
+      return time;
+    }
+    case V8UnionDoubleOrString::ContentType::kString:
+      return FindExistingMarkStartTime(
+          AtomicString(mark_or_time->GetAsString()), exception_state);
   }
-  DCHECK(mark_or_time.IsDouble());
-  const double time = mark_or_time.GetAsDouble();
-  if (time < 0.0) {
-    exception_state.ThrowTypeError("'" + measure_name +
-                                   "' cannot have a negative time stamp.");
-  }
-  return time;
+
+  NOTREACHED();
+  return 0;
 }
 
 base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
     double start_time,
-    const base::Optional<StringOrDouble>& maybe_mark_name) {
-  if (maybe_mark_name.has_value() && maybe_mark_name.value().IsString()) {
+    const V8UnionDoubleOrString* maybe_mark_name) {
+  if (maybe_mark_name && maybe_mark_name->IsString()) {
     const PerformanceMark* mark =
-        FindExistingMark(AtomicString(maybe_mark_name.value().GetAsString()));
+        FindExistingMark(AtomicString(maybe_mark_name->GetAsString()));
     if (mark) {
-      return (mark->UnsafeTimeForTraces());
+      return mark->UnsafeTimeForTraces();
     }
   }
 
@@ -178,24 +187,20 @@ base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
                                        start_time_in_seconds);
 }
 
-PerformanceMeasure* UserTiming::Measure(
-    ScriptState* script_state,
-    const AtomicString& measure_name,
-    const base::Optional<StringOrDouble>& start,
-    const base::Optional<double>& duration,
-    const base::Optional<StringOrDouble>& end,
-    const ScriptValue& detail,
-    ExceptionState& exception_state) {
+PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
+                                        const AtomicString& measure_name,
+                                        const V8UnionDoubleOrString* start,
+                                        const base::Optional<double>& duration,
+                                        const V8UnionDoubleOrString* end,
+                                        const ScriptValue& detail,
+                                        ExceptionState& exception_state) {
   double start_time =
-      start.has_value()
-          ? GetTimeOrFindMarkTime(measure_name, start.value(), exception_state)
-          : 0;
+      start ? GetTimeOrFindMarkTime(measure_name, start, exception_state) : 0;
   if (exception_state.HadException())
     return nullptr;
 
   double end_time =
-      end.has_value()
-          ? GetTimeOrFindMarkTime(measure_name, end.value(), exception_state)
+      end ? GetTimeOrFindMarkTime(measure_name, end, exception_state)
           : performance_->now();
   if (exception_state.HadException())
     return nullptr;

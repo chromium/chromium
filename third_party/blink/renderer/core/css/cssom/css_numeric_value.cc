@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_numeric_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -227,6 +228,7 @@ CSSPrimitiveValue::UnitType CSSNumericValue::UnitFromName(const String& name) {
   return CSSPrimitiveValue::StringToUnitType(name);
 }
 
+// static
 CSSNumericValue* CSSNumericValue::parse(const String& css_text,
                                         ExceptionState& exception_state) {
   CSSTokenizer tokenizer(css_text);
@@ -270,6 +272,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
   return nullptr;
 }
 
+// static
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
     return CalcToNumericValue(
@@ -278,7 +281,17 @@ CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
 
-/* static */
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
+CSSNumericValue* CSSNumericValue::FromNumberish(const V8CSSNumberish* value) {
+  if (value->IsDouble()) {
+    return CSSUnitValue::Create(value->GetAsDouble(),
+                                CSSPrimitiveValue::UnitType::kNumber);
+  }
+  return value->GetAsCSSNumericValue();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
 CSSNumericValue* CSSNumericValue::FromNumberish(const CSSNumberish& value) {
   if (value.IsDouble()) {
     return CSSUnitValue::Create(value.GetAsDouble(),
@@ -286,8 +299,19 @@ CSSNumericValue* CSSNumericValue::FromNumberish(const CSSNumberish& value) {
   }
   return value.GetAsCSSNumericValue();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-/* static */
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
+CSSNumericValue* CSSNumericValue::FromPercentish(const V8CSSNumberish* value) {
+  if (value->IsDouble()) {
+    return CSSUnitValue::Create(value->GetAsDouble() * 100,
+                                CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return value->GetAsCSSNumericValue();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
 CSSNumericValue* CSSNumericValue::FromPercentish(const CSSNumberish& value) {
   if (value.IsDouble()) {
     return CSSUnitValue::Create(value.GetAsDouble() * 100,
@@ -295,6 +319,7 @@ CSSNumericValue* CSSNumericValue::FromPercentish(const CSSNumberish& value) {
   }
   return value.GetAsCSSNumericValue();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CSSUnitValue* CSSNumericValue::to(const String& unit_string,
                                   ExceptionState& exception_state) {
@@ -423,7 +448,11 @@ CSSNumericType* CSSNumericValue::type() const {
 }
 
 CSSNumericValue* CSSNumericValue::add(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kSumType>(values, this);
@@ -436,7 +465,11 @@ CSSNumericValue* CSSNumericValue::add(
 }
 
 CSSNumericValue* CSSNumericValue::sub(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   std::transform(values.begin(), values.end(), values.begin(),
@@ -451,7 +484,11 @@ CSSNumericValue* CSSNumericValue::sub(
 }
 
 CSSNumericValue* CSSNumericValue::mul(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kProductType>(values, this);
@@ -462,7 +499,11 @@ CSSNumericValue* CSSNumericValue::mul(
 }
 
 CSSNumericValue* CSSNumericValue::div(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   for (auto& v : values) {
@@ -482,7 +523,11 @@ CSSNumericValue* CSSNumericValue::div(
 }
 
 CSSNumericValue* CSSNumericValue::min(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kMinType>(values, this);
@@ -495,7 +540,11 @@ CSSNumericValue* CSSNumericValue::min(
 }
 
 CSSNumericValue* CSSNumericValue::max(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSNumberish>& numberishes,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kMaxType>(values, this);
@@ -507,8 +556,14 @@ CSSNumericValue* CSSNumericValue::max(
   return CSSMathMax::Create(std::move(values));
 }
 
-bool CSSNumericValue::equals(const HeapVector<CSSNumberish>& args) {
-  CSSNumericValueVector values = CSSNumberishesToNumericValues(args);
+bool CSSNumericValue::equals(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8CSSNumberish>>& numberishes
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<CSSNumberish>& numberishes
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
+  CSSNumericValueVector values = CSSNumberishesToNumericValues(numberishes);
   return std::all_of(values.begin(), values.end(),
                      [this](const auto& v) { return this->Equals(*v); });
 }
@@ -527,6 +582,16 @@ CSSNumericValue* CSSNumericValue::Invert() {
   return CSSMathInvert::Create(this);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+CSSNumericValueVector CSSNumberishesToNumericValues(
+    const HeapVector<Member<V8CSSNumberish>>& values) {
+  CSSNumericValueVector result;
+  for (const V8CSSNumberish* value : values) {
+    result.push_back(CSSNumericValue::FromNumberish(value));
+  }
+  return result;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSNumericValueVector CSSNumberishesToNumericValues(
     const HeapVector<CSSNumberish>& values) {
   CSSNumericValueVector result;
@@ -535,5 +600,6 @@ CSSNumericValueVector CSSNumberishesToNumericValues(
   }
   return result;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

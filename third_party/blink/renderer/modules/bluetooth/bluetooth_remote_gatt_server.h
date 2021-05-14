@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -68,12 +69,21 @@ class BluetoothRemoteGATTServer
   bool connected() { return connected_; }
   ScriptPromise connect(ScriptState*);
   void disconnect(ScriptState*);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise getPrimaryService(ScriptState* script_state,
+                                  const V8BluetoothServiceUUID* service,
+                                  ExceptionState& exception_state);
+  ScriptPromise getPrimaryServices(ScriptState* script_state,
+                                   const V8BluetoothServiceUUID* service,
+                                   ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise getPrimaryService(ScriptState*,
                                   const StringOrUnsignedLong& service,
                                   ExceptionState&);
   ScriptPromise getPrimaryServices(ScriptState*,
                                    const StringOrUnsignedLong& service,
                                    ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise getPrimaryServices(ScriptState*, ExceptionState&);
 
  private:

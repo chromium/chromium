@@ -167,7 +167,11 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesCallback(
 
 ScriptPromise BluetoothRemoteGATTServer::getPrimaryService(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BluetoothServiceUUID* service,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrUnsignedLong& service,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String service_uuid = BluetoothUUID::getService(service, exception_state);
   if (exception_state.HadException())
@@ -180,7 +184,11 @@ ScriptPromise BluetoothRemoteGATTServer::getPrimaryService(
 
 ScriptPromise BluetoothRemoteGATTServer::getPrimaryServices(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BluetoothServiceUUID* service,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrUnsignedLong& service,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String service_uuid = BluetoothUUID::getService(service, exception_state);
   if (exception_state.HadException())

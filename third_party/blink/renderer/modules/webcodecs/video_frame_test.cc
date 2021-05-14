@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+
 #include "components/viz/test/test_context_provider.h"
+#include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -233,16 +236,24 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(original_image), base::nullopt,
       default_options);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasImageSourceUnion source;
   source.SetImageBitmap(image_bitmap);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
                                          scope.GetExceptionState());
 
   EXPECT_EQ(video_frame->handle()->sk_image(), original_image);
 
   {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* ibs_source = MakeGarbageCollected<V8ImageBitmapSource>(video_frame);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ImageBitmapSourceUnion ibs_source;
     ibs_source.SetVideoFrame(video_frame);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     auto promise = ImageBitmapFactories::CreateImageBitmap(
         scope.GetScriptState(), ibs_source, default_options,
         scope.GetExceptionState());
@@ -282,8 +293,12 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   auto* init = VideoFrameInit::Create();
   init->setTimestamp(0);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   CanvasImageSourceUnion source;
   source.SetImageBitmap(image_bitmap);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
                                          scope.GetExceptionState());
   ASSERT_TRUE(video_frame);

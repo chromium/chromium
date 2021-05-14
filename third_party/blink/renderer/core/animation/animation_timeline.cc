@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -40,11 +41,20 @@ bool CompareAnimations(const Member<Animation>& left,
       Animation::CompareAnimationsOrdering::kPointerOrder);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSNumberish* AnimationTimeline::currentTime() {
+  const base::Optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
+  if (result)
+    return MakeGarbageCollected<V8CSSNumberish>(result->InMillisecondsF());
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void AnimationTimeline::currentTime(CSSNumberish& currentTime) {
   base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
   currentTime = result ? CSSNumberish::FromDouble(result->InMillisecondsF())
                        : CSSNumberish();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 base::Optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
   base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
@@ -63,9 +73,15 @@ base::Optional<double> AnimationTimeline::CurrentTimeSeconds() {
   return result ? base::make_optional(result->InSecondsF()) : base::nullopt;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8CSSNumberish* AnimationTimeline::duration() {
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void AnimationTimeline::duration(CSSNumberish& duration) {
   duration = CSSNumberish();
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String AnimationTimeline::phase() {
   switch (CurrentPhaseAndTime().phase) {

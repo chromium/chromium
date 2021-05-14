@@ -19,6 +19,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
@@ -234,7 +235,11 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
 
 // static
 VideoFrame* VideoFrame::Create(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                               const V8CanvasImageSource* source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                const CanvasImageSourceUnion& source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                const VideoFrameInit* init,
                                ExceptionState& exception_state) {
   auto* image_source = ToCanvasImageSource(source, exception_state);
@@ -253,8 +258,31 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   constexpr char kAlphaKeep[] = "keep";
 
   // Special case <video> and VideoFrame to directly use the underlying frame.
-  if (source.IsVideoFrame() || source.IsHTMLVideoElement()) {
+  if (
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      source->IsVideoFrame() || source->IsHTMLVideoElement()
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      source.IsVideoFrame() || source.IsHTMLVideoElement()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ) {
     scoped_refptr<media::VideoFrame> source_frame;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    switch (source->GetContentType()) {
+      case V8CanvasImageSource::ContentType::kVideoFrame:
+        if (!init || (!init->hasTimestamp() && !init->hasDuration() &&
+                      init->alpha() == kAlphaKeep)) {
+          return source->GetAsVideoFrame()->clone(exception_state);
+        }
+        source_frame = source->GetAsVideoFrame()->frame();
+        break;
+      case V8CanvasImageSource::ContentType::kHTMLVideoElement:
+        if (auto* wmp = source->GetAsHTMLVideoElement()->GetWebMediaPlayer())
+          source_frame = wmp->GetCurrentFrame();
+        break;
+      default:
+        NOTREACHED();
+    }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     if (source.IsVideoFrame()) {
       if (!init || (!init->hasTimestamp() && !init->hasDuration() &&
                     init->alpha() == kAlphaKeep)) {
@@ -265,6 +293,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       if (auto* wmp = source.GetAsHTMLVideoElement()->GetWebMediaPlayer())
         source_frame = wmp->GetCurrentFrame();
     }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     if (!source_frame) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -838,11 +867,15 @@ uint32_t VideoFrame::allocationSize(VideoFrameReadIntoOptions* options,
   return layout.min_buffer_size;
 }
 
-ScriptPromise VideoFrame::readInto(
-    ScriptState* script_state,
-    const ArrayBufferOrArrayBufferView& destination,
-    VideoFrameReadIntoOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise VideoFrame::readInto(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                   const V8BufferSource* destination,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                   const ArrayBufferOrArrayBufferView&
+                                       destination,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                   VideoFrameReadIntoOptions* options,
+                                   ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

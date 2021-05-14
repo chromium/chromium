@@ -12,6 +12,33 @@
 
 namespace blink {
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8OffscreenRenderingContext* OffscreenCanvasModule::getContext(
+    ExecutionContext* execution_context,
+    OffscreenCanvas& offscreen_canvas,
+    const String& context_id,
+    const CanvasContextCreationAttributesModule* attributes,
+    ExceptionState& exception_state) {
+  if (offscreen_canvas.IsNeutered()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "OffscreenCanvas object is detached");
+    return nullptr;
+  }
+  CanvasContextCreationAttributesCore canvas_context_creation_attributes;
+  if (!ToCanvasContextCreationAttributes(
+          attributes, canvas_context_creation_attributes, exception_state)) {
+    return nullptr;
+  }
+
+  // OffscreenCanvas cannot be transferred after getContext, so this execution
+  // context will always be the right one from here on.
+  CanvasRenderingContext* context = offscreen_canvas.GetCanvasRenderingContext(
+      execution_context, context_id, canvas_context_creation_attributes);
+  if (!context)
+    return nullptr;
+  return context->AsV8OffscreenRenderingContext();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void OffscreenCanvasModule::getContext(
     ExecutionContext* execution_context,
     OffscreenCanvas& offscreen_canvas,
@@ -37,5 +64,6 @@ void OffscreenCanvasModule::getContext(
   if (context)
     context->SetOffscreenCanvasGetContextResult(result);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

@@ -346,7 +346,11 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::stopNotifications(
 
 ScriptPromise BluetoothRemoteGATTCharacteristic::getDescriptor(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BluetoothDescriptorUUID* descriptor_uuid,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrUnsignedLong& descriptor_uuid,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String descriptor =
       BluetoothUUID::getDescriptor(descriptor_uuid, exception_state);
@@ -368,7 +372,11 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::getDescriptors(
 
 ScriptPromise BluetoothRemoteGATTCharacteristic::getDescriptors(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BluetoothDescriptorUUID* descriptor_uuid,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrUnsignedLong& descriptor_uuid,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   String descriptor =
       BluetoothUUID::getDescriptor(descriptor_uuid, exception_state);

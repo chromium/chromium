@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "v8/include/v8.h"
@@ -62,9 +64,15 @@ Timing AnimationTimingInputTest::ApplyTimingInputNumber(
       return Timing();
     }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* timing_input =
+        MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
+            timing_input_dictionary);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     UnrestrictedDoubleOrKeyframeEffectOptions timing_input =
         UnrestrictedDoubleOrKeyframeEffectOptions::FromKeyframeEffectOptions(
             timing_input_dictionary);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
@@ -75,9 +83,15 @@ Timing AnimationTimingInputTest::ApplyTimingInputNumber(
     if (exception_state.HadException())
       return Timing();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* timing_input = MakeGarbageCollected<
+        V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble>(
+        timing_input_dictionary);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     UnrestrictedDoubleOrKeyframeAnimationOptions timing_input =
         UnrestrictedDoubleOrKeyframeAnimationOptions::
             FromKeyframeAnimationOptions(timing_input_dictionary);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
@@ -106,9 +120,15 @@ Timing AnimationTimingInputTest::ApplyTimingInputString(
     if (exception_state.HadException())
       return Timing();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* timing_input =
+        MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
+            timing_input_dictionary);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     UnrestrictedDoubleOrKeyframeEffectOptions timing_input =
         UnrestrictedDoubleOrKeyframeEffectOptions::FromKeyframeEffectOptions(
             timing_input_dictionary);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
@@ -119,9 +139,15 @@ Timing AnimationTimingInputTest::ApplyTimingInputString(
     if (exception_state.HadException())
       return Timing();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    auto* timing_input = MakeGarbageCollected<
+        V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble>(
+        timing_input_dictionary);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     UnrestrictedDoubleOrKeyframeAnimationOptions timing_input =
         UnrestrictedDoubleOrKeyframeAnimationOptions::
             FromKeyframeAnimationOptions(timing_input_dictionary);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
@@ -453,9 +479,15 @@ TEST_F(AnimationTimingInputTest, TimingInputTimingFunction) {
 TEST_F(AnimationTimingInputTest, TimingInputEmpty) {
   DummyExceptionStateForTesting exception_state;
   Timing control_timing;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* timing_input =
+      MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
+          KeyframeEffectOptions::Create());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   UnrestrictedDoubleOrKeyframeEffectOptions timing_input =
       UnrestrictedDoubleOrKeyframeEffectOptions::FromKeyframeEffectOptions(
           KeyframeEffectOptions::Create());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Timing updated_timing =
       TimingInput::Convert(timing_input, nullptr, exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -472,9 +504,15 @@ TEST_F(AnimationTimingInputTest, TimingInputEmpty) {
 TEST_F(AnimationTimingInputTest, TimingInputEmptyKeyframeAnimationOptions) {
   DummyExceptionStateForTesting exception_state;
   Timing control_timing;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  auto* input_timing =
+      MakeGarbageCollected<V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble>(
+          KeyframeAnimationOptions::Create());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   UnrestrictedDoubleOrKeyframeAnimationOptions input_timing =
       UnrestrictedDoubleOrKeyframeAnimationOptions::
           FromKeyframeAnimationOptions(KeyframeAnimationOptions::Create());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Timing updated_timing =
       TimingInput::Convert(input_timing, nullptr, exception_state);
   EXPECT_FALSE(exception_state.HadException());

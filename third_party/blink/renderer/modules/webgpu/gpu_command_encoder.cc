@@ -274,11 +274,20 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
   return encoder;
 }
 
-void GPUCommandEncoder::copyBufferToTexture(
-    GPUImageCopyBuffer* source,
-    GPUImageCopyTexture* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
+void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
+                                            GPUImageCopyTexture* destination,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            const V8GPUExtent3D* copy_size
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
+                                                copy_size
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
 
   const char* error = nullptr;
@@ -293,11 +302,20 @@ void GPUCommandEncoder::copyBufferToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
 }
 
-void GPUCommandEncoder::copyTextureToBuffer(
-    GPUImageCopyTexture* source,
-    GPUImageCopyBuffer* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
+void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
+                                            GPUImageCopyBuffer* destination,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            const V8GPUExtent3D* copy_size
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                            UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
+                                                copy_size
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
 
   const char* error = nullptr;
@@ -312,13 +330,22 @@ void GPUCommandEncoder::copyTextureToBuffer(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
 }
 
-void GPUCommandEncoder::copyTextureToTexture(
-    GPUImageCopyTexture* source,
-    GPUImageCopyTexture* destination,
-    UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
+void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
+                                             GPUImageCopyTexture* destination,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                             const V8GPUExtent3D* copy_size
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                             UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict&
+                                                 copy_size
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size, device_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   GetProcs().commandEncoderCopyTextureToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);

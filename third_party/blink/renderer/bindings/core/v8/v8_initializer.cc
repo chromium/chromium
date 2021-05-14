@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -389,10 +391,16 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {true, v8::MaybeLocal<v8::String>()};
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionStringOrTrustedScript* string_or_trusted_script =
+      NativeValueTraits<V8UnionStringOrTrustedScript>::NativeValue(
+          context->GetIsolate(), source, exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringOrTrustedScript string_or_trusted_script;
   V8StringOrTrustedScript::ToImpl(
       context->GetIsolate(), source, string_or_trusted_script,
       UnionTypeConversionMode::kNotNullable, exception_state);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (exception_state.HadException()) {
     exception_state.ClearException();
     // The input was a string or TrustedScript but the conversion failed.
@@ -400,11 +408,18 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  if (is_code_like && string_or_trusted_script->IsString()) {
+    string_or_trusted_script->Set(MakeGarbageCollected<TrustedScript>(
+        string_or_trusted_script->GetAsString()));
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (is_code_like && string_or_trusted_script.IsString()) {
     string_or_trusted_script = StringOrTrustedScript::FromTrustedScript(
         MakeGarbageCollected<TrustedScript>(
             string_or_trusted_script.GetAsString()));
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   String stringified_source = TrustedTypesCheckForScript(
       string_or_trusted_script, ToExecutionContext(context), exception_state);

@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_int32array_longsequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_uint32array_unsignedlongsequence.h"
+
 namespace blink {
 
 bool WebGLMultiDrawCommon::ValidateDrawcount(
@@ -37,6 +40,23 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
   return true;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
+base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
+    const V8UnionInt32ArrayOrLongSequence* array) {
+  DCHECK(array);
+  switch (array->GetContentType()) {
+    case V8UnionInt32ArrayOrLongSequence::ContentType::kInt32Array:
+      return base::span<const int32_t>(array->GetAsInt32Array()->Data(),
+                                       array->GetAsInt32Array()->length());
+    case V8UnionInt32ArrayOrLongSequence::ContentType::kLongSequence:
+      return base::span<const int32_t>(array->GetAsLongSequence().data(),
+                                       array->GetAsLongSequence().size());
+  }
+  NOTREACHED();
+  return {};
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     const Int32ArrayOrLongSequence& array) {
@@ -47,7 +67,27 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
   return base::span<const int32_t>(array.GetAsLongSequence().data(),
                                    array.GetAsLongSequence().size());
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+// static
+base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
+    const V8UnionUint32ArrayOrUnsignedLongSequence* array) {
+  DCHECK(array);
+  switch (array->GetContentType()) {
+    case V8UnionUint32ArrayOrUnsignedLongSequence::ContentType::kUint32Array:
+      return base::span<const uint32_t>(array->GetAsUint32Array()->Data(),
+                                        array->GetAsUint32Array()->length());
+    case V8UnionUint32ArrayOrUnsignedLongSequence::ContentType::
+        kUnsignedLongSequence:
+      return base::span<const uint32_t>(
+          array->GetAsUnsignedLongSequence().data(),
+          array->GetAsUnsignedLongSequence().size());
+  }
+  NOTREACHED();
+  return {};
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 // static
 base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
     const Uint32ArrayOrUnsignedLongSequence& array) {
@@ -58,5 +98,6 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
   return base::span<const uint32_t>(array.GetAsUnsignedLongSequence().data(),
                                     array.GetAsUnsignedLongSequence().size());
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace blink

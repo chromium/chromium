@@ -104,7 +104,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     DCHECK(!Host() || !Host()->IsOffscreenCanvas());
     return static_cast<HTMLCanvasElement*>(Host());
   }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8RenderingContext* AsV8RenderingContext() final;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void SetCanvasGetContextResult(RenderingContext&) final;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   bool isContextLost() const override;
 

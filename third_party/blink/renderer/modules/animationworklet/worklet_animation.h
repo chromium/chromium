@@ -24,6 +24,8 @@ namespace blink {
 class AnimationEffectOrAnimationEffectSequence;
 class ScriptValue;
 class SerializedScriptValue;
+class V8UnionAnimationEffectOrAnimationEffectSequence;
+class V8UnionDocumentTimelineOrScrollTimeline;
 
 // The main-thread controller for a single AnimationWorklet animator instance.
 //
@@ -44,6 +46,26 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   USING_PRE_FINALIZER(WorkletAnimation, Dispose);
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static WorkletAnimation* Create(
+      ScriptState* script_state,
+      const String& animator_name,
+      const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+      ExceptionState& exception_state);
+  static WorkletAnimation* Create(
+      ScriptState* script_state,
+      const String& animator_name,
+      const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+      const V8UnionDocumentTimelineOrScrollTimeline* timeline,
+      ExceptionState& exception_state);
+  static WorkletAnimation* Create(
+      ScriptState* script_state,
+      const String& animator_name,
+      const V8UnionAnimationEffectOrAnimationEffectSequence* effects,
+      const V8UnionDocumentTimelineOrScrollTimeline* timeline,
+      const ScriptValue& options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static WorkletAnimation* Create(
       ScriptState*,
       String animator_name,
@@ -62,6 +84,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
       DocumentTimelineOrScrollTimeline,
       const ScriptValue& options,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   WorkletAnimation(WorkletAnimationId id,
                    const String& animator_name,

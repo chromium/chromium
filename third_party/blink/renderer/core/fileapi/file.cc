@@ -125,11 +125,16 @@ static std::unique_ptr<BlobData> CreateBlobDataForFileSystemURL(
 }
 
 // static
-File* File::Create(
-    ExecutionContext* context,
-    const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>& file_bits,
-    const String& file_name,
-    const FilePropertyBag* options) {
+File* File::Create(ExecutionContext* context,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const HeapVector<Member<V8BlobPart>>& file_bits,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const HeapVector<
+                       ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&
+                       file_bits,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                   const String& file_name,
+                   const FilePropertyBag* options) {
   DCHECK(options->hasType());
 
   base::Time last_modified;

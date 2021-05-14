@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
@@ -784,7 +785,11 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
       2, 1, base::nullopt, nullptr, ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  image_data->data()->GetAsUint8ClampedArray()->BufferBase()->Detach();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   image_data->data().GetAsUint8ClampedArray()->BufferBase()->Detach();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   v8::Local<v8::Value> wrapper =
       ToV8(image_data, scope.GetContext()->Global(), scope.GetIsolate());

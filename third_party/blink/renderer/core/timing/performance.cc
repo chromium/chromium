@@ -48,6 +48,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_measure_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_init_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_performancemeasureoptions_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -125,6 +127,32 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
           stats.gc_full_incremental_wall_clock_duration_us)
       .SetDuration_V8_GC_Young(stats.gc_young_wall_clock_duration_us)
       .Record(execution_context->UkmRecorder());
+}
+
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8UnionPerformanceMeasureOptionsOrString*
+StringOrPerformanceMeasureOptionsToNewV8Union(
+    const StringOrPerformanceMeasureOptions& value) {
+  if (value.IsString()) {
+    return MakeGarbageCollected<V8UnionPerformanceMeasureOptionsOrString>(
+        value.GetAsString());
+  }
+  if (value.IsPerformanceMeasureOptions()) {
+    return MakeGarbageCollected<V8UnionPerformanceMeasureOptionsOrString>(
+        value.GetAsPerformanceMeasureOptions());
+  }
+  return nullptr;
+}
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+// TODO(crbug.com/1181288): Remove the old IDL union version.
+V8UnionDoubleOrString* StringOrDoubleToV8UnionDoubleOrString(
+    const StringOrDouble& value) {
+  if (value.IsString())
+    return MakeGarbageCollected<V8UnionDoubleOrString>(value.GetAsString());
+  if (value.IsDouble())
+    return MakeGarbageCollected<V8UnionDoubleOrString>(value.GetAsDouble());
+  return nullptr;
 }
 
 }  // namespace
@@ -818,31 +846,55 @@ PerformanceMeasure* Performance::measure(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   // When |startOrOptions| is not provided, it's assumed to be an empty
   // dictionary.
-  return MeasureInternal(
-      script_state, measure_name,
-      StringOrPerformanceMeasureOptions::FromPerformanceMeasureOptions(
-          PerformanceMeasureOptions::Create()),
-      base::nullopt, exception_state);
+  return MeasureInternal(script_state, measure_name, nullptr, base::nullopt,
+                         exception_state);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+PerformanceMeasure* Performance::measure(
+    ScriptState* script_state,
+    const AtomicString& measure_name,
+    const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
+    ExceptionState& exception_state) {
+  return MeasureInternal(script_state, measure_name, start_or_options,
+                         base::nullopt, exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 PerformanceMeasure* Performance::measure(
     ScriptState* script_state,
     const AtomicString& measure_name,
     const StringOrPerformanceMeasureOptions& start_or_options,
     ExceptionState& exception_state) {
-  return MeasureInternal(script_state, measure_name, start_or_options,
-                         base::nullopt, exception_state);
+  return MeasureInternal(
+      script_state, measure_name,
+      StringOrPerformanceMeasureOptionsToNewV8Union(start_or_options),
+      base::nullopt, exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+PerformanceMeasure* Performance::measure(
+    ScriptState* script_state,
+    const AtomicString& measure_name,
+    const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
+    const String& end,
+    ExceptionState& exception_state) {
+  return MeasureInternal(script_state, measure_name, start_or_options,
+                         base::Optional<String>(end), exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 PerformanceMeasure* Performance::measure(
     ScriptState* script_state,
     const AtomicString& measure_name,
     const StringOrPerformanceMeasureOptions& start_or_options,
     const String& end,
     ExceptionState& exception_state) {
-  return MeasureInternal(script_state, measure_name, start_or_options,
-                         base::Optional<String>(end), exception_state);
+  return MeasureInternal(
+      script_state, measure_name,
+      StringOrPerformanceMeasureOptionsToNewV8Union(start_or_options),
+      base::Optional<String>(end), exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 // |MeasureInternal| exists to unify the arguments from different
 // `performance.measure()` overloads into a consistent form, then delegate to
@@ -863,14 +915,13 @@ PerformanceMeasure* Performance::measure(
 PerformanceMeasure* Performance::MeasureInternal(
     ScriptState* script_state,
     const AtomicString& measure_name,
-    const StringOrPerformanceMeasureOptions& start_or_options,
+    const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
     base::Optional<String> end_mark,
     ExceptionState& exception_state) {
-  DCHECK(!start_or_options.IsNull());
   // An empty option is treated with no difference as null, undefined.
-  if (start_or_options.IsPerformanceMeasureOptions() &&
+  if (start_or_options && start_or_options->IsPerformanceMeasureOptions() &&
       !IsMeasureOptionsEmpty(
-          *start_or_options.GetAsPerformanceMeasureOptions())) {
+          *start_or_options->GetAsPerformanceMeasureOptions())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
     // measure("name", { start, end }, *)
     if (end_mark) {
@@ -880,7 +931,7 @@ PerformanceMeasure* Performance::MeasureInternal(
       return nullptr;
     }
     const PerformanceMeasureOptions* options =
-        start_or_options.GetAsPerformanceMeasureOptions();
+        start_or_options->GetAsPerformanceMeasureOptions();
     if (!options->hasStart() && !options->hasEnd()) {
       exception_state.ThrowTypeError(
           "If a non-empty PerformanceMeasureOptions object was passed, at "
@@ -896,17 +947,17 @@ PerformanceMeasure* Performance::MeasureInternal(
       return nullptr;
     }
 
-    base::Optional<StringOrDouble> start;
+    V8UnionDoubleOrString* start = nullptr;
     if (options->hasStart()) {
-      start = options->start();
+      start = StringOrDoubleToV8UnionDoubleOrString(options->start());
     }
     base::Optional<double> duration;
     if (options->hasDuration()) {
       duration = options->duration();
     }
-    base::Optional<StringOrDouble> end;
+    V8UnionDoubleOrString* end = nullptr;
     if (options->hasEnd()) {
-      end = options->end();
+      end = StringOrDoubleToV8UnionDoubleOrString(options->end());
     }
 
     return MeasureWithDetail(
@@ -916,15 +967,16 @@ PerformanceMeasure* Performance::MeasureInternal(
   }
 
   // measure("name", "mark1", *)
-  base::Optional<StringOrDouble> start;
-  if (start_or_options.IsString()) {
-    start = StringOrDouble::FromString(start_or_options.GetAsString());
+  V8UnionDoubleOrString* start = nullptr;
+  if (start_or_options && start_or_options->IsString()) {
+    start = MakeGarbageCollected<V8UnionDoubleOrString>(
+        start_or_options->GetAsString());
   }
   // We let |end_mark| behave the same whether it's empty, undefined or null
   // in JS, as long as |end_mark| is null in C++.
-  base::Optional<StringOrDouble> end;
+  V8UnionDoubleOrString* end = nullptr;
   if (end_mark) {
-    end = StringOrDouble::FromString(*end_mark);
+    end = MakeGarbageCollected<V8UnionDoubleOrString>(*end_mark);
   }
   return MeasureWithDetail(script_state, measure_name, start,
                            /* duration = */ base::nullopt, end,
@@ -935,9 +987,9 @@ PerformanceMeasure* Performance::MeasureInternal(
 PerformanceMeasure* Performance::MeasureWithDetail(
     ScriptState* script_state,
     const AtomicString& measure_name,
-    const base::Optional<StringOrDouble>& start,
+    const V8UnionDoubleOrString* start,
     const base::Optional<double>& duration,
-    const base::Optional<StringOrDouble>& end,
+    const V8UnionDoubleOrString* end,
     const ScriptValue& detail,
     ExceptionState& exception_state) {
   PerformanceMeasure* performance_measure =

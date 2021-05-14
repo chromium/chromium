@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -16,6 +17,7 @@ namespace blink {
 
 class DoubleOrScrollTimelineAutoKeyword;
 class ScrollTimelineOptions;
+class V8UnionDoubleOrScrollTimelineAutoKeyword;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
 //
@@ -61,11 +63,21 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // IDL API implementation.
   Element* scrollSource() const;
   String orientation();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const HeapVector<Member<V8ScrollTimelineOffset>> scrollOffsets() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const HeapVector<ScrollTimelineOffsetValue> scrollOffsets() const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8CSSNumberish* currentTime() override;
+  V8CSSNumberish* duration() override;
+  V8UnionDoubleOrScrollTimelineAutoKeyword* timeRange() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void currentTime(CSSNumberish&) override;
   void duration(CSSNumberish&) override;
   void timeRange(DoubleOrScrollTimelineAutoKeyword&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Returns the Node that should actually have the ScrollableArea (if one
   // exists). This can differ from |scrollSource| when |scroll_source_| is the

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequencesequence_usvstringusvstringrecord.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
@@ -53,6 +54,28 @@ bool CompareParams(const std::pair<String, String>& a,
 
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
+                                         ExceptionState& exception_state) {
+  DCHECK(init);
+  switch (init->GetContentType()) {
+    case URLSearchParamsInit::ContentType::kUSVString: {
+      const String& query_string = init->GetAsUSVString();
+      if (query_string.StartsWith('?'))
+        return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
+      return MakeGarbageCollected<URLSearchParams>(query_string);
+    }
+    case URLSearchParamsInit::ContentType::kUSVStringSequenceSequence:
+      return URLSearchParams::Create(init->GetAsUSVStringSequenceSequence(),
+                                     exception_state);
+    case URLSearchParamsInit::ContentType::kUSVStringUSVStringRecord:
+      return URLSearchParams::Create(init->GetAsUSVStringUSVStringRecord(),
+                                     exception_state);
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit& init,
                                          ExceptionState& exception_state) {
   if (init.IsUSVString()) {
@@ -73,6 +96,7 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit& init,
   DCHECK(init.IsNull());
   return MakeGarbageCollected<URLSearchParams>(String());
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
                                          ExceptionState& exception_state) {

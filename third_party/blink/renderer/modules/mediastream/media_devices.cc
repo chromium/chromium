@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_supported_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -53,10 +54,17 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
                  MediaStream* stream) override {
     resolver_->Resolve(stream);
   }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void OnError(ScriptWrappable* callback_this_value,
+               const V8MediaStreamError* error) override {
+    resolver_->Reject(error);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void OnError(ScriptWrappable* callback_this_value,
                DOMExceptionOrOverconstrainedError error) override {
     resolver_->Reject(error);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(resolver_);

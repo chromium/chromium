@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_data_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuextent3ddict_unsignedlongenforcerangesequence.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
@@ -43,6 +45,21 @@ WGPUColor AsDawnType(const GPUColorDict* webgpu_color) {
   return dawn_color;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+WGPUColor AsDawnType(const V8GPUColor* webgpu_color) {
+  DCHECK(webgpu_color);
+
+  switch (webgpu_color->GetContentType()) {
+    case V8GPUColor::ContentType::kDoubleSequence:
+      return AsDawnColor(webgpu_color->GetAsDoubleSequence());
+    case V8GPUColor::ContentType::kGPUColorDict:
+      return AsDawnType(webgpu_color->GetAsGPUColorDict());
+  }
+
+  NOTREACHED();
+  return WGPUColor{};
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict* webgpu_color) {
   DCHECK(webgpu_color);
 
@@ -55,6 +72,58 @@ WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict* webgpu_color) {
   WGPUColor dawn_color = {};
   return dawn_color;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
+  DCHECK(webgpu_extent);
+
+  // Set all extents to their default value of 1.
+  // TODO (crbug.com/1206740): The last member of WGPUExtent3D (depth) is being
+  // removed from Dawn soon, but until it has been removed it must be set to 1
+  // or the correct value, in depthOrArrayLayers, will be ignored. Once depth
+  // has been removed from WGPUExtent3D in Dawn this can be to be updated to
+  // WGPUExtent3D dawn_extent = {1, 1, 1};
+  WGPUExtent3D dawn_extent;
+  uint32_t extent_defaults[4] = {1, 1, 1, 1};
+  memcpy(&dawn_extent, extent_defaults, sizeof(WGPUExtent3D));
+
+  switch (webgpu_extent->GetContentType()) {
+    case V8GPUExtent3D::ContentType::kGPUExtent3DDict: {
+      const GPUExtent3DDict* webgpu_extent_3d_dict =
+          webgpu_extent->GetAsGPUExtent3DDict();
+      dawn_extent.width = webgpu_extent_3d_dict->width();
+      dawn_extent.height = webgpu_extent_3d_dict->height();
+      dawn_extent.depthOrArrayLayers =
+          webgpu_extent_3d_dict->depthOrArrayLayers();
+      break;
+    }
+    case V8GPUExtent3D::ContentType::kUnsignedLongEnforceRangeSequence: {
+      const Vector<uint32_t>& webgpu_extent_sequence =
+          webgpu_extent->GetAsUnsignedLongEnforceRangeSequence();
+
+      // The WebGPU spec states that if the sequence isn't big enough then the
+      // default values of 1 are used (which are set above).
+      switch (webgpu_extent_sequence.size()) {
+        default:
+          dawn_extent.depth = webgpu_extent_sequence[2];
+          FALLTHROUGH;
+        case 2:
+          dawn_extent.height = webgpu_extent_sequence[1];
+          FALLTHROUGH;
+        case 1:
+          dawn_extent.width = webgpu_extent_sequence[0];
+          FALLTHROUGH;
+        case 0:
+          break;
+      }
+      break;
+    }
+  }
+
+  return dawn_extent;
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 WGPUExtent3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent,

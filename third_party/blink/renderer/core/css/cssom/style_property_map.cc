@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -204,6 +205,37 @@ const CSSValue* StyleValueToCSSValue(
   return style_value.ToCSSValueWithProperty(property_id);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+const CSSValue* CoerceStyleValueOrString(
+    const CSSProperty& property,
+    const AtomicString& custom_property_name,
+    const V8UnionCSSStyleValueOrString* value,
+    const ExecutionContext& execution_context) {
+  DCHECK(!property.IsRepeated());
+  DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
+            !custom_property_name.IsNull());
+  DCHECK(value);
+
+  switch (value->GetContentType()) {
+    case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue:
+      return StyleValueToCSSValue(property, custom_property_name,
+                                  *value->GetAsCSSStyleValue(),
+                                  execution_context);
+    case V8UnionCSSStyleValueOrString::ContentType::kString: {
+      const auto& values = StyleValueFactory::FromString(
+          property.PropertyID(), custom_property_name, value->GetAsString(),
+          MakeGarbageCollected<CSSParserContext>(execution_context));
+      if (values.size() != 1U)
+        return nullptr;
+      return StyleValueToCSSValue(property, custom_property_name, *values[0],
+                                  execution_context);
+    }
+  }
+
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 const CSSValue* CoerceStyleValueOrString(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
@@ -231,11 +263,16 @@ const CSSValue* CoerceStyleValueOrString(
                                 execution_context);
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 const CSSValue* CoerceStyleValuesOrStrings(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const HeapVector<CSSStyleValueOrString>& values,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ExecutionContext& execution_context) {
   DCHECK(property.IsRepeated());
   DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
@@ -266,10 +303,15 @@ const CSSValue* CoerceStyleValuesOrStrings(
 
 }  // namespace
 
-void StylePropertyMap::set(const ExecutionContext* execution_context,
-                           const String& property_name,
-                           const HeapVector<CSSStyleValueOrString>& values,
-                           ExceptionState& exception_state) {
+void StylePropertyMap::set(
+    const ExecutionContext* execution_context,
+    const String& property_name,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<CSSStyleValueOrString>& values,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ExceptionState& exception_state) {
   const CSSPropertyID property_id =
       CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
@@ -286,6 +328,21 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
     }
 
     String css_text;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    switch (values[0]->GetContentType()) {
+      case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue: {
+        CSSStyleValue* style_value = values[0]->GetAsCSSStyleValue();
+        if (CSSOMTypes::PropertyCanTake(property_id, g_null_atom,
+                                        *style_value)) {
+          css_text = style_value->toString();
+        }
+        break;
+      }
+      case V8UnionCSSStyleValueOrString::ContentType::kString:
+        css_text = values[0]->GetAsString();
+        break;
+    }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     if (values[0].IsCSSStyleValue()) {
       CSSStyleValue* style_value = values[0].GetAsCSSStyleValue();
       if (style_value &&
@@ -295,18 +352,20 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
     } else {
       css_text = values[0].GetAsString();
     }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
     if (css_text.IsEmpty() ||
         !SetShorthandProperty(property.PropertyID(), css_text,
-                              execution_context->GetSecureContextMode()))
+                              execution_context->GetSecureContextMode())) {
       exception_state.ThrowTypeError("Invalid type for property");
+    }
 
     return;
   }
 
-  AtomicString custom_property_name = (property_id == CSSPropertyID::kVariable)
-                                          ? AtomicString(property_name)
-                                          : g_null_atom;
+  const AtomicString& custom_property_name =
+      (property_id == CSSPropertyID::kVariable) ? AtomicString(property_name)
+                                                : g_null_atom;
 
   const CSSValue* result = nullptr;
   if (property.IsRepeated()) {
@@ -328,10 +387,15 @@ void StylePropertyMap::set(const ExecutionContext* execution_context,
     SetProperty(property_id, *result);
 }
 
-void StylePropertyMap::append(const ExecutionContext* execution_context,
-                              const String& property_name,
-                              const HeapVector<CSSStyleValueOrString>& values,
-                              ExceptionState& exception_state) {
+void StylePropertyMap::append(
+    const ExecutionContext* execution_context,
+    const String& property_name,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const HeapVector<CSSStyleValueOrString>& values,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ExceptionState& exception_state) {
   if (values.IsEmpty())
     return;
 

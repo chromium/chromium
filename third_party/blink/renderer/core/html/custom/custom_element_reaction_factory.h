@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -44,10 +45,17 @@ class CustomElementReactionFactory {
   static CustomElementReaction& CreateFormDisabled(
       CustomElementDefinition& definition,
       bool is_disabled);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static CustomElementReaction& CreateFormStateRestore(
+      CustomElementDefinition& definition,
+      const V8ControlValue* value,
+      const String& mode);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static CustomElementReaction& CreateFormStateRestore(
       CustomElementDefinition& definition,
       const FileOrUSVStringOrFormData& value,
       const String& mode);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

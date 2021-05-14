@@ -12,6 +12,7 @@ namespace blink {
 
 class ArrayBufferOrArrayBufferView;
 class DOMArrayBufferView;
+class V8UnionArrayBufferOrArrayBufferView;
 
 // This class is for passing around un-owned bytes as a pointer + length.
 // It supports implicit conversion from several other data types.
@@ -29,6 +30,11 @@ class CORE_EXPORT DOMArrayPiece {
   DOMArrayPiece();
   DOMArrayPiece(DOMArrayBuffer* buffer);
   DOMArrayPiece(DOMArrayBufferView* view);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DOMArrayPiece(
+      const V8UnionArrayBufferOrArrayBufferView* array_buffer_or_view);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  // TODO(crbug.com/1181288): Remove the old IDL union version.
   DOMArrayPiece(const ArrayBufferOrArrayBufferView&);
 
   bool operator==(const DOMArrayBuffer& other) const {

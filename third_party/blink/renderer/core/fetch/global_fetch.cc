@@ -56,7 +56,11 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
         fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                      const V8RequestInfo* input,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                       const RequestInfo& input,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                       const RequestInit* init,
                       ExceptionState& exception_state) override {
     fetch_count_ += 1;
@@ -123,7 +127,11 @@ void GlobalFetch::ScopedFetcher::Trace(Visitor* visitor) const {}
 
 ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
                                  LocalDOMWindow& window,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                 const V8RequestInfo* input,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  const RequestInfo& input,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  const RequestInit* init,
                                  ExceptionState& exception_state) {
   UseCounter::Count(window.GetExecutionContext(), WebFeature::kFetch);
@@ -137,7 +145,11 @@ ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
 
 ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
                                  WorkerGlobalScope& worker,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                 const V8RequestInfo* input,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  const RequestInfo& input,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                  const RequestInit* init,
                                  ExceptionState& exception_state) {
   UseCounter::Count(worker.GetExecutionContext(), WebFeature::kFetch);

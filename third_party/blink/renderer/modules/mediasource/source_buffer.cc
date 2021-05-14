@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_encodedaudiochunk_encodedaudiochunkorencodedvideochunksequence_encodedvideochunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_encodedaudiochunk_encodedvideochunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -631,7 +633,11 @@ void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
 // append use-cases.
 ScriptPromise SourceBuffer::appendEncodedChunks(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8EncodedChunks* chunks,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const EncodedChunks& chunks,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this;
 
@@ -655,6 +661,62 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
   auto buffer_queue = std::make_unique<media::StreamParser::BufferQueue>();
   size_t size = 0;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (chunks->GetContentType()) {
+    case V8EncodedChunks::ContentType::kEncodedAudioChunk:
+      buffer_queue->emplace_back(
+          MakeAudioStreamParserBuffer(*(chunks->GetAsEncodedAudioChunk())));
+      size += buffer_queue->back()->data_size() +
+              buffer_queue->back()->side_data_size();
+      break;
+    case V8EncodedChunks::ContentType::kEncodedVideoChunk: {
+      const auto& video_chunk = *(chunks->GetAsEncodedVideoChunk());
+      if (!video_chunk.duration().has_value()) {
+        MediaSource::LogAndThrowTypeError(
+            exception_state,
+            "EncodedVideoChunk is missing duration, required for use with "
+            "SourceBuffer.");
+        return ScriptPromise();
+      }
+      buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
+      size += buffer_queue->back()->data_size() +
+              buffer_queue->back()->side_data_size();
+      break;
+    }
+    case V8EncodedChunks::ContentType::
+        kEncodedAudioChunkOrEncodedVideoChunkSequence:
+      for (const auto& av_chunk :
+           chunks->GetAsEncodedAudioChunkOrEncodedVideoChunkSequence()) {
+        DCHECK(av_chunk);
+        switch (av_chunk->GetContentType()) {
+          case V8UnionEncodedAudioChunkOrEncodedVideoChunk::ContentType::
+              kEncodedAudioChunk:
+            buffer_queue->emplace_back(MakeAudioStreamParserBuffer(
+                *(av_chunk->GetAsEncodedAudioChunk())));
+            size += buffer_queue->back()->data_size() +
+                    buffer_queue->back()->side_data_size();
+            break;
+          case V8UnionEncodedAudioChunkOrEncodedVideoChunk::ContentType::
+              kEncodedVideoChunk: {
+            const auto& video_chunk = *(av_chunk->GetAsEncodedVideoChunk());
+            if (!video_chunk.duration().has_value()) {
+              MediaSource::LogAndThrowTypeError(
+                  exception_state,
+                  "EncodedVideoChunk is missing duration, required for use "
+                  "with SourceBuffer.");
+              return ScriptPromise();
+            }
+            buffer_queue->emplace_back(
+                MakeVideoStreamParserBuffer(video_chunk));
+            size += buffer_queue->back()->data_size() +
+                    buffer_queue->back()->side_data_size();
+            break;
+          }
+        }
+      }
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (chunks.IsEncodedAudioChunk()) {
     buffer_queue->emplace_back(
         MakeAudioStreamParserBuffer(*(chunks.GetAsEncodedAudioChunk())));
@@ -702,6 +764,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
       }
     }
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DCHECK(!append_encoded_chunks_resolver_);
   append_encoded_chunks_resolver_ =

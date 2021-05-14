@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index_or_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -98,28 +100,50 @@ IDBRequest* IDBRequest::Create(ScriptState* script_state,
                                IDBIndex* source,
                                IDBTransaction* transaction,
                                IDBRequest::AsyncTraceState metrics) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return Create(script_state,
+                source ? MakeGarbageCollected<Source>(source) : nullptr,
+                transaction, std::move(metrics));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return IDBRequest::Create(script_state, Source::FromIDBIndex(source),
                             transaction, std::move(metrics));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 IDBRequest* IDBRequest::Create(ScriptState* script_state,
                                IDBObjectStore* source,
                                IDBTransaction* transaction,
                                IDBRequest::AsyncTraceState metrics) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return Create(script_state,
+                source ? MakeGarbageCollected<Source>(source) : nullptr,
+                transaction, std::move(metrics));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return IDBRequest::Create(script_state, Source::FromIDBObjectStore(source),
                             transaction, std::move(metrics));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 IDBRequest* IDBRequest::Create(ScriptState* script_state,
                                IDBCursor* source,
                                IDBTransaction* transaction,
                                IDBRequest::AsyncTraceState metrics) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return Create(script_state,
+                source ? MakeGarbageCollected<Source>(source) : nullptr,
+                transaction, std::move(metrics));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return IDBRequest::Create(script_state, Source::FromIDBCursor(source),
                             transaction, std::move(metrics));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 IDBRequest* IDBRequest::Create(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                               const Source* source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                const Source& source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                                IDBTransaction* transaction,
                                IDBRequest::AsyncTraceState metrics) {
   IDBRequest* request = MakeGarbageCollected<IDBRequest>(
@@ -132,7 +156,11 @@ IDBRequest* IDBRequest::Create(ScriptState* script_state,
 }
 
 IDBRequest::IDBRequest(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                       const Source* source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                        const Source& source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                        IDBTransaction* transaction,
                        AsyncTraceState metrics)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
@@ -142,7 +170,8 @@ IDBRequest::IDBRequest(ScriptState* script_state,
       source_(source),
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)) {}
+                                           TaskType::kDatabaseAccess)) {
+}
 
 IDBRequest::~IDBRequest() {
   if (!GetExecutionContext())
@@ -194,6 +223,13 @@ DOMException* IDBRequest::error(ExceptionState& exception_state) const {
   return error_;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
+  if (!GetExecutionContext())
+    return nullptr;
+  return source_;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void IDBRequest::source(ScriptState* script_state,
                         IDBObjectStoreOrIDBIndexOrIDBCursor& source) const {
   if (!GetExecutionContext()) {
@@ -201,6 +237,7 @@ void IDBRequest::source(ScriptState* script_state,
   }
   source = source_;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 const String& IDBRequest::readyState() const {
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
@@ -450,6 +487,24 @@ void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,
 
   DCHECK(!pending_cursor_);
   IDBCursor* cursor = nullptr;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  IDBCursor::Source* source = nullptr;
+
+  DCHECK(source_);
+  switch (source_->GetContentType()) {
+    case Source::ContentType::kIDBCursor:
+      break;
+    case Source::ContentType::kIDBIndex:
+      source =
+          MakeGarbageCollected<IDBCursor::Source>(source_->GetAsIDBIndex());
+      break;
+    case Source::ContentType::kIDBObjectStore:
+      source = MakeGarbageCollected<IDBCursor::Source>(
+          source_->GetAsIDBObjectStore());
+      break;
+  }
+  DCHECK(source);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBObjectStoreOrIDBIndex source;
 
   if (source_.IsIDBObjectStore()) {
@@ -459,6 +514,7 @@ void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,
     source = IDBCursor::Source::FromIDBIndex(source_.GetAsIDBIndex());
   }
   DCHECK(!source.IsNull());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   switch (cursor_type_) {
     case indexed_db::kCursorKeyOnly:
@@ -512,6 +568,22 @@ void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
 }
 
 #if DCHECK_IS_ON()
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+static IDBObjectStore* EffectiveObjectStore(const IDBRequest::Source* source) {
+  DCHECK(source);
+  switch (source->GetContentType()) {
+    case IDBRequest::Source::ContentType::kIDBCursor:
+      NOTREACHED();
+      return nullptr;
+    case IDBRequest::Source::ContentType::kIDBIndex:
+      return source->GetAsIDBIndex()->objectStore();
+    case IDBRequest::Source::ContentType::kIDBObjectStore:
+      return source->GetAsIDBObjectStore();
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static IDBObjectStore* EffectiveObjectStore(const IDBRequest::Source& source) {
   if (source.IsIDBObjectStore())
     return source.GetAsIDBObjectStore();
@@ -521,6 +593,7 @@ static IDBObjectStore* EffectiveObjectStore(const IDBRequest::Source& source) {
   NOTREACHED();
   return nullptr;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 #endif  // DCHECK_IS_ON()
 
 void IDBRequest::EnqueueResponse(std::unique_ptr<IDBValue> value) {
@@ -609,8 +682,13 @@ void IDBRequest::ContextDestroyed() {
       transaction_->UnregisterRequest(this);
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  if (source_ && source_->IsIDBCursor())
+    source_->GetAsIDBCursor()->ContextWillBeDestroyed();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (source_.IsIDBCursor())
     source_.GetAsIDBCursor()->ContextWillBeDestroyed();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (result_)
     result_->ContextWillBeDestroyed();
   if (pending_cursor_)

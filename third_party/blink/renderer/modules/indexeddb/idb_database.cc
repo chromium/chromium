@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
@@ -330,7 +331,11 @@ void IDBDatabase::deleteObjectStore(const String& name,
 
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionStringOrStringSequence* store_names,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrStringSequence& store_names,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& mode,
     ExceptionState& exception_state) {
   return transaction(script_state, store_names, mode, nullptr, exception_state);
@@ -338,13 +343,29 @@ IDBTransaction* IDBDatabase::transaction(
 
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8UnionStringOrStringSequence* store_names,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const StringOrStringSequence& store_names,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const String& mode_string,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
   IDB_TRACE("IDBDatabase::transaction");
 
   HashSet<String> scope;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(store_names);
+  switch (store_names->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString:
+      scope.insert(store_names->GetAsString());
+      break;
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+      for (const String& name : store_names->GetAsStringSequence())
+        scope.insert(name);
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (store_names.IsString()) {
     scope.insert(store_names.GetAsString());
   } else if (store_names.IsStringSequence()) {
@@ -353,6 +374,7 @@ IDBTransaction* IDBDatabase::transaction(
   } else {
     NOTREACHED();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (version_change_transaction_) {
     exception_state.ThrowDOMException(

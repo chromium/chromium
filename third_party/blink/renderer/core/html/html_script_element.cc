@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -136,8 +137,24 @@ void HTMLScriptElement::text(StringOrTrustedScript& result) {
   result.SetString(TextFromChildren());
 }
 
-void HTMLScriptElement::setInnerText(
-    const StringOrTrustedScript& string_or_trusted_script,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLScriptElement::setInnerTextForBinding(
+    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+        string_or_trusted_script,
+    ExceptionState& exception_state) {
+  const String& value = TrustedTypesCheckForScript(
+      string_or_trusted_script, GetExecutionContext(), exception_state);
+  if (exception_state.HadException())
+    return;
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
+  // On setting, the innerText [...] perform the regular steps, and then set
+  // content object's [[ScriptText]] internal slot value [...].
+  HTMLElement::setInnerText(value, exception_state);
+  script_text_internal_slot_ = ParkableString(value.Impl());
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLScriptElement::setInnerTextForBinding(
+    const StringTreatNullAsEmptyStringOrTrustedScript& string_or_trusted_script,
     ExceptionState& exception_state) {
   String value = TrustedTypesCheckForScript(
       string_or_trusted_script, GetExecutionContext(), exception_state);
@@ -149,16 +166,24 @@ void HTMLScriptElement::setInnerText(
     script_text_internal_slot_ = ParkableString(value.Impl());
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-void HTMLScriptElement::setTextContent(const String& string) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLScriptElement::setTextContentForBinding(
+    const V8UnionStringOrTrustedScript* value,
+    ExceptionState& exception_state) {
+  const String& string =
+      TrustedTypesCheckForScript(value, GetExecutionContext(), exception_state);
+  if (exception_state.HadException())
+    return;
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
   // On setting, [..] textContent [..] perform the regular steps, and then set
   // content object's [[ScriptText]] internal slot value [...].
   Node::setTextContent(string);
   script_text_internal_slot_ = ParkableString(string.Impl());
 }
-
-void HTMLScriptElement::setTextContent(
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLScriptElement::setTextContentForBinding(
     const StringOrTrustedScript& string_or_trusted_script,
     ExceptionState& exception_state) {
   String value = TrustedTypesCheckForScript(
@@ -170,6 +195,15 @@ void HTMLScriptElement::setTextContent(
     Node::setTextContent(value);
     script_text_internal_slot_ = ParkableString(value.Impl());
   }
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+void HTMLScriptElement::setTextContent(const String& string) {
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
+  // On setting, [..] textContent [..] perform the regular steps, and then set
+  // content object's [[ScriptText]] internal slot value [...].
+  Node::setTextContent(string);
+  script_text_internal_slot_ = ParkableString(string.Impl());
 }
 
 void HTMLScriptElement::setAsync(bool async) {
@@ -290,18 +324,26 @@ ExecutionContext* HTMLScriptElement::GetExecutionContext() const {
   return Node::GetExecutionContext();
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+V8HTMLOrSVGScriptElement* HTMLScriptElement::AsV8HTMLOrSVGScriptElement() {
+  if (IsInShadowTree())
+    return nullptr;
+  return MakeGarbageCollected<V8HTMLOrSVGScriptElement>(this);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void HTMLScriptElement::SetScriptElementForBinding(
+    HTMLScriptElementOrSVGScriptElement& element) {
+  if (!IsInShadowTree())
+    element.SetHTMLScriptElement(this);
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void HTMLScriptElement::DispatchLoadEvent() {
   DispatchEvent(*Event::Create(event_type_names::kLoad));
 }
 
 void HTMLScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
-}
-
-void HTMLScriptElement::SetScriptElementForBinding(
-    HTMLScriptElementOrSVGScriptElement& element) {
-  if (!IsInShadowTree())
-    element.SetHTMLScriptElement(this);
 }
 
 ScriptElementBase::Type HTMLScriptElement::GetScriptElementType() {

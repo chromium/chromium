@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -111,10 +112,16 @@ class CORE_EXPORT CustomElement {
                                             HTMLFormElement* nullable_form);
   static void EnqueueFormResetCallback(Element& element);
   static void EnqueueFormDisabledCallback(Element& element, bool is_disabled);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static void EnqueueFormStateRestoreCallback(Element& element,
+                                              const V8ControlValue* value,
+                                              const String& mode);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static void EnqueueFormStateRestoreCallback(
       Element& element,
       const FileOrUSVStringOrFormData& value,
       const String& mode);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   static void TryToUpgrade(Element&);
 

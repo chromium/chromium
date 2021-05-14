@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_usb_control_transfer_parameters.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -94,6 +95,44 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool ConvertBufferSource(const V8BufferSource* buffer_source,
+                         Vector<uint8_t>* vector,
+                         ScriptPromiseResolver* resolver) {
+  DCHECK(buffer_source);
+  DOMArrayBuffer* array_buffer = nullptr;
+  void* data = nullptr;
+  size_t size = 0;
+  switch (buffer_source->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer:
+      array_buffer = buffer_source->GetAsArrayBuffer();
+      data = array_buffer->Data();
+      size = array_buffer->ByteLength();
+      break;
+    case V8BufferSource::ContentType::kArrayBufferView: {
+      const auto& array_buffer_view = buffer_source->GetAsArrayBufferView();
+      array_buffer = array_buffer_view->buffer();
+      data = array_buffer_view->BaseAddress();
+      size = array_buffer_view->byteLength();
+      break;
+    }
+  }
+
+  if (array_buffer->IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
+    return false;
+  }
+  if (size > std::numeric_limits<wtf_size_t>::max()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, kBufferTooBig));
+    return false;
+  }
+
+  vector->Append(static_cast<uint8_t*>(data), static_cast<wtf_size_t>(size));
+  return true;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
                          Vector<uint8_t>* vector,
                          ScriptPromiseResolver* resolver) {
@@ -131,6 +170,7 @@ bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
   }
   return true;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace
 
@@ -401,7 +441,12 @@ ScriptPromise USBDevice::controlTransferOut(
 ScriptPromise USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-    const ArrayBufferOrArrayBufferView& data) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BufferSource* data
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const ArrayBufferOrArrayBufferView& data
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
@@ -466,7 +511,12 @@ ScriptPromise USBDevice::transferIn(ScriptState* script_state,
 
 ScriptPromise USBDevice::transferOut(ScriptState* script_state,
                                      uint8_t endpoint_number,
-                                     const ArrayBufferOrArrayBufferView& data) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                     const V8BufferSource* data
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                     const ArrayBufferOrArrayBufferView& data
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureEndpointAvailable(false /* out */, endpoint_number, resolver))
@@ -504,7 +554,11 @@ ScriptPromise USBDevice::isochronousTransferIn(
 ScriptPromise USBDevice::isochronousTransferOut(
     ScriptState* script_state,
     uint8_t endpoint_number,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8BufferSource* data,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const ArrayBufferOrArrayBufferView& data,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     Vector<unsigned> packet_lengths) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

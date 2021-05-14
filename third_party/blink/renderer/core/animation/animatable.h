@@ -38,12 +38,13 @@
 namespace blink {
 
 class Animation;
-class ExceptionState;
 class Element;
+class ExceptionState;
 class GetAnimationsOptions;
 class ScriptState;
 class ScriptValue;
 class UnrestrictedDoubleOrKeyframeAnimationOptions;
+class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 
 // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
 class CORE_EXPORT Animatable {
@@ -52,10 +53,18 @@ class CORE_EXPORT Animatable {
   // called on.
   virtual Element* GetAnimationTarget() = 0;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Animation* animate(
+      ScriptState* script_state,
+      const ScriptValue& keyframes,
+      const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Animation* animate(ScriptState*,
                      const ScriptValue&,
                      const UnrestrictedDoubleOrKeyframeAnimationOptions&,
                      ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   Animation* animate(ScriptState*, const ScriptValue&, ExceptionState&);
 

@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/object_or_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -58,7 +59,11 @@ using AlgorithmIdentifier = ObjectOrString;
 // https://w3c.github.io/webcrypto/#algorithm-normalization-normalize-an-algorithm
 MODULES_EXPORT WARN_UNUSED_RESULT bool NormalizeAlgorithm(
     v8::Isolate*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8AlgorithmIdentifier*,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const AlgorithmIdentifier&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     WebCryptoOperation,
     WebCryptoAlgorithm&,
     ExceptionState&);

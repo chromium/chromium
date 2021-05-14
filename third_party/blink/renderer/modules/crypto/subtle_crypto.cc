@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_json_web_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_jsonwebkey.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -113,11 +114,21 @@ static bool ParseJsonWebKey(const JsonWebKey& key,
 
 SubtleCrypto::SubtleCrypto() = default;
 
-ScriptPromise SubtleCrypto::encrypt(ScriptState* script_state,
-                                    const AlgorithmIdentifier& raw_algorithm,
-                                    CryptoKey* key,
-                                    const BufferSource& raw_data,
-                                    ExceptionState& exception_state) {
+ScriptPromise SubtleCrypto::encrypt(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    CryptoKey* key,
+    const V8BufferSource* raw_data,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const AlgorithmIdentifier& raw_algorithm,
+    CryptoKey* key,
+    const BufferSource& raw_data,
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#dfn-SubtleCrypto-method-encrypt
 
@@ -157,11 +168,21 @@ ScriptPromise SubtleCrypto::encrypt(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SubtleCrypto::decrypt(ScriptState* script_state,
-                                    const AlgorithmIdentifier& raw_algorithm,
-                                    CryptoKey* key,
-                                    const BufferSource& raw_data,
-                                    ExceptionState& exception_state) {
+ScriptPromise SubtleCrypto::decrypt(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    CryptoKey* key,
+    const V8BufferSource* raw_data,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const AlgorithmIdentifier& raw_algorithm,
+    CryptoKey* key,
+    const BufferSource& raw_data,
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#dfn-SubtleCrypto-method-decrypt
 
@@ -201,11 +222,21 @@ ScriptPromise SubtleCrypto::decrypt(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SubtleCrypto::sign(ScriptState* script_state,
-                                 const AlgorithmIdentifier& raw_algorithm,
-                                 CryptoKey* key,
-                                 const BufferSource& raw_data,
-                                 ExceptionState& exception_state) {
+ScriptPromise SubtleCrypto::sign(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    CryptoKey* key,
+    const V8BufferSource* raw_data,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const AlgorithmIdentifier& raw_algorithm,
+    CryptoKey* key,
+    const BufferSource& raw_data,
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#dfn-SubtleCrypto-method-sign
 
@@ -246,12 +277,22 @@ ScriptPromise SubtleCrypto::sign(ScriptState* script_state,
 }
 
 ScriptPromise SubtleCrypto::verifySignature(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    CryptoKey* key,
+    const V8BufferSource* raw_signature,
+    const V8BufferSource* raw_data,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ScriptState* script_state,
     const AlgorithmIdentifier& raw_algorithm,
     CryptoKey* key,
     const BufferSource& raw_signature,
     const BufferSource& raw_data,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-verify
 
@@ -295,10 +336,19 @@ ScriptPromise SubtleCrypto::verifySignature(
   return promise;
 }
 
-ScriptPromise SubtleCrypto::digest(ScriptState* script_state,
-                                   const AlgorithmIdentifier& raw_algorithm,
-                                   const BufferSource& raw_data,
-                                   ExceptionState& exception_state) {
+ScriptPromise SubtleCrypto::digest(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    const V8BufferSource* raw_data,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const AlgorithmIdentifier& raw_algorithm,
+    const BufferSource& raw_data,
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-digest
 
@@ -327,11 +377,20 @@ ScriptPromise SubtleCrypto::digest(ScriptState* script_state,
 }
 
 ScriptPromise SubtleCrypto::generateKey(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ScriptState* script_state,
     const AlgorithmIdentifier& raw_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-generateKey
 
@@ -367,13 +426,24 @@ ScriptPromise SubtleCrypto::generateKey(
 }
 
 ScriptPromise SubtleCrypto::importKey(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const String& raw_format,
+    const V8UnionBufferSourceOrJsonWebKey* raw_key_data,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ScriptState* script_state,
     const String& raw_format,
     const ArrayBufferOrArrayBufferViewOrJsonWebKey& raw_key_data,
     const AlgorithmIdentifier& raw_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-importKey
 
@@ -403,6 +473,21 @@ ScriptPromise SubtleCrypto::importKey(
     case kWebCryptoKeyFormatRaw:
     case kWebCryptoKeyFormatPkcs8:
     case kWebCryptoKeyFormatSpki:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      switch (raw_key_data->GetContentType()) {
+        case V8UnionBufferSourceOrJsonWebKey::ContentType::kArrayBuffer:
+          key_data = CopyBytes(raw_key_data->GetAsArrayBuffer());
+          break;
+        case V8UnionBufferSourceOrJsonWebKey::ContentType::kArrayBufferView:
+          key_data = CopyBytes(raw_key_data->GetAsArrayBufferView().Get());
+          break;
+        case V8UnionBufferSourceOrJsonWebKey::ContentType::kJsonWebKey:
+          result->CompleteWithError(
+              kWebCryptoErrorTypeType,
+              "Key data must be a BufferSource for non-JWK formats");
+          return promise;
+      }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (raw_key_data.IsArrayBuffer()) {
         key_data = CopyBytes(raw_key_data.GetAsArrayBuffer());
       } else if (raw_key_data.IsArrayBufferView()) {
@@ -413,6 +498,7 @@ ScriptPromise SubtleCrypto::importKey(
             "Key data must be a BufferSource for non-JWK formats");
         return promise;
       }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       break;
     // 14.3.9.2: If format is equal to the string "jwk":
     //
@@ -422,6 +508,15 @@ ScriptPromise SubtleCrypto::importKey(
     //  (2) Let keyData be the keyData parameter passed to the importKey
     //      method.
     case kWebCryptoKeyFormatJwk:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      if (!raw_key_data->IsJsonWebKey()) {
+        result->CompleteWithError(kWebCryptoErrorTypeType,
+                                  "Key data must be an object for JWK import");
+        return promise;
+      }
+      if (!ParseJsonWebKey(*raw_key_data->GetAsJsonWebKey(), key_data, result))
+        return promise;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       if (raw_key_data.IsJsonWebKey()) {
         if (!ParseJsonWebKey(*raw_key_data.GetAsJsonWebKey(), key_data, result))
           return promise;
@@ -430,6 +525,7 @@ ScriptPromise SubtleCrypto::importKey(
                                   "Key data must be an object for JWK import");
         return promise;
       }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
       break;
   }
 
@@ -488,7 +584,11 @@ ScriptPromise SubtleCrypto::wrapKey(
     const String& raw_format,
     CryptoKey* key,
     CryptoKey* wrapping_key,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8AlgorithmIdentifier* raw_wrap_algorithm,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const AlgorithmIdentifier& raw_wrap_algorithm,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ExceptionState& exception_state) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-wrapKey
@@ -548,6 +648,17 @@ ScriptPromise SubtleCrypto::wrapKey(
 }
 
 ScriptPromise SubtleCrypto::unwrapKey(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const String& raw_format,
+    const V8BufferSource* raw_wrapped_key,
+    CryptoKey* unwrapping_key,
+    const V8AlgorithmIdentifier* raw_unwrap_algorithm,
+    const V8AlgorithmIdentifier* raw_unwrapped_key_algorithm,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ScriptState* script_state,
     const String& raw_format,
     const BufferSource& raw_wrapped_key,
@@ -556,7 +667,9 @@ ScriptPromise SubtleCrypto::unwrapKey(
     const AlgorithmIdentifier& raw_unwrapped_key_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-unwrapKey
 
@@ -628,11 +741,16 @@ ScriptPromise SubtleCrypto::unwrapKey(
   return promise;
 }
 
-ScriptPromise SubtleCrypto::deriveBits(ScriptState* script_state,
-                                       const AlgorithmIdentifier& raw_algorithm,
-                                       CryptoKey* base_key,
-                                       unsigned length_bits,
-                                       ExceptionState& exception_state) {
+ScriptPromise SubtleCrypto::deriveBits(
+    ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8AlgorithmIdentifier* raw_algorithm,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const AlgorithmIdentifier& raw_algorithm,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    CryptoKey* base_key,
+    unsigned length_bits,
+    ExceptionState& exception_state) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#dfn-SubtleCrypto-method-deriveBits
 
@@ -670,13 +788,24 @@ ScriptPromise SubtleCrypto::deriveBits(ScriptState* script_state,
 }
 
 ScriptPromise SubtleCrypto::deriveKey(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* raw_algorithm,
+    CryptoKey* base_key,
+    const V8AlgorithmIdentifier* raw_derived_key_type,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     ScriptState* script_state,
     const AlgorithmIdentifier& raw_algorithm,
     CryptoKey* base_key,
     const AlgorithmIdentifier& raw_derived_key_type,
     bool extractable,
     const Vector<String>& raw_key_usages,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-deriveKey
 

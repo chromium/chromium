@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
@@ -51,7 +53,11 @@ namespace blink {
 IDBCursor::IDBCursor(std::unique_ptr<WebIDBCursor> backend,
                      mojom::IDBCursorDirection direction,
                      IDBRequest* request,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                     const Source* source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      const Source& source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                      IDBTransaction* transaction)
     : backend_(std::move(backend)),
       request_(request),
@@ -60,7 +66,11 @@ IDBCursor::IDBCursor(std::unique_ptr<WebIDBCursor> backend,
       transaction_(transaction) {
   DCHECK(backend_);
   DCHECK(request_);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DCHECK(source_);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(!source_.IsNull());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DCHECK(transaction_);
 }
 
@@ -124,8 +134,12 @@ IDBRequest* IDBCursor::update(ScriptState* script_state,
 
   IDBObjectStore* object_store = EffectiveObjectStore();
   return object_store->DoPut(script_state, mojom::IDBPutMode::CursorUpdate,
-                             IDBRequest::Source::FromIDBCursor(this), value,
-                             IdbPrimaryKey(), exception_state);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             MakeGarbageCollected<IDBRequest::Source>(this),
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             IDBRequest::Source::FromIDBCursor(this),
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                             value, IdbPrimaryKey(), exception_state);
 }
 
 void IDBCursor::advance(unsigned count, ExceptionState& exception_state) {
@@ -218,7 +232,13 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
     return;
   }
 
-  if (!source_.IsIDBIndex()) {
+  if (
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      !source_->IsIDBIndex()
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+      !source_.IsIDBIndex()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The cursor's source is not an index.");
     return;
@@ -419,9 +439,15 @@ ScriptValue IDBCursor::value(ScriptState* script_state) {
   return script_value;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+const IDBCursor::Source* IDBCursor::source() const {
+  return source_;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void IDBCursor::source(Source& source) const {
   source = source_;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void IDBCursor::SetValueReady(std::unique_ptr<IDBKey> key,
                               std::unique_ptr<IDBKey> primary_key,
@@ -470,15 +496,37 @@ const IDBKey* IDBCursor::IdbPrimaryKey() const {
 }
 
 IDBObjectStore* IDBCursor::EffectiveObjectStore() const {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (source_->GetContentType()) {
+    case Source::ContentType::kIDBIndex:
+      return source_->GetAsIDBIndex()->objectStore();
+    case Source::ContentType::kIDBObjectStore:
+      return source_->GetAsIDBObjectStore();
+  }
+  NOTREACHED();
+  return nullptr;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (source_.IsIDBObjectStore())
     return source_.GetAsIDBObjectStore();
   return source_.GetAsIDBIndex()->objectStore();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 bool IDBCursor::IsDeleted() const {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  switch (source_->GetContentType()) {
+    case Source::ContentType::kIDBIndex:
+      return source_->GetAsIDBIndex()->IsDeleted();
+    case Source::ContentType::kIDBObjectStore:
+      return source_->GetAsIDBObjectStore()->IsDeleted();
+  }
+  NOTREACHED();
+  return false;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (source_.IsIDBObjectStore())
     return source_.GetAsIDBObjectStore()->IsDeleted();
   return source_.GetAsIDBIndex()->IsDeleted();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 mojom::IDBCursorDirection IDBCursor::StringToDirection(

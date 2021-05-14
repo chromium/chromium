@@ -147,10 +147,18 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   void cancel();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8CSSNumberish* currentTime() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void currentTime(CSSNumberish&) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   base::Optional<AnimationTimeDelta> CurrentTimeInternal() const;
+  void setCurrentTime(const V8CSSNumberish* current_time,
+                      ExceptionState& exception_state);
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setCurrentTime(CSSNumberish, ExceptionState& exception_state);
   void setCurrentTime(CSSNumberish);
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void SetCurrentTimeInternal(AnimationTimeDelta);
 
   base::Optional<AnimationTimeDelta> UnlimitedCurrentTime() const;
@@ -209,12 +217,20 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   virtual void setTimeline(AnimationTimeline* timeline);
   Document* GetDocument() const;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8CSSNumberish* startTime() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void startTime(CSSNumberish&) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   base::Optional<AnimationTimeDelta> StartTimeInternal() const {
     return start_time_;
   }
+  virtual void setStartTime(const V8CSSNumberish* start_time,
+                            ExceptionState& exception_state);
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   virtual void setStartTime(CSSNumberish, ExceptionState&);
   void setStartTime(CSSNumberish);
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   const AnimationEffect* effect() const { return content_.Get(); }
   AnimationEffect* effect() { return content_.Get(); }

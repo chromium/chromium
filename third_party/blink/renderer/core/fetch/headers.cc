@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/byte_string_sequence_sequence_or_byte_string_byte_string_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_bytestringbytestringrecord_bytestringsequencesequence.h"
 #include "third_party/blink/renderer/core/dom/iterator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -49,6 +50,18 @@ Headers* Headers::Create(ExceptionState&) {
   return MakeGarbageCollected<Headers>();
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+Headers* Headers::Create(const V8HeadersInit* init,
+                         ExceptionState& exception_state) {
+  // "The Headers(|init|) constructor, when invoked, must run these steps:"
+  // "1. Let |headers| be a new Headers object whose guard is "none".
+  Headers* headers = Create(exception_state);
+  // "2. If |init| is given, fill headers with |init|. Rethrow any exception."
+  headers->FillWith(init, exception_state);
+  // "3. Return |headers|."
+  return headers;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Headers* Headers::Create(const HeadersInit& init,
                          ExceptionState& exception_state) {
   // "The Headers(|init|) constructor, when invoked, must run these steps:"
@@ -59,6 +72,7 @@ Headers* Headers::Create(const HeadersInit& init,
   // "3. Return |headers|."
   return headers;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 Headers* Headers::Create(FetchHeaderList* header_list) {
   return MakeGarbageCollected<Headers>(header_list);
@@ -257,6 +271,26 @@ void Headers::FillWith(const Headers* object, ExceptionState& exception_state) {
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void Headers::FillWith(const V8HeadersInit* init,
+                       ExceptionState& exception_state) {
+  DCHECK_EQ(header_list_->size(), 0U);
+
+  if (!init)
+    return;
+
+  switch (init->GetContentType()) {
+    case V8HeadersInit::ContentType::kByteStringByteStringRecord:
+      return FillWith(init->GetAsByteStringByteStringRecord(), exception_state);
+    case V8HeadersInit::ContentType::kByteStringSequenceSequence:
+      return FillWith(init->GetAsByteStringSequenceSequence(), exception_state);
+  }
+
+  NOTREACHED();
+}
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+// TODO(crbug.com/1181288): Remove the old IDL union version.
 void Headers::FillWith(const HeadersInit& init,
                        ExceptionState& exception_state) {
   DCHECK_EQ(header_list_->size(), 0U);

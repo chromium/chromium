@@ -43,6 +43,7 @@
 namespace blink {
 
 class ExceptionState;
+class V8UnionStringOrWorkerOptions;
 
 class CORE_EXPORT SharedWorker final
     : public AbstractWorker,
@@ -51,10 +52,18 @@ class CORE_EXPORT SharedWorker final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static SharedWorker* Create(
+      ExecutionContext* context,
+      const String& url,
+      const V8UnionStringOrWorkerOptions* name_or_options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static SharedWorker* Create(ExecutionContext*,
                               const String& url,
                               const StringOrWorkerOptions&,
                               ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   explicit SharedWorker(ExecutionContext*);
   ~SharedWorker() override;

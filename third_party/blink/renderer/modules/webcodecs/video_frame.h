@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
@@ -55,10 +57,17 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   explicit VideoFrame(scoped_refptr<VideoFrameHandle> handle);
 
   // video_frame.idl implementation.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static VideoFrame* Create(ScriptState* script_state,
+                            const V8CanvasImageSource* source,
+                            const VideoFrameInit* init,
+                            ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static VideoFrame* Create(ScriptState*,
                             const CanvasImageSourceUnion&,
                             const VideoFrameInit*,
                             ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static VideoFrame* Create(ScriptState*,
                             const String& format,
                             const HeapVector<Member<PlaneInit>>&,
@@ -87,10 +96,17 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameReadIntoOptions* options, ExceptionState&);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise readInto(ScriptState* script_state,
+                         const V8BufferSource* destination,
+                         VideoFrameReadIntoOptions* options,
+                         ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise readInto(ScriptState*,
                          const ArrayBufferOrArrayBufferView& destination,
                          VideoFrameReadIntoOptions* options,
                          ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.

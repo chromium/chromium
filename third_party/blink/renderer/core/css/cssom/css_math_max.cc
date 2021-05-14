@@ -10,6 +10,24 @@
 
 namespace blink {
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+CSSMathMax* CSSMathMax::Create(const HeapVector<Member<V8CSSNumberish>>& args,
+                               ExceptionState& exception_state) {
+  if (args.IsEmpty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Arguments can't be empty");
+    return nullptr;
+  }
+
+  CSSMathMax* result = Create(CSSNumberishesToNumericValues(args));
+  if (!result) {
+    exception_state.ThrowTypeError("Incompatible types");
+    return nullptr;
+  }
+
+  return result;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CSSMathMax* CSSMathMax::Create(const HeapVector<CSSNumberish>& args,
                                ExceptionState& exception_state) {
   if (args.IsEmpty()) {
@@ -26,6 +44,7 @@ CSSMathMax* CSSMathMax::Create(const HeapVector<CSSNumberish>& args,
 
   return result;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CSSMathMax* CSSMathMax::Create(CSSNumericValueVector values) {
   bool error = false;

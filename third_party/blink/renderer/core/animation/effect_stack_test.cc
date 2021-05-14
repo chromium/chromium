@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -34,7 +36,13 @@ class AnimationEffectStackTest : public PageTestBase {
 
   Animation* Play(KeyframeEffect* effect, double start_time) {
     Animation* animation = timeline->Play(effect);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    animation->setStartTime(
+        MakeGarbageCollected<V8CSSNumberish>(start_time * 1000),
+        ASSERT_NO_EXCEPTION);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     animation->setStartTime(CSSNumberish::FromDouble(start_time * 1000));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     animation->Update(kTimingUpdateOnDemand);
     return animation;
   }

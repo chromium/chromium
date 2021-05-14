@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_OFFSET_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -52,7 +53,11 @@ class CORE_EXPORT ScrollTimelineOffset final
                                        double max_offset,
                                        double default_offset);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8ScrollTimelineOffset* ToV8ScrollTimelineOffset() const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScrollTimelineOffsetValue ToScrollTimelineOffsetValue() const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   bool IsDefaultValue() const {
     return !length_based_offset_ && !element_based_offset_;
   }

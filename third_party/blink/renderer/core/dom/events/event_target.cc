@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -445,6 +447,41 @@ bool EventTarget::addEventListener(const AtomicString& event_type,
   return addEventListener(event_type, event_listener);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool EventTarget::addEventListener(
+    const AtomicString& event_type,
+    V8EventListener* listener,
+    const V8UnionAddEventListenerOptionsOrBoolean* bool_or_options) {
+  DCHECK(bool_or_options);
+
+  EventListener* event_listener = JSEventListener::CreateOrNull(listener);
+
+  switch (bool_or_options->GetContentType()) {
+    case V8UnionAddEventListenerOptionsOrBoolean::ContentType::kBoolean:
+      return addEventListener(event_type, event_listener,
+                              bool_or_options->GetAsBoolean());
+    case V8UnionAddEventListenerOptionsOrBoolean::ContentType::
+        kAddEventListenerOptions: {
+      auto* options_resolved =
+          MakeGarbageCollected<AddEventListenerOptionsResolved>();
+      AddEventListenerOptions* options =
+          bool_or_options->GetAsAddEventListenerOptions();
+      if (options->hasPassive())
+        options_resolved->setPassive(options->passive());
+      if (options->hasOnce())
+        options_resolved->setOnce(options->once());
+      if (options->hasCapture())
+        options_resolved->setCapture(options->capture());
+      if (options->hasSignal())
+        options_resolved->setSignal(options->signal());
+      return addEventListener(event_type, event_listener, options_resolved);
+    }
+  }
+
+  NOTREACHED();
+  return false;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool EventTarget::addEventListener(
     const AtomicString& event_type,
     V8EventListener* listener,
@@ -474,6 +511,7 @@ bool EventTarget::addEventListener(
 
   return addEventListener(event_type, event_listener);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
                                    EventListener* listener,
@@ -598,6 +636,31 @@ bool EventTarget::removeEventListener(const AtomicString& event_type,
   return removeEventListener(event_type, event_listener);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+bool EventTarget::removeEventListener(
+    const AtomicString& event_type,
+    V8EventListener* listener,
+    const V8UnionBooleanOrEventListenerOptions* bool_or_options) {
+  DCHECK(bool_or_options);
+
+  EventListener* event_listener = JSEventListener::CreateOrNull(listener);
+
+  switch (bool_or_options->GetContentType()) {
+    case V8UnionBooleanOrEventListenerOptions::ContentType::kBoolean:
+      return removeEventListener(event_type, event_listener,
+                                 bool_or_options->GetAsBoolean());
+    case V8UnionBooleanOrEventListenerOptions::ContentType::
+        kEventListenerOptions: {
+      EventListenerOptions* options =
+          bool_or_options->GetAsEventListenerOptions();
+      return removeEventListener(event_type, event_listener, options);
+    }
+  }
+
+  NOTREACHED();
+  return false;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 bool EventTarget::removeEventListener(
     const AtomicString& event_type,
     V8EventListener* listener,
@@ -616,6 +679,7 @@ bool EventTarget::removeEventListener(
 
   return removeEventListener(event_type, event_listener);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,

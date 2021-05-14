@@ -13,6 +13,7 @@
 namespace blink {
 
 class DOMMatrixInit;
+class V8UnionStringOrUnrestrictedDoubleSequence;
 
 class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
   DEFINE_WRAPPERTYPEINFO();
@@ -20,9 +21,16 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
  public:
   static DOMMatrix* Create();
   static DOMMatrix* Create(ExecutionContext*, ExceptionState&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  static DOMMatrix* Create(
+      ExecutionContext* execution_context,
+      const V8UnionStringOrUnrestrictedDoubleSequence* init,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   static DOMMatrix* Create(ExecutionContext*,
                            StringOrUnrestrictedDoubleSequence&,
                            ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // TODO(fserb): double check those two bellow are needed:
   static DOMMatrix* Create(DOMMatrixReadOnly*,
                            ExceptionState& = ASSERT_NO_EXCEPTION);

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SANITIZER_API_SANITIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SANITIZER_API_SANITIZER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config_impl.h"
@@ -38,12 +39,21 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   explicit Sanitizer(ExecutionContext*, const SanitizerConfig*);
   ~Sanitizer() override;
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  String sanitizeToString(ScriptState* script_state,
+                          const V8SanitizerInput* input,
+                          ExceptionState& exception_state);
+  DocumentFragment* sanitize(ScriptState* script_state,
+                             const V8SanitizerInputWithTrustedHTML* input,
+                             ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   String sanitizeToString(ScriptState*,
                           StringOrDocumentFragmentOrDocument&,
                           ExceptionState&);
   DocumentFragment* sanitize(ScriptState*,
                              StringOrTrustedHTMLOrDocumentFragmentOrDocument&,
                              ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   SanitizerConfig* config() const;
   static SanitizerConfig* defaultConfig();
@@ -59,16 +69,29 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void AttrFormatter(HashMap<String, Vector<String>>&,
                      const Vector<std::pair<String, Vector<String>>>&);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DocumentFragment* PrepareFragment(LocalDOMWindow* window,
+                                    ScriptState* script_state,
+                                    const V8SanitizerInput* input,
+                                    ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DocumentFragment* PrepareFragment(LocalDOMWindow*,
                                     ScriptState*,
                                     StringOrDocumentFragmentOrDocument&,
                                     ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DocumentFragment* DoSanitizing(DocumentFragment*,
                                  LocalDOMWindow*,
                                  ExceptionState&);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  DocumentFragment* SanitizeImpl(ScriptState* script_state,
+                                 const V8SanitizerInput* input,
+                                 ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   DocumentFragment* SanitizeImpl(ScriptState*,
                                  StringOrDocumentFragmentOrDocument&,
                                  ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   SanitizerConfigImpl config_;
   Member<const SanitizerConfig> config_dictionary_;

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -147,37 +148,69 @@ ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
 
 ScriptPromise BackgroundFetchRegistration::match(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8RequestInfo* request,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const RequestOrUSVString& request,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return MatchImpl(script_state, request,
+                   mojom::blink::CacheQueryOptions::From(options),
+                   exception_state,
+                   /* match_all = */ false);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(
       script_state, base::make_optional<RequestOrUSVString>(request),
       mojom::blink::CacheQueryOptions::From(options), exception_state,
       /* match_all = */ false);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return MatchImpl(script_state, /* request = */ nullptr,
+                   /* cache_query_options = */ nullptr, exception_state,
+                   /* match_all = */ true);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(script_state, /* request = */ base::nullopt,
                    /* cache_query_options = */ nullptr, exception_state,
                    /* match_all = */ true);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8RequestInfo* request,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const RequestOrUSVString& request,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  return MatchImpl(script_state, request,
+                   mojom::blink::CacheQueryOptions::From(options),
+                   exception_state,
+                   /* match_all = */ true);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(
       script_state, base::make_optional<RequestOrUSVString>(request),
       mojom::blink::CacheQueryOptions::From(options), exception_state,
       /* match_all = */ true);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 }
 
 ScriptPromise BackgroundFetchRegistration::MatchImpl(
     ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const V8RequestInfo* request,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     base::Optional<RequestOrUSVString> request,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     mojom::blink::CacheQueryOptionsPtr cache_query_options,
     ExceptionState& exception_state,
     bool match_all) {
@@ -200,6 +233,23 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 
   // Convert |request| to mojom::blink::FetchAPIRequestPtr.
   mojom::blink::FetchAPIRequestPtr request_to_match;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_to_match = request->GetAsRequest()->CreateFetchAPIRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString: {
+        Request* new_request = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        request_to_match = new_request->CreateFetchAPIRequest();
+        break;
+      }
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   if (request.has_value()) {
     if (request->IsRequest()) {
       request_to_match = request->GetAsRequest()->CreateFetchAPIRequest();
@@ -211,6 +261,7 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
       request_to_match = new_request->CreateFetchAPIRequest();
     }
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   DCHECK(registration_);
   DCHECK(registration_service_);

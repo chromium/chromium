@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
@@ -170,6 +172,22 @@ void BaseRenderingContext2D::reset() {
   origin_tainted_by_content_ = false;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+static V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString*
+ConvertCanvasStyleToUnionType(CanvasStyle* style) {
+  if (CanvasGradient* gradient = style->GetCanvasGradient()) {
+    return MakeGarbageCollected<
+        V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(gradient);
+  }
+  if (CanvasPattern* pattern = style->GetCanvasPattern()) {
+    return MakeGarbageCollected<
+        V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(pattern);
+  }
+  return MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
+      style->GetColorAsString());
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 static inline void ConvertCanvasStyleToUnionType(
     CanvasStyle* style,
     StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) {
@@ -183,7 +201,33 @@ static inline void ConvertCanvasStyleToUnionType(
   }
   return_value.SetString(style->GetColorAsString());
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+void BaseRenderingContext2D::IdentifiabilityMaybeUpdateForStyleUnion(
+    const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style) {
+  switch (style->GetContentType()) {
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCSSColorValue:
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasGradient:
+      identifiability_study_helper_.MaybeUpdateBuilder(
+          style->GetAsCanvasGradient()->GetIdentifiableToken());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasPattern:
+      identifiability_study_helper_.MaybeUpdateBuilder(
+          style->GetAsCanvasPattern()->GetIdentifiableToken());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kString:
+      identifiability_study_helper_.MaybeUpdateBuilder(
+          IdentifiabilityBenignStringToken(style->GetAsString()));
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void BaseRenderingContext2D::IdentifiabilityMaybeUpdateForStyleUnion(
     const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style) {
   if (style.IsString()) {
@@ -197,6 +241,7 @@ void BaseRenderingContext2D::IdentifiabilityMaybeUpdateForStyleUnion(
         style.GetAsCanvasGradient()->GetIdentifiableToken());
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 RespectImageOrientationEnum
 BaseRenderingContext2D::RespectImageOrientationInternal(
@@ -206,6 +251,68 @@ BaseRenderingContext2D::RespectImageOrientationInternal(
     return kRespectImageOrientation;
   return RespectImageOrientation();
 }
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString*
+BaseRenderingContext2D::strokeStyle() const {
+  return ConvertCanvasStyleToUnionType(GetState().StrokeStyle());
+}
+
+void BaseRenderingContext2D::setStrokeStyle(
+    const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style) {
+  DCHECK(style);
+
+  identifiability_study_helper_.MaybeUpdateBuilder(CanvasOps::kSetStrokeStyle);
+  IdentifiabilityMaybeUpdateForStyleUnion(style);
+
+  String color_string;
+  CanvasStyle* canvas_style = nullptr;
+  switch (style->GetContentType()) {
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCSSColorValue:
+      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+        return;
+      canvas_style = MakeGarbageCollected<CanvasStyle>(
+          style->GetAsCSSColorValue()->ToColor().Rgb());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasGradient:
+      canvas_style =
+          MakeGarbageCollected<CanvasStyle>(style->GetAsCanvasGradient());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasPattern: {
+      CanvasPattern* canvas_pattern = style->GetAsCanvasPattern();
+      if (!origin_tainted_by_content_ && !canvas_pattern->OriginClean())
+        SetOriginTaintedByContent();
+      canvas_style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
+      break;
+    }
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kString: {
+      color_string = style->GetAsString();
+      if (color_string == GetState().UnparsedStrokeColor())
+        return;
+      Color parsed_color = 0;
+      if (!ParseColorOrCurrentColor(parsed_color, color_string))
+        return;
+      if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
+        GetState().SetUnparsedStrokeColor(color_string);
+        return;
+      }
+      canvas_style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
+      break;
+    }
+  }
+
+  DCHECK(canvas_style);
+  GetState().SetStrokeStyle(canvas_style);
+  GetState().SetUnparsedStrokeColor(color_string);
+  GetState().ClearResolvedFilter();
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void BaseRenderingContext2D::strokeStyle(
     StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) const {
@@ -257,6 +364,71 @@ void BaseRenderingContext2D::setStrokeStyle(
   GetState().ClearResolvedFilter();
 }
 
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString*
+BaseRenderingContext2D::fillStyle() const {
+  return ConvertCanvasStyleToUnionType(GetState().FillStyle());
+}
+
+void BaseRenderingContext2D::setFillStyle(
+    const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style) {
+  DCHECK(style);
+
+  ValidateStateStack();
+  identifiability_study_helper_.MaybeUpdateBuilder(CanvasOps::kSetFillStyle);
+  IdentifiabilityMaybeUpdateForStyleUnion(style);
+
+  String color_string;
+  CanvasStyle* canvas_style = nullptr;
+  switch (style->GetContentType()) {
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCSSColorValue:
+      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+        return;
+      canvas_style = MakeGarbageCollected<CanvasStyle>(
+          style->GetAsCSSColorValue()->ToColor().Rgb());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasGradient:
+      canvas_style =
+          MakeGarbageCollected<CanvasStyle>(style->GetAsCanvasGradient());
+      break;
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kCanvasPattern: {
+      CanvasPattern* canvas_pattern = style->GetAsCanvasPattern();
+      if (!origin_tainted_by_content_ && !canvas_pattern->OriginClean())
+        SetOriginTaintedByContent();
+      canvas_style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
+      break;
+    }
+    case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
+        ContentType::kString: {
+      color_string = style->GetAsString();
+      if (color_string == GetState().UnparsedFillColor())
+        return;
+      Color parsed_color = 0;
+      if (!ParseColorOrCurrentColor(parsed_color, color_string))
+        return;
+      if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
+        GetState().SetUnparsedFillColor(color_string);
+        return;
+      }
+      canvas_style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
+      break;
+    }
+  }
+
+  DCHECK(canvas_style);
+  GetState().SetFillStyle(canvas_style);
+  GetState().SetUnparsedFillColor(color_string);
+  GetState().ClearResolvedFilter();
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void BaseRenderingContext2D::fillStyle(
     StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) const {
   ConvertCanvasStyleToUnionType(GetState().FillStyle(), return_value);
@@ -306,6 +478,8 @@ void BaseRenderingContext2D::setFillStyle(
   GetState().SetUnparsedFillColor(color_string);
   GetState().ClearResolvedFilter();
 }
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 double BaseRenderingContext2D::lineWidth() const {
   return GetState().LineWidth();
@@ -461,6 +635,51 @@ void BaseRenderingContext2D::setGlobalCompositeOperation(
   GetState().SetGlobalComposite(sk_blend_mode);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+const V8UnionCanvasFilterOrString* BaseRenderingContext2D::filter() const {
+  if (CanvasFilter* filter = GetState().GetCanvasFilter()) {
+    return MakeGarbageCollected<V8UnionCanvasFilterOrString>(filter);
+  }
+  return MakeGarbageCollected<V8UnionCanvasFilterOrString>(
+      GetState().UnparsedCSSFilter());
+}
+
+void BaseRenderingContext2D::setFilter(
+    const ExecutionContext* execution_context,
+    const V8UnionCanvasFilterOrString* input) {
+  if (!input)
+    return;
+
+  switch (input->GetContentType()) {
+    case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
+      if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+        GetState().SetCanvasFilter(input->GetAsCanvasFilter());
+        SnapshotStateForFilter();
+      }
+      break;
+    case V8UnionCanvasFilterOrString::ContentType::kString: {
+      const String& filter_string = input->GetAsString();
+      if (!GetState().GetCanvasFilter() &&
+          filter_string == GetState().UnparsedCSSFilter()) {
+        return;
+      }
+      const CSSValue* css_value = CSSParser::ParseSingleValue(
+          CSSPropertyID::kFilter, filter_string,
+          MakeGarbageCollected<CSSParserContext>(
+              kHTMLStandardMode, execution_context->GetSecureContextMode()));
+      if (!css_value || css_value->IsCSSWideKeyword())
+        return;
+      GetState().SetUnparsedCSSFilter(filter_string);
+      GetState().SetCSSFilter(css_value);
+      SnapshotStateForFilter();
+      break;
+    }
+  }
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
 void BaseRenderingContext2D::filter(StringOrCanvasFilter& filter) const {
   if (GetState().GetCanvasFilter())
     filter.SetCanvasFilter(GetState().GetCanvasFilter());
@@ -495,6 +714,8 @@ void BaseRenderingContext2D::setFilter(
     SnapshotStateForFilter();
   }
 }
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 void BaseRenderingContext2D::scale(double sx, double sy) {
   // TODO(crbug.com/1140535): Investigate the performance impact of simply
@@ -1263,12 +1484,16 @@ static inline void ClipRectsToImageRect(const FloatRect& image_rect,
   dst_rect->Move(offset);
 }
 
-void BaseRenderingContext2D::drawImage(
-    ScriptState* script_state,
-    const CanvasImageSourceUnion& image_source,
-    double x,
-    double y,
-    ExceptionState& exception_state) {
+void BaseRenderingContext2D::drawImage(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const V8CanvasImageSource* image_source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const CanvasImageSourceUnion&
+                                           image_source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       double x,
+                                       double y,
+                                       ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
@@ -1285,14 +1510,18 @@ void BaseRenderingContext2D::drawImage(
             dest_rect_size.Height(), exception_state);
 }
 
-void BaseRenderingContext2D::drawImage(
-    ScriptState* script_state,
-    const CanvasImageSourceUnion& image_source,
-    double x,
-    double y,
-    double width,
-    double height,
-    ExceptionState& exception_state) {
+void BaseRenderingContext2D::drawImage(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const V8CanvasImageSource* image_source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const CanvasImageSourceUnion&
+                                           image_source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       double x,
+                                       double y,
+                                       double width,
+                                       double height,
+                                       ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
@@ -1305,18 +1534,22 @@ void BaseRenderingContext2D::drawImage(
             source_rect_size.Height(), x, y, width, height, exception_state);
 }
 
-void BaseRenderingContext2D::drawImage(
-    ScriptState* script_state,
-    const CanvasImageSourceUnion& image_source,
-    double sx,
-    double sy,
-    double sw,
-    double sh,
-    double dx,
-    double dy,
-    double dw,
-    double dh,
-    ExceptionState& exception_state) {
+void BaseRenderingContext2D::drawImage(ScriptState* script_state,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const V8CanvasImageSource* image_source,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       const CanvasImageSourceUnion&
+                                           image_source,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                       double sx,
+                                       double sy,
+                                       double sw,
+                                       double sh,
+                                       double dx,
+                                       double dy,
+                                       double dw,
+                                       double dh,
+                                       ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
@@ -1674,6 +1907,22 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
   return gradient;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+CanvasPattern* BaseRenderingContext2D::createPattern(
+    ScriptState* script_state,
+    const V8CanvasImageSource* image_source,
+    const String& repetition_type,
+    ExceptionState& exception_state) {
+  CanvasImageSource* image_source_internal =
+      ToCanvasImageSource(image_source, exception_state);
+  if (!image_source_internal) {
+    return nullptr;
+  }
+
+  return createPattern(script_state, image_source_internal, repetition_type,
+                       exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 CanvasPattern* BaseRenderingContext2D::createPattern(
     ScriptState* script_state,
     const CanvasImageSourceUnion& image_source,
@@ -1688,6 +1937,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   return createPattern(script_state, image_source_internal, repetition_type,
                        exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 CanvasPattern* BaseRenderingContext2D::createPattern(
     ScriptState* script_state,

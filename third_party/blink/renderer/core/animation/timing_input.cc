@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -57,6 +59,37 @@ bool UpdateValueIfChanged(V& lhs, const V& rhs) {
 
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+Timing TimingInput::Convert(
+    const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
+    Document* document,
+    ExceptionState& exception_state) {
+  if (!options) {
+    return Timing();
+  }
+
+  switch (options->GetContentType()) {
+    case V8UnionKeyframeEffectOptionsOrUnrestrictedDouble::ContentType::
+        kKeyframeEffectOptions:
+      return ConvertEffectTiming(options->GetAsKeyframeEffectOptions(),
+                                 document, exception_state);
+    case V8UnionKeyframeEffectOptionsOrUnrestrictedDouble::ContentType::
+        kUnrestrictedDouble: {
+      // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
+      // If options is a double,
+      //   Let timing input be a new EffectTiming object with all members set to
+      //   their default values and duration set to options.
+      EffectTiming* timing_input = EffectTiming::Create();
+      timing_input->setDuration(
+          UnrestrictedDoubleOrString::FromUnrestrictedDouble(
+              options->GetAsUnrestrictedDouble()));
+      return ConvertEffectTiming(timing_input, document, exception_state);
+    }
+  }
+  NOTREACHED();
+  return Timing();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Timing TimingInput::Convert(
     const UnrestrictedDoubleOrKeyframeEffectOptions& options,
     Document* document,
@@ -81,7 +114,39 @@ Timing TimingInput::Convert(
       options.GetAsUnrestrictedDouble()));
   return ConvertEffectTiming(timing_input, document, exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+Timing TimingInput::Convert(
+    const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+    Document* document,
+    ExceptionState& exception_state) {
+  if (!options) {
+    return Timing();
+  }
+
+  switch (options->GetContentType()) {
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kKeyframeAnimationOptions:
+      return ConvertEffectTiming(options->GetAsKeyframeAnimationOptions(),
+                                 document, exception_state);
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kUnrestrictedDouble: {
+      // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
+      // If options is a double,
+      //   Let timing input be a new EffectTiming object with all members set to
+      //   their default values and duration set to options.
+      EffectTiming* timing_input = EffectTiming::Create();
+      timing_input->setDuration(
+          UnrestrictedDoubleOrString::FromUnrestrictedDouble(
+              options->GetAsUnrestrictedDouble()));
+      return ConvertEffectTiming(timing_input, document, exception_state);
+    }
+  }
+  NOTREACHED();
+  return Timing();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Timing TimingInput::Convert(
     const UnrestrictedDoubleOrKeyframeAnimationOptions& options,
     Document* document,
@@ -105,6 +170,7 @@ Timing TimingInput::Convert(
       options.GetAsUnrestrictedDouble()));
   return ConvertEffectTiming(timing_input, document, exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 template <class InputTiming>
 bool TimingInput::Update(Timing& timing,

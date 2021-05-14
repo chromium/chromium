@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
@@ -124,17 +125,29 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-cancel
   ScriptPromise cancel(ScriptState*, ScriptValue reason, ExceptionState&);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8ReadableStreamReader* getReader(ScriptState* script_state,
+                                    ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void getReader(
       ScriptState*,
       ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   // https://streams.spec.whatwg.org/#rs-get-reader
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8ReadableStreamReader* getReader(
+      ScriptState* script_state,
+      const ReadableStreamGetReaderOptions* options,
+      ExceptionState& exception_state);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void getReader(
       ScriptState*,
       ReadableStreamGetReaderOptions* options,
       ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
       ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   ReadableStreamDefaultReader* GetDefaultReaderForTesting(ScriptState*,
                                                           ExceptionState&);

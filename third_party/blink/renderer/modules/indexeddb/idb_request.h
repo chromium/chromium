@@ -63,6 +63,7 @@ class ExceptionState;
 class IDBCursor;
 struct IDBDatabaseMetadata;
 class IDBValue;
+class V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
 
 class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                                   public ActiveScriptWrappable<IDBRequest>,
@@ -70,7 +71,11 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  using Source = V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   using Source = IDBObjectStoreOrIDBIndexOrIDBCursor;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Container for async tracing state.
   //
   // The documentation for TRACE_EVENT_NESTABLE_ASYNC_{BEGIN,END} suggests
@@ -176,11 +181,22 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                             IDBTransaction* source,
                             AsyncTraceState);
   static IDBRequest* Create(ScriptState*,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                            const Source*,
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             const Source&,
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
                             IDBTransaction*,
                             AsyncTraceState);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  IDBRequest(ScriptState* script_state,
+             const Source* source,
+             IDBTransaction* transaction,
+             AsyncTraceState metrics);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBRequest(ScriptState*, const Source&, IDBTransaction*, AsyncTraceState);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ~IDBRequest() override;
 
   void Trace(Visitor*) const override;
@@ -188,7 +204,11 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   v8::Isolate* GetIsolate() const { return isolate_; }
   ScriptValue result(ScriptState*, ExceptionState&);
   DOMException* error(ExceptionState&) const;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const Source* source(ScriptState* script_state) const;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void source(ScriptState*, Source&) const;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBTransaction* transaction() const { return transaction_.Get(); }
 
   bool isResultDirty() const { return result_dirty_; }
@@ -388,7 +408,11 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
 
   void ClearPutOperationBlobs() { transit_blob_handles_.clear(); }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  Member<const Source> source_;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Source source_;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   Member<IDBAny> result_;
   Member<DOMException> error_;
 

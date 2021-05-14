@@ -14,12 +14,6 @@ class CORE_EXPORT CSSNumericArray final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSNumericArray* FromNumberishes(
-      const HeapVector<CSSNumberish>& values) {
-    return MakeGarbageCollected<CSSNumericArray>(
-        CSSNumberishesToNumericValues(values));
-  }
-
   explicit CSSNumericArray(CSSNumericValueVector values)
       : values_(std::move(values)) {}
   CSSNumericArray(const CSSNumericArray&) = delete;

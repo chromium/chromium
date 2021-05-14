@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_multi_cache_query_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -330,6 +331,27 @@ ScriptPromise CacheStorage::keys(ScriptState* script_state) {
   return promise;
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+ScriptPromise CacheStorage::match(ScriptState* script_state,
+                                  const V8RequestInfo* request,
+                                  const MultiCacheQueryOptions* options,
+                                  ExceptionState& exception_state) {
+  DCHECK(request);
+  Request* request_object = nullptr;
+  switch (request->GetContentType()) {
+    case V8RequestInfo::ContentType::kRequest:
+      request_object = request->GetAsRequest();
+      break;
+    case V8RequestInfo::ContentType::kUSVString:
+      request_object = Request::Create(script_state, request->GetAsUSVString(),
+                                       exception_state);
+      if (exception_state.HadException())
+        return ScriptPromise();
+      break;
+  }
+  return MatchImpl(script_state, request_object, options);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 ScriptPromise CacheStorage::match(ScriptState* script_state,
                                   const RequestInfo& request,
                                   const MultiCacheQueryOptions* options,
@@ -344,6 +366,7 @@ ScriptPromise CacheStorage::match(ScriptState* script_state,
     return ScriptPromise();
   return MatchImpl(script_state, new_request, options);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
                                       const Request* request,

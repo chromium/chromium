@@ -10,7 +10,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_html_or_trusted_script_or_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml_trustedscript_trustedscripturl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -452,6 +456,42 @@ String TrustedTypesCheckForScriptURL(String script_url,
   return result->toString();
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+String TrustedTypesCheckFor(SpecificTrustedType type,
+                            const V8TrustedString* trusted,
+                            const ExecutionContext* execution_context,
+                            ExceptionState& exception_state) {
+  DCHECK(trusted);
+
+  // Whatever happens below, we will need the string value:
+  String value;
+  bool does_type_match = false;
+  switch (trusted->GetContentType()) {
+    case V8TrustedString::ContentType::kString:
+      value = trusted->GetAsString();
+      break;
+    case V8TrustedString::ContentType::kTrustedHTML:
+      value = trusted->GetAsTrustedHTML()->toString();
+      does_type_match = type == SpecificTrustedType::kHTML;
+      break;
+    case V8TrustedString::ContentType::kTrustedScript:
+      value = trusted->GetAsTrustedScript()->toString();
+      does_type_match = type == SpecificTrustedType::kScript;
+      break;
+    case V8TrustedString::ContentType::kTrustedScriptURL:
+      value = trusted->GetAsTrustedScriptURL()->toString();
+      does_type_match = type == SpecificTrustedType::kScriptURL;
+      break;
+  }
+
+  if (type == SpecificTrustedType::kNone || does_type_match)
+    return value;
+
+  // In all other cases: run the full check against the string value.
+  return TrustedTypesCheckFor(type, std::move(value), execution_context,
+                              exception_state);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 String TrustedTypesCheckFor(
     SpecificTrustedType type,
     const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL& trusted,
@@ -482,8 +522,65 @@ String TrustedTypesCheckFor(
   return TrustedTypesCheckFor(type, std::move(value), execution_context,
                               exception_state);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-String TrustedTypesCheckForScript(StringOrTrustedScript trusted,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
+                                  const ExecutionContext* execution_context,
+                                  ExceptionState& exception_state) {
+  // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
+  // attributes to allow for nullable union of (DOMString or TrustedScript).
+  // Thus, this method is required to handle the case where |!value|, unlike
+  // the various similar methods in this file.
+  if (!value) {
+    return TrustedTypesCheckForScript(g_empty_string, execution_context,
+                                      exception_state);
+  }
+
+  switch (value->GetContentType()) {
+    case V8UnionStringOrTrustedScript::ContentType::kString:
+      return TrustedTypesCheckForScript(value->GetAsString(), execution_context,
+                                        exception_state);
+    case V8UnionStringOrTrustedScript::ContentType::kTrustedScript:
+      return value->GetAsTrustedScript()->toString();
+  }
+
+  NOTREACHED();
+  return String();
+}
+
+String TrustedTypesCheckForScript(
+    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript* value,
+    const ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
+  // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
+  // attributes to allow for nullable union of (DOMString or TrustedScript).
+  // Thus, this method is required to handle the case where |!value|, unlike
+  // the various similar methods in this file.
+  if (!value) {
+    return TrustedTypesCheckForScript(g_empty_string, execution_context,
+                                      exception_state);
+  }
+
+  switch (value->GetContentType()) {
+    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
+        kStringTreatNullAsEmptyString:
+      return TrustedTypesCheckForScript(
+          value->GetAsStringTreatNullAsEmptyString(), execution_context,
+          exception_state);
+    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
+        kTrustedScript:
+      return value->GetAsTrustedScript()->toString();
+  }
+
+  NOTREACHED();
+  return String();
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+
+String TrustedTypesCheckForScript(const StringOrTrustedScript& trusted,
                                   const ExecutionContext* execution_context,
                                   ExceptionState& exception_state) {
   // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
@@ -495,11 +592,34 @@ String TrustedTypesCheckForScript(StringOrTrustedScript trusted,
     return trusted.GetAsTrustedScript()->toString();
   }
   if (trusted.IsNull()) {
-    trusted = StringOrTrustedScript::FromString(g_empty_string);
+    return TrustedTypesCheckForScript(g_empty_string, execution_context,
+                                      exception_state);
   }
   return TrustedTypesCheckForScript(trusted.GetAsString(), execution_context,
                                     exception_state);
 }
+
+String TrustedTypesCheckForScript(
+    const StringTreatNullAsEmptyStringOrTrustedScript& trusted,
+    const ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
+  // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
+  // attributes to allow for nullable union of (DOMString or TrustedScript).
+  // Thus, this method is required to handle the case where
+  // string_or_trusted_script.IsNull(), unlike the various similar methods in
+  // this file.
+  if (trusted.IsTrustedScript()) {
+    return trusted.GetAsTrustedScript()->toString();
+  }
+  if (trusted.IsNull()) {
+    return TrustedTypesCheckForScript(g_empty_string, execution_context,
+                                      exception_state);
+  }
+  return TrustedTypesCheckForScript(trusted.GetAsString(), execution_context,
+                                    exception_state);
+}
+
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 String TrustedTypesCheckFor(SpecificTrustedType type,
                             String trusted,

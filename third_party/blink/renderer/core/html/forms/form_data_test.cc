@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_file_usvstring.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -57,10 +58,16 @@ TEST(FormDataTest, get) {
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("name1", "value1");
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionFileOrUSVString* result = fd->get("name1");
+  EXPECT_TRUE(result->IsUSVString());
+  EXPECT_EQ("value1", result->GetAsUSVString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   FileOrUSVString result;
   fd->get("name1", result);
   EXPECT_TRUE(result.IsUSVString());
   EXPECT_EQ("value1", result.GetAsUSVString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   const FormData::Entry& entry = *fd->Entries()[0];
   EXPECT_EQ("name1", entry.name());
@@ -71,10 +78,17 @@ TEST(FormDataTest, getAll) {
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("name1", "value1");
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  const HeapVector<Member<V8FormDataEntryValue>>& results = fd->getAll("name1");
+  EXPECT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0]->IsUSVString());
+  EXPECT_EQ("value1", results[0]->GetAsUSVString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<FormDataEntryValue> results = fd->getAll("name1");
   EXPECT_EQ(1u, results.size());
   EXPECT_TRUE(results[0].IsUSVString());
   EXPECT_EQ("value1", results[0].GetAsUSVString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   EXPECT_EQ(1u, fd->size());
 }

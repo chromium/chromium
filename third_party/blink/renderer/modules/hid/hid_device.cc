@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_collection_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_report_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -34,6 +35,26 @@ const char kUnexpectedClose[] = "The device was closed unexpectedly.";
 const char kArrayBufferTooBig[] =
     "The provided ArrayBuffer exceeds the maximum allowed size.";
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+Vector<uint8_t> ConvertBufferSource(const V8BufferSource* buffer) {
+  DCHECK(buffer);
+  Vector<uint8_t> vector;
+  switch (buffer->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer:
+      vector.Append(static_cast<uint8_t*>(buffer->GetAsArrayBuffer()->Data()),
+                    base::checked_cast<wtf_size_t>(
+                        buffer->GetAsArrayBuffer()->ByteLength()));
+      break;
+    case V8BufferSource::ContentType::kArrayBufferView:
+      vector.Append(
+          static_cast<uint8_t*>(buffer->GetAsArrayBufferView()->BaseAddress()),
+          base::checked_cast<wtf_size_t>(
+              buffer->GetAsArrayBufferView()->byteLength()));
+      break;
+  }
+  return vector;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 Vector<uint8_t> ConvertBufferSource(
     const ArrayBufferOrArrayBufferView& buffer) {
   DCHECK(!buffer.IsNull());
@@ -50,6 +71,7 @@ Vector<uint8_t> ConvertBufferSource(
   }
   return vector;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 bool IsProtected(
     const device::mojom::blink::HidUsageAndPage& hid_usage_and_page) {
@@ -299,7 +321,12 @@ ScriptPromise HIDDevice::close(ScriptState* script_state) {
 
 ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
                                     uint8_t report_id,
-                                    const ArrayBufferOrArrayBufferView& data) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                    const V8BufferSource* data
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                    const ArrayBufferOrArrayBufferView& data
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -312,9 +339,15 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
     return promise;
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  size_t data_size = data->IsArrayBuffer()
+                         ? data->GetAsArrayBuffer()->ByteLength()
+                         : data->GetAsArrayBufferView()->byteLength();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
                          : data.GetAsArrayBufferView()->byteLength();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -329,10 +362,15 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise HIDDevice::sendFeatureReport(
-    ScriptState* script_state,
-    uint8_t report_id,
-    const ArrayBufferOrArrayBufferView& data) {
+ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
+                                           uint8_t report_id,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                           const V8BufferSource* data
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                           const ArrayBufferOrArrayBufferView&
+                                               data
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -345,9 +383,15 @@ ScriptPromise HIDDevice::sendFeatureReport(
     return promise;
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  size_t data_size = data->IsArrayBuffer()
+                         ? data->GetAsArrayBuffer()->ByteLength()
+                         : data->GetAsArrayBufferView()->byteLength();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
                          : data.GetAsArrayBufferView()->byteLength();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

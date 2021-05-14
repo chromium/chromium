@@ -33,6 +33,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -51,39 +53,96 @@ class SubtleCrypto final : public ScriptWrappable {
  public:
   SubtleCrypto();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise encrypt(ScriptState*,
+                        const V8AlgorithmIdentifier*,
+                        CryptoKey*,
+                        const V8BufferSource*,
+                        ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise encrypt(ScriptState*,
                         const AlgorithmIdentifier&,
                         CryptoKey*,
                         const BufferSource&,
                         ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise decrypt(ScriptState*,
+                        const V8AlgorithmIdentifier*,
+                        CryptoKey*,
+                        const V8BufferSource*,
+                        ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise decrypt(ScriptState*,
                         const AlgorithmIdentifier&,
                         CryptoKey*,
                         const BufferSource&,
                         ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise sign(ScriptState*,
+                     const V8AlgorithmIdentifier*,
+                     CryptoKey*,
+                     const V8BufferSource*,
+                     ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise sign(ScriptState*,
                      const AlgorithmIdentifier&,
                      CryptoKey*,
                      const BufferSource&,
                      ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   // Note that this is not named "verify" because when compiling on Mac that
   // expands to a macro and breaks.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise verifySignature(ScriptState*,
+                                const V8AlgorithmIdentifier*,
+                                CryptoKey*,
+                                const V8BufferSource* signature,
+                                const V8BufferSource* data,
+                                ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise verifySignature(ScriptState*,
                                 const AlgorithmIdentifier&,
                                 CryptoKey*,
                                 const BufferSource& signature,
                                 const BufferSource& data,
                                 ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise digest(ScriptState*,
+                       const V8AlgorithmIdentifier*,
+                       const V8BufferSource* data,
+                       ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise digest(ScriptState*,
                        const AlgorithmIdentifier&,
                        const BufferSource& data,
                        ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise generateKey(ScriptState*,
+                            const V8AlgorithmIdentifier*,
+                            bool extractable,
+                            const Vector<String>& key_usages,
+                            ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise generateKey(ScriptState*,
                             const AlgorithmIdentifier&,
                             bool extractable,
                             const Vector<String>& key_usages,
                             ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise importKey(ScriptState*,
+                          const String&,
+                          const V8UnionBufferSourceOrJsonWebKey*,
+                          const V8AlgorithmIdentifier*,
+                          bool extractable,
+                          const Vector<String>& key_usages,
+                          ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise importKey(ScriptState*,
                           const String&,
                           const ArrayBufferOrArrayBufferViewOrJsonWebKey&,
@@ -91,14 +150,35 @@ class SubtleCrypto final : public ScriptWrappable {
                           bool extractable,
                           const Vector<String>& key_usages,
                           ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise exportKey(ScriptState*, const String&, CryptoKey*);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise wrapKey(ScriptState*,
+                        const String&,
+                        CryptoKey*,
+                        CryptoKey*,
+                        const V8AlgorithmIdentifier*,
+                        ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise wrapKey(ScriptState*,
                         const String&,
                         CryptoKey*,
                         CryptoKey*,
                         const AlgorithmIdentifier&,
                         ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise unwrapKey(ScriptState*,
+                          const String&,
+                          const V8BufferSource*,
+                          CryptoKey*,
+                          const V8AlgorithmIdentifier*,
+                          const V8AlgorithmIdentifier*,
+                          bool,
+                          const Vector<String>&,
+                          ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise unwrapKey(ScriptState*,
                           const String&,
                           const BufferSource&,
@@ -108,12 +188,30 @@ class SubtleCrypto final : public ScriptWrappable {
                           bool,
                           const Vector<String>&,
                           ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise deriveBits(ScriptState*,
+                           const V8AlgorithmIdentifier*,
+                           CryptoKey*,
+                           unsigned,
+                           ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise deriveBits(ScriptState*,
                            const AlgorithmIdentifier&,
                            CryptoKey*,
                            unsigned,
                            ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  ScriptPromise deriveKey(ScriptState*,
+                          const V8AlgorithmIdentifier*,
+                          CryptoKey*,
+                          const V8AlgorithmIdentifier*,
+                          bool extractable,
+                          const Vector<String>&,
+                          ExceptionState&);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise deriveKey(ScriptState*,
                           const AlgorithmIdentifier&,
                           CryptoKey*,
@@ -121,6 +219,7 @@ class SubtleCrypto final : public ScriptWrappable {
                           bool extractable,
                           const Vector<String>&,
                           ExceptionState&);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 };
 
 }  // namespace blink

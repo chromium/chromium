@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
@@ -94,8 +95,13 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
   String ContextName() const override { return "WebGLRenderingContext"; }
   void RegisterContextExtensions() override;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8RenderingContext* AsV8RenderingContext() final;
+  V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void SetCanvasGetContextResult(RenderingContext&) final;
   void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 

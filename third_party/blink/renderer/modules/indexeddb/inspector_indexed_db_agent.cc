@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_options.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -331,8 +332,13 @@ IDBTransaction* TransactionForDatabase(
     const String& object_store_name,
     const String& mode = indexed_db_names::kReadonly) {
   DummyExceptionStateForTesting exception_state;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8UnionStringOrStringSequence* scope =
+      MakeGarbageCollected<V8UnionStringOrStringSequence>(object_store_name);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   StringOrStringSequence scope;
   scope.SetString(object_store_name);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   IDBTransactionOptions options;
   options.setDurability("relaxed");
   IDBTransaction* idb_transaction = idb_database->transaction(

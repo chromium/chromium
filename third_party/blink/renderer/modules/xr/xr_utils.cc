@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
@@ -66,6 +67,20 @@ DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                   w / length);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
+    const V8XRWebGLRenderingContext* context) {
+  DCHECK(context);
+  switch (context->GetContentType()) {
+    case V8XRWebGLRenderingContext::ContentType::kWebGL2RenderingContext:
+      return context->GetAsWebGL2RenderingContext();
+    case V8XRWebGLRenderingContext::ContentType::kWebGLRenderingContext:
+      return context->GetAsWebGLRenderingContext();
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     const XRWebGLRenderingContext& context) {
   if (context.IsWebGL2RenderingContext()) {
@@ -74,6 +89,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     return context.GetAsWebGLRenderingContext();
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 base::Optional<device::Pose> CreatePose(
     const blink::TransformationMatrix& matrix) {

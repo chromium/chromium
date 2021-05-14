@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -50,8 +51,20 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   void text(StringOrTrustedScript& result);
   String text() { return TextFromChildren(); }
   void setText(const String&);
-  void setInnerText(const StringOrTrustedScript&, ExceptionState&) override;
-  void setTextContent(const StringOrTrustedScript&, ExceptionState&) override;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void setInnerTextForBinding(
+      const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+          string_or_trusted_script,
+      ExceptionState& exception_state) override;
+  void setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
+                                ExceptionState& exception_state) override;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void setInnerTextForBinding(
+      const StringTreatNullAsEmptyStringOrTrustedScript&,
+      ExceptionState&) override;
+  void setTextContentForBinding(const StringOrTrustedScript&,
+                                ExceptionState&) override;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void setTextContent(const String&) override;
 
   void setAsync(bool);
@@ -62,6 +75,13 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   bool IsScriptElement() const override { return true; }
   Document& GetDocument() const override;
   ExecutionContext* GetExecutionContext() const override;
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() override;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+  void SetScriptElementForBinding(
+      HTMLScriptElementOrSVGScriptElement&) override;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
   void Trace(Visitor*) const override;
 
@@ -106,8 +126,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
                                const String& script_content) override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;
-  void SetScriptElementForBinding(
-      HTMLScriptElementOrSVGScriptElement&) override;
 
   Type GetScriptElementType() override;
 
