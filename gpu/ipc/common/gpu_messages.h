@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -32,6 +31,7 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
@@ -123,7 +123,7 @@ IPC_MESSAGE_ROUTED4(GpuStreamTextureMsg_FrameWithInfoAvailable,
                     gpu::Mailbox,
                     gfx::Size /* coded_size */,
                     gfx::Rect /* visible_rect*/,
-                    base::Optional<gpu::VulkanYCbCrInfo>)
+                    absl::optional<gpu::VulkanYCbCrInfo>)
 
 // Inform the renderer that a new frame is available.
 IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_FrameAvailable)

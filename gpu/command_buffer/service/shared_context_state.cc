@@ -599,7 +599,7 @@ bool SharedContextState::OnMemoryDump(
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
     raster::DumpBackgroundGrMemoryStatistics(gr_context_, pmd);
   } else {
-    raster::DumpGrMemoryStatistics(gr_context_, pmd, base::nullopt);
+    raster::DumpGrMemoryStatistics(gr_context_, pmd, absl::nullopt);
   }
 
   return true;
@@ -775,7 +775,7 @@ QueryManager* SharedContextState::GetQueryManager() {
   return nullptr;
 }
 
-base::Optional<error::ContextLostReason> SharedContextState::GetResetStatus(
+absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
     bool needs_gl) {
   DCHECK(!context_lost());
 
@@ -794,11 +794,11 @@ base::Optional<error::ContextLostReason> SharedContextState::GetResetStatus(
 
   // Not using GL.
   if (!GrContextIsGL() && !needs_gl)
-    return base::nullopt;
+    return absl::nullopt;
 
   // GL is not initialized.
   if (!context_state_)
-    return base::nullopt;
+    return absl::nullopt;
 
   GLenum error;
   while ((error = context_state_->api()->glGetErrorFn()) != GL_NO_ERROR) {
@@ -816,13 +816,13 @@ base::Optional<error::ContextLostReason> SharedContextState::GetResetStatus(
   base::Time now = base::Time::Now();
   if (!disable_check_reset_status_throttling_for_test_ &&
       now < last_gl_check_graphics_reset_status_ + kMinCheckDelay) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   last_gl_check_graphics_reset_status_ = now;
 
   GLenum driver_status = context()->CheckStickyGraphicsResetStatus();
   if (driver_status == GL_NO_ERROR)
-    return base::nullopt;
+    return absl::nullopt;
   LOG(ERROR) << "SharedContextState context lost via ARB/EXT_robustness. Reset "
                 "status = "
              << gles2::GLES2Util::GetStringEnum(driver_status);
@@ -838,7 +838,7 @@ base::Optional<error::ContextLostReason> SharedContextState::GetResetStatus(
       NOTREACHED();
       break;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool SharedContextState::CheckResetStatus(bool need_gl) {

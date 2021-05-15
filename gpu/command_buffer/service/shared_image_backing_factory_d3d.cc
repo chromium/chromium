@@ -47,7 +47,7 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
   return true;
 }
 
-base::Optional<DXGI_FORMAT> VizFormatToDXGIFormat(
+absl::optional<DXGI_FORMAT> VizFormatToDXGIFormat(
     viz::ResourceFormat viz_resource_format) {
   switch (viz_resource_format) {
     case viz::RGBA_F16:
@@ -222,7 +222,7 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
-  const base::Optional<DXGI_FORMAT> dxgi_format = VizFormatToDXGIFormat(format);
+  const absl::optional<DXGI_FORMAT> dxgi_format = VizFormatToDXGIFormat(format);
   if (!dxgi_format.has_value()) {
     DLOG(ERROR) << "Unsupported viz format found: " << format;
     return nullptr;

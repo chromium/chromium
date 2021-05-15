@@ -179,7 +179,7 @@ void StreamTexture::UpdateTexImage(BindingsMode bindings_mode,
   }
 
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
-  base::Optional<ScopedRestoreTextureBinding> scoped_restore_texture;
+  absl::optional<ScopedRestoreTextureBinding> scoped_restore_texture;
   if (texture_owner_->binds_texture_on_update()) {
     // If the texture_owner() binds the texture while doing the texture update
     // (UpdateTexImage), like in SurfaceTexture case, then make sure that the

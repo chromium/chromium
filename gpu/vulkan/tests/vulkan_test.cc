@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "gpu/vulkan/tests/basic_vulkan_test.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -12,6 +11,7 @@
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file tests basic vulkan initialization steps.
 
@@ -45,7 +45,7 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
 
   constexpr VkSemaphore kNullSemaphore = VK_NULL_HANDLE;
 
-  base::Optional<VulkanSwapChain::ScopedWrite> scoped_write;
+  absl::optional<VulkanSwapChain::ScopedWrite> scoped_write;
   scoped_write.emplace(surface->swap_chain());
   EXPECT_TRUE(scoped_write->success());
 
@@ -75,7 +75,7 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
 
   // Also make sure we can swap multiple times.
   for (int i = 0; i < 10; ++i) {
-    base::Optional<VulkanSwapChain::ScopedWrite> scoped_write;
+    absl::optional<VulkanSwapChain::ScopedWrite> scoped_write;
     scoped_write.emplace(surface->swap_chain());
     EXPECT_TRUE(scoped_write->success());
 

@@ -631,7 +631,7 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
   bool result = backend_texture_.getVkImageInfo(&image_info);
   DCHECK(result);
   gl::GLApi* api = gl::g_current_gl_context;
-  base::Optional<ScopedDedicatedMemoryObject> memory_object;
+  absl::optional<ScopedDedicatedMemoryObject> memory_object;
   if (!use_separate_gl_texture()) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     auto memory_fd = image_->GetMemoryFd();

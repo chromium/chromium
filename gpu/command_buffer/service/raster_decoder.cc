@@ -815,7 +815,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   std::unique_ptr<SkDeferredDisplayListRecorder> recorder_;
   sk_sp<SkDeferredDisplayList> ddl_;
-  base::Optional<SkDeferredDisplayList::ProgramIterator> program_iterator_;
+  absl::optional<SkDeferredDisplayList::ProgramIterator> program_iterator_;
   SkCanvas* raster_canvas_ = nullptr;  // ptr into recorder_ or sk_surface_
   std::vector<SkDiscardableHandleId> locked_handles_;
 
@@ -1589,7 +1589,7 @@ bool RasterDecoderImpl::ClearLevel(gles2::Texture* texture,
   {
     ScopedTextureBinder binder(state(), texture->target(),
                                texture->service_id(), gr_context());
-    base::Optional<ScopedPixelUnpackState> pixel_unpack_state;
+    absl::optional<ScopedPixelUnpackState> pixel_unpack_state;
     if (shared_context_state_->need_context_state_reset()) {
       pixel_unpack_state.emplace(state(), gr_context(), feature_info());
     }
@@ -2197,7 +2197,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALGL(
   gles2::Texture::ImageState image_state;
   if (gl::GLImage* image =
           source_texture->GetLevelImage(source_target, 0, &image_state)) {
-    base::Optional<ScopedPixelUnpackState> pixel_unpack_state;
+    absl::optional<ScopedPixelUnpackState> pixel_unpack_state;
     if (image->GetType() == gl::GLImage::Type::MEMORY &&
         shared_context_state_->need_context_state_reset()) {
       // If the image is in shared memory, we may need upload the pixel data

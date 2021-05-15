@@ -14,11 +14,11 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/swap_result.h"
@@ -175,7 +175,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   VkResult state_ GUARDED_BY(lock_) = VK_SUCCESS;
 
   // Acquired images queue.
-  base::Optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
+  absl::optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
 
   bool destroy_swapchain_will_hang_ = false;
 

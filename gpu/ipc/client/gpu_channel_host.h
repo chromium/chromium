@@ -273,7 +273,7 @@ class GPU_EXPORT GpuChannelHost
   // |*_deferred_message_id_|.
   mutable base::Lock context_lock_;
   std::vector<mojom::DeferredRequestPtr> deferred_messages_;
-  base::Optional<OrderingBarrierInfo> pending_ordering_barrier_;
+  absl::optional<OrderingBarrierInfo> pending_ordering_barrier_;
   uint32_t next_deferred_message_id_ = 1;
   // Highest deferred message id in |deferred_messages_|.
   uint32_t enqueued_deferred_message_id_ = 0;

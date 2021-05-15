@@ -110,7 +110,7 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 
 std::unique_ptr<base::DictionaryValue> ParseJSONDict(const std::string& data) {
   std::unique_ptr<base::DictionaryValue> response_dict;
-  base::Optional<base::Value> message_value = base::JSONReader::Read(data);
+  absl::optional<base::Value> message_value = base::JSONReader::Read(data);
   if (message_value && message_value->is_dict()) {
     response_dict = std::make_unique<base::DictionaryValue>();
     response_dict->MergeDictionary(base::OptionalOrNullptr(message_value));

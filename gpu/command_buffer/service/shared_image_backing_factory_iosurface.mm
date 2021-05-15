@@ -7,7 +7,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -17,6 +16,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buildflags.h"
@@ -213,7 +213,7 @@ SharedImageBackingFactoryIOSurface::ProduceDawn(
   if (!io_surface)
     return nullptr;
 
-  base::Optional<WGPUTextureFormat> wgpu_format =
+  absl::optional<WGPUTextureFormat> wgpu_format =
       viz::ToWGPUFormat(actual_format);
   if (wgpu_format.value() == WGPUTextureFormat_Undefined)
     return nullptr;

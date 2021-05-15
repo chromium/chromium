@@ -11,7 +11,7 @@ namespace gpu {
 
 namespace {
 // Global instance in browser process.
-base::Optional<DevicePerfInfo> g_device_perf_info;
+absl::optional<DevicePerfInfo> g_device_perf_info;
 
 base::Lock& GetLock() {
   static base::NoDestructor<base::Lock> lock;
@@ -19,7 +19,7 @@ base::Lock& GetLock() {
 }
 }  // namespace
 
-base::Optional<DevicePerfInfo> GetDevicePerfInfo() {
+absl::optional<DevicePerfInfo> GetDevicePerfInfo() {
   base::AutoLock lock(GetLock());
   return g_device_perf_info;
 }

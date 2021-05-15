@@ -10,9 +10,9 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -96,10 +96,10 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* domain = cookie.FindStringKey("domain");
     const std::string* host = cookie.FindStringKey("host");
     const std::string* path = cookie.FindStringKey("path");
-    base::Optional<bool> is_secure = cookie.FindBoolKey("isSecure");
-    base::Optional<bool> is_http_only = cookie.FindBoolKey("isHttpOnly");
+    absl::optional<bool> is_secure = cookie.FindBoolKey("isSecure");
+    absl::optional<bool> is_http_only = cookie.FindBoolKey("isHttpOnly");
     const std::string* priority = cookie.FindStringKey("priority");
-    base::Optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
+    absl::optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
     const std::string* same_site = cookie.FindStringKey("sameSite");
 
     base::TimeDelta before_expiration =
@@ -142,7 +142,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
 OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
   base::StringPiece data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
-  base::Optional<base::Value> json_data = base::JSONReader::Read(data);
+  absl::optional<base::Value> json_data = base::JSONReader::Read(data);
   if (!json_data) {
     RecordMultiloginResponseStatus(status_);
     return;

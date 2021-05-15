@@ -245,7 +245,7 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
 GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
-    const base::Optional<VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<VulkanYCbCrInfo>& ycbcr_info) {
   if (!ycbcr_info)
     return GrVkYcbcrConversionInfo();
 
@@ -303,7 +303,7 @@ bool ShouldVulkanSyncCpuForSkiaSubmit(
     viz::VulkanContextProvider* context_provider) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (context_provider) {
-    const base::Optional<uint32_t>& sync_cpu_memory_limit =
+    const absl::optional<uint32_t>& sync_cpu_memory_limit =
         context_provider->GetSyncCpuMemoryLimit();
     if (sync_cpu_memory_limit.has_value()) {
       uint64_t total_allocated_bytes = gpu::vma::GetTotalAllocatedMemory(

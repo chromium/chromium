@@ -58,14 +58,14 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
   const GPUInfo& gpu_info() const { return gpu_info_; }
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
   const gfx::GpuExtraInfo& gpu_extra_info() const { return gpu_extra_info_; }
-  const base::Optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
+  const absl::optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
     return gpu_info_for_hardware_gpu_;
   }
-  const base::Optional<GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu()
+  const absl::optional<GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu()
       const {
     return gpu_feature_info_for_hardware_gpu_;
   }
-  const base::Optional<DevicePerfInfo>& device_perf_info() const {
+  const absl::optional<DevicePerfInfo>& device_perf_info() const {
     return device_perf_info_;
   }
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
@@ -96,13 +96,13 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 
   // The following data are collected from hardware GPU and saved before
   // switching to SwiftShader.
-  base::Optional<GPUInfo> gpu_info_for_hardware_gpu_;
-  base::Optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
+  absl::optional<GPUInfo> gpu_info_for_hardware_gpu_;
+  absl::optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
   gfx::GpuExtraInfo gpu_extra_info_;
 
   // The following data are collected by the info collection GPU process.
-  base::Optional<DevicePerfInfo> device_perf_info_;
+  absl::optional<DevicePerfInfo> device_perf_info_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;

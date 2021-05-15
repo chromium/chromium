@@ -11,10 +11,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -32,7 +32,7 @@ std::unique_ptr<GaiaConfig> ReadConfigFromDisk() {
     return nullptr;
   }
 
-  base::Optional<base::Value> dict = base::JSONReader::Read(config_contents);
+  absl::optional<base::Value> dict = base::JSONReader::Read(config_contents);
   if (!dict || !dict->is_dict()) {
     LOG(ERROR) << "Couldn't parse gaia config file " << config_path;
     return nullptr;

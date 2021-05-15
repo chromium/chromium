@@ -315,7 +315,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool subpixel_font_rendering;
 
 #if BUILDFLAG(ENABLE_VULKAN)
-    base::Optional<VulkanInfo> vulkan_info;
+    absl::optional<VulkanInfo> vulkan_info;
 #endif
   };
 

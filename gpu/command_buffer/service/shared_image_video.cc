@@ -109,18 +109,18 @@ void SharedImageVideo::OnContextLost() {
   context_state_ = nullptr;
 }
 
-base::Optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
+absl::optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
     TextureOwner* texture_owner,
     scoped_refptr<SharedContextState> context_state) {
   // For non-vulkan context, return null.
   if (!context_state->GrContextIsVulkan())
-    return base::nullopt;
+    return absl::nullopt;
 
   // GetAHardwareBuffer() renders the latest image and gets AHardwareBuffer
   // from it.
   auto scoped_hardware_buffer = texture_owner->GetAHardwareBuffer();
   if (!scoped_hardware_buffer) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DCHECK(scoped_hardware_buffer->buffer());
@@ -133,9 +133,9 @@ base::Optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
   if (!vk_implementation->GetSamplerYcbcrConversionInfo(
           vk_device, scoped_hardware_buffer->TakeBuffer(), &ycbcr_info)) {
     LOG(ERROR) << "Failed to get the ycbcr info.";
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::Optional<VulkanYCbCrInfo>(ycbcr_info);
+  return absl::optional<VulkanYCbCrInfo>(ycbcr_info);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>

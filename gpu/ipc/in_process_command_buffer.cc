@@ -236,9 +236,9 @@ bool InProcessCommandBuffer::MakeCurrent() {
   return true;
 }
 
-base::Optional<gles2::ProgramCache::ScopedCacheUse>
+absl::optional<gles2::ProgramCache::ScopedCacheUse>
 InProcessCommandBuffer::CreateCacheUse() {
-  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (context_group_->has_program_cache()) {
     cache_use.emplace(context_group_->get_program_cache(),
                       base::BindRepeating(&DecoderClient::CacheShader,
@@ -687,7 +687,7 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
   gpu_thread_weak_ptr_factory_.InvalidateWeakPtrs();
   // Clean up GL resources if possible.
   bool have_context = context_.get() && context_->MakeCurrent(surface_.get());
-  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
     cache_use = CreateCacheUse();
 
@@ -882,7 +882,7 @@ void InProcessCommandBuffer::FlushOnGpuThread(
   auto cache_use = CreateCacheUse();
 
   {
-    base::Optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
+    absl::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
     if (gr_shader_cache_)
       gr_cache_use.emplace(gr_shader_cache_, kDisplayCompositorClientId);
     command_buffer_->Flush(put_offset, decoder_.get());

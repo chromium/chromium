@@ -7,13 +7,13 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class SharedImageRepresentationFactoryRef;
@@ -116,7 +116,7 @@ class GPU_GLES2_EXPORT SharedImageManager {
  private:
   class AutoLock;
   // The lock for protecting |images_|.
-  base::Optional<base::Lock> lock_;
+  absl::optional<base::Lock> lock_;
 
   base::flat_set<std::unique_ptr<SharedImageBacking>> images_ GUARDED_BY(lock_);
 

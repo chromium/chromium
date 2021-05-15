@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing_android.h"
 #include "gpu/command_buffer/service/stream_texture_shared_image_interface.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class SharedImageRepresentationGLTexture;
@@ -56,7 +56,7 @@ class GPU_GLES2_EXPORT SharedImageVideo
 
   // Returns ycbcr information. This is only valid in vulkan context and
   // nullopt for other context.
-  static base::Optional<VulkanYCbCrInfo> GetYcbcrInfo(
+  static absl::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
       scoped_refptr<SharedContextState> context_state);
 

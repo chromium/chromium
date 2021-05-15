@@ -8,13 +8,13 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 #include "gpu/command_buffer/client/gles2_impl_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class MappedMemoryManager;
@@ -112,8 +112,8 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
 
   Client* const client_;  // not owned --- client_ outlives this
 
-  base::Optional<ScopedMappedMemoryPtr> mapped_ptr_;
-  base::Optional<ScopedTransferBufferPtr> transfer_buffer_ptr_;
+  absl::optional<ScopedMappedMemoryPtr> mapped_ptr_;
+  absl::optional<ScopedTransferBufferPtr> transfer_buffer_ptr_;
 
   // Access to other members must always be done with |lock_| held.
   base::Lock lock_;

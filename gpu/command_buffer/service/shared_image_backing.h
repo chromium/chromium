@@ -12,13 +12,13 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
@@ -207,7 +207,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Protects non-const members here and in derived classes. Protected access
   // to allow GUARDED_BY macros in derived classes. Should not be used
   // directly. Use AutoLock instead.
-  mutable base::Optional<base::Lock> lock_;
+  mutable absl::optional<base::Lock> lock_;
 
  private:
   class ScopedWriteUMA {
@@ -244,7 +244,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   bool have_context_ GUARDED_BY(lock_) = true;
 
   // A scoped object for recording write UMA.
-  base::Optional<ScopedWriteUMA> scoped_write_uma_ GUARDED_BY(lock_);
+  absl::optional<ScopedWriteUMA> scoped_write_uma_ GUARDED_BY(lock_);
 
   // A vector of SharedImageRepresentations which hold references to this
   // backing. The first reference is considered the owner, and the vector is

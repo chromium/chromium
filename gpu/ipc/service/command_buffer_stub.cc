@@ -136,7 +136,7 @@ void CommandBufferStub::ExecuteDeferredRequest(
   // handler can assume that the context is current (not necessary for
   // RetireSyncPoint or WaitSyncPoint).
   bool have_context = false;
-  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (!params.is_destroy_transfer_buffer()) {
     if (!MakeCurrent())
       return;
@@ -181,7 +181,7 @@ bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
                "data", DevToolsChannelData::CreateForChannel(channel()));
   UpdateActiveUrl();
   bool have_context = false;
-  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   // Ensure the appropriate GL context is current before handling any IPC
   // messages directed at the command buffer. This ensures that the message
   // handler can assume that the context is current (not necessary for
@@ -393,7 +393,7 @@ void CommandBufferStub::Destroy() {
         decoder_context_->GetGLContext()->MakeCurrent(surface_.get());
   }
 
-  base::Optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
     cache_use.emplace(CreateCacheUse());
 
@@ -542,7 +542,7 @@ void CommandBufferStub::OnAsyncFlush(
 
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    base::Optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (gr_shader_cache)
       cache_use.emplace(gr_shader_cache, channel_->client_id());
     command_buffer_->Flush(put_offset, decoder_context_.get());

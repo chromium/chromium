@@ -275,7 +275,7 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   int re_authenticate_count_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   RequestSender* sender_;
-  base::Optional<DriveApiErrorCode> error_code_;
+  absl::optional<DriveApiErrorCode> error_code_;
   const ProgressCallback upload_progress_callback_;
   const ProgressCallback download_progress_callback_;
   std::unique_ptr<DownloadData> download_data_;

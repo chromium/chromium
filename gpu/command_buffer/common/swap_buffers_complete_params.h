@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/swap_result.h"
@@ -29,7 +29,7 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
   // Damage area of the current backing buffer compare to the previous swapped
   // buffer. The renderer can use it as hint for minimizing drawing area for the
   // next frame.
-  base::Optional<gfx::Rect> frame_buffer_damage_area;
+  absl::optional<gfx::Rect> frame_buffer_damage_area;
 
   // The mailbox corresponding to the primary plane that was just swapped to
   // the front buffer. The overlay processor can use it to extract the buffer

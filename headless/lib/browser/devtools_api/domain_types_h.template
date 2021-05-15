@@ -7,7 +7,7 @@
 #ifndef HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 #define HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "base/values.h"
 #include "headless/lib/browser/protocol/base_string_adapter.h"
 {% for domain_name in domain.dependencies %}
@@ -102,7 +102,7 @@ class HEADLESS_EXPORT {{type.id}} {
 
   {% for property in type.properties %}
     {% if property.optional %}
-  base::Optional<{{resolve_type(property).type}}> {{property.name | camelcase_to_hacker_style}}_;
+  absl::optional<{{resolve_type(property).type}}> {{property.name | camelcase_to_hacker_style}}_;
     {% else %}
   {{resolve_type(property).type}} {{property.name | camelcase_to_hacker_style}}_;
     {% endif %}

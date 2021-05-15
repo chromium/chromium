@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -27,6 +26,7 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/vulkan/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/progress_reporter.h"
@@ -140,7 +140,7 @@ class GPU_GLES2_EXPORT SharedContextState
   gles2::FeatureInfo* feature_info() { return feature_info_.get(); }
   gles2::ContextState* context_state() const { return context_state_.get(); }
   bool context_lost() const { return !!context_lost_reason_; }
-  base::Optional<error::ContextLostReason> context_lost_reason() {
+  absl::optional<error::ContextLostReason> context_lost_reason() {
     return context_lost_reason_;
   }
   bool need_context_state_reset() const { return need_context_state_reset_; }
@@ -276,7 +276,7 @@ class GPU_GLES2_EXPORT SharedContextState
 
   ~SharedContextState() override;
 
-  base::Optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
+  absl::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
   // gpu::GLContextVirtualDelegate implementation.
   bool initialized() const override;
@@ -337,7 +337,7 @@ class GPU_GLES2_EXPORT SharedContextState
   // driver's GL state.
   bool need_context_state_reset_ = false;
 
-  base::Optional<error::ContextLostReason> context_lost_reason_;
+  absl::optional<error::ContextLostReason> context_lost_reason_;
   base::ObserverList<ContextLostObserver>::Unchecked context_lost_observers_;
 
   base::MRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;

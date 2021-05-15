@@ -198,7 +198,7 @@ class GLES2_IMPL_EXPORT QueryTracker {
     uint64_t client_begin_time_us_;  // Only used for latency query target.
     uint64_t result_;
 
-    base::Optional<base::OnceClosure> on_completed_callback_;
+    absl::optional<base::OnceClosure> on_completed_callback_;
   };
 
   explicit QueryTracker(MappedMemoryManager* manager);

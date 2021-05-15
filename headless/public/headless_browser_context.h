@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "content/public/browser/browser_context.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace base {
