@@ -11,10 +11,8 @@ class DesktopUIStorySet(story.StorySet):
   TAB_SEARCH_STORIES = [
       tab_search_story.TabSearchStoryTop10,
       tab_search_story.TabSearchStoryTop50,
-      tab_search_story.TabSearchStoryTop100,
       tab_search_story.TabSearchStoryTop10Loading,
       tab_search_story.TabSearchStoryTop50Loading,
-      tab_search_story.TabSearchStoryTop100Loading,
       tab_search_story.TabSearchStoryCloseAndOpen,
       tab_search_story.TabSearchStoryCloseAndOpenLoading,
       tab_search_story.TabSearchStoryScrollUpAndDown,

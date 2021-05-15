@@ -1380,14 +1380,6 @@
         "name": "desktop_ui/tab_search:scroll_up_and_down:2020"
     },
     {
-        "duration": "84.0",
-        "name": "desktop_ui/tab_search:top100:2020"
-    },
-    {
-        "duration": "70.0",
-        "name": "desktop_ui/tab_search:top100:loading:2020"
-    },
-    {
         "duration": "33.0",
         "name": "desktop_ui/tab_search:top10:2020"
     },

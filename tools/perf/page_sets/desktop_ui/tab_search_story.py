@@ -126,13 +126,6 @@ class TabSearchStoryTop50(TabSearchStory):
   WAIT_FOR_NETWORK_QUIESCENCE = True
 
 
-class TabSearchStoryTop100(TabSearchStory):
-  NAME = 'tab_search:top100:2020'
-  URL_LIST = TOP_URL[:50] * 2
-  URL = URL_LIST[0]
-  WAIT_FOR_NETWORK_QUIESCENCE = True
-
-
 class TabSearchStoryTop10Loading(TabSearchStory):
   NAME = 'tab_search:top10:loading:2020'
   URL_LIST = TOP_URL[:10]
@@ -143,13 +136,6 @@ class TabSearchStoryTop10Loading(TabSearchStory):
 class TabSearchStoryTop50Loading(TabSearchStory):
   NAME = 'tab_search:top50:loading:2020'
   URL_LIST = TOP_URL[:50]
-  URL = URL_LIST[0]
-  WAIT_FOR_NETWORK_QUIESCENCE = False
-
-
-class TabSearchStoryTop100Loading(TabSearchStory):
-  NAME = 'tab_search:top100:loading:2020'
-  URL_LIST = TOP_URL[:50] * 2
   URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
@@ -177,7 +163,7 @@ class TabSearchStoryCloseAndOpenLoading(TabSearchStory):
 
 class TabSearchStoryScrollUpAndDown(TabSearchStory):
   NAME = 'tab_search:scroll_up_and_down:2020'
-  URL_LIST = TOP_URL[:50] * 2
+  URL_LIST = TOP_URL[:50]
   URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
