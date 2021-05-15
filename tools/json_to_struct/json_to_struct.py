@@ -58,6 +58,7 @@
 
 import json
 from datetime import datetime
+import io
 import os.path
 import sys
 import optparse
@@ -73,7 +74,7 @@ finally:
 import struct_generator
 import element_generator
 
-HEAD = """// Copyright %d The Chromium Authors. All rights reserved.
+HEAD = u"""// Copyright %d The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,8 +88,9 @@ HEAD = """// Copyright %d The Chromium Authors. All rights reserved.
 def _GenerateHeaderGuard(h_filename):
   """Generates the string used in #ifndef guarding the header file.
   """
-  result = re.sub('[%s\\\\.]' % os.sep, '_', h_filename.upper())
-  return re.sub('^_*', '', result) + '_'  # Remove leading underscores.
+  result = re.sub(u'[%s\\\\.]' % os.sep, u'_', h_filename.upper())
+  return re.sub(u'^_*', '', result) + u'_'  # Remove leading underscores.
+
 
 def _GenerateH(basepath, fileroot, head, namespace, schema, description):
   """Generates the .h file containing the definition of the structure specified
@@ -105,50 +107,52 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
         this file.
   """
 
-  h_filename = fileroot + '.h'
-  with open(os.path.join(basepath, h_filename), 'w') as f:
+  h_filename = fileroot + u'.h'
+  with io.open(os.path.join(basepath, h_filename), 'w', encoding='utf-8') as f:
     f.write(head)
 
     header_guard = _GenerateHeaderGuard(h_filename)
-    f.write('#ifndef %s\n' % header_guard)
-    f.write('#define %s\n' % header_guard)
-    f.write('\n')
+    f.write(u'#ifndef %s\n' % header_guard)
+    f.write(u'#define %s\n' % header_guard)
+    f.write(u'\n')
 
-    f.write('#include <cstddef>\n')
-    f.write('\n')
+    f.write(u'#include <cstddef>\n')
+    f.write(u'\n')
 
-    for header in schema.get('headers', []):
-      f.write('#include "%s"\n' % header)
-    f.write('\n')
+    for header in schema.get(u'headers', []):
+      f.write(u'#include "%s"\n' % header)
+    f.write(u'\n')
 
     if namespace:
-      f.write('namespace %s {\n' % namespace)
-      f.write('\n')
+      f.write(u'namespace %s {\n' % namespace)
+      f.write(u'\n')
 
     f.write(struct_generator.GenerateStruct(
       schema['type_name'], schema['schema']))
-    f.write('\n')
+    f.write(u'\n')
 
     for var_name, value in description.get('int_variables', {}).items():
-      f.write('extern const int %s;\n' % var_name)
-    f.write('\n')
+      f.write(u'extern const int %s;\n' % var_name)
+    f.write(u'\n')
 
     for element_name, element in description['elements'].items():
-      f.write('extern const %s %s;\n' % (schema['type_name'], element_name))
+      f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
 
     if 'generate_array' in description:
-      f.write('\n')
-      f.write('extern const %s* const %s[];\n' % (schema['type_name'],
-          description['generate_array']['array_name']))
-      f.write('extern const size_t %s;\n' %
-          (description['generate_array']['array_name'] + 'Length'))
+      f.write(u'\n')
+      f.write(
+          u'extern const %s* const %s[];\n' %
+          (schema['type_name'], description['generate_array']['array_name']))
+      f.write(u'extern const size_t %s;\n' %
+              (description['generate_array']['array_name'] + u'Length'))
 
     if namespace:
-      f.write('\n')
-      f.write('}  // namespace %s\n' % namespace)
+      f.write(u'\n')
+      f.write(u'}  // namespace %s\n' % namespace)
 
-    f.write('\n')
-    f.write( '#endif  // %s\n' % header_guard)
+    f.write(u'\n')
+    f.write(u'#endif  // %s\n' % header_guard)
+
 
 def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
   """Generates the .cc file containing the static initializers for the
@@ -165,39 +169,42 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
         this file.
   """
 
-  with open(os.path.join(basepath, fileroot + '.cc'), 'w') as f:
+  with io.open(os.path.join(basepath, fileroot + '.cc'), 'w',
+               encoding='utf-8') as f:
     f.write(head)
 
-    f.write('#include "%s"\n' % (fileroot + '.h'))
-    f.write('\n')
+    f.write(u'#include "%s"\n' % (fileroot + u'.h'))
+    f.write(u'\n')
 
     if namespace:
-      f.write('namespace %s {\n' % namespace)
-      f.write('\n')
+      f.write(u'namespace %s {\n' % namespace)
+      f.write(u'\n')
 
     f.write(element_generator.GenerateElements(schema['type_name'],
         schema['schema'], description))
 
     if 'generate_array' in description:
-      f.write('\n')
-      f.write('const %s* const %s[] = {\n' % (schema['type_name'],
-          description['generate_array']['array_name']))
+      f.write(u'\n')
+      f.write(
+          u'const %s* const %s[] = {\n' %
+          (schema['type_name'], description['generate_array']['array_name']))
       for element_name, _ in description['elements'].items():
-        f.write('\t&%s,\n' % element_name)
-      f.write('};\n')
-      f.write('const size_t %s = %d;\n' %
-          (description['generate_array']['array_name'] + 'Length',
-           len(description['elements'])))
+        f.write(u'\t&%s,\n' % element_name)
+      f.write(u'};\n')
+      f.write(u'const size_t %s = %d;\n' %
+              (description['generate_array']['array_name'] + u'Length',
+               len(description['elements'])))
 
     if namespace:
-      f.write('\n')
-      f.write('}  // namespace %s\n' % namespace)
+      f.write(u'\n')
+      f.write(u'}  // namespace %s\n' % namespace)
+
 
 def _Load(filename):
   """Loads a JSON file int a Python object and return this object.
   """
   # TODO(beaudoin): When moving to Python 2.7 use object_pairs_hook=OrderedDict.
-  with open(filename, 'r') as handle:
+  with io.open(filename, 'r', encoding='utf-8') as handle:
     result = json.loads(json_comment_eater.Nom(handle.read()))
   return result
 

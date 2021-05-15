@@ -27,7 +27,7 @@ import owners
 def load_metadata():
   flags_path = os.path.join(ROOT_PATH, 'chrome', 'browser',
                             'flag-metadata.json')
-  return json5.load(open(flags_path))
+  return json5.load(open(flags_path, encoding='utf-8'))
 
 
 def keep_expired_by(flags, mstone):
@@ -89,7 +89,7 @@ def find_unused(flags):
       'chrome/browser/about_flags.cc',
       'ios/chrome/browser/flags/about_flags.mm',
   ]
-  flag_files_data = [open(f, 'rb').read().decode('utf-8') for f in FLAG_FILES]
+  flag_files_data = [open(f, 'rb', encoding='utf-8').read() for f in FLAG_FILES]
   unused_flags = []
   for flag in flags:
     # Search for the name in quotes.
