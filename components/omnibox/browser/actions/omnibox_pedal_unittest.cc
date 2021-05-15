@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/omnibox_pedal_implementations.h"

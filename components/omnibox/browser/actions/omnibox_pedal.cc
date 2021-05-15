@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
 
 #include <algorithm>
 #include <cctype>
@@ -10,6 +10,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -153,23 +154,6 @@ size_t OmniboxPedal::TokenSequence::WalkToUnconsumedIndexFrom(
 
 // =============================================================================
 
-OmniboxPedal::LabelStrings::LabelStrings(int id_hint,
-                                         int id_suggestion_contents,
-                                         int id_accessibility_suffix,
-                                         int id_accessibility_hint)
-    : hint(l10n_util::GetStringUTF16(id_hint)),
-      suggestion_contents(l10n_util::GetStringUTF16(id_suggestion_contents)),
-      accessibility_suffix(l10n_util::GetStringUTF16(id_accessibility_suffix)),
-      accessibility_hint(l10n_util::GetStringUTF16(id_accessibility_hint)) {}
-
-OmniboxPedal::LabelStrings::LabelStrings() = default;
-
-OmniboxPedal::LabelStrings::LabelStrings(const LabelStrings&) = default;
-
-OmniboxPedal::LabelStrings::~LabelStrings() = default;
-
-// =============================================================================
-
 OmniboxPedal::SynonymGroup::SynonymGroup(bool required,
                                          bool match_once,
                                          size_t reserve_size)
@@ -216,29 +200,10 @@ size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {
 
 // =============================================================================
 
-namespace base {
-namespace trace_event {
-size_t EstimateMemoryUsage(const OmniboxPedal::LabelStrings& self) {
-  size_t total = 0;
-  total += base::trace_event::EstimateMemoryUsage(self.hint);
-  total += base::trace_event::EstimateMemoryUsage(self.suggestion_contents);
-  total += base::trace_event::EstimateMemoryUsage(self.accessibility_suffix);
-  total += base::trace_event::EstimateMemoryUsage(self.accessibility_hint);
-  return total;
-}
-}  // namespace trace_event
-}  // namespace base
-
-// =============================================================================
-
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
-    : id_(id), strings_(strings), url_(url) {}
+    : OmniboxAction(strings, url), id_(id) {}
 
-OmniboxPedal::~OmniboxPedal() {}
-
-const OmniboxPedal::LabelStrings& OmniboxPedal::GetLabelStrings() const {
-  return strings_;
-}
+OmniboxPedal::~OmniboxPedal() = default;
 
 void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
   DCHECK(ui_strings.is_dict());
@@ -253,27 +218,8 @@ void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
       ->GetAsString(&strings_.accessibility_suffix);
 }
 
-bool OmniboxPedal::IsNavigation() const {
-  return !url_.is_empty();
-}
-
-const GURL& OmniboxPedal::GetNavigationUrl() const {
-  return url_;
-}
-
 void OmniboxPedal::SetNavigationUrl(const GURL& url) {
   url_ = url;
-}
-
-void OmniboxPedal::Execute(OmniboxPedal::ExecutionContext& context) const {
-  DCHECK(IsNavigation());
-  OpenURL(context, url_);
-}
-
-bool OmniboxPedal::IsReadyToTrigger(
-    const AutocompleteInput& input,
-    const AutocompleteProviderClient& client) const {
-  return true;
 }
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
@@ -297,8 +243,7 @@ void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
 
 size_t OmniboxPedal::EstimateMemoryUsage() const {
   size_t total = 0;
-  total += base::trace_event::EstimateMemoryUsage(url_);
-  total += base::trace_event::EstimateMemoryUsage(strings_);
+  total += OmniboxAction::EstimateMemoryUsage();
   total += base::trace_event::EstimateMemoryUsage(synonym_groups_);
   return total;
 }
@@ -309,17 +254,4 @@ bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
       return false;
   }
   return match_sequence.IsFullyConsumed();
-}
-
-void OmniboxPedal::OpenURL(OmniboxPedal::ExecutionContext& context,
-                           const GURL& url) const {
-  // destination_url_entered_without_scheme is used to determine whether
-  // navigations typed without a scheme and upgraded to HTTPS should fall back
-  // to HTTP. The URL might have been entered without a scheme, but pedal
-  // destination URLs don't need a fallback so it's fine to pass false here.
-  context.controller_.OnAutocompleteAccept(
-      url, nullptr, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED, AutocompleteMatchType::PEDAL,
-      context.match_selection_timestamp_,
-      /*destination_url_entered_without_scheme=*/false);
 }

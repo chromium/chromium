@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "build/build_config.h"
-#include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
 
 // Returns the full set of encapsulated OmniboxPedal implementations.

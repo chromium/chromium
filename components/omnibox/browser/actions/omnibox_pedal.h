@@ -2,31 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_
+#define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_
 
-#include <string>
 #include <unordered_set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
 #include "url/gurl.h"
-
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
-namespace gfx {
-struct VectorIcon;
-}
-#endif
-
-class AutocompleteInput;
-class AutocompleteProviderClient;
-class OmniboxEditController;
-class OmniboxClient;
 
 // Conceptually, a Pedal is a fixed action that can be taken by the user
 // pressing a button or taking a new dedicated suggestion when some
@@ -35,7 +23,7 @@ class OmniboxClient;
 // like settings, but other actions like translation or launching
 // an incognito window are possible.  The intention is detected by
 // checking trigger queries against suggested match queries.
-class OmniboxPedal {
+class OmniboxPedal : public OmniboxAction {
  public:
   struct Token {
     // Token identifier from the common token dictionary.
@@ -113,20 +101,6 @@ class OmniboxPedal {
     std::vector<Token> tokens_;
   };
 
-  struct LabelStrings {
-    LabelStrings(int id_hint,
-                 int id_suggestion_contents,
-                 int id_accessibility_suffix,
-                 int id_accessibility_hint);
-    LabelStrings();
-    LabelStrings(const LabelStrings&);
-    ~LabelStrings();
-    std::u16string hint;
-    std::u16string suggestion_contents;
-    std::u16string accessibility_suffix;
-    std::u16string accessibility_hint;
-  };
-
   class SynonymGroup {
    public:
     // Note: synonyms must be specified in decreasing order by length
@@ -176,70 +150,29 @@ class OmniboxPedal {
     std::vector<TokenSequence> synonyms_;
   };
 
-  // ExecutionContext provides the necessary structure for Pedal
-  // execution implementations that potentially vary widely, and
-  // references are preferred over pointers for members that are
-  // not nullable.  If there's ever a good case for changing to
-  // nullable pointers, this can change but for now presence is
-  // guaranteed so Pedals can use them without needing to check.
-  // The other reason to use a context is that it's easier to
-  // maintain with lots of Pedal implementations because the amount
-  // of boilerplate required is greatly reduced.
-  class ExecutionContext {
-   public:
-    ExecutionContext(OmniboxClient& client,
-                     OmniboxEditController& controller,
-                     base::TimeTicks match_selection_timestamp)
-        : client_(client),
-          controller_(controller),
-          match_selection_timestamp_(match_selection_timestamp) {}
-    OmniboxClient& client_;
-    OmniboxEditController& controller_;
-    base::TimeTicks match_selection_timestamp_;
-  };
-
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
-  virtual ~OmniboxPedal();
-
-  // Provides read access to labels associated with this Pedal.
-  const LabelStrings& GetLabelStrings() const;
+  ~OmniboxPedal() override;
 
   // Writes labels associated with this Pedal by taking named
   //  values from provided dictionary value |ui_strings|.
   void SetLabelStrings(const base::Value& ui_strings);
 
-  // Returns true if this is purely a navigation Pedal with URL.
-  bool IsNavigation() const;
-
-  // For navigation Pedals, returns the destination URL.
-  const GURL& GetNavigationUrl() const;
-
   // Sets the destination URL for the Pedal.
   void SetNavigationUrl(const GURL& url);
-
-  // Takes the action associated with this Pedal.  Non-navigation
-  // Pedals must override the default, but Navigation Pedals don't need to.
-  virtual void Execute(ExecutionContext& context) const;
-
-  // Returns true if this Pedal is ready to be used now, or false if
-  // it does not apply under current conditions. (Example: the UpdateChrome
-  // Pedal may not be ready to trigger if no update is available.)
-  virtual bool IsReadyToTrigger(const AutocompleteInput& input,
-                                const AutocompleteProviderClient& client) const;
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   // Returns the default vector icon to use for Pedals that do not specify one.
   static const gfx::VectorIcon& GetDefaultVectorIcon();
 
   // Returns the vector icon to represent this Pedal's action in suggestion.
-  virtual const gfx::VectorIcon& GetVectorIcon() const;
+  const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
 
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
 
   // Estimates RAM usage in bytes for this Pedal.
-  size_t EstimateMemoryUsage() const;
+  size_t EstimateMemoryUsage() const override;
 
   OmniboxPedalId id() const { return id_; }
 
@@ -256,17 +189,9 @@ class OmniboxPedal {
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
 
-  // Use this for the common case of navigating to a URL.
-  void OpenURL(ExecutionContext& context, const GURL& url) const;
-
   OmniboxPedalId id_;
 
   std::vector<SynonymGroup> synonym_groups_;
-  LabelStrings strings_;
-
-  // For navigation Pedals, this holds the destination URL; for action Pedals,
-  // this remains empty.
-  GURL url_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_

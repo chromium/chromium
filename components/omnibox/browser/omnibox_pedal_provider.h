@@ -11,8 +11,8 @@
 
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/values.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/omnibox/browser/omnibox_pedal_implementations.h"
 
 class OmniboxPedal;

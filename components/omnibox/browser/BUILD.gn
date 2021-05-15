@@ -82,6 +82,10 @@ static_library("vector_icons") {
 
 static_library("browser") {
   sources = [
+    "actions/omnibox_action.cc",
+    "actions/omnibox_action.h",
+    "actions/omnibox_pedal.cc",
+    "actions/omnibox_pedal.h",
     "answers_cache.cc",
     "answers_cache.h",
     "autocomplete_classifier.cc",
@@ -160,8 +164,6 @@ static_library("browser") {
     "omnibox_metrics_provider.cc",
     "omnibox_metrics_provider.h",
     "omnibox_navigation_observer.h",
-    "omnibox_pedal.cc",
-    "omnibox_pedal.h",
     "omnibox_pedal_concepts.h",
     "omnibox_pedal_implementations.cc",
     "omnibox_pedal_implementations.h",
@@ -496,6 +498,7 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",
     "autocomplete_input_unittest.cc",
     "autocomplete_match_type_unittest.cc",
@@ -524,7 +527,6 @@ source_set("unit_tests") {
     "omnibox_field_trial_unittest.cc",
     "omnibox_pedal_implementations_unittest.cc",
     "omnibox_pedal_provider_unittest.cc",
-    "omnibox_pedal_unittest.cc",
     "omnibox_popup_model_unittest.cc",
     "omnibox_prefs_unittest.cc",
     "omnibox_view_unittest.cc",
