@@ -107,7 +107,7 @@ void DumpDistillability(content::RenderFrame* render_frame,
 
   std::unique_ptr<base::ListValue> derived_features(new base::ListValue());
   for (double value : derived) {
-    derived_features->AppendDouble(value);
+    derived_features->Append(value);
   }
   dict.Set("derived_features", std::move(derived_features));
 

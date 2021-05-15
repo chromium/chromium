@@ -1675,10 +1675,6 @@ void ListValue::AppendInteger(int in_value) {
   list().emplace_back(in_value);
 }
 
-void ListValue::AppendDouble(double in_value) {
-  list().emplace_back(in_value);
-}
-
 void ListValue::AppendString(StringPiece in_value) {
   list().emplace_back(in_value);
 }

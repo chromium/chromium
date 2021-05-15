@@ -133,7 +133,7 @@ void AddItemToList(const bool from, base::ListValue* out) {
 }
 
 void AddItemToList(const double from, base::ListValue* out) {
-  out->AppendDouble(from);
+  out->Append(from);
 }
 
 void AddItemToList(const std::string& from, base::ListValue* out) {

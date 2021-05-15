@@ -26,7 +26,7 @@ void SetCheckinInfo(const std::vector<gcm::CheckinActivity>& checkins,
                     base::ListValue* checkin_info) {
   for (const gcm::CheckinActivity& checkin : checkins) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(checkin.time.ToJsTime());
+    row->Append(checkin.time.ToJsTime());
     row->AppendString(checkin.event);
     row->AppendString(checkin.details);
     checkin_info->Append(std::move(row));
@@ -37,7 +37,7 @@ void SetConnectionInfo(const std::vector<gcm::ConnectionActivity>& connections,
                        base::ListValue* connection_info) {
   for (const gcm::ConnectionActivity& connection : connections) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(connection.time.ToJsTime());
+    row->Append(connection.time.ToJsTime());
     row->AppendString(connection.event);
     row->AppendString(connection.details);
     connection_info->Append(std::move(row));
@@ -49,7 +49,7 @@ void SetRegistrationInfo(
     base::ListValue* registration_info) {
   for (const gcm::RegistrationActivity& registration : registrations) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(registration.time.ToJsTime());
+    row->Append(registration.time.ToJsTime());
     row->AppendString(registration.app_id);
     row->AppendString(registration.source);
     row->AppendString(registration.event);
@@ -62,7 +62,7 @@ void SetReceivingInfo(const std::vector<gcm::ReceivingActivity>& receives,
                       base::ListValue* receive_info) {
   for (const gcm::ReceivingActivity& receive : receives) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(receive.time.ToJsTime());
+    row->Append(receive.time.ToJsTime());
     row->AppendString(receive.app_id);
     row->AppendString(receive.from);
     row->AppendString(base::NumberToString(receive.message_byte_size));
@@ -76,7 +76,7 @@ void SetSendingInfo(const std::vector<gcm::SendingActivity>& sends,
                     base::ListValue* send_info) {
   for (const gcm::SendingActivity& send : sends) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(send.time.ToJsTime());
+    row->Append(send.time.ToJsTime());
     row->AppendString(send.app_id);
     row->AppendString(send.receiver_id);
     row->AppendString(send.message_id);
@@ -91,7 +91,7 @@ void SetDecryptionFailureInfo(
     base::ListValue* failure_info) {
   for (const gcm::DecryptionFailureActivity& failure : failures) {
     auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(failure.time.ToJsTime());
+    row->Append(failure.time.ToJsTime());
     row->AppendString(failure.app_id);
     row->AppendString(failure.details);
     failure_info->Append(std::move(row));

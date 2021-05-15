@@ -63,17 +63,17 @@ TEST(WebUIMessageHandlerTest, ExtractDoubleValue) {
   static const char neg_string[] = "-1234.5";
   static const char pos_string[] = "1234.5";
 
-  list.AppendDouble(zero_value);
+  list.Append(zero_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, zero_value);
   list.Clear();
 
-  list.AppendDouble(neg_value);
+  list.Append(neg_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, neg_value);
   list.Clear();
 
-  list.AppendDouble(pos_value);
+  list.Append(pos_value);
   EXPECT_TRUE(WebUIMessageHandler::ExtractDoubleValue(&list, &value));
   EXPECT_DOUBLE_EQ(value, pos_value);
   list.Clear();

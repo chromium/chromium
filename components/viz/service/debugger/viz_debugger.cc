@@ -112,8 +112,8 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
     }
     {
       base::ListValue list_xy;
-      list_xy.AppendDouble(each.pos.x());
-      list_xy.AppendDouble(each.pos.y());
+      list_xy.Append(static_cast<double>(each.pos.x()));
+      list_xy.Append(static_cast<double>(each.pos.y()));
       dict.SetKey("pos", std::move(list_xy));
     }
 
@@ -134,8 +134,8 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
     base::DictionaryValue dict = text.GetDictionaryValue();
     {
       base::ListValue list_xy;
-      list_xy.AppendDouble(text.pos.x());
-      list_xy.AppendDouble(text.pos.y());
+      list_xy.Append(static_cast<double>(text.pos.x()));
+      list_xy.Append(static_cast<double>(text.pos.y()));
       dict.SetKey("pos", std::move(list_xy));
     }
     dict.SetString("text", text.text);

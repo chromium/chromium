@@ -570,7 +570,7 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   lv = std::make_unique<base::ListValue>();
-  lv->AppendDouble(3.0);
+  lv->Append(3.0);
   params.SetList("pageRanges", std::move(lv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();

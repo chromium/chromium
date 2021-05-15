@@ -34,7 +34,7 @@ static std::unique_ptr<base::DictionaryValue> CreateBasicArrayTypeDictionary() {
   booleans_value->AppendBoolean(false);
   booleans_value->AppendBoolean(true);
   auto numbers_value = std::make_unique<base::ListValue>();
-  numbers_value->AppendDouble(6.1);
+  numbers_value->Append(6.1);
   value->Set("numbers", std::move(numbers_value));
   value->Set("booleans", std::move(booleans_value));
   value->Set("strings", std::move(strings_value));

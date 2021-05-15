@@ -929,7 +929,6 @@ class BASE_EXPORT ListValue : public Value {
   // DEPRECATED, use `Value::Append()` instead.
   void AppendBoolean(bool in_value);
   void AppendInteger(int in_value);
-  void AppendDouble(double in_value);
   void AppendString(StringPiece in_value);
   void AppendString(const std::u16string& in_value);
   // DEPRECATED, use `Value::Append()` in a loop instead.

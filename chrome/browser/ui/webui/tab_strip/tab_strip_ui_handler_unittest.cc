@@ -576,8 +576,8 @@ TEST_F(TabStripUIHandlerTest, RemoveTabIfInvalidContextMenu) {
   base::ListValue args;
   args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
       new_browser->tab_strip_model()->GetWebContentsAt(0)));
-  args.AppendDouble(50);
-  args.AppendDouble(100);
+  args.Append(50.0);
+  args.Append(100.0);
   handler()->HandleShowTabContextMenu(&args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();

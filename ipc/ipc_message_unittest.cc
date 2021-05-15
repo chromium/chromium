@@ -106,7 +106,7 @@ TEST(IPCMessageTest, Value) {
 
 TEST(IPCMessageTest, ListValue) {
   base::ListValue input;
-  input.AppendDouble(42.42);
+  input.Append(42.42);
   input.AppendString("forty");
   input.Append(std::make_unique<base::Value>());
 
@@ -138,7 +138,7 @@ TEST(IPCMessageTest, DictionaryValue) {
   subdict->SetBoolean("bool", false);
 
   auto sublist = std::make_unique<base::ListValue>();
-  sublist->AppendDouble(42.42);
+  sublist->Append(42.42);
   sublist->AppendString("forty");
   sublist->AppendString("two");
   subdict->Set("list", std::move(sublist));

@@ -1772,7 +1772,7 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
   auto event_args = std::make_unique<base::ListValue>();
   event_args->AppendString(AccessibilityPrivateEnumForAction(action));
   if (value != 0.0) {
-    event_args->AppendDouble(value);
+    event_args->Append(value);
   }
 
   auto event = std::make_unique<extensions::Event>(

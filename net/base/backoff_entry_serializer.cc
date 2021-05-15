@@ -67,7 +67,7 @@ std::unique_ptr<base::Value> BackoffEntrySerializer::SerializeToValue(
 
   // Redundantly stores both the remaining time delta and the absolute time.
   // The delta is used to work around some cases where wall clock time changes.
-  serialized->AppendDouble(backoff_duration.InSecondsF());
+  serialized->Append(backoff_duration.InSecondsF());
   serialized->AppendString(
       base::NumberToString(absolute_release_time.ToInternalValue()));
 

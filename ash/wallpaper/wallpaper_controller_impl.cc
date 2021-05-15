@@ -2118,7 +2118,7 @@ void WallpaperControllerImpl::CacheProminentColors(
                                                prefs::kWallpaperColors);
   auto wallpaper_colors = std::make_unique<base::ListValue>();
   for (SkColor color : colors)
-    wallpaper_colors->AppendDouble(static_cast<double>(color));
+    wallpaper_colors->Append(static_cast<double>(color));
   wallpaper_colors_update->SetWithoutPathExpansion(current_location,
                                                    std::move(wallpaper_colors));
 }

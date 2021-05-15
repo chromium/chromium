@@ -246,16 +246,16 @@ void GinJavaMethodInvocationHelper::InvokeMethod(jobject object,
                  : env->CallStaticIntMethodA(clazz, id, parameters));
       break;
     case JavaType::TypeLong:
-      result_wrapper.AppendDouble(
+      result_wrapper.Append(static_cast<double>(
           object ? env->CallLongMethodA(object, id, parameters)
-                 : env->CallStaticLongMethodA(clazz, id, parameters));
+                 : env->CallStaticLongMethodA(clazz, id, parameters)));
       break;
     case JavaType::TypeFloat: {
       float result = object
                          ? env->CallFloatMethodA(object, id, parameters)
                          : env->CallStaticFloatMethodA(clazz, id, parameters);
       if (std::isfinite(result)) {
-        result_wrapper.AppendDouble(result);
+        result_wrapper.Append(static_cast<double>(result));
       } else {
         result_wrapper.Append(GinJavaBridgeValue::CreateNonFiniteValue(result));
       }
@@ -266,7 +266,7 @@ void GinJavaMethodInvocationHelper::InvokeMethod(jobject object,
                           ? env->CallDoubleMethodA(object, id, parameters)
                           : env->CallStaticDoubleMethodA(clazz, id, parameters);
       if (std::isfinite(result)) {
-        result_wrapper.AppendDouble(result);
+        result_wrapper.Append(result);
       } else {
         result_wrapper.Append(GinJavaBridgeValue::CreateNonFiniteValue(result));
       }

@@ -134,7 +134,7 @@ std::unique_ptr<base::ListValue> Referrer::Serialize() const {
   auto subresource_list = std::make_unique<base::ListValue>();
   for (auto it = begin(); it != end(); ++it) {
     subresource_list->AppendString(it->first.spec());
-    subresource_list->AppendDouble(it->second.subresource_use_rate());
+    subresource_list->Append(it->second.subresource_use_rate());
   }
   return subresource_list;
 }

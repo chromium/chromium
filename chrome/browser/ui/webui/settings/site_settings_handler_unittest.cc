@@ -2484,7 +2484,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   const double size = 120000000000;
   base::ListValue get_args;
   get_args.AppendString(kCallbackId);
-  get_args.AppendDouble(size);
+  get_args.Append(size);
   handler()->HandleGetFormattedBytes(&get_args);
 
   // Validate that this method can handle large data.

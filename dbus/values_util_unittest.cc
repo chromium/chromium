@@ -256,7 +256,7 @@ TEST(ValuesUtilTest, PopStruct) {
   base::ListValue list_value;
   list_value.AppendBoolean(kBoolValue);
   list_value.AppendInteger(kInt32Value);
-  list_value.AppendDouble(kDoubleValue);
+  list_value.Append(kDoubleValue);
   list_value.AppendString(kStringValue);
 
   // Pop a struct.
@@ -622,7 +622,7 @@ TEST(ValuesUtilTest, AppendList) {
   base::ListValue test_list;
   test_list.AppendBoolean(kBoolValue);
   test_list.AppendInteger(kInt32Value);
-  test_list.AppendDouble(kDoubleValue);
+  test_list.Append(kDoubleValue);
   test_list.AppendString(kStringValue);
   test_list.Append(std::move(list_value));
   test_list.Append(std::move(dictionary_value));
@@ -666,7 +666,7 @@ TEST(ValuesUtilTest, AppendListAsVariant) {
   base::ListValue test_list;
   test_list.AppendBoolean(kBoolValue);
   test_list.AppendInteger(kInt32Value);
-  test_list.AppendDouble(kDoubleValue);
+  test_list.Append(kDoubleValue);
   test_list.AppendString(kStringValue);
   test_list.Append(std::move(list_value));
   test_list.Append(std::move(dictionary_value));
