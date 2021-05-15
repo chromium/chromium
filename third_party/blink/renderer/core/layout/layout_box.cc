@@ -4164,6 +4164,10 @@ bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
   if (StyleRef().AspectRatio().IsAuto())
     return false;
 
+  if (IsGridItem() &&
+      StyleRef().JustifySelf().GetPosition() == ItemPosition::kStretch)
+    return false;
+
   if (!HasOverrideLogicalHeight() &&
       !ShouldComputeLogicalWidthFromAspectRatioAndInsets() &&
       !StyleRef().LogicalHeight().IsFixed() &&

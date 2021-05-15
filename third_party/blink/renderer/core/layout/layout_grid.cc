@@ -1640,12 +1640,14 @@ void LayoutGrid::ApplyStretchAlignmentToChildIfNeeded(LayoutBox& child) {
 bool LayoutGrid::HasAutoSizeInColumnAxis(const LayoutBox& child) const {
   NOT_DESTROYED();
   if (!child.StyleRef().AspectRatio().IsAuto()) {
-    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode()) {
+    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode() &&
+        child.StyleRef().AlignSelf().GetPosition() != ItemPosition::kStretch) {
       // If the used inline size is non-auto, we do have a non auto block size
       // (column axis size) because of the aspect ratio.
       if (!child.StyleRef().LogicalWidth().IsAuto())
         return false;
-    } else {
+    } else if (child.StyleRef().JustifySelf().GetPosition() !=
+               ItemPosition::kStretch) {
       const Length& logical_height = child.StyleRef().LogicalHeight();
       if (logical_height.IsFixed() ||
           (logical_height.IsPercentOrCalc() &&
@@ -1662,7 +1664,9 @@ bool LayoutGrid::HasAutoSizeInColumnAxis(const LayoutBox& child) const {
 bool LayoutGrid::HasAutoSizeInRowAxis(const LayoutBox& child) const {
   NOT_DESTROYED();
   if (!child.StyleRef().AspectRatio().IsAuto()) {
-    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode()) {
+    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode() &&
+        child.StyleRef().JustifySelf().GetPosition() !=
+            ItemPosition::kStretch) {
       // If the used block size is non-auto, we do have a non auto inline size
       // (row axis size) because of the aspect ratio.
       const Length& logical_height = child.StyleRef().LogicalHeight();
@@ -1672,7 +1676,8 @@ bool LayoutGrid::HasAutoSizeInRowAxis(const LayoutBox& child) const {
                kIndefiniteSize)) {
         return false;
       }
-    } else {
+    } else if (child.StyleRef().AlignSelf().GetPosition() !=
+               ItemPosition::kStretch) {
       if (!child.StyleRef().LogicalWidth().IsAuto())
         return false;
     }
