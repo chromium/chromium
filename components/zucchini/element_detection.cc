@@ -118,11 +118,11 @@ std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
   }
 }
 
-base::Optional<Element> DetectElementFromDisassembler(ConstBufferView image) {
+absl::optional<Element> DetectElementFromDisassembler(ConstBufferView image) {
   std::unique_ptr<Disassembler> disasm = MakeDisassemblerWithoutFallback(image);
   if (disasm)
     return Element({0, disasm->size()}, disasm->GetExeType());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 /******** ProgramScanner ********/
@@ -132,18 +132,18 @@ ElementFinder::ElementFinder(ConstBufferView image, ElementDetector&& detector)
 
 ElementFinder::~ElementFinder() = default;
 
-base::Optional<Element> ElementFinder::GetNext() {
+absl::optional<Element> ElementFinder::GetNext() {
   for (; pos_ < image_.size(); ++pos_) {
     ConstBufferView test_image =
         ConstBufferView::FromRange(image_.begin() + pos_, image_.end());
-    base::Optional<Element> element = detector_.Run(test_image);
+    absl::optional<Element> element = detector_.Run(test_image);
     if (element) {
       element->offset += pos_;
       pos_ = element->EndOffset();
       return element;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace zucchini

@@ -63,7 +63,7 @@ TranslateModelService::TranslateModelService(
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/base::nullopt, this);
+      /*model_metadata=*/absl::nullopt, this);
 }
 
 TranslateModelService::~TranslateModelService() = default;
@@ -76,7 +76,7 @@ void TranslateModelService::Shutdown() {
 
 void TranslateModelService::OnModelFileUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::Optional<optimization_guide::proto::Any>& model_metadata,
+    const absl::optional<optimization_guide::proto::Any>& model_metadata,
     const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (optimization_target !=

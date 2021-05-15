@@ -827,7 +827,7 @@ bool Schema::InternalStorage::Parse(const base::Value& schema,
   schema_node->extra = kInvalid;
   schema_node->is_sensitive_value = false;
 
-  base::Optional<bool> is_sensitive_value =
+  absl::optional<bool> is_sensitive_value =
       schema.FindBoolKey(schema::kSensitiveValue);
   if (is_sensitive_value)
     schema_node->is_sensitive_value = *is_sensitive_value;
@@ -1390,7 +1390,7 @@ void Schema::MaskSensitiveValues(base::Value* value) const {
 Schema Schema::Parse(const std::string& content, std::string* error) {
   // Validate as a generic JSON schema, and ignore unknown attributes; they
   // may become used in a future version of the schema format.
-  base::Optional<base::Value> dict = Schema::ParseToDictAndValidate(
+  absl::optional<base::Value> dict = Schema::ParseToDictAndValidate(
       content, kSchemaOptionsIgnoreUnknownAttributes, error);
   if (!dict.has_value())
     return Schema();
@@ -1420,7 +1420,7 @@ Schema Schema::Parse(const std::string& content, std::string* error) {
 }
 
 // static
-base::Optional<base::Value> Schema::ParseToDictAndValidate(
+absl::optional<base::Value> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options,
     std::string* error) {
@@ -1430,14 +1430,14 @@ base::Optional<base::Value> Schema::ParseToDictAndValidate(
   *error = value_with_error.error_message;
 
   if (!value_with_error.value)
-    return base::nullopt;
+    return absl::nullopt;
   base::Value json = std::move(value_with_error.value.value());
   if (!json.is_dict()) {
     *error = "Schema must be a JSON object";
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (!IsValidSchema(json, validator_options, error))
-    return base::nullopt;
+    return absl::nullopt;
   return json;
 }
 

@@ -45,7 +45,7 @@ using testing::NotNull;
 using testing::StrEq;
 
 MATCHER_P(EqualsJSON, json, "equals JSON") {
-  base::Optional<base::Value> expected = base::JSONReader::Read(json);
+  absl::optional<base::Value> expected = base::JSONReader::Read(json);
   if (!expected) {
     *result_listener << "INTERNAL ERROR: couldn't parse expected JSON";
     return false;

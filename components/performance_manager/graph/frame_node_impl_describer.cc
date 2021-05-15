@@ -20,7 +20,7 @@ namespace {
 const char kDescriberName[] = "FrameNodeImpl";
 
 std::string ViewportIntersectionToString(
-    const base::Optional<gfx::Rect>& viewport_intersection) {
+    const absl::optional<gfx::Rect>& viewport_intersection) {
   if (!viewport_intersection.has_value())
     return "Nullopt";
 

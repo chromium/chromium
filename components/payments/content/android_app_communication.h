@@ -13,9 +13,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "components/payments/core/android_app_description.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -31,15 +31,15 @@ namespace payments {
 class AndroidAppCommunication : public base::SupportsUserData::Data {
  public:
   using GetAppDescriptionsCallback = base::OnceCallback<void(
-      const base::Optional<std::string>& error_message,
+      const absl::optional<std::string>& error_message,
       std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions)>;
 
   using IsReadyToPayCallback =
-      base::OnceCallback<void(const base::Optional<std::string>& error_message,
+      base::OnceCallback<void(const absl::optional<std::string>& error_message,
                               bool is_ready_to_pay)>;
 
   using InvokePaymentAppCallback =
-      base::OnceCallback<void(const base::Optional<std::string>& error_message,
+      base::OnceCallback<void(const absl::optional<std::string>& error_message,
                               bool is_activity_result_ok,
                               const std::string& payment_method_identifier,
                               const std::string& stringified_details)>;

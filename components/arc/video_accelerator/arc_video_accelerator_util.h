@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -29,14 +29,14 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds);
 
 // Return GpuMemoryBufferHandle iff |planes| are valid for a video frame located
 // on |scoped_fds| and of |pixel_format| and |coded_size|. Otherwise
-// returns base::nullopt.
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+// returns absl::nullopt.
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<VideoFramePlane>& planes);
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,

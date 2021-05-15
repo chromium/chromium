@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace {
@@ -71,10 +71,10 @@ struct InFlightChange {
   // Either subscribing or unsubscribing.
   bool subscribing = false;
   // Set only when subscribing from a web page.
-  base::Optional<WebFeedPageInformation> page_information;
+  absl::optional<WebFeedPageInformation> page_information;
   // We may or may not know about this web feed when subscribing; always known
   // when unsubscribing.
-  base::Optional<feedstore::WebFeedInfo> web_feed_info;
+  absl::optional<feedstore::WebFeedInfo> web_feed_info;
 };
 
 // An in-memory model of the subscribed web feeds. This should be loaded before
@@ -241,7 +241,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeed(
     const WebFeedPageInformation& page_info,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   EnqueueInFlightChange(/*subscribing=*/true, page_info,
-                        /*info=*/base::nullopt);
+                        /*info=*/absl::nullopt);
   WithModel(
       base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart,
                      base::Unretained(this), page_info, std::move(callback)));
@@ -267,7 +267,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeed(
   feedstore::WebFeedInfo info;
   info.set_web_feed_id(web_feed_id);
   EnqueueInFlightChange(/*subscribing=*/true,
-                        /*page_information=*/base::nullopt, info);
+                        /*page_information=*/absl::nullopt, info);
   WithModel(
       base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart,
                      base::Unretained(this), web_feed_id, std::move(callback)));
@@ -322,10 +322,10 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
   SubscriptionInfo info = model_->GetSubscriptionInfo(web_feed_id);
 
   EnqueueInFlightChange(/*subscribing=*/false,
-                        /*page_information=*/base::nullopt,
+                        /*page_information=*/absl::nullopt,
                         info.status != WebFeedSubscriptionStatus::kUnknown
-                            ? base::make_optional(info.web_feed_info)
-                            : base::nullopt);
+                            ? absl::make_optional(info.web_feed_info)
+                            : absl::nullopt);
 
   feed_stream_->GetTaskQueue().AddTask(
       std::make_unique<UnsubscribeFromWebFeedTask>(
@@ -530,8 +530,8 @@ void WebFeedSubscriptionCoordinator::ModelDataLoaded(
 
 void WebFeedSubscriptionCoordinator::EnqueueInFlightChange(
     bool subscribing,
-    base::Optional<WebFeedPageInformation> page_information,
-    base::Optional<feedstore::WebFeedInfo> info) {
+    absl::optional<WebFeedPageInformation> page_information,
+    absl::optional<feedstore::WebFeedInfo> info) {
   in_flight_changes_.push_back(
       {subscribing, std::move(page_information), std::move(info)});
 }

@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/update_client/component.h"
@@ -23,6 +22,7 @@
 #include "components/update_client/ping_manager.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -83,7 +83,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   void DoUpdateCheck(scoped_refptr<UpdateContext> update_context);
   void UpdateCheckResultsAvailable(
       scoped_refptr<UpdateContext> update_context,
-      const base::Optional<ProtocolParser::Results>& results,
+      const absl::optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec);

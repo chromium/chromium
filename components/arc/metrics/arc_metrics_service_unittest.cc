@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +25,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -342,7 +342,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
   events.emplace_back(
       mojom::BootProgressEvent::New(kBootProgressArcUpgraded, kArcStartTimeMs));
 
-  base::Optional<base::TimeTicks> arc_start_time =
+  absl::optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_TRUE(arc_start_time.has_value());
   EXPECT_EQ(*arc_start_time,
@@ -360,7 +360,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
   std::vector<mojom::BootProgressEventPtr> events(
       GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
 
-  base::Optional<base::TimeTicks> arc_start_time =
+  absl::optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_FALSE(arc_start_time.has_value());
 }
@@ -371,7 +371,7 @@ TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
     void OnUserInteraction(UserInteractionType type) override {
       this->type = type;
     }
-    base::Optional<UserInteractionType> type;
+    absl::optional<UserInteractionType> type;
   } observer;
 
   service()->AddUserInteractionObserver(&observer);

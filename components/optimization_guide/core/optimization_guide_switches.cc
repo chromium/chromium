@@ -7,9 +7,9 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace switches {
@@ -99,11 +99,11 @@ bool ShouldPurgeModelAndFeaturesStoreOnStartup() {
 // Parses a list of hosts to have hints fetched for. This overrides scheduling
 // of the first hints fetch and forces it to occur immediately. If no hosts are
 // provided, nullopt is returned.
-base::Optional<std::vector<std::string>>
+absl::optional<std::vector<std::string>>
 ParseHintsFetchOverrideFromCommandLine() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(kFetchHintsOverride))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string override_hosts_value =
       cmd_line->GetSwitchValueASCII(kFetchHintsOverride);
@@ -113,7 +113,7 @@ ParseHintsFetchOverrideFromCommandLine() {
                         base::SPLIT_WANT_NONEMPTY);
 
   if (hosts.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return hosts;
 }
@@ -174,13 +174,13 @@ bool IsModelOverridePresent() {
   return command_line->HasSwitch(kModelOverride);
 }
 
-base::Optional<
-    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+absl::optional<
+    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kModelOverride))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string model_override_switch_value =
       command_line->GetSwitchValueASCII(kModelOverride);
@@ -193,7 +193,7 @@ GetModelOverrideForOptimizationTarget(
     if (override_parts.size() != 2 && override_parts.size() != 3) {
       // Input is malformed.
       DLOG(ERROR) << "Invalid string format provided to the Model Override";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     optimization_guide::proto::OptimizationTarget recv_optimization_target;
@@ -202,33 +202,33 @@ GetModelOverrideForOptimizationTarget(
       // Optimization target is invalid.
       DLOG(ERROR)
           << "Invalid optimization target provided to the Model Override";
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (optimization_target != recv_optimization_target)
       continue;
 
     if (override_parts.size() == 2) {
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>
+      std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
           file_path_and_metadata =
-              std::make_pair(override_parts[1], base::nullopt);
+              std::make_pair(override_parts[1], absl::nullopt);
       return file_path_and_metadata;
     }
     std::string binary_pb;
     if (!base::Base64Decode(override_parts[2], &binary_pb)) {
       DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
-      return base::nullopt;
+      return absl::nullopt;
     }
     optimization_guide::proto::Any model_metadata;
     if (!model_metadata.ParseFromString(binary_pb)) {
       DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
-      return base::nullopt;
+      return absl::nullopt;
     }
-    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>
+    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
         file_path_and_metadata =
             std::make_pair(override_parts[1], model_metadata);
     return file_path_and_metadata;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace switches

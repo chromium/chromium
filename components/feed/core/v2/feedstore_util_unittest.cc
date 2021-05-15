@@ -40,21 +40,21 @@ TEST(feedstore_util_test, MaybeUpdateSessionId) {
   SetSessionId(metadata, Token1(), kExpiryTime1);
 
   // Updating the token with nullopt is a NOP.
-  EXPECT_FALSE(MaybeUpdateSessionId(metadata, base::nullopt));
+  EXPECT_FALSE(MaybeUpdateSessionId(metadata, absl::nullopt));
 
   // Updating the token with the same value is a NOP.
   EXPECT_FALSE(MaybeUpdateSessionId(metadata, Token1()));
 
   // Updating the token with a different value resets the token and assigns a
   // new expiry time.
-  base::Optional<Metadata> metadata2 = MaybeUpdateSessionId(metadata, Token2());
+  absl::optional<Metadata> metadata2 = MaybeUpdateSessionId(metadata, Token2());
   ASSERT_TRUE(metadata2);
   EXPECT_EQ(Token2(), metadata2->session_id().token());
   EXPECT_TIME_EQ(base::Time::Now() + feed::GetFeedConfig().session_id_max_age,
                  GetSessionIdExpiryTime(*metadata2));
 
   // Updating the token with the empty string clears its value.
-  base::Optional<Metadata> metadata3 = MaybeUpdateSessionId(*metadata2, "");
+  absl::optional<Metadata> metadata3 = MaybeUpdateSessionId(*metadata2, "");
   EXPECT_TRUE(metadata3->session_id().token().empty());
   EXPECT_TRUE(GetSessionIdExpiryTime(*metadata3).is_null());
 }

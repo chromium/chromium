@@ -97,21 +97,21 @@ ClipboardRecentContentIOS::ClipboardRecentContentIOS(
   implementation_ = implementation;
 }
 
-base::Optional<GURL> ClipboardRecentContentIOS::GetRecentURLFromClipboard() {
+absl::optional<GURL> ClipboardRecentContentIOS::GetRecentURLFromClipboard() {
   NSURL* url_from_pasteboard = [implementation_ recentURLFromClipboard];
   GURL converted_url = net::GURLWithNSURL(url_from_pasteboard);
   if (!converted_url.is_valid()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return converted_url;
 }
 
-base::Optional<std::u16string>
+absl::optional<std::u16string>
 ClipboardRecentContentIOS::GetRecentTextFromClipboard() {
   NSString* text_from_pasteboard = [implementation_ recentTextFromClipboard];
   if (!text_from_pasteboard) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::SysNSStringToUTF16(text_from_pasteboard);
@@ -163,7 +163,7 @@ void ClipboardRecentContentIOS::GetRecentURLFromClipboard(
     GURL converted_url = net::GURLWithNSURL(url);
     if (!converted_url.is_valid()) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
-                              std::move(callback_for_block).Run(base::nullopt);
+                              std::move(callback_for_block).Run(absl::nullopt);
                             }));
       return;
     }
@@ -185,7 +185,7 @@ void ClipboardRecentContentIOS::GetRecentTextFromClipboard(
   [implementation_ recentTextFromClipboardAsync:^(NSString* text) {
     if (!text) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
-                              std::move(callback_for_block).Run(base::nullopt);
+                              std::move(callback_for_block).Run(absl::nullopt);
                             }));
       return;
     }
@@ -208,7 +208,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
   [implementation_ recentImageFromClipboardAsync:^(UIImage* image) {
     if (!image) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
-                              std::move(callback_for_block).Run(base::nullopt);
+                              std::move(callback_for_block).Run(absl::nullopt);
                             }));
       return;
     }
@@ -235,11 +235,11 @@ void ClipboardRecentContentIOS::ClearClipboardContent() {
   return;
 }
 
-base::Optional<gfx::Image>
+absl::optional<gfx::Image>
 ClipboardRecentContentIOS::GetRecentImageFromClipboardInternal() {
   UIImage* image_from_pasteboard = [implementation_ recentImageFromClipboard];
   if (!image_from_pasteboard) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return gfx::Image(image_from_pasteboard);

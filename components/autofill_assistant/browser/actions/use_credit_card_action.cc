@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 

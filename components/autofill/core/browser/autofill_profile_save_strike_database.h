@@ -28,12 +28,12 @@ class AutofillProfileSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
 
   void ClearStrikesByOrigin(const std::set<std::string>& hosts_to_delete);
 
-  base::Optional<size_t> GetMaximumEntries() const override;
-  base::Optional<size_t> GetMaximumEntriesAfterCleanup() const override;
+  absl::optional<size_t> GetMaximumEntries() const override;
+  absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override;
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;
-  base::Optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
 };
 

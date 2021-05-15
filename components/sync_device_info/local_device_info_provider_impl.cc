@@ -43,21 +43,21 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
 
   // Do not update previous values if the service is not fully initialized.
-  // base::nullopt means that the value is unknown yet and the previous value
+  // absl::nullopt means that the value is unknown yet and the previous value
   // should be kept.
-  const base::Optional<std::string> fcm_token =
+  const absl::optional<std::string> fcm_token =
       sync_client_->GetFCMRegistrationToken();
   if (fcm_token) {
     local_device_info_->set_fcm_registration_token(*fcm_token);
   }
 
-  const base::Optional<ModelTypeSet> interested_data_types =
+  const absl::optional<ModelTypeSet> interested_data_types =
       sync_client_->GetInterestedDataTypes();
   if (interested_data_types) {
     local_device_info_->set_interested_data_types(*interested_data_types);
   }
 
-  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
       sync_client_->GetPhoneAsASecurityKeyInfo();
   if (paask_info) {
     local_device_info_->set_paask_info(std::move(*paask_info));
@@ -105,7 +105,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
   // become ready by then.
   std::string last_fcm_registration_token;
   ModelTypeSet last_interested_data_types;
-  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
+  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
   if (device_info_restored_from_store) {
     last_fcm_registration_token =
         device_info_restored_from_store->fcm_registration_token();

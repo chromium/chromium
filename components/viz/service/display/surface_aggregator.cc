@@ -184,11 +184,11 @@ SurfaceAggregator::GenerateRenderPassMap(
 
 // Create a clip rect for an aggregated quad from the original clip rect and
 // the clip rect from the surface it's on.
-base::Optional<gfx::Rect> SurfaceAggregator::CalculateClipRect(
-    const base::Optional<gfx::Rect>& surface_clip,
-    const base::Optional<gfx::Rect>& quad_clip,
+absl::optional<gfx::Rect> SurfaceAggregator::CalculateClipRect(
+    const absl::optional<gfx::Rect>& surface_clip,
+    const absl::optional<gfx::Rect>& quad_clip,
     const gfx::Transform& target_transform) {
-  base::Optional<gfx::Rect> out_clip;
+  absl::optional<gfx::Rect> out_clip;
   if (surface_clip)
     out_clip = surface_clip;
 
@@ -306,7 +306,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
 void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Rect& default_damage_rect,
     const gfx::Transform& parent_target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     const CompositorRenderPass* source_pass,
     AggregatedRenderPass* dest_pass,
     Surface* surface) {
@@ -356,7 +356,7 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     AggregatedRenderPass* dest_pass,
     const gfx::Transform& parent_target_transform,
     const Surface* surface,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     size_t* overlay_damage_index) {
   // If we have damage from a surface animation, then we shouldn't have an
   // overlay candidate from the root render pass, since that's an interpolated
@@ -443,7 +443,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
     const SurfaceDrawQuad* surface_quad,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
@@ -509,7 +509,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     float parent_device_scale_factor,
     const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
@@ -605,7 +605,7 @@ void SurfaceAggregator::EmitSurfaceContent(
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
       CanMergeMaskFilterInfo(mask_filter_info, *render_pass_list.back());
 
-  base::Optional<gfx::Rect> quads_clip;
+  absl::optional<gfx::Rect> quads_clip;
   if (merge_pass) {
     // Intersect the transformed visible rect and the clip rect to create a
     // smaller cliprect for the quad.
@@ -779,7 +779,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
   TRACE_EVENT1("viz", "SurfaceAggregator::EmitDefaultBackgroundColorQuad",
@@ -803,7 +803,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& fallback_rect,
     const SharedQuadState* primary_shared_quad_state,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     SkColor background_color,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
@@ -894,7 +894,7 @@ void SurfaceAggregator::AddColorConversionPass() {
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+      /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
       /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrc, /*sorting_context_id=*/0);
 
@@ -952,7 +952,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt, are_contents_opaque, /*opacity=*/1.f,
+      /*clip_rect=*/absl::nullopt, are_contents_opaque, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   auto* quad = display_transform_pass
@@ -969,7 +969,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
 SharedQuadState* SurfaceAggregator::CopySharedQuadState(
     const SharedQuadState* source_sqs,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_render_pass,
     const MaskFilterInfoExt& mask_filter_info) {
   return CopyAndScaleSharedQuadState(
@@ -984,7 +984,7 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
     const gfx::Transform& target_transform,
     const gfx::Rect& quad_layer_rect,
     const gfx::Rect& visible_quad_layer_rect,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_render_pass,
     const MaskFilterInfoExt& mask_filter_info_ext) {
   auto* shared_quad_state = dest_render_pass->CreateAndAppendSharedQuadState();
@@ -1019,7 +1019,7 @@ void SurfaceAggregator::CopyQuadsToPass(
     const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
         child_to_parent_map,
     const gfx::Transform& target_transform,
-    const base::Optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& clip_rect,
     const Surface* surface,
     const MaskFilterInfoExt& parent_mask_filter_info_ext) {
   const QuadList& source_quad_list = source_pass.quad_list;

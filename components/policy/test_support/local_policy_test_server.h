@@ -91,7 +91,7 @@ class LocalPolicyTestServer : public net::LocalTestServer {
   GURL GetServiceURL() const;
 
   // net::LocalTestServer:
-  base::Optional<std::vector<base::FilePath>> GetPythonPath() const override;
+  absl::optional<std::vector<base::FilePath>> GetPythonPath() const override;
   bool GetTestServerPath(base::FilePath* testserver_path) const override;
   bool GenerateAdditionalArguments(
       base::DictionaryValue* arguments) const override;

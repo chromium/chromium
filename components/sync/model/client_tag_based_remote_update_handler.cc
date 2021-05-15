@@ -51,7 +51,7 @@ ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
   DCHECK(entity_tracker_);
 }
 
-base::Optional<ModelError>
+absl::optional<ModelError>
 ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
     const sync_pb::ModelTypeState& model_type_state,
     UpdateResponseDataList updates) {
@@ -191,7 +191,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
                     storage_key_to_clear);
   } else {
     // Handle simple create/delete/update.
-    base::Optional<EntityChange::ChangeType> change_type;
+    absl::optional<EntityChange::ChangeType> change_type;
 
     if (entity == nullptr) {
       entity = CreateEntity(data);

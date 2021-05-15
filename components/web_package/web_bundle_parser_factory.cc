@@ -31,7 +31,7 @@ class FileDataSource final : public mojom::BundleDataSource {
       buf.resize(bytes);
       std::move(callback).Run(std::move(buf));
     } else {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
     }
   }
 

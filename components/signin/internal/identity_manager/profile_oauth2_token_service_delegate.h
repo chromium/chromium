@@ -129,7 +129,7 @@ class ProfileOAuth2TokenServiceDelegate {
 #if defined(OS_IOS) || defined(OS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const base::Optional<CoreAccountId>& primary_account_id) {}
+      const absl::optional<CoreAccountId>& primary_account_id) {}
 #endif
 
 #if defined(OS_IOS)

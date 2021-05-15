@@ -51,14 +51,14 @@ void WriteToDisk(const sync_pb::LocalTrustedVault& data,
   }
 }
 
-base::Optional<TrustedVaultKeyAndVersion> GetLastTrustedVaultKeyAndVersion(
+absl::optional<TrustedVaultKeyAndVersion> GetLastTrustedVaultKeyAndVersion(
     const sync_pb::LocalTrustedVaultPerUser& per_user_vault) {
   if (per_user_vault.vault_key_size() != 0) {
     return TrustedVaultKeyAndVersion(
         ProtoStringToBytes(per_user_vault.vault_key().rbegin()->key_material()),
         per_user_vault.last_vault_key_version());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -172,7 +172,7 @@ void StandaloneTrustedVaultBackend::RemoveAllStoredKeys() {
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
-    const base::Optional<CoreAccountInfo>& primary_account) {
+    const absl::optional<CoreAccountInfo>& primary_account) {
   if (primary_account == primary_account_) {
     return;
   }
@@ -228,7 +228,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   std::move(cb).Run();
 }
 
-base::Optional<CoreAccountInfo>
+absl::optional<CoreAccountInfo>
 StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
 }
@@ -269,7 +269,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
 
-  base::Optional<TrustedVaultKeyAndVersion> last_trusted_vault_key_and_version =
+  absl::optional<TrustedVaultKeyAndVersion> last_trusted_vault_key_and_version =
       GetLastTrustedVaultKeyAndVersion(*per_user_vault);
   if (!last_trusted_vault_key_and_version.has_value() &&
       !base::FeatureList::IsEnabled(

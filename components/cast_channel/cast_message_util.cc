@@ -182,7 +182,7 @@ int GetVirtualConnectPlatformValue() {
 // messages are passed using a CastInternalMessage object.
 base::StringPiece GetRemappedMediaRequestType(
     base::StringPiece v2_message_type) {
-  base::Optional<V2MessageType> type =
+  absl::optional<V2MessageType> type =
       StringToEnum<V2MessageType>(v2_message_type);
   DCHECK(type && IsMediaRequestMessageType(*type));
   switch (*type) {
@@ -476,7 +476,7 @@ CastMessage CreateLaunchRequest(
     const std::string& app_id,
     const std::string& locale,
     const std::vector<std::string>& supported_app_types,
-    const base::Optional<base::Value>& app_params) {
+    const absl::optional<base::Value>& app_params) {
   Value dict(Value::Type::DICTIONARY);
   dict.SetKey("type",
               Value(EnumToString<CastMessageType, CastMessageType::kLaunch>()));
@@ -586,13 +586,13 @@ const char* ToString(GetAppAvailabilityResult result) {
   return EnumToString(result).value_or("").data();
 }
 
-base::Optional<int> GetRequestIdFromResponse(const Value& payload) {
+absl::optional<int> GetRequestIdFromResponse(const Value& payload) {
   DCHECK(payload.is_dict());
 
   const Value* request_id_value =
       payload.FindKeyOfType("requestId", Value::Type::INTEGER);
   if (!request_id_value)
-    return base::nullopt;
+    return absl::nullopt;
   return request_id_value->GetInt();
 }
 

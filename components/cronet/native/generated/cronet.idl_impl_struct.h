@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Struct Cronet_Error.
 struct Cronet_Error {
@@ -180,19 +180,19 @@ struct Cronet_Metrics {
   explicit Cronet_Metrics(Cronet_Metrics&& from);
   ~Cronet_Metrics();
 
-  base::Optional<Cronet_DateTime> request_start;
-  base::Optional<Cronet_DateTime> dns_start;
-  base::Optional<Cronet_DateTime> dns_end;
-  base::Optional<Cronet_DateTime> connect_start;
-  base::Optional<Cronet_DateTime> connect_end;
-  base::Optional<Cronet_DateTime> ssl_start;
-  base::Optional<Cronet_DateTime> ssl_end;
-  base::Optional<Cronet_DateTime> sending_start;
-  base::Optional<Cronet_DateTime> sending_end;
-  base::Optional<Cronet_DateTime> push_start;
-  base::Optional<Cronet_DateTime> push_end;
-  base::Optional<Cronet_DateTime> response_start;
-  base::Optional<Cronet_DateTime> request_end;
+  absl::optional<Cronet_DateTime> request_start;
+  absl::optional<Cronet_DateTime> dns_start;
+  absl::optional<Cronet_DateTime> dns_end;
+  absl::optional<Cronet_DateTime> connect_start;
+  absl::optional<Cronet_DateTime> connect_end;
+  absl::optional<Cronet_DateTime> ssl_start;
+  absl::optional<Cronet_DateTime> ssl_end;
+  absl::optional<Cronet_DateTime> sending_start;
+  absl::optional<Cronet_DateTime> sending_end;
+  absl::optional<Cronet_DateTime> push_start;
+  absl::optional<Cronet_DateTime> push_end;
+  absl::optional<Cronet_DateTime> response_start;
+  absl::optional<Cronet_DateTime> request_end;
   bool socket_reused = false;
   int64_t sent_byte_count = -1;
   int64_t received_byte_count = -1;
@@ -209,7 +209,7 @@ struct Cronet_RequestFinishedInfo {
   explicit Cronet_RequestFinishedInfo(Cronet_RequestFinishedInfo&& from);
   ~Cronet_RequestFinishedInfo();
 
-  base::Optional<Cronet_Metrics> metrics;
+  absl::optional<Cronet_Metrics> metrics;
   std::vector<Cronet_RawDataPtr> annotations;
   Cronet_RequestFinishedInfo_FINISHED_REASON finished_reason =
       Cronet_RequestFinishedInfo_FINISHED_REASON_SUCCEEDED;

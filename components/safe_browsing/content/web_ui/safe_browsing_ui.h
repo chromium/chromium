@@ -42,13 +42,13 @@ struct DeepScanDebugData {
   ~DeepScanDebugData();
 
   base::Time request_time;
-  base::Optional<enterprise_connectors::ContentAnalysisRequest> request;
+  absl::optional<enterprise_connectors::ContentAnalysisRequest> request;
   GURL tab_url;
   bool per_profile_request;
 
   base::Time response_time;
   std::string response_status;
-  base::Optional<enterprise_connectors::ContentAnalysisResponse> response;
+  absl::optional<enterprise_connectors::ContentAnalysisResponse> response;
 };
 #endif
 

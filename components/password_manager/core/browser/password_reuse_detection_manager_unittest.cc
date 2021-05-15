@@ -144,7 +144,7 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
   PasswordReuseDetectionManager manager(&client_);
 
   // Simulate that reuse found.
-  manager.OnReuseCheckDone(true, 0ul, base::nullopt, {{"https://example.com"}},
+  manager.OnReuseCheckDone(true, 0ul, absl::nullopt, {{"https://example.com"}},
                            0);
 
   // Expect no checking of reuse.
@@ -231,10 +231,10 @@ TEST_F(PasswordReuseDetectionManagerTest,
               CheckProtectedPasswordEntry(_, _, reused_credentials, _));
   // Simulate 2 responses from the store with the same reused credentials.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            reused_credentials, /*saved_passwords=*/1);
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            reused_credentials, /*saved_passwords=*/1);
 }
 
@@ -309,7 +309,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
        .in_store = PasswordForm::Store::kProfileStore}};
   // Simulate response from the profile store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            profile_reused_credentials, /*saved_passwords=*/1);
 
   std::vector<MatchingReusedCredential> account_reused_credentials{
@@ -326,7 +326,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
                   _));
   // Simulate response from the account store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            account_reused_credentials, /*saved_passwords=*/1);
 }
 
@@ -356,7 +356,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
        .in_store = PasswordForm::Store::kProfileStore}};
   // Simulate response from the profile store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            profile_reused_credentials, /*saved_passwords=*/1);
 
   // The callback is run only after both stores respond.
@@ -364,7 +364,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
               CheckProtectedPasswordEntry(_, _, profile_reused_credentials, _));
   // Simulate response from the account store with no reuse found.
   manager.OnReuseCheckDone(/*is_reuse_found=*/false, /*password_length=*/0,
-                           /*reused_protected_password_hash=*/base::nullopt, {},
+                           /*reused_protected_password_hash=*/absl::nullopt, {},
                            /*saved_passwords=*/0);
 }
 
@@ -390,7 +390,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
 
   // Simulate response from the account store with no reuse found.
   manager.OnReuseCheckDone(/*is_reuse_found=*/false, /*password_length=*/0,
-                           /*reused_protected_password_hash=*/base::nullopt, {},
+                           /*reused_protected_password_hash=*/absl::nullopt, {},
                            /*saved_passwords=*/0);
 
   std::vector<MatchingReusedCredential> profile_reused_credentials = {
@@ -403,7 +403,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
               CheckProtectedPasswordEntry(_, _, profile_reused_credentials, _));
   // Simulate response from the profile store.
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
-                           /*reused_protected_password_hash=*/base::nullopt,
+                           /*reused_protected_password_hash=*/absl::nullopt,
                            profile_reused_credentials, /*saved_passwords=*/1);
 }
 

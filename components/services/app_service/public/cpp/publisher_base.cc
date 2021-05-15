@@ -69,8 +69,8 @@ void PublisherBase::Publish(
 void PublisherBase::ModifyCapabilityAccess(
     const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers,
     const std::string& app_id,
-    base::Optional<bool> accessing_camera,
-    base::Optional<bool> accessing_microphone) {
+    absl::optional<bool> accessing_camera,
+    absl::optional<bool> accessing_microphone) {
   if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
     return;
   }

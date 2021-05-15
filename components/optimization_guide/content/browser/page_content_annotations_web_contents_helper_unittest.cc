@@ -47,13 +47,13 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     last_annotation_request_.emplace(std::make_pair(visit, text));
   }
 
-  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request()
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request()
       const {
     return last_annotation_request_;
   }
 
  private:
-  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request_;
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request_;
 };
 
 class PageContentAnnotationsWebContentsHelperTest
@@ -150,7 +150,7 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest,
   result.AddFrameTextDumpResult(frame_result);
   std::move(request->callback).Run(std::move(result));
 
-  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
   EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));

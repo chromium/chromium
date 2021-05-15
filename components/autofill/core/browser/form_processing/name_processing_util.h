@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -22,24 +22,24 @@ size_t FindLongestCommonAffixLength(
 
 bool IsValidParseableName(const base::StringPiece16 parseable_name);
 
-base::Optional<std::vector<base::StringPiece16>> RemoveCommonAffixesIfPossible(
+absl::optional<std::vector<base::StringPiece16>> RemoveCommonAffixesIfPossible(
     const std::vector<base::StringPiece16>& field_names);
 
 size_t FindLongestCommonPrefixLengthInStringsWithMinimalLength(
     const std::vector<base::StringPiece16>& strings,
     size_t minimal_length);
 
-base::Optional<std::vector<base::StringPiece16>>
+absl::optional<std::vector<base::StringPiece16>>
 GetStrippedParseableNamesIfValid(
     const std::vector<base::StringPiece16>& field_names,
     size_t offset_left,
     size_t offset_right,
     size_t minimal_string_length_to_strip);
 
-base::Optional<std::vector<base::StringPiece16>> RemoveCommonPrefixIfPossible(
+absl::optional<std::vector<base::StringPiece16>> RemoveCommonPrefixIfPossible(
     const std::vector<base::StringPiece16>& field_names);
 
-base::Optional<std::vector<base::StringPiece16>>
+absl::optional<std::vector<base::StringPiece16>>
 RemoveCommonPrefixForNamesWithMinimalLengthIfPossible(
     const std::vector<base::StringPiece16>& field_names);
 #endif

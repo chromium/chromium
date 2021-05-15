@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method_delegate.h"
 
 namespace arc {
@@ -36,7 +36,7 @@ class KeyEventResultReceiver {
   void RecordImeLatency();
 
   KeyEventDoneCallback callback_{};
-  base::Optional<base::TimeTicks> callback_set_time_{};
+  absl::optional<base::TimeTicks> callback_set_time_{};
   base::WeakPtrFactory<KeyEventResultReceiver> weak_ptr_factory_{this};
 };
 

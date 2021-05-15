@@ -50,7 +50,7 @@ bool UnpickleNetworkResponseInfo(base::PickleIterator& iterator,
 }
 
 void PickleOptionalNetworkResponseInfo(
-    const base::Optional<NetworkResponseInfo>& value,
+    const absl::optional<NetworkResponseInfo>& value,
     base::Pickle& pickle) {
   if (value.has_value()) {
     pickle.WriteBool(true);
@@ -62,7 +62,7 @@ void PickleOptionalNetworkResponseInfo(
 
 bool UnpickleOptionalNetworkResponseInfo(
     base::PickleIterator& iterator,
-    base::Optional<NetworkResponseInfo>& value) {
+    absl::optional<NetworkResponseInfo>& value) {
   bool has_network_response_info = false;
   if (!iterator.ReadBool(&has_network_response_info))
     return false;
@@ -134,15 +134,15 @@ std::string SerializeDebugStreamData(const DebugStreamData& data) {
       base::span<const uint8_t>(pickle_data_ptr, pickle.size()));
 }
 
-base::Optional<DebugStreamData> DeserializeDebugStreamData(
+absl::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded) {
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
-    return base::nullopt;
+    return absl::nullopt;
   base::Pickle pickle(binary_data.data(), binary_data.size());
   DebugStreamData result;
   if (!UnpickleDebugStreamData(base::PickleIterator(pickle), result))
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -163,12 +163,12 @@ PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value) {
   PersistentMetricsData result;
   if (!value.is_dict())
     return result;
-  base::Optional<base::Time> day_start =
+  absl::optional<base::Time> day_start =
       util::ValueToTime(value.FindKey("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
-  base::Optional<base::TimeDelta> time_spent_in_feed =
+  absl::optional<base::TimeDelta> time_spent_in_feed =
       util::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_LOCK_SCREEN_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_LOCK_SCREEN_INSTANCE_H_
 
-#include "base/optional.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -20,10 +20,10 @@ class FakeLockScreenInstance : public mojom::LockScreenInstance {
   // mojom::LockScreenInstance overrides:
   void SetDeviceLocked(bool is_locked) override;
 
-  const base::Optional<bool>& is_locked() const { return is_locked_; }
+  const absl::optional<bool>& is_locked() const { return is_locked_; }
 
  private:
-  base::Optional<bool> is_locked_;
+  absl::optional<bool> is_locked_;
 };
 
 }  // namespace arc

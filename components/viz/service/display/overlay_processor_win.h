@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Set |is_video_capture_enabled_|.
   void SetIsVideoCaptureEnabled(bool enabled) override;
 
-  void AdjustOutputSurfaceOverlay(base::Optional<OutputSurfaceOverlayPlane>*
+  void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
 
   // Attempt to replace quads from the specified root render pass with overlays

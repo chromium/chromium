@@ -309,7 +309,7 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
 
 void MediaRouterAndroid::OnRouteClosed(
     const MediaRoute::Id& route_id,
-    const base::Optional<std::string>& error) {
+    const absl::optional<std::string>& error) {
   RemoveRoute(route_id);
   // TODO(crbug.com/882690): When the sending context is destroyed, tell MRP to
   // clean up the connection.

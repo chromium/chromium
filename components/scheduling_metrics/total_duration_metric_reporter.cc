@@ -39,7 +39,7 @@ void TotalDurationMetricReporter::RecordAdditionalDuration(
 }
 
 void TotalDurationMetricReporter::Reset() {
-  reported_value_ = base::nullopt;
+  reported_value_ = absl::nullopt;
 }
 
 }  // namespace scheduling_metrics

@@ -390,7 +390,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
     shared_quad_state->SetAll(layer_to_target_transform, layer_bounds,
                               visible_layer_rect, mask_filter_info,
-                              base::nullopt, are_contents_opaque, opacity,
+                              absl::nullopt, are_contents_opaque, opacity,
                               blend_mode, 0);
     shared_quad_state->is_fast_rounded_corner = is_fast_rounded_corner;
 
@@ -410,7 +410,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     gfx::Rect output_rect = gfx::Rect(0, 0, 5, 5);
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
-                         gfx::MaskFilterInfo(), base::nullopt, false, 1,
+                         gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
@@ -425,7 +425,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                               const gfx::Rect& output_rect) {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
-                         gfx::MaskFilterInfo(), base::nullopt, false, 1,
+                         gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
@@ -655,7 +655,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {
 
   {
     std::vector<Quad> quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, embedded_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, embedded_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), .5f, gfx::Transform(),
         /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
         /*is_fast_rounded_corner=*/false)};
@@ -679,7 +679,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {
   // use a render surface.
   {
     std::vector<Quad> quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, embedded_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, embedded_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), .9999f, gfx::Transform(),
         /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
         /*is_fast_rounded_corner=*/false)};
@@ -716,7 +716,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RotatedClip) {
   gfx::Transform rotate;
   rotate.Rotate(30);
   std::vector<Quad> quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, embedded_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, embedded_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), 1.f, rotate,
       /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
       /*is_fast_rounded_corner=*/false)};
@@ -834,7 +834,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleSurfaceReference) {
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -884,12 +884,12 @@ class TestVizClient {
     for (const auto& embed : embedded_clients_) {
       if (embed.second) {
         embedded_quads.push_back(Quad::SurfaceQuad(
-            SurfaceRange(base::nullopt, embed.first->surface_id()),
+            SurfaceRange(absl::nullopt, embed.first->surface_id()),
             SK_ColorWHITE, embed.first->bounds(),
             /*stretch_content_to_fill_bounds=*/false));
       } else {
         referenced_surfaces.emplace_back(
-            SurfaceRange(base::nullopt, embed.first->surface_id()));
+            SurfaceRange(absl::nullopt, embed.first->surface_id()));
       }
     }
     std::vector<Pass> embedded_passes = {Pass(embedded_quads, bounds_.size())};
@@ -947,7 +947,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfaces) {
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent.surface_id()),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent.surface_id()),
                         SK_ColorWHITE, parent.bounds(),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -999,7 +999,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfacesWithCopyRequests) {
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent.surface_id()),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent.surface_id()),
                         SK_ColorWHITE, parent.bounds(),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -1047,10 +1047,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Submit a root CompositorFrame that embeds both parents.
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, first_parent.surface_id()),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, first_parent.surface_id()),
                         SK_ColorCYAN, first_parent.bounds(),
                         /*stretch_content_to_fill_bounds=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, second_parent.surface_id()),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, second_parent.surface_id()),
                         SK_ColorMAGENTA, second_parent.bounds(),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -1324,7 +1324,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ReflectedSurfaceDrawQuadScaled) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetAll(sqs, display_rect, display_rect,
                          /*needs_blending=*/false,
-                         SurfaceRange(base::nullopt, root_surface_id_),
+                         SurfaceRange(absl::nullopt, root_surface_id_),
                          SK_ColorBLACK,
                          /*stretch_content_to_fill_bounds=*/true,
                          /*is_reflection=*/true,
@@ -1401,7 +1401,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ReflectedSurfaceDrawQuadNotScaled) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetAll(sqs, display_rect, display_rect,
                          /*needs_blending=*/false,
-                         SurfaceRange(base::nullopt, root_surface_id_),
+                         SurfaceRange(absl::nullopt, root_surface_id_),
                          SK_ColorBLACK,
                          /*stretch_content_to_fill_bounds=*/true,
                          /*is_reflection=*/true,
@@ -1541,7 +1541,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -1600,7 +1600,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RootCopyRequest) {
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
@@ -1686,7 +1686,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
 
   std::vector<Quad> parent_quads = {
       Quad::SolidColorQuad(SK_ColorGRAY, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorLTGRAY, gfx::Rect(5, 5))};
@@ -1778,7 +1778,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSurfaceReference) {
   std::vector<Quad> root_quads[3] = {
       {Quad::SolidColorQuad(5, gfx::Rect(5, 5)),
        Quad::SolidColorQuad(6, gfx::Rect(5, 5))},
-      {Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+      {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                          SK_ColorWHITE, gfx::Rect(5, 5),
                          /*stretch_content_to_fill_bounds=*/false),
        Quad::RenderPassQuad(pass_ids[0], gfx::Transform(), true)},
@@ -1931,7 +1931,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ValidSurfaceReferenceWithNoFrame) {
 
   std::vector<Quad> quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, surface_with_no_frame_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, surface_with_no_frame_id),
                         SK_ColorYELLOW, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLUE, gfx::Rect(5, 5))};
@@ -1978,7 +1978,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ValidFallbackWithNoFrame) {
 // The quad creating the cycle should be dropped from the final frame.
 TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleCyclicalReference) {
   std::vector<Quad> quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, root_surface_id_),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, root_surface_id_),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorYELLOW, gfx::Rect(5, 5))};
@@ -2001,7 +2001,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, TwoSurfaceCyclicalReference) {
 
   std::vector<Quad> parent_quads = {
       Quad::SolidColorQuad(SK_ColorBLUE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorCYAN, gfx::Rect(5, 5))};
@@ -2014,7 +2014,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, TwoSurfaceCyclicalReference) {
 
   std::vector<Quad> child_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, root_surface_id_),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, root_surface_id_),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorMAGENTA, gfx::Rect(5, 5))};
@@ -2062,7 +2062,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassIdMapping) {
   CompositorRenderPassId parent_pass_id[] = {CompositorRenderPassId{3u},
                                              CompositorRenderPassId{2u}};
   std::vector<Quad> parent_quad[2] = {
-      {Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE, gfx::Rect(5, 5),
                          /*stretch_content_to_fill_bounds=*/false)},
       {Quad::RenderPassQuad(parent_pass_id[0], gfx::Transform(), true)}};
@@ -2122,7 +2122,7 @@ void AddSolidColorQuadWithBlendMode(
   bool force_anti_aliasing_off = false;
   auto* sqs = pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(layer_to_target_transform, layer_rect, visible_layer_rect,
-              mask_filter_info, base::nullopt, are_contents_opaque, opacity,
+              mask_filter_info, absl::nullopt, are_contents_opaque, opacity,
               blend_mode, 0);
 
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -2203,7 +2203,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
   grandchild_surface_quad->SetNew(
       child_one_pass->shared_quad_state_list.back(), gfx::Rect(SurfaceSize()),
       gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, grandchild_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, grandchild_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
   AddSolidColorQuadWithBlendMode(SurfaceSize(), child_one_pass.get(),
                                  blend_modes[3], gfx::MaskFilterInfo());
@@ -2234,7 +2234,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
   child_one_surface_quad->SetNew(
       root_pass->shared_quad_state_list.back(), gfx::Rect(SurfaceSize()),
       gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_one_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_one_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
   AddSolidColorQuadWithBlendMode(SurfaceSize(), root_pass.get(), blend_modes[4],
                                  gfx::MaskFilterInfo());
@@ -2243,7 +2243,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
   child_two_surface_quad->SetNew(
       root_pass->shared_quad_state_list.back(), gfx::Rect(SurfaceSize()),
       gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_two_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_two_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
   AddSolidColorQuadWithBlendMode(SurfaceSize(), root_pass.get(), blend_modes[6],
                                  gfx::MaskFilterInfo());
@@ -2347,7 +2347,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   child_three_surface_quad->SetNew(
       child_three_surface_sqs, gfx::Rect(SurfaceSize()),
       gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_three_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_three_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
 
   QueuePassAsFrame(std::move(child_one_pass),
@@ -2386,7 +2386,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       child_root_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   child_one_surface_quad->SetNew(
       child_one_surface_sqs, gfx::Rect(SurfaceSize()), gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_one_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_one_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
 
   // Add child two surface quad
@@ -2397,7 +2397,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       child_root_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   child_two_surface_quad->SetNew(
       child_two_surface_sqs, gfx::Rect(SurfaceSize()), gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_two_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_two_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
 
   // Add solid color quad
@@ -2421,7 +2421,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   child_root_surface_quad->SetNew(
       child_root_surface_sqs, gfx::Rect(SurfaceSize()),
       gfx::Rect(SurfaceSize()),
-      SurfaceRange(base::nullopt, child_root_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_root_surface_id), SK_ColorWHITE,
       /*stretch_content_to_fill_bounds=*/false);
 
   QueuePassAsFrame(std::move(root_pass), root_surface_id_.local_surface_id(),
@@ -2511,7 +2511,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
   TestSurfaceIdAllocator middle_surface_id(middle_support->frame_sink_id());
   {
     std::vector<Quad> middle_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> middle_passes = {
         Pass(middle_quads, SurfaceSize()),
@@ -2536,7 +2536,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
   // Root surface.
   std::vector<Quad> secondary_quads = {
       Quad::SolidColorQuad(1, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, middle_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, middle_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Quad> root_quads = {Quad::SolidColorQuad(1, gfx::Rect(5, 5))};
@@ -2850,7 +2850,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                      std::move(child_frame));
 
   std::vector<Quad> parent_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false, AllowMerge())};
   std::vector<Pass> parent_surface_passes = {
       Pass(parent_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -2866,7 +2866,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                         std::move(parent_surface_frame));
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, parent_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, parent_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false, AllowMerge())};
   std::vector<Quad> root_render_pass_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(), true)};
@@ -3029,7 +3029,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                      std::move(child_frame));
 
   std::vector<Quad> parent_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false, AllowMerge())};
   std::vector<Pass> parent_surface_passes = {
       Pass(parent_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -3045,7 +3045,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                         std::move(parent_surface_frame));
 
   std::vector<Quad> root_surface_quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent_surface_id),
                         SK_ColorWHITE, gfx::Rect(50, 50),
                         /*stretch_content_to_fill_bounds=*/true, AllowMerge())};
   std::vector<Quad> root_render_pass_quads = {
@@ -3129,7 +3129,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                      std::move(child_frame));
 
   std::vector<Quad> parent_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false, AllowMerge())};
   std::vector<Pass> parent_surface_passes = {
       Pass(parent_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -3145,7 +3145,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                         std::move(parent_surface_frame));
 
   std::vector<Quad> root_surface_quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent_surface_id),
                         SK_ColorWHITE, gfx::Rect(200, 200),
                         /*stretch_content_to_fill_bounds=*/true, AllowMerge())};
   std::vector<Quad> root_render_pass_quads = {
@@ -3400,7 +3400,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SurfaceDamagePrimarySurfaceOnly) {
   LocalSurfaceId id4 = allocator2.GetCurrentLocalSurfaceId();
 
   CompositorFrame frame = MakeCompositorFrameFromSurfaceRanges(
-      {SurfaceRange(base::nullopt, primary_surface_id)});
+      {SurfaceRange(absl::nullopt, primary_surface_id)});
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(frame));
 
@@ -3516,7 +3516,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       // on this quad.
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
                            /*intersects_damage_under=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(90, 90),
                         /*stretch_content_to_fill_bounds=*/false,
                         AllowMerge())};
@@ -3747,10 +3747,10 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   std::vector<Quad> render_pass_quads = {
       // The |allow_merge| flag of the surface quad would be set to true/false
       // according to the parameter of the test.
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(90, 90),
                         /*stretch_content_to_fill_bounds=*/false, AllowMerge()),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, second_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, second_surface_id),
                         SK_ColorWHITE, gfx::Rect(second_surface_size),
                         /*stretch_content_to_fill_bounds=*/false,
                         /*allow_merge=*/false)};
@@ -3985,7 +3985,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
 
   constexpr gfx::Size parent_surface_size(90, 90);
   std::vector<Quad> parent_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false, AllowMerge())};
   std::vector<Pass> parent_surface_passes = {Pass(
       parent_surface_quads, CompositorRenderPassId{1}, parent_surface_size)};
@@ -4010,7 +4010,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       // damage of the SurfaceDrawQuad under it.
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
                            /*intersects_damage_under=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, parent_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false,
                         AllowMerge())};
@@ -4228,7 +4228,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   gfx::Transform translation2;
   translation2.Translate(2.f, 2.f);
   std::vector<Quad> root_quads[] = {
-      {Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE, gfx::Rect(5, 5),
                          /*stretch_content_to_fill_bounds=*/false,
                          AllowMerge())},
@@ -4462,7 +4462,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   std::vector<Quad> render_pass_quads = {
       // The |allow_merge| flag of the surface quad would be set to true/false
       // according to the parameter of the test.
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(90, 90),
                         /*stretch_content_to_fill_bounds=*/false,
                         AllowMerge())};
@@ -4596,7 +4596,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   std::vector<Quad> render_pass_quads = {
       // The |allow_merge| flag of the surface quad would be set to true/false
       // according to the parameter of the test.
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(90, 90),
                         /*stretch_content_to_fill_bounds=*/true, AllowMerge())};
 
@@ -4746,7 +4746,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
 
   {
     std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
 
     std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
@@ -4780,7 +4780,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
   // Create a root surface with a smaller damage rect.
   {
     std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
 
     std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
@@ -4890,7 +4890,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
                                               CompositorRenderPassId{2},
                                               CompositorRenderPassId{3}};
     std::vector<Quad> root_quads1 = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Quad> root_quads2 = {
         Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true)};
@@ -4953,7 +4953,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
                                               CompositorRenderPassId{2},
                                               CompositorRenderPassId{3}};
     std::vector<Quad> root_quads1 = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Quad> root_quads2 = {
         Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true)};
@@ -5018,7 +5018,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     };
     std::vector<Quad> root_quads2 = {
         Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true),
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                           SK_ColorWHITE, gfx::Rect(5, 5),
                           /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> root_passes = {
@@ -5101,7 +5101,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     };
     std::vector<Quad> root_quads2 = {
         Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true),
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                           SK_ColorWHITE, gfx::Rect(5, 5),
                           /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> root_passes = {
@@ -5186,7 +5186,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     };
     std::vector<Quad> root_quads2 = {
         Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true),
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                           SK_ColorWHITE, gfx::Rect(5, 5),
                           /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> root_passes = {
@@ -5254,7 +5254,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, ExpandByTargetDamage) {
 
   {
     std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(SurfaceSize()), /*stretch_content_to_fill_bounds=*/false)};
 
     std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
@@ -5283,7 +5283,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, ExpandByTargetDamage) {
   // This time the damage should be smaller.
   {
     std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         gfx::Rect(SurfaceSize()), /*stretch_content_to_fill_bounds=*/false)};
 
     std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
@@ -5316,7 +5316,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, ExpandByTargetDamage) {
   // surface.
   {
     std::vector<Quad> root_quads = {
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                           SK_ColorWHITE, gfx::Rect(SurfaceSize()), false)};
 
     std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
@@ -5395,7 +5395,7 @@ CompositorFrame BuildCompositorFrameWithResources(
   if (child_id.is_valid()) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetNew(sqs, gfx::Rect(0, 0, 1, 1), gfx::Rect(0, 0, 1, 1),
-                         SurfaceRange(base::nullopt, child_id), SK_ColorWHITE,
+                         SurfaceRange(absl::nullopt, child_id), SK_ColorWHITE,
                          /*stretch_content_to_fill_bounds=*/false);
   }
 
@@ -5663,7 +5663,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
 
     surface_quad->SetNew(sqs, gfx::Rect(0, 0, 1, 1), gfx::Rect(0, 0, 1, 1),
-                         SurfaceRange(base::nullopt, surface1_id),
+                         SurfaceRange(absl::nullopt, surface1_id),
                          SK_ColorWHITE,
                          /*stretch_content_to_fill_bounds=*/false);
     pass->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
@@ -5881,7 +5881,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MetadataContentColorUsageTest) {
                                            std::move(child_frame));
 
         std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-            SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+            SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
             gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
         std::vector<Pass> root_passes = {Pass(root_quads, SurfaceSize())};
 
@@ -5925,7 +5925,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageByChangingChildSurface) {
                                      std::move(child_surface_frame));
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> root_passes = {
       Pass(root_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -5999,7 +5999,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                                      std::move(child_surface_frame));
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> root_passes = {
       Pass(root_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -6040,7 +6040,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
     std::vector<Quad> new_child_surface_quads = {
         child_surface_quads[0],
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, grand_child_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, grand_child_surface_id),
                           SK_ColorWHITE, gfx::Rect(5, 5),
                           /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> new_child_surface_passes = {Pass(
@@ -6113,7 +6113,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
                                      std::move(child_frame));
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Quad> root_render_pass_quads = {
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(), true)};
@@ -6273,7 +6273,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                                      std::move(child_frame));
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
 
   std::vector<Pass> root_passes = {
@@ -6371,7 +6371,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
 
   // root surface quads
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(SurfaceSize()), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> root_passes = {
       Pass(root_surface_quads, CompositorRenderPassId{1}, SurfaceSize())};
@@ -6450,7 +6450,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
   TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
 
   std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(0, 0, 100, 100), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> root_passes = {
       Pass(root_surface_quads,
@@ -6527,7 +6527,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
   {
     TestSurfaceIdAllocator child_surface_id2(child_sink_->frame_sink_id());
     std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id2), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id2), SK_ColorWHITE,
         gfx::Rect(0, 0, 100, 100), /*stretch_content_to_fill_bounds=*/false)};
     std::vector<Pass> root_passes = {
         Pass(root_surface_quads,
@@ -6577,7 +6577,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   std::vector<Quad> root_surface_quads = {
       Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(60, 0, 40, 40)),
       Quad::SurfaceQuad(
-          SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+          SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
           /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
           /*opacity*/ 1.f, video_transform,
           /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
@@ -6696,7 +6696,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     // root surface quads, the solid quad (60, 0, 40, 40) is removed.
     std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
         /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
         /*opacity*/ 1.f, video_transform,
         /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
@@ -6793,7 +6793,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     std::vector<Quad> root_surface_quads = {
         Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(60, 0, 100, 100)),
         Quad::SurfaceQuad(
-            SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+            SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
             /*primary_surface_rect*/ gfx::Rect(0, 0, 100, 100),
             /*opacity*/ 1.f, video_transform,
             /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
@@ -6944,7 +6944,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, NotIgnoreOutsideForCachedRenderPass) {
     CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
                                         CompositorRenderPassId{2}};
     std::vector<Quad> root_quads[2] = {
-        {Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                            SK_ColorWHITE, gfx::Rect(5, 5),
                            /*stretch_content_to_fill_bounds=*/false)},
         {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
@@ -6985,7 +6985,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, NotIgnoreOutsideForCachedRenderPass) {
     CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
                                         CompositorRenderPassId{2}};
     std::vector<Quad> root_quads[2] = {
-        {Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+        {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                            SK_ColorWHITE, gfx::Rect(5, 5),
                            /*stretch_content_to_fill_bounds=*/false)},
         {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
@@ -7112,7 +7112,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformChange) {
 
   // Root surface.
   std::vector<Quad> surface_quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5), false)};
   std::vector<Pass> root_passes = {Pass(surface_quads, SurfaceSize())};
 
@@ -7165,7 +7165,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformedSurfaceQuad) {
   {
     // Set an opacity in order to prevent merging into the root render pass.
     std::vector<Quad> child_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, grandchild_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, grandchild_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), 0.5f, gfx::Transform(), false,
         gfx::MaskFilterInfo(gfx::RRectF(0, 0, 96, 10, 5)),
         /*is_fast_rounded_corner=*/false)};
@@ -7185,7 +7185,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RoundedCornerTransformedSurfaceQuad) {
   gfx::Transform surface_transform;
   surface_transform.Translate(3, 4);
   std::vector<Quad> secondary_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), 1.f, surface_transform, false, gfx::MaskFilterInfo(),
       /*is_fast_rounded_corner=*/false)};
 
@@ -7241,7 +7241,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
   {
     std::vector<Quad> child_quads = {Quad::SurfaceQuad(
-        SurfaceRange(base::nullopt, grandchild_surface_id), SK_ColorWHITE,
+        SurfaceRange(absl::nullopt, grandchild_surface_id), SK_ColorWHITE,
         gfx::Rect(5, 5), 1.f, gfx::Transform(), false,
         gfx::MaskFilterInfo(gfx::RRectF(0, 0, 96, 10, 5)),
         /*is_fast_rounded_corner=*/false)};
@@ -7261,7 +7261,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   gfx::Transform surface_transform;
   surface_transform.Translate(3, 4);
   std::vector<Quad> secondary_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), 1.f, surface_transform, false, gfx::MaskFilterInfo(),
       /*is_fast_rounded_corner=*/false)};
 
@@ -7318,7 +7318,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, TransformedRoundedSurfaceQuad) {
   gfx::Transform surface_transform;
   surface_transform.Translate(3, 4);
   std::vector<Quad> secondary_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), 1.f, surface_transform, false,
       gfx::MaskFilterInfo(gfx::RRectF(0, 0, 96, 10, 5)),
       /*is_fast_rounded_corner=*/true)};
@@ -7386,7 +7386,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   gfx::Transform translation;
   translation.Translate(30.f, 50.f);
   std::vector<Quad> root_quads[] = {
-      {Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE, gfx::Rect(5, 5),
                          /*stretch_content_to_fill_bounds=*/false,
                          AllowMerge())},
@@ -7479,7 +7479,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   CompositorRenderPassId root_pass_ids[] = {CompositorRenderPassId{1},
                                             CompositorRenderPassId{2}};
   std::vector<Quad> root_quads_1 = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
       Quad::RenderPassQuad(root_pass_ids[1], gfx::Transform(), true)};
@@ -7568,7 +7568,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AllowMerge) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetAll(sqs, child_rect, child_rect,
                          /*needs_blending=*/false,
-                         SurfaceRange(base::nullopt, child_surface_id),
+                         SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE,
                          /*stretch_content_to_fill_bounds=*/false,
                          /*is_reflection=*/false,
@@ -7595,7 +7595,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AllowMerge) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetAll(sqs, child_rect, child_rect,
                          /*needs_blending=*/false,
-                         SurfaceRange(base::nullopt, child_surface_id),
+                         SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE,
                          /*stretch_content_to_fill_bounds=*/false,
                          /*is_reflection=*/false,
@@ -7647,7 +7647,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SkipInvisibleSurface) {
   auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   surface_quad->SetAll(sqs, child_rect, child_rect,
                        /*needs_blending=*/false,
-                       SurfaceRange(base::nullopt, child_surface_id),
+                       SurfaceRange(absl::nullopt, child_surface_id),
                        SK_ColorWHITE,
                        /*stretch_content_to_fill_bounds=*/false,
                        /*is_reflection=*/false,
@@ -7697,7 +7697,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassDoesNotFillSurface) {
     auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
     surface_quad->SetAll(sqs, surface_size, surface_size,
                          /*needs_blending=*/false,
-                         SurfaceRange(base::nullopt, child_surface_id),
+                         SurfaceRange(absl::nullopt, child_surface_id),
                          SK_ColorWHITE,
                          /*stretch_content_to_fill_bounds=*/false,
                          /*is_reflection=*/false,
@@ -7760,7 +7760,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       Quad::RenderPassQuad(CompositorRenderPassId{2}, gfx::Transform(), true),
       Quad::RenderPassQuad(CompositorRenderPassId{3}, gfx::Transform(), true),
       Quad::RenderPassQuad(CompositorRenderPassId{4}, gfx::Transform(), true),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
                         SK_ColorWHITE, gfx::Rect(child_surface_size),
                         /*stretch_content_to_fill_bounds=*/false,
                         AllowMerge())};
@@ -7899,7 +7899,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // aggregate.
   {
     std::vector<Quad> root_quads = {
-        Quad::SurfaceQuad(SurfaceRange(base::nullopt, embedded_surface_id),
+        Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
                           SK_ColorWHITE, gfx::Rect(5, 5), false),
         Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(5, 5)),
         Quad::SolidColorQuad(SK_ColorBLUE, gfx::Rect(5, 5))};
@@ -7955,7 +7955,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
                                      std::move(child_frame));
 
   std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
 
   std::vector<Pass> root_passes = {
@@ -8031,7 +8031,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   auto grand_child_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryMiddleFrameSinkId, kChildIsRoot);
   std::vector<Quad> grandchild_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, great_grandchild_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, great_grandchild_surface_id), SK_ColorWHITE,
       gfx::Rect(7, 7), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> grandchild_passes = {
       Pass(grandchild_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
@@ -8065,7 +8065,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       grandchild_surface_id.local_surface_id(), std::move(grandchild_frame));
 
   std::vector<Quad> child_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, grandchild_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, grandchild_surface_id), SK_ColorWHITE,
       gfx::Rect(7, 7), /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Pass> child_passes = {
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(30, 30))};
@@ -8090,7 +8090,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                                      std::move(child_frame));
 
   std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-      SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+      SurfaceRange(absl::nullopt, child_surface_id), SK_ColorWHITE,
       gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
 
   std::vector<Pass> root_passes = {
@@ -8188,13 +8188,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                                          std::move(child_3_frame));
 
   std::vector<Quad> root_quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_1_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_1_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_2_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_2_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_3_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_3_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false)};
 
@@ -8317,13 +8317,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                                          std::move(child_3_frame));
 
   std::vector<Quad> root_quads = {
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_1_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_1_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_2_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_2_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false),
-      Quad::SurfaceQuad(SurfaceRange(base::nullopt, child_3_surface_id),
+      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_3_surface_id),
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false)};
 
@@ -8413,7 +8413,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   CompositorFrame root_frame = MakeEmptyCompositorFrame();
   root_frame.metadata.referenced_surfaces.emplace_back(
-      SurfaceRange(base::nullopt, child_surface_id));
+      SurfaceRange(absl::nullopt, child_surface_id));
   AddPasses(&root_frame.render_pass_list, root_passes,
             &root_frame.metadata.referenced_surfaces);
 

@@ -24,8 +24,8 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
   ~ClipboardRecentContentGeneric() override;
 
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<std::u16string> GetRecentTextFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,

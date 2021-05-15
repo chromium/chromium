@@ -626,7 +626,7 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
     // host of |page_url| for fuzzy matching. Query the database for a page_url
     // that is known to exist and matches the host of |page_url|. Do this only
     // if we have a HTTP/HTTPS url.
-    base::Optional<GURL> fallback_page_url =
+    absl::optional<GURL> fallback_page_url =
         db_->FindFirstPageURLForHost(page_url, icon_types);
 
     if (fallback_page_url) {

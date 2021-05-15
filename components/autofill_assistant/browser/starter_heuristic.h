@@ -10,9 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_matcher_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -28,7 +28,7 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   StarterHeuristic& operator=(const StarterHeuristic&) = delete;
 
   // Runs the heuristic against |url| and invokes the callback with the matching
-  // intent or base::nullopt if there is none. Since we currently do not
+  // intent or absl::nullopt if there is none. Since we currently do not
   // support intent disambiguation in cases where more than one intent is
   // matching for a given URL, this will return the intent of the first matching
   // condition-set specified in the config.
@@ -37,7 +37,7 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // The callback will be invoked on the caller's sequence.
   void RunHeuristicAsync(
       const GURL& url,
-      base::OnceCallback<void(base::Optional<std::string> intent)> callback)
+      base::OnceCallback<void(absl::optional<std::string> intent)> callback)
       const;
 
  private:
@@ -47,14 +47,14 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
 
   // Initializes the heuristic from the heuristic trial parameters. If there is
   // no trial or parsing fails, the heuristic will be empty and as such always
-  // report base::nullopt. However, if you want to disable implicit startup,
+  // report absl::nullopt. However, if you want to disable implicit startup,
   // you should disable the dedicated in-CCT and/or in-Tab triggering trials
   // instead to prevent the heuristic from being called in the first place.
   void InitFromTrialParams();
 
   // Runs the heuristic against |url|. Returns the matching intent or
-  // base::nullopt if there is none.
-  base::Optional<std::string> IsHeuristicMatch(const GURL& url) const;
+  // absl::nullopt if there is none.
+  absl::optional<std::string> IsHeuristicMatch(const GURL& url) const;
 
   // The set of denylisted domains that will always return false before
   // considering any of the intent heuristics.

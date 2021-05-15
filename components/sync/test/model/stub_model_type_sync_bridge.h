@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -22,10 +22,10 @@ class StubModelTypeSyncBridge : public ModelTypeSyncBridge {
   ~StubModelTypeSyncBridge() override;
 
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  base::Optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  base::Optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

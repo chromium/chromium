@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,6 +25,7 @@
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -93,7 +93,7 @@ void UpdateEngine::Update(
   }
 
   // Calls out to get the corresponding CrxComponent data for the components.
-  const std::vector<base::Optional<CrxComponent>> crx_components =
+  const std::vector<absl::optional<CrxComponent>> crx_components =
       std::move(crx_data_callback).Run(ids);
   if (crx_components.size() < ids.size()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -168,7 +168,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
 
 void UpdateEngine::UpdateCheckResultsAvailable(
     scoped_refptr<UpdateContext> update_context,
-    const base::Optional<ProtocolParser::Results>& results,
+    const absl::optional<ProtocolParser::Results>& results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -197,7 +197,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     for (const auto& id : update_context->components_to_check_for_updates) {
       DCHECK_EQ(1u, update_context->components.count(id));
       auto& component = update_context->components.at(id);
-      component->SetUpdateCheckResult(base::nullopt,
+      component->SetUpdateCheckResult(absl::nullopt,
                                       ErrorCategory::kUpdateCheck, error);
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -239,7 +239,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
                                       static_cast<int>(error.second));
     } else {
       component->SetUpdateCheckResult(
-          base::nullopt, ErrorCategory::kUpdateCheck,
+          absl::nullopt, ErrorCategory::kUpdateCheck,
           static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND));
     }
   }

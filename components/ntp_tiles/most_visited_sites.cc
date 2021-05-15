@@ -718,7 +718,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
 
 void MostVisitedSites::OnHomepageTitleDetermined(
     NTPTilesVector tiles,
-    const base::Optional<std::u16string>& title) {
+    const absl::optional<std::u16string>& title) {
   if (!title.has_value())
     return;  // If there is no title, the most recent tile was already sent out.
 
@@ -769,9 +769,9 @@ NTPTilesVector MostVisitedSites::InsertHomeTile(
   return new_tiles;
 }
 
-base::Optional<NTPTile> MostVisitedSites::CreateExploreSitesTile() {
+absl::optional<NTPTile> MostVisitedSites::CreateExploreSitesTile() {
   if (!explore_sites_client_)
-    return base::nullopt;
+    return absl::nullopt;
 
   NTPTile explore_sites_tile;
   explore_sites_tile.url = explore_sites_client_->GetExploreSitesUrl();
@@ -843,7 +843,7 @@ void MostVisitedSites::InitiateNotificationForNewTiles(
 void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
   std::set<std::string> used_hosts;
 
-  base::Optional<NTPTile> explore_tile = CreateExploreSitesTile();
+  absl::optional<NTPTile> explore_tile = CreateExploreSitesTile();
   size_t num_actual_tiles = explore_tile ? 1 : 0;
 
   // The explore sites tile may have taken a space that was utilized by the
@@ -895,7 +895,7 @@ NTPTilesVector MostVisitedSites::MergeTiles(
     NTPTilesVector personal_tiles,
     NTPTilesVector allowlist_tiles,
     NTPTilesVector popular_tiles,
-    base::Optional<NTPTile> explore_tile) {
+    absl::optional<NTPTile> explore_tile) {
   NTPTilesVector merged_tiles;
   std::move(personal_tiles.begin(), personal_tiles.end(),
             std::back_inserter(merged_tiles));

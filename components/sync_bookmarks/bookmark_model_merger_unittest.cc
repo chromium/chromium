@@ -142,7 +142,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     const std::string& url,
     bool is_folder,
     const syncer::UniquePosition& unique_position,
-    base::Optional<base::GUID> guid = base::nullopt,
+    absl::optional<base::GUID> guid = absl::nullopt,
     const std::string& icon_url = std::string(),
     const std::string& icon_data = std::string()) {
   UpdateResponseDataBuilder builder(server_id, parent_id, title,

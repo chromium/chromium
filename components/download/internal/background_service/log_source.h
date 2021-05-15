@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/download/internal/background_service/controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -21,7 +21,7 @@ struct StartupStatus;
 // instance of LogSource to push relevant log information to observers.
 class LogSource {
  public:
-  using EntryDetails = std::pair<const Entry*, base::Optional<DriverEntry>>;
+  using EntryDetails = std::pair<const Entry*, absl::optional<DriverEntry>>;
   using EntryDetailsList = std::vector<EntryDetails>;
 
   virtual ~LogSource() = default;
@@ -36,7 +36,7 @@ class LogSource {
   virtual EntryDetailsList GetServiceDownloads() = 0;
 
   // Returns the (Driver)Entry object representing the donwnload at |guid|.
-  virtual base::Optional<EntryDetails> GetServiceDownload(
+  virtual absl::optional<EntryDetails> GetServiceDownload(
       const std::string& guid) = 0;
 };
 

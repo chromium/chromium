@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apdu {
 
@@ -28,7 +28,7 @@ namespace apdu {
 class COMPONENT_EXPORT(APDU) ApduCommand {
  public:
   // Constructs an APDU command from the serialized message data.
-  static base::Optional<ApduCommand> CreateFromMessage(
+  static absl::optional<ApduCommand> CreateFromMessage(
       base::span<const uint8_t> message);
 
   ApduCommand();

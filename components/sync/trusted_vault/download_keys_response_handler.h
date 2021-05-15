@@ -42,7 +42,7 @@ class DownloadKeysResponseHandler {
   // is provided, then it will be verified that the new keys are result of
   // rotating the provided key.
   DownloadKeysResponseHandler(
-      const base::Optional<TrustedVaultKeyAndVersion>&
+      const absl::optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
@@ -55,7 +55,7 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
-  const base::Optional<TrustedVaultKeyAndVersion>
+  const absl::optional<TrustedVaultKeyAndVersion>
       last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };

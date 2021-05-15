@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/test/weak_mock_timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -63,7 +63,7 @@ class TestMetricsWebContentsObserverEmbedder
     return observed_features_;
   }
 
-  const base::Optional<bool>& is_first_navigation_in_web_contents() const {
+  const absl::optional<bool>& is_first_navigation_in_web_contents() const {
     return is_first_navigation_in_web_contents_;
   }
 
@@ -90,7 +90,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;
   std::vector<GURL> completed_filtered_urls_;
   std::vector<blink::UseCounterFeature> observed_features_;
-  base::Optional<bool> is_first_navigation_in_web_contents_;
+  absl::optional<bool> is_first_navigation_in_web_contents_;
   bool is_ntp_ = false;
   int count_on_enter_back_forward_cache_ = 0;
 };

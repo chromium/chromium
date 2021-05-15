@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -17,8 +17,8 @@ class SecureBoxPrivateKey;
 class SecureBoxPublicKey;
 
 // Decrypts |wrapped_key| using securebox. Returns decrypted key if successful
-// and base::nullopt otherwise.
-base::Optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
+// and absl::nullopt otherwise.
+absl::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
     const SecureBoxPrivateKey& private_key,
     base::span<const uint8_t> wrapped_key);
 

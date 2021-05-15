@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -27,6 +26,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace send_tab_to_self {
 
@@ -56,7 +56,7 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 
 // Parses the content of |record_list| into |*initial_data|. The output
 // parameter is first for binding purposes.
-base::Optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
+absl::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     base::Time now,
     std::map<std::string, std::unique_ptr<SendTabToSelfEntry>>* entries,
     std::string* local_personalizable_device_name,
@@ -79,7 +79,7 @@ base::Optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -118,7 +118,7 @@ SendTabToSelfBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-base::Optional<syncer::ModelError> SendTabToSelfBridge::MergeSyncData(
+absl::optional<syncer::ModelError> SendTabToSelfBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entries_.empty());
@@ -126,7 +126,7 @@ base::Optional<syncer::ModelError> SendTabToSelfBridge::MergeSyncData(
                           std::move(entity_data));
 }
 
-base::Optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::vector<const SendTabToSelfEntry*> added;
@@ -194,7 +194,7 @@ base::Optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChanges(
   NotifyRemoteSendTabToSelfEntryAdded(added);
   NotifyRemoteSendTabToSelfEntryOpened(opened);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SendTabToSelfBridge::GetData(StorageKeyList storage_keys,
@@ -524,7 +524,7 @@ void SendTabToSelfBridge::NotifySendTabToSelfModelLoaded() {
 }
 
 void SendTabToSelfBridge::OnStoreCreated(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -550,7 +550,7 @@ void SendTabToSelfBridge::OnStoreCreated(
 void SendTabToSelfBridge::OnReadAllData(
     std::unique_ptr<SendTabToSelfEntries> initial_entries,
     std::unique_ptr<std::string> local_device_name,
-    const base::Optional<syncer::ModelError>& error) {
+    const absl::optional<syncer::ModelError>& error) {
   DCHECK(initial_entries);
   DCHECK(local_device_name);
 
@@ -567,7 +567,7 @@ void SendTabToSelfBridge::OnReadAllData(
 }
 
 void SendTabToSelfBridge::OnReadAllMetadata(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -580,7 +580,7 @@ void SendTabToSelfBridge::OnReadAllMetadata(
 }
 
 void SendTabToSelfBridge::OnCommit(
-    const base::Optional<syncer::ModelError>& error) {
+    const absl::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

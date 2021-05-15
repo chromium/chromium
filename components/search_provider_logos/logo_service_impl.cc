@@ -85,7 +85,7 @@ class ImageDecodedHandlerWithTimeout {
 void ObserverOnLogoAvailable(LogoObserver* observer,
                              bool from_cache,
                              LogoCallbackReason type,
-                             const base::Optional<Logo>& logo) {
+                             const absl::optional<Logo>& logo) {
   switch (type) {
     case LogoCallbackReason::DISABLED:
     case LogoCallbackReason::CANCELED:
@@ -108,19 +108,19 @@ void ObserverOnLogoAvailable(LogoObserver* observer,
 void RunCallbacksWithDisabled(LogoCallbacks callbacks) {
   if (callbacks.on_cached_encoded_logo_available) {
     std::move(callbacks.on_cached_encoded_logo_available)
-        .Run(LogoCallbackReason::DISABLED, base::nullopt);
+        .Run(LogoCallbackReason::DISABLED, absl::nullopt);
   }
   if (callbacks.on_cached_decoded_logo_available) {
     std::move(callbacks.on_cached_decoded_logo_available)
-        .Run(LogoCallbackReason::DISABLED, base::nullopt);
+        .Run(LogoCallbackReason::DISABLED, absl::nullopt);
   }
   if (callbacks.on_fresh_encoded_logo_available) {
     std::move(callbacks.on_fresh_encoded_logo_available)
-        .Run(LogoCallbackReason::DISABLED, base::nullopt);
+        .Run(LogoCallbackReason::DISABLED, absl::nullopt);
   }
   if (callbacks.on_fresh_decoded_logo_available) {
     std::move(callbacks.on_fresh_decoded_logo_available)
-        .Run(LogoCallbackReason::DISABLED, base::nullopt);
+        .Run(LogoCallbackReason::DISABLED, absl::nullopt);
   }
 }
 
@@ -161,14 +161,14 @@ void NotifyAndClear(std::vector<EncodedLogoCallback>* encoded_callbacks,
                     const EncodedLogo* encoded_logo,
                     const Logo* decoded_logo) {
   auto opt_encoded_logo =
-      encoded_logo ? base::Optional<EncodedLogo>(*encoded_logo) : base::nullopt;
+      encoded_logo ? absl::optional<EncodedLogo>(*encoded_logo) : absl::nullopt;
   for (EncodedLogoCallback& callback : *encoded_callbacks) {
     std::move(callback).Run(type, opt_encoded_logo);
   }
   encoded_callbacks->clear();
 
   auto opt_decoded_logo =
-      decoded_logo ? base::Optional<Logo>(*decoded_logo) : base::nullopt;
+      decoded_logo ? absl::optional<Logo>(*decoded_logo) : absl::nullopt;
   for (LogoCallback& callback : *decoded_callbacks) {
     std::move(callback).Run(type, opt_decoded_logo);
   }

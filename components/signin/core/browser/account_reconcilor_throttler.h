@@ -54,7 +54,7 @@ class AccountReconcilorThrottler {
   // Reset for every new request with different parameters.
   float available_requests_bucket_;
   base::TimeTicks last_refill_time_stamp_;
-  base::Optional<signin::MultiloginParameters> last_request_params_;
+  absl::optional<signin::MultiloginParameters> last_request_params_;
   size_t consecutive_rejected_requests_ = 0;
 };
 

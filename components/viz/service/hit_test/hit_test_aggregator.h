@@ -69,7 +69,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // the given |surface_id| if it is different than when it was last queried.
   // This is used in order to ensure that the flow between receiving hit-test
   // data and aggregating is included only once per submission.
-  base::Optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
+  absl::optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
                                               uint64_t active_frame_index);
 
   // Inserts debug quads based on hit-test data.

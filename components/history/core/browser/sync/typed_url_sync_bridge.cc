@@ -99,7 +99,7 @@ TypedURLSyncBridge::CreateMetadataChangeList() {
       sync_metadata_database_, syncer::TYPED_URLS);
 }
 
-base::Optional<ModelError> TypedURLSyncBridge::MergeSyncData(
+absl::optional<ModelError> TypedURLSyncBridge::MergeSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -148,7 +148,7 @@ base::Optional<ModelError> TypedURLSyncBridge::MergeSyncData(
                      &updated_synced_urls);
   }
 
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       WriteToHistoryBackend(&new_synced_urls, &updated_synced_urls, nullptr,
                             &new_synced_visits, nullptr);
   if (error)
@@ -181,7 +181,7 @@ base::Optional<ModelError> TypedURLSyncBridge::MergeSyncData(
       ->TakeError();
 }
 
-base::Optional<ModelError> TypedURLSyncBridge::ApplySyncChanges(
+absl::optional<ModelError> TypedURLSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -225,7 +225,7 @@ base::Optional<ModelError> TypedURLSyncBridge::ApplySyncChanges(
                    &updated_synced_urls, &new_synced_urls);
   }
 
-  base::Optional<ModelError> error = WriteToHistoryBackend(
+  absl::optional<ModelError> error = WriteToHistoryBackend(
       &new_synced_urls, &updated_synced_urls, &pending_deleted_urls,
       &new_synced_visits, &deleted_visits);
   if (error)
@@ -949,7 +949,7 @@ void TypedURLSyncBridge::ExpireMetadataForURL(const URLRow& row) {
   change_processor()->UntrackEntityForStorageKey(storage_key);
 }
 
-base::Optional<ModelError> TypedURLSyncBridge::WriteToHistoryBackend(
+absl::optional<ModelError> TypedURLSyncBridge::WriteToHistoryBackend(
     const URLRows* new_urls,
     const URLRows* updated_urls,
     const std::vector<GURL>* deleted_urls,

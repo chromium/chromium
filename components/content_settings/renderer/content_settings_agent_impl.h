@@ -51,10 +51,10 @@ class ContentSettingsAgentImpl
 
     // Allows the delegate to override logic for various
     // blink::WebContentSettingsClient methods. If an optional value is
-    // returned, return base::nullopt to use the default logic.
-    virtual base::Optional<bool> AllowReadFromClipboard();
-    virtual base::Optional<bool> AllowWriteToClipboard();
-    virtual base::Optional<bool> AllowMutationEvents();
+    // returned, return absl::nullopt to use the default logic.
+    virtual absl::optional<bool> AllowReadFromClipboard();
+    virtual absl::optional<bool> AllowWriteToClipboard();
+    virtual absl::optional<bool> AllowMutationEvents();
     virtual void PassiveInsecureContentFound(const blink::WebURL& resource_url);
   };
 

@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -34,6 +33,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -235,7 +235,7 @@ class RequestImpl : public WebHistoryService::Request {
   GURL url_;
 
   // POST data to be sent with the request (may be empty).
-  base::Optional<std::string> post_data_;
+  absl::optional<std::string> post_data_;
 
   // MIME type of the post requests. Defaults to text/plain.
   std::string post_data_mime_type_;

@@ -176,7 +176,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>(42.0));
+      absl::optional<double>(42.0));
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -290,7 +290,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   std::unique_ptr<net::HostResolver::ResolveHostRequest> resolve_request =
       context->host_resolver()->CreateRequest(
           net::HostPortPair("abcde", 80), net::NetworkIsolationKey(),
-          net::NetLogWithSource(), base::nullopt);
+          net::NetLogWithSource(), absl::nullopt);
   EXPECT_EQ(net::OK, resolve_request->Start(
                          base::BindOnce([](int error) { NOTREACHED(); })));
 
@@ -341,7 +341,7 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -394,7 +394,7 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -443,7 +443,7 @@ TEST(URLRequestContextConfigTest, SetUnsupportedQuicVersion) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -495,7 +495,7 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersion) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -548,7 +548,7 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersionWhenAllowed) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -598,7 +598,7 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -657,7 +657,7 @@ TEST(URLRequestContextConfigTest,
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -717,7 +717,7 @@ TEST(URLRequestContextConfigTest,
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -777,7 +777,7 @@ TEST(URLRequestContextConfigTest,
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -838,7 +838,7 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -902,7 +902,7 @@ TEST(URLRequestContextConfigTest, SetQuicStaleDNSracing) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -950,7 +950,7 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -999,7 +999,7 @@ TEST(URLRequestContextConfigTest, SetQuicGoawayOnPathDegrading) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -1048,7 +1048,7 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -1100,7 +1100,7 @@ TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -1151,7 +1151,7 @@ TEST(URLURLRequestContextConfigTest, SetQuicConnectionOptions) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -1209,7 +1209,7 @@ TEST(URLURLRequestContextConfigTest, SetAcceptLanguageAndUserAgent) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);
@@ -1258,7 +1258,7 @@ TEST(URLURLRequestContextConfigTest, TurningOffQuic) {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      base::Optional<double>());
+      absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config.ConfigureURLRequestContextBuilder(&builder);

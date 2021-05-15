@@ -14,7 +14,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -32,6 +31,7 @@
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -62,15 +62,15 @@ BuildHitTesters(const PaintPreviewProto& proto) {
       std::move(hit_testers));
 }
 
-base::Optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
+absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
     const paint_preview::PaintPreviewProto& proto) {
   auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
   if (!region.IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto mapping = region.Map();
   if (!mapping.IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   proto.SerializeToArray(mapping.memory(), mapping.size());
   return base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
@@ -203,7 +203,7 @@ void PlayerCompositorDelegate::InitializeInternal(
 }
 
 int32_t PlayerCompositorDelegate::RequestBitmap(
-    const base::Optional<base::UnguessableToken>& frame_guid,
+    const absl::optional<base::UnguessableToken>& frame_guid,
     const gfx::Rect& clip_rect,
     float scale_factor,
     base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
@@ -323,7 +323,7 @@ void PlayerCompositorDelegate::OnCompositorClientCreated(
                                   TRACE_ID_LOCAL(this));
   if (!proto_) {
     paint_preview_service_->GetFileMixin()->GetCapturedPaintPreviewProto(
-        key, base::nullopt,
+        key, absl::nullopt,
         base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
                        weak_factory_.GetWeakPtr(), expected_url));
   } else {

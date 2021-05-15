@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -41,7 +41,7 @@ class TranslateModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelFileUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const base::Optional<optimization_guide::proto::Any>& model_metadata,
+      const absl::optional<optimization_guide::proto::Any>& model_metadata,
       const base::FilePath& file_path) override;
 
   // Invokes |callback| with a language detection model file when it is
@@ -59,7 +59,7 @@ class TranslateModelService
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been
   // successfully loaded.
-  base::Optional<base::File> language_detection_model_file_;
+  absl::optional<base::File> language_detection_model_file_;
 
   // The set of callbacks associated with requests for the language detection
   // model.

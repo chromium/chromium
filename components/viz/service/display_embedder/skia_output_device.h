@@ -12,13 +12,13 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/src/gpu/GrSemaphore.h"
 #include "ui/gfx/swap_result.h"
@@ -142,7 +142,7 @@ class SkiaOutputDevice {
   // primary plane will be on screen when SwapBuffers() or PostSubBuffer() is
   // called.
   virtual void SchedulePrimaryPlane(
-      const base::Optional<
+      const absl::optional<
           OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane);
 
   // Schedule overlays which will be on screen when SwapBuffers() or
@@ -178,7 +178,7 @@ class SkiaOutputDevice {
     ~SwapInfo();
     const gpu::SwapBuffersCompleteParams& Complete(
         gfx::SwapCompletionResult result,
-        const base::Optional<gfx::Rect>& damage_area,
+        const absl::optional<gfx::Rect>& damage_area,
         std::vector<gpu::Mailbox> released_overlays,
         const gpu::Mailbox& primary_plane_mailbox);
     void CallFeedback();
@@ -219,7 +219,7 @@ class SkiaOutputDevice {
       gfx::SwapCompletionResult result,
       const gfx::Size& size,
       OutputSurfaceFrame frame,
-      const base::Optional<gfx::Rect>& damage_area = base::nullopt,
+      const absl::optional<gfx::Rect>& damage_area = absl::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 

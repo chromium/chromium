@@ -615,10 +615,10 @@ void ServiceWorkerResourceReaderImpl::CompleteReadResponseHead(int status) {
 #endif
   DCHECK(read_response_head_callback_);
 
-  base::Optional<mojo_base::BigBuffer> metadata =
+  absl::optional<mojo_base::BigBuffer> metadata =
       metadata_buffer_
-          ? base::Optional<mojo_base::BigBuffer>(metadata_buffer_->TakeBuffer())
-          : base::nullopt;
+          ? absl::optional<mojo_base::BigBuffer>(metadata_buffer_->TakeBuffer())
+          : absl::nullopt;
 
   metadata_buffer_ = nullptr;
 

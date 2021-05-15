@@ -61,11 +61,11 @@ void DynamicTriggerConditions::ClearSelectors() {
   selectors_.clear();
 }
 
-base::Optional<bool> DynamicTriggerConditions::GetSelectorMatches(
+absl::optional<bool> DynamicTriggerConditions::GetSelectorMatches(
     const Selector& selector) const {
   auto it = selector_matches_.find(selector);
   if (it == selector_matches_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }

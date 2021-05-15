@@ -8,11 +8,11 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
 #include "net/cookies/cookie_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_data {
 
@@ -37,7 +37,7 @@ void MockCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
 void MockCookieHelper::AddCookieSamples(const GURL& url,
                                         const std::string& cookie_line) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), base::nullopt /* server_time */));
+      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */));
 
   if (cc.get()) {
     for (const auto& cookie : cookie_list_) {

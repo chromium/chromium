@@ -163,7 +163,7 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        LowEntropySourceValue_Valid) {
   VariationsIdsProvider provider;
 
-  base::Optional<int> valid_low_entropy_source_value = 5;
+  absl::optional<int> valid_low_entropy_source_value = 5;
   provider.SetLowEntropySourceValue(valid_low_entropy_source_value);
   provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
@@ -200,7 +200,7 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        LowEntropySourceValue_Null) {
   VariationsIdsProvider provider;
 
-  base::Optional<int> null_low_entropy_source_value = base::nullopt;
+  absl::optional<int> null_low_entropy_source_value = absl::nullopt;
   provider.SetLowEntropySourceValue(null_low_entropy_source_value);
 
   // Valid experiment ids.

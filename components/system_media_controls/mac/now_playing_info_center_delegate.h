@@ -43,10 +43,10 @@ class API_AVAILABLE(macos(10.13.1)) NowPlayingInfoCenterDelegate {
   void UpdatePlaybackStatusAndPosition();
 
   // Stores the most recently received playback status.
-  base::Optional<SystemMediaControls::PlaybackStatus> playback_status_;
+  absl::optional<SystemMediaControls::PlaybackStatus> playback_status_;
 
   // Stores the most recently received position.
-  base::Optional<media_session::MediaPosition> position_;
+  absl::optional<media_session::MediaPosition> position_;
 
   // Calls UpdatePlaybackStatusAndPosition() when the timer expires.
   std::unique_ptr<base::OneShotTimer> timer_ =

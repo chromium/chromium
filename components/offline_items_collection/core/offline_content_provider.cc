@@ -37,7 +37,7 @@ void OfflineContentProvider::NotifyItemRemoved(const ContentId& id) {
 
 void OfflineContentProvider::NotifyItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   for (auto& observer : observers_)
     observer.OnItemUpdated(item, update_delta);
 }

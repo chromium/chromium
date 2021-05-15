@@ -112,8 +112,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Callers should init an SkAutoCanvasRestore before calling this function.
   // |scissor_rect| and |rounded_corner_bounds| should be in device space,
   // i.e. same space that |cdt| will transform subsequent draws into.
-  void PrepareCanvas(const base::Optional<gfx::Rect>& scissor_rect,
-                     const base::Optional<gfx::RRectF>& rounded_corner_bounds,
+  void PrepareCanvas(const absl::optional<gfx::Rect>& scissor_rect,
+                     const absl::optional<gfx::RRectF>& rounded_corner_bounds,
                      const gfx::Transform* cdt);
   // Further modify the canvas as needed to apply the effects represented by
   // |rpdq_params|. Call Prepare[Paint|Color]OrCanvasForRPDQ when possible,
@@ -286,8 +286,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // State common to all quads in a batch. Draws that require an SkPaint not
   // captured by this state cannot be batched.
   struct BatchedQuadState {
-    base::Optional<gfx::Rect> scissor_rect;
-    base::Optional<gfx::RRectF> rounded_corner_bounds;
+    absl::optional<gfx::Rect> scissor_rect;
+    absl::optional<gfx::RRectF> rounded_corner_bounds;
     SkBlendMode blend_mode;
     SkSamplingOptions sampling;
     SkCanvas::SrcRectConstraint constraint;
@@ -311,7 +311,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // the compositor thread. And the sync token will be released when the DDL
   // for the current frame is replayed on the GPU thread.
   // It is only used with DDL.
-  base::Optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
 
   // Locks for overlays are pending for swapbuffers.

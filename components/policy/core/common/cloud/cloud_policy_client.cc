@@ -273,7 +273,7 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
       std::make_unique<RegistrationJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
           this, DMAuth::FromEnrollmentToken(token),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                          weak_ptr_factory_.GetWeakPtr()));
 
@@ -313,7 +313,7 @@ void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
       RegistrationJobConfiguration>(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
       this, std::move(auth),
-      /*oauth_token=*/base::nullopt,
+      /*oauth_token=*/absl::nullopt,
       base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -431,7 +431,7 @@ void CloudPolicyClient::UploadPolicyValidationReport(
               TYPE_UPLOAD_POLICY_VALIDATION_REPORT,
           this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -471,7 +471,7 @@ void CloudPolicyClient::FetchRobotAuthCodes(
           DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH,
           this,
           /*critical=*/false, std::move(auth),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnFetchRobotAuthCodesCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -496,7 +496,7 @@ void CloudPolicyClient::Unregister() {
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION, this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnUnregisterCompleted,
                          weak_ptr_factory_.GetWeakPtr()));
 
@@ -581,7 +581,7 @@ void CloudPolicyClient::UploadChromeDesktopReport(
           DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT,
           this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -605,7 +605,7 @@ void CloudPolicyClient::UploadChromeOsUserReport(
           DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT,
           this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -631,11 +631,11 @@ void CloudPolicyClient::UploadSecurityEventReport(
 
 void CloudPolicyClient::UploadEncryptedReport(
     base::Value merging_payload,
-    base::Optional<base::Value> context,
+    absl::optional<base::Value> context,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_registered()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -705,7 +705,7 @@ void CloudPolicyClient::FetchRemoteCommands(
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS, this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnRemoteCommandsFetched,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -809,7 +809,7 @@ void CloudPolicyClient::UpdateGcmId(
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_GCM_ID_UPDATE, this,
           /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-          /*oauth_token=*/base::nullopt,
+          /*oauth_token=*/absl::nullopt,
           base::BindOnce(&CloudPolicyClient::OnGcmIdUpdated,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -835,7 +835,7 @@ void CloudPolicyClient::ClientCertProvisioningStartCsr(
       DeviceManagementService::JobConfiguration::TYPE_CERT_PROVISIONING_REQUEST,
       this,
       /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/base::nullopt,
+      /*oauth_token=*/absl::nullopt,
       base::BindOnce(
           &CloudPolicyClient::OnClientCertProvisioningStartCsrResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -872,7 +872,7 @@ void CloudPolicyClient::ClientCertProvisioningFinishCsr(
       DeviceManagementService::JobConfiguration::TYPE_CERT_PROVISIONING_REQUEST,
       this,
       /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/base::nullopt,
+      /*oauth_token=*/absl::nullopt,
       base::BindOnce(
           &CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -912,7 +912,7 @@ void CloudPolicyClient::ClientCertProvisioningDownloadCert(
       DeviceManagementService::JobConfiguration::TYPE_CERT_PROVISIONING_REQUEST,
       this,
       /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/base::nullopt,
+      /*oauth_token=*/absl::nullopt,
       base::BindOnce(
           &CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -1034,7 +1034,7 @@ CloudPolicyClient::CreateCertUploadJobConfiguration(
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
       client_id(),
       /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/base::nullopt, GetURLLoaderFactory(),
+      /*oauth_token=*/absl::nullopt, GetURLLoaderFactory(),
       base::BindOnce(&CloudPolicyClient::OnCertificateUploadCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -1326,7 +1326,7 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
     int net_error,
     const base::Value& response) {
   if (job == nullptr) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   status_ = status;
@@ -1385,8 +1385,8 @@ namespace {
 bool CheckCommonClientCertProvisioningResponse(
     const em::DeviceManagementResponse& response,
     policy::DeviceManagementStatus* status,
-    base::Optional<CertProvisioningResponseErrorType>* response_error,
-    base::Optional<int64_t>* try_later) {
+    absl::optional<CertProvisioningResponseErrorType>* response_error,
+    absl::optional<int64_t>* try_later) {
   if (*status != DM_STATUS_SUCCESS) {
     return false;
   }
@@ -1424,8 +1424,8 @@ void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
 
   status_ = status;
-  base::Optional<CertProvisioningResponseErrorType> response_error;
-  base::Optional<int64_t> try_later;
+  absl::optional<CertProvisioningResponseErrorType> response_error;
+  absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
@@ -1496,8 +1496,8 @@ void CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
 
   status_ = status;
-  base::Optional<CertProvisioningResponseErrorType> response_error;
-  base::Optional<int64_t> try_later;
+  absl::optional<CertProvisioningResponseErrorType> response_error;
+  absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
@@ -1529,8 +1529,8 @@ void CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
 
   status_ = status;
-  base::Optional<CertProvisioningResponseErrorType> response_error;
-  base::Optional<int64_t> try_later;
+  absl::optional<CertProvisioningResponseErrorType> response_error;
+  absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {

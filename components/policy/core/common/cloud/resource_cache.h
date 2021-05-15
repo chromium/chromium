@@ -16,8 +16,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -37,7 +37,7 @@ class POLICY_EXPORT ResourceCache {
  public:
   ResourceCache(const base::FilePath& cache_path,
                 scoped_refptr<base::SequencedTaskRunner> task_runner,
-                const base::Optional<int64_t> max_cache_size);
+                const absl::optional<int64_t> max_cache_size);
   virtual ~ResourceCache();
 
   // Stores |data| under (key, subkey). Returns file path if the store
@@ -132,7 +132,7 @@ class POLICY_EXPORT ResourceCache {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Maximum size of the cache directory.
-  const base::Optional<int64_t> max_cache_size_;
+  const absl::optional<int64_t> max_cache_size_;
 
   // Note that this variable could be created on any thread, but is modified
   // only on the |task_runner_| thread.

@@ -6,8 +6,8 @@
 #define COMPONENTS_METRICS_UI_SCREEN_INFO_METRICS_PROVIDER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/metrics/metrics_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace metrics {
@@ -26,7 +26,7 @@ class ScreenInfoMetricsProvider : public MetricsProvider {
   // Exposed for the sake of mocking in test code.
 
   // Returns the screen size for the primary monitor if available.
-  virtual base::Optional<gfx::Size> GetScreenSize() const;
+  virtual absl::optional<gfx::Size> GetScreenSize() const;
 
   // Returns the device scale factor for the primary monitor.
   virtual float GetScreenDeviceScaleFactor() const;

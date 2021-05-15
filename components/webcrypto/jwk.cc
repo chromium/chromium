@@ -207,7 +207,7 @@ Status JwkReader::Init(const CryptoData& bytes,
   {
     // Limit the visibility for |value| as it is moved to |dict_| (via
     // |dict_value|) once it has been loaded successfully.
-    base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+    absl::optional<base::Value> value = base::JSONReader::Read(json_string);
     base::DictionaryValue* dict_value = nullptr;
 
     if (!value.has_value() || !value.value().GetAsDictionary(&dict_value))

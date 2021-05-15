@@ -81,12 +81,12 @@ AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
       GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER);
 }
 
-base::Optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // All metadata changes have been already written, return early for an error.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       static_cast<syncer::SyncMetadataStoreChangeList*>(
           metadata_change_list.get())
           ->TakeError();
@@ -95,17 +95,17 @@ base::Optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
   }
 
   MergeRemoteData(std::move(entity_data));
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 AutofillWalletOfferSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This bridge does not support incremental updates, so whenever this is
   // called, the change list should be empty.
   DCHECK(entity_data.empty()) << "Received an unsupported incremental update.";
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillWalletOfferSyncBridge::GetData(StorageKeyList storage_keys,

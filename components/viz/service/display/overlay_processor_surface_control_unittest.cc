@@ -107,7 +107,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane candidate;
   candidate.display_rect = gfx::RectF(100, 200);
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       overlay_plane = candidate;
 
   OverlayProcessorSurfaceControl processor;

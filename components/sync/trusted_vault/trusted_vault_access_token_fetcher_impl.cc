@@ -22,7 +22,7 @@ void FetchAccessTokenOnUIThread(
     const CoreAccountId& account_id,
     TrustedVaultAccessTokenFetcher::TokenCallback callback) {
   if (!frontend) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   } else {
     frontend->FetchAccessToken(account_id, std::move(callback));
   }

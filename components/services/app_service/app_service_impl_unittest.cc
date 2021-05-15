@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -50,8 +50,8 @@ class FakePublisher : public apps::PublisherBase {
   }
 
   void ModifyCapabilityAccess(const std::string& app_id,
-                              base::Optional<bool> accessing_camera,
-                              base::Optional<bool> accessing_microphone) {
+                              absl::optional<bool> accessing_camera,
+                              absl::optional<bool> accessing_microphone) {
     if (accessing_camera.has_value()) {
       if (accessing_camera.value()) {
         apps_accessing_camera_.insert(app_id);
@@ -258,12 +258,12 @@ TEST_F(AppServiceImplTest, PubSub) {
   EXPECT_EQ("", sub0.AppIdsAccessingCamera());
   EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
 
-  pub0.ModifyCapabilityAccess("B", base::nullopt, base::nullopt);
+  pub0.ModifyCapabilityAccess("B", absl::nullopt, absl::nullopt);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("", sub0.AppIdsAccessingCamera());
   EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
 
-  pub0.ModifyCapabilityAccess("B", true, base::nullopt);
+  pub0.ModifyCapabilityAccess("B", true, absl::nullopt);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("B", sub0.AppIdsAccessingCamera());
   EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
@@ -287,8 +287,8 @@ TEST_F(AppServiceImplTest, PubSub) {
   // Have both publishers publish more apps.
   pub0.PublishMoreApps(std::vector<std::string>{"F"});
   pub1.PublishMoreApps(std::vector<std::string>{"n"});
-  pub0.ModifyCapabilityAccess("B", false, base::nullopt);
-  pub1.ModifyCapabilityAccess("n", base::nullopt, true);
+  pub0.ModifyCapabilityAccess("B", false, absl::nullopt);
+  pub1.ModifyCapabilityAccess("n", absl::nullopt, true);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDEFmn", sub0.AppIdsSeen());
   EXPECT_EQ("D", sub0.AppIdsAccessingCamera());
@@ -307,7 +307,7 @@ TEST_F(AppServiceImplTest, PubSub) {
   // Publish more apps.
   pub0.ModifyCapabilityAccess("D", false, false);
   pub1.PublishMoreApps(std::vector<std::string>{"o", "p", "q"});
-  pub1.ModifyCapabilityAccess("n", true, base::nullopt);
+  pub1.ModifyCapabilityAccess("n", true, absl::nullopt);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDEFmnopq", sub0.AppIdsSeen());
   EXPECT_EQ("ABCDEFmnopq", sub1.AppIdsSeen());
@@ -409,13 +409,13 @@ TEST_F(AppServiceImplTest, PreferredApps) {
       apps_util::CreateIntentFilterForUrlScope(another_filter_url);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub0.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub1.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub0.PreferredApps().FindPreferredAppForUrl(another_filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
 
   impl.AddPreferredApp(
@@ -436,13 +436,13 @@ TEST_F(AppServiceImplTest, PreferredApps) {
   // Test that uninstall removes all the settings for the app.
   pub0.UninstallApps(std::vector<std::string>{kAppId2}, &impl);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub0.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub1.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub0.PreferredApps().FindPreferredAppForUrl(another_filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
 
   impl.AddPreferredApp(
@@ -465,9 +465,9 @@ TEST_F(AppServiceImplTest, PreferredApps) {
   impl.RemovePreferredAppForFilter(apps::mojom::AppType::kUnknown, kAppId2,
                                    intent_filter->Clone());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub0.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             sub1.PreferredApps().FindPreferredAppForUrl(filter_url));
   EXPECT_EQ(kAppId2,
             sub0.PreferredApps().FindPreferredAppForUrl(another_filter_url));
@@ -587,10 +587,10 @@ TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
                                      intent_filter2_with_action->Clone());
     task_environment_.RunUntilIdle();
     EXPECT_EQ(
-        base::nullopt,
+        absl::nullopt,
         impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(filter_url1));
     EXPECT_EQ(
-        base::nullopt,
+        absl::nullopt,
         impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(filter_url2));
   }
 }

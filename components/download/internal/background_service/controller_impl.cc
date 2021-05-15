@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -31,6 +30,7 @@
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 namespace {
@@ -619,15 +619,15 @@ LogSource::EntryDetailsList ControllerImpl::GetServiceDownloads() {
   return list;
 }
 
-base::Optional<LogSource::EntryDetails> ControllerImpl::GetServiceDownload(
+absl::optional<LogSource::EntryDetails> ControllerImpl::GetServiceDownload(
     const std::string& guid) {
   if (controller_state_ != State::READY)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto* entry = model_->Get(guid);
   auto driver_entry = driver_->Find(guid);
 
-  return base::Optional<LogSource::EntryDetails>(
+  return absl::optional<LogSource::EntryDetails>(
       std::make_pair(entry, driver_entry));
 }
 
@@ -767,7 +767,7 @@ void ControllerImpl::CleanupUnknownFiles() {
   auto entries = model_->PeekEntries();
   std::vector<DriverEntry> driver_entries;
   for (auto* entry : entries) {
-    base::Optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
+    absl::optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
     if (driver_entry.has_value())
       driver_entries.push_back(driver_entry.value());
   }
@@ -784,7 +784,7 @@ void ControllerImpl::ResolveInitialRequestStates() {
     // Pull the initial Entry::State and DriverEntry::State.
     Entry::State state = entry->state;
     auto driver_entry = driver_->Find(entry->guid);
-    base::Optional<DriverEntry::State> driver_state;
+    absl::optional<DriverEntry::State> driver_state;
     if (driver_entry.has_value()) {
       DCHECK_NE(DriverEntry::State::UNKNOWN, driver_entry->state);
       driver_state = driver_entry->state;
@@ -927,7 +927,7 @@ void ControllerImpl::UpdateDriverState(Entry* entry) {
     return;
   }
 
-  base::Optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
+  absl::optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
 
   // Check if the DriverEntry is in a finished state already.  If so we need to
   // clean up our Entry and finish the download.
@@ -1323,7 +1323,7 @@ bool ControllerImpl::ShouldBlockDownloadOnNavigation(Entry* entry) {
   bool pausable_priority =
       entry->scheduling_params.priority <= SchedulingParams::Priority::NORMAL;
 
-  base::Optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
+  absl::optional<DriverEntry> driver_entry = driver_->Find(entry->guid);
   bool new_download = !driver_entry.has_value();
   bool resumable_download =
       driver_entry.has_value() && driver_entry->can_resume;

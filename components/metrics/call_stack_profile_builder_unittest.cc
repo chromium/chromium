@@ -488,7 +488,7 @@ TEST(CallStackProfileBuilderTest, RecordMetadata) {
   TestModule module;
   base::Frame frame = {0x10, &module};
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   profile_builder->RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());

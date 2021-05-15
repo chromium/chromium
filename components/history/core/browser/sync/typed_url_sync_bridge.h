@@ -37,10 +37,10 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -170,7 +170,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   void ExpireMetadataForURL(const URLRow& row);
 
   // Writes new typed url data from sync server to history backend.
-  base::Optional<syncer::ModelError> WriteToHistoryBackend(
+  absl::optional<syncer::ModelError> WriteToHistoryBackend(
       const URLRows* new_urls,
       const URLRows* updated_urls,
       const std::vector<GURL>* deleted_urls,

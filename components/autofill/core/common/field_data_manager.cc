@@ -53,11 +53,11 @@ void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
                                           FieldPropertiesMask mask) {
   if (HasFieldData(id)) {
     field_value_and_properties_map_.at(id).first =
-        base::Optional<std::u16string>(value);
+        absl::optional<std::u16string>(value);
     field_value_and_properties_map_.at(id).second |= mask;
   } else {
     field_value_and_properties_map_[id] =
-        std::make_pair(base::Optional<std::u16string>(value), mask);
+        std::make_pair(absl::optional<std::u16string>(value), mask);
   }
   // Reset kUserTyped and kAutofilled flags if the value is empty.
   if (value.empty()) {
@@ -72,7 +72,7 @@ void FieldDataManager::UpdateFieldDataMapWithNullValue(
   if (HasFieldData(id))
     field_value_and_properties_map_.at(id).second |= mask;
   else
-    field_value_and_properties_map_[id] = std::make_pair(base::nullopt, mask);
+    field_value_and_properties_map_[id] = std::make_pair(absl::nullopt, mask);
 }
 
 bool FieldDataManager::DidUserType(FieldRendererId id) const {

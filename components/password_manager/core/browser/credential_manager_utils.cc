@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

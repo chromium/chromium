@@ -168,7 +168,7 @@ void PermissionRequestManager::AddRequest(
       url::Origin::Create(main_frame_url)
           .IsSameOriginWith(url::Origin::Create(request->GetOrigin()));
 
-  base::Optional<url::Origin> auto_approval_origin =
+  absl::optional<url::Origin> auto_approval_origin =
       PermissionsClient::Get()->GetAutoApprovalOrigin();
   if (auto_approval_origin) {
     if (url::Origin::Create(request->GetOrigin()) ==
@@ -633,7 +633,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
 
-  base::Optional<QuietUiReason> quiet_ui_reason;
+  absl::optional<QuietUiReason> quiet_ui_reason;
   if (ShouldCurrentRequestUseQuietUI())
     quiet_ui_reason = ReasonForUsingQuietUi();
 
@@ -770,14 +770,14 @@ void PermissionRequestManager::RemoveObserver(Observer* observer) {
 bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
   // ContentSettingImageModel might call into this method if the user switches
   // between tabs while the |notification_permission_ui_selectors_| are pending.
-  return ReasonForUsingQuietUi() != base::nullopt;
+  return ReasonForUsingQuietUi() != absl::nullopt;
 }
 
-base::Optional<PermissionRequestManager::QuietUiReason>
+absl::optional<PermissionRequestManager::QuietUiReason>
 PermissionRequestManager::ReasonForUsingQuietUi() const {
   if (!IsRequestInProgress() || !current_request_ui_to_use_ ||
       !current_request_ui_to_use_->quiet_ui_reason)
-    return base::nullopt;
+    return absl::nullopt;
 
   return *(current_request_ui_to_use_->quiet_ui_reason);
 }

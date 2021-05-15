@@ -181,7 +181,7 @@ DomStorageDatabase::DomStorageDatabase(
     const base::FilePath& directory,
     const std::string& name,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -194,7 +194,7 @@ DomStorageDatabase::DomStorageDatabase(
 
 DomStorageDatabase::DomStorageDatabase(
     const std::string& tracking_name,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -209,7 +209,7 @@ DomStorageDatabase::DomStorageDatabase(
     const std::string& name,
     std::unique_ptr<leveldb::Env> env,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -240,7 +240,7 @@ void DomStorageDatabase::OpenDirectory(
     const base::FilePath& directory,
     const std::string& name,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
@@ -253,7 +253,7 @@ void DomStorageDatabase::OpenDirectory(
 // static
 void DomStorageDatabase::OpenInMemory(
     const std::string& name,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {

@@ -638,7 +638,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithAutofillValue) {
 }
 
 TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   content::WebContentsTester::For(web_contents_.get())

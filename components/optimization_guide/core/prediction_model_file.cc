@@ -12,7 +12,7 @@ namespace optimization_guide {
 PredictionModelFile::PredictionModelFile(
     const base::FilePath& model_file_path,
     const int64_t version,
-    const base::Optional<proto::Any>& model_metadata)
+    const absl::optional<proto::Any>& model_metadata)
     : model_file_path_(model_file_path),
       version_(version),
       model_metadata_(model_metadata) {}
@@ -22,14 +22,14 @@ PredictionModelFile::~PredictionModelFile() = default;
 // static
 std::unique_ptr<PredictionModelFile> PredictionModelFile::Create(
     const proto::PredictionModel& model) {
-  base::Optional<base::FilePath> model_file_path =
+  absl::optional<base::FilePath> model_file_path =
       GetFilePathFromPredictionModel(model);
   if (!model_file_path)
     return nullptr;
   if (!model.model_info().has_version())
     return nullptr;
 
-  base::Optional<proto::Any> model_metadata;
+  absl::optional<proto::Any> model_metadata;
   if (model.model_info().has_model_metadata())
     model_metadata = model.model_info().model_metadata();
 
@@ -46,7 +46,7 @@ int64_t PredictionModelFile::GetVersion() const {
   return version_;
 }
 
-base::Optional<proto::Any> PredictionModelFile::GetModelMetadata() const {
+absl::optional<proto::Any> PredictionModelFile::GetModelMetadata() const {
   return model_metadata_;
 }
 

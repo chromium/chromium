@@ -96,7 +96,7 @@ class TileManagerImpl : public TileManager {
         }
       }
     }
-    auto result_tile = result ? base::make_optional(*result) : base::nullopt;
+    auto result_tile = result ? absl::make_optional(*result) : absl::nullopt;
     if (result_tile.has_value()) {
       // Get the tiles to display, and convert the result vector.
       // TODO(qinmin): make GetTile() return a vector of sub tiles, rather than
@@ -275,7 +275,7 @@ class TileManagerImpl : public TileManager {
     trending_tile_handler_.OnTileClicked(tile_id);
   }
 
-  void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
+  void OnQuerySelected(const absl::optional<std::string>& parent_tile_id,
                        const std::u16string& query_text) override {
     if (!tile_group_)
       return;

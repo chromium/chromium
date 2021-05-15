@@ -169,7 +169,7 @@ void ArcUsbHostBridge::RequestPermission(const std::string& guid,
 }
 
 void ArcUsbHostBridge::OpenDevice(const std::string& guid,
-                                  const base::Optional<std::string>& package,
+                                  const absl::optional<std::string>& package,
                                   OpenDeviceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
@@ -201,7 +201,7 @@ void ArcUsbHostBridge::OpenDevice(const std::string& guid,
 
 void ArcUsbHostBridge::OpenDeviceDeprecated(
     const std::string& guid,
-    const base::Optional<std::string>& package,
+    const absl::optional<std::string>& package,
     OpenDeviceCallback callback) {
   LOG(ERROR) << "ArcUsbHostBridge::OpenDeviceDeprecated is deprecated";
   OpenDevice(guid, package, std::move(callback));

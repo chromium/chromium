@@ -30,7 +30,7 @@ namespace service_worker_storage_unittest {
 struct ReadResponseHeadResult {
   int result;
   network::mojom::URLResponseHeadPtr response_head;
-  base::Optional<mojo_base::BigBuffer> metadata;
+  absl::optional<mojo_base::BigBuffer> metadata;
 };
 
 using RegistrationData = mojom::ServiceWorkerRegistrationData;
@@ -69,7 +69,7 @@ mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
 
 void DatabaseStatusCallback(
     base::OnceClosure quit_closure,
-    base::Optional<ServiceWorkerDatabase::Status>* result,
+    absl::optional<ServiceWorkerDatabase::Status>* result,
     ServiceWorkerDatabase::Status status) {
   *result = status;
   std::move(quit_closure).Run();
@@ -417,7 +417,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
     reader->ReadResponseHead(base::BindLambdaForTesting(
         [&](int result, network::mojom::URLResponseHeadPtr response_head,
-            base::Optional<mojo_base::BigBuffer> metadata) {
+            absl::optional<mojo_base::BigBuffer> metadata) {
           out.result = result;
           out.response_head = std::move(response_head);
           out.metadata = std::move(metadata);
@@ -850,7 +850,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver) {
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDatabasePath()));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
@@ -874,7 +874,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_UnrelatedFileExists) {
   ASSERT_TRUE(base::PathExists(file_path));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
@@ -899,7 +899,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
   ASSERT_TRUE(base::PathExists(file_path));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();

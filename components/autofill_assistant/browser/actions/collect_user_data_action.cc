@@ -152,10 +152,10 @@ bool IsValidDateTimeRangeProto(
 }
 
 bool IsValidDateTimeRange(
-    const base::Optional<autofill_assistant::DateProto>& start_date,
-    const base::Optional<int> start_timeslot,
-    const base::Optional<autofill_assistant::DateProto> end_date,
-    const base::Optional<int> end_timeslot,
+    const absl::optional<autofill_assistant::DateProto>& start_date,
+    const absl::optional<int> start_timeslot,
+    const absl::optional<autofill_assistant::DateProto> end_date,
+    const absl::optional<int> end_timeslot,
     const CollectUserDataOptions& collect_user_data_options) {
   if (!collect_user_data_options.request_date_time_range) {
     return true;
@@ -510,12 +510,12 @@ void CollectUserDataAction::OnGetLogins(
         login_option.sublabel_accessibility_hint(),
         login_option.preselection_priority(),
         login_option.has_info_popup()
-            ? base::make_optional(login_option.info_popup())
-            : base::nullopt,
+            ? absl::make_optional(login_option.info_popup())
+            : absl::nullopt,
         login_option.has_edit_button_content_description()
-            ? base::make_optional(
+            ? absl::make_optional(
                   login_option.edit_button_content_description())
-            : base::nullopt);
+            : absl::nullopt);
     login_details_map_.emplace(
         identifier, std::make_unique<LoginDetails>(
                         login_option.choose_automatically_if_no_stored_login(),
@@ -810,19 +810,19 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
             login_option.custom().label(),
             login_option.sublabel(),
             login_option.has_sublabel_accessibility_hint()
-                ? base::make_optional(
+                ? absl::make_optional(
                       login_option.sublabel_accessibility_hint())
-                : base::nullopt,
+                : absl::nullopt,
             login_option.has_preselection_priority()
                 ? login_option.preselection_priority()
                 : -1,
             login_option.has_info_popup()
-                ? base::make_optional(login_option.info_popup())
-                : base::nullopt,
+                ? absl::make_optional(login_option.info_popup())
+                : absl::nullopt,
             login_option.has_edit_button_content_description()
-                ? base::make_optional(
+                ? absl::make_optional(
                       login_option.edit_button_content_description())
-                : base::nullopt};
+                : absl::nullopt};
         collect_user_data_options_->login_choices.emplace_back(
             std::move(choice));
         login_details_map_.emplace(
@@ -1056,10 +1056,10 @@ int CollectUserDataAction::CompareDates(const DateProto& first,
 // TODO(b/148448649): Move to dedicated helper namespace.
 // static
 bool CollectUserDataAction::SanitizeDateTimeRange(
-    base::Optional<DateProto>* start_date,
-    base::Optional<int>* start_timeslot,
-    base::Optional<DateProto>* end_date,
-    base::Optional<int>* end_timeslot,
+    absl::optional<DateProto>* start_date,
+    absl::optional<int>* start_timeslot,
+    absl::optional<DateProto>* end_date,
+    absl::optional<int>* end_timeslot,
     const CollectUserDataOptions& collect_user_data_options,
     bool change_start) {
   if (!collect_user_data_options.request_date_time_range) {

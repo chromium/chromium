@@ -375,7 +375,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        /*paask_info=*/base::nullopt, last_fcm_registration_token,
+        /*paask_info=*/absl::nullopt, last_fcm_registration_token,
         last_interested_data_types);
   }
 
@@ -421,8 +421,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
 
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
-  base::Optional<std::string> fcm_registration_token_;
-  base::Optional<ModelTypeSet> interested_data_types_;
+  absl::optional<std::string> fcm_registration_token_;
+  absl::optional<ModelTypeSet> interested_data_types_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLocalDeviceInfoProvider);
 };  // namespace
@@ -564,7 +564,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     store()->CommitWriteBatch(
         std::move(batch),
         base::BindOnce(
-            [](base::RunLoop* loop, const base::Optional<ModelError>& result) {
+            [](base::RunLoop* loop, const absl::optional<ModelError>& result) {
               EXPECT_FALSE(result.has_value()) << result->ToString();
               loop->Quit();
             },
@@ -597,7 +597,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     base::RunLoop loop;
     store()->ReadAllData(base::BindOnce(
         [](std::unique_ptr<ModelTypeStore::RecordList>* output_records,
-           base::RunLoop* loop, const base::Optional<syncer::ModelError>& error,
+           base::RunLoop* loop, const absl::optional<syncer::ModelError>& error,
            std::unique_ptr<ModelTypeStore::RecordList> input_records) {
           EXPECT_FALSE(error) << error->ToString();
           EXPECT_THAT(input_records, NotNull());

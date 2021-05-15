@@ -54,7 +54,7 @@ class ProfileOAuth2TokenServiceIOSDelegate
   void RevokeAllCredentials() override;
 
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const base::Optional<CoreAccountId>& primary_account_id) override;
+      const absl::optional<CoreAccountId>& primary_account_id) override;
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;
 
   // Adds |account_id| to |accounts_| if it does not exist or udpates

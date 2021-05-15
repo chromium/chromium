@@ -45,7 +45,7 @@ class MockTileManager : public TileManager {
   MOCK_METHOD(void, OnTileClicked, (const std::string&));
   MOCK_METHOD(void,
               OnQuerySelected,
-              (const base::Optional<std::string>&, const std::u16string&));
+              (const absl::optional<std::string>&, const std::u16string&));
 };
 
 class MockTileServiceScheduler : public TileServiceScheduler {
@@ -121,7 +121,7 @@ class TileServiceImplTest : public testing::Test {
   }
 
   void OnGetTileDone(const std::string& expected_id,
-                     base::Optional<Tile> actual_tile) {
+                     absl::optional<Tile> actual_tile) {
     EXPECT_EQ(expected_id, actual_tile->id);
   }
 

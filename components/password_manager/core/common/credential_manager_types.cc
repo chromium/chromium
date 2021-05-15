@@ -30,10 +30,10 @@ std::ostream& operator<<(std::ostream& os, CredentialType value) {
 CredentialInfo::CredentialInfo() = default;
 
 CredentialInfo::CredentialInfo(CredentialType type,
-                               base::Optional<std::u16string> id,
-                               base::Optional<std::u16string> name,
+                               absl::optional<std::u16string> id,
+                               absl::optional<std::u16string> name,
                                GURL icon,
-                               base::Optional<std::u16string> password,
+                               absl::optional<std::u16string> password,
                                url::Origin federation)
     : type(type),
       id(std::move(id)),

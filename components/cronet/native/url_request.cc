@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/cronet/cronet_upload_data_stream.h"
 #include "components/cronet/native/engine.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
@@ -23,6 +22,7 @@
 #include "components/cronet/native/upload_data_sink.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_states.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

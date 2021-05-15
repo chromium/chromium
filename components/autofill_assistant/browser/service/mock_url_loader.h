@@ -73,7 +73,7 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_CONST_METHOD0(NetError, int());
   MOCK_CONST_METHOD0(ResponseInfo, const ::network::mojom::URLResponseHead*());
   MOCK_CONST_METHOD0(CompletionStatus,
-                     base::Optional<::network::URLLoaderCompletionStatus>&());
+                     absl::optional<::network::URLLoaderCompletionStatus>&());
   MOCK_CONST_METHOD0(GetFinalURL, const GURL&());
   MOCK_CONST_METHOD0(LoadedFromCache, bool());
   MOCK_CONST_METHOD0(GetContentSize, int64_t());

@@ -17,7 +17,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -25,6 +24,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "ui/gfx/geometry/rect.h"
@@ -65,7 +65,7 @@ class MockExternalUseClient : public ExternalUseClient {
                    const gfx::Size&,
                    ResourceFormat,
                    bool,
-                   const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                   const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace>));
 };
 
@@ -118,7 +118,7 @@ class DisplayResourceProviderSkiaTest : public testing::Test {
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   testing::NiceMock<MockExternalUseClient> client_;
-  base::Optional<DisplayResourceProviderSkia::LockSetForExternalUse> lock_set_;
+  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse> lock_set_;
 };
 
 TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
@@ -154,7 +154,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
 
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, RGBA_8888,
-      /*ycbcr_info=*/base::nullopt, /*color_space=*/nullptr);
+      /*ycbcr_info=*/absl::nullopt, /*color_space=*/nullptr);
   auto* image_context = owned_image_context.get();
 
   gpu::MailboxHolder holder;
@@ -234,7 +234,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, RGBA_8888,
-      /*ycbcr_info=*/base::nullopt, /*color_space=*/nullptr);
+      /*ycbcr_info=*/absl::nullopt, /*color_space=*/nullptr);
   auto* image_context = owned_image_context.get();
 
   gpu::MailboxHolder holder;

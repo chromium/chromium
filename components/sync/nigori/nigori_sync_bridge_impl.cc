@@ -48,7 +48,7 @@ enum class KeyDerivationMethodStateForMetrics {
 };
 
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
-    const base::Optional<KeyDerivationParams>& key_derivation_params) {
+    const absl::optional<KeyDerivationParams>& key_derivation_params) {
   if (!key_derivation_params.has_value()) {
     return KeyDerivationMethodStateForMetrics::NOT_SET;
   }
@@ -437,7 +437,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   // It's quite unlikely we get a corrupted data, since it was successfully
   // deserialized and decrypted. But we may want to consider some
   // verifications, taking into account sensitivity of this data.
-  base::Optional<sync_pb::NigoriLocalData> deserialized_data =
+  absl::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
   if (!deserialized_data) {
     // We either have no Nigori node stored locally or it was corrupted.
@@ -565,7 +565,7 @@ void NigoriSyncBridgeImpl::SetDecryptionPassphrase(
       tmp_key_bag.AddKey(Nigori::CreateByDerivation(
           GetKeyDerivationParamsForPendingKeys(), passphrase));
 
-  base::Optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
+  absl::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
   if (error.has_value()) {
     processor_->ReportError(*error);
     return;
@@ -613,7 +613,7 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
         GetKeyDerivationParamsForPendingKeys(), encoded_key));
   }
 
-  base::Optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
+  absl::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
   if (error.has_value()) {
     processor_->ReportError(*error);
     return;
@@ -697,11 +697,11 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     // Newly arrived keystore keys could resolve pending encryption state in
     // keystore mode.
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-    const base::Optional<sync_pb::NigoriKey> keystore_decryptor_key =
+    const absl::optional<sync_pb::NigoriKey> keystore_decryptor_key =
         TryDecryptPendingKeystoreDecryptorToken(
             sync_pb::EncryptedData(*state_.pending_keystore_decryptor_token));
 
-    base::Optional<ModelError> error = TryDecryptPendingKeysWith(
+    absl::optional<ModelError> error = TryDecryptPendingKeysWith(
         BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key));
     if (error.has_value()) {
       processor_->ReportError(*error);
@@ -722,8 +722,8 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
   return true;
 }
 
-base::Optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
-    base::Optional<EntityData> data) {
+absl::optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
+    absl::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!data) {
     return ModelError(FROM_HERE,
@@ -753,11 +753,11 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
   // keystore Nigori.
   QueuePendingLocalCommit(
       PendingLocalNigoriCommit::ForKeystoreInitialization());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<ModelError> NigoriSyncBridgeImpl::ApplySyncChanges(
-    base::Optional<EntityData> data) {
+absl::optional<ModelError> NigoriSyncBridgeImpl::ApplySyncChanges(
+    absl::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data) {
@@ -780,10 +780,10 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::ApplySyncChanges(
   // Receiving empty |data| means metadata-only change (e.g. no remote updates,
   // or local commit completion), so we need to persist its state.
   storage_->StoreData(SerializeAsNigoriLocalData());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
+absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     const NigoriSpecifics& specifics) {
   if (!IsValidNigoriSpecifics(specifics)) {
     return ModelError(FROM_HERE, "NigoriSpecifics is not valid.");
@@ -820,7 +820,7 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
         ProtoTimeToTime(specifics.keystore_migration_time());
   }
 
-  base::Optional<sync_pb::NigoriKey> keystore_decryptor_key;
+  absl::optional<sync_pb::NigoriKey> keystore_decryptor_key;
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
     keystore_decryptor_key = TryDecryptPendingKeystoreDecryptorToken(
         specifics.keystore_decryptor_token());
@@ -844,7 +844,7 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   state_.pending_keys = specifics.encryption_keybag();
   state_.cryptographer->ClearDefaultEncryptionKey();
 
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       TryDecryptPendingKeysWith(decryption_key_bag_for_remote_update);
   if (error.has_value()) {
     return error;
@@ -882,10 +882,10 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   storage_->StoreData(SerializeAsNigoriLocalData());
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<sync_pb::NigoriKey>
+absl::optional<sync_pb::NigoriKey>
 NigoriSyncBridgeImpl::TryDecryptPendingKeystoreDecryptorToken(
     const sync_pb::EncryptedData& keystore_decryptor_token) {
   DCHECK(!keystore_decryptor_token.blob().empty());
@@ -896,11 +896,11 @@ NigoriSyncBridgeImpl::TryDecryptPendingKeystoreDecryptorToken(
     return keystore_decryptor_key;
   }
   state_.pending_keystore_decryptor_token = keystore_decryptor_token;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag(
-    const base::Optional<sync_pb::NigoriKey>& keystore_decryptor_key) const {
+    const absl::optional<sync_pb::NigoriKey>& keystore_decryptor_key) const {
   NigoriKeyBag decryption_key_bag = NigoriKeyBag::CreateEmpty();
 
   if (keystore_decryptor_key.has_value()) {
@@ -931,19 +931,19 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag(
   return decryption_key_bag;
 }
 
-base::Optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
+absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     const NigoriKeyBag& key_bag) {
   DCHECK(state_.pending_keys.has_value());
   DCHECK(state_.cryptographer->GetDefaultEncryptionKeyName().empty());
 
   std::string decrypted_pending_keys_str;
   if (!key_bag.Decrypt(*state_.pending_keys, &decrypted_pending_keys_str)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   sync_pb::NigoriKeyBag decrypted_pending_keys;
   if (!decrypted_pending_keys.ParseFromString(decrypted_pending_keys_str)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string new_default_key_name = state_.pending_keys->key_name();
@@ -968,12 +968,12 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
   // TRUSTED_VAULT passphrase type. The callers are responsible to set it again
   // if needed.
-  state_.last_default_trusted_vault_key_name = base::nullopt;
+  state_.last_default_trusted_vault_key_name = absl::nullopt;
   state_.cryptographer->EmplaceKeysFrom(new_key_bag);
   state_.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
   state_.pending_keys.reset();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetData() {
@@ -1027,8 +1027,8 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.encrypt_everything = false;
   state_.custom_passphrase_time = base::Time();
   state_.keystore_migration_time = base::Time();
-  state_.custom_passphrase_key_derivation_params = base::nullopt;
-  state_.last_default_trusted_vault_key_name = base::nullopt;
+  state_.custom_passphrase_key_derivation_params = absl::nullopt;
+  state_.last_default_trusted_vault_key_name = absl::nullopt;
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(),
       /*has_pending_keys=*/false);

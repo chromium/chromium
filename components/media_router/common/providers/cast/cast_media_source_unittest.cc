@@ -31,7 +31,7 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
   EXPECT_EQ(DefaultActionPolicy::kCreateSession,
             source->default_action_policy());
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[0]);
-  EXPECT_EQ(base::nullopt, source->target_playout_delay());
+  EXPECT_EQ(absl::nullopt, source->target_playout_delay());
   EXPECT_EQ(true, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kStrong,
             source->connection_type());

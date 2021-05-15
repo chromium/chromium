@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 struct Feature;
@@ -39,7 +39,7 @@ class AvailabilityModel {
   // Returns the day number since epoch (1970-01-01) in the local timezone for
   // when the particular |feature| was made available.
   // See TimeProvider::GetCurrentDay().
-  virtual base::Optional<uint32_t> GetAvailability(
+  virtual absl::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const = 0;
 
  protected:

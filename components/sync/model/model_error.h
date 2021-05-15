@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -39,7 +39,7 @@ class ModelError {
   std::string message_;
 };
 
-base::Optional<ModelError> ConvertToModelError(const SyncError& sync_error);
+absl::optional<ModelError> ConvertToModelError(const SyncError& sync_error);
 
 // Typedef for a simple error handler callback.
 using ModelErrorHandler = base::RepeatingCallback<void(const ModelError&)>;

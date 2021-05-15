@@ -12,9 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/version.h"
 #include "components/federated_learning/floc_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -30,7 +30,7 @@ namespace federated_learning {
 class FlocSortingLshClustersService {
  public:
   using ApplySortingLshCallback =
-      base::OnceCallback<void(base::Optional<uint64_t>, base::Version)>;
+      base::OnceCallback<void(absl::optional<uint64_t>, base::Version)>;
 
   class Observer {
    public:
@@ -66,7 +66,7 @@ class FlocSortingLshClustersService {
 
   void DidApplySortingLsh(ApplySortingLshCallback callback,
                           base::Version version,
-                          base::Optional<uint64_t> final_hash);
+                          absl::optional<uint64_t> final_hash);
 
   // Runner for tasks that do not influence user experience.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

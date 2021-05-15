@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -39,6 +38,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 
@@ -713,7 +713,7 @@ TEST_F(RemoteSuggestionsFetcherImplTest, ExclusiveCategoryOnly) {
 
   RequestParams params = test_params();
   params.exclusive_category =
-      base::Optional<Category>(Category::FromRemoteCategory(2));
+      absl::optional<Category>(Category::FromRemoteCategory(2));
 
   fetcher().FetchSnippets(params,
                           ToSnippetsAvailableCallback(&mock_callback()));

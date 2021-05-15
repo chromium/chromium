@@ -7,9 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       const std::u16string& default_app_name,
       int notification_width,
       bool should_show_icon,
-      base::Optional<NotificationTheme> theme = base::nullopt);
+      absl::optional<NotificationTheme> theme = absl::nullopt);
   MediaNotificationViewImpl(const MediaNotificationViewImpl&) = delete;
   MediaNotificationViewImpl& operator=(const MediaNotificationViewImpl&) =
       delete;
@@ -171,7 +171,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   bool expanded_ = false;
 
   // Used to force the notification to remain in a specific expanded state.
-  base::Optional<bool> forced_expanded_state_;
+  absl::optional<bool> forced_expanded_state_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
@@ -197,7 +197,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   views::BoxLayout* title_artist_row_layout_ = nullptr;
   const gfx::VectorIcon* vector_header_icon_ = nullptr;
 
-  base::Optional<NotificationTheme> theme_;
+  absl::optional<NotificationTheme> theme_;
 
   const bool is_cros_;
 };

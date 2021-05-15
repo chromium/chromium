@@ -16,7 +16,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -24,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -129,13 +129,13 @@ typedef NTSTATUS (WINAPI *NtQuerySystemInformationPtr)(
 
 // Returns the hard fault count of the current process, or nullopt if it can't
 // be determined.
-base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
+absl::optional<uint32_t> GetHardFaultCountForCurrentProcess() {
   // Get the function pointer.
   static const NtQuerySystemInformationPtr query_sys_info =
       reinterpret_cast<NtQuerySystemInformationPtr>(::GetProcAddress(
           GetModuleHandle(L"ntdll.dll"), "NtQuerySystemInformation"));
   if (query_sys_info == nullptr)
-    return base::nullopt;
+    return absl::nullopt;
 
   // The output of this system call depends on the number of threads and
   // processes on the entire system, and this can change between calls. Retry
@@ -164,7 +164,7 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
       // fill a large buffer just to record histograms.
       constexpr ULONG kMaxLength = 512 * 1024;
       if (return_length >= kMaxLength)
-        return base::nullopt;
+        return absl::nullopt;
 
       // Resize the buffer and retry, if the buffer hasn't already been resized
       // too many times.
@@ -179,7 +179,7 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
     // insufficient buffer length, or if the buffer was resized too many times.
     DCHECK(return_length <= buffer.size() ||
            num_buffer_resize >= kMaxNumBufferResize);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Look for the struct housing information for the current process.
@@ -194,11 +194,11 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
     // The list ends when NextEntryOffset is zero. This also prevents busy
     // looping if the data is in fact invalid.
     if (proc_info->NextEntryOffset <= 0)
-      return base::nullopt;
+      return absl::nullopt;
     index += proc_info->NextEntryOffset;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 #endif  // defined(OS_WIN)
 
@@ -297,7 +297,7 @@ void RecordHardFaultHistogram() {
 #if defined(OS_WIN)
   DCHECK_EQ(UNDETERMINED_STARTUP_TEMPERATURE, g_startup_temperature);
 
-  const base::Optional<uint32_t> hard_fault_count =
+  const absl::optional<uint32_t> hard_fault_count =
       GetHardFaultCountForCurrentProcess();
 
   if (hard_fault_count.has_value()) {

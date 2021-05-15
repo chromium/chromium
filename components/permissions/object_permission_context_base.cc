@@ -29,7 +29,7 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
 ObjectPermissionContextBase::ObjectPermissionContextBase(
     ContentSettingsType data_content_settings_type,
     HostContentSettingsMap* host_content_settings_map)
-    : guard_content_settings_type_(base::nullopt),
+    : guard_content_settings_type_(absl::nullopt),
       data_content_settings_type_(data_content_settings_type),
       host_content_settings_map_(host_content_settings_map) {
   DCHECK(host_content_settings_map_);
@@ -50,7 +50,7 @@ ObjectPermissionContextBase::Object::Object(
 ObjectPermissionContextBase::Object::~Object() = default;
 
 void ObjectPermissionContextBase::PermissionObserver::OnObjectPermissionChanged(
-    base::Optional<ContentSettingsType> guard_content_settings_type,
+    absl::optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {}
 
 void ObjectPermissionContextBase::PermissionObserver::OnPermissionRevoked(

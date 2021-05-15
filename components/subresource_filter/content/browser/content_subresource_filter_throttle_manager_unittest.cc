@@ -86,7 +86,7 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
       mojom::ActivationStatePtr activation_state,
-      const base::Optional<blink::FrameAdEvidence>& ad_evidence) override {
+      const absl::optional<blink::FrameAdEvidence>& ad_evidence) override {
     last_activation_ = std::move(activation_state);
     is_ad_subframe_ =
         ad_evidence.has_value() && ad_evidence->IndicatesAdSubframe();
@@ -98,9 +98,9 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
     is_ad_subframe_ = false;
     return is_ad_subframe;
   }
-  base::Optional<bool> LastActivated() {
+  absl::optional<bool> LastActivated() {
     if (!last_activation_)
-      return base::nullopt;
+      return absl::nullopt;
     bool activated =
         last_activation_->activation_level != mojom::ActivationLevel::kDisabled;
     last_activation_.reset();
@@ -239,7 +239,7 @@ class ContentSubresourceFilterThrottleManagerTest
     // ensure mojo calls make it to the fake agent.
     base::RunLoop().RunUntilIdle();
     FakeSubresourceFilterAgent* agent = agent_map_[rfh].get();
-    base::Optional<bool> last_activated = agent->LastActivated();
+    absl::optional<bool> last_activated = agent->LastActivated();
     EXPECT_EQ(expect_activation, last_activated && *last_activated);
     EXPECT_EQ(expect_is_ad_subframe, agent->LastAdSubframe());
     EXPECT_EQ(expect_activation_sent_to_agent, last_activated.has_value());

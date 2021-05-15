@@ -24,7 +24,7 @@ class StorageServicePartitionImplTest : public testing::Test {
 
   void SetUp() override {
     remote_service_->BindPartition(
-        base::nullopt, remote_test_partition_.BindNewPipeAndPassReceiver());
+        absl::nullopt, remote_test_partition_.BindNewPipeAndPassReceiver());
     remote_test_partition_.FlushForTesting();
 
     ASSERT_EQ(1u, service_.partitions().size());

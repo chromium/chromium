@@ -14,11 +14,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_user_events/global_id_mapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -32,10 +32,10 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
 
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  base::Optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  base::Optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -55,17 +55,17 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
   void RecordUserEventImpl(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics);
 
-  void OnStoreCreated(const base::Optional<ModelError>& error,
+  void OnStoreCreated(const absl::optional<ModelError>& error,
                       std::unique_ptr<ModelTypeStore> store);
-  void OnReadAllMetadata(const base::Optional<ModelError>& error,
+  void OnReadAllMetadata(const absl::optional<ModelError>& error,
                          std::unique_ptr<MetadataBatch> metadata_batch);
-  void OnCommit(const base::Optional<ModelError>& error);
+  void OnCommit(const absl::optional<ModelError>& error);
   void OnReadData(DataCallback callback,
-                  const base::Optional<ModelError>& error,
+                  const absl::optional<ModelError>& error,
                   std::unique_ptr<ModelTypeStore::RecordList> data_records,
                   std::unique_ptr<ModelTypeStore::IdList> missing_id_list);
   void OnReadAllData(DataCallback callback,
-                     const base::Optional<ModelError>& error,
+                     const absl::optional<ModelError>& error,
                      std::unique_ptr<ModelTypeStore::RecordList> data_records);
 
   void HandleGlobalIdChange(int64_t old_global_id, int64_t new_global_id);

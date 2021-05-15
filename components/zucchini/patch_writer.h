@@ -14,11 +14,11 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/zucchini/buffer_sink.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/patch_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -224,10 +224,10 @@ class PatchElementWriter {
 
  private:
   ElementMatch element_match_;
-  base::Optional<EquivalenceSink> equivalences_;
-  base::Optional<ExtraDataSink> extra_data_;
-  base::Optional<RawDeltaSink> raw_delta_;
-  base::Optional<ReferenceDeltaSink> reference_delta_;
+  absl::optional<EquivalenceSink> equivalences_;
+  absl::optional<ExtraDataSink> extra_data_;
+  absl::optional<RawDeltaSink> raw_delta_;
+  absl::optional<ReferenceDeltaSink> reference_delta_;
   std::map<PoolTag, TargetSink> extra_targets_;
 };
 

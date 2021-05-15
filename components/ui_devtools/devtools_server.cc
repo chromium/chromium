@@ -107,7 +107,7 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViz(
     int port) {
   auto server =
       base::WrapUnique(new UiDevToolsServer(port, kVizDevtoolsServerTag));
-  server->MakeServer(std::move(server_socket), net::OK, base::nullopt);
+  server->MakeServer(std::move(server_socket), net::OK, absl::nullopt);
   return server;
 }
 
@@ -185,7 +185,7 @@ void UiDevToolsServer::SetOnSessionEnded(base::OnceClosure callback) const {
 void UiDevToolsServer::MakeServer(
     mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr) {
+    const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
   if (result == net::OK) {
     server_ = std::make_unique<network::server::HttpServer>(

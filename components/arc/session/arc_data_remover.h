@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "components/prefs/pref_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -34,7 +34,7 @@ class ArcDataRemover {
   // Executes the removing, if scheduled.
   // This must run while ARC instance is stopped.
   // If not scheduled, |callback| will be synchronously called with nullopt.
-  using RunCallback = base::OnceCallback<void(base::Optional<bool> result)>;
+  using RunCallback = base::OnceCallback<void(absl::optional<bool> result)>;
   void Run(RunCallback callback);
 
  private:

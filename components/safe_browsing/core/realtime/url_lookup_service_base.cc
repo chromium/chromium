@@ -328,14 +328,14 @@ void RealTimeUrlLookupServiceBase::StartLookup(
     GetAccessToken(url, std::move(request_callback),
                    std::move(response_callback));
   } else {
-    SendRequest(url, /* access_token_string */ base::nullopt,
+    SendRequest(url, /* access_token_string */ absl::nullopt,
                 std::move(request_callback), std::move(response_callback));
   }
 }
 
 void RealTimeUrlLookupServiceBase::SendRequest(
     const GURL& url,
-    base::Optional<std::string> access_token_string,
+    absl::optional<std::string> access_token_string,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
@@ -374,7 +374,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
     const GURL& url,
-    base::Optional<std::string> access_token_string,
+    absl::optional<std::string> access_token_string,
     RTLookupResponseCallback response_callback) {
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
@@ -396,7 +396,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     const GURL& url,
-    base::Optional<std::string> access_token_string,
+    absl::optional<std::string> access_token_string,
     network::SimpleURLLoader* url_loader,
     base::TimeTicks request_start_time,
     std::unique_ptr<std::string> response_body) {
@@ -464,7 +464,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
   request->set_version(kRTLookupRequestVersion);
   request->set_os_type(GetRTLookupRequestOSType());
-  base::Optional<std::string> dm_token_string = GetDMTokenString();
+  absl::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());
   }

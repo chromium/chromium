@@ -94,7 +94,7 @@ std::u16string PermissionRequestImpl::GetMessageText() const {
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
-base::Optional<std::u16string> PermissionRequestImpl::GetChipText() const {
+absl::optional<std::u16string> PermissionRequestImpl::GetChipText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -128,7 +128,7 @@ base::Optional<std::u16string> PermissionRequestImpl::GetChipText() const {
       // TODO(bsep): We don't actually want to support having no string in the
       // long term, but writing them takes time. In the meantime, we fall back
       // to the existing UI when the string is missing.
-      return base::nullopt;
+      return absl::nullopt;
   }
   return l10n_util::GetStringUTF16(message_id);
 }

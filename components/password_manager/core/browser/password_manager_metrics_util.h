@@ -520,7 +520,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 // user-state-specific histogram.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    base::Optional<PasswordAccountStorageUserState> user_state);
+    absl::optional<PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the save password prompt after previously
 // having unblocklisted the origin while on the page.

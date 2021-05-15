@@ -78,7 +78,7 @@ void FakeAppInstance::Init(mojo::PendingRemote<mojom::AppHost> host_remote,
 void FakeAppInstance::LaunchAppDeprecated(
     const std::string& package_name,
     const std::string& activity,
-    const base::Optional<gfx::Rect>& dimension) {
+    const absl::optional<gfx::Rect>& dimension) {
   LaunchApp(package_name, activity, 0);
 }
 
@@ -558,7 +558,7 @@ void FakeAppInstance::IsInstallable(const std::string& package_name,
 
 void FakeAppInstance::LaunchIntentDeprecated(
     const std::string& intent_uri,
-    const base::Optional<gfx::Rect>& dimension_on_screen) {
+    const absl::optional<gfx::Rect>& dimension_on_screen) {
   LaunchIntent(intent_uri, 0);
 }
 

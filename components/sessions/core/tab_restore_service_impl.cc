@@ -1024,7 +1024,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         }
         std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
         base::PickleIterator iter(*pickle);
-        base::Optional<base::Token> group_token = ReadTokenFromPickle(&iter);
+        absl::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         std::u16string title;
         uint32_t color_int;
         if (!iter.ReadString16(&title)) {
@@ -1087,7 +1087,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         current_tab->user_agent_override.ua_string_override.swap(
             user_agent_override);
         current_tab->user_agent_override.opaque_ua_metadata_override =
-            base::nullopt;
+            absl::nullopt;
         break;
       }
 
@@ -1098,7 +1098,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         }
         SessionID tab_id = SessionID::InvalidValue();
         std::string user_agent_override;
-        base::Optional<std::string> opaque_ua_metadata_override;
+        absl::optional<std::string> opaque_ua_metadata_override;
         if (!RestoreSetTabUserAgentOverrideCommand2(
                 command, &tab_id, &user_agent_override,
                 &opaque_ua_metadata_override)) {
@@ -1288,7 +1288,7 @@ void TabRestoreServiceImpl::RemoveObserver(
   helper_.RemoveObserver(observer);
 }
 
-base::Optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
+absl::optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
     LiveTab* live_tab,
     int index) {
   return helper_.CreateHistoricalTab(live_tab, index);

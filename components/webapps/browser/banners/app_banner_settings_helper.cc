@@ -166,19 +166,19 @@ void UpdateSiteEngagementToTrigger() {
 // Reports whether |event| was recorded within the |period| up until |now|.
 // If we get nullopt, we cannot store any more values for |origin_url|.
 // Conservatively assume we did block a banner in this case.
-base::Optional<bool> WasEventWithinPeriod(
+absl::optional<bool> WasEventWithinPeriod(
     AppBannerSettingsHelper::AppBannerEvent event,
     base::TimeDelta period,
     content::WebContents* web_contents,
     const GURL& origin_url,
     const std::string& package_name_or_start_url,
     base::Time now) {
-  base::Optional<base::Time> event_time =
+  absl::optional<base::Time> event_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents, origin_url, package_name_or_start_url, event);
 
   if (!event_time)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Null times are in the distant past, so the delta between real times and
   // null events will always be greater than the limits.
@@ -196,7 +196,7 @@ struct NextInstallTextAnimation {
   base::Time last_shown;
   base::TimeDelta delay;
 
-  static base::Optional<NextInstallTextAnimation> Get(
+  static absl::optional<NextInstallTextAnimation> Get(
       content::WebContents* web_contents,
       const GURL& scope);
 
@@ -206,7 +206,7 @@ struct NextInstallTextAnimation {
                      const GURL& scope) const;
 };
 
-base::Optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
+absl::optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
     content::WebContents* web_contents,
     const GURL& scope) {
   AppPrefs app_prefs(web_contents, scope, scope.spec());
@@ -216,17 +216,17 @@ base::Optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
   const base::Value* next_dict =
       app_prefs.dict()->FindKey(kNextInstallTextAnimation);
   if (!next_dict || !next_dict->is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<base::Time> last_shown =
+  absl::optional<base::Time> last_shown =
       util::ValueToTime(next_dict->FindKey(kLastShownKey));
   if (!last_shown)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<base::TimeDelta> delay =
+  absl::optional<base::TimeDelta> delay =
       util::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
   if (!delay)
-    return base::nullopt;
+    return absl::nullopt;
 
   return NextInstallTextAnimation{*last_shown, *delay};
 }
@@ -322,7 +322,7 @@ bool AppBannerSettingsHelper::HasBeenInstalled(
     content::WebContents* web_contents,
     const GURL& origin_url,
     const std::string& package_name_or_start_url) {
-  base::Optional<base::Time> added_time =
+  absl::optional<base::Time> added_time =
       GetSingleBannerEvent(web_contents, origin_url, package_name_or_start_url,
                            APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN);
 
@@ -336,7 +336,7 @@ bool AppBannerSettingsHelper::WasBannerRecentlyBlocked(
     base::Time now) {
   DCHECK(!package_name_or_start_url.empty());
 
-  base::Optional<bool> in_period = WasEventWithinPeriod(
+  absl::optional<bool> in_period = WasEventWithinPeriod(
       APP_BANNER_EVENT_DID_BLOCK,
       base::TimeDelta::FromDays(gDaysAfterDismissedToShow), web_contents,
       origin_url, package_name_or_start_url, now);
@@ -350,7 +350,7 @@ bool AppBannerSettingsHelper::WasBannerRecentlyIgnored(
     base::Time now) {
   DCHECK(!package_name_or_start_url.empty());
 
-  base::Optional<bool> in_period = WasEventWithinPeriod(
+  absl::optional<bool> in_period = WasEventWithinPeriod(
       APP_BANNER_EVENT_DID_SHOW,
       base::TimeDelta::FromDays(gDaysAfterIgnoredToShow), web_contents,
       origin_url, package_name_or_start_url, now);
@@ -358,7 +358,7 @@ bool AppBannerSettingsHelper::WasBannerRecentlyIgnored(
   return in_period.value_or(true);
 }
 
-base::Optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
+absl::optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
     content::WebContents* web_contents,
     const GURL& origin_url,
     const std::string& package_name_or_start_url,
@@ -367,7 +367,7 @@ base::Optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
 
   AppPrefs app_prefs(web_contents, origin_url, package_name_or_start_url);
   if (!app_prefs.dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::Value* internal_time = app_prefs.dict()->FindKeyOfType(
       kBannerEventKeys[event], base::Value::Type::DOUBLE);
@@ -388,7 +388,7 @@ void AppBannerSettingsHelper::RecordMinutesFromFirstVisitToShow(
     const GURL& origin_url,
     const std::string& package_name_or_start_url,
     base::Time time) {
-  base::Optional<base::Time> could_show_time =
+  absl::optional<base::Time> could_show_time =
       GetSingleBannerEvent(web_contents, origin_url, package_name_or_start_url,
                            APP_BANNER_EVENT_COULD_SHOW);
 
@@ -466,7 +466,7 @@ void AppBannerSettingsHelper::UpdateFromFieldTrial() {
 bool AppBannerSettingsHelper::CanShowInstallTextAnimation(
     content::WebContents* web_contents,
     const GURL& scope) {
-  base::Optional<NextInstallTextAnimation> next_prompt =
+  absl::optional<NextInstallTextAnimation> next_prompt =
       NextInstallTextAnimation::Get(web_contents, scope);
 
   if (!next_prompt)
@@ -489,7 +489,7 @@ void AppBannerSettingsHelper::RecordInstallTextAnimationShown(
   NextInstallTextAnimation next_prompt = {AppBannerManager::GetCurrentTime(),
                                           kInitialAnimationSuppressionPeriod};
 
-  base::Optional<NextInstallTextAnimation> last_prompt =
+  absl::optional<NextInstallTextAnimation> last_prompt =
       NextInstallTextAnimation::Get(web_contents, scope);
   if (last_prompt) {
     next_prompt.delay =

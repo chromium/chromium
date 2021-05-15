@@ -14,11 +14,11 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
 #include "net/http/http_request_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -60,9 +60,9 @@ class DataReductionProxyRequestOptions {
   // proxy authentication credentials. |page_id| should only be non-empty for
   // main frame requests.
   void AddRequestHeader(net::HttpRequestHeaders* request_headers,
-                        base::Optional<uint64_t> page_id);
+                        absl::optional<uint64_t> page_id);
   static void AddRequestHeader(net::HttpRequestHeaders* request_headers,
-                               base::Optional<uint64_t> page_id,
+                               absl::optional<uint64_t> page_id,
                                const std::string& session_header_value);
 
   // Adds |page_id| to the 'Chrome-Proxy' header, merging with existing value if
@@ -94,11 +94,11 @@ class DataReductionProxyRequestOptions {
   void Invalidate();
 
   // Parses |request_headers| and returns the value of the session key.
-  static base::Optional<std::string> GetSessionKeyFromRequestHeaders(
+  static absl::optional<std::string> GetSessionKeyFromRequestHeaders(
       const net::HttpRequestHeaders& request_headers);
 
   // Parses |request_headers| and returns the value of the page id.
-  static base::Optional<uint64_t> GetPageIdFromRequestHeaders(
+  static absl::optional<uint64_t> GetPageIdFromRequestHeaders(
       const net::HttpRequestHeaders& request_headers);
 
   // Creates and returns a new unique page ID (unique per session).

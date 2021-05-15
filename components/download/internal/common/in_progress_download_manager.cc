@@ -5,7 +5,6 @@
 #include "components/download/public/common/in_progress_download_manager.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -28,6 +27,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -50,7 +50,7 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
   if (entry.download_info->id < 0)
     return nullptr;
 
-  base::Optional<InProgressInfo> in_progress_info =
+  absl::optional<InProgressInfo> in_progress_info =
       entry.download_info->in_progress_info;
   if (!in_progress_info)
     return nullptr;
@@ -59,7 +59,7 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       in_progress_info->current_path, in_progress_info->target_path,
       in_progress_info->url_chain, in_progress_info->referrer_url,
       in_progress_info->site_url, in_progress_info->tab_url,
-      in_progress_info->tab_referrer_url, base::nullopt,
+      in_progress_info->tab_referrer_url, absl::nullopt,
       in_progress_info->mime_type, in_progress_info->original_mime_type,
       in_progress_info->start_time, in_progress_info->end_time,
       in_progress_info->etag, in_progress_info->last_modified,
@@ -158,7 +158,7 @@ void OnPathReserved(DownloadItemImplDelegate::DownloadTargetCallback callback,
                     const InProgressDownloadManager::IntermediatePathCallback&
                         intermediate_path_cb,
                     const base::FilePath& forced_file_path,
-                    base::Optional<DownloadSchedule> download_schedule,
+                    absl::optional<DownloadSchedule> download_schedule,
                     PathValidationResult result,
                     const base::FilePath& target_path) {
   base::FilePath intermediate_path;

@@ -123,7 +123,7 @@ PasswordStore::CheckReuseRequest::~CheckReuseRequest() = default;
 void PasswordStore::CheckReuseRequest::OnReuseCheckDone(
     bool is_reuse_found,
     size_t password_length,
-    base::Optional<PasswordHashData> reused_protected_password_hash,
+    absl::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords) {
   origin_task_runner_->PostTask(
@@ -834,7 +834,7 @@ void PasswordStore::CheckReuseImpl(std::unique_ptr<CheckReuseRequest> request,
   if (reuse_detector_) {
     reuse_detector_->CheckReuse(input, domain, request.get());
   } else {
-    request->OnReuseCheckDone(false, 0, base::nullopt, {}, 0);
+    request->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0);
   }
 }
 

@@ -90,7 +90,7 @@ class SessionStorageMetadata {
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> SetupNewDatabase();
 
   // This parses the database version from the bytes that were stored on
-  // disk, or if there was no version saved then passes a base::nullopt. This
+  // disk, or if there was no version saved then passes a absl::nullopt. This
   // call is not necessary on new databases. The |upgrade_tasks| are populated
   // with any tasks needed to upgrade the databases versioning metadata. Note
   // this is different than the namespaces metadata, which will be upgraded in
@@ -98,7 +98,7 @@ class SessionStorageMetadata {
   //
   // Returns |true| if the parsing is correct and we support the version read.
   bool ParseDatabaseVersion(
-      base::Optional<std::vector<uint8_t>> value,
+      absl::optional<std::vector<uint8_t>> value,
       std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks);
 
   // Parses all namespaces and maps, and stores all metadata locally. This

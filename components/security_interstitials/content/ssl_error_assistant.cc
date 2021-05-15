@@ -203,7 +203,7 @@ bool SSLErrorAssistant::IsKnownCaptivePortalCertificate(
   return MatchSSLInfoWithHashes(ssl_info, *(captive_portal_spki_hashes_.get()));
 }
 
-base::Optional<DynamicInterstitialInfo>
+absl::optional<DynamicInterstitialInfo>
 SSLErrorAssistant::MatchDynamicInterstitial(const net::SSLInfo& ssl_info,
                                             bool is_overridable) {
   // Load the dynamic interstitial data from SSL error assistant proto if it's
@@ -248,7 +248,7 @@ SSLErrorAssistant::MatchDynamicInterstitial(const net::SSLInfo& ssl_info,
     return data;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const std::string SSLErrorAssistant::MatchKnownMITMSoftware(

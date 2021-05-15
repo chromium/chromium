@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "components/query_tiles/internal/store.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/internal/tile_types.h"
 #include "components/query_tiles/tile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace query_tiles {
 
@@ -25,7 +25,7 @@ class TileManager {
   using TileStore = Store<TileGroup>;
   using TileGroupStatusCallback = base::OnceCallback<void(TileGroupStatus)>;
   using GetTilesCallback = base::OnceCallback<void(std::vector<Tile>)>;
-  using TileCallback = base::OnceCallback<void(base::Optional<Tile>)>;
+  using TileCallback = base::OnceCallback<void(absl::optional<Tile>)>;
 
   // Creates the instance.
   static std::unique_ptr<TileManager> Create(
@@ -59,7 +59,7 @@ class TileManager {
   // Called when the final query is formed. |parent_tile_id| is the parent
   // Id of the last tile, if it exists.
   virtual void OnQuerySelected(
-      const base::Optional<std::string>& parent_tile_id,
+      const absl::optional<std::string>& parent_tile_id,
       const std::u16string& query_text) = 0;
 
   TileManager();

@@ -50,7 +50,7 @@ class PolicyConverterTest : public testing::Test {
   // Converts the passed in value to the passed in schema, and serializes the
   // result to JSON, to make it easier to compare with EXPECT_EQ.
   std::string Convert(Value value, const Schema& value_schema) {
-    base::Optional<base::Value> converted_value =
+    absl::optional<base::Value> converted_value =
         PolicyConverter::ConvertValueToSchema(std::move(value), value_schema);
     EXPECT_TRUE(converted_value.has_value());
 

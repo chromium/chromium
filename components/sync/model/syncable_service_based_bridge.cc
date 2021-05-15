@@ -77,7 +77,7 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
 
 // Parses the content of |record_list| into |*in_memory_store|. The output
 // parameter is first for binding purposes.
-base::Optional<ModelError> ParseInMemoryStoreOnBackendSequence(
+absl::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
     SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK(in_memory_store);
@@ -94,7 +94,7 @@ base::Optional<ModelError> ParseInMemoryStoreOnBackendSequence(
                              std::move(*persisted_entity.mutable_specifics()));
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Object to propagate local changes to the bridge, which will ultimately
@@ -103,7 +103,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
  public:
   LocalChangeProcessor(
       ModelType type,
-      const base::RepeatingCallback<void(const base::Optional<ModelError>&)>&
+      const base::RepeatingCallback<void(const absl::optional<ModelError>&)>&
           error_callback,
       ModelTypeStore* store,
       SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
@@ -119,13 +119,13 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
   ~LocalChangeProcessor() override {}
 
-  base::Optional<ModelError> ProcessSyncChanges(
+  absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Reject changes if the processor has already experienced errors.
-    base::Optional<ModelError> processor_error = other_->GetError();
+    absl::optional<ModelError> processor_error = other_->GetError();
     if (processor_error) {
       return processor_error;
     }
@@ -190,7 +190,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
     store_->CommitWriteBatch(std::move(batch), error_callback_);
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SyncDataList GetAllSyncData(ModelType type) const override {
@@ -202,7 +202,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
  private:
   const ModelType type_;
-  const base::RepeatingCallback<void(const base::Optional<ModelError>&)>
+  const base::RepeatingCallback<void(const absl::optional<ModelError>&)>
       error_callback_;
   ModelTypeStore* const store_;
   SyncableServiceBasedBridge::InMemoryStore* const in_memory_store_;
@@ -262,7 +262,7 @@ SyncableServiceBasedBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-base::Optional<ModelError> SyncableServiceBasedBridge::MergeSyncData(
+absl::optional<ModelError> SyncableServiceBasedBridge::MergeSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -280,7 +280,7 @@ base::Optional<ModelError> SyncableServiceBasedBridge::MergeSyncData(
   return StartSyncableService();
 }
 
-base::Optional<ModelError> SyncableServiceBasedBridge::ApplySyncChanges(
+absl::optional<ModelError> SyncableServiceBasedBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -292,7 +292,7 @@ base::Optional<ModelError> SyncableServiceBasedBridge::ApplySyncChanges(
       std::move(metadata_change_list), std::move(entity_change_list));
 
   if (sync_change_list.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return syncable_service_->ProcessSyncChanges(FROM_HERE, sync_change_list);
@@ -395,7 +395,7 @@ SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
 }
 
 void SyncableServiceBasedBridge::OnStoreCreated(
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -419,7 +419,7 @@ void SyncableServiceBasedBridge::OnStoreCreated(
 
 void SyncableServiceBasedBridge::OnReadAllDataForInit(
     std::unique_ptr<InMemoryStore> in_memory_store,
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(in_memory_store.get());
   DCHECK(in_memory_store_.empty());
@@ -437,7 +437,7 @@ void SyncableServiceBasedBridge::OnReadAllDataForInit(
 }
 
 void SyncableServiceBasedBridge::OnReadAllMetadataForInit(
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncable_service_started_);
@@ -480,7 +480,7 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
   }
 }
 
-base::Optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
+absl::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
   DCHECK(store_);
   DCHECK(!syncable_service_started_);
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -503,7 +503,7 @@ base::Optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
       type_, error_callback, store_.get(), &in_memory_store_,
       change_processor());
 
-  const base::Optional<ModelError> merge_error =
+  const absl::optional<ModelError> merge_error =
       syncable_service_->MergeDataAndStartSyncing(
           type_, initial_sync_data, std::move(local_change_processor),
           std::make_unique<SyncErrorFactoryImpl>(type_));
@@ -583,7 +583,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
 
 void SyncableServiceBasedBridge::OnReadDataForProcessor(
     DataCallback callback,
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> record_list,
     std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
   OnReadAllDataForProcessor(std::move(callback), error, std::move(record_list));
@@ -591,7 +591,7 @@ void SyncableServiceBasedBridge::OnReadDataForProcessor(
 
 void SyncableServiceBasedBridge::OnReadAllDataForProcessor(
     DataCallback callback,
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -618,7 +618,7 @@ void SyncableServiceBasedBridge::OnReadAllDataForProcessor(
 }
 
 void SyncableServiceBasedBridge::ReportErrorIfSet(
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

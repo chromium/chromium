@@ -49,7 +49,7 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {
   return fds;
 }
 
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,
@@ -65,7 +65,7 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
         base::CheckMul(stride, plane_height);
     if (!current_size.IsValid()) {
       VLOGF(1) << "Invalid stride/height";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     color_planes.emplace_back(stride, offset, current_size.ValueOrDie());
@@ -75,7 +75,7 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
                                      std::move(scoped_fds), color_planes);
 }
 
-base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,
@@ -85,12 +85,12 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
   if (planes.size() != num_planes || planes.size() == 0) {
     VLOGF(1) << "Invalid number of dmabuf planes passed: " << planes.size()
              << ", expected: " << num_planes;
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (scoped_fds.size() != num_planes) {
     VLOGF(1) << "Invalid number of fds passed: " << scoped_fds.size()
              << ", expected: " << num_planes;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle;
@@ -101,11 +101,11 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     // offset in NativePixmapPlane are uint32_t and uint64_t, respectively.
     if (!base::IsValueInRangeForNumericType<uint32_t>(planes[i].stride)) {
       VLOGF(1) << "Invalid stride";
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!base::IsValueInRangeForNumericType<uint64_t>(planes[i].offset)) {
       VLOGF(1) << "Invalid offset";
-      return base::nullopt;
+      return absl::nullopt;
     }
     uint32_t stride = base::checked_cast<uint32_t>(planes[i].stride);
     uint64_t offset = base::checked_cast<uint64_t>(planes[i].offset);
@@ -115,7 +115,7 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
   }
 
   if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size, gmb_handle))
-    return base::nullopt;
+    return absl::nullopt;
 
   return gmb_handle;
 }

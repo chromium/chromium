@@ -55,7 +55,7 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
     }
     case CastMessageUtilInputs::kCreateLaunchRequestInput: {
       const auto& input = input_union.create_launch_request_input();
-      base::Optional<base::Value> app_params;
+      absl::optional<base::Value> app_params;
       if (input.has_app_params())
         app_params = MakeValue(input.app_params());
       CreateLaunchRequest(input.source_id(), input.request_id(), input.app_id(),

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_AUTO_FETCH_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_AUTO_FETCH_H_
 
-#include "base/optional.h"
 #include "components/offline_pages/core/client_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Most auto-fetch code is in browser/offline_pages. This file contains code
 // that needs to be accessed within components/offline_pages.
@@ -26,7 +26,7 @@ struct ClientIdMetadata {
 
 ClientId MakeClientId(const ClientIdMetadata& metadata);
 // Extract metadata from a |ClientId| that was created with |MakeClientId|.
-base::Optional<ClientIdMetadata> ExtractMetadata(const ClientId& id);
+absl::optional<ClientIdMetadata> ExtractMetadata(const ClientId& id);
 
 }  // namespace auto_fetch
 }  // namespace offline_pages

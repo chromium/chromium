@@ -13,11 +13,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -151,7 +151,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // The default implementation does nothing.
   virtual void TerminateImpl();
 
-  const base::Optional<enterprise_management::SignedData>& signed_command()
+  const absl::optional<enterprise_management::SignedData>& signed_command()
       const {
     return signed_command_;
   }
@@ -172,7 +172,7 @@ class POLICY_EXPORT RemoteCommandJob {
 
   // Serialized command inside policy data proto with signature in case of a
   // signed command, otherwise empty.
-  base::Optional<enterprise_management::SignedData> signed_command_;
+  absl::optional<enterprise_management::SignedData> signed_command_;
 
   std::unique_ptr<ResultPayload> result_payload_;
 

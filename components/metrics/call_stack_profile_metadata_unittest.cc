@@ -98,7 +98,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_SetItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
@@ -139,7 +139,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RepeatItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   (void)metadata.CreateSampleMetadata(&name_hashes);
@@ -181,12 +181,12 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_ModifiedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   (void)metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(100, base::nullopt, 11);
+  metadata_recorder.Set(100, absl::nullopt, 11);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
@@ -230,12 +230,12 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NewItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   (void)metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(101, base::nullopt, 11);
+  metadata_recorder.Set(101, absl::nullopt, 11);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
@@ -281,12 +281,12 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 10);
+  metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   (void)metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(100, base::nullopt);
+  metadata_recorder.Remove(100, absl::nullopt);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
@@ -331,7 +331,7 @@ TEST(CallStackProfileMetadataTest,
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 20);
+  metadata_recorder.Set(100, absl::nullopt, 20);
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
@@ -356,13 +356,13 @@ TEST(CallStackProfileMetadataTest,
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, base::nullopt, 20);
+  metadata_recorder.Set(100, absl::nullopt, 20);
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   (void)metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(100, base::nullopt);
+  metadata_recorder.Remove(100, absl::nullopt);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
@@ -457,7 +457,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_DifferentKeys) {
 
   const base::MetadataRecorder::Item item1(3, 30, 300);
   const base::MetadataRecorder::Item item2(3, 40, 300);
-  const base::MetadataRecorder::Item item3(3, base::nullopt, 300);
+  const base::MetadataRecorder::Item item3(3, absl::nullopt, 300);
   metadata.ApplyMetadata(item1, stack_samples.begin() + 1,
                          stack_samples.begin() + 4, &stack_samples,
                          &name_hashes);

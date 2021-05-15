@@ -91,8 +91,8 @@ class FullscreenShellSurface : public SurfaceTreeHost,
 
   views::Widget* widget_ = nullptr;
   aura::Window* parent_ = nullptr;
-  base::Optional<std::string> application_id_;
-  base::Optional<std::string> startup_id_;
+  absl::optional<std::string> application_id_;
+  absl::optional<std::string> startup_id_;
   base::RepeatingClosure close_callback_;
   base::OnceClosure surface_destroyed_callback_;
   FullscreenShellView* contents_view_ = nullptr;

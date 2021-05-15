@@ -9,10 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,9 +49,9 @@ class WellKnownChangePasswordState {
   void FetchNonExistingResource(
       network::SharedURLLoaderFactory* url_loader_factory,
       const GURL& origin,
-      base::Optional<url::Origin> request_initiator = base::nullopt,
-      base::Optional<network::ResourceRequest::TrustedParams> trusted_params =
-          base::nullopt);
+      absl::optional<url::Origin> request_initiator = absl::nullopt,
+      absl::optional<network::ResourceRequest::TrustedParams> trusted_params =
+          absl::nullopt);
   // Prefetch change password URLs from |affiliation_service|.
   void PrefetchChangePasswordURLs(AffiliationService* affiliation_service,
                                   const std::vector<GURL>& urls);

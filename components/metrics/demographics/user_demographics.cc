@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -101,7 +101,7 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-base::Optional<int> GetUserBirthYear(
+absl::optional<int> GetUserBirthYear(
     const base::DictionaryValue* demographics) {
   const base::Value* value =
       demographics->FindPath(kSyncDemographicsBirthYearPath);
@@ -111,7 +111,7 @@ base::Optional<int> GetUserBirthYear(
 
   // Verify that there is a birth year.
   if (birth_year == kUserDemographicsBirthYearDefaultValue)
-    return base::nullopt;
+    return absl::nullopt;
 
   return birth_year;
 }
@@ -119,7 +119,7 @@ base::Optional<int> GetUserBirthYear(
 // Gets the synced user's gender from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-base::Optional<UserDemographicsProto_Gender> GetUserGender(
+absl::optional<UserDemographicsProto_Gender> GetUserGender(
     const base::DictionaryValue* demographics) {
   const base::Value* value =
       demographics->FindPath(kSyncDemographicsGenderPath);
@@ -129,12 +129,12 @@ base::Optional<UserDemographicsProto_Gender> GetUserGender(
 
   // Verify that the gender is not default.
   if (gender_int == kUserDemographicsGenderDefaultValue)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Verify that the gender number is a valid UserDemographicsProto_Gender
   // encoding.
   if (!UserDemographicsProto_Gender_IsValid(gender_int))
-    return base::nullopt;
+    return absl::nullopt;
 
   auto gender = UserDemographicsProto_Gender(gender_int);
 
@@ -142,7 +142,7 @@ base::Optional<UserDemographicsProto_Gender> GetUserGender(
   // anonymity.
   if (gender != UserDemographicsProto::GENDER_FEMALE &&
       gender != UserDemographicsProto::GENDER_MALE) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return gender;
@@ -221,14 +221,14 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   DCHECK(demographics != nullptr);
 
   // Get the user's birth year.
-  base::Optional<int> birth_year = GetUserBirthYear(demographics);
+  absl::optional<int> birth_year = GetUserBirthYear(demographics);
   if (!birth_year.has_value()) {
     return UserDemographicsResult::ForStatus(
         UserDemographicsStatus::kIneligibleDemographicsData);
   }
 
   // Get the user's gender.
-  base::Optional<UserDemographicsProto_Gender> gender =
+  absl::optional<UserDemographicsProto_Gender> gender =
       GetUserGender(demographics);
   if (!gender.has_value()) {
     return UserDemographicsResult::ForStatus(

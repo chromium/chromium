@@ -311,14 +311,14 @@ class CastSocketImpl : public CastSocket {
 
   // Callback from network::mojom::NetworkContext::CreateTCPConnectedSocket.
   void OnConnect(int result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr,
+                 const absl::optional<net::IPEndPoint>& local_addr,
+                 const absl::optional<net::IPEndPoint>& peer_addr,
                  mojo::ScopedDataPipeConsumerHandle receive_stream,
                  mojo::ScopedDataPipeProducerHandle send_stream);
   void OnUpgradeToTLS(int result,
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream,
-                      const base::Optional<net::SSLInfo>& ssl_info);
+                      const absl::optional<net::SSLInfo>& ssl_info);
   /////////////////////////////////////////////////////////////////////////////
 
   // Resets the cancellable callback used for async invocations of

@@ -518,7 +518,7 @@ class ScriptExecutor : public ActionDelegate,
     base::OnceCallback<void()> end_prompt_on_navigation_callback;
   };
   CurrentActionData current_action_data_;
-  base::Optional<size_t> current_action_index_;
+  absl::optional<size_t> current_action_index_;
 
   const UserData* user_data_ = nullptr;
 

@@ -37,7 +37,7 @@ class AvailabilityModelImpl : public AvailabilityModel {
   void Initialize(OnInitializedCallback callback,
                   uint32_t current_day) override;
   bool IsReady() const override;
-  base::Optional<uint32_t> GetAvailability(
+  absl::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const override;
 
  private:

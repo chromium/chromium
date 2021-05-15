@@ -6,7 +6,6 @@
 #define COMPONENTS_BLOCKED_CONTENT_POPUP_TRACKER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -14,6 +13,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -74,10 +74,10 @@ class PopupTracker : public content::WebContentsObserver,
 
   // Will be unset until the first navigation commits. Will be set to the total
   // time the contents was visible at commit time.
-  base::Optional<base::TimeDelta> first_load_visible_time_start_;
+  absl::optional<base::TimeDelta> first_load_visible_time_start_;
   // Will be unset until the second navigation commits. Is the total time the
   // contents is visible while the first document is loading (after commit).
-  base::Optional<base::TimeDelta> first_load_visible_time_;
+  absl::optional<base::TimeDelta> first_load_visible_time_;
 
   ui::ScopedVisibilityTracker visibility_tracker_;
 

@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -14,6 +13,7 @@
 #include "components/web_package/test_support/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -46,7 +46,7 @@ class TestDataSource : public mojom::BundleDataSource {
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     if (offset >= data_.size()) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     const uint8_t* start =

@@ -35,7 +35,7 @@ class StarterPlatformDelegate {
   virtual void StartRegularScript(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script) = 0;
+      const absl::optional<TriggerScriptProto>& trigger_script) = 0;
   // Returns whether a regular script is currently running.
   virtual bool IsRegularScriptRunning() const;
   // Returns whether a regular script is currently showing UI to the user.

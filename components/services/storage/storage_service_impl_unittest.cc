@@ -40,7 +40,7 @@ TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
 
   mojo::Remote<mojom::Partition> in_memory_partition1;
   remote_service()->BindPartition(
-      /*path=*/base::nullopt,
+      /*path=*/absl::nullopt,
       in_memory_partition1.BindNewPipeAndPassReceiver());
   in_memory_partition1.FlushForTesting();
 
@@ -48,7 +48,7 @@ TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
 
   mojo::Remote<mojom::Partition> in_memory_partition2;
   remote_service()->BindPartition(
-      base::nullopt /* path */,
+      absl::nullopt /* path */,
       in_memory_partition2.BindNewPipeAndPassReceiver());
   in_memory_partition2.FlushForTesting();
 

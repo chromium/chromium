@@ -132,7 +132,7 @@ int GetMinuteOfTheDay(bool local_time,
 // categories. If only a single category was requested, this function filters
 // all other categories out.
 void FilterCategories(FetchedCategoriesVector* categories,
-                      base::Optional<Category> exclusive_category) {
+                      absl::optional<Category> exclusive_category) {
   if (!exclusive_category.has_value()) {
     return;
   }

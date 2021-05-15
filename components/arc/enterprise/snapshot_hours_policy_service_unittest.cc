@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -20,6 +19,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace data_snapshotd {
@@ -183,7 +183,7 @@ class SnapshotHoursPolicyServiceTest
 
   // Enable feature and check.
   void EnableSnapshot(int enabled_calls_num = 1) {
-    base::Optional<base::Value> policy = base::JSONReader::Read(kJsonPolicy);
+    absl::optional<base::Value> policy = base::JSONReader::Read(kJsonPolicy);
     EXPECT_TRUE(policy.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy.value());
     EnsureSnapshotEnabled(enabled_calls_num);
@@ -236,7 +236,7 @@ TEST_F(SnapshotHoursPolicyServiceTest, DoubleDisable) {
   EnableSnapshot();
 
   {
-    base::Optional<base::Value> policy_value =
+    absl::optional<base::Value> policy_value =
         base::JSONReader::Read(kJsonPolicyEmptyIntervals);
     EXPECT_TRUE(policy_value.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy_value.value());
@@ -246,7 +246,7 @@ TEST_F(SnapshotHoursPolicyServiceTest, DoubleDisable) {
 
   {
     // User a different JSON to ensure the policy value is updated.
-    base::Optional<base::Value> policy_value =
+    absl::optional<base::Value> policy_value =
         base::JSONReader::Read(kJsonPolicyNoIntervals);
     EXPECT_TRUE(policy_value.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy_value.value());
@@ -285,7 +285,7 @@ TEST_F(SnapshotHoursPolicyServiceTest, InsideInterval) {
 
   // Disable snapshots.
   {
-    base::Optional<base::Value> policy_value =
+    absl::optional<base::Value> policy_value =
         base::JSONReader::Read(kJsonPolicyNoIntervals);
     EXPECT_TRUE(policy_value.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy_value.value());
@@ -330,7 +330,7 @@ TEST_F(SnapshotHoursPolicyServiceTest, DisableByUserPolicyForMGS) {
 TEST_P(SnapshotHoursPolicyServiceTest, DisabledByPolicy) {
   EnableSnapshot();
 
-  base::Optional<base::Value> policy_value = base::JSONReader::Read(policy());
+  absl::optional<base::Value> policy_value = base::JSONReader::Read(policy());
   EXPECT_TRUE(policy_value.has_value());
   local_state()->Set(arc::prefs::kArcSnapshotHours, policy_value.value());
 

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_observers.h"
@@ -27,6 +26,7 @@
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class PresentationScreenAvailabilityListener;
@@ -238,7 +238,7 @@ class PresentationServiceDelegateImpl
       presentation_observers_;
 
   // Default presentation request for the owning WebContents.
-  base::Optional<content::PresentationRequest> default_presentation_request_;
+  absl::optional<content::PresentationRequest> default_presentation_request_;
 
   // Callback to invoke when the default presentation has started.
   content::DefaultPresentationConnectionCallback

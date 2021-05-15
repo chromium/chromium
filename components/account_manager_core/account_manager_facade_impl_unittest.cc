@@ -140,7 +140,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   void GetPersistentErrorForAccount(
       crosapi::mojom::AccountKeyPtr mojo_account_key,
       GetPersistentErrorForAccountCallback callback) override {
-    base::Optional<AccountKey> account_key =
+    absl::optional<AccountKey> account_key =
         FromMojoAccountKey(mojo_account_key);
     DCHECK(account_key.has_value());
     auto it = persistent_errors_.find(account_key.value());

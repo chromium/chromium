@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "components/security_interstitials/content/origin_policy_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/origin_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace security_interstitials {
@@ -39,7 +39,7 @@ std::unique_ptr<SecurityInterstitialPage> GetErrorPageImpl(
 
 }  // namespace
 
-base::Optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
+absl::optional<std::string> OriginPolicyUI::GetErrorPageAsHTML(
     network::OriginPolicyState error_reason,
     content::NavigationHandle* handle) {
   DCHECK(handle);

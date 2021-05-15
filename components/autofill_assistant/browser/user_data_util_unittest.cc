@@ -811,7 +811,7 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
 }
 
 TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
@@ -842,7 +842,7 @@ TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
 }
 
 TEST_F(UserDataUtilTextValueTest, GetUsernameFromSameDomain) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
@@ -862,7 +862,7 @@ TEST_F(UserDataUtilTextValueTest, GetUsernameFromSameDomain) {
 }
 
 TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFromSameDomain) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
@@ -884,7 +884,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFromSameDomain) {
 }
 
 TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
@@ -970,7 +970,7 @@ TEST_F(UserDataUtilTextValueTest, TextValueAutofillValue) {
 }
 
 TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;

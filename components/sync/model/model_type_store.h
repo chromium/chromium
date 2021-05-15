@@ -10,11 +10,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -47,22 +47,22 @@ namespace syncer {
 class ModelTypeStore : public ModelTypeStoreBase {
  public:
   using InitCallback =
-      base::OnceCallback<void(const base::Optional<ModelError>& error,
+      base::OnceCallback<void(const absl::optional<ModelError>& error,
                               std::unique_ptr<ModelTypeStore> store)>;
   using CallbackWithResult =
-      base::OnceCallback<void(const base::Optional<ModelError>& error)>;
+      base::OnceCallback<void(const absl::optional<ModelError>& error)>;
   using ReadDataCallback =
-      base::OnceCallback<void(const base::Optional<ModelError>& error,
+      base::OnceCallback<void(const absl::optional<ModelError>& error,
                               std::unique_ptr<RecordList> data_records,
                               std::unique_ptr<IdList> missing_id_list)>;
   using ReadAllDataCallback =
-      base::OnceCallback<void(const base::Optional<ModelError>& error,
+      base::OnceCallback<void(const absl::optional<ModelError>& error,
                               std::unique_ptr<RecordList> data_records)>;
   using ReadMetadataCallback =
-      base::OnceCallback<void(const base::Optional<ModelError>& error,
+      base::OnceCallback<void(const absl::optional<ModelError>& error,
                               std::unique_ptr<MetadataBatch> metadata_batch)>;
   // Callback that runs on the backend sequence, see ReadAllDataAndPreprocess().
-  using PreprocessCallback = base::OnceCallback<base::Optional<ModelError>(
+  using PreprocessCallback = base::OnceCallback<absl::optional<ModelError>(
       std::unique_ptr<RecordList> data_records)>;
 
   // Read operations return records either for all entries or only for ones

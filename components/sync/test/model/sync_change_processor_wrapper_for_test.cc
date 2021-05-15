@@ -27,7 +27,7 @@ SyncChangeProcessorWrapperForTest::SyncChangeProcessorWrapperForTest(
 
 SyncChangeProcessorWrapperForTest::~SyncChangeProcessorWrapperForTest() {}
 
-base::Optional<ModelError>
+absl::optional<ModelError>
 SyncChangeProcessorWrapperForTest::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {

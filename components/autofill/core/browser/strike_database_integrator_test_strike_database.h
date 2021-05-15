@@ -20,28 +20,28 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
  public:
   StrikeDatabaseIntegratorTestStrikeDatabase(
       StrikeDatabase* strike_database,
-      base::Optional<base::TimeDelta> expiry_time_delta);
+      absl::optional<base::TimeDelta> expiry_time_delta);
   explicit StrikeDatabaseIntegratorTestStrikeDatabase(
       StrikeDatabase* strike_database);
   ~StrikeDatabaseIntegratorTestStrikeDatabase() override;
 
-  base::Optional<size_t> GetMaximumEntries() const override;
-  base::Optional<size_t> GetMaximumEntriesAfterCleanup() const override;
+  absl::optional<size_t> GetMaximumEntries() const override;
+  absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override;
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;
-  base::Optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
 
   void SetUniqueIdsRequired(bool unique_ids_required);
 
  private:
   bool unique_ids_required_ = false;
-  base::Optional<base::TimeDelta> expiry_time_delta_ =
+  absl::optional<base::TimeDelta> expiry_time_delta_ =
       base::TimeDelta::FromDays(365);
 
-  base::Optional<size_t> maximum_entries_ = 10;
-  base::Optional<size_t> maximum_entries_after_cleanup_ = 5;
+  absl::optional<size_t> maximum_entries_ = 10;
+  absl::optional<size_t> maximum_entries_after_cleanup_ = 5;
 };
 
 }  // namespace autofill

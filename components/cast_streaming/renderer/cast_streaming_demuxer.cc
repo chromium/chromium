@@ -391,10 +391,10 @@ int64_t CastStreamingDemuxer::GetMemoryUsage() const {
   return 0;
 }
 
-base::Optional<media::container_names::MediaContainerName>
+absl::optional<media::container_names::MediaContainerName>
 CastStreamingDemuxer::GetContainerForMetrics() const {
   // Cast Streaming frames have no container.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Not supported.

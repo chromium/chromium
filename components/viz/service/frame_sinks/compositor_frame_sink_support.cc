@@ -426,7 +426,7 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
 void CompositorFrameSinkSupport::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   const auto result = MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),
@@ -456,7 +456,7 @@ void CompositorFrameSinkSupport::DidDeleteSharedBitmap(
 SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   TRACE_EVENT_WITH_FLOW2(

@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/util/values/values_util.h"
 #include "build/build_config.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "media/base/media_drm_key_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -166,7 +166,7 @@ class OriginData {
     if (!origin_id_value)
       return nullptr;
 
-    base::Optional<base::UnguessableToken> origin_id =
+    absl::optional<base::UnguessableToken> origin_id =
         util::ValueToUnguessableToken(*origin_id_value);
     if (!origin_id)
       return nullptr;
@@ -747,7 +747,7 @@ MediaDrmStorageImpl::~MediaDrmStorageImpl() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (init_cb_)
-    std::move(init_cb_).Run(false, base::nullopt);
+    std::move(init_cb_).Run(false, absl::nullopt);
 }
 
 void MediaDrmStorageImpl::Initialize(InitializeCallback callback) {
@@ -792,7 +792,7 @@ void MediaDrmStorageImpl::OnOriginIdObtained(
 }
 
 void MediaDrmStorageImpl::OnEmptyOriginIdAllowed(bool allowed) {
-  std::move(init_cb_).Run(allowed, base::nullopt);
+  std::move(init_cb_).Run(allowed, absl::nullopt);
 }
 
 void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {

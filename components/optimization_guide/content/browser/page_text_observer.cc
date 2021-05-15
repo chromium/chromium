@@ -64,7 +64,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   PageTextChunkConsumer(
       mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
       uint32_t max_size,
-      base::OnceCallback<void(const base::Optional<std::u16string>&)>
+      base::OnceCallback<void(const absl::optional<std::u16string>&)>
           on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
@@ -109,7 +109,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 
   void OnDisconnect() {
     receiver_.reset();
-    std::move(on_complete_).Run(base::nullopt);
+    std::move(on_complete_).Run(absl::nullopt);
     // Don't do anything else. This callback may have destroyed |this|.
   }
 
@@ -120,7 +120,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
   // deleted (in stack with the callback).
-  base::OnceCallback<void(const base::Optional<std::u16string>&)> on_complete_;
+  base::OnceCallback<void(const absl::optional<std::u16string>&)> on_complete_;
   mojo::Receiver<mojom::PageTextConsumer> receiver_;
 
   // All chunks that have been read from the data pipe. These will be
@@ -209,7 +209,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   size_t MakeSelfOwnedAndDispatchRequests(
       scoped_refptr<RequestMediator> self,
-      base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+      base::RepeatingCallback<void(absl::optional<FrameTextDumpResult>)>
           on_frame_text_dump_complete,
       content::RenderFrameHost* rfh) {
     DCHECK_EQ(self.get(), this);
@@ -275,7 +275,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   void OnPageTextAsString(scoped_refptr<RequestMediator> self,
                           const FrameTextDumpResult& preliminary_result,
-                          const base::Optional<std::u16string>& page_text) {
+                          const absl::optional<std::u16string>& page_text) {
     DCHECK(on_frame_text_dump_complete_);
 
     std::string event_suffix =
@@ -285,7 +285,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
       base::UmaHistogramMediumTimes(
           kTimeUntilDisconnectHistogram + event_suffix,
           base::TimeTicks::Now() - requests_sent_time_);
-      on_frame_text_dump_complete_.Run(base::nullopt);
+      on_frame_text_dump_complete_.Run(absl::nullopt);
       return;
     }
 
@@ -301,7 +301,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   // Called whenever a text dump is completed for an event. This called as many
   // times as events requested, which can be greater than 1.
-  base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+  base::RepeatingCallback<void(absl::optional<FrameTextDumpResult>)>
       on_frame_text_dump_complete_;
 
   // All |PageTextChunkConsumer|'s that are owned by this.
@@ -399,7 +399,7 @@ void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
 }
 
 void PageTextObserver::OnFrameTextDumpCompleted(
-    base::Optional<FrameTextDumpResult> frame_result) {
+    absl::optional<FrameTextDumpResult> frame_result) {
   // Ensure that the generated frame result is not for a previous page load.
   // This should be done before decrementing |outstanding_requests_| so that
   // each page load handles its own state.

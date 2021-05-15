@@ -7,12 +7,12 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -46,7 +46,7 @@ class PermissionRequestImpl : public PermissionRequest {
 #if defined(OS_ANDROID)
   std::u16string GetMessageText() const override;
 #else
-  base::Optional<std::u16string> GetChipText() const override;
+  absl::optional<std::u16string> GetChipText() const override;
 #endif
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;

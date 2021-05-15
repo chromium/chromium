@@ -225,7 +225,7 @@ TEST_F(ArcPowerBridgeTest, ScreenBrightness) {
 }
 
 TEST_F(ArcPowerBridgeTest, PowerSupplyInfoChanged) {
-  base::Optional<power_manager::PowerSupplyProperties> prop =
+  absl::optional<power_manager::PowerSupplyProperties> prop =
       power_manager_client()->GetLastStatus();
   ASSERT_TRUE(prop.has_value());
   prop->set_battery_state(power_manager::PowerSupplyProperties::FULL);

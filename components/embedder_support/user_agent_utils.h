@@ -30,9 +30,9 @@ blink::UserAgentMetadata GetUserAgentMetadata();
 
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
-    base::Optional<std::string> brand,
+    absl::optional<std::string> brand,
     std::string major_version,
-    base::Optional<std::string> maybe_greasey_brand);
+    absl::optional<std::string> maybe_greasey_brand);
 
 #if defined(OS_ANDROID)
 // This sets a user agent string to simulate a desktop user agent on mobile.

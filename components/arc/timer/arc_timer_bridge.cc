@@ -180,7 +180,7 @@ void ArcTimerBridge::OnDeleteArcTimers(bool result) {
 void ArcTimerBridge::OnCreateArcTimers(
     std::vector<clockid_t> clock_ids,
     CreateTimersCallback callback,
-    base::Optional<std::vector<TimerId>> timer_ids) {
+    absl::optional<std::vector<TimerId>> timer_ids) {
   // Any old timers associated with the same tag are always cleared by the API
   // regardless of the new timers being created successfully or not. Clear the
   // cached timer ids in that case.
@@ -217,11 +217,11 @@ void ArcTimerBridge::OnCreateArcTimers(
   std::move(callback).Run(mojom::ArcTimerResult::SUCCESS);
 }
 
-base::Optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
+absl::optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
     clockid_t clock_id) const {
   auto it = timer_ids_.find(clock_id);
-  return (it == timer_ids_.end()) ? base::nullopt
-                                  : base::make_optional<TimerId>(it->second);
+  return (it == timer_ids_.end()) ? absl::nullopt
+                                  : absl::make_optional<TimerId>(it->second);
 }
 
 }  // namespace arc

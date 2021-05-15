@@ -18,10 +18,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -481,7 +481,7 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
 
   // If set to true, half-float textures are supported. This is lazy-initialized
   // by SupportsPreciseColorManagement().
-  mutable base::Optional<bool> supports_half_floats_;
+  mutable absl::optional<bool> supports_half_floats_;
 
   // The maximum number of simultaneous draw buffers, lazy-initialized by
   // GetMaxDrawBuffersSupported(). -1 means "not yet known."

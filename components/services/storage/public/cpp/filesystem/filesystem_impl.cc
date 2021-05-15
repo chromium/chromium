@@ -225,7 +225,7 @@ void FilesystemImpl::GetFileInfo(const base::FilePath& path,
   if (base::GetFileInfo(MakeAbsolute(path), &info))
     std::move(callback).Run(std::move(info));
   else
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
 }
 
 void FilesystemImpl::GetPathAccess(const base::FilePath& path,

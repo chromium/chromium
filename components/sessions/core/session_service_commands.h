@@ -9,13 +9,13 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 namespace sessions {
@@ -46,7 +46,7 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     SessionWindow::WindowType type);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     const SessionID& tab_id,
-    base::Optional<tab_groups::TabGroupId> group);
+    absl::optional<tab_groups::TabGroupId> group);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,

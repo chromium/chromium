@@ -18,8 +18,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/optional.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 class PrefService;
@@ -99,7 +99,7 @@ class SigninClient : public KeyedService {
   virtual bool IsNonEnterpriseUser(const std::string& username);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  virtual base::Optional<account_manager::Account>
+  virtual absl::optional<account_manager::Account>
   GetInitialPrimaryAccount() = 0;
 #endif
 };

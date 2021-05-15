@@ -310,7 +310,7 @@ download_pb::DownloadSchedule DownloadDBConversions::DownloadScheduleToProto(
 DownloadSchedule DownloadDBConversions::DownloadScheduleFromProto(
     const download_pb::DownloadSchedule& proto,
     bool only_on_wifi) {
-  base::Optional<base::Time> start_time;
+  absl::optional<base::Time> start_time;
   if (proto.has_start_time())
     start_time = FromMillisecondsToTime(proto.start_time());
   return DownloadSchedule(only_on_wifi, std::move(start_time));

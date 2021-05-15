@@ -72,7 +72,7 @@ void TestPermissionsClient::GetUkmSourceId(
         ukm::GetSourceIdForWebContentsDocument(web_contents);
     std::move(callback).Run(source_id);
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 

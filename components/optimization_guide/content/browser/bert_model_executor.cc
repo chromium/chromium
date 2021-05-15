@@ -12,7 +12,7 @@ namespace optimization_guide {
 BertModelExecutor::BertModelExecutor() = default;
 BertModelExecutor::~BertModelExecutor() = default;
 
-base::Optional<std::vector<tflite::task::core::Category>>
+absl::optional<std::vector<tflite::task::core::Category>>
 BertModelExecutor::Execute(ModelExecutionTask* execution_task,
                            const std::string& input) {
   return static_cast<tflite::task::text::nlclassifier::BertNLClassifier*>(
@@ -37,7 +37,7 @@ BertModelExecutorHandle::BertModelExecutorHandle(
     OptimizationGuideDecider* decider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata)
+    const absl::optional<proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
                    const std::string&>(decider,
                                        background_task_runner,

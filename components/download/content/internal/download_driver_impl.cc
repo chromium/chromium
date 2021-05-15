@@ -233,13 +233,13 @@ void DownloadDriverImpl::Resume(const std::string& guid) {
     item->Resume(true);
 }
 
-base::Optional<DriverEntry> DownloadDriverImpl::Find(const std::string& guid) {
+absl::optional<DriverEntry> DownloadDriverImpl::Find(const std::string& guid) {
   if (!download_manager_coordinator_)
-    return base::nullopt;
+    return absl::nullopt;
   DownloadItem* item = download_manager_coordinator_->GetDownloadByGuid(guid);
   if (item)
     return CreateDriverEntry(item);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::set<std::string> DownloadDriverImpl::GetActiveDownloads() {

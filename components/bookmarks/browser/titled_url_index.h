@@ -13,9 +13,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 
@@ -82,7 +82,7 @@ class TitledUrlIndex {
 
   // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
   // containing |node| and the matches.
-  base::Optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       const query_parser::QueryNodeVector& query_nodes,
       bool match_ancestor_titles);

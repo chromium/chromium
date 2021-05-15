@@ -16,7 +16,7 @@ class MockDynamicTriggerConditions : public DynamicTriggerConditions {
   ~MockDynamicTriggerConditions() override;
 
   MOCK_CONST_METHOD1(GetSelectorMatches,
-                     base::Optional<bool>(const Selector& selector));
+                     absl::optional<bool>(const Selector& selector));
 
   MOCK_METHOD1(SetURL, void(const GURL& url));
 

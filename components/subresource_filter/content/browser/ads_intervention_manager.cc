@@ -83,7 +83,7 @@ void AdsInterventionManager::TriggerAdsInterventionForUrlOnSubsequentLoads(
                             ads_violation);
 }
 
-base::Optional<AdsInterventionManager::LastAdsIntervention>
+absl::optional<AdsInterventionManager::LastAdsIntervention>
 AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
   int ads_violation;
   double last_violation_time;
@@ -100,7 +100,7 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
         {diff, static_cast<mojom::AdsViolation>(ads_violation)});
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool AdsInterventionManager::ShouldActivate(
@@ -109,7 +109,7 @@ bool AdsInterventionManager::ShouldActivate(
   // TODO(https://crbug.com/1136987): Add new ads intervention
   // manager function to return struct with all ads intervention
   // metadata to reduce metadata accesses.
-  base::Optional<AdsInterventionManager::LastAdsIntervention>
+  absl::optional<AdsInterventionManager::LastAdsIntervention>
       last_intervention = GetLastAdsIntervention(url);
 
   // Only activate the subresource filter if we are intervening on

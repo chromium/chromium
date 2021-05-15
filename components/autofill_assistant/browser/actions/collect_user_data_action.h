@@ -11,13 +11,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 class UserModel;
@@ -44,10 +44,10 @@ class CollectUserDataAction : public Action,
   // Ensures that |end| is > |start| by modifying either |start| or |end|,
   // depending on |change_start|. Returns true if changes were performed.
   static bool SanitizeDateTimeRange(
-      base::Optional<DateProto>* start_date,
-      base::Optional<int>* start_timeslot,
-      base::Optional<DateProto>* end_date,
-      base::Optional<int>* end_timeslot,
+      absl::optional<DateProto>* start_date,
+      absl::optional<int>* start_timeslot,
+      absl::optional<DateProto>* end_date,
+      absl::optional<int>* end_timeslot,
       const CollectUserDataOptions& collect_user_data_options,
       bool change_start);
 
@@ -66,7 +66,7 @@ class CollectUserDataAction : public Action,
     bool choose_automatically_if_no_stored_login;
     std::string payload;
     // Only for Chrome PWM login details.
-    base::Optional<WebsiteLoginManager::Login> login;
+    absl::optional<WebsiteLoginManager::Login> login;
   };
 
   void InternalProcessAction(ProcessActionCallback callback) override;

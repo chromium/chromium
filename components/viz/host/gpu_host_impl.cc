@@ -49,7 +49,7 @@ class FontRenderParams {
  public:
   void Set(const gfx::FontRenderParams& params);
   void Reset();
-  const base::Optional<gfx::FontRenderParams>& Get();
+  const absl::optional<gfx::FontRenderParams>& Get();
 
  private:
   friend class base::NoDestructor<FontRenderParams>;
@@ -58,7 +58,7 @@ class FontRenderParams {
   ~FontRenderParams();
 
   THREAD_CHECKER(thread_checker_);
-  base::Optional<gfx::FontRenderParams> params_;
+  absl::optional<gfx::FontRenderParams> params_;
 
   DISALLOW_COPY_AND_ASSIGN(FontRenderParams);
 };
@@ -70,10 +70,10 @@ void FontRenderParams::Set(const gfx::FontRenderParams& params) {
 
 void FontRenderParams::Reset() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  params_ = base::nullopt;
+  params_ = absl::nullopt;
 }
 
-const base::Optional<gfx::FontRenderParams>& FontRenderParams::Get() {
+const absl::optional<gfx::FontRenderParams>& FontRenderParams::Get() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return params_;
 }
@@ -453,8 +453,8 @@ void GpuHostImpl::OnChannelEstablished(
 void GpuHostImpl::DidInitialize(
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-    const base::Optional<gpu::GpuFeatureInfo>&
+    const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+    const absl::optional<gpu::GpuFeatureInfo>&
         gpu_feature_info_for_hardware_gpu,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   UMA_HISTOGRAM_BOOLEAN("GPU.GPUProcessInitialized", true);

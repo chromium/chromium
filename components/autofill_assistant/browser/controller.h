@@ -12,7 +12,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client.h"
@@ -36,6 +35,7 @@
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -198,10 +198,10 @@ class Controller : public ScriptExecutorDelegate,
   std::vector<Details> GetDetails() const override;
   const InfoBox* GetInfoBox() const override;
   int GetProgress() const override;
-  base::Optional<int> GetProgressActiveStep() const override;
+  absl::optional<int> GetProgressActiveStep() const override;
   bool GetProgressVisible() const override;
   bool GetProgressBarErrorState() const override;
-  base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
+  absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
   GetStepProgressBarConfiguration() const override;
   const std::vector<UserAction>& GetUserActions() const override;
   bool PerformUserActionWithContext(
@@ -223,12 +223,12 @@ class Controller : public ScriptExecutorDelegate,
   void OnTextLinkClicked(int link) override;
   void OnFormActionLinkClicked(int link) override;
   void SetDateTimeRangeStartDate(
-      const base::Optional<DateProto>& date) override;
+      const absl::optional<DateProto>& date) override;
   void SetDateTimeRangeStartTimeSlot(
-      const base::Optional<int>& timeslot_index) override;
-  void SetDateTimeRangeEndDate(const base::Optional<DateProto>& date) override;
+      const absl::optional<int>& timeslot_index) override;
+  void SetDateTimeRangeEndDate(const absl::optional<DateProto>& date) override;
   void SetDateTimeRangeEndTimeSlot(
-      const base::Optional<int>& timeslot_index) override;
+      const absl::optional<int>& timeslot_index) override;
   void SetAdditionalValue(const std::string& client_memory_key,
                           const ValueProto& value) override;
   void GetTouchableArea(std::vector<RectF>* area) const override;
@@ -470,12 +470,12 @@ class Controller : public ScriptExecutorDelegate,
 
   // Current progress.
   int progress_ = 0;
-  base::Optional<int> progress_active_step_;
+  absl::optional<int> progress_active_step_;
 
   // Current visibility of the progress bar. It is initially visible.
   bool progress_visible_ = true;
   bool progress_bar_error_state_ = false;
-  base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
+  absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
       step_progress_bar_configuration_;
 
   // Current set of user actions. May be null, but never empty.
@@ -568,7 +568,7 @@ class Controller : public ScriptExecutorDelegate,
   // If set, the controller entered the STOPPED state but shutdown was delayed
   // until the browser has left the |script_url_.host()| for which the decision
   // was taken.
-  base::Optional<Metrics::DropOutReason> delayed_shutdown_reason_;
+  absl::optional<Metrics::DropOutReason> delayed_shutdown_reason_;
 
   EventHandler event_handler_;
   UserModel user_model_;

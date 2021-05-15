@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/permissions/notification_permission_ui_selector.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 
 // static
 bool NotificationPermissionUiSelector::ShouldSuppressAnimation(
-    base::Optional<QuietUiReason> reason) {
+    absl::optional<QuietUiReason> reason) {
   if (!reason)
     return true;
 
@@ -25,8 +25,8 @@ bool NotificationPermissionUiSelector::ShouldSuppressAnimation(
 }
 
 NotificationPermissionUiSelector::Decision::Decision(
-    base::Optional<QuietUiReason> quiet_ui_reason,
-    base::Optional<WarningReason> warning_reason)
+    absl::optional<QuietUiReason> quiet_ui_reason,
+    absl::optional<WarningReason> warning_reason)
     : quiet_ui_reason(quiet_ui_reason), warning_reason(warning_reason) {}
 NotificationPermissionUiSelector::Decision::~Decision() = default;
 
@@ -41,9 +41,9 @@ NotificationPermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
   return Decision(UseNormalUi(), ShowNoWarning());
 }
 
-base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
 NotificationPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace permissions

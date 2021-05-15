@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_change_processor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -89,7 +89,7 @@ class ModelTypeSyncBridge {
   // storage writes, if not able to combine all change atomically, should save
   // the metadata after the data changes, so that this merge will be re-driven
   // by sync if is not completely saved during the current run.
-  virtual base::Optional<ModelError> MergeSyncData(
+  virtual absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) = 0;
 
@@ -98,7 +98,7 @@ class ModelTypeSyncBridge {
   // |metadata_change_list| in case when some of the data changes are filtered
   // out, or even be empty in case when a commit confirmation is processed and
   // only the metadata needs to persisted.
-  virtual base::Optional<ModelError> ApplySyncChanges(
+  virtual absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) = 0;
 

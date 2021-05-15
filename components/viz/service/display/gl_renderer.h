@@ -224,7 +224,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   gfx::Rect GetBackdropBoundingBoxForRenderPassQuad(
       DrawRenderPassDrawQuadParams* params,
       gfx::Transform* backdrop_filter_bounds_transform,
-      base::Optional<gfx::RRectF>* backdrop_filter_bounds,
+      absl::optional<gfx::RRectF>* backdrop_filter_bounds,
       gfx::Rect* unclipped_rect) const;
 
   // Allocates and returns a texture id that contains a copy of the contents
@@ -247,7 +247,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   sk_sp<SkImage> ApplyBackdropFilters(
       DrawRenderPassDrawQuadParams* params,
       const gfx::Rect& unclipped_rect,
-      const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+      const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
       const gfx::Transform& backdrop_filter_bounds_transform);
 
   // gl_renderer can bypass TileDrawQuads that fill the RenderPass

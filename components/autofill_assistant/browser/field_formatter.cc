@@ -23,12 +23,12 @@ namespace {
 // the prefix before the key, the second for the key itself.
 const char kPlaceholderExtractor[] = R"re((.*?)\$\{([^{}]+)\})re";
 
-base::Optional<std::string> GetFieldValue(
+absl::optional<std::string> GetFieldValue(
     const std::map<std::string, std::string>& mappings,
     const std::string& key) {
   auto it = mappings.find(key);
   if (it == mappings.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }
@@ -52,7 +52,7 @@ std::map<std::string, std::string> CreateFormGroupMappings(
 namespace autofill_assistant {
 namespace field_formatter {
 
-base::Optional<std::string> FormatString(
+absl::optional<std::string> FormatString(
     const std::string& pattern,
     const std::map<std::string, std::string>& mappings,
     bool strict) {
@@ -70,7 +70,7 @@ base::Optional<std::string> FormatString(
     if (!rewrite_value.has_value()) {
       if (strict) {
         VLOG(2) << "No value for " << key << " in " << pattern;
-        return base::nullopt;
+        return absl::nullopt;
       }
       // Leave placeholder unchanged.
       rewrite_value = "${" + key + "}";

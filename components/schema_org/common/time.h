@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace schema_org {
 
@@ -18,7 +18,7 @@ namespace schema_org {
 // particularly because there is no standard conversion from date units, such as
 // a month to a time interval.
 COMPONENT_EXPORT(SCHEMA_ORG_COMMON)
-base::Optional<base::TimeDelta> ParseISO8601Duration(const std::string& str);
+absl::optional<base::TimeDelta> ParseISO8601Duration(const std::string& str);
 
 }  // namespace schema_org
 

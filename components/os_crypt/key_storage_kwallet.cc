@@ -80,24 +80,24 @@ KeyStorageKWallet::InitResult KeyStorageKWallet::InitWallet() {
   return InitResult::PERMANENT_FAIL;
 }
 
-base::Optional<std::string> KeyStorageKWallet::GetKeyImpl() {
+absl::optional<std::string> KeyStorageKWallet::GetKeyImpl() {
   // Get handle
   KWalletDBus::Error error =
       kwallet_dbus_->Open(wallet_name_, app_name_, &handle_);
   if (error || handle_ == kInvalidHandle)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Create folder
   if (!InitFolder())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Read password
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   error =
       kwallet_dbus_->ReadPassword(handle_, KeyStorageLinux::kFolderName,
                                   KeyStorageLinux::kKey, app_name_, &password);
   if (error)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If there is no entry, generate and write a new password.
   if (!password.has_value()) {
@@ -108,7 +108,7 @@ base::Optional<std::string> KeyStorageKWallet::GetKeyImpl() {
                                          KeyStorageLinux::kKey, password_,
                                          app_name_, &success);
     if (error || !success)
-      return base::nullopt;
+      return absl::nullopt;
     password = std::move(password_);
   }
 

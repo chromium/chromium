@@ -59,7 +59,7 @@ void TriggerScriptCoordinator::Start(
     std::unique_ptr<TriggerContext> trigger_context,
     base::OnceCallback<void(Metrics::TriggerScriptFinishedState,
                             std::unique_ptr<TriggerContext>,
-                            base::Optional<TriggerScriptProto>)> callback) {
+                            absl::optional<TriggerScriptProto>)> callback) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
   deeplink_url_ = deeplink_url;
@@ -90,7 +90,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
 
   trigger_scripts_.clear();
   additional_allowed_domains_.clear();
-  base::Optional<int> timeout_ms;
+  absl::optional<int> timeout_ms;
   int check_interval_ms;
   if (!ProtocolUtils::ParseTriggerScripts(response, &trigger_scripts_,
                                           &additional_allowed_domains_,
@@ -275,7 +275,7 @@ void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
   }
   waiting_for_onboarding_ = false;
 
-  RunCallback(trigger_ui_type, state, /* trigger_script = */ base::nullopt);
+  RunCallback(trigger_ui_type, state, /* trigger_script = */ absl::nullopt);
 }
 
 void TriggerScriptCoordinator::DidFinishNavigation(
@@ -533,7 +533,7 @@ void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
 void TriggerScriptCoordinator::RunCallback(
     TriggerUIType trigger_ui_type,
     Metrics::TriggerScriptFinishedState state,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
+    const absl::optional<TriggerScriptProto>& trigger_script) {
   if (!finished_state_recorded_) {
     finished_state_recorded_ = true;
     Metrics::RecordTriggerScriptFinished(ukm_recorder_, ukm_source_id_,

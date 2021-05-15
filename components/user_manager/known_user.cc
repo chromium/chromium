@@ -624,7 +624,7 @@ base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
   const base::Value* value = nullptr;
   if (!GetPref(account_id, kLastOnlineSignin, &value))
     return base::Time();
-  base::Optional<base::Time> time = util::ValueToTime(value);
+  absl::optional<base::Time> time = util::ValueToTime(value);
   if (!time)
     return base::Time();
   return *time;
@@ -632,7 +632,7 @@ base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
 
 void KnownUser::SetOfflineSigninLimit(
     const AccountId& account_id,
-    base::Optional<base::TimeDelta> time_delta) {
+    absl::optional<base::TimeDelta> time_delta) {
   if (!time_delta) {
     ClearPref(account_id, kOfflineSigninLimit);
   } else {
@@ -641,12 +641,12 @@ void KnownUser::SetOfflineSigninLimit(
   }
 }
 
-base::Optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
+absl::optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
     const AccountId& account_id) {
   const base::Value* value = nullptr;
   if (!GetPref(account_id, kOfflineSigninLimit, &value))
-    return base::nullopt;
-  base::Optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
+    return absl::nullopt;
+  absl::optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
   return time_delta;
 }
 
@@ -760,7 +760,7 @@ void KnownUser::CleanEphemeralUsers() {
     if (!value.is_dict())
       return false;
 
-    base::Optional<bool> is_ephemeral = value.FindBoolKey(kIsEphemeral);
+    absl::optional<bool> is_ephemeral = value.FindBoolKey(kIsEphemeral);
     return is_ephemeral && *is_ephemeral;
   });
 }
@@ -1137,7 +1137,7 @@ base::Time GetLastOnlineSignin(const AccountId& account_id) {
 }
 
 void SetOfflineSigninLimit(const AccountId& account_id,
-                           base::Optional<base::TimeDelta> time_delta) {
+                           absl::optional<base::TimeDelta> time_delta) {
   PrefService* local_state = GetLocalStateLegacy();
   // Local State may not be initialized in tests.
   if (!local_state)
@@ -1145,12 +1145,12 @@ void SetOfflineSigninLimit(const AccountId& account_id,
   return KnownUser(local_state).SetOfflineSigninLimit(account_id, time_delta);
 }
 
-base::Optional<base::TimeDelta> GetOfflineSigninLimit(
+absl::optional<base::TimeDelta> GetOfflineSigninLimit(
     const AccountId& account_id) {
   PrefService* local_state = GetLocalStateLegacy();
   // Local State may not be initialized in tests.
   if (!local_state)
-    return base::nullopt;
+    return absl::nullopt;
   return KnownUser(local_state).GetOfflineSigninLimit(account_id);
 }
 

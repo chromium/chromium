@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -50,15 +50,15 @@ class StoreUpdateData {
       base::Time expiry_time);
 
   // Returns the component version of a component hint update.
-  const base::Optional<base::Version> component_version() const {
+  const absl::optional<base::Version> component_version() const {
     return component_version_;
   }
 
   // Returns the next update time for the entries in the store update.
-  const base::Optional<base::Time> update_time() const { return update_time_; }
+  const absl::optional<base::Time> update_time() const { return update_time_; }
 
   // Returns the expiry time for the hints in a fetched hint update.
-  const base::Optional<base::Time> expiry_time() const { return expiry_time_; }
+  const absl::optional<base::Time> expiry_time() const { return expiry_time_; }
 
   // Moves |hint| into this update data. After MoveHintIntoUpdateData() is
   // called, |hint| is no longer valid.
@@ -76,21 +76,21 @@ class StoreUpdateData {
   std::unique_ptr<EntryVector> TakeUpdateEntries();
 
  private:
-  StoreUpdateData(base::Optional<base::Version> component_version,
-                  base::Optional<base::Time> fetch_update_time,
-                  base::Optional<base::Time> expiry_time);
+  StoreUpdateData(absl::optional<base::Version> component_version,
+                  absl::optional<base::Time> fetch_update_time,
+                  absl::optional<base::Time> expiry_time);
   StoreUpdateData(base::Time host_model_features_update_time,
                   base::Time expiry_time);
   explicit StoreUpdateData(base::Time expiry_time);
 
   // The component version of the update data for a component update.
-  base::Optional<base::Version> component_version_;
+  absl::optional<base::Version> component_version_;
 
   // The time when the entries in this update need to be updated.
-  base::Optional<base::Time> update_time_;
+  absl::optional<base::Time> update_time_;
 
   // The time when entries in this update expire.
-  base::Optional<base::Time> expiry_time_;
+  absl::optional<base::Time> expiry_time_;
 
   // The prefix to add to the key of every store entry. It is set
   // during construction for appropriate type of update.

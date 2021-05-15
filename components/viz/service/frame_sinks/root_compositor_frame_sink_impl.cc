@@ -351,7 +351,7 @@ void RootCompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
 void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   if (support_->last_activated_local_surface_id() != local_surface_id) {
     display_->SetLocalSurfaceId(local_surface_id, frame.device_scale_factor());
@@ -378,7 +378,7 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
 void RootCompositorFrameSinkImpl::SubmitCompositorFrameSync(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     SubmitCompositorFrameSyncCallback callback) {
   NOTIMPLEMENTED();

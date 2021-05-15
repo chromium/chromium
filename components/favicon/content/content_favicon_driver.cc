@@ -171,7 +171,7 @@ void ContentFaviconDriver::DidUpdateFaviconURL(
 
 void ContentFaviconDriver::DidUpdateWebManifestURL(
     content::RenderFrameHost* rfh,
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   // Ignore the update if there is no last committed navigation entry. This can
   // occur when loading an initially blank page.
   content::NavigationEntry* entry =

@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +22,7 @@
 #include "components/sync/test/engine/mock_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

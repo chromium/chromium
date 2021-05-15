@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_OBSERVER_H_
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_OBSERVER_H_
 
-#include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/download/database/in_progress/in_progress_info.h"
 #include "components/download/database/in_progress/ukm_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -30,10 +30,10 @@ struct DownloadInfo {
   int id = -1;
 
   // UKM information for reporting.
-  base::Optional<UkmInfo> ukm_info;
+  absl::optional<UkmInfo> ukm_info;
 
   // In progress information for active download.
-  base::Optional<InProgressInfo> in_progress_info;
+  absl::optional<InProgressInfo> in_progress_info;
 };
 
 }  // namespace download

@@ -114,7 +114,7 @@ bool IsUsernameFirstFlowFeatureEnabled() {
 
 // Find a field in |predictions| with given renderer id.
 const PasswordFieldPrediction* FindFieldPrediction(
-    const base::Optional<FormPredictions>& predictions,
+    const absl::optional<FormPredictions>& predictions,
     autofill::FieldRendererId field_renderer_id) {
   if (!predictions)
     return nullptr;

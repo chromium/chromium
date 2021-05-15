@@ -8,17 +8,17 @@ namespace page_load_metrics {
 
 mojom::PageLoadTimingPtr CreatePageLoadTiming() {
   return mojom::PageLoadTiming::New(
-      base::Time(), base::Optional<base::TimeDelta>(),
+      base::Time(), absl::optional<base::TimeDelta>(),
       mojom::DocumentTiming::New(), mojom::InteractiveTiming::New(),
-      mojom::PaintTiming::New(base::nullopt, base::nullopt, base::nullopt,
-                              base::nullopt,
+      mojom::PaintTiming::New(absl::nullopt, absl::nullopt, absl::nullopt,
+                              absl::nullopt,
                               mojom::LargestContentfulPaintTiming::New(),
                               mojom::LargestContentfulPaintTiming::New(),
-                              base::nullopt, base::nullopt, base::nullopt),
+                              absl::nullopt, absl::nullopt, absl::nullopt),
       mojom::ParseTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
-      base::Optional<base::TimeDelta>(), base::Optional<base::TimeDelta>(),
-      base::Optional<base::TimeDelta>(), base::Optional<base::TimeDelta>());
+      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>(),
+      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {

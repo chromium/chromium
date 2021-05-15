@@ -92,11 +92,11 @@ void KeyData::WriteNowForTest() {
 // Key management
 //---------------
 
-base::Optional<std::string> KeyData::ValidateAndGetKey(
+absl::optional<std::string> KeyData::ValidateAndGetKey(
     const uint64_t project_name_hash) {
   if (!is_initialized_) {
     NOTREACHED();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const int now = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
@@ -126,7 +126,7 @@ base::Optional<std::string> KeyData::ValidateAndGetKey(
   const std::string key_string = key.key();
   if (key_string.size() != kKeySize) {
     LogInternalError(StructuredMetricsError::kWrongKeyLength);
-    return base::nullopt;
+    return absl::nullopt;
   }
   return key_string;
 }
@@ -148,7 +148,7 @@ uint64_t KeyData::Id(const uint64_t project_name_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
+  const absl::optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
     NOTREACHED();
     return 0u;
@@ -166,7 +166,7 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
+  const absl::optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
     NOTREACHED();
     return 0u;

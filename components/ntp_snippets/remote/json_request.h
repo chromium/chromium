@@ -11,13 +11,13 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/status.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -133,7 +133,7 @@ class JsonRequest {
     DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
-  JsonRequest(base::Optional<Category> exclusive_category,
+  JsonRequest(absl::optional<Category> exclusive_category,
               const base::Clock* clock,
               const ParseJSONCallback& callback);
   JsonRequest(JsonRequest&&);
@@ -143,7 +143,7 @@ class JsonRequest {
 
   static int Get5xxRetryCount(bool interactive_request);
 
-  const base::Optional<Category>& exclusive_category() const {
+  const absl::optional<Category>& exclusive_category() const {
     return exclusive_category_;
   }
 
@@ -165,7 +165,7 @@ class JsonRequest {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // If set, only return results for this category.
-  base::Optional<Category> exclusive_category_;
+  absl::optional<Category> exclusive_category_;
 
   // Use the Clock from the Fetcher to measure the fetch time. It will be
   // used on creation and after the fetch returned. It has to be alive until the

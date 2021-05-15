@@ -6,11 +6,11 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/backend/printing_restrictions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -21,13 +21,13 @@ constexpr char kPrintingPaperSizeDefault[] = "printing.paper_size_default";
 
 namespace printing {
 
-base::Optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
+absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(kPrintingPaperSizeDefault))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* paper_size_value = prefs.Get(kPrintingPaperSizeDefault);
   if (!paper_size_value || paper_size_value->DictEmpty())
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* custom_size =
       paper_size_value->FindKey(kPaperSizeCustomSize);

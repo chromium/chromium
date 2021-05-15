@@ -53,7 +53,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
-  base::Optional<uint32_t> GetSyncCpuMemoryLimit() const override;
+  absl::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
 
  private:
   friend class VulkanInProcessContextProviderTest;

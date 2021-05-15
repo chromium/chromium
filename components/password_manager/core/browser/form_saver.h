@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 

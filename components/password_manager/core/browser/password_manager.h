@@ -375,7 +375,7 @@ class PasswordManager : public PasswordManagerInterface {
   // Helper for making the requests on leak detection.
   LeakDetectionDelegate leak_delegate_;
 
-  base::Optional<PossibleUsernameData> possible_username_;
+  absl::optional<PossibleUsernameData> possible_username_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordManager);
 };

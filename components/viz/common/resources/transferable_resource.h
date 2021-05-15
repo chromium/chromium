@@ -107,7 +107,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool read_lock_fences_enabled = false;
 
   // YCbCr info for resources backed by YCbCr Vulkan images.
-  base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
 #if defined(OS_ANDROID)
   // Indicates whether this resource may not be overlayed on Android, since

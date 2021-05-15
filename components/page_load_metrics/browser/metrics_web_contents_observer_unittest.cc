@@ -220,7 +220,7 @@ class MetricsWebContentsObserverTest
     return embedder_interface_->observed_features();
   }
 
-  const base::Optional<bool>& is_first_navigation_in_web_contents() const {
+  const absl::optional<bool>& is_first_navigation_in_web_contents() const {
     return embedder_interface_->is_first_navigation_in_web_contents();
   }
 

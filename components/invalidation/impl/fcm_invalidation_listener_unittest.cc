@@ -173,7 +173,7 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
                void(const Topics& topics, const std::string& token));
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
-                     base::Optional<Topic>(const std::string& private_topic));
+                     absl::optional<Topic>(const std::string& private_topic));
 };
 
 class FCMInvalidationListenerTest : public testing::Test {

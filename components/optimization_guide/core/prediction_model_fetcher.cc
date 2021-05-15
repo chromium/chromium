@@ -54,7 +54,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
   SEQUENCE_CHECKER(sequence_checker_);
 
   if (network_connection_tracker_->IsOffline()) {
-    std::move(models_fetched_callback).Run(base::nullopt);
+    std::move(models_fetched_callback).Run(absl::nullopt);
     return false;
   }
 
@@ -63,7 +63,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
 
   // If there are no models to request, do not make a GetModelsRequest.
   if (models_request_info.empty()) {
-    std::move(models_fetched_callback).Run(base::nullopt);
+    std::move(models_fetched_callback).Run(absl::nullopt);
     return false;
   }
 
@@ -165,7 +165,7 @@ void PredictionModelFetcher::HandleResponse(
       get_models_response->ParseFromString(get_models_response_data)) {
     std::move(models_fetched_callback_).Run(std::move(get_models_response));
   } else {
-    std::move(models_fetched_callback_).Run(base::nullopt);
+    std::move(models_fetched_callback_).Run(absl::nullopt);
   }
 }
 

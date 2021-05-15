@@ -250,7 +250,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    base::Optional<double> network_thread_priority)
+    absl::optional<double> network_thread_priority)
     : enable_quic(enable_quic),
       quic_user_agent_id(quic_user_agent_id),
       enable_spdy(enable_spdy),

@@ -11,11 +11,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "components/offline_items_collection/core/launch_location.h"
 #include "components/offline_items_collection/core/open_params.h"
 #include "components/offline_items_collection/core/rename_result.h"
 #include "components/offline_items_collection/core/update_delta.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_items_collection {
@@ -38,7 +38,7 @@ class OfflineContentProvider {
                               std::unique_ptr<OfflineItemShareInfo>)>;
   using MultipleItemCallback = base::OnceCallback<void(const OfflineItemList&)>;
   using SingleItemCallback =
-      base::OnceCallback<void(const base::Optional<OfflineItem>&)>;
+      base::OnceCallback<void(const absl::optional<OfflineItem>&)>;
   using RenameCallback = base::OnceCallback<void(RenameResult)>;
   using DownloadRenameCallback = base::OnceCallback<RenameCallback>;
 
@@ -96,7 +96,7 @@ class OfflineContentProvider {
     // determine whether this call should be ignored.
     virtual void OnItemUpdated(
         const OfflineItem& item,
-        const base::Optional<UpdateDelta>& update_delta) = 0;
+        const absl::optional<UpdateDelta>& update_delta) = 0;
 
     // Called right before this object gets destroyed, to lets observers
     // perform cleanup.
@@ -162,7 +162,7 @@ class OfflineContentProvider {
 
   // Called to change when to start the OfflineItem represented by |id|.
   virtual void ChangeSchedule(const ContentId& id,
-                              base::Optional<OfflineItemSchedule> schedule) = 0;
+                              absl::optional<OfflineItemSchedule> schedule) = 0;
 
   // Adds an observer that should be notified of OfflineItem list modifications.
   void AddObserver(Observer* observer);
@@ -181,7 +181,7 @@ class OfflineContentProvider {
   void NotifyItemsAdded(const OfflineItemList& items);
   void NotifyItemRemoved(const ContentId& id);
   void NotifyItemUpdated(const OfflineItem& item,
-                         const base::Optional<UpdateDelta>& update_delta);
+                         const absl::optional<UpdateDelta>& update_delta);
 
  private:
   base::ObserverList<Observer> observers_;

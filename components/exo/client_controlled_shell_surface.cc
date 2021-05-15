@@ -476,7 +476,7 @@ void ClientControlledShellSurface::SetShadowBounds(const gfx::Rect& bounds) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetShadowBounds", "bounds",
                bounds.ToString());
   auto shadow_bounds =
-      bounds.IsEmpty() ? base::nullopt : base::make_optional(bounds);
+      bounds.IsEmpty() ? absl::nullopt : absl::make_optional(bounds);
   if (shadow_bounds_ != shadow_bounds) {
     shadow_bounds_ = shadow_bounds;
     shadow_bounds_changed_ = true;
@@ -1097,7 +1097,7 @@ float ClientControlledShellSurface::GetScale() const {
   return scale_;
 }
 
-base::Optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
+absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
     const {
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled()) {

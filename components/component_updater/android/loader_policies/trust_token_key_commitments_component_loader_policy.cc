@@ -18,24 +18,24 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
 // TODO(crbug.com/1180964) move reading string from fd to base/file_util.h
-base::Optional<std::string> LoadKeyCommitmentsFromDisk(int fd) {
+absl::optional<std::string> LoadKeyCommitmentsFromDisk(int fd) {
   base::ScopedFILE file_stream(fdopen(fd, "r"));
   if (!file_stream.get()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string commitments;
   if (!base::ReadStreamToString(file_stream.get(), &commitments))
-    return base::nullopt;
+    return absl::nullopt;
 
   return commitments;
 }

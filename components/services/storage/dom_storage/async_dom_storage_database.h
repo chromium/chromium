@@ -37,13 +37,13 @@ class AsyncDomStorageDatabase {
       const leveldb_env::Options& options,
       const base::FilePath& directory,
       const std::string& dbname,
-      const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       StatusCallback callback);
 
   static std::unique_ptr<AsyncDomStorageDatabase> OpenInMemory(
-      const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       const std::string& tracking_name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,

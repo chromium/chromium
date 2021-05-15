@@ -47,7 +47,7 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelSearch) {
 namespace {
 
 bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
-  base::Optional<base::Value> value = base::JSONReader::Read(answer_json);
+  absl::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict())
     return false;
 

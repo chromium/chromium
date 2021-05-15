@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -146,7 +146,7 @@ class TextInput : public ui::TextInputClient,
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  base::Optional<ui::GrammarFragment> GetGrammarFragment(
+  absl::optional<ui::GrammarFragment> GetGrammarFragment(
       const gfx::Range& range) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
@@ -172,7 +172,7 @@ class TextInput : public ui::TextInputClient,
   bool should_do_learning_ = true;
   ui::CompositionText composition_;
   std::u16string surrounding_text_;
-  base::Optional<gfx::Range> cursor_pos_;
+  absl::optional<gfx::Range> cursor_pos_;
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
 
   DISALLOW_COPY_AND_ASSIGN(TextInput);

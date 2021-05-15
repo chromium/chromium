@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   bool IsPrimaryPlaneOverlay() const override;
   void SchedulePrimaryPlane(
-      const base::Optional<
+      const absl::optional<
           OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane)
       override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;

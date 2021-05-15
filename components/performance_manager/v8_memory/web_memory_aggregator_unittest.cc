@@ -9,12 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/trace_event/traced_value.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "components/performance_manager/v8_memory/v8_memory_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -29,17 +29,17 @@ using AttributionScope = mojom::WebMemoryAttribution::Scope;
 struct ExpectedMemoryBreakdown {
   WebMemoryTestHarness::Bytes bytes;
   AttributionScope scope = AttributionScope::kWindow;
-  base::Optional<std::string> url;
-  base::Optional<std::string> id;
-  base::Optional<std::string> src;
+  absl::optional<std::string> url;
+  absl::optional<std::string> id;
+  absl::optional<std::string> src;
 
   ExpectedMemoryBreakdown() = default;
   ExpectedMemoryBreakdown(
       WebMemoryTestHarness::Bytes expected_bytes,
       AttributionScope expected_scope,
-      base::Optional<std::string> expected_url = base::nullopt,
-      base::Optional<std::string> expected_id = base::nullopt,
-      base::Optional<std::string> expected_src = base::nullopt)
+      absl::optional<std::string> expected_url = absl::nullopt,
+      absl::optional<std::string> expected_id = absl::nullopt,
+      absl::optional<std::string> expected_src = absl::nullopt)
       : bytes(expected_bytes),
         scope(expected_scope),
         url(std::move(expected_url)),
@@ -96,7 +96,7 @@ class WebMemoryAggregatorTest : public WebMemoryTestHarness {
   // WebMemoryAggregator.
   static mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
       mojom::WebMemoryAttribution::Scope scope,
-      base::Optional<std::string> url,
+      absl::optional<std::string> url,
       mojom::WebMemoryMeasurement* measurement) {
     return WebMemoryAggregator::CreateBreakdownEntry(scope, url, measurement);
   }
@@ -119,7 +119,7 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
   auto measurement = mojom::WebMemoryMeasurement::New();
   auto* breakdown_with_no_url =
       CreateBreakdownEntry(AttributionScope::kCrossOriginAggregated,
-                           base::nullopt, measurement.get());
+                           absl::nullopt, measurement.get());
   auto* breakdown_with_url = CreateBreakdownEntry(
       AttributionScope::kWindow, "https://example.com", measurement.get());
   auto* breakdown_with_empty_url =
@@ -132,11 +132,11 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
   EXPECT_EQ(measurement->breakdown[2].get(), breakdown_with_empty_url);
 
   // Can't use an initializer list because nullopt_t and
-  // base::Optional<std::string> are different types.
-  std::vector<base::Optional<std::string>> attributes;
-  attributes.push_back(base::nullopt);
-  attributes.push_back(base::make_optional("example_attr"));
-  attributes.push_back(base::make_optional(""));
+  // absl::optional<std::string> are different types.
+  std::vector<absl::optional<std::string>> attributes;
+  attributes.push_back(absl::nullopt);
+  attributes.push_back(absl::make_optional("example_attr"));
+  attributes.push_back(absl::make_optional(""));
   for (const auto& attribute : attributes) {
     SCOPED_TRACE(attribute.value_or("nullopt"));
 
@@ -151,15 +151,15 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
 
     // All measurements should be created without measurement results.
     auto expected_result = CreateExpectedMemoryMeasurement({
-        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+        ExpectedMemoryBreakdown(/*bytes=*/absl::nullopt,
                                 AttributionScope::kCrossOriginAggregated,
-                                /*expected_url=*/base::nullopt,
-                                /*expected_id=*/base::nullopt,
-                                /*expected_src=*/base::nullopt),
-        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+                                /*expected_url=*/absl::nullopt,
+                                /*expected_id=*/absl::nullopt,
+                                /*expected_src=*/absl::nullopt),
+        ExpectedMemoryBreakdown(/*bytes=*/absl::nullopt,
                                 AttributionScope::kWindow,
                                 "https://example.com", attribute, attribute),
-        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+        ExpectedMemoryBreakdown(/*bytes=*/absl::nullopt,
                                 AttributionScope::kWindow,
                                 /*expected_url=*/"", attribute, attribute),
     });
@@ -233,7 +233,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOrigin) {
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
       ExpectedMemoryBreakdown(14, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "example-id",
+                              absl::nullopt, "example-id",
                               "https://foo.com/iframe1"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
@@ -290,7 +290,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
 
   // A frame without a memory measurement (eg. a frame that's added to the frame
   // tree during the measurement) should not have a memory entry in the result.
-  AddFrameNode("https://example.com/empty_frame", base::nullopt, subframe3);
+  AddFrameNode("https://example.com/empty_frame", absl::nullopt, subframe3);
 
   WebMemoryAggregator aggregator(main_frame);
 
@@ -298,13 +298,13 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
       ExpectedMemoryBreakdown(9, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "example-id",
+                              absl::nullopt, "example-id",
                               "https://foo.com/iframe1"),
       ExpectedMemoryBreakdown(3, AttributionScope::kWindow,
                               "https://example.com/iframe1", "example-id",
                               "https://foo.com/iframe1"),
       ExpectedMemoryBreakdown(2, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "example-id4",
+                              absl::nullopt, "example-id4",
                               "https://foo.com/iframe2"),
       ExpectedMemoryBreakdown(1, AttributionScope::kWindow,
                               "https://example.com/iframe2", "example-id4",
@@ -316,8 +316,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
                               "https://example.com/cross_process",
                               "cross-process-id1"),
       ExpectedMemoryBreakdown(0, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "cross-process-id2"),
-      ExpectedMemoryBreakdown(base::nullopt, AttributionScope::kWindow,
+                              absl::nullopt, "cross-process-id2"),
+      ExpectedMemoryBreakdown(absl::nullopt, AttributionScope::kWindow,
                               "https://example.com/empty_frame"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
@@ -350,7 +350,7 @@ TEST_F(WebMemoryAggregatorTest, SkipCrossOriginAboutBlank) {
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
       ExpectedMemoryBreakdown(50, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt),
+                              absl::nullopt),
   });
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
@@ -388,7 +388,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
                               "https://example.com/window-iframe.html",
                               "example-id2"),
       ExpectedMemoryBreakdown(2, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "example-id3"),
+                              absl::nullopt, "example-id3"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(NormalizeMeasurement(result),
@@ -401,8 +401,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
         ExpectedMemoryBreakdown(22, AttributionScope::kCrossOriginAggregated),
         ExpectedMemoryBreakdown(
             2, AttributionScope::kWindow,
-            "https://cross-site-example.com/window-iframe.html", base::nullopt,
-            base::nullopt),
+            "https://cross-site-example.com/window-iframe.html", absl::nullopt,
+            absl::nullopt),
     });
     auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(cross_site_result),
@@ -415,7 +415,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
     auto expected_cross_site_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(2, AttributionScope::kWindow,
                                 "https://cross-site-example.com/",
-                                base::nullopt, base::nullopt),
+                                absl::nullopt, absl::nullopt),
     });
     auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(cross_site_result),
@@ -429,7 +429,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateProvisionalWindowOpener) {
   // This creates an openee window with pending navigation which should be
   // skipped because it may get its own browsing context group once the
   // navigation completes.
-  AddFrameNodeFromOpener(base::nullopt, Bytes{4}, main_frame);
+  AddFrameNodeFromOpener(absl::nullopt, Bytes{4}, main_frame);
 
   WebMemoryAggregator aggregator(main_frame);
 
@@ -489,7 +489,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginWorker) {
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
       ExpectedMemoryBreakdown(65, AttributionScope::kCrossOriginAggregated,
-                              base::nullopt, "example-id"),
+                              absl::nullopt, "example-id"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(NormalizeMeasurement(result),
@@ -524,13 +524,13 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
         ExpectedMemoryBreakdown(20, AttributionScope::kWindow,
                                 "https://a.com/iframe", "a_com_iframe"),
         ExpectedMemoryBreakdown(40, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "b_com_iframe2"),
+                                absl::nullopt, "b_com_iframe2"),
         ExpectedMemoryBreakdown(80, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "b_com_iframe1"),
+                                absl::nullopt, "b_com_iframe1"),
         ExpectedMemoryBreakdown(60, AttributionScope::kWindow,
                                 "https://a.com/popup1"),
         ExpectedMemoryBreakdown(150, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "b_com_iframe3"),
+                                absl::nullopt, "b_com_iframe3"),
         ExpectedMemoryBreakdown(90, AttributionScope::kWindow,
                                 "https://a.com/popup2"),
     });
@@ -543,17 +543,17 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
     WebMemoryAggregator aggregator(b_com_iframe3);
     auto expected_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(180, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt),
+                                absl::nullopt),
         ExpectedMemoryBreakdown(40, AttributionScope::kWindow,
                                 "https://b.com/iframe2"),
         ExpectedMemoryBreakdown(30, AttributionScope::kWindow,
                                 "https://b.com/iframe1"),
         ExpectedMemoryBreakdown(50, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "c_com_iframe1"),
+                                absl::nullopt, "c_com_iframe1"),
         ExpectedMemoryBreakdown(70, AttributionScope::kWindow,
                                 "https://b.com/iframe3"),
         ExpectedMemoryBreakdown(80, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "c_com_iframe2"),
+                                absl::nullopt, "c_com_iframe2"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(result),
@@ -564,7 +564,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
     WebMemoryAggregator aggregator(c_com_iframe1);
     auto expected_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(320, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt),
+                                absl::nullopt),
         ExpectedMemoryBreakdown(50, AttributionScope::kWindow,
                                 "https://c.com/iframe1"),
         ExpectedMemoryBreakdown(80, AttributionScope::kWindow,
@@ -586,7 +586,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossProcessCallers) {
         ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                                 "https://a.com/"),
         ExpectedMemoryBreakdown(0, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt, "b_com_iframe"),
+                                absl::nullopt, "b_com_iframe"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(result),
@@ -597,7 +597,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossProcessCallers) {
     WebMemoryAggregator aggregator(b_com_iframe);
     auto expected_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(0, AttributionScope::kCrossOriginAggregated,
-                                base::nullopt),
+                                absl::nullopt),
         ExpectedMemoryBreakdown(30, AttributionScope::kWindow,
                                 "https://b.com/iframe"),
     });
@@ -661,7 +661,7 @@ TEST_F(WebMemoryAggregatorTest, WorkerWithoutData) {
   auto expected_result = CreateExpectedMemoryMeasurement({
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
                               "https://example.com/"),
-      ExpectedMemoryBreakdown(base::nullopt, AttributionScope::kDedicatedWorker,
+      ExpectedMemoryBreakdown(absl::nullopt, AttributionScope::kDedicatedWorker,
                               ""),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();

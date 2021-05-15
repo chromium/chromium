@@ -22,7 +22,7 @@ class NigoriStorageImpl : public NigoriStorage {
   // NigoriStorage implementation.
   // Encrypts |data| and atomically stores it in binary file.
   void StoreData(const sync_pb::NigoriLocalData& data) override;
-  base::Optional<sync_pb::NigoriLocalData> RestoreData() override;
+  absl::optional<sync_pb::NigoriLocalData> RestoreData() override;
   void ClearData() override;
 
  private:

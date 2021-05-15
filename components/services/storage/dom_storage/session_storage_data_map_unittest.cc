@@ -73,7 +73,7 @@ class SessionStorageDataMapTest : public testing::Test {
       : test_origin_(url::Origin::Create(GURL("http://host1.com:1"))) {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        base::nullopt, "SessionStorageDataMapTest",
+        absl::nullopt, "SessionStorageDataMapTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());

@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/ntp_snippets/remote/json_to_categories.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 
@@ -43,22 +43,22 @@ class RemoteSuggestionBuilder {
   std::unique_ptr<RemoteSuggestion> Build() const;
 
  private:
-  base::Optional<std::vector<std::string>> ids_;
-  base::Optional<std::string> title_;
-  base::Optional<std::string> snippet_;
-  base::Optional<std::string> salient_image_url_;
-  base::Optional<base::Time> publish_date_;
-  base::Optional<base::Time> expiry_date_;
-  base::Optional<double> score_;
-  base::Optional<bool> is_dismissed_;
-  base::Optional<int> remote_category_id_;
-  base::Optional<std::string> url_;
-  base::Optional<std::string> publisher_name_;
-  base::Optional<std::string> amp_url_;
-  base::Optional<base::Time> fetch_date_;
-  base::Optional<int> rank_;
-  base::Optional<bool> should_notify_;
-  base::Optional<base::Time> notification_deadline_;
+  absl::optional<std::vector<std::string>> ids_;
+  absl::optional<std::string> title_;
+  absl::optional<std::string> snippet_;
+  absl::optional<std::string> salient_image_url_;
+  absl::optional<base::Time> publish_date_;
+  absl::optional<base::Time> expiry_date_;
+  absl::optional<double> score_;
+  absl::optional<bool> is_dismissed_;
+  absl::optional<int> remote_category_id_;
+  absl::optional<std::string> url_;
+  absl::optional<std::string> publisher_name_;
+  absl::optional<std::string> amp_url_;
+  absl::optional<base::Time> fetch_date_;
+  absl::optional<int> rank_;
+  absl::optional<bool> should_notify_;
+  absl::optional<base::Time> notification_deadline_;
 };
 
 class FetchedCategoryBuilder {
@@ -82,13 +82,13 @@ class FetchedCategoryBuilder {
   FetchedCategory Build() const;
 
  private:
-  base::Optional<Category> category_;
-  base::Optional<std::u16string> title_;
-  base::Optional<ContentSuggestionsCardLayout> card_layout_;
-  base::Optional<ContentSuggestionsAdditionalAction> additional_action_;
-  base::Optional<bool> show_if_empty_;
-  base::Optional<std::u16string> no_suggestions_message_;
-  base::Optional<std::vector<RemoteSuggestionBuilder>> suggestion_builders_;
+  absl::optional<Category> category_;
+  absl::optional<std::u16string> title_;
+  absl::optional<ContentSuggestionsCardLayout> card_layout_;
+  absl::optional<ContentSuggestionsAdditionalAction> additional_action_;
+  absl::optional<bool> show_if_empty_;
+  absl::optional<std::u16string> no_suggestions_message_;
+  absl::optional<std::vector<RemoteSuggestionBuilder>> suggestion_builders_;
 };
 
 }  // namespace test

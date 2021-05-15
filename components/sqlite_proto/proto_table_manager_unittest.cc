@@ -57,7 +57,7 @@ TEST(ProtoTableTest, PutReinitializeAndGet) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/base::nullopt,
+                                 /*max_num_entries=*/absl::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     // In these tests, we're using the current thread as the DB sequence.
@@ -70,7 +70,7 @@ TEST(ProtoTableTest, PutReinitializeAndGet) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/base::nullopt,
+                                 /*max_num_entries=*/absl::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     data.InitializeOnDBSequence();

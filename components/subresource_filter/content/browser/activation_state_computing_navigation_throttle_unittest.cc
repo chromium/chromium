@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,6 +29,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace subresource_filter {
 
@@ -238,8 +238,8 @@ class ActivationStateComputingNavigationThrottleTest
 
   // Owned by the current navigation.
   ActivationStateComputingNavigationThrottle* test_throttle_;
-  base::Optional<mojom::ActivationState> last_activation_state_;
-  base::Optional<mojom::ActivationState> parent_activation_state_;
+  absl::optional<mojom::ActivationState> last_activation_state_;
+  absl::optional<mojom::ActivationState> parent_activation_state_;
 
   // Needed for potential cross process navigations which swap hosts.
   content::RenderFrameHost* last_committed_frame_host_ = nullptr;

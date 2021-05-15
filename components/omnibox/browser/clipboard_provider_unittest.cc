@@ -105,8 +105,8 @@ class ClipboardProviderTest : public testing::Test,
   }
 
   bool IsClipboardEmpty() {
-    return clipboard_content_.GetRecentURLFromClipboard() == base::nullopt &&
-           clipboard_content_.GetRecentTextFromClipboard() == base::nullopt &&
+    return clipboard_content_.GetRecentURLFromClipboard() == absl::nullopt &&
+           clipboard_content_.GetRecentTextFromClipboard() == absl::nullopt &&
            !clipboard_content_.HasRecentImageFromClipboard();
   }
 
@@ -118,7 +118,7 @@ class ClipboardProviderTest : public testing::Test,
     return input;
   }
 
-  void MatchesImageCallback(base::Optional<AutocompleteMatch> match) {
+  void MatchesImageCallback(absl::optional<AutocompleteMatch> match) {
     matches_image_match_ = match;
   }
 
@@ -130,7 +130,7 @@ class ClipboardProviderTest : public testing::Test,
   FakeClipboardRecentContent clipboard_content_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<ClipboardProvider> provider_;
-  base::Optional<AutocompleteMatch> matches_image_match_;
+  absl::optional<AutocompleteMatch> matches_image_match_;
 
   base::test::TaskEnvironment task_environment_;
 };

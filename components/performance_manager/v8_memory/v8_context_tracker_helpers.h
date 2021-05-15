@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -78,9 +78,9 @@ V8ContextDescriptionStatus ValidateV8ContextDescription(
 
 // Determines whether or not IframeAttributionData is expected to accompany the
 // provided V8ContextDescription. This is not always able to be determined, in
-// which case base::nullopt will be returned. It is assumed that the
+// which case absl::nullopt will be returned. It is assumed that the
 // |description| has previously been validated.
-base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
+absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
     const mojom::V8ContextDescription& description,
     Graph* graph) WARN_UNUSED_RESULT;
 

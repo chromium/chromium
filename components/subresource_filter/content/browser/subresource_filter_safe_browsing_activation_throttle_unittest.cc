@@ -561,11 +561,11 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
        NavigationFails_NoActivation) {
-  EXPECT_EQ(base::Optional<mojom::ActivationLevel>(),
+  EXPECT_EQ(absl::optional<mojom::ActivationLevel>(),
             observer()->GetPageActivationForLastCommittedLoad());
   content::NavigationSimulator::NavigateAndFailFromDocument(
       GURL(kURL), net::ERR_TIMED_OUT, main_rfh());
-  EXPECT_EQ(base::Optional<mojom::ActivationLevel>(),
+  EXPECT_EQ(absl::optional<mojom::ActivationLevel>(),
             observer()->GetPageActivationForLastCommittedLoad());
 }
 
@@ -980,7 +980,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
 struct RedirectSamplesAndResults {
   std::vector<GURL> urls;
   bool expected_activation;
-  base::Optional<RedirectPosition> last_enforcement_position;
+  absl::optional<RedirectPosition> last_enforcement_position;
 };
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
@@ -1012,7 +1012,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
       {{bad_url, normal_url, worse_url}, true, RedirectPosition::kLast},
       {{worse_url, normal_url, bad_url}, true, RedirectPosition::kLast},
       {{normal_url, worse_url, bad_url}, true, RedirectPosition::kLast},
-      {{normal_url, normal_url}, false, base::nullopt},
+      {{normal_url, normal_url}, false, absl::nullopt},
       {{normal_url, bad_url, normal_url}, false, RedirectPosition::kMiddle},
       {{worse_url}, true, RedirectPosition::kOnly},
   };

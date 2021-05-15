@@ -251,7 +251,7 @@ class AppUpdateTest : public testing::Test {
       expect_readiness_changed_ = true;
       CheckExpects(u);
 
-      delta->name = base::nullopt;
+      delta->name = absl::nullopt;
       expect_name_ = state ? test_name_0 : "";
       expect_name_changed_ = false;
       CheckExpects(u);

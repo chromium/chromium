@@ -11,12 +11,12 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/io_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -36,8 +36,8 @@ class Rel32ReaderX86 : public ReferenceReader {
                  const AddressTranslator& translator);
   ~Rel32ReaderX86() override;
 
-  // Returns the next reference, or base::nullopt if exhausted.
-  base::Optional<Reference> GetNext() override;
+  // Returns the next reference, or absl::nullopt if exhausted.
+  absl::optional<Reference> GetNext() override;
 
  private:
   ConstBufferView image_;
@@ -91,7 +91,7 @@ class Rel32ReaderArm : public ReferenceReader {
     rel32_end_ = rel32_locations.end();
   }
 
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (cur_it_ < rel32_end_ && *cur_it_ < hi_) {
       offset_t location = *(cur_it_++);
       CODE_T code = ADDR_TRAITS::Fetch(view_, location);
@@ -103,7 +103,7 @@ class Rel32ReaderArm : public ReferenceReader {
           return Reference{location, target};
       }
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:

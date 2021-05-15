@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -17,6 +16,7 @@
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -378,9 +378,9 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithHostAndPathMatching(
 VerdictCacheManager::VerdictCacheManager(
     history::HistoryService* history_service,
     scoped_refptr<HostContentSettingsMap> content_settings)
-    : stored_verdict_count_password_on_focus_(base::nullopt),
-      stored_verdict_count_password_entry_(base::nullopt),
-      stored_verdict_count_real_time_url_check_(base::nullopt),
+    : stored_verdict_count_password_on_focus_(absl::nullopt),
+      stored_verdict_count_password_entry_(absl::nullopt),
+      stored_verdict_count_real_time_url_check_(absl::nullopt),
       content_settings_(content_settings) {
   if (history_service)
     history_service_observation_.Observe(history_service);
@@ -434,7 +434,7 @@ void VerdictCacheManager::CachePhishGuardVerdict(
   // Increases stored verdict count if we haven't seen this cache expression
   // before.
   if (!verdict_dictionary->FindKey(GetCacheExpression(verdict))) {
-    base::Optional<size_t>* stored_verdict_count =
+    absl::optional<size_t>* stored_verdict_count =
         trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE
             ? &stored_verdict_count_password_on_focus_
             : &stored_verdict_count_password_entry_;
@@ -473,7 +473,7 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
   DCHECK(content_settings_);
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
-  base::Optional<size_t>* stored_verdict_count =
+  absl::optional<size_t>* stored_verdict_count =
       trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE
           ? &stored_verdict_count_password_on_focus_
           : &stored_verdict_count_password_entry_;

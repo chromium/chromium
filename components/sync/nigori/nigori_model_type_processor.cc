@@ -109,7 +109,7 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
     entity_->ClearTransientSyncState();
   }
   // Ask the bridge to persist the new metadata.
-  bridge_->ApplySyncChanges(/*data=*/base::nullopt);
+  bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
 }
 
 void NigoriModelTypeProcessor::OnUpdateReceived(
@@ -124,7 +124,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
     return;
   }
 
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
 
   const bool is_initial_sync = !model_type_state_.initial_sync_done();
   LogUpdatesReceivedByProcessorHistogram(NIGORI, is_initial_sync,
@@ -135,7 +135,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   if (is_initial_sync) {
     DCHECK(!entity_);
     if (updates.empty()) {
-      error = bridge_->MergeSyncData(base::nullopt);
+      error = bridge_->MergeSyncData(absl::nullopt);
     } else {
       DCHECK(!updates[0].entity.is_deleted());
       entity_ = ProcessorEntity::CreateNew(
@@ -151,7 +151,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   }
 
   if (updates.empty()) {
-    bridge_->ApplySyncChanges(/*data=*/base::nullopt);
+    bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
     return;
   }
 
@@ -162,7 +162,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 
   if (entity_->UpdateIsReflection(updates[0].response_version)) {
     // Seen this update before; just ignore it.
-    bridge_->ApplySyncChanges(/*data=*/base::nullopt);
+    bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
     return;
   }
 

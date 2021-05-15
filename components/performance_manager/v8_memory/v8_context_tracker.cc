@@ -105,7 +105,7 @@ void V8ContextTracker::OnV8ContextCreated(
 
   // Validate the |iframe_attribution_data|.
   {
-    base::Optional<bool> result =
+    absl::optional<bool> result =
         ExpectIframeAttributionDataForV8ContextDescription(
             description, process_node->graph());
     if (result) {

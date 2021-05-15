@@ -312,7 +312,7 @@ class AutofillProfileSyncBridgeTestBase : public testing::Test {
   }
 
   void ApplySyncChanges(EntityChangeList changes) {
-    const base::Optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
+    const absl::optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
         bridge()->CreateMetadataChangeList(), std::move(changes));
     EXPECT_FALSE(error) << error->ToString();
   }

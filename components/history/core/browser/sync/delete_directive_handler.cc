@@ -379,7 +379,7 @@ bool DeleteDirectiveHandler::CreateDeleteDirectives(
       global_id_directive->set_end_time_usec(end_time_usecs);
     }
   }
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       ProcessLocalDeleteDirective(delete_directive);
   return !error.has_value();
 }
@@ -393,12 +393,12 @@ bool DeleteDirectiveHandler::CreateUrlDeleteDirective(const GURL& url) {
   url_directive->set_url(url.spec());
   url_directive->set_end_time_usec(TimeToUnixUsec(base::Time::Now()));
 
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       ProcessLocalDeleteDirective(delete_directive);
   return !error.has_value();
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 DeleteDirectiveHandler::ProcessLocalDeleteDirective(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -434,7 +434,7 @@ void DeleteDirectiveHandler::WaitUntilReadyToSync(base::OnceClosure done) {
   }
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 DeleteDirectiveHandler::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -453,7 +453,7 @@ DeleteDirectiveHandler::MergeDataAndStartSyncing(
                                 &internal_tracker_);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DeleteDirectiveHandler::StopSyncing(syncer::ModelType type) {
@@ -462,7 +462,7 @@ void DeleteDirectiveHandler::StopSyncing(syncer::ModelType type) {
   sync_processor_.reset();
 }
 
-base::Optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
+absl::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -497,7 +497,7 @@ base::Optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
                                 &internal_tracker_);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DeleteDirectiveHandler::FinishProcessing(

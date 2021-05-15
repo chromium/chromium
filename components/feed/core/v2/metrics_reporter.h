@@ -9,13 +9,13 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 namespace feed {
@@ -145,10 +145,10 @@ class MetricsReporter {
   // tapped is stored here. Upon timeout, another open attempt, or
   // |ChromeStopping()|, the open is considered failed. Otherwise, if the
   // loading the page succeeds, the open is considered successful.
-  base::Optional<base::TimeTicks> pending_open_;
+  absl::optional<base::TimeTicks> pending_open_;
 
   // For tracking time spent in the Feed.
-  base::Optional<base::TimeTicks> time_in_feed_start_;
+  absl::optional<base::TimeTicks> time_in_feed_start_;
   // For TimeSpentOnFeed.
   base::TimeDelta tracked_visit_time_in_feed_;
   // Non-null only directly after a stream load.

@@ -209,7 +209,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
 
-  base::Optional<SurfaceAnimationManager> manager_;
+  absl::optional<SurfaceAnimationManager> manager_;
 };
 
 TEST_F(SurfaceAnimationManagerTest, DefaultState) {

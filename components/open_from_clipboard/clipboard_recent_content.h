@@ -35,12 +35,12 @@ class ClipboardRecentContent {
   // Returns clipboard content as URL, if it has a compatible type,
   // is recent enough, has not been suppressed and will not trigger a system
   // notification that the clipboard has been accessed.
-  virtual base::Optional<GURL> GetRecentURLFromClipboard() = 0;
+  virtual absl::optional<GURL> GetRecentURLFromClipboard() = 0;
 
   // Returns clipboard content as text, if it has a compatible type,
   // is recent enough, has not been suppressed and will not trigger a system
   // notification that the clipboard has been accessed.
-  virtual base::Optional<std::u16string> GetRecentTextFromClipboard() = 0;
+  virtual absl::optional<std::u16string> GetRecentTextFromClipboard() = 0;
 
   // Return if system's clipboard contains an image that will not trigger a
   // system notification that the clipboard has been accessed.
@@ -52,11 +52,11 @@ class ClipboardRecentContent {
    */
   using HasDataCallback =
       base::OnceCallback<void(std::set<ClipboardContentType>)>;
-  using GetRecentURLCallback = base::OnceCallback<void(base::Optional<GURL>)>;
+  using GetRecentURLCallback = base::OnceCallback<void(absl::optional<GURL>)>;
   using GetRecentTextCallback =
-      base::OnceCallback<void(base::Optional<std::u16string>)>;
+      base::OnceCallback<void(absl::optional<std::u16string>)>;
   using GetRecentImageCallback =
-      base::OnceCallback<void(base::Optional<gfx::Image>)>;
+      base::OnceCallback<void(absl::optional<gfx::Image>)>;
 
   // Returns whether the clipboard contains a URL to |HasDataCallback| if it
   // is recent enough and has not been suppressed.

@@ -29,7 +29,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
-using base::Optional;
+using absl::optional;
 using base::UTF16ToUTF8;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
@@ -42,7 +42,7 @@ namespace {
 
 // Simplify checking for optional errors and returning only when present.
 #define RETURN_IF_ERROR(x)                \
-  if (Optional<ModelError> ret_val = x) { \
+  if (optional<ModelError> ret_val = x) { \
     return ret_val;                       \
   }
 
@@ -98,7 +98,7 @@ AutofillProfileSyncBridge::CreateMetadataChangeList() {
       GetAutofillTable(), syncer::AUTOFILL_PROFILE);
 }
 
-Optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
+optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -129,10 +129,10 @@ Optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
 
   web_data_backend_->CommitChanges();
   web_data_backend_->NotifyThatSyncHasStarted(syncer::AUTOFILL_PROFILE);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError> AutofillProfileSyncBridge::ApplySyncChanges(
+optional<ModelError> AutofillProfileSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -160,7 +160,7 @@ Optional<ModelError> AutofillProfileSyncBridge::ApplySyncChanges(
   RETURN_IF_ERROR(FlushSyncTracker(std::move(metadata_change_list), &tracker));
 
   web_data_backend_->CommitChanges();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
@@ -237,12 +237,12 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
   // committed by the AutofillWebDataService when the original local write
   // operation (that triggered this notification to the bridge) finishes.
 
-  if (Optional<ModelError> error = metadata_change_list->TakeError()) {
+  if (optional<ModelError> error = metadata_change_list->TakeError()) {
     change_processor()->ReportError(*error);
   }
 }
 
-base::Optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
+absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     AutofillProfileSyncDifferenceTracker* tracker) {
   DCHECK(tracker);

@@ -13,11 +13,11 @@ FakeSyncChangeProcessor::FakeSyncChangeProcessor() {}
 
 FakeSyncChangeProcessor::~FakeSyncChangeProcessor() {}
 
-base::Optional<ModelError> FakeSyncChangeProcessor::ProcessSyncChanges(
+absl::optional<ModelError> FakeSyncChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {
   changes_.insert(changes_.end(), change_list.begin(), change_list.end());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 SyncDataList FakeSyncChangeProcessor::GetAllSyncData(ModelType type) const {

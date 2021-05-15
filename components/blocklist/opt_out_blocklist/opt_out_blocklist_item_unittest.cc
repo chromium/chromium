@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

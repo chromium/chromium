@@ -154,8 +154,8 @@ void MigrateOldBreadcrumbFiles(
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
     const base::FilePath& directory,
-    const base::Optional<base::FilePath>& old_breadcrumbs_file_path,
-    const base::Optional<base::FilePath>& old_breadcrumbs_temp_file_path)
+    const absl::optional<base::FilePath>& old_breadcrumbs_file_path,
+    const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),

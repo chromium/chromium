@@ -10,10 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -104,7 +104,7 @@ int MaxServerBloomFilterByteSize();
 // Maximum effective connection type at which hints can be fetched for
 // navigations in real-time. Returns null if the hints fetching for navigations
 // is disabled.
-base::Optional<net::EffectiveConnectionType>
+absl::optional<net::EffectiveConnectionType>
 GetMaxEffectiveConnectionTypeForNavigationHintsFetch();
 
 // Returns the duration of the time window before hints expiration during which

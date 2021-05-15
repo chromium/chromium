@@ -252,7 +252,7 @@ void ResourceDownloader::OnReceiveRedirect() {
       std::vector<std::string>() /* removed_headers */,
       net::HttpRequestHeaders() /* modified_headers */,
       net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      base::nullopt);
+      absl::nullopt);
 }
 
 void ResourceDownloader::OnResponseCompleted() {

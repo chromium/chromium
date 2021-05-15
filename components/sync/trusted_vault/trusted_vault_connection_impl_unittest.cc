@@ -62,13 +62,13 @@ class FakeTrustedVaultAccessTokenFetcher
     : public TrustedVaultAccessTokenFetcher {
  public:
   explicit FakeTrustedVaultAccessTokenFetcher(
-      const base::Optional<std::string>& access_token)
+      const absl::optional<std::string>& access_token)
       : access_token_(access_token) {}
   ~FakeTrustedVaultAccessTokenFetcher() override = default;
 
   void FetchAccessToken(const CoreAccountId& account_id,
                         TokenCallback callback) override {
-    base::Optional<signin::AccessTokenInfo> access_token_info;
+    absl::optional<signin::AccessTokenInfo> access_token_info;
     if (access_token_) {
       access_token_info = signin::AccessTokenInfo(
           *access_token_, /*expiration_time_param=*/base::Time::Now() +
@@ -79,7 +79,7 @@ class FakeTrustedVaultAccessTokenFetcher
   }
 
  private:
-  const base::Optional<std::string> access_token_;
+  const absl::optional<std::string> access_token_;
 };
 
 // TODO(crbug.com/1113598): revisit this tests suite and determine what actually
@@ -103,7 +103,7 @@ class TrustedVaultConnectionImplTest : public testing::Test {
   // Allows overloading of FakeTrustedVaultAccessTokenFetcher behavior, doesn't
   // overwrite connection().
   std::unique_ptr<TrustedVaultConnectionImpl> CreateConnectionWithAccessToken(
-      base::Optional<std::string> access_token) {
+      absl::optional<std::string> access_token) {
     return std::make_unique<TrustedVaultConnectionImpl>(
         kTestURL,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -223,7 +223,7 @@ TEST_F(TrustedVaultConnectionImplTest,
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(),
-          /*last_trusted_vault_key_and_version=*/base::nullopt,
+          /*last_trusted_vault_key_and_version=*/absl::nullopt,
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
@@ -370,7 +370,7 @@ TEST_F(
     ShouldHandleAccessTokenFetchingFailureWhenRegisteringAuthenticationFactor) {
   std::unique_ptr<TrustedVaultConnectionImpl> connection =
       CreateConnectionWithAccessToken(
-          /*access_token=*/base::nullopt);
+          /*access_token=*/absl::nullopt);
 
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
@@ -463,7 +463,7 @@ TEST_F(TrustedVaultConnectionImplTest,
        ShouldHandleAccessTokenFetchingFailureWhenDownloadingKeys) {
   std::unique_ptr<TrustedVaultConnectionImpl> connection =
       CreateConnectionWithAccessToken(
-          /*access_token=*/base::nullopt);
+          /*access_token=*/absl::nullopt);
 
   base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 

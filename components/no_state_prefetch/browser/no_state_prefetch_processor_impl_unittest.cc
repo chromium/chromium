@@ -20,7 +20,7 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
   MockNoStatePrefetchLinkManager()
       : NoStatePrefetchLinkManager(/*manager=*/nullptr) {}
 
-  base::Optional<int> OnStartLinkTrigger(
+  absl::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,

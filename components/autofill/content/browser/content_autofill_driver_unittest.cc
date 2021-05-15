@@ -245,25 +245,25 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // Records data received from FillForm() call.
   int32_t fill_form_id_;
-  base::Optional<FormData> fill_form_form_;
+  absl::optional<FormData> fill_form_form_;
   // Records data received from PreviewForm() call.
   int32_t preview_form_id_;
-  base::Optional<FormData> preview_form_form_;
+  absl::optional<FormData> preview_form_form_;
   // Records data received from FieldTypePredictionsAvailable() call.
-  base::Optional<std::vector<FormDataPredictions>> predictions_;
+  absl::optional<std::vector<FormDataPredictions>> predictions_;
   // Records whether ClearSection() got called.
   bool called_clear_section_;
   // Records whether ClearPreviewedForm() got called.
   bool called_clear_previewed_form_;
   // Records the ID received from FillFieldWithValue(), PreviewFieldWithValue(),
   // SetSuggestionAvailability(), or AcceptDataListSuggestion().
-  base::Optional<FieldRendererId> value_renderer_id_;
+  absl::optional<FieldRendererId> value_renderer_id_;
   // Records string received from FillFieldWithValue() call.
-  base::Optional<std::u16string> value_fill_field_;
+  absl::optional<std::u16string> value_fill_field_;
   // Records string received from PreviewFieldWithValue() call.
-  base::Optional<std::u16string> value_preview_field_;
+  absl::optional<std::u16string> value_preview_field_;
   // Records string received from AcceptDataListSuggestion() call.
-  base::Optional<std::u16string> value_accept_data_;
+  absl::optional<std::u16string> value_accept_data_;
   // Records bool received from SetSuggestionAvailability() call.
   bool suggestions_available_;
 };

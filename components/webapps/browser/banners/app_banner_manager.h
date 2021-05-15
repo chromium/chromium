@@ -324,7 +324,7 @@ class AppBannerManager : public content::WebContentsObserver,
                          base::TimeTicks activation_time) override;
   void DidUpdateWebManifestURL(
       content::RenderFrameHost* target_frame,
-      const base::Optional<GURL>& manifest_url) override;
+      const absl::optional<GURL>& manifest_url) override;
   void MediaStartedPlaying(const MediaPlayerInfo& media_info,
                            const content::MediaPlayerId& id) override;
   void MediaStoppedPlaying(

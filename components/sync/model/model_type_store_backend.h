@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/sync/model/model_type_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace leveldb {
@@ -45,7 +45,7 @@ class ModelTypeStoreBackend
   // It can be called from a sequence that is different to the constructing one,
   // but from this point on the backend is bound to the current sequence, and
   // must be used on it. May be destructed on any sequence.
-  base::Optional<ModelError> Init(const base::FilePath& path);
+  absl::optional<ModelError> Init(const base::FilePath& path);
 
   // Can be called from any sequence.
   bool IsInitialized() const;
@@ -55,7 +55,7 @@ class ModelTypeStoreBackend
   // appended to record_list. If record is not found its id is appended to
   // |missing_id_list|. It is not an error that records for ids are not found so
   // function will still return success in this case.
-  base::Optional<ModelError> ReadRecordsWithPrefix(
+  absl::optional<ModelError> ReadRecordsWithPrefix(
       const std::string& prefix,
       const ModelTypeStore::IdList& id_list,
       ModelTypeStore::RecordList* record_list,
@@ -63,21 +63,21 @@ class ModelTypeStoreBackend
 
   // Reads all records with keys starting with |prefix|. Prefix is removed from
   // key before it is added to |record_list|.
-  base::Optional<ModelError> ReadAllRecordsWithPrefix(
+  absl::optional<ModelError> ReadAllRecordsWithPrefix(
       const std::string& prefix,
       ModelTypeStore::RecordList* record_list);
 
   // Writes modifications accumulated in |write_batch| to database. If |outcome|
   // is not null, it will contain the leveldb::Status of this operation.
-  base::Optional<ModelError> WriteModifications(
+  absl::optional<ModelError> WriteModifications(
       std::unique_ptr<leveldb::WriteBatch> write_batch,
       leveldb::Status* outcome = nullptr);
 
-  base::Optional<ModelError> DeleteDataAndMetadataForPrefix(
+  absl::optional<ModelError> DeleteDataAndMetadataForPrefix(
       const std::string& prefix);
 
   // Migrate the db schema from |current_version| to |desired_version|.
-  base::Optional<ModelError> MigrateForTest(int64_t current_version,
+  absl::optional<ModelError> MigrateForTest(int64_t current_version,
                                             int64_t desired_version);
 
   // Attempts to read and return the database's version.
@@ -141,7 +141,7 @@ class ModelTypeStoreBackend
 
   // Migrate the db schema from |current_version| to |desired_version|,
   // returning nullopt on success.
-  base::Optional<ModelError> Migrate(int64_t current_version,
+  absl::optional<ModelError> Migrate(int64_t current_version,
                                      int64_t desired_version);
 
   // Migrates from no version record at all (version 0) to version 1 of

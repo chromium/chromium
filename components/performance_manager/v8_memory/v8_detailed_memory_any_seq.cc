@@ -29,8 +29,8 @@ namespace v8_memory {
 V8DetailedMemoryRequestAnySeq::V8DetailedMemoryRequestAnySeq(
     const base::TimeDelta& min_time_between_requests,
     MeasurementMode mode,
-    base::Optional<RenderProcessHostId> process_to_measure) {
-  base::Optional<base::WeakPtr<ProcessNode>> process_node;
+    absl::optional<RenderProcessHostId> process_to_measure) {
+  absl::optional<base::WeakPtr<ProcessNode>> process_node;
   if (process_to_measure) {
     // GetProcessNodeForRenderProcessHostId must be called from the UI thread.
     auto ui_task_runner = content::GetUIThreadTaskRunner({});
@@ -95,7 +95,7 @@ void V8DetailedMemoryRequestAnySeq::NotifyObserversOnMeasurementAvailable(
 void V8DetailedMemoryRequestAnySeq::InitializeWrappedRequest(
     const base::TimeDelta& min_time_between_requests,
     MeasurementMode mode,
-    base::Optional<base::WeakPtr<ProcessNode>> process_to_measure) {
+    absl::optional<base::WeakPtr<ProcessNode>> process_to_measure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Can't use make_unique since this calls the private any-sequence
   // constructor. After construction the V8DetailedMemoryRequest must only be

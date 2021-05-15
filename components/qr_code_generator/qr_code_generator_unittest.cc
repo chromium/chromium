@@ -16,8 +16,8 @@ TEST(QRCodeGenerator, Generate) {
   constexpr size_t kMaxInputLen = 210;
   uint8_t input[kMaxInputLen];
   QRCodeGenerator qr;
-  base::Optional<int> smallest_size;
-  base::Optional<int> largest_size;
+  absl::optional<int> smallest_size;
+  absl::optional<int> largest_size;
 
   for (const bool use_alphanum : {false, true}) {
     SCOPED_TRACE(use_alphanum);
@@ -27,9 +27,9 @@ TEST(QRCodeGenerator, Generate) {
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      base::Optional<QRCodeGenerator::GeneratedCode> qr_code =
+      absl::optional<QRCodeGenerator::GeneratedCode> qr_code =
           qr.Generate(base::span<const uint8_t>(input, input_len));
-      ASSERT_NE(qr_code, base::nullopt);
+      ASSERT_NE(qr_code, absl::nullopt);
       auto& qr_data = qr_code->data;
 
       if (!smallest_size || qr_code->qr_size < *smallest_size) {

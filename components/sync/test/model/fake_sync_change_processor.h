@@ -19,7 +19,7 @@ class FakeSyncChangeProcessor : public SyncChangeProcessor {
   //
   // ProcessSyncChanges will accumulate changes in changes() until they are
   // cleared.
-  base::Optional<ModelError> ProcessSyncChanges(
+  absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) override;
 

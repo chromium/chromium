@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct wl_display;
 
@@ -42,8 +42,8 @@ class SerialTracker {
 
   // Get the serial number of the last {pointer,touch} pressed event, or nullopt
   // if the press has since been released.
-  base::Optional<uint32_t> GetPointerDownSerial();
-  base::Optional<uint32_t> GetTouchDownSerial();
+  absl::optional<uint32_t> GetPointerDownSerial();
+  absl::optional<uint32_t> GetTouchDownSerial();
 
   // Needed because wl_touch::cancel doesn't send a serial number, so we can't
   // test for it in GetNextSerial.
@@ -59,7 +59,7 @@ class SerialTracker {
 
   // Get the EventType for a serial number, or nullopt if the serial number was
   // never sent or is too old.
-  base::Optional<EventType> GetEventType(uint32_t serial) const;
+  absl::optional<EventType> GetEventType(uint32_t serial) const;
 
  private:
   struct wl_display* display_;
@@ -74,9 +74,9 @@ class SerialTracker {
   uint32_t min_event_ = 1;
   uint32_t max_event_ = 1;
 
-  base::Optional<uint32_t> pointer_down_serial_;
-  base::Optional<uint32_t> touch_down_serial_;
-  base::Optional<uint32_t> key_serial_;
+  absl::optional<uint32_t> pointer_down_serial_;
+  absl::optional<uint32_t> touch_down_serial_;
+  absl::optional<uint32_t> key_serial_;
 };
 
 }  // namespace wayland

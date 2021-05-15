@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +23,7 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
@@ -425,7 +425,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     //
     // TODO(b/161755250): the ifdef is only necessary because of the feature
     // flag. This code should work fine on non-cros.
-    base::Optional<gfx::Vector2dF> ordinal_motion = base::nullopt;
+    absl::optional<gfx::Vector2dF> ordinal_motion = absl::nullopt;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
         base::FeatureList::IsEnabled(chromeos::features::kExoOrdinalMotion)) {
@@ -830,7 +830,7 @@ void Pointer::MoveCursorToCenterOfActiveDisplay() {
 bool Pointer::HandleRelativePointerMotion(
     base::TimeTicks time_stamp,
     gfx::PointF location_in_root,
-    const base::Optional<gfx::Vector2dF>& ordinal_motion) {
+    const absl::optional<gfx::Vector2dF>& ordinal_motion) {
   if (!relative_pointer_delegate_)
     return false;
 

@@ -16,11 +16,11 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_math.h"
-#include "base/optional.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/sampling_malloc_shims.h"
@@ -134,11 +134,11 @@ size_t AllocationSamplingFrequency(const base::Feature& feature) {
 }  // namespace
 
 // Exported for testing.
-GWP_ASAN_EXPORT base::Optional<AllocatorSettings> GetAllocatorSettings(
+GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
     bool boost_sampling) {
   if (!base::FeatureList::IsEnabled(feature))
-    return base::nullopt;
+    return absl::nullopt;
 
   static_assert(AllocatorState::kMaxSlots <= std::numeric_limits<int>::max(),
                 "kMaxSlots out of range");
@@ -152,7 +152,7 @@ GWP_ASAN_EXPORT base::Optional<AllocatorSettings> GetAllocatorSettings(
                                                      kDefaultTotalPages);
   if (total_pages < 1 || total_pages > kMaxSlots) {
     DLOG(ERROR) << "GWP-ASan TotalPages is out-of-range: " << total_pages;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int max_metadata = GetFieldTrialParamByFeatureAsInt(feature, "MaxMetadata",
@@ -160,7 +160,7 @@ GWP_ASAN_EXPORT base::Optional<AllocatorSettings> GetAllocatorSettings(
   if (max_metadata < 1 || max_metadata > std::min(total_pages, kMaxMetadata)) {
     DLOG(ERROR) << "GWP-ASan MaxMetadata is out-of-range: " << max_metadata
                 << " with TotalPages = " << total_pages;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int max_allocations = GetFieldTrialParamByFeatureAsInt(
@@ -168,15 +168,15 @@ GWP_ASAN_EXPORT base::Optional<AllocatorSettings> GetAllocatorSettings(
   if (max_allocations < 1 || max_allocations > max_metadata) {
     DLOG(ERROR) << "GWP-ASan MaxAllocations is out-of-range: "
                 << max_allocations << " with MaxMetadata = " << max_metadata;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   size_t alloc_sampling_freq = AllocationSamplingFrequency(feature);
   if (!alloc_sampling_freq)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!SampleProcess(feature, boost_sampling))
-    return base::nullopt;
+    return absl::nullopt;
 
   return AllocatorSettings{max_allocations, max_metadata, total_pages,
                            alloc_sampling_freq};

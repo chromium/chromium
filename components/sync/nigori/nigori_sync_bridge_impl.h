@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -25,6 +24,7 @@
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class NigoriLocalData;
@@ -78,10 +78,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   bool SetKeystoreKeys(const std::vector<std::vector<uint8_t>>& keys) override;
 
   // NigoriSyncBridge implementation.
-  base::Optional<ModelError> MergeSyncData(
-      base::Optional<EntityData> data) override;
-  base::Optional<ModelError> ApplySyncChanges(
-      base::Optional<EntityData> data) override;
+  absl::optional<ModelError> MergeSyncData(
+      absl::optional<EntityData> data) override;
+  absl::optional<ModelError> ApplySyncChanges(
+      absl::optional<EntityData> data) override;
   std::unique_ptr<EntityData> GetData() override;
   void ApplyDisableSyncChanges() override;
 
@@ -94,10 +94,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
       const CryptographerImpl& cryptographer);
 
  private:
-  base::Optional<ModelError> UpdateLocalState(
+  absl::optional<ModelError> UpdateLocalState(
       const sync_pb::NigoriSpecifics& specifics);
 
-  base::Optional<sync_pb::NigoriKey> TryDecryptPendingKeystoreDecryptorToken(
+  absl::optional<sync_pb::NigoriKey> TryDecryptPendingKeystoreDecryptorToken(
       const sync_pb::EncryptedData& keystore_decryptor_token);
 
   // Builds NigoriKeyBag, which contains keys acceptable for decryption of
@@ -107,7 +107,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // it contains deserialized |explicit_passphrase_key_| and current default
   // encryption key.
   NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag(
-      const base::Optional<sync_pb::NigoriKey>& keystore_decryptor_key) const;
+      const absl::optional<sync_pb::NigoriKey>& keystore_decryptor_key) const;
 
   // Uses |key_bag| to try to decrypt pending keys as represented in
   // |state_.pending_keys| (which must be set).
@@ -118,10 +118,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   //
   // If |key_bag| is not capable of decrypting pending keys,
   // |state_.pending_keys| stays set. Such outcome is not itself considered
-  // and error and returns base::nullopt.
+  // and error and returns absl::nullopt.
   //
   // Errors may be returned, in rare cases, for fatal protocol violations.
-  base::Optional<ModelError> TryDecryptPendingKeysWith(
+  absl::optional<ModelError> TryDecryptPendingKeysWith(
       const NigoriKeyBag& key_bag);
 
   base::Time GetExplicitPassphraseTime() const;

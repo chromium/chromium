@@ -43,7 +43,7 @@ const ContentfulPaintTimingInfo& MergeTimingsBySizeAndTime(
 
 void MergeForSubframesWithAdjustedTime(
     ContentfulPaintTimingInfo* inout_timing,
-    const base::Optional<base::TimeDelta>& candidate_new_time,
+    const absl::optional<base::TimeDelta>& candidate_new_time,
     const uint64_t& candidate_new_size) {
   DCHECK(inout_timing);
   const ContentfulPaintTimingInfo new_candidate(
@@ -59,19 +59,19 @@ bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
-  timing.Reset(base::nullopt, 0u);
+  timing.Reset(absl::nullopt, 0u);
 }
 
 }  // namespace
 
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(LargestContentType type,
                                                      bool in_main_frame)
-    : time_(base::Optional<base::TimeDelta>()),
+    : time_(absl::optional<base::TimeDelta>()),
       size_(0),
       type_(type),
       in_main_frame_(in_main_frame) {}
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
-    const base::Optional<base::TimeDelta>& time,
+    const absl::optional<base::TimeDelta>& time,
     const uint64_t& size,
     const LargestContentType type,
     bool in_main_frame)
@@ -109,7 +109,7 @@ void LargestContentfulPaintHandler::SetTestMode(bool enabled) {
 }
 
 void ContentfulPaintTimingInfo::Reset(
-    const base::Optional<base::TimeDelta>& time,
+    const absl::optional<base::TimeDelta>& time,
     const uint64_t& size) {
   size_ = size;
   time_ = time;
@@ -129,7 +129,7 @@ const ContentfulPaintTimingInfo& ContentfulPaint::MergeTextAndImageTiming()
 bool LargestContentfulPaintHandler::AssignTimeAndSizeForLargestContentfulPaint(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    base::Optional<base::TimeDelta>* largest_content_paint_time,
+    absl::optional<base::TimeDelta>* largest_content_paint_time,
     uint64_t* largest_content_paint_size,
     ContentfulPaintTimingInfo::LargestContentType* largest_content_type) {
   // Size being 0 means the paint time is not recorded.
@@ -167,7 +167,7 @@ LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
 void LargestContentfulPaintHandler::RecordTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const base::Optional<base::TimeDelta>&
+    const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     content::RenderFrameHost* subframe_rfh) {
   if (!IsSubframe(subframe_rfh)) {
@@ -206,7 +206,7 @@ LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
 void LargestContentfulPaintHandler::RecordSubframeTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const base::Optional<base::TimeDelta>&
+    const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     const base::TimeDelta& navigation_start_offset) {
   UpdateFirstInputOrScrollNotified(first_input_or_scroll_notified_timestamp,
@@ -224,7 +224,7 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const base::Optional<base::TimeDelta>&
+    const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp) {
   UpdateFirstInputOrScrollNotified(
       first_input_or_scroll_notified_timestamp,
@@ -242,7 +242,7 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
 }
 
 void LargestContentfulPaintHandler::UpdateFirstInputOrScrollNotified(
-    const base::Optional<base::TimeDelta>& candidate_new_time,
+    const absl::optional<base::TimeDelta>& candidate_new_time,
     const base::TimeDelta& navigation_start_offset) {
   if (!candidate_new_time.has_value())
     return;
@@ -298,10 +298,10 @@ void LargestContentfulPaintHandler::OnFrameDeleted(int frame_tree_node_id) {
 
 void LargestContentfulPaintHandler::MergeForSubframes(
     ContentfulPaintTimingInfo* inout_timing,
-    const base::Optional<base::TimeDelta>& candidate_new_time,
+    const absl::optional<base::TimeDelta>& candidate_new_time,
     const uint64_t& candidate_new_size,
     base::TimeDelta navigation_start_offset) {
-  base::Optional<base::TimeDelta> new_time = base::nullopt;
+  absl::optional<base::TimeDelta> new_time = absl::nullopt;
   if (candidate_new_time) {
     // If |candidate_new_time| is TimeDelta(), this means that the candidate is
     // an image that has not finished loading. Preserve its meaning by not

@@ -415,7 +415,7 @@ TEST_F(SiteDataImplTest, OnInitCallbackMergePreviousObservations) {
   // Initialize a fake protobuf that indicates that this site updates its title
   // while in background and set a fake last loaded time (this should be
   // overridden once the callback runs).
-  base::Optional<SiteDataProto> test_proto = SiteDataProto();
+  absl::optional<SiteDataProto> test_proto = SiteDataProto();
   SiteDataFeatureProto unused_feature_proto = GetUnusedFeatureProto();
   test_proto->mutable_updates_title_in_background()->CopyFrom(
       GetUsedFeatureProto());
@@ -590,7 +590,7 @@ TEST_F(SiteDataImplTest, OptionalFieldsNotPopulatedWhenClean) {
   EXPECT_EQ(0u, local_site_data->cpu_usage_estimate().num_datums());
   EXPECT_EQ(0u, local_site_data->private_footprint_kb_estimate().num_datums());
 
-  base::Optional<SiteDataProto> test_proto = SiteDataProto();
+  absl::optional<SiteDataProto> test_proto = SiteDataProto();
 
   // Run the callback to indicate that the initialization has completed.
   std::move(read_cb).Run(test_proto);
@@ -672,7 +672,7 @@ TEST_F(SiteDataImplTest, DataLoadedCallbackInvoked) {
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));
 
   // Run the callback to indicate that the initialization has completed.
-  base::Optional<SiteDataProto> test_proto = SiteDataProto();
+  absl::optional<SiteDataProto> test_proto = SiteDataProto();
   std::move(read_cb).Run(test_proto);
 
   EXPECT_TRUE(callback_invoked);

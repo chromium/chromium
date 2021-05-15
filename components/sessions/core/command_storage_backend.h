@@ -14,10 +14,10 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/optional.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class File;
@@ -207,7 +207,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   bool IsEncrypted() const { return !crypto_key_.empty(); }
 
   // Gets data for the last session file.
-  base::Optional<SessionInfo> FindLastSessionFile() const;
+  absl::optional<SessionInfo> FindLastSessionFile() const;
 
   // Attempt to delete all sessions besides the current and last. This is a
   // best effort operation.
@@ -269,9 +269,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   base::Time timestamp_;
 
   // Data for the last session. If unset, fallback to legacy session data.
-  base::Optional<SessionInfo> last_session_info_;
+  absl::optional<SessionInfo> last_session_info_;
 
-  base::Optional<base::FilePath> last_file_with_valid_marker_;
+  absl::optional<base::FilePath> last_file_with_valid_marker_;
 
   bool force_append_commands_to_fail_for_testing_ = false;
 };

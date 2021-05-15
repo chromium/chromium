@@ -278,7 +278,7 @@ class StarterTest : public content::RenderViewHostTestHarness {
   base::MockCallback<base::OnceCallback<void(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script)>>
+      const absl::optional<TriggerScriptProto>& trigger_script)>>
       mock_start_regular_script_callback_;
   std::unique_ptr<base::test::ScopedFeatureList> enable_fake_heuristic_;
 };
@@ -750,7 +750,7 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
   EXPECT_CALL(mock_start_regular_script_callback_,
               Run(GURL(kExampleDeeplink),
                   Pointee(Property(&TriggerContext::GetOnboardingShown, true)),
-                  testing::Ne(base::nullopt)));
+                  testing::Ne(absl::nullopt)));
 
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters), options));
@@ -994,7 +994,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
   EXPECT_CALL(mock_start_regular_script_callback_,
               Run(GURL("https://www.some-website.com/cart"),
                   Pointee(Property(&TriggerContext::GetOnboardingShown, false)),
-                  testing::Ne(base::nullopt)));
+                  testing::Ne(absl::nullopt)));
 
   // Implicit startup by navigating to an autofill-assistant-enabled site.
   content::WebContentsTester::For(web_contents())

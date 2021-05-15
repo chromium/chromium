@@ -418,7 +418,7 @@ void CreditCardAccessManager::Authenticate(bool get_unmask_details_returned) {
         card_selected_without_unmask_details_timestamp_.value());
     AutofillMetrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
         /*did_time_out=*/!get_unmask_details_returned);
-    card_selected_without_unmask_details_timestamp_ = base::nullopt;
+    card_selected_without_unmask_details_timestamp_ = absl::nullopt;
   }
 
   unmask_auth_flow_type_ = GetAuthenticationType(get_unmask_details_returned);
@@ -496,7 +496,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
 
   // Store request options temporarily if given. They will be used for
   // AdditionallyPerformFidoAuth.
-  base::Optional<base::Value> request_options = base::nullopt;
+  absl::optional<base::Value> request_options = absl::nullopt;
   if (unmask_details_.fido_request_options.has_value()) {
     // For opted-in user (CVC then FIDO case), request options are returned in
     // unmask detail response.

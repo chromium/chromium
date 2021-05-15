@@ -10,11 +10,11 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -76,11 +76,11 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer) override;
   void Put(const std::vector<uint8_t>& key,
            const std::vector<uint8_t>& value,
-           const base::Optional<std::vector<uint8_t>>& client_old_value,
+           const absl::optional<std::vector<uint8_t>>& client_old_value,
            const std::string& source,
            PutCallback callback) override;
   void Delete(const std::vector<uint8_t>& key,
-              const base::Optional<std::vector<uint8_t>>& client_old_value,
+              const absl::optional<std::vector<uint8_t>>& client_old_value,
               const std::string& source,
               DeleteCallback callback) override;
   void DeleteAll(
@@ -108,7 +108,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
   enum class NewMapType { FORKED, EMPTY_FROM_DELETE_ALL };
 
   void CreateNewMap(NewMapType map_type,
-                    const base::Optional<std::string>& delete_all_source);
+                    const absl::optional<std::string>& delete_all_source);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry_;
   url::Origin origin_;

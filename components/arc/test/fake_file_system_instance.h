@@ -96,7 +96,7 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
     Seekable seekable;
 
     // Override of |content| length in bytes.
-    base::Optional<int64_t> size_override;
+    absl::optional<int64_t> size_override;
 
     // The thumbnail of a file, which can be read by OpenThumbnail().
     std::string thumbnail_content;

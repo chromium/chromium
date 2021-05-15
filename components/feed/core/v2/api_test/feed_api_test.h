@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
@@ -35,6 +34,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace test {
@@ -96,9 +96,9 @@ class TestSurfaceBase : public FeedStreamSurface {
 
   // The initial state of the stream, if it was received. This is nullopt if
   // only the loading spinner was seen.
-  base::Optional<feedui::StreamUpdate> initial_state;
+  absl::optional<feedui::StreamUpdate> initial_state;
   // The last stream update received.
-  base::Optional<feedui::StreamUpdate> update;
+  absl::optional<feedui::StreamUpdate> update;
 
  private:
   std::string CurrentState();
@@ -204,8 +204,8 @@ class TestFeedNetwork : public FeedNetwork {
   void InjectEmptyActionRequestResult();
 
   template <typename API>
-  base::Optional<typename API::Request> GetApiRequestSent() {
-    base::Optional<typename API::Request> result;
+  absl::optional<typename API::Request> GetApiRequestSent() {
+    absl::optional<typename API::Request> result;
     NetworkRequestType request_type = API::kRequestType;
     auto iter = api_requests_sent_.find(request_type);
     if (iter != api_requests_sent_.end()) {
@@ -213,7 +213,7 @@ class TestFeedNetwork : public FeedNetwork {
       if (!iter->second.empty()) {
         if (!message.ParseFromString(iter->second)) {
           LOG(ERROR) << "Failed to parse API request.";
-          return base::nullopt;
+          return absl::nullopt;
         }
       }
       result = message;
@@ -221,7 +221,7 @@ class TestFeedNetwork : public FeedNetwork {
     return result;
   }
 
-  base::Optional<feedwire::UploadActionsRequest> GetActionRequestSent();
+  absl::optional<feedwire::UploadActionsRequest> GetActionRequestSent();
 
   template <typename API>
   int GetApiRequestCount() const {
@@ -251,7 +251,7 @@ class TestFeedNetwork : public FeedNetwork {
   void SendResponsesOnCommand(bool on);
   void SendResponse();
 
-  base::Optional<feedwire::Request> query_request_sent;
+  absl::optional<feedwire::Request> query_request_sent;
   // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
   std::string last_gaia;
@@ -268,7 +268,7 @@ class TestFeedNetwork : public FeedNetwork {
       injected_api_responses_;
   std::map<NetworkRequestType, std::string> api_requests_sent_;
   std::map<NetworkRequestType, int> api_request_count_;
-  base::Optional<feedwire::Response> injected_response_;
+  absl::optional<feedwire::Response> injected_response_;
 };
 
 // Forwards to |FeedStream::WireResponseTranslator| unless a response is
@@ -283,7 +283,7 @@ class TestWireResponseTranslator : public WireResponseTranslator {
       bool was_signed_in_request,
       base::Time current_time) const override;
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
-                      base::Optional<std::string> session_id = base::nullopt);
+                      absl::optional<std::string> session_id = absl::nullopt);
   void InjectResponse(RefreshResponseData response_data);
   bool InjectedResponseConsumed() const;
 
@@ -331,14 +331,14 @@ class TestMetricsReporter : public MetricsReporter {
 
   // Test access.
 
-  base::Optional<int> slice_viewed_index;
-  base::Optional<LoadStreamStatus> load_stream_status;
-  base::Optional<LoadStreamStatus> load_stream_from_store_status;
-  base::Optional<SurfaceId> load_more_surface_id;
-  base::Optional<LoadStreamStatus> load_more_status;
-  base::Optional<LoadStreamStatus> background_refresh_status;
-  base::Optional<base::TimeDelta> time_since_last_clear;
-  base::Optional<UploadActionsStatus> upload_action_status;
+  absl::optional<int> slice_viewed_index;
+  absl::optional<LoadStreamStatus> load_stream_status;
+  absl::optional<LoadStreamStatus> load_stream_from_store_status;
+  absl::optional<SurfaceId> load_more_surface_id;
+  absl::optional<LoadStreamStatus> load_more_status;
+  absl::optional<LoadStreamStatus> background_refresh_status;
+  absl::optional<base::TimeDelta> time_since_last_clear;
+  absl::optional<UploadActionsStatus> upload_action_status;
 };
 
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {

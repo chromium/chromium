@@ -11,11 +11,11 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/feed/core/v2/public/persistent_key_value_store.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/task/task_queue.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feedkvstore {
 class Entry;

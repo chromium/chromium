@@ -421,7 +421,7 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
       return false;
     }
 
-    base::Optional<base::Value> value = description.ExtractKey(kValue);
+    absl::optional<base::Value> value = description.ExtractKey(kValue);
     if (!value.has_value()) {
       LOG(ERROR)
           << "The JSON blob dictionary value doesn't contain the required "

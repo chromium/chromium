@@ -504,9 +504,9 @@ TEST_F(FeedStoreTest, ReadNonexistentContentAndSharedStates) {
                       {MakeSharedStateContentId(0)}, cr.Bind());
   fake_db_->LoadCallback(true);
 
-  ASSERT_NE(cr.GetResult<0>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
   EXPECT_EQ(cr.GetResult<0>()->size(), 0ul);
-  ASSERT_NE(cr.GetResult<1>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<1>(), absl::nullopt);
   EXPECT_EQ(cr.GetResult<1>()->size(), 0ul);
 }
 
@@ -538,9 +538,9 @@ TEST_F(FeedStoreTest, ReadContentAndSharedStates) {
   store_->ReadContent(kForYouStream, content_ids, shared_state_ids, cr.Bind());
   fake_db_->LoadCallback(true);
 
-  ASSERT_NE(cr.GetResult<0>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
   std::vector<feedstore::Content> content = *cr.GetResult<0>();
-  ASSERT_NE(cr.GetResult<1>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<1>(), absl::nullopt);
   std::vector<feedstore::StreamSharedState> shared_states = *cr.GetResult<1>();
 
   ASSERT_EQ(content.size(), 2ul);
@@ -558,9 +558,9 @@ TEST_F(FeedStoreTest, ReadContentAndSharedStates) {
   store_->ReadContent(kForYouStream, content_ids, shared_state_ids, cr.Bind());
   fake_db_->LoadCallback(false);
 
-  ASSERT_NE(cr.GetResult<0>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
   EXPECT_EQ(cr.GetResult<0>()->size(), 0ul);
-  ASSERT_NE(cr.GetResult<1>(), base::nullopt);
+  ASSERT_NE(cr.GetResult<1>(), absl::nullopt);
   EXPECT_EQ(cr.GetResult<1>()->size(), 0ul);
 }
 
@@ -573,7 +573,7 @@ TEST_F(FeedStoreTest, ReadActions) {
   CallbackReceiver<std::vector<feedstore::StoredAction>> receiver;
   store_->ReadActions(receiver.Bind());
   fake_db_->LoadCallback(true);
-  ASSERT_NE(base::nullopt, receiver.GetResult());
+  ASSERT_NE(absl::nullopt, receiver.GetResult());
   std::vector<feedstore::StoredAction> result =
       std::move(*receiver.GetResult());
 
@@ -584,7 +584,7 @@ TEST_F(FeedStoreTest, ReadActions) {
   receiver.Clear();
   store_->ReadActions(receiver.Bind());
   fake_db_->LoadCallback(false);
-  ASSERT_NE(base::nullopt, receiver.GetResult());
+  ASSERT_NE(absl::nullopt, receiver.GetResult());
   result = std::move(*receiver.GetResult());
   EXPECT_EQ(0ul, result.size());
 }
@@ -605,7 +605,7 @@ TEST_F(FeedStoreTest, WriteActions) {
   receiver.GetResult().reset();
   store_->WriteActions({action}, receiver.Bind());
   fake_db_->UpdateCallback(false);
-  EXPECT_NE(receiver.GetResult(), base::nullopt);
+  EXPECT_NE(receiver.GetResult(), absl::nullopt);
   EXPECT_EQ(receiver.GetResult().value(), false);
 }
 
@@ -626,7 +626,7 @@ TEST_F(FeedStoreTest, RemoveActions) {
   receiver.GetResult().reset();
   store_->RemoveActions(ids, receiver.Bind());
   fake_db_->UpdateCallback(false);
-  EXPECT_NE(receiver.GetResult(), base::nullopt);
+  EXPECT_NE(receiver.GetResult(), absl::nullopt);
   EXPECT_EQ(receiver.GetResult().value(), false);
 }
 

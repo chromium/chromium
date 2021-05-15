@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -189,7 +189,7 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
                 (override));
     MOCK_METHOD(void,
                 OnIntentFiltersUpdated,
-                (const base::Optional<std::string>& package_name),
+                (const absl::optional<std::string>& package_name),
                 (override));
     MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
   };
@@ -220,7 +220,7 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
 
   {
     // Observer should be called when an intent filter is updated.
-    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(base::nullopt)));
+    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(absl::nullopt)));
     instance_->OnIntentFiltersUpdated(/*filters=*/std::vector<IntentFilter>());
     testing::Mock::VerifyAndClearExpectations(&observer);
   }

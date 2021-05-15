@@ -92,8 +92,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                  scoped_refptr<base::SingleThreadTaskRunner> io_runner,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  const gpu::GpuPreferences& gpu_preferences,
-                 const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-                 const base::Optional<gpu::GpuFeatureInfo>&
+                 const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+                 const absl::optional<gpu::GpuFeatureInfo>&
                      gpu_feature_info_for_hardware_gpu,
                  const gfx::GpuExtraInfo& gpu_extra_info,
                  gpu::VulkanImplementation* vulkan_implementation,
@@ -375,8 +375,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 
   // What we would have gotten if we haven't fallen back to SwiftShader or
   // pure software (in the viz case).
-  base::Optional<gpu::GPUInfo> gpu_info_for_hardware_gpu_;
-  base::Optional<gpu::GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
+  absl::optional<gpu::GPUInfo> gpu_info_for_hardware_gpu_;
+  absl::optional<gpu::GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
   // Information about the GPU process populated on creation.
   gfx::GpuExtraInfo gpu_extra_info_;

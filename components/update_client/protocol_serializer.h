@@ -47,7 +47,7 @@ protocol_request::Request MakeProtocolRequest(
 protocol_request::App MakeProtocolApp(
     const std::string& app_id,
     const base::Version& version,
-    base::Optional<std::vector<base::Value>> events);
+    absl::optional<std::vector<base::Value>> events);
 
 protocol_request::App MakeProtocolApp(
     const std::string& app_id,
@@ -62,8 +62,8 @@ protocol_request::App MakeProtocolApp(
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
-    base::Optional<protocol_request::UpdateCheck> update_check,
-    base::Optional<protocol_request::Ping> ping);
+    absl::optional<protocol_request::UpdateCheck> update_check,
+    absl::optional<protocol_request::Ping> ping);
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(bool is_update_disabled);
 

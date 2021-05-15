@@ -32,12 +32,12 @@ class OfflineItemBridge {
   // Creates a Java UpdateDelta from |update_delta|.
   static base::android::ScopedJavaLocalRef<jobject> CreateUpdateDelta(
       JNIEnv* env,
-      const base::Optional<UpdateDelta>& update_delta);
+      const absl::optional<UpdateDelta>& update_delta);
 
   // Creates a Java OfflineItemSchedule.
   static base::android::ScopedJavaLocalRef<jobject> CreateOfflineItemSchedule(
       JNIEnv* env,
-      const base::Optional<OfflineItemSchedule>& schedule);
+      const absl::optional<OfflineItemSchedule>& schedule);
 
  private:
   OfflineItemBridge();

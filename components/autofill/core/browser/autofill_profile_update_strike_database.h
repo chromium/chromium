@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/strike_database_base.h"
 #include "components/autofill/core/browser/strike_database_integrator_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -21,12 +22,12 @@ class AutofillProfileUpdateStrikeDatabase
       StrikeDatabaseBase* strike_database);
   ~AutofillProfileUpdateStrikeDatabase() override;
 
-  base::Optional<size_t> GetMaximumEntries() const override;
-  base::Optional<size_t> GetMaximumEntriesAfterCleanup() const override;
+  absl::optional<size_t> GetMaximumEntries() const override;
+  absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override;
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;
-  base::Optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
 };
 

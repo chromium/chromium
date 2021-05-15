@@ -58,7 +58,7 @@ void UnsentLogStore::LogInfo::Init(
     const std::string& log_data,
     const std::string& log_timestamp,
     const std::string& signing_key,
-    base::Optional<base::HistogramBase::Count> samples_count) {
+    absl::optional<base::HistogramBase::Count> samples_count) {
   DCHECK(!log_data.empty());
 
   if (!compression::GzipCompress(log_data, &compressed_log_data)) {
@@ -183,7 +183,7 @@ void UnsentLogStore::LoadPersistedUnsentLogs() {
 
 void UnsentLogStore::StoreLog(
     const std::string& log_data,
-    base::Optional<base::HistogramBase::Count> samples_count) {
+    absl::optional<base::HistogramBase::Count> samples_count) {
   LogInfo info;
   info.Init(metrics_.get(), log_data,
             base::NumberToString(base::Time::Now().ToTimeT()), signing_key_,
@@ -200,7 +200,7 @@ const std::string& UnsentLogStore::GetLogAtIndex(size_t index) {
 std::string UnsentLogStore::ReplaceLogAtIndex(
     size_t index,
     const std::string& new_log_data,
-    base::Optional<base::HistogramBase::Count> samples_count) {
+    absl::optional<base::HistogramBase::Count> samples_count) {
   DCHECK_GE(index, 0U);
   DCHECK_LT(index, list_.size());
 

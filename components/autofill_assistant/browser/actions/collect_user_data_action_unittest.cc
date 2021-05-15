@@ -2333,7 +2333,7 @@ TEST_F(CollectUserDataActionTest, ClearUserDataIfRequested) {
             ExpectSelectedProfileMatches("billing", &address_a);
             ExpectSelectedProfileMatches("contact", &address_a);
             ExpectSelectedProfileMatches("shipping", &address_a);
-            EXPECT_EQ(user_data_.selected_login_, base::nullopt);
+            EXPECT_EQ(user_data_.selected_login_, absl::nullopt);
 
             // Do not call the callback. We're only interested in the state.
           }));

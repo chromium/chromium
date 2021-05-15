@@ -14,10 +14,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -153,7 +153,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   size_t max_buffers_ = 3U;
   size_t allocated_count_;
   // The |format_| is optional to prevent use of uninitialized values.
-  base::Optional<gfx::BufferFormat> format_;
+  absl::optional<gfx::BufferFormat> format_;
   // This surface is currently bound. This may be nullptr if no surface has
   // been bound, or if allocation failed at bind.
   std::unique_ptr<AllocatedSurface> current_surface_;

@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -31,9 +31,9 @@ bool NeverAvailabilityModel::IsReady() const {
   return ready_;
 }
 
-base::Optional<uint32_t> NeverAvailabilityModel::GetAvailability(
+absl::optional<uint32_t> NeverAvailabilityModel::GetAvailability(
     const base::Feature& feature) const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void NeverAvailabilityModel::ForwardedOnInitializedCallback(

@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "components/enterprise/common/strings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -14,6 +13,7 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -60,8 +60,8 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value report) {
   if (!report.is_dict())
     return false;
 
-  base::Optional<base::Value> context_result = report.ExtractKey(kContextKey);
-  base::Optional<base::Value> event_list = report.ExtractKey(kEventListKey);
+  absl::optional<base::Value> context_result = report.ExtractKey(kContextKey);
+  absl::optional<base::Value> event_list = report.ExtractKey(kEventListKey);
   if (!context_result || !event_list || !event_list->is_list())
     return false;
 
@@ -126,7 +126,7 @@ std::string RealtimeReportingJobConfiguration::GetUmaString() const {
 std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
     const std::string& response_body) const {
   std::set<std::string> failedIds;
-  base::Optional<base::Value> response = base::JSONReader::Read(response_body);
+  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
   base::Value response_value = response ? std::move(*response) : base::Value();
   base::Value* failedUploads = response_value.FindListKey(kFailedUploadsKey);
   if (failedUploads) {

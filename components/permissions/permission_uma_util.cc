@@ -183,7 +183,7 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
 }
 
 void RecordPermissionUsageUkm(ContentSettingsType permission_type,
-                              base::Optional<ukm::SourceId> source_id) {
+                              absl::optional<ukm::SourceId> source_id) {
   if (!source_id.has_value())
     return;
 
@@ -205,12 +205,12 @@ void RecordPermissionActionUkm(
     PermissionSourceUI source_ui,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    base::Optional<PermissionPromptDispositionReason> ui_reason,
-    base::Optional<bool> has_three_consecutive_denies,
-    base::Optional<bool> has_previously_revoked_permission,
-    base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+    absl::optional<PermissionPromptDispositionReason> ui_reason,
+    absl::optional<bool> has_three_consecutive_denies,
+    absl::optional<bool> has_previously_revoked_permission,
+    absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
         predicted_grant_likelihood,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
     return;
@@ -292,7 +292,7 @@ std::string GetPromptDispositionString(
 // CrowdDeny versions published before 2020 will be reported as 1.
 // Returns 0 if no version available.
 // Returns 1 if a version has invalid format.
-int ConvertCrowdDenyVersionToInt(const base::Optional<base::Version>& version) {
+int ConvertCrowdDenyVersionToInt(const absl::optional<base::Version>& version) {
   if (!version.has_value() || !version.value().IsValid())
     return 0;
 
@@ -381,9 +381,9 @@ void PermissionUmaUtil::PermissionRevoked(
                          PermissionRequestGestureType::UNKNOWN,
                          /*time_to_decision=*/base::TimeDelta(),
                          PermissionPromptDisposition::NOT_APPLICABLE,
-                         /*ui_reason=*/base::nullopt, revoked_origin,
+                         /*ui_reason=*/absl::nullopt, revoked_origin,
                          /*web_contents=*/nullptr, browser_context,
-                         /*predicted_grant_likelihood=*/base::nullopt);
+                         /*predicted_grant_likelihood=*/absl::nullopt);
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -448,8 +448,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionAction permission_action,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    base::Optional<PermissionPromptDispositionReason> ui_reason,
-    base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
+    absl::optional<PermissionPromptDispositionReason> ui_reason,
+    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
   switch (permission_action) {
     case PermissionAction::GRANTED:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
@@ -552,7 +552,7 @@ void PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(
 }
 
 void PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
-    const base::Optional<base::Version>& version) {
+    const absl::optional<base::Version>& version) {
   base::UmaHistogramSparse(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime",
       ConvertCrowdDenyVersionToInt(version));
@@ -665,11 +665,11 @@ void PermissionUmaUtil::RecordPermissionAction(
     PermissionRequestGestureType gesture_type,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    base::Optional<PermissionPromptDispositionReason> ui_reason,
+    absl::optional<PermissionPromptDispositionReason> ui_reason,
     const GURL& requesting_origin,
     const content::WebContents* web_contents,
     content::BrowserContext* browser_context,
-    base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
+    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -688,7 +688,7 @@ void PermissionUmaUtil::RecordPermissionAction(
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(
                         browser_context)
-              : base::nullopt,
+              : absl::nullopt,
           PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
               browser_context, requesting_origin, permission),
           predicted_grant_likelihood));

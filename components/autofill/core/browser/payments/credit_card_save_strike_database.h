@@ -22,7 +22,7 @@ class CreditCardSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;
-  base::Optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
 };
 

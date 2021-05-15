@@ -11,8 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -80,18 +80,18 @@ class ArcFeaturesParser {
  public:
   // Get ARC system available features.
   static void GetArcFeatures(
-      base::OnceCallback<void(base::Optional<ArcFeatures>)> callback);
+      base::OnceCallback<void(absl::optional<ArcFeatures>)> callback);
 
   // Given an input feature JSON, return ARC features. This method is for
   // testing only.
-  static base::Optional<ArcFeatures> ParseFeaturesJsonForTesting(
+  static absl::optional<ArcFeatures> ParseFeaturesJsonForTesting(
       base::StringPiece input_json);
 
   // Overrides the ArcFeatures returned by GetArcFeatures, for testing only.
   // Does not take ownership of |getter|, it must be alive when GetArcFeatures
   // is called.
   static void SetArcFeaturesGetterForTesting(
-      base::RepeatingCallback<base::Optional<ArcFeatures>()>* getter);
+      base::RepeatingCallback<absl::optional<ArcFeatures>()>* getter);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ArcFeaturesParser);

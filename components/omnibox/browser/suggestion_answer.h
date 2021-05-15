@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #ifdef OS_ANDROID
@@ -210,8 +210,8 @@ class SuggestionAnswer {
    private:
     TextFields text_fields_;
     int num_text_lines_;
-    base::Optional<TextField> additional_text_;
-    base::Optional<TextField> status_text_;
+    absl::optional<TextField> additional_text_;
+    absl::optional<TextField> status_text_;
     GURL image_url_;
 
     FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
@@ -258,7 +258,7 @@ class SuggestionAnswer {
 
   // Logs which answer type was used (if any) at the time a user used the
   // omnibox to go somewhere.
-  static void LogAnswerUsed(const base::Optional<SuggestionAnswer>& answer);
+  static void LogAnswerUsed(const absl::optional<SuggestionAnswer>& answer);
 
 #ifdef OS_ANDROID
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;

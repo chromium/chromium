@@ -8,16 +8,16 @@
 
 namespace schema_org {
 
-base::Optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
+absl::optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
   if (str.empty() || str[0] != 'P')
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta duration;
 
   std::string time = "";
   int time_index = str.find("T");
   if (time_index == -1)
-    return base::nullopt;
+    return absl::nullopt;
 
   time = str.substr(time_index + 1);
   std::stringstream t(time);
@@ -37,7 +37,7 @@ base::Optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
         duration = duration + base::TimeDelta::FromSeconds(amount);
         break;
       default:
-        return base::nullopt;
+        return absl::nullopt;
     }
   }
 

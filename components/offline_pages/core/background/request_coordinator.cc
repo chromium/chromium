@@ -206,9 +206,9 @@ constexpr bool IsCanceledOrInternalFailure(Offliner::RequestStatus status) {
 }
 
 // Returns the |BackgroundSavePageResult| appropriate for a single attempt
-// status. Returns |base::nullopt| for indeterminate status values that can be
+// status. Returns |absl::nullopt| for indeterminate status values that can be
 // retried.
-base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
+absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     Offliner::RequestStatus status) {
   switch (status) {
       // Success status values.
@@ -224,7 +224,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_DEFERRED:
     case Offliner::RequestStatus::BACKGROUND_SCHEDULER_CANCELED:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED:
-      return base::nullopt;
+      return absl::nullopt;
 
       // Other failure status values.
     case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
@@ -241,7 +241,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_FAILED_HTTP_ERROR:
     case Offliner::RequestStatus::LOADING_FAILED_NO_NEXT:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT:
-      return base::nullopt;
+      return absl::nullopt;
 
     // Only used by |Offliner| internally.
     case Offliner::RequestStatus::UNKNOWN:
@@ -251,7 +251,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     // Only recorded by |RequestCoordinator| directly.
     case Offliner::RequestStatus::BROWSER_KILLED:
       DCHECK(false) << "Received invalid status: " << static_cast<int>(status);
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -1012,7 +1012,7 @@ void RequestCoordinator::OfflinerDoneCallback(const SavePageRequest& request,
 void RequestCoordinator::UpdateRequestForAttempt(
     const SavePageRequest& request,
     Offliner::RequestStatus status) {
-  base::Optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
+  absl::optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
       SingleAttemptResult(status);
 
   // If the request failed, report the connection type as of the start of the

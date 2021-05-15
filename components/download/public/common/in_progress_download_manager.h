@@ -13,7 +13,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {

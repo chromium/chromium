@@ -9,12 +9,12 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/favicon/core/favicon_types.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -203,7 +203,7 @@ class FaviconDatabase {
   // |url| = http://www.google.com would match
   // |page_url| = https://www.google.com/search. The returned optional will be
   // empty if no such |page_url| exists.
-  base::Optional<GURL> FindFirstPageURLForHost(
+  absl::optional<GURL> FindFirstPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 

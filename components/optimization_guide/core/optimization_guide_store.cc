@@ -816,7 +816,7 @@ void OptimizationGuideStore::OnLoadHint(
   UMA_HISTOGRAM_ENUMERATION("OptimizationGuide.HintCache.HintType.Loaded",
                             store_entry_type);
 
-  base::Optional<base::Time> expiry_time;
+  absl::optional<base::Time> expiry_time;
   if (entry->has_expiry_time_secs()) {
     expiry_time = base::Time::FromDeltaSinceWindowsEpoch(
         base::TimeDelta::FromSeconds(entry->expiry_time_secs()));

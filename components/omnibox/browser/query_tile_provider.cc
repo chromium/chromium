@@ -127,7 +127,7 @@ void QueryTileProvider::OnTopLevelTilesFetched(
 
 void QueryTileProvider::OnSubTilesFetched(
     const AutocompleteInput& input,
-    base::Optional<query_tiles::Tile> tile) {
+    absl::optional<query_tiles::Tile> tile) {
   DCHECK(tile.has_value());
   std::vector<query_tiles::Tile> sub_tiles;
   for (const auto& sub_tile : std::move(tile->sub_tiles))

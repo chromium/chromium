@@ -35,13 +35,13 @@ PaintPreviewFileMixin::~PaintPreviewFileMixin() = default;
 
 void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
-    base::Optional<base::TimeDelta> expiry_horizon,
+    absl::optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<FileManager> file_manager, const DirectoryKey& key,
-             base::Optional<base::TimeDelta> expiry_horizon)
+             absl::optional<base::TimeDelta> expiry_horizon)
               -> std::pair<PaintPreviewFileMixin::ProtoReadStatus,
                            std::unique_ptr<PaintPreviewProto>> {
             if (expiry_horizon.has_value()) {

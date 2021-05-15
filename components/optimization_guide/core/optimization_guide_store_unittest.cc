@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -23,6 +22,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using leveldb_proto::test::FakeDB;
@@ -81,11 +81,11 @@ class OptimizationGuideStoreTest : public testing::Test {
   // Initializes the entries contained within the database on startup.
   void SeedInitialData(
       MetadataSchemaState state,
-      base::Optional<size_t> component_hint_count = base::Optional<size_t>(),
-      base::Optional<base::Time> fetched_hints_update =
-          base::Optional<base::Time>(),
-      base::Optional<base::Time> host_model_features_update =
-          base::Optional<base::Time>()) {
+      absl::optional<size_t> component_hint_count = absl::optional<size_t>(),
+      absl::optional<base::Time> fetched_hints_update =
+          absl::optional<base::Time>(),
+      absl::optional<base::Time> host_model_features_update =
+          absl::optional<base::Time>()) {
     db_store_.clear();
 
     // Add a metadata schema entry if its state isn't kMissing. The version
@@ -171,7 +171,7 @@ class OptimizationGuideStoreTest : public testing::Test {
   void SeedPredictionModelUpdateData(
       StoreUpdateData* update_data,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      base::Optional<base::FilePath> model_file_path = base::nullopt) {
+      absl::optional<base::FilePath> model_file_path = absl::nullopt) {
     std::unique_ptr<optimization_guide::proto::PredictionModel>
         prediction_model = CreatePredictionModel();
     prediction_model->mutable_model_info()->set_optimization_target(

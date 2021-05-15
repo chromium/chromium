@@ -121,7 +121,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         surface_quad->SetNew(
             sqs, gfx::Rect(0, 0, 1, 1), gfx::Rect(0, 0, 1, 1),
             // Surface at index i embeds surface at index i - 1.
-            SurfaceRange(base::nullopt,
+            SurfaceRange(absl::nullopt,
                          SurfaceId(FrameSinkId(1, i),
                                    LocalSurfaceId(i, child_tokens[i - 1]))),
             SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false);
@@ -148,7 +148,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
       surface_quad->SetNew(
           sqs, gfx::Rect(0, 0, 100, 100), gfx::Rect(0, 0, 100, 100),
           SurfaceRange(
-              base::nullopt,
+              absl::nullopt,
               // Root surface embeds surface at index num_surfaces - 1.
               SurfaceId(FrameSinkId(1, num_surfaces),
                         LocalSurfaceId(num_surfaces,

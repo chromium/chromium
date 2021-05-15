@@ -378,8 +378,8 @@ TEST_F(ValueUtilTest, TestGetNthValue) {
   EXPECT_EQ(GetNthValue(value, 1), SimpleValue(std::string("b")));
   EXPECT_EQ(GetNthValue(value, 2), SimpleValue(std::string("c")));
 
-  EXPECT_EQ(GetNthValue(value, -1), base::nullopt);
-  EXPECT_EQ(GetNthValue(value, 3), base::nullopt);
+  EXPECT_EQ(GetNthValue(value, -1), absl::nullopt);
+  EXPECT_EQ(GetNthValue(value, 3), absl::nullopt);
 
   value.set_is_client_side_only(true);
   EXPECT_EQ(GetNthValue(value, 0),

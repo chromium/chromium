@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -47,7 +47,7 @@ class ProtocolUtils {
       const std::string& script_payload,
       const ClientContextProto& client_context,
       const ScriptParameters& script_parameters,
-      const base::Optional<ScriptStoreConfig>& script_store_config);
+      const absl::optional<ScriptStoreConfig>& script_store_config);
 
   // Create request to get next sequence of actions for a script.
   static std::string CreateNextScriptActionsRequest(
@@ -92,7 +92,7 @@ class ProtocolUtils {
       std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
       std::vector<std::string>* additional_allowed_domains,
       int* trigger_condition_check_interval_ms,
-      base::Optional<int>* timeout_ms);
+      absl::optional<int>* timeout_ms);
 
  private:
   // Checks that the |trigger_condition| is well-formed (e.g. does not contain

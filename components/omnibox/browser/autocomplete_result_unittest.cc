@@ -121,7 +121,7 @@ class AutocompleteResultTest : public testing::Test {
     AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
 
     // Suggestion Group ID for this suggestion
-    base::Optional<int> suggestion_group_id;
+    absl::optional<int> suggestion_group_id;
 
     // Inline autocompletion.
     std::string inline_autocompletion;

@@ -388,7 +388,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                              requiresReauth:requiresReauth];
     [suggestions addObject:suggestion];
   }
-  base::Optional<PasswordDropdownState> suggestionState;
+  absl::optional<PasswordDropdownState> suggestionState;
   if (suggestions.count) {
     suggestionState = PasswordDropdownState::kStandard;
   }

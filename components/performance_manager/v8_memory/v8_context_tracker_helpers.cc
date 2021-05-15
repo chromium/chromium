@@ -162,7 +162,7 @@ V8ContextDescriptionStatus ValidateV8ContextDescription(
   return V8ContextDescriptionStatus::kValid;
 }
 
-base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
+absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
     const mojom::V8ContextDescription& description,
     Graph* graph) {
   switch (description.world_type) {
@@ -176,7 +176,7 @@ base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
         return IsSynchronousIframeAttributionDataExpected(ec);
       } else {
         // Unable to be determined.
-        return base::nullopt;
+        return absl::nullopt;
       }
     } break;
 

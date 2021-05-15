@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -18,6 +17,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 
@@ -86,7 +86,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Helper methods used to implement TabRestoreService.
   void AddObserver(TabRestoreServiceObserver* observer);
   void RemoveObserver(TabRestoreServiceObserver* observer);
-  base::Optional<SessionID> CreateHistoricalTab(LiveTab* live_tab, int index);
+  absl::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab, int index);
   void BrowserClosing(LiveTabContext* context);
   void BrowserClosed(LiveTabContext* context);
   void CreateHistoricalGroup(LiveTabContext* context,

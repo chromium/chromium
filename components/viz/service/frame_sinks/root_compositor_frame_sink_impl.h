@@ -90,7 +90,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list,
+      absl::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -99,7 +99,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void SubmitCompositorFrameSync(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list,
+      absl::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
   void InitializeCompositorFrameSinkType(

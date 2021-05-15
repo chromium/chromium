@@ -36,7 +36,7 @@ constexpr base::TimeDelta kExpireInterval = base::TimeDelta::FromSeconds(10);
 
 SurfaceManager::SurfaceManager(
     SurfaceManagerDelegate* delegate,
-    base::Optional<uint32_t> activation_deadline_in_frames)
+    absl::optional<uint32_t> activation_deadline_in_frames)
     : delegate_(delegate),
       activation_deadline_in_frames_(activation_deadline_in_frames),
       root_surface_id_(FrameSinkId(0u, 0u),
@@ -84,7 +84,7 @@ std::string SurfaceManager::SurfaceReferencesToString() {
 #endif
 
 void SurfaceManager::SetActivationDeadlineInFramesForTesting(
-    base::Optional<uint32_t> activation_deadline_in_frames) {
+    absl::optional<uint32_t> activation_deadline_in_frames) {
   activation_deadline_in_frames_ = activation_deadline_in_frames;
 }
 

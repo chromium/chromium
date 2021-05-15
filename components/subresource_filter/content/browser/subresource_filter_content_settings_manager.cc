@@ -161,7 +161,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   // was previously set.
   base::Time expiry_time = base::Time::Now() + kMaxPersistMetadataDuration;
   if (dict && dict->HasKey(kNonRenewingExpiryTime)) {
-    base::Optional<double> metadata_expiry_time =
+    absl::optional<double> metadata_expiry_time =
         dict->FindDoubleKey(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
     expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
@@ -194,7 +194,7 @@ bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
   if (!dict)
     return true;
 
-  base::Optional<double> metadata_expiry_time =
+  absl::optional<double> metadata_expiry_time =
       dict->FindDoubleKey(kNonRenewingExpiryTime);
 
   if (!metadata_expiry_time)
@@ -213,7 +213,7 @@ bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(
   if (!dict)
     return false;
 
-  base::Optional<bool> site_activation_status =
+  absl::optional<bool> site_activation_status =
       dict->FindBoolKey(kActivatedKey);
 
   // If there is no explicit site activation status, it is metadata V1:

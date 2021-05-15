@@ -546,7 +546,7 @@ class Generator(generator.Generator):
 
   def _GetCppWrapperType(self, kind, add_same_module_namespaces=False):
     def _AddOptional(type_name):
-      return "base::Optional<%s>" % type_name
+      return "absl::optional<%s>" % type_name
 
     if self._IsTypemappedKind(kind):
       type_name = self._GetNativeTypeName(kind)

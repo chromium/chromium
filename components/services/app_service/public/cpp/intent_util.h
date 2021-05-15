@@ -107,7 +107,7 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent);
 
 // Gets the string value from base::DictionaryValue, e.g. { "key": "value" }
 // returns "value".
-base::Optional<std::string> GetStringValueFromDict(
+absl::optional<std::string> GetStringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name);
 
@@ -119,12 +119,12 @@ apps::mojom::OptionalBool GetBoolValueFromDict(
 
 // Gets GURL from base::DictionaryValue, e.g. { "url": "abc.com" } returns
 // "abc.com".
-base::Optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
+absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name);
 
 // Gets std::vector<::GURL> from base::DictionaryValue, e.g. { "file_urls":
 // "/abc, /a" } returns std::vector<::GURL>{"/abc, /a"}.
-base::Optional<std::vector<::GURL>> GetFileUrlsFromDict(
+absl::optional<std::vector<::GURL>> GetFileUrlsFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name);
 

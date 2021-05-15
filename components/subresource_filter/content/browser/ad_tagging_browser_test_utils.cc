@@ -74,7 +74,7 @@ void ExpectFrameAdEvidence(
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
           content::WebContents::FromRenderFrameHost(frame_host));
-  base::Optional<blink::FrameAdEvidence> ad_evidence =
+  absl::optional<blink::FrameAdEvidence> ad_evidence =
       throttle_manager->GetAdEvidenceForFrame(frame_host);
   ASSERT_TRUE(ad_evidence.has_value());
   EXPECT_TRUE(ad_evidence->is_complete());

@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -190,7 +190,7 @@ class InstallableManager
   // Called when navigating to a new page or if the WebContents is destroyed
   // whilst waiting for a callback.
   // If populated, the given |error| is reported to all queued tasks.
-  void Reset(base::Optional<InstallableStatusCode> error = base::nullopt);
+  void Reset(absl::optional<InstallableStatusCode> error = absl::nullopt);
 
   // Sets the fetched bit on the installable and icon subtasks.
   // Called if no manifest (or an empty manifest) was fetched from the site.
@@ -240,7 +240,7 @@ class InstallableManager
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidUpdateWebManifestURL(
       content::RenderFrameHost* rfh,
-      const base::Optional<GURL>& manifest_url) override;
+      const absl::optional<GURL>& manifest_url) override;
   void WebContentsDestroyed() override;
 
   const GURL& manifest_url() const;

@@ -375,7 +375,7 @@ class Storage::KeyInStorage {
   // Enumerates found key files and locates one with the highest index and
   // valid key. Returns pair of file name and loaded signed key proto.
   // Called once, during initialization.
-  base::Optional<std::pair<base::FilePath, SignedEncryptionInfo>>
+  absl::optional<std::pair<base::FilePath, SignedEncryptionInfo>>
   LocateValidKeyAndParse(
       const base::flat_map<uint64_t, base::FilePath>& found_key_files) {
     // Try to unserialize the key from each found file (latest first).
@@ -426,7 +426,7 @@ class Storage::KeyInStorage {
     }
 
     // Not found, return error.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Index of the file to serialize the signed key to.
@@ -621,7 +621,7 @@ void Storage::Write(Priority priority,
 }
 
 void Storage::Confirm(Priority priority,
-                      base::Optional<int64_t> seq_number,
+                      absl::optional<int64_t> seq_number,
                       bool force,
                       base::OnceCallback<void(Status)> completion_cb) {
   // Note: queues_ never change after initialization is finished, so there is

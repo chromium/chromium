@@ -111,7 +111,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // mojom::AutofillDriver:
   void SetFormToBeProbablySubmitted(
-      const base::Optional<FormData>& form) override;
+      const absl::optional<FormData>& form) override;
   void FormsSeen(const std::vector<FormData>& forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
@@ -217,7 +217,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the
   // submitted one.
-  base::Optional<FormData> potentially_submitted_form_;
+  absl::optional<FormData> potentially_submitted_form_;
 
   // Keeps track of the forms for which FormSubmitted() event has been triggered
   // to avoid duplicates fired by AutofillAgent.

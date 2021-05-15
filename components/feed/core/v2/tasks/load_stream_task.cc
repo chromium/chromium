@@ -250,7 +250,7 @@ void LoadStreamTask::ProcessNetworkResponse(
 
   MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
 
-  base::Optional<feedstore::Metadata> updated_metadata =
+  absl::optional<feedstore::Metadata> updated_metadata =
       feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
                                       response_data.session_id);
   if (updated_metadata) {

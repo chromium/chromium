@@ -47,7 +47,7 @@ class StorageServiceImpl : public mojom::StorageService {
       const base::FilePath& path,
       mojo::PendingRemote<mojom::Directory> directory) override;
 #endif
-  void BindPartition(const base::Optional<base::FilePath>& path,
+  void BindPartition(const absl::optional<base::FilePath>& path,
                      mojo::PendingReceiver<mojom::Partition> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 

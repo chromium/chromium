@@ -298,7 +298,7 @@ void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
   }
 }
 
-bool FeedStream::SetMetadata(base::Optional<feedstore::Metadata> metadata) {
+bool FeedStream::SetMetadata(absl::optional<feedstore::Metadata> metadata) {
   if (metadata) {
     SetMetadata(std::move(*metadata));
     return true;

@@ -53,10 +53,10 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -116,14 +116,14 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   void NotifySendTabToSelfModelLoaded();
 
   // Methods used as callbacks given to DataTypeStore.
-  void OnStoreCreated(const base::Optional<syncer::ModelError>& error,
+  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(std::unique_ptr<SendTabToSelfEntries> initial_entries,
                      std::unique_ptr<std::string> local_device_name,
-                     const base::Optional<syncer::ModelError>& error);
-  void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
+                     const absl::optional<syncer::ModelError>& error);
+  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void OnCommit(const base::Optional<syncer::ModelError>& error);
+  void OnCommit(const absl::optional<syncer::ModelError>& error);
 
   // Persists the changes in the given aggregators
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);

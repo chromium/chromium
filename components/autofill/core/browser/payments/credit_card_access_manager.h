@@ -268,15 +268,15 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   base::TimeTicks preflight_call_timestamp_;
 
   // Timestamp used for user-perceived latency metrics.
-  base::Optional<base::TimeTicks>
+  absl::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
 
   // Meant for histograms recorded in FullCardRequest.
   base::TimeTicks form_parsed_timestamp_;
 
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
-  base::Optional<base::TimeTicks> is_user_verifiable_called_timestamp_ =
-      base::nullopt;
+  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_ =
+      absl::nullopt;
 
   // Authenticators for card unmasking.
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
@@ -317,7 +317,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Set to true only if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available
   // and enabled.
-  base::Optional<bool> is_user_verifiable_;
+  absl::optional<bool> is_user_verifiable_;
 
   // True only if currently waiting on unmask details. This avoids making
   // unnecessary calls to payments.

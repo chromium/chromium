@@ -11,9 +11,9 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
 #include "components/cast/message_port/message_port.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_api_bindings {
 
@@ -67,7 +67,7 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
   // or handling the message fails.
   // Note that handling the message may result in |this| being deleted before
   // the call returns.
-  base::Optional<fuchsia::web::FrameError> ExtractAndHandleMessageFromFidl(
+  absl::optional<fuchsia::web::FrameError> ExtractAndHandleMessageFromFidl(
       fuchsia::web::WebMessage message);
 
   void OnZxError(zx_status_t status);

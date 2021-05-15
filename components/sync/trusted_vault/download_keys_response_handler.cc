@@ -40,7 +40,7 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
     const SecureBoxPrivateKey& member_private_key) {
   std::map<int, ExtractedSharedKey> epoch_to_extracted_key;
   for (const sync_pb::SharedMemberKey& shared_key : membership.keys()) {
-    base::Optional<std::vector<uint8_t>> decrypted_key =
+    absl::optional<std::vector<uint8_t>> decrypted_key =
         DecryptTrustedVaultWrappedKey(
             member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
     if (!decrypted_key.has_value()) {
@@ -76,7 +76,7 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
 // used), only the first key is filtered out if it's a constant one.
 std::vector<ExtractedSharedKey> GetNewKeys(
     const std::vector<ExtractedSharedKey>& sorted_keys,
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         last_known_trusted_vault_key_and_version) {
   DCHECK(!sorted_keys.empty());
   auto new_keys_start_it = sorted_keys.begin();
@@ -150,7 +150,7 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
     : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),

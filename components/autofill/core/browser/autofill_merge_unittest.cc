@@ -292,7 +292,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
 
       // Import the profile.
       std::unique_ptr<CreditCard> imported_credit_card;
-      base::Optional<std::string> unused_imported_upi_id;
+      absl::optional<std::string> unused_imported_upi_id;
       form_data_importer_->ImportFormData(form_structure,
                                           true,  // address autofill enabled,
                                           true,  // credit card autofill enabled

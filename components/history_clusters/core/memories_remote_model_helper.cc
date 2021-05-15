@@ -26,7 +26,7 @@ const size_t kMaxExpectedResponseSize = 1024 * 1024;
 // the parameter is non-nullptr.
 proto::GetClustersRequest CreateRequestProto(
     const std::vector<history::AnnotatedVisit>& visits,
-    base::Optional<DebugLoggerCallback> debug_logger) {
+    absl::optional<DebugLoggerCallback> debug_logger) {
   proto::GetClustersRequest request;
   request.set_experiment_name(kRemoteModelEndpointExperimentName.Get());
 
@@ -81,7 +81,7 @@ proto::GetClustersRequest CreateRequestProto(
 std::vector<history::Cluster> ParseResponseProto(
     const std::vector<history::AnnotatedVisit>& visits,
     const proto::GetClustersResponse& response_proto,
-    base::Optional<DebugLoggerCallback> debug_logger) {
+    absl::optional<DebugLoggerCallback> debug_logger) {
   std::vector<history::Cluster> clusters;
   for (const proto::Cluster& cluster_proto : response_proto.clusters()) {
     history::Cluster cluster;
@@ -135,7 +135,7 @@ std::vector<history::Cluster> ParseResponseProto(
 
 MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Optional<DebugLoggerCallback> debug_logger)
+    absl::optional<DebugLoggerCallback> debug_logger)
     : url_loader_factory_(url_loader_factory), debug_logger_(debug_logger) {}
 
 MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
@@ -170,7 +170,7 @@ void MemoriesRemoteModelHelper::GetMemories(
       url_loader_factory_.get(),
       base::BindOnce(
           [](std::unique_ptr<network::SimpleURLLoader> url_loader,
-             base::Optional<DebugLoggerCallback> debug_logger,
+             absl::optional<DebugLoggerCallback> debug_logger,
              const std::vector<history::AnnotatedVisit>& visits,
              std::unique_ptr<std::string> response) {
             if (!response) {

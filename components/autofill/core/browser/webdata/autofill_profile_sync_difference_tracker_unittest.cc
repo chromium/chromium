@@ -66,18 +66,18 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   }
 
   void IncorporateRemoteProfile(const AutofillProfile& profile) {
-    EXPECT_EQ(base::nullopt, tracker()->IncorporateRemoteProfile(
+    EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteProfile(
                                  std::make_unique<AutofillProfile>(profile)));
   }
 
   UpdatesToSync FlushToSync() {
-    EXPECT_EQ(base::nullopt,
+    EXPECT_EQ(absl::nullopt,
               tracker()->FlushToLocal(
                   /*autofill_changes_callback=*/base::DoNothing()));
 
     UpdatesToSync updates;
     std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
-    EXPECT_EQ(base::nullopt,
+    EXPECT_EQ(absl::nullopt,
               tracker()->FlushToSync(
                   /*profiles_to_upload_to_sync=*/&vector_of_unique_ptrs,
                   /*profiles_to_delete_from_sync=*/&updates
@@ -347,7 +347,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
   MockCallback<base::OnceClosure> autofill_changes_callback;
 
   EXPECT_CALL(autofill_changes_callback, Run()).Times(0);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 }
 
@@ -360,7 +360,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile should also get deleted.
@@ -374,7 +374,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile should also get added.
@@ -393,7 +393,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             tracker()->FlushToLocal(autofill_changes_callback.Get()));
 
   // On top of that, the profile with key kSmallerGuid should also get updated.

@@ -91,7 +91,7 @@ bool LegacyDomStorageDatabase::CommitChanges(
   for (; it != changes.end(); ++it) {
     sql::Statement statement;
     const std::u16string& key = it->first;
-    const base::Optional<std::u16string>& value = it->second;
+    const absl::optional<std::u16string>& value = it->second;
     if (!value.has_value()) {
       statement.Assign(db_->GetCachedStatement(
           SQL_FROM_HERE, "DELETE FROM ItemTable WHERE key=?"));
@@ -240,7 +240,7 @@ bool LegacyDomStorageDatabase::DeleteFileAndRecreate() {
 
   tried_to_recreate_ = true;
 
-  base::Optional<base::File::Info> info =
+  absl::optional<base::File::Info> info =
       filesystem_proxy_->GetFileInfo(file_path_);
   // If it's not a directory and we can delete the file, try and open it again.
   if (info && !info->is_directory && sql::Database::Delete(file_path_)) {

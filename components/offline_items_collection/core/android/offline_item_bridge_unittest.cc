@@ -44,8 +44,8 @@ TEST_F(OfflineItemBridgeTest, OfflineItemSchedule) {
   // OfflineItemSchedule only on wifi.
   auto* env = AttachCurrentThread();
   OfflineItem item;
-  item.schedule = base::make_optional<OfflineItemSchedule>(
-      true /*only_on_wifi*/, base::nullopt);
+  item.schedule = absl::make_optional<OfflineItemSchedule>(
+      true /*only_on_wifi*/, absl::nullopt);
   auto j_offline_item = OfflineItemBridge::CreateOfflineItem(env, item);
   Java_OfflineItemBridgeUnitTest_testOfflineItemSchedule(
       env, j_test(), j_offline_item, true /*only_on_wifi*/, 0);
@@ -53,7 +53,7 @@ TEST_F(OfflineItemBridgeTest, OfflineItemSchedule) {
   // OfflineItemSchedule with specific start time.
   auto start_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
-  item.schedule = base::make_optional<OfflineItemSchedule>(
+  item.schedule = absl::make_optional<OfflineItemSchedule>(
       false /*only_on_wifi*/, start_time);
   EXPECT_EQ(start_time, item.schedule->start_time);
   EXPECT_FALSE(start_time.is_null());

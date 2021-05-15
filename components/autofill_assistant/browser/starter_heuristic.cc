@@ -48,7 +48,7 @@ void StarterHeuristic::InitFromTrialParams() {
   if (parameters.empty()) {
     return;
   }
-  base::Optional<base::Value> dict = base::JSONReader::Read(parameters);
+  absl::optional<base::Value> dict = base::JSONReader::Read(parameters);
   if (!dict || !dict->is_dict()) {
     VLOG(1) << "Failed to parse field trial params as JSON object: "
             << parameters;
@@ -111,34 +111,34 @@ void StarterHeuristic::InitFromTrialParams() {
   matcher_id_to_intent_map_ = std::move(mapping);
 }
 
-base::Optional<std::string> StarterHeuristic::IsHeuristicMatch(
+absl::optional<std::string> StarterHeuristic::IsHeuristicMatch(
     const GURL& url) const {
   if (matcher_id_to_intent_map_.empty() || !url.is_valid()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (denylisted_domains_.count(
           url_utils::GetOrganizationIdentifyingDomain(url)) > 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::set<url_matcher::URLMatcherConditionSet::ID> matches =
       url_matcher_.MatchURL(url);
   if (matches.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   // Return the first matching intent.
   auto first_matching_it = matcher_id_to_intent_map_.find(*matches.begin());
   if (first_matching_it == matcher_id_to_intent_map_.end()) {
     DCHECK(false);
-    return base::nullopt;
+    return absl::nullopt;
   }
   return first_matching_it->second;
 }
 
 void StarterHeuristic::RunHeuristicAsync(
     const GURL& url,
-    base::OnceCallback<void(base::Optional<std::string> intent)> callback)
+    base::OnceCallback<void(absl::optional<std::string> intent)> callback)
     const {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},

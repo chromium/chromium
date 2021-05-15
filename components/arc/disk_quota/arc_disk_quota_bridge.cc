@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -111,7 +111,7 @@ void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
       user_data_auth::GetArcDiskFeaturesRequest(),
       base::BindOnce(
           [](IsQuotaSupportedCallback callback,
-             base::Optional<user_data_auth::GetArcDiskFeaturesReply> reply) {
+             absl::optional<user_data_auth::GetArcDiskFeaturesReply> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from IsQuotaSupported call.";
             bool result = false;
@@ -132,7 +132,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForUidCallback callback, int uid,
-             base::Optional<user_data_auth::GetCurrentSpaceForArcUidReply>
+             absl::optional<user_data_auth::GetCurrentSpaceForArcUidReply>
                  reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from "
@@ -156,7 +156,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForGidCallback callback, int gid,
-             base::Optional<user_data_auth::GetCurrentSpaceForArcGidReply>
+             absl::optional<user_data_auth::GetCurrentSpaceForArcGidReply>
                  reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from "
@@ -180,7 +180,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForProjectIdCallback callback, int project_id,
-             base::Optional<user_data_auth::GetCurrentSpaceForArcProjectIdReply>
+             absl::optional<user_data_auth::GetCurrentSpaceForArcProjectIdReply>
                  reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from "
@@ -220,7 +220,7 @@ void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
           [](SetProjectIdCallback callback, const int project_id,
              const user_data_auth::SetProjectIdAllowedPathType parent_path,
              const std::string& child_path,
-             base::Optional<user_data_auth::SetProjectIdReply> reply) {
+             absl::optional<user_data_auth::SetProjectIdReply> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to set project ID " << project_id
                 << " to parent_path=" << parent_path

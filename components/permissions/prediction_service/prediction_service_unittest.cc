@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -28,6 +27,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace {
@@ -349,24 +349,24 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
 TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   struct {
     GURL url;
-    base::Optional<GeneratePredictionsResponse> expected_response;
+    absl::optional<GeneratePredictionsResponse> expected_response;
     double delay_in_seconds;
     int err_code;
   } kTests[] = {
       // Test different responses.
       {kUrl_Likely,
-       base::Optional<GeneratePredictionsResponse>(kResponseLikely)},
+       absl::optional<GeneratePredictionsResponse>(kResponseLikely)},
       {kUrl_Unlikely,
-       base::Optional<GeneratePredictionsResponse>(kResponseUnlikely)},
+       absl::optional<GeneratePredictionsResponse>(kResponseUnlikely)},
 
       // Test the response's timeout.
       {kUrl_Likely,
-       base::Optional<GeneratePredictionsResponse>(kResponseLikely), 0.5},
-      {kUrl_Likely, base::nullopt, 2},
+       absl::optional<GeneratePredictionsResponse>(kResponseLikely), 0.5},
+      {kUrl_Likely, absl::nullopt, 2},
 
       // Test error code responses.
-      {kUrl_Likely, base::nullopt, 0, net::ERR_SSL_PROTOCOL_ERROR},
-      {kUrl_Likely, base::nullopt, 0, net::ERR_CONNECTION_FAILED},
+      {kUrl_Likely, absl::nullopt, 0, net::ERR_SSL_PROTOCOL_ERROR},
+      {kUrl_Likely, absl::nullopt, 0, net::ERR_CONNECTION_FAILED},
   };
 
   for (const auto& kTest : kTests) {
@@ -393,26 +393,26 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
 // valid.
 TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
   struct {
-    base::Optional<std::string> command_line_switch_value;
-    base::Optional<std::string> url_override_param_value;
+    absl::optional<std::string> command_line_switch_value;
+    absl::optional<std::string> url_override_param_value;
     GURL expected_request_url;
     permissions::GeneratePredictionsResponse expected_response;
   } kTests[] = {
       // Test without any overrides.
-      {base::nullopt, base::nullopt, GURL(kDefaultPredictionServiceUrl),
+      {absl::nullopt, absl::nullopt, GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
 
       // Test only the FeatureParam override.
-      {base::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
-      {base::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
+      {absl::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
+      {absl::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
-      {base::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {absl::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
 
       // Test only the command line override.
-      {kUrl_Unlikely.spec(), base::nullopt, kUrl_Unlikely, kResponseUnlikely},
-      {"this is not a url", base::nullopt, GURL(kDefaultPredictionServiceUrl),
+      {kUrl_Unlikely.spec(), absl::nullopt, kUrl_Unlikely, kResponseUnlikely},
+      {"this is not a url", absl::nullopt, GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
-      {"", base::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {"", absl::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
 
       // Command line takes precedence over FeatureParam, if valid.
       {kUrl_Likely.spec(), kUrl_Unlikely.spec(), kUrl_Likely, kResponseLikely},

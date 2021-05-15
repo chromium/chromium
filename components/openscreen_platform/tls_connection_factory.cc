@@ -89,7 +89,7 @@ void TlsConnectionFactory::Connect(const IPEndpoint& remote_address,
       request.tcp_socket.BindNewPipeAndPassReceiver();
 
   network_context->CreateTCPConnectedSocket(
-      base::nullopt /* local_addr */, address_list,
+      absl::nullopt /* local_addr */, address_list,
       nullptr /* tcp_connected_socket_options */,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(receiver), mojo::NullRemote(), /* observer */
@@ -146,8 +146,8 @@ TlsConnectionFactory::TlsUpgradeRequest::~TlsUpgradeRequest() = default;
 void TlsConnectionFactory::OnTcpConnect(
     TcpConnectRequest request,
     int32_t net_result,
-    const base::Optional<net::IPEndPoint>& local_address,
-    const base::Optional<net::IPEndPoint>& remote_address,
+    const absl::optional<net::IPEndPoint>& local_address,
+    const absl::optional<net::IPEndPoint>& remote_address,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   // We only care about net_result, since local_address doesn't matter,
@@ -194,7 +194,7 @@ void TlsConnectionFactory::OnTlsUpgrade(
     int32_t net_result,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const base::Optional<net::SSLInfo>& ssl_info) {
+    const absl::optional<net::SSLInfo>& ssl_info) {
   if (net_result != net::OK) {
     client_->OnConnectionFailed(this, request.remote_address);
     return;

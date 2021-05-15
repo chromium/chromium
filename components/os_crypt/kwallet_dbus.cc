@@ -378,7 +378,7 @@ KWalletDBus::Error KWalletDBus::ReadPassword(
     const std::string& folder_name,
     const std::string& key,
     const std::string& app_name,
-    base::Optional<std::string>* const password_ptr) {
+    absl::optional<std::string>* const password_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "readPassword");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(handle);
@@ -396,7 +396,7 @@ KWalletDBus::Error KWalletDBus::ReadPassword(
   if (!reader.PopString(&password)) {
     LOG(ERROR) << "Error reading response from " << kwalletd_name_
                << " (readPassword): " << response->ToString();
-    *password_ptr = base::nullopt;
+    *password_ptr = absl::nullopt;
     return CANNOT_READ;
   }
   *password_ptr = std::move(password);

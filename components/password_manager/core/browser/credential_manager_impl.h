@@ -23,7 +23,7 @@ using StoreCallback = base::OnceCallback<void()>;
 using PreventSilentAccessCallback = base::OnceCallback<void()>;
 using GetCallback =
     base::OnceCallback<void(CredentialManagerError,
-                            const base::Optional<CredentialInfo>&)>;
+                            const absl::optional<CredentialInfo>&)>;
 
 // Class implementing Credential Manager methods Store, PreventSilentAccess
 // and Get in a platform independent way. Each method takes a callback as an

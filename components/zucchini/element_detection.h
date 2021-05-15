@@ -11,9 +11,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -32,10 +32,10 @@ std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
 // Attempts to detect an element associated with |image| and returns it, or
 // returns nullopt if no element is detected.
 using ElementDetector =
-    base::RepeatingCallback<base::Optional<Element>(ConstBufferView image)>;
+    base::RepeatingCallback<absl::optional<Element>(ConstBufferView image)>;
 
 // Implementation of ElementDetector using disassemblers.
-base::Optional<Element> DetectElementFromDisassembler(ConstBufferView image);
+absl::optional<Element> DetectElementFromDisassembler(ConstBufferView image);
 
 // A class to scan through an image and iteratively detect elements.
 class ElementFinder {
@@ -45,7 +45,7 @@ class ElementFinder {
 
   // Scans for the next executable using |detector|. Returns the next element
   // found, or nullopt if no more element can be found.
-  base::Optional<Element> GetNext();
+  absl::optional<Element> GetNext();
 
  private:
   ConstBufferView image_;

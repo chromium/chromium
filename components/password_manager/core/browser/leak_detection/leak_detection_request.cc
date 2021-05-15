@@ -180,7 +180,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
   base::UmaHistogramCounts100000(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
-  std::move(callback).Run(std::move(single_lookup_response), base::nullopt);
+  std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
 }
 
 }  // namespace password_manager

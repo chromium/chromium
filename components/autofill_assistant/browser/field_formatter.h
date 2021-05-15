@@ -7,11 +7,11 @@
 
 #include <map>
 #include <string>
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 namespace field_formatter {
@@ -21,7 +21,7 @@ namespace field_formatter {
 // does not contain curly braces. If |strict| is true, this will fail if any of
 // the found placeholders is not in |mappings|. Otherwise, placeholders other
 // than those from |mappings| will be left unchanged.
-base::Optional<std::string> FormatString(
+absl::optional<std::string> FormatString(
     const std::string& input,
     const std::map<std::string, std::string>& mappings,
     bool strict = true);

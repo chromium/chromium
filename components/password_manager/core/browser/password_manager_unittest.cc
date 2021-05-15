@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,6 +58,7 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::FieldRendererId;
 using autofill::FormData;
@@ -3071,8 +3071,8 @@ namespace {
 
 // A convenience helper for type conversions.
 template <typename T>
-base::Optional<int64_t> MetricValue(T value) {
-  return base::Optional<int64_t>(static_cast<int64_t>(value));
+absl::optional<int64_t> MetricValue(T value) {
+  return absl::optional<int64_t>(static_cast<int64_t>(value));
 }
 
 struct MissingFormManagerTestCase {
@@ -3087,8 +3087,8 @@ struct MissingFormManagerTestCase {
   // A list of forms to be processed for saving, one at a time.
   std::vector<FormData> processed_form_data;
   // The expected value of the PageWithPassword::kFormManagerAvailableName
-  // metric, or base::nullopt if no value should be logged.
-  base::Optional<int64_t> expected_metric_value;
+  // metric, or absl::nullopt if no value should be logged.
+  absl::optional<int64_t> expected_metric_value;
 };
 
 }  // namespace
@@ -3157,7 +3157,7 @@ TEST_P(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::None,
           .parsed_forms_data = {},
           .processed_form_data = {},
-          .expected_metric_value = base::nullopt,
+          .expected_metric_value = absl::nullopt,
       },
       {
           .description = "Not enabled, no report.",
@@ -3165,7 +3165,7 @@ TEST_P(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::Automatic,
           .parsed_forms_data = {form_data},
           .processed_form_data = {form_data},
-          .expected_metric_value = base::nullopt,
+          .expected_metric_value = absl::nullopt,
       },
   };
 

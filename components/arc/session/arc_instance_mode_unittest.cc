@@ -6,8 +6,8 @@
 
 #include <sstream>
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -28,14 +28,14 @@ TEST(ArcInstanceModeTest, TestLogging) {
   EXPECT_TRUE(invalid.str().empty()) << invalid.str();
 }
 
-// Test that base::Optional<ArcInstanceMode> can be logged too.
+// Test that absl::optional<ArcInstanceMode> can be logged too.
 TEST(ArcInstanceModeTest, TestLoggingWithOptional) {
   std::ostringstream nullopt;
-  nullopt << base::Optional<ArcInstanceMode>();
+  nullopt << absl::optional<ArcInstanceMode>();
   EXPECT_FALSE(nullopt.str().empty());
 
   std::ostringstream non_nullopt;
-  non_nullopt << base::Optional<ArcInstanceMode>(
+  non_nullopt << absl::optional<ArcInstanceMode>(
       ArcInstanceMode::MINI_INSTANCE);
   EXPECT_FALSE(non_nullopt.str().empty());
   EXPECT_NE(nullopt.str(), non_nullopt.str());

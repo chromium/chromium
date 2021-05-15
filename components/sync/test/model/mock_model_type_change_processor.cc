@@ -83,7 +83,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
     other_->ReportError(error);
   }
 
-  base::Optional<ModelError> GetError() const override {
+  absl::optional<ModelError> GetError() const override {
     return other_->GetError();
   }
 

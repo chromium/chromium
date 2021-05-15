@@ -20,7 +20,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
@@ -34,6 +33,7 @@
 #include "components/search/repeatable_queries/repeatable_queries_service_observer.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "components/suggestions/suggestions_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace user_prefs {
@@ -104,7 +104,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   class HomepageClient {
    public:
     using TitleCallback =
-        base::OnceCallback<void(const base::Optional<std::u16string>& title)>;
+        base::OnceCallback<void(const absl::optional<std::u16string>& title)>;
 
     virtual ~HomepageClient() = default;
     virtual bool IsHomepageTileEnabled() const = 0;
@@ -229,7 +229,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   static NTPTilesVector MergeTiles(NTPTilesVector personal_tiles,
                                    NTPTilesVector allowlist_tiles,
                                    NTPTilesVector popular_tiles,
-                                   base::Optional<NTPTile> explore_tile);
+                                   absl::optional<NTPTile> explore_tile);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesTest,
@@ -336,10 +336,10 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   // Creates a tile for the Explore Sites page, if enabled. The tile is added to
   // the front of the list.
-  base::Optional<NTPTile> CreateExploreSitesTile();
+  absl::optional<NTPTile> CreateExploreSitesTile();
 
   void OnHomepageTitleDetermined(NTPTilesVector tiles,
-                                 const base::Optional<std::u16string>& title);
+                                 const absl::optional<std::u16string>& title);
 
   // Returns true if there is a valid homepage that can be pinned as tile.
   bool ShouldAddHomeTile() const;
@@ -394,7 +394,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Current set of tiles. Optional so that the observer can be notified
   // whenever it changes, including possibily an initial change from
   // !current_tiles_.has_value() to current_tiles_->empty().
-  base::Optional<NTPTilesVector> current_tiles_;
+  absl::optional<NTPTilesVector> current_tiles_;
 
   // For callbacks may be run after destruction, used exclusively for TopSites
   // (since it's used to detect whether there's a query in flight).

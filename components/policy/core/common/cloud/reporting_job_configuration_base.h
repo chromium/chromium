@@ -10,11 +10,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -146,7 +146,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   // being generated can be seen with the ::reporting::GetContext function. Once
   // |GetPayload| is called, |context_| will be merged into the payload and
   // reset.
-  base::Optional<base::Value> context_;
+  absl::optional<base::Value> context_;
 
   UploadCompleteCallback callback_;
 

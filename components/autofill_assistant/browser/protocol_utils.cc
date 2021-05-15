@@ -116,7 +116,7 @@ std::string ProtocolUtils::CreateInitialScriptActionsRequest(
     const std::string& script_payload,
     const ClientContextProto& client_context,
     const ScriptParameters& script_parameters,
-    const base::Optional<ScriptStoreConfig>& script_store_config) {
+    const absl::optional<ScriptStoreConfig>& script_store_config) {
   ScriptActionRequestProto request_proto;
   InitialScriptActionsRequestProto* initial_request_proto =
       request_proto.mutable_initial_request();
@@ -432,7 +432,7 @@ bool ProtocolUtils::ParseTriggerScripts(
     std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
     std::vector<std::string>* additional_allowed_domains,
     int* trigger_condition_check_interval_ms,
-    base::Optional<int>* timeout_ms) {
+    absl::optional<int>* timeout_ms) {
   DCHECK(trigger_scripts);
   DCHECK(additional_allowed_domains);
   DCHECK(trigger_condition_check_interval_ms);

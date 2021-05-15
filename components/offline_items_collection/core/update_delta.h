@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_UPDATE_DELTA_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_UPDATE_DELTA_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_items_collection {
 
@@ -14,9 +14,9 @@ namespace offline_items_collection {
 // to make a decision on whether to act on the new info contained in the offline
 // item.
 struct UpdateDelta {
-  static base::Optional<UpdateDelta> MergeUpdates(
-      const base::Optional<UpdateDelta>& update1,
-      const base::Optional<UpdateDelta>& update2);
+  static absl::optional<UpdateDelta> MergeUpdates(
+      const absl::optional<UpdateDelta>& update1,
+      const absl::optional<UpdateDelta>& update2);
 
   UpdateDelta();
   UpdateDelta(const UpdateDelta& other);

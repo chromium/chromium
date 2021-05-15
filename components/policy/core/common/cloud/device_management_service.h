@@ -19,7 +19,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_checker.h"
@@ -28,6 +27,7 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -377,7 +377,7 @@ class POLICY_EXPORT JobConfigurationBase
  protected:
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
-                       base::Optional<std::string> oauth_token,
+                       absl::optional<std::string> oauth_token,
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
 
@@ -412,7 +412,7 @@ class POLICY_EXPORT JobConfigurationBase
 
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
-  base::Optional<std::string> oauth_token_;
+  absl::optional<std::string> oauth_token_;
 
   // Query parameters for the network request.
   ParameterMap query_params_;

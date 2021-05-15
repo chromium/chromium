@@ -13,9 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -144,12 +144,12 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
     base::Time first_timestamp;
     ui::PageTransition first_transition_type;
   };
-  const base::Optional<ReplacedNavigationEntryData>& replaced_entry_data()
+  const absl::optional<ReplacedNavigationEntryData>& replaced_entry_data()
       const {
     return replaced_entry_data_;
   }
   void set_replaced_entry_data(
-      const base::Optional<ReplacedNavigationEntryData>& replaced_entry_data) {
+      const absl::optional<ReplacedNavigationEntryData>& replaced_entry_data) {
     replaced_entry_data_ = replaced_entry_data;
   }
 
@@ -201,7 +201,7 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int http_status_code_ = 0;
   bool is_restored_ = false;          // Not persisted.
   std::vector<GURL> redirect_chain_;  // Not persisted.
-  base::Optional<ReplacedNavigationEntryData>
+  absl::optional<ReplacedNavigationEntryData>
       replaced_entry_data_;  // Not persisted.
 
   // Additional information.

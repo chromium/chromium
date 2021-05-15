@@ -371,7 +371,7 @@ void DragDropOperation::OnDragActionsChanged(int actions) {
   if (dnd_action != DndAction::kNone)
     source_->get()->Target(mime_type_);
   else
-    source_->get()->Target(base::nullopt);
+    source_->get()->Target(absl::nullopt);
 
   source_->get()->Action(dnd_action);
 }

@@ -216,7 +216,7 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
     return false;
   }
 
-  base::Optional<media::VideoFrameLayout> layout =
+  absl::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes), data.buffer_addr_align(),
           data.modifier());

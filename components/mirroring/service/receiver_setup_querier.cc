@@ -36,7 +36,7 @@ constexpr char kSetupQueryMethod[] = "GET";
 bool ParseReceiverSetupInfo(const std::string& response,
                             std::string* build_version,
                             std::string* name) {
-  const base::Optional<base::Value> root = base::JSONReader::Read(response);
+  const absl::optional<base::Value> root = base::JSONReader::Read(response);
 
   return root && root->is_dict() &&
          GetString(*root, "cast_build_revision", build_version) &&

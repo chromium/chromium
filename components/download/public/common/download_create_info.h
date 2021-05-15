@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -23,6 +22,7 @@
 #include "net/http/http_response_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -76,7 +76,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   GURL tab_referrer_url;
 
   // The origin of the requester that originally initiated the download.
-  base::Optional<url::Origin> request_initiator;
+  absl::optional<url::Origin> request_initiator;
 
   // The time when the download started.
   base::Time start_time;
@@ -97,7 +97,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // short-lived and is not shown in the UI.
   bool transient;
 
-  base::Optional<ui::PageTransition> transition_type;
+  absl::optional<ui::PageTransition> transition_type;
 
   // The HTTP response headers. This contains a nullptr when the response has
   // not yet been received. Only for consuming headers.

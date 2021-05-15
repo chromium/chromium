@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 struct Feature;
@@ -102,7 +102,7 @@ struct SessionRateImpact {
 
   // In the case of the Type |EXPLICIT|, this is the list of affected
   // base::Feature names.
-  base::Optional<std::vector<std::string>> affected_features;
+  absl::optional<std::vector<std::string>> affected_features;
 };
 
 bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs);

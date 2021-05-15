@@ -18,11 +18,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/io_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -363,13 +363,13 @@ class InstructionReferenceReader : public ReferenceReader {
   }
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (true) {
       while (parser_.ReadNext()) {
         const auto& v = parser_.value();
         DCHECK_NE(v.instr, nullptr);
         if (v.instr_offset >= hi_)
-          return base::nullopt;
+          return absl::nullopt;
         const offset_t location = filter_.Run(v);
         if (location == kInvalidOffset || location < lo_)
           continue;
@@ -377,7 +377,7 @@ class InstructionReferenceReader : public ReferenceReader {
         // assumption |hi_| and |lo_| do not straddle the body of a Reference.
         // So |reference_width| is unneeded.
         if (location >= hi_)
-          return base::nullopt;
+          return absl::nullopt;
         offset_t target = mapper_.Run(location);
         if (target != kInvalidOffset)
           return Reference{location, target};
@@ -386,7 +386,7 @@ class InstructionReferenceReader : public ReferenceReader {
       }
       ++cur_it_;
       if (cur_it_ == end_it_)
-        return base::nullopt;
+        return absl::nullopt;
       parser_ = InstructionParser(image_, *cur_it_);
     }
   }
@@ -447,7 +447,7 @@ class ItemReferenceReader : public ReferenceReader {
   }
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (cur_idx_ < num_items_) {
       const offset_t item_offset = OffsetOfIndex(cur_idx_);
       const offset_t location = item_offset + rel_location_;
@@ -478,7 +478,7 @@ class ItemReferenceReader : public ReferenceReader {
       ++cur_idx_;
       return Reference{location, target};
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:
@@ -631,7 +631,7 @@ class CachedItemListReferenceReader : public ReferenceReader {
   }
 
   // ReferenceReader:
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     while (cur_it_ < end_it_) {
       const offset_t location = *cur_it_ + rel_location_;
       if (location >= hi_)  // Check is simplified by atomicity assumption.
@@ -649,7 +649,7 @@ class CachedItemListReferenceReader : public ReferenceReader {
         continue;
       return Reference{location, target};
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:

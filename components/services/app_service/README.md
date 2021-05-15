@@ -225,8 +225,8 @@ which have the same type: `App`). Specifically, last known value wins. Any
 known field in the delta overwrites the corresponding field in the old state,
 any unknown field in the delta is ignored. For example, if an app's name
 changed but its icon didn't, the delta's `App.name` field (a
-`base::Optional<std::string>`) would be known (not `base::nullopt`) and copied
-over but its `App.icon` field would be unknown (`base::nullopt`) and not copied
+`absl::optional<std::string>`) would be known (not `absl::nullopt`) and copied
+over but its `App.icon` field would be unknown (`absl::nullopt`) and not copied
 over.
 
 The current state is thus the merger or sum of all previous deltas, including

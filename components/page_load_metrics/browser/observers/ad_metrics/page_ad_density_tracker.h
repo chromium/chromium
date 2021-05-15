@@ -8,7 +8,7 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {
@@ -92,7 +92,7 @@ class PageAdDensityTracker {
   int max_page_ad_density_by_area_ = -1;
   int max_page_ad_density_by_height_ = -1;
 
-  base::Optional<gfx::Rect> last_main_frame_size_;
+  absl::optional<gfx::Rect> last_main_frame_size_;
 };
 
 }  // namespace page_load_metrics

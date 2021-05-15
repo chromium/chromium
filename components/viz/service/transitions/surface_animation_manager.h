@@ -87,7 +87,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
     RenderPassDrawData& operator=(RenderPassDrawData&&) = default;
 
     std::unique_ptr<CompositorRenderPass> render_pass;
-    base::Optional<CompositorRenderPassDrawQuad> draw_quad;
+    absl::optional<CompositorRenderPassDrawQuad> draw_quad;
     float opacity = 1.f;
   };
 
@@ -140,9 +140,9 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   TransferableResourceTracker transferable_resource_tracker_;
 
-  base::Optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
-  base::Optional<CompositorFrameTransitionDirective> save_directive_;
-  base::Optional<CompositorFrameTransitionDirective> animate_directive_;
+  absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
+  absl::optional<CompositorFrameTransitionDirective> save_directive_;
+  absl::optional<CompositorFrameTransitionDirective> animate_directive_;
 
   // State represents the total state of the animation for this manager. It is
   // adjusted in step with the root animation. In other words, if the root

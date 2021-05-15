@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/cloud/policy_builder.h"
 #include "crypto/signature_creator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -44,7 +44,7 @@ std::string SignDataWithTestKey(const std::string& data) {
 
 struct TestingRemoteCommandsServer::RemoteCommandWithCallback {
   RemoteCommandWithCallback(em::RemoteCommand command_proto,
-                            base::Optional<em::SignedData> signed_command_proto,
+                            absl::optional<em::SignedData> signed_command_proto,
                             base::TimeTicks issued_time,
                             ResultReportedCallback reported_callback)
       : command_proto(command_proto),
@@ -58,7 +58,7 @@ struct TestingRemoteCommandsServer::RemoteCommandWithCallback {
   ~RemoteCommandWithCallback() {}
 
   em::RemoteCommand command_proto;
-  base::Optional<em::SignedData> signed_command_proto;
+  absl::optional<em::SignedData> signed_command_proto;
   base::TimeTicks issued_time;
   ResultReportedCallback reported_callback;
 };
@@ -92,7 +92,7 @@ void TestingRemoteCommandsServer::IssueCommand(
   if (!payload.empty())
     command.set_payload(payload);
 
-  DoIssueCommand(command, /*signed_data=*/base::nullopt,
+  DoIssueCommand(command, /*signed_data=*/absl::nullopt,
                  std::move(reported_callback), skip_next_fetch);
 }
 
@@ -103,7 +103,7 @@ void TestingRemoteCommandsServer::IssueCommand(
   DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock auto_lock(lock_);
 
-  DoIssueCommand(command, /*signed_data=*/base::nullopt,
+  DoIssueCommand(command, /*signed_data=*/absl::nullopt,
                  std::move(reported_callback), skip_next_fetch);
 }
 
@@ -233,7 +233,7 @@ size_t TestingRemoteCommandsServer::NumberOfCommandsPendingResult() const {
 
 void TestingRemoteCommandsServer::DoIssueCommand(
     const em::RemoteCommand& command,
-    const base::Optional<em::SignedData>& signed_data,
+    const absl::optional<em::SignedData>& signed_data,
     ResultReportedCallback reported_callback,
     bool skip_next_fetch) {
   RemoteCommandWithCallback command_with_callback(

@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
 
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the
-  // callback. Otherwise `account` will be set to `base::nullopt`.
+  // callback. Otherwise `account` will be set to `absl::nullopt`.
   virtual void ShowAddAccountDialog(
       const AccountAdditionSource& source,
       base::OnceCallback<void(const AccountAdditionResult& result)>

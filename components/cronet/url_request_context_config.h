@@ -11,13 +11,13 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verifier.h"
 #include "net/http/http_network_session.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifier;
@@ -128,7 +128,7 @@ struct URLRequestContextConfig {
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
       // not specify for other targets.
-      base::Optional<double> network_thread_priority);
+      absl::optional<double> network_thread_priority);
   ~URLRequestContextConfig();
 
   // Configures |context_builder| based on |this|.
@@ -184,7 +184,7 @@ struct URLRequestContextConfig {
 
   // If set, forces NQE to return the set value as the effective connection
   // type.
-  base::Optional<net::EffectiveConnectionType>
+  absl::optional<net::EffectiveConnectionType>
       nqe_forced_effective_connection_type;
 
   // Preloaded Report-To headers, to preconfigure the Reporting API.
@@ -196,7 +196,7 @@ struct URLRequestContextConfig {
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
   // On iOS, corresponds to NSThread::setThreadPriority values.
-  const base::Optional<double> network_thread_priority;
+  const absl::optional<double> network_thread_priority;
 
  private:
   // Parses experimental options and makes appropriate changes to settings in
@@ -273,7 +273,7 @@ struct URLRequestContextConfigBuilder {
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
   // On iOS, corresponds to NSThread::setThreadPriority values.
   // Do not specify for other targets.
-  base::Optional<double> network_thread_priority;
+  absl::optional<double> network_thread_priority;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(URLRequestContextConfigBuilder);

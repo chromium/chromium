@@ -60,7 +60,7 @@ class CastStreamingDemuxer : public media::Demuxer {
   base::TimeDelta GetStartTime() const final;
   base::Time GetTimelineOffset() const final;
   int64_t GetMemoryUsage() const final;
-  base::Optional<media::container_names::MediaContainerName>
+  absl::optional<media::container_names::MediaContainerName>
   GetContainerForMetrics() const final;
   void OnEnabledAudioTracksChanged(
       const std::vector<media::MediaTrack::Id>& track_ids,

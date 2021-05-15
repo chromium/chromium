@@ -35,7 +35,7 @@ bool IsKeyNumerical(const std::string& key) {
 
 }  // namespace
 
-base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
+absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
                                                  const Schema& schema) {
   if (!schema.valid())
     return value.Clone();
@@ -46,7 +46,7 @@ base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
     if (value.is_dict()) {
       base::Value result(base::Value::Type::DICTIONARY);
       for (const auto& entry : value.DictItems()) {
-        base::Optional<base::Value> converted =
+        absl::optional<base::Value> converted =
             ConvertRegistryValue(entry.second, schema.GetProperty(entry.first));
         if (converted.has_value())
           result.SetKey(entry.first, std::move(converted.value()));
@@ -55,7 +55,7 @@ base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
     } else if (value.is_list()) {
       base::Value result(base::Value::Type::LIST);
       for (const auto& entry : value.GetList()) {
-        base::Optional<base::Value> converted =
+        absl::optional<base::Value> converted =
             ConvertRegistryValue(entry, schema.GetItems());
         if (converted.has_value())
           result.Append(std::move(converted.value()));
@@ -108,7 +108,7 @@ base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
         for (const auto& it : value.DictItems()) {
           if (!IsKeyNumerical(it.first))
             continue;
-          base::Optional<base::Value> converted =
+          absl::optional<base::Value> converted =
               ConvertRegistryValue(it.second, schema.GetItems());
           if (converted.has_value())
             result.Append(std::move(converted.value()));
@@ -121,7 +121,7 @@ base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
     case base::Value::Type::DICTIONARY: {
       // Dictionaries may be encoded as JSON strings.
       if (value.is_string()) {
-        base::Optional<base::Value> result = base::JSONReader::Read(
+        absl::optional<base::Value> result = base::JSONReader::Read(
             value.GetString(),
             base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
         if (result.has_value() && result.value().type() == schema.type())
@@ -137,7 +137,7 @@ base::Optional<base::Value> ConvertRegistryValue(const base::Value& value,
 
   LOG(WARNING) << "Failed to convert " << value.type() << " to "
                << schema.type();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool CaseInsensitiveStringCompare::operator()(const std::string& a,
@@ -309,7 +309,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
         if (matching_schemas.empty())
           matching_schemas.push_back(Schema());
         for (const Schema& subschema : matching_schemas) {
-          base::Optional<base::Value> converted =
+          absl::optional<base::Value> converted =
               ConvertRegistryValue(*entry->second, subschema);
           if (converted.has_value()) {
             result->SetKey(entry->first, std::move(converted.value()));
@@ -352,7 +352,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
            entry != values_.end(); ++entry) {
         if (!IsKeyNumerical(entry->first))
           continue;
-        base::Optional<base::Value> converted =
+        absl::optional<base::Value> converted =
             ConvertRegistryValue(*entry->second, item_schema);
         if (converted.has_value())
           result->Append(std::move(converted.value()));

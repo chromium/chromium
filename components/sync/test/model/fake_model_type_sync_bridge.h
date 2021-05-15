@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/optional.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/metadata_batch.h"
@@ -19,6 +18,7 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -113,10 +113,10 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
 
   // ModelTypeSyncBridge implementation
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  base::Optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  base::Optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

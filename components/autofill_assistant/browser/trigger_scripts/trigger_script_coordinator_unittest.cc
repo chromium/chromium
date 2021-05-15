@@ -177,7 +177,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   base::MockCallback<base::OnceCallback<void(
       Metrics::TriggerScriptFinishedState result,
       std::unique_ptr<TriggerContext> trigger_context,
-      base::Optional<TriggerScriptProto> trigger_script)>>
+      absl::optional<TriggerScriptProto> trigger_script)>>
       mock_callback_;
   FakeStarterPlatformDelegate fake_platform_delegate_;
   NiceMock<MockTriggerScriptUiDelegate>* mock_ui_delegate_;

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -23,6 +22,7 @@
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
@@ -137,7 +137,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   // Profile / KeyedServices - but with the availability of IdentityManager. We
   // don't have such a place in Lacros - which guarantees that the Primary
   // Account will be available on startup - just like Ash.
-  base::Optional<account_manager::Account> initial_account =
+  absl::optional<account_manager::Account> initial_account =
       signin_client_->GetInitialPrimaryAccount();
   if (initial_account.has_value()) {
     SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
@@ -179,7 +179,7 @@ void IdentityManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-// TODO(862619) change return type to base::Optional<CoreAccountInfo>
+// TODO(862619) change return type to absl::optional<CoreAccountInfo>
 CoreAccountInfo IdentityManager::GetPrimaryAccountInfo(
     ConsentLevel consent) const {
   return primary_account_manager_->GetPrimaryAccountInfo(consent);
@@ -298,7 +298,7 @@ GoogleServiceAuthError IdentityManager::GetErrorStateOfRefreshTokenForAccount(
   return token_service_->GetAuthError(account_id);
 }
 
-base::Optional<AccountInfo>
+absl::optional<AccountInfo>
 IdentityManager::FindExtendedAccountInfoForAccountWithRefreshToken(
     const CoreAccountInfo& account_info) const {
   AccountInfo extended_account_info =
@@ -308,12 +308,12 @@ IdentityManager::FindExtendedAccountInfoForAccountWithRefreshToken(
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.
   if (!HasAccountWithRefreshToken(extended_account_info.account_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
 }
 
-base::Optional<AccountInfo>
+absl::optional<AccountInfo>
 IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
     const CoreAccountId& account_id) const {
   AccountInfo account_info =
@@ -323,12 +323,12 @@ IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.
   if (!HasAccountWithRefreshToken(account_info.account_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
 }
 
-base::Optional<AccountInfo> IdentityManager::
+absl::optional<AccountInfo> IdentityManager::
     FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
         const std::string& email_address) const {
   AccountInfo account_info =
@@ -338,12 +338,12 @@ base::Optional<AccountInfo> IdentityManager::
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.
   if (!HasAccountWithRefreshToken(account_info.account_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
 }
 
-base::Optional<AccountInfo>
+absl::optional<AccountInfo>
 IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
     const std::string& gaia_id) const {
   AccountInfo account_info =
@@ -353,7 +353,7 @@ IdentityManager::FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
   // case of failure, the AccountInfo will be unpopulated, thus we should not
   // be able to find a valid refresh token.
   if (!HasAccountWithRefreshToken(account_info.account_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetAccountInfoForAccountWithRefreshToken(account_info.account_id);
 }

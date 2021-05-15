@@ -395,7 +395,7 @@ void SoftwareRenderer::DrawPictureQuad(const PictureDrawQuad* quad) {
 
   SkCanvas* raster_canvas = current_canvas_;
 
-  base::Optional<skia::OpacityFilterCanvas> opacity_canvas;
+  absl::optional<skia::OpacityFilterCanvas> opacity_canvas;
   if (needs_transparency || disable_image_filtering) {
     // TODO(aelias): This isn't correct in all cases. We should detect these
     // cases and fall back to a persistent bitmap backing
@@ -751,10 +751,10 @@ SkBitmap SoftwareRenderer::GetBackdropBitmap(
 gfx::Rect SoftwareRenderer::GetBackdropBoundingBoxForRenderPassQuad(
     const AggregatedRenderPassDrawQuad* quad,
     const cc::FilterOperations* backdrop_filters,
-    base::Optional<gfx::RRectF> backdrop_filter_bounds_input,
+    absl::optional<gfx::RRectF> backdrop_filter_bounds_input,
     gfx::Transform contents_device_transform,
     gfx::Transform* backdrop_filter_bounds_transform,
-    base::Optional<gfx::RRectF>* backdrop_filter_bounds,
+    absl::optional<gfx::RRectF>* backdrop_filter_bounds,
     gfx::Rect* unclipped_rect) const {
   DCHECK(backdrop_filter_bounds_transform);
   DCHECK(backdrop_filter_bounds);
@@ -794,7 +794,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
       BackdropFiltersForPass(quad->render_pass_id);
   if (!ShouldApplyBackdropFilters(backdrop_filters, quad))
     return nullptr;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds_input =
+  absl::optional<gfx::RRectF> backdrop_filter_bounds_input =
       BackdropFilterBoundsForPass(quad->render_pass_id);
   DCHECK(!FiltersForPass(quad->render_pass_id))
       << "Filters should always be in a separate Effect node";
@@ -812,7 +812,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
       quad_rect_matrix;
   contents_device_transform.FlattenTo2d();
 
-  base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds;
   gfx::Transform backdrop_filter_bounds_transform;
   gfx::Rect unclipped_rect;
   gfx::Rect backdrop_rect = GetBackdropBoundingBoxForRenderPassQuad(

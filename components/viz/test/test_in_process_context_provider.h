@@ -92,7 +92,7 @@ class TestInProcessContextProvider
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
-  base::Optional<base::Lock> context_lock_;
+  absl::optional<base::Lock> context_lock_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 };
 

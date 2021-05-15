@@ -56,7 +56,7 @@ void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
   DCHECK_EQ(state_, State::kStarted);
   if (proceed) {
     state_ = State::kSafe;
-    std::move(completion_callback_).Run(base::nullopt);
+    std::move(completion_callback_).Run(absl::nullopt);
   } else {
     // When the insterstitial is dismissed the page is navigated and this object
     // is destroyed before reaching here.
@@ -94,7 +94,7 @@ void WebSocketSBHandshakeThrottle::OnMojoDisconnect() {
   notifier_receiver_.reset();
 
   state_ = State::kNotSupported;
-  std::move(completion_callback_).Run(base::nullopt);
+  std::move(completion_callback_).Run(absl::nullopt);
   // |this| is destroyed here.
 }
 

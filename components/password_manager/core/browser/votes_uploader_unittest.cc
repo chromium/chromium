@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/hash/hash.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillDownloadManager;
 using autofill::CONFIRMATION_PASSWORD;
@@ -275,7 +275,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
     for (int i = 0; i < kNumberOfRuns; ++i) {
       votes_uploader.GeneratePasswordAttributesVote(password_value,
                                                     &form_structure);
-      base::Optional<std::pair<PasswordAttribute, bool>> vote =
+      absl::optional<std::pair<PasswordAttribute, bool>> vote =
           form_structure.get_password_attributes_vote();
       int attribute_index = static_cast<int>(vote->first);
       if (vote->second)
@@ -332,7 +332,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
 
     votes_uploader.GeneratePasswordAttributesVote(password_value,
                                                   &form_structure);
-    base::Optional<std::pair<PasswordAttribute, bool>> vote =
+    absl::optional<std::pair<PasswordAttribute, bool>> vote =
         form_structure.get_password_attributes_vote();
 
     // Continue if the vote is not about special symbols or implies that no
@@ -362,7 +362,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_OneCharacterPassword) {
   FormStructure form_structure(form);
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.GeneratePasswordAttributesVote(u"1", &form_structure);
-  base::Optional<std::pair<PasswordAttribute, bool>> vote =
+  absl::optional<std::pair<PasswordAttribute, bool>> vote =
       form_structure.get_password_attributes_vote();
   EXPECT_TRUE(vote.has_value());
   size_t reported_length = form_structure.get_password_length_vote();
@@ -377,7 +377,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_AllAsciiCharacters) {
       u"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
       u"stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
       &form_structure);
-  base::Optional<std::pair<PasswordAttribute, bool>> vote =
+  absl::optional<std::pair<PasswordAttribute, bool>> vote =
       form_structure.get_password_attributes_vote();
   EXPECT_TRUE(vote.has_value());
 }
@@ -393,7 +393,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
     FormStructure form_structure(form);
     VotesUploader votes_uploader(&client_, true);
     votes_uploader.GeneratePasswordAttributesVote(password, &form_structure);
-    base::Optional<std::pair<PasswordAttribute, bool>> vote =
+    absl::optional<std::pair<PasswordAttribute, bool>> vote =
         form_structure.get_password_attributes_vote();
 
     EXPECT_FALSE(vote.has_value()) << password;

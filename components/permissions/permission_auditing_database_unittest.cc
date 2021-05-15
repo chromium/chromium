@@ -80,7 +80,7 @@ class PermissionAuditingDatabaseTest : public testing::Test {
     return db_.GetPermissionUsageHistory(type, GetOrigin(url), starting_from);
   }
 
-  base::Optional<base::Time> GetLastUsageTime(ContentSettingsType type,
+  absl::optional<base::Time> GetLastUsageTime(ContentSettingsType type,
                                               const char* url) {
     return db_.GetLastPermissionUsageTime(type, GetOrigin(url));
   }

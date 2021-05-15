@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 
@@ -45,7 +45,7 @@ struct SESSIONS_EXPORT SerializedUserAgentOverride {
   // Override of user-agent client hints. Format is user dependent; content/
   // encodes it via blink::UserAgentMetadata::Marshal(). Should be nullopt
   // if |ua_string_override| is empty.
-  base::Optional<std::string> opaque_ua_metadata_override;
+  absl::optional<std::string> opaque_ua_metadata_override;
 };
 
 }  // namespace sessions

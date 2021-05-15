@@ -10,11 +10,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -152,9 +152,9 @@ class V8DetailedMemoryExecutionContextData {
   // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
   // the browser does not know URLs of dedicated workers, so we pass them
   // together with the measurement result and store in ExecutionContext data.
-  base::Optional<std::string> url() const { return url_; }
+  absl::optional<std::string> url() const { return url_; }
 
-  void set_url(base::Optional<std::string> url) { url_ = std::move(url); }
+  void set_url(absl::optional<std::string> url) { url_ = std::move(url); }
 
   // Returns frame data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
@@ -175,7 +175,7 @@ class V8DetailedMemoryExecutionContextData {
       const WorkerNode* node);
 
   uint64_t v8_bytes_used_ = 0;
-  base::Optional<std::string> url_;
+  absl::optional<std::string> url_;
 };
 
 class V8DetailedMemoryProcessData {
@@ -334,7 +334,7 @@ class V8DetailedMemoryRequest {
       base::PassKey<V8DetailedMemoryRequestAnySeq>,
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode,
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+      absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
       base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request);
 
   // Private constructor for V8DetailedMemoryRequestOneShot. Sets
@@ -358,7 +358,7 @@ class V8DetailedMemoryRequest {
 
  private:
   void StartMeasurementFromOffSequence(
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+      absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
       Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 

@@ -236,8 +236,8 @@ TEST_F(UserModelTest, SubscriptAccess) {
   EXPECT_EQ(model_.GetValue("value[2]"), SimpleValue(std::string("c")));
   EXPECT_EQ(model_.GetValue("value[001]"), SimpleValue(std::string("b")));
 
-  EXPECT_EQ(model_.GetValue("value[3]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("value[-1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[3]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("value[-1]"), absl::nullopt);
 
   model_.SetValue("index", SimpleValue(0));
   EXPECT_EQ(model_.GetValue("value[index]"), SimpleValue(std::string("a")));
@@ -246,14 +246,14 @@ TEST_F(UserModelTest, SubscriptAccess) {
   model_.SetValue("index", SimpleValue(2));
   EXPECT_EQ(model_.GetValue("value[index]"), SimpleValue(std::string("c")));
   model_.SetValue("index", SimpleValue(3));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
   model_.SetValue("index", SimpleValue(-1));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
 
   model_.SetValue("index", SimpleValue(0));
   EXPECT_EQ(model_.GetValue("value[index[0]]"), SimpleValue(std::string("a")));
   model_.SetValue("index", SimpleValue(std::string("not an index")));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
 
   ValueProto indices;
   indices.mutable_ints()->add_values(2);
@@ -299,14 +299,14 @@ TEST_F(UserModelTest, IrregularModelIdentifiers) {
   // irregular characters (i.e., outside of \w+).
   EXPECT_EQ(model_.GetValue("normal_identifier[1]"),
             SimpleValue(std::string("b")));
-  EXPECT_EQ(model_.GetValue("ends_in_bracket][1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("contains_[brackets][1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("[][0]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("empty_brackets[1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("empty_brackets[][1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("ends_in_bracket][1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("contains_[brackets][1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("[][0]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("empty_brackets[1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("empty_brackets[][1]"), absl::nullopt);
 
   // Subscript access into UTF-8 identifiers is not supported.
-  EXPECT_EQ(model_.GetValue("utf_8_ü万𠜎[1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("utf_8_ü万𠜎[1]"), absl::nullopt);
 }
 
 TEST_F(UserModelTest, SetCreditCards) {

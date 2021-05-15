@@ -24,7 +24,7 @@ namespace syncer {
 namespace {
 
 sync_pb::SharedMemberKey CreateSharedMemberKey(
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
   std::vector<uint8_t> trusted_vault_key;
@@ -71,7 +71,7 @@ sync_pb::SecurityDomainMember CreateSecurityDomainMember(
 }
 
 sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type) {
@@ -166,7 +166,7 @@ TrustedVaultConnectionImpl::~TrustedVaultConnectionImpl() = default;
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type,
@@ -190,7 +190,7 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadNewKeys(
     const CoreAccountInfo& account_info,
-    const base::Optional<TrustedVaultKeyAndVersion>&
+    const absl::optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
@@ -199,7 +199,7 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       GURL(trusted_vault_service_url_.spec() +
            GetGetSecurityDomainMemberURLPathAndQuery(
                device_key_pair->public_key().ExportToBytes())),
-      /*serialized_request_proto=*/base::nullopt);
+      /*serialized_request_proto=*/absl::nullopt);
 
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, GetOrCreateURLLoaderFactory(),
@@ -222,7 +222,7 @@ TrustedVaultConnectionImpl::RetrieveIsRecoverabilityDegraded(
       TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
            kGetSecurityDomainURLPathAndQuery),
-      /*serialized_request_proto=*/base::nullopt);
+      /*serialized_request_proto=*/absl::nullopt);
 
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, GetOrCreateURLLoaderFactory(),

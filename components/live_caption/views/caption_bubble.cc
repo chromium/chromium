@@ -686,7 +686,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
 }
 
 void CaptionBubble::UpdateCaptionStyle(
-    base::Optional<ui::CaptionStyle> caption_style) {
+    absl::optional<ui::CaptionStyle> caption_style) {
   caption_style_ = caption_style;
   SetCaptionBubbleStyle();
   Redraw();

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace safe_browsing {
@@ -49,7 +49,7 @@ std::string GetHashFromBlurredImage(VisualFeatures::BlurredImage blurred_image);
 // and then GetHashFromBlurredImage() to |image|. |histogram| should be obtained
 // by applying GetHistogramForImage() to |image|. Returns nullopt in the case of
 // no match, and the VisionMatchResult if it is a match.
-base::Optional<VisionMatchResult> IsVisualMatch(
+absl::optional<VisionMatchResult> IsVisualMatch(
     const SkBitmap& image,
     const std::string& blurred_image_hash,
     const VisualFeatures::ColorHistogram& histogram,

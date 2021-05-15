@@ -100,7 +100,7 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
   return StartupMode::START_RPC_TRIGGER_SCRIPT;
 }
 
-base::Optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
+absl::optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
     const TriggerContext& trigger_context) const {
   GURL url =
       GURL(trigger_context.GetScriptParameters().GetOriginalDeeplink().value_or(
@@ -114,7 +114,7 @@ base::Optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
     return url;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace autofill_assistant

@@ -12,9 +12,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -105,8 +105,8 @@ class DeviceInfo {
              base::Time last_updated_timestamp,
              base::TimeDelta pulse_interval,
              bool send_tab_to_self_receiving_enabled,
-             const base::Optional<SharingInfo>& sharing_info,
-             const base::Optional<PhoneAsASecurityKeyInfo>& paask_info,
+             const absl::optional<SharingInfo>& sharing_info,
+             const absl::optional<PhoneAsASecurityKeyInfo>& paask_info,
              const std::string& fcm_registration_token,
              const ModelTypeSet& interested_data_types);
   ~DeviceInfo();
@@ -161,9 +161,9 @@ class DeviceInfo {
   bool send_tab_to_self_receiving_enabled() const;
 
   // Returns Sharing related info of the device.
-  const base::Optional<SharingInfo>& sharing_info() const;
+  const absl::optional<SharingInfo>& sharing_info() const;
 
-  const base::Optional<PhoneAsASecurityKeyInfo>& paask_info() const;
+  const absl::optional<PhoneAsASecurityKeyInfo>& paask_info() const;
 
   // Returns the FCM registration token for sync invalidations.
   const std::string& fcm_registration_token() const;
@@ -190,7 +190,7 @@ class DeviceInfo {
 
   void set_send_tab_to_self_receiving_enabled(bool new_value);
 
-  void set_sharing_info(const base::Optional<SharingInfo>& sharing_info);
+  void set_sharing_info(const absl::optional<SharingInfo>& sharing_info);
 
   void set_paask_info(PhoneAsASecurityKeyInfo&& paask_info);
 
@@ -235,9 +235,9 @@ class DeviceInfo {
 
   bool send_tab_to_self_receiving_enabled_;
 
-  base::Optional<SharingInfo> sharing_info_;
+  absl::optional<SharingInfo> sharing_info_;
 
-  base::Optional<PhoneAsASecurityKeyInfo> paask_info_;
+  absl::optional<PhoneAsASecurityKeyInfo> paask_info_;
 
   // An FCM registration token obtained by sync invalidations service.
   std::string fcm_registration_token_;

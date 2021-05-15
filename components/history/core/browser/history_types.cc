@@ -245,7 +245,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          false,
                          true,
                          false,
-                         base::nullopt) {}
+                         absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        base::Time time,
@@ -259,7 +259,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
                                        bool floc_allowed,
-                                       base::Optional<std::u16string> title)
+                                       absl::optional<std::u16string> title)
     : url(url),
       time(time),
       context_id(context_id),
@@ -325,7 +325,7 @@ bool DeletionTimeRange::IsAllTime() const {
 // static
 DeletionInfo DeletionInfo::ForAllHistory() {
   return DeletionInfo(DeletionTimeRange::AllTime(), false, {}, {},
-                      base::nullopt);
+                      absl::nullopt);
 }
 
 // static
@@ -333,14 +333,14 @@ DeletionInfo DeletionInfo::ForUrls(URLRows deleted_rows,
                                    std::set<GURL> favicon_urls) {
   return DeletionInfo(DeletionTimeRange::Invalid(), false,
                       std::move(deleted_rows), std::move(favicon_urls),
-                      base::nullopt);
+                      absl::nullopt);
 }
 
 DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            bool is_from_expiration,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
-                           base::Optional<std::set<GURL>> restrict_urls)
+                           absl::optional<std::set<GURL>> restrict_urls)
     : time_range_(time_range),
       is_from_expiration_(is_from_expiration),
       deleted_rows_(std::move(deleted_rows)),

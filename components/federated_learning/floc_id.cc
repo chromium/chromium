@@ -116,7 +116,7 @@ void FlocId::ResetComputeTimeAndSaveToPrefs(base::Time compute_time,
 
 // static
 FlocId FlocId::ReadFromPrefs(PrefService* prefs) {
-  base::Optional<uint64_t> id;
+  absl::optional<uint64_t> id;
   if (prefs->HasPrefPath(kFlocIdValuePrefKey))
     id = prefs->GetUint64(kFlocIdValuePrefKey);
 
@@ -127,7 +127,7 @@ FlocId FlocId::ReadFromPrefs(PrefService* prefs) {
                 prefs->GetTime(kFlocIdComputeTimePrefKey));
 }
 
-FlocId::FlocId(base::Optional<uint64_t> id,
+FlocId::FlocId(absl::optional<uint64_t> id,
                base::Time history_begin_time,
                base::Time history_end_time,
                uint32_t finch_config_version,

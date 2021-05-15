@@ -83,7 +83,7 @@ void BackgroundSyncMetrics::MaybeRecordPeriodicSyncEventCompletion(
 
 void BackgroundSyncMetrics::DidGetBackgroundSourceId(
     RecordCallback record_callback,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   // This background event did not meet the requirements for the UKM service.
   if (!source_id)
     return;

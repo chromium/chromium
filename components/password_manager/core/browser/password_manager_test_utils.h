@@ -115,32 +115,32 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
   MOCK_METHOD5(OnReuseCheckDone,
                void(bool,
                     size_t,
-                    base::Optional<PasswordHashData>,
+                    absl::optional<PasswordHashData>,
                     const std::vector<MatchingReusedCredential>&,
                     int));
 };
 
 // Matcher class used to compare PasswordHashData in tests.
 class PasswordHashDataMatcher
-    : public ::testing::MatcherInterface<base::Optional<PasswordHashData>> {
+    : public ::testing::MatcherInterface<absl::optional<PasswordHashData>> {
  public:
-  explicit PasswordHashDataMatcher(base::Optional<PasswordHashData> expected);
+  explicit PasswordHashDataMatcher(absl::optional<PasswordHashData> expected);
   ~PasswordHashDataMatcher() override = default;
 
   // ::testing::MatcherInterface overrides
-  bool MatchAndExplain(base::Optional<PasswordHashData> hash_data,
+  bool MatchAndExplain(absl::optional<PasswordHashData> hash_data,
                        ::testing::MatchResultListener* listener) const override;
   void DescribeTo(::std::ostream* os) const override;
   void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
-  const base::Optional<PasswordHashData> expected_;
+  const absl::optional<PasswordHashData> expected_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordHashDataMatcher);
 };
 
-::testing::Matcher<base::Optional<PasswordHashData>> Matches(
-    base::Optional<PasswordHashData> expected);
+::testing::Matcher<absl::optional<PasswordHashData>> Matches(
+    absl::optional<PasswordHashData> expected);
 
 }  // namespace password_manager
 

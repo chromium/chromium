@@ -344,7 +344,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
       ->NavigateAndCommit(GURL("https://www.example.com"));
   element->container_frame_host = web_contents_->GetMainFrame();
 
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   EXPECT_CALL(*this, MockValueAction("username", _, _))
@@ -369,7 +369,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
       ->NavigateAndCommit(GURL("https://www.other.com"));
   element->container_frame_host = web_contents_->GetMainFrame();
 
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   EXPECT_CALL(*this, MockValueAction("username", _, _)).Times(0);

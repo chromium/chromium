@@ -15,13 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -62,7 +62,7 @@ class Component {
 
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(
-      const base::Optional<ProtocolParser::Result>& result,
+      const absl::optional<ProtocolParser::Result>& result,
       ErrorCategory error_category,
       int error);
 
@@ -84,7 +84,7 @@ class Component {
 
   std::string id() const { return id_; }
 
-  const base::Optional<CrxComponent>& crx_component() const {
+  const absl::optional<CrxComponent>& crx_component() const {
     return crx_component_;
   }
   void set_crx_component(const CrxComponent& crx_component) {
@@ -411,7 +411,7 @@ class Component {
   SEQUENCE_CHECKER(sequence_checker_);
 
   const std::string id_;
-  base::Optional<CrxComponent> crx_component_;
+  absl::optional<CrxComponent> crx_component_;
 
   // The status of the updatecheck response.
   std::string status_;
@@ -478,7 +478,7 @@ class Component {
 
   // Contains the optional |run| and |arguments| values in the update response
   // manifest. This data is provided as an argument to the |Install| call.
-  base::Optional<CrxInstaller::InstallParams> install_params_;
+  absl::optional<CrxInstaller::InstallParams> install_params_;
 
   // Contains the events which are therefore serialized in the requests.
   std::vector<base::Value> events_;

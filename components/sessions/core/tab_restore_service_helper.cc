@@ -91,23 +91,23 @@ void TabRestoreServiceHelper::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-base::Optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
+absl::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
     LiveTab* live_tab,
     int index) {
   if (restoring_)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If an entire window or group is being closed than all of the tabs have
   // already been persisted via "BrowserClosing" or "CreateHistoricalGroup".
   // Ignore the subsequent tab closing notifications.
   LiveTabContext* context = client_->FindLiveTabContextForTab(live_tab);
   if (closing_contexts_.find(context) != closing_contexts_.end())
-    return base::nullopt;
-  base::Optional<tab_groups::TabGroupId> group =
-      context ? context->GetTabGroupForTab(index) : base::nullopt;
+    return absl::nullopt;
+  absl::optional<tab_groups::TabGroupId> group =
+      context ? context->GetTabGroupForTab(index) : absl::nullopt;
   if (group.has_value() &&
       closing_groups_.find(group.value()) != closing_groups_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Save the Window as well as the Tab if this is the last tab of an appp
@@ -115,13 +115,13 @@ base::Optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
   if (context && context->GetTabCount() == 1 &&
       !context->GetAppName().empty()) {
     BrowserClosing(context);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto local_tab = std::make_unique<Tab>();
   PopulateTab(local_tab.get(), index, context, live_tab);
   if (local_tab->navigations.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   SessionID id = local_tab->id;
   AddEntry(std::move(local_tab), true, true);
@@ -750,11 +750,11 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
     tab->group_visual_data =
         tab->group.has_value()
-            ? base::Optional<
+            ? absl::optional<
                   tab_groups::TabGroupVisualData>{*context
                                                        ->GetVisualDataForGroup(
                                                            tab->group.value())}
-            : base::nullopt;
+            : absl::nullopt;
   }
 }
 
@@ -766,7 +766,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
   LiveTab* restored_tab;
   if (disposition == WindowOpenDisposition::CURRENT_TAB && context) {
     restored_tab = context->ReplaceRestoredTab(
-        tab.navigations, base::nullopt, tab.current_navigation_index,
+        tab.navigations, absl::nullopt, tab.current_navigation_index,
         tab.extension_app_id, tab.platform_data.get(), tab.user_agent_override);
   } else {
     // We only respect the tab's original browser if there's no disposition.

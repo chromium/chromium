@@ -37,7 +37,7 @@ base::Version ExtractVersionFromJsonObject(base::Value& root);
 //    }
 //  }
 //  An example can be found in the relative resources folder.
-base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
+absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
     const base::Value& root);
 
 // Tries to get and parse the default configuration in the resource bundle
@@ -51,7 +51,7 @@ void PopulateFromResourceBundle(
 void PopulateFromJsonString(std::string json_string);
 
 // Synchronous getter used to set up a test fixture.
-base::Optional<PatternProvider::Map>
+absl::optional<PatternProvider::Map>
 GetPatternsFromResourceBundleSynchronously();
 
 }  // namespace field_type_parsing

@@ -302,7 +302,7 @@ struct GLRenderer::DrawRenderPassDrawQuadParams {
   gfx::Transform quad_to_target_transform;
   const cc::FilterOperations* filters = nullptr;
   const cc::FilterOperations* backdrop_filters = nullptr;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds;
 
   // Whether the texture to be sampled from needs to be flipped.
   bool source_needs_flip = false;
@@ -866,7 +866,7 @@ bool GLRenderer::ShouldApplyBackdropFilters(
 gfx::Rect GLRenderer::GetBackdropBoundingBoxForRenderPassQuad(
     DrawRenderPassDrawQuadParams* params,
     gfx::Transform* backdrop_filter_bounds_transform,
-    base::Optional<gfx::RRectF>* backdrop_filter_bounds,
+    absl::optional<gfx::RRectF>* backdrop_filter_bounds,
     gfx::Rect* unclipped_rect) const {
   DCHECK(backdrop_filter_bounds_transform);
   DCHECK(backdrop_filter_bounds);
@@ -1052,7 +1052,7 @@ static sk_sp<SkImage> FinalizeImage(sk_sp<SkSurface> surface) {
 sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
     DrawRenderPassDrawQuadParams* params,
     const gfx::Rect& unclipped_rect,
-    const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+    const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
     const gfx::Transform& backdrop_filter_bounds_transform) {
   DCHECK(ShouldApplyBackdropFilters(params));
   DCHECK(params->backdrop_filter_quality > 0.0f &&
@@ -1420,7 +1420,7 @@ void GLRenderer::UpdateRPDQShadersForBlending(
   if (params->use_shaders_for_blending) {
     // Compute a bounding box around the pixels that will be visible through
     // the quad.
-    base::Optional<gfx::RRectF> backdrop_filter_bounds;
+    absl::optional<gfx::RRectF> backdrop_filter_bounds;
     gfx::Transform backdrop_filter_bounds_transform;
     gfx::Rect unclipped_rect;
     params->background_rect = GetBackdropBoundingBoxForRenderPassQuad(
@@ -2600,7 +2600,7 @@ void GLRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   }
 #endif
 
-  // TODO(jbauman): Use base::Optional when available.
+  // TODO(jbauman): Use absl::optional when available.
   std::unique_ptr<DisplayResourceProviderGL::ScopedSamplerGL> v_plane_lock;
   if (uv_texture_mode == UV_TEXTURE_MODE_U_V) {
     v_plane_lock = std::make_unique<DisplayResourceProviderGL::ScopedSamplerGL>(

@@ -1288,7 +1288,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
     underlying_store()->ReadData(
         {header_storage_key, tab_storage_key},
         base::BindLambdaForTesting(
-            [&](const base::Optional<syncer::ModelError>& error,
+            [&](const absl::optional<syncer::ModelError>& error,
                 std::unique_ptr<syncer::ModelTypeStore::RecordList>
                     data_records,
                 std::unique_ptr<syncer::ModelTypeStore::IdList>
@@ -1306,7 +1306,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   {
     base::RunLoop loop;
     underlying_store()->ReadAllMetadata(base::BindLambdaForTesting(
-        [&](const base::Optional<syncer::ModelError>& error,
+        [&](const absl::optional<syncer::ModelError>& error,
             std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
           syncer::EntityMetadataMap entity_metadata_map =
               metadata_batch->TakeAllMetadata();

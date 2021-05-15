@@ -64,7 +64,7 @@ base::FilePath CreateDir(scoped_refptr<FileManager> manager,
       base::BindOnce(&FileManager::CreateOrGetDirectory, manager, key, false),
       base::BindOnce(
           [](base::OnceClosure quit, base::FilePath* out,
-             const base::Optional<base::FilePath>& path) {
+             const absl::optional<base::FilePath>& path) {
             EXPECT_TRUE(path.has_value());
             EXPECT_FALSE(path->empty());
             *out = path.value();
@@ -205,7 +205,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   params->max_decoded_image_size_bytes = 1000;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->embedding_token = base::nullopt;
+  response->embedding_token = absl::nullopt;
   if (GetParam() == RecordingPersistence::kMemoryBuffer) {
     response->skp.emplace(mojo_base::BigBuffer());
   }
@@ -276,7 +276,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->embedding_token = base::nullopt;
+  response->embedding_token = absl::nullopt;
   recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
   OverrideInterface(&recorder);
 
@@ -313,7 +313,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->embedding_token = base::nullopt;
+  response->embedding_token = absl::nullopt;
   recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
   OverrideInterface(&recorder);
 

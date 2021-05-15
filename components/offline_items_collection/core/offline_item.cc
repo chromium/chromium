@@ -33,7 +33,7 @@ bool ContentId::operator<(const ContentId& content_id) const {
 // -----------------------------------------------------------------------------
 // OfflineItemSchedule.
 OfflineItemSchedule::OfflineItemSchedule(bool only_on_wifi,
-                                         base::Optional<base::Time> start_time)
+                                         absl::optional<base::Time> start_time)
     : only_on_wifi(only_on_wifi), start_time(std::move(start_time)) {}
 
 OfflineItemSchedule::OfflineItemSchedule(const OfflineItemSchedule& other) =

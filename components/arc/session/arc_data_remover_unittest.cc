@@ -83,8 +83,8 @@ TEST_F(ArcDataRemoverTest, NotScheduled) {
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, base::Optional<bool> result) {
-        EXPECT_EQ(result, base::nullopt);
+      [](base::RunLoop* loop, absl::optional<bool> result) {
+        EXPECT_EQ(result, absl::nullopt);
         loop->Quit();
       },
       &loop));
@@ -99,8 +99,8 @@ TEST_F(ArcDataRemoverTest, Success) {
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, base::Optional<bool> result) {
-        EXPECT_EQ(result, base::make_optional(true));
+      [](base::RunLoop* loop, absl::optional<bool> result) {
+        EXPECT_EQ(result, absl::make_optional(true));
         loop->Quit();
       },
       &loop));
@@ -113,8 +113,8 @@ TEST_F(ArcDataRemoverTest, Fail) {
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, base::Optional<bool> result) {
-        EXPECT_EQ(result, base::make_optional(false));
+      [](base::RunLoop* loop, absl::optional<bool> result) {
+        EXPECT_EQ(result, absl::make_optional(false));
         loop->Quit();
       },
       &loop));

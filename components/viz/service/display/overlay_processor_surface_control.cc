@@ -92,7 +92,7 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
 }
 
 void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
-    base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   // For surface control, we should always have a valid |output_surface_plane|
   // here.
   DCHECK(output_surface_plane && output_surface_plane->has_value());

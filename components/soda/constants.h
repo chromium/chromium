@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/soda/pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace speech {
 
@@ -126,10 +126,10 @@ const base::FilePath GetLatestSodaDirectory();
 // installed.
 const base::FilePath GetSodaBinaryPath();
 
-base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code);
 
-base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name);
 
 LanguageCode GetLanguageCodeByComponentId(const std::string& component_id);

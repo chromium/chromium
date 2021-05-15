@@ -39,7 +39,7 @@ void SetArcVmBootNotificationServerAddressForTesting(
     base::TimeDelta connect_sleep_duration_initial);
 
 // Sets the an FD ConnectToArcVmBootNotificationServer() returns for testing.
-void SetArcVmBootNotificationServerFdForTesting(base::Optional<int> fd);
+void SetArcVmBootNotificationServerFdForTesting(absl::optional<int> fd);
 
 // Generates a list of props from |upgrade_params|, each of which takes the form
 // "prefix.prop_name=value"

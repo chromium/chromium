@@ -14,17 +14,17 @@
 namespace autofill_assistant {
 namespace {
 
-base::Optional<std::vector<std::string>> GetCommandForDomKey(
+absl::optional<std::vector<std::string>> GetCommandForDomKey(
     ui::DomKey dom_key) {
   if (dom_key == ui::DomKey::BACKSPACE) {
     return std::vector<std::string>({"DeleteBackward"});
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<input::DispatchKeyEventParams> CreateKeyEventParamsForKeyEvent(
     input::DispatchKeyEventType type,
-    base::Optional<base::Time> timestamp,
+    absl::optional<base::Time> timestamp,
     const KeyEvent& key_event) {
   auto params = input::DispatchKeyEventParams::Builder().SetType(type).Build();
   if (timestamp) {
@@ -155,7 +155,7 @@ void SendKeyboardInputWorker::DispatchKeyboardTextDownEvent(size_t index) {
   DCHECK_LT(index, key_events_.size());
   devtools_client_->GetInput()->DispatchKeyEvent(
       CreateKeyEventParamsForKeyEvent(input::DispatchKeyEventType::KEY_DOWN,
-                                      base::nullopt, key_events_[index]),
+                                      absl::nullopt, key_events_[index]),
       frame_id_,
       base::BindOnce(&SendKeyboardInputWorker::DispatchKeyboardTextUpEvent,
                      weak_ptr_factory_.GetWeakPtr(), index));
@@ -178,7 +178,7 @@ void SendKeyboardInputWorker::DispatchKeyboardTextUpEvent(
   DCHECK_LT(index, key_events_.size());
   devtools_client_->GetInput()->DispatchKeyEvent(
       CreateKeyEventParamsForKeyEvent(input::DispatchKeyEventType::KEY_UP,
-                                      base::nullopt, key_events_[index]),
+                                      absl::nullopt, key_events_[index]),
       frame_id_,
       base::BindOnce(&SendKeyboardInputWorker::WaitBeforeNextKey,
                      weak_ptr_factory_.GetWeakPtr(), index + 1));

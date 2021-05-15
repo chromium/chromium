@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -20,6 +19,7 @@
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -177,7 +177,7 @@ class GpuArcVideoDecodeAccelerator
 
   size_t protected_input_buffer_count_ = 0;
 
-  base::Optional<bool> secure_mode_ = base::nullopt;
+  absl::optional<bool> secure_mode_ = absl::nullopt;
   size_t output_buffer_count_ = 0;
 
   DecoderState decoder_state_ = DecoderState::kDecoding;

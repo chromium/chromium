@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
@@ -31,6 +30,7 @@
 #include "components/arc/test/fake_arc_bridge_host.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptohome {
 class Identification;
@@ -235,7 +235,7 @@ class TestArcSessionObserver : public ArcSession::Observer {
 
   ~TestArcSessionObserver() override { arc_session_->RemoveObserver(this); }
 
-  const base::Optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
+  const absl::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
     return on_session_stopped_args_;
   }
 
@@ -252,7 +252,7 @@ class TestArcSessionObserver : public ArcSession::Observer {
  private:
   ArcSession* const arc_session_;            // Not owned.
   base::RunLoop* const run_loop_ = nullptr;  // Not owned.
-  base::Optional<OnSessionStoppedArgs> on_session_stopped_args_;
+  absl::optional<OnSessionStoppedArgs> on_session_stopped_args_;
 
   DISALLOW_COPY_AND_ASSIGN(TestArcSessionObserver);
 };
@@ -279,12 +279,12 @@ class FakeSchedulerConfigurationManager
       obs.OnConfigurationSet(reply_->first, reply_->second);
   }
 
-  base::Optional<std::pair<bool, size_t>> GetLastReply() const override {
+  absl::optional<std::pair<bool, size_t>> GetLastReply() const override {
     return reply_;
   }
 
  private:
-  base::Optional<std::pair<bool, size_t>> reply_;
+  absl::optional<std::pair<bool, size_t>> reply_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSchedulerConfigurationManager);
 };

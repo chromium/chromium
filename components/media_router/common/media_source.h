@@ -132,8 +132,8 @@ class MediaSource {
 
   // When this source was created by ForDesktop(), returns the stream ID to pass
   // to content::DesktopStreamsRegistry::RequestMediaForStreamId(). Otherwise,
-  // returns base::nullopt.
-  base::Optional<std::string> DesktopStreamId() const;
+  // returns absl::nullopt.
+  absl::optional<std::string> DesktopStreamId() const;
 
   // Returns true if this source represents desktop capture that also provides
   // audio loopback capture. Returns false otherwise.

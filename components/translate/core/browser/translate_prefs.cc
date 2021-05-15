@@ -479,7 +479,7 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
   std::vector<std::string> result;
   auto* dict = prefs_->GetDictionary(kPrefNeverPromptSitesWithTime);
   for (const auto& entry : dict->DictItems()) {
-    base::Optional<base::Time> time = util::ValueToTime(entry.second);
+    absl::optional<base::Time> time = util::ValueToTime(entry.second);
     if (!time) {
       NOTREACHED();
       continue;

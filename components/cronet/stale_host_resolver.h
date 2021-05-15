@@ -82,7 +82,7 @@ class StaleHostResolver : public net::HostResolver {
       const net::HostPortPair& host,
       const net::NetworkIsolationKey& network_isolation_key,
       const net::NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
 
   // The remaining public methods pass through to the inner resolver:

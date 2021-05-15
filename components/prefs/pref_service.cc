@@ -197,7 +197,7 @@ base::FilePath PrefService::GetFilePath(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
   if (!value)
     return base::FilePath();
-  base::Optional<base::FilePath> result = util::ValueToFilePath(*value);
+  absl::optional<base::FilePath> result = util::ValueToFilePath(*value);
   DCHECK(result);
   return *result;
 }
@@ -493,7 +493,7 @@ void PrefService::SetInt64(const std::string& path, int64_t value) {
 
 int64_t PrefService::GetInt64(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  base::Optional<int64_t> integer = util::ValueToInt64(value);
+  absl::optional<int64_t> integer = util::ValueToInt64(value);
   DCHECK(integer);
   return integer.value_or(0);
 }
@@ -520,7 +520,7 @@ void PrefService::SetTime(const std::string& path, base::Time value) {
 
 base::Time PrefService::GetTime(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  base::Optional<base::Time> time = util::ValueToTime(value);
+  absl::optional<base::Time> time = util::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
 }
@@ -531,7 +531,7 @@ void PrefService::SetTimeDelta(const std::string& path, base::TimeDelta value) {
 
 base::TimeDelta PrefService::GetTimeDelta(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  base::Optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
+  absl::optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
   DCHECK(time_delta);
   return time_delta.value_or(base::TimeDelta());
 }

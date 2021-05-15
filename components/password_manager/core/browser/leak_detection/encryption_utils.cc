@@ -7,7 +7,6 @@
 #include <climits>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -15,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
@@ -85,7 +85,7 @@ std::string BucketizeUsername(base::StringPiece canonicalized_username) {
   return prefix;
 }
 
-base::Optional<std::string> ScryptHashUsernameAndPassword(
+absl::optional<std::string> ScryptHashUsernameAndPassword(
     base::StringPiece canonicalized_username,
     base::StringPiece password) {
   // Constant salt added to the password hash on top of canonicalized_username.
@@ -120,11 +120,11 @@ base::Optional<std::string> ScryptHashUsernameAndPassword(
                      reinterpret_cast<const uint8_t*>(salt.data()), salt.size(),
                      kScryptCost, kScryptBlockSize, kScryptParallelization,
                      kScryptMaxMemory, key_data, kHashKeyLength);
-  return scrypt_ok == 1 ? base::make_optional(std::move(result))
-                        : base::nullopt;
+  return scrypt_ok == 1 ? absl::make_optional(std::move(result))
+                        : absl::nullopt;
 }
 
-base::Optional<std::string> CipherEncrypt(const std::string& plaintext,
+absl::optional<std::string> CipherEncrypt(const std::string& plaintext,
                                           std::string* key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
@@ -136,10 +136,10 @@ base::Optional<std::string> CipherEncrypt(const std::string& plaintext,
       return std::move(result).ValueOrDie();
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
+absl::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
                                                  const std::string& key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
@@ -149,10 +149,10 @@ base::Optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
     if (result.ok())
       return std::move(result).ValueOrDie();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<std::string> CipherReEncrypt(
+absl::optional<std::string> CipherReEncrypt(
     const std::string& already_encrypted,
     std::string* key) {
   using ::private_join_and_compute::ECCommutativeCipher;
@@ -165,10 +165,10 @@ base::Optional<std::string> CipherReEncrypt(
       return std::move(result).ValueOrDie();
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<std::string> CipherDecrypt(const std::string& ciphertext,
+absl::optional<std::string> CipherDecrypt(const std::string& ciphertext,
                                           const std::string& key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
@@ -178,16 +178,16 @@ base::Optional<std::string> CipherDecrypt(const std::string& ciphertext,
     if (result.ok())
       return std::move(result).ValueOrDie();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<std::string> CreateNewKey() {
+absl::optional<std::string> CreateNewKey() {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok())
     return cipher.ValueOrDie()->GetPrivateKeyBytes();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace password_manager

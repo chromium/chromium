@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +26,7 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillDownloadManager;
 using autofill::AutofillField;

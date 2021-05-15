@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct QRVersionInfo;
 
@@ -60,10 +60,10 @@ class QRCodeGenerator {
   // input-dependent and not known at compile-time. The optional |mask| argument
   // specifies the QR mask value to use (from 0 to 7). If not specified, the
   // optimal mask is calculated per the algorithm specified in the QR standard.
-  base::Optional<GeneratedCode> Generate(
+  absl::optional<GeneratedCode> Generate(
       base::span<const uint8_t> in,
-      base::Optional<int> min_version = base::nullopt,
-      base::Optional<uint8_t> mask = base::nullopt);
+      absl::optional<int> min_version = absl::nullopt,
+      absl::optional<uint8_t> mask = absl::nullopt);
 
  private:
   // PutFinder paints a finder symbol at the given coordinates.

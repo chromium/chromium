@@ -66,7 +66,7 @@ TEST_F(DirectoryImplTest, Read) {
   EXPECT_EQ(base::File::Error::FILE_OK, error);
 
   error = base::File::Error::FILE_ERROR_FAILED;
-  base::Optional<std::vector<mojom::DirectoryEntryPtr>> directory_contents;
+  absl::optional<std::vector<mojom::DirectoryEntryPtr>> directory_contents;
   handled = directory->Read(&error, &directory_contents);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);

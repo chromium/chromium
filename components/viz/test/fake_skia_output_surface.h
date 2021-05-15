@@ -122,7 +122,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Size& size,
       ResourceFormat format,
       bool concurrent_reads,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) override;
 
   // If set true, callbacks triggering will be in a reverse order as SignalQuery

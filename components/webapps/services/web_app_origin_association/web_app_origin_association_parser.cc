@@ -29,7 +29,7 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
     const std::string& data) {
   auto parsed_data = base::JSONReader::ReadAndReturnValueWithError(data);
 
-  if (parsed_data.value == base::nullopt) {
+  if (parsed_data.value == absl::nullopt) {
     AddErrorInfo(parsed_data.error_message, parsed_data.error_line,
                  parsed_data.error_column);
     failed_ = true;
@@ -89,7 +89,7 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
       continue;
     }
 
-    base::Optional<mojom::AssociatedWebAppPtr> app =
+    absl::optional<mojom::AssociatedWebAppPtr> app =
         ParseAssociatedWebApp(app_item);
     if (!app)
       continue;
@@ -100,12 +100,12 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
   return result;
 }
 
-base::Optional<mojom::AssociatedWebAppPtr>
+absl::optional<mojom::AssociatedWebAppPtr>
 WebAppOriginAssociationParser::ParseAssociatedWebApp(
     const base::Value& app_dict) {
-  base::Optional<GURL> manifest_url = ParseManifestURL(app_dict);
+  absl::optional<GURL> manifest_url = ParseManifestURL(app_dict);
   if (!manifest_url)
-    return base::nullopt;
+    return absl::nullopt;
 
   mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
   app->manifest_url = manifest_url.value();
@@ -120,52 +120,52 @@ WebAppOriginAssociationParser::ParseAssociatedWebApp(
     return app;
   }
 
-  base::Optional<std::vector<std::string>> paths =
+  absl::optional<std::vector<std::string>> paths =
       ParsePaths(*app_details_value, kPathsKey);
   if (paths)
     app->paths = paths.value();
-  base::Optional<std::vector<std::string>> exclude_paths =
+  absl::optional<std::vector<std::string>> exclude_paths =
       ParsePaths(*app_details_value, kExcludePathsKey);
   if (exclude_paths)
     app->exclude_paths = exclude_paths.value();
   return app;
 }
 
-base::Optional<GURL> WebAppOriginAssociationParser::ParseManifestURL(
+absl::optional<GURL> WebAppOriginAssociationParser::ParseManifestURL(
     const base::Value& app_dict) {
   const base::Value* url_value = app_dict.FindKey(kManifestUrlKey);
   if (!url_value) {
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kManifestUrlKey) + "' does not exist.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!url_value->is_string()) {
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kManifestUrlKey) + "' is not a string.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   GURL manifest_url(url_value->GetString());
   if (!manifest_url.is_valid()) {
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kManifestUrlKey) + "' is not a valid URL.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return manifest_url;
 }
 
-base::Optional<std::vector<std::string>>
+absl::optional<std::vector<std::string>>
 WebAppOriginAssociationParser::ParsePaths(const base::Value& app_details_dict,
                                           const std::string& key) {
   const base::Value* paths_value = app_details_dict.FindKey(key);
   if (!paths_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!paths_value->is_list()) {
     AddErrorInfo("Property '" + key + "' ignored, type array expected.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> paths;

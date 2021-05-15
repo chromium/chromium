@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Return;
@@ -63,7 +63,7 @@ class InitAwareEventModelTest : public testing::Test {
   MockEventModel* mocked_model_;
 
   // Load callback tracking.
-  base::Optional<bool> load_success_;
+  absl::optional<bool> load_success_;
   EventModel::OnModelInitializationFinished load_callback_;
 
  private:

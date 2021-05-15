@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -28,7 +28,7 @@ class LeakDetectionRequestInterface {
  public:
   using LookupSingleLeakCallback =
       base::OnceCallback<void(std::unique_ptr<SingleLookupResponse>,
-                              base::Optional<LeakDetectionError>)>;
+                              absl::optional<LeakDetectionError>)>;
 
   LeakDetectionRequestInterface() = default;
   virtual ~LeakDetectionRequestInterface() = default;

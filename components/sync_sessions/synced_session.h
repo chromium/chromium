@@ -11,13 +11,13 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 
@@ -51,7 +51,7 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 // property of the window.
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    base::Optional<sync_pb::SessionWindow::BrowserType> browser_type);
+    absl::optional<sync_pb::SessionWindow::BrowserType> browser_type);
 
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {

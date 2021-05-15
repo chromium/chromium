@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -125,7 +125,7 @@ class AppBannerSettingsHelper {
 
   // Get the time that |event| was recorded, or a nullopt if it no dict to
   // record yet(such as exceed max num per site) . Exposed for testing.
-  static base::Optional<base::Time> GetSingleBannerEvent(
+  static absl::optional<base::Time> GetSingleBannerEvent(
       content::WebContents* web_contents,
       const GURL& origin_url,
       const std::string& package_name_or_start_url,

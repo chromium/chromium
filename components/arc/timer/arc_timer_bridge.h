@@ -12,13 +12,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/arc/mojom/timer.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -72,11 +72,11 @@ class ArcTimerBridge : public KeyedService,
   // Callback for powerd's D-Bus API called in |CreateTimers|.
   void OnCreateArcTimers(std::vector<clockid_t> clock_ids,
                          CreateTimersCallback callback,
-                         base::Optional<std::vector<TimerId>> timer_ids);
+                         absl::optional<std::vector<TimerId>> timer_ids);
 
   // Retrieves the timer id corresponding to |clock_id|. If a mapping exists in
-  // |timer_ids_| then returns an int32_t >= 0. Else returns base::nullopt.
-  base::Optional<TimerId> GetTimerId(clockid_t clock_id) const;
+  // |timer_ids_| then returns an int32_t >= 0. Else returns absl::nullopt.
+  absl::optional<TimerId> GetTimerId(clockid_t clock_id) const;
 
   // Owned by ArcServiceManager.
   ArcBridgeService* const arc_bridge_service_;

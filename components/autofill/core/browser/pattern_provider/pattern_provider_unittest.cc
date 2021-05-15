@@ -78,7 +78,7 @@ void OnJsonParsed(base::OnceClosure done_callback,
                   data_decoder::DataDecoder::ValueOrError result) {
   base::Version version =
       field_type_parsing::ExtractVersionFromJsonObject(result.value.value());
-  base::Optional<PatternProvider::Map> patterns =
+  absl::optional<PatternProvider::Map> patterns =
       field_type_parsing::GetConfigurationFromJsonObject(result.value.value());
   ASSERT_TRUE(patterns);
   ASSERT_TRUE(version.IsValid());

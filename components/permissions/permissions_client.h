@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -16,6 +15,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -113,7 +113,7 @@ class PermissionsClient {
   // with the result, and may be run synchronously if the result is available
   // immediately.
   using GetUkmSourceIdCallback =
-      base::OnceCallback<void(base::Optional<ukm::SourceId>)>;
+      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
   virtual void GetUkmSourceId(content::BrowserContext* browser_context,
                               const content::WebContents* web_contents,
                               const GURL& requesting_origin,
@@ -140,19 +140,19 @@ class PermissionsClient {
                                 RequestType request_type,
                                 PermissionAction action,
                                 const GURL& origin,
-                                base::Optional<QuietUiReason> quiet_ui_reason);
+                                absl::optional<QuietUiReason> quiet_ui_reason);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.
-  // Returns base::nullopt if the user is not in the adoptive activation quiet
+  // Returns absl::nullopt if the user is not in the adoptive activation quiet
   // ui dry run experiment group.
-  virtual base::Optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
+  virtual absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context);
 
   // Returns whether the |permission| has already been auto-revoked due to abuse
   // at least once for the given |origin|. Returns `nullopt` if permission
   // auto-revocation is not supported for a given permission type.
-  virtual base::Optional<bool> HasPreviouslyAutoRevokedPermission(
+  virtual absl::optional<bool> HasPreviouslyAutoRevokedPermission(
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission);
@@ -160,7 +160,7 @@ class PermissionsClient {
   // If the embedder returns an origin here, any requests matching that origin
   // will be approved. Requests that do not match the returned origin will
   // immediately be finished without granting/denying the permission.
-  virtual base::Optional<url::Origin> GetAutoApprovalOrigin();
+  virtual absl::optional<url::Origin> GetAutoApprovalOrigin();
 
   // Allows the embedder to bypass checking the embedding origin when performing
   // permission availability checks. This is used for example when a permission
@@ -172,7 +172,7 @@ class PermissionsClient {
   // Allows embedder to override the canonical origin for a permission request.
   // This is the origin that will be used for requesting/storing/displaying
   // permissions.
-  virtual base::Optional<GURL> OverrideCanonicalOrigin(
+  virtual absl::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 

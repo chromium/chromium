@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +19,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -48,7 +48,7 @@ void SetPolicy(PolicyMap* map,
                const char* name,
                std::unique_ptr<ExternalDataFetcher> external_data_fetcher) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-           base::nullopt, std::move(external_data_fetcher));
+           absl::nullopt, std::move(external_data_fetcher));
 }
 
 template <class T>
@@ -100,7 +100,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
       ExternalDataFetcher::Equals(entry->external_data_fetcher.get(),
                                   CreateExternalDataFetcher("dummy").get()));
   map.Set(kTestPolicyName1, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-          POLICY_SOURCE_ENTERPRISE_DEFAULT, base::nullopt, nullptr);
+          POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt, nullptr);
   EXPECT_FALSE(map.GetValue(kTestPolicyName1));
   entry = map.Get(kTestPolicyName1);
   ASSERT_TRUE(entry != nullptr);
@@ -361,7 +361,7 @@ TEST_F(PolicyMapTest, MergeFrom) {
   a.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
         POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   a.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_ENTERPRISE_DEFAULT, base::nullopt,
+        POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt,
         CreateExternalDataFetcher("a"));
   a.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
         POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
@@ -380,7 +380,7 @@ TEST_F(PolicyMapTest, MergeFrom) {
   b.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
         POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   b.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_ENTERPRISE_DEFAULT, base::nullopt,
+        POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt,
         CreateExternalDataFetcher("b"));
   b.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
         POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE, base::Value(true),
@@ -421,7 +421,7 @@ TEST_F(PolicyMapTest, MergeFrom) {
   c.GetMutable(kTestPolicyName2)
       ->AddConflictingPolicy(b.Get(kTestPolicyName2)->DeepCopy());
   c.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_ENTERPRISE_DEFAULT, base::nullopt,
+        POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt,
         CreateExternalDataFetcher("a"));
   c.GetMutable(kTestPolicyName3)
       ->AddMessage(PolicyMap::MessageType::kWarning,

@@ -10,10 +10,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -56,11 +56,11 @@ class ImageFetcherParams {
     return network_traffic_annotation_tag_;
   }
 
-  void set_max_download_size(base::Optional<int64_t> max_download_bytes) {
+  void set_max_download_size(absl::optional<int64_t> max_download_bytes) {
     max_download_bytes_ = max_download_bytes;
   }
 
-  base::Optional<int64_t> max_download_size() const {
+  absl::optional<int64_t> max_download_size() const {
     return max_download_bytes_;
   }
 
@@ -89,7 +89,7 @@ class ImageFetcherParams {
     skip_disk_cache_read_ = skip_disk_cache_read;
   }
 
-  const base::Optional<base::TimeDelta>& expiration_interval() const {
+  const absl::optional<base::TimeDelta>& expiration_interval() const {
     return expiration_interval_;
   }
 
@@ -109,11 +109,11 @@ class ImageFetcherParams {
 
   const net::NetworkTrafficAnnotationTag network_traffic_annotation_tag_;
 
-  base::Optional<int64_t> max_download_bytes_;
+  absl::optional<int64_t> max_download_bytes_;
   // Only used in rare cases to keep the cache file on disk for certain period
   // of time. Image files will stay in cache at least for |expiration_interval_|
   // after last use.
-  base::Optional<base::TimeDelta> expiration_interval_;
+  absl::optional<base::TimeDelta> expiration_interval_;
   gfx::Size desired_frame_size_;
   std::string uma_client_name_;
   // When true, the image fetcher will skip transcoding whenever possible. Only

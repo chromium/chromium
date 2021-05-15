@@ -188,7 +188,7 @@ class FeedStream : public FeedApi,
   RequestThrottler* GetRequestThrottler() { return &request_throttler_; }
   const feedstore::Metadata& GetMetadata() const;
   void SetMetadata(feedstore::Metadata metadata);
-  bool SetMetadata(base::Optional<feedstore::Metadata> metadata);
+  bool SetMetadata(absl::optional<feedstore::Metadata> metadata);
   void SetStreamStale(const StreamType& stream_type, bool is_stale);
 
   MetricsReporter& GetMetricsReporter() const { return *metrics_reporter_; }

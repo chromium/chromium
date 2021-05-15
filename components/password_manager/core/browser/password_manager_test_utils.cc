@@ -127,16 +127,16 @@ MockPasswordReuseDetectorConsumer::~MockPasswordReuseDetectorConsumer() =
     default;
 
 PasswordHashDataMatcher::PasswordHashDataMatcher(
-    base::Optional<PasswordHashData> expected)
+    absl::optional<PasswordHashData> expected)
     : expected_(expected) {}
 
 bool PasswordHashDataMatcher::MatchAndExplain(
-    base::Optional<PasswordHashData> hash_data,
+    absl::optional<PasswordHashData> hash_data,
     ::testing::MatchResultListener* listener) const {
-  if (expected_ == base::nullopt)
-    return hash_data == base::nullopt;
+  if (expected_ == absl::nullopt)
+    return hash_data == absl::nullopt;
 
-  if (hash_data == base::nullopt)
+  if (hash_data == absl::nullopt)
     return false;
 
   return expected_->username == hash_data->username &&
@@ -152,8 +152,8 @@ void PasswordHashDataMatcher::DescribeNegationTo(::std::ostream* os) const {
   *os << "doesn't match password hash data for " << expected_->username;
 }
 
-::testing::Matcher<base::Optional<PasswordHashData>> Matches(
-    base::Optional<PasswordHashData> expected) {
+::testing::Matcher<absl::optional<PasswordHashData>> Matches(
+    absl::optional<PasswordHashData> expected) {
   return ::testing::MakeMatcher(new PasswordHashDataMatcher(expected));
 }
 

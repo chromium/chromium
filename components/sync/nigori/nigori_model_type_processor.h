@@ -97,7 +97,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   // The first model error that occurred, if any. Stored to track model state
   // and so it can be passed to sync if it happened prior to sync being ready.
-  base::Optional<ModelError> model_error_;
+  absl::optional<ModelError> model_error_;
 
   std::unique_ptr<ProcessorEntity> entity_;
 

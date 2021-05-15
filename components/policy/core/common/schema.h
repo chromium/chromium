@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 namespace internal {
@@ -109,7 +109,7 @@ class POLICY_EXPORT Schema {
   // accept any strings.
   // |options| is a bitwise-OR combination of the options above (see
   // |kSchemaOptions*| above).
-  static base::Optional<base::Value> ParseToDictAndValidate(
+  static absl::optional<base::Value> ParseToDictAndValidate(
       const std::string& schema,
       int options,
       std::string* error);

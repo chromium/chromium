@@ -14,11 +14,11 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/patch_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -77,8 +77,8 @@ bool ParseVarInt(BufferSource* source, T* value) {
 // - bool Initialize(BufferSource* source): Consumes data from BufferSource and
 //   initializes internal states. Returns true if successful, and false
 //   otherwise (|source| may be partially consumed).
-// - base::Optional<MAIN_TYPE> GetNext(OPT_PARAMS): Decodes consumed data and
-//   returns the next item as base::Optional (returns base::nullopt on failure).
+// - absl::optional<MAIN_TYPE> GetNext(OPT_PARAMS): Decodes consumed data and
+//   returns the next item as absl::optional (returns absl::nullopt on failure).
 // - bool Done() const: Returns true if no more items remain; otherwise false.
 //
 // Usage of *Source instances don't mix, and GetNext() have dissimilar
@@ -94,7 +94,7 @@ class EquivalenceSource {
 
   // Core functions.
   bool Initialize(BufferSource* source);
-  base::Optional<Equivalence> GetNext();
+  absl::optional<Equivalence> GetNext();
   bool Done() const {
     return src_skip_.empty() && dst_skip_.empty() && copy_count_.empty();
   }
@@ -123,7 +123,7 @@ class ExtraDataSource {
   // Core functions.
   bool Initialize(BufferSource* source);
   // |size| is the size in bytes of the buffer requested.
-  base::Optional<ConstBufferView> GetNext(offset_t size);
+  absl::optional<ConstBufferView> GetNext(offset_t size);
   bool Done() const { return extra_data_.empty(); }
 
   // Accessors for unittest.
@@ -142,7 +142,7 @@ class RawDeltaSource {
 
   // Core functions.
   bool Initialize(BufferSource* source);
-  base::Optional<RawDeltaUnit> GetNext();
+  absl::optional<RawDeltaUnit> GetNext();
   bool Done() const {
     return raw_delta_skip_.empty() && raw_delta_diff_.empty();
   }
@@ -167,7 +167,7 @@ class ReferenceDeltaSource {
 
   // Core functions.
   bool Initialize(BufferSource* source);
-  base::Optional<int32_t> GetNext();
+  absl::optional<int32_t> GetNext();
   bool Done() const { return source_.empty(); }
 
   // Accessors for unittest.
@@ -186,7 +186,7 @@ class TargetSource {
 
   // Core functions.
   bool Initialize(BufferSource* source);
-  base::Optional<offset_t> GetNext();
+  absl::optional<offset_t> GetNext();
   bool Done() const { return extra_targets_.empty(); }
 
   // Accessors for unittest.
@@ -256,8 +256,8 @@ class PatchElementReader {
 class EnsemblePatchReader {
  public:
   // If data read from |buffer| is well-formed, initializes and returns
-  // an instance of EnsemblePatchReader. Otherwise returns base::nullopt.
-  static base::Optional<EnsemblePatchReader> Create(ConstBufferView buffer);
+  // an instance of EnsemblePatchReader. Otherwise returns absl::nullopt.
+  static absl::optional<EnsemblePatchReader> Create(ConstBufferView buffer);
 
   EnsemblePatchReader();
   EnsemblePatchReader(EnsemblePatchReader&&);

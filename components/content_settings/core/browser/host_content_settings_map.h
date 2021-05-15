@@ -155,8 +155,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // This may be called on any thread.
   void GetSettingsForOneType(ContentSettingsType content_type,
                              ContentSettingsForOneType* settings,
-                             base::Optional<content_settings::SessionModel>
-                                 session_model = base::nullopt) const;
+                             absl::optional<content_settings::SessionModel>
+                                 session_model = absl::nullopt) const;
 
   // Sets the default setting for a particular content type. This method must
   // not be invoked on an incognito map.
@@ -363,7 +363,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ContentSettingsForOneType* settings,
       bool incognito,
-      base::Optional<content_settings::SessionModel> session_model) const;
+      absl::optional<content_settings::SessionModel> session_model) const;
 
   // Call UsedContentSettingsProviders() whenever you access
   // content_settings_providers_ (apart from initialization and

@@ -231,7 +231,7 @@ void Starter::DidFinishNavigation(
           navigation_handle->IsErrorPage()
               ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
               : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
-      CancelPendingStartup(base::nullopt);
+      CancelPendingStartup(absl::nullopt);
     } else {
       // Regular startup was interrupted (most likely during the onboarding).
       Metrics::RecordDropOut(waiting_for_onboarding_
@@ -241,7 +241,7 @@ void Starter::DidFinishNavigation(
                                  ->GetScriptParameters()
                                  .GetIntent()
                                  .value_or(std::string()));
-      CancelPendingStartup(base::nullopt);
+      CancelPendingStartup(absl::nullopt);
     }
     // Note: do not early-return here. While the previous startup has failed, we
     // may have navigated to a new supported domain and may need to start
@@ -276,7 +276,7 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
 }
 
 void Starter::OnHeuristicMatch(const GURL& url,
-                               base::Optional<std::string> intent) {
+                               absl::optional<std::string> intent) {
   if (!intent || IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
     return;
   }
@@ -440,7 +440,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 }
 
 void Starter::CancelPendingStartup(
-    base::Optional<Metrics::TriggerScriptFinishedState> state) {
+    absl::optional<Metrics::TriggerScriptFinishedState> state) {
   if (!IsStartupPending()) {
     return;
   }
@@ -523,7 +523,7 @@ void Starter::StartTriggerScript() {
             Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR);
         OnTriggerScriptFinished(
             Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR,
-            std::move(pending_trigger_context_), base::nullopt);
+            std::move(pending_trigger_context_), absl::nullopt);
         return;
       }
     } else if (script_parameters.GetRequestsTriggerScript().value_or(false)) {
@@ -563,7 +563,7 @@ void Starter::StartTriggerScript() {
 void Starter::OnTriggerScriptFinished(
     Metrics::TriggerScriptFinishedState state,
     std::unique_ptr<TriggerContext> trigger_context,
-    base::Optional<TriggerScriptProto> trigger_script) {
+    absl::optional<TriggerScriptProto> trigger_script) {
   // Update caches on error or user-cancel.
   if (trigger_script_coordinator_) {
     std::string domain = url_utils::GetOrganizationIdentifyingDomain(
@@ -619,7 +619,7 @@ void Starter::OnTriggerScriptFinished(
 }
 
 void Starter::MaybeShowOnboarding(
-    base::Optional<TriggerScriptProto> trigger_script) {
+    absl::optional<TriggerScriptProto> trigger_script) {
   if (platform_delegate_->GetOnboardingAccepted()) {
     OnOnboardingFinished(trigger_script, /* shown = */ false,
                          OnboardingResult::ACCEPTED);
@@ -638,7 +638,7 @@ void Starter::MaybeShowOnboarding(
 }
 
 void Starter::OnOnboardingFinished(
-    base::Optional<TriggerScriptProto> trigger_script,
+    absl::optional<TriggerScriptProto> trigger_script,
     bool shown,
     OnboardingResult result) {
   waiting_for_onboarding_ = false;
@@ -680,7 +680,7 @@ void Starter::OnOnboardingFinished(
 }
 
 void Starter::OnStartDone(bool start_regular_script,
-                          base::Optional<TriggerScriptProto> trigger_script) {
+                          absl::optional<TriggerScriptProto> trigger_script) {
   if (!start_regular_script) {
     // Catch-all to ensure that after a failed startup attempt we reset the
     // UI state.

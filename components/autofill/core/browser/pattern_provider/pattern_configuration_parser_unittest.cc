@@ -61,13 +61,13 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
         ]
       }
     })";
-  base::Optional<base::Value> json_object =
+  absl::optional<base::Value> json_object =
       base::JSONReader::Read(json_message);
 
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   base::Version version = ExtractVersionFromJsonObject(json_object.value());
-  base::Optional<PatternProvider::Map> optional_patterns =
+  absl::optional<PatternProvider::Map> optional_patterns =
       GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_TRUE(version.IsValid());
@@ -126,12 +126,12 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
         ]
       }
     })";
-  base::Optional<base::Value> json_object =
+  absl::optional<base::Value> json_object =
       base::JSONReader::Read(json_message);
 
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
-  base::Optional<PatternProvider::Map> optional_patterns =
+  absl::optional<PatternProvider::Map> optional_patterns =
       GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_FALSE(optional_patterns);
@@ -154,7 +154,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
         ]
       }
     })";
-  base::Optional<base::Value> json_object =
+  absl::optional<base::Value> json_object =
       base::JSONReader::Read(json_message);
 
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
@@ -179,12 +179,12 @@ TEST(PatternConfigurationParserTest, MalformedNotList) {
         }
       }
     })";
-  base::Optional<base::Value> json_object =
+  absl::optional<base::Value> json_object =
       base::JSONReader::Read(json_message);
 
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
-  base::Optional<PatternProvider::Map> optional_patterns =
+  absl::optional<PatternProvider::Map> optional_patterns =
       GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_FALSE(optional_patterns);

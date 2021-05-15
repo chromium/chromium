@@ -81,20 +81,20 @@ constexpr const char kInvalidJsonWithMissingFields[] =
     "invalid_root_third": {}})json";
 
 TEST_F(ArcFeaturesParserTest, ParseEmptyJson) {
-  base::Optional<ArcFeatures> arc_features =
+  absl::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(base::StringPiece());
-  EXPECT_EQ(arc_features, base::nullopt);
+  EXPECT_EQ(arc_features, absl::nullopt);
 }
 
 TEST_F(ArcFeaturesParserTest, ParseInvalidJson) {
-  base::Optional<ArcFeatures> arc_features =
+  absl::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kInvalidJsonWithMissingFields);
-  EXPECT_EQ(arc_features, base::nullopt);
+  EXPECT_EQ(arc_features, absl::nullopt);
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJson) {
-  base::Optional<ArcFeatures> arc_features =
+  absl::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(kValidJson);
   auto feature_map = arc_features->feature_map;
   auto unavailable_features = arc_features->unavailable_features;
@@ -107,7 +107,7 @@ TEST_F(ArcFeaturesParserTest, ParseValidJson) {
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJsonWithUnavailableFeature) {
-  base::Optional<ArcFeatures> arc_features =
+  absl::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kValidJsonWithUnavailableFeature);
   auto feature_map = arc_features->feature_map;
@@ -121,10 +121,10 @@ TEST_F(ArcFeaturesParserTest, ParseValidJsonWithUnavailableFeature) {
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJsonWithEmptyFeatureName) {
-  base::Optional<ArcFeatures> arc_features =
+  absl::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kValidJsonFeatureEmptyName);
-  EXPECT_EQ(arc_features, base::nullopt);
+  EXPECT_EQ(arc_features, absl::nullopt);
 }
 
 }  // namespace

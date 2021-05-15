@@ -290,7 +290,7 @@ class ZtfReferenceReader : public ReferenceReader {
 
   // Walks |offset_| from |lo| to |hi_| running |parser_|. If any matches are
   // found they are returned.
-  base::Optional<Reference> GetNext() override {
+  absl::optional<Reference> GetNext() override {
     T line_col;
     for (; offset_ < hi_; ++offset_) {
       if (!parser_.MatchAtOffset(offset_, &line_col))
@@ -304,7 +304,7 @@ class ZtfReferenceReader : public ReferenceReader {
       offset_ += config_.Width(line_col);
       return Reference{location, target};
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:
@@ -456,12 +456,12 @@ offset_t ZtfTranslator::LineColToOffset(ztf::LineCol lc) const {
   return target;
 }
 
-base::Optional<ztf::LineCol> ZtfTranslator::OffsetToLineCol(
+absl::optional<ztf::LineCol> ZtfTranslator::OffsetToLineCol(
     offset_t offset) const {
   DCHECK(!line_starts_.empty());
   // Don't place a target outside the image.
   if (offset >= line_starts_.back())
-    return base::nullopt;
+    return absl::nullopt;
   auto it = SearchForRange(offset);
   ztf::LineCol lc;
   lc.line = std::distance(line_starts_.cbegin(), it) + 1;

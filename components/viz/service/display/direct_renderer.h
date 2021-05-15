@@ -13,7 +13,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -24,6 +23,7 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -125,7 +125,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // When we have a buffer queue, the output surface could be treated as an
     // overlay plane, and the struct to store that information is in
     // |output_surface_plane|.
-    base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+    absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
         output_surface_plane;
   };
 
@@ -222,7 +222,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       AggregatedRenderPassId render_pass_id) const;
   const cc::FilterOperations* BackdropFiltersForPass(
       AggregatedRenderPassId render_pass_id) const;
-  const base::Optional<gfx::RRectF> BackdropFilterBoundsForPass(
+  const absl::optional<gfx::RRectF> BackdropFilterBoundsForPass(
       AggregatedRenderPassId render_pass_id) const;
 
   // Private interface implemented by subclasses for use by DirectRenderer.
@@ -307,7 +307,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       render_pass_filters_;
   base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
       render_pass_backdrop_filters_;
-  base::flat_map<AggregatedRenderPassId, base::Optional<gfx::RRectF>>
+  base::flat_map<AggregatedRenderPassId, absl::optional<gfx::RRectF>>
       render_pass_backdrop_filter_bounds_;
   base::flat_map<AggregatedRenderPassId, gfx::Rect>
       backdrop_filter_output_rects_;
@@ -373,7 +373,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::Size device_viewport_size_;
   float reshape_device_scale_factor_ = 0.f;
   gfx::ColorSpace reshape_color_space_;
-  base::Optional<gfx::BufferFormat> reshape_buffer_format_;
+  absl::optional<gfx::BufferFormat> reshape_buffer_format_;
   bool reshape_use_stencil_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DirectRenderer);

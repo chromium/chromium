@@ -241,7 +241,7 @@ void StorageAreaImpl::AddObserver(
 void StorageAreaImpl::Put(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& value,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     PutCallback callback) {
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
@@ -254,7 +254,7 @@ void StorageAreaImpl::Put(
   size_t old_item_size = 0;
   size_t old_item_memory = 0;
   size_t new_item_memory = 0;
-  base::Optional<std::vector<uint8_t>> old_value;
+  absl::optional<std::vector<uint8_t>> old_value;
   if (map_state_ == MapState::LOADED_KEYS_ONLY) {
     KeysOnlyMap::const_iterator found = keys_only_map_.find(key);
     if (found != keys_only_map_.end()) {
@@ -355,7 +355,7 @@ void StorageAreaImpl::Put(
 
 void StorageAreaImpl::Delete(
     const std::vector<uint8_t>& key,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     DeleteCallback callback) {
   // Map upgrade check is required because the cache state could be changed
@@ -380,7 +380,7 @@ void StorageAreaImpl::Delete(
       // the change request, as clients may rely on this acknowledgement for
       // caching behavior.
       for (const auto& observer : observers_)
-        observer->KeyDeleted(key, base::nullopt, source);
+        observer->KeyDeleted(key, absl::nullopt, source);
       std::move(callback).Run(true);
       return;
     }
@@ -416,7 +416,7 @@ void StorageAreaImpl::Delete(
       // the change request, as clients may rely on this acknowledgement for
       // caching behavior.
       for (const auto& observer : observers_)
-        observer->KeyDeleted(key, base::nullopt, source);
+        observer->KeyDeleted(key, absl::nullopt, source);
       std::move(callback).Run(true);
       return;
     }
@@ -791,7 +791,7 @@ void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
     bool clear_all_first;
     std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
     std::vector<DomStorageDatabase::Key> keys_to_delete;
-    base::Optional<DomStorageDatabase::Key> copy_to_prefix;
+    absl::optional<DomStorageDatabase::Key> copy_to_prefix;
   };
 
   Commit commit;

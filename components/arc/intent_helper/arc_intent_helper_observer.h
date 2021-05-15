@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -27,11 +27,11 @@ class ArcIntentHelperObserver {
   virtual void OnArcDownloadAdded(const base::FilePath& relative_path,
                                   const std::string& owner_package_name) {}
   // Called when intent filters are added, removed or updated.
-  // A base::nullopt |package_name| indicates that intent filters were updated
+  // A absl::nullopt |package_name| indicates that intent filters were updated
   // for all packages. Otherwise, |package_name| contains the name of the
   // package whose filters were changed.
   virtual void OnIntentFiltersUpdated(
-      const base::Optional<std::string>& package_name) {}
+      const absl::optional<std::string>& package_name) {}
   // Called when the preferred apps changed in ARC.
   virtual void OnPreferredAppsChanged() {}
 };

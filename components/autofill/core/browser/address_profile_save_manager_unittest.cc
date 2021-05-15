@@ -60,7 +60,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
   // Mocks the function that initiates the UI prompt for testing purposes.
   MOCK_METHOD(void, OfferSavePrompt, (), (override));
 
-  // Returns a copy of the last finished import process or 'base::nullopt' if no
+  // Returns a copy of the last finished import process or 'absl::nullopt' if no
   // import process was finished.
   ProfileImportProcess* last_import();
 
@@ -74,7 +74,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
   void ClearPendingImport() override;
   // Profile that is passed from the emulated UI respones in case the user
   // edited the import candidate.
-  base::Optional<ProfileImportProcess> last_import_;
+  absl::optional<ProfileImportProcess> last_import_;
 };
 
 TestAddressProfileSaveManager::TestAddressProfileSaveManager(
@@ -102,8 +102,8 @@ struct ImportScenarioTestCase {
   AutofillProfile edited_profile;
   AutofillProfileImportType expected_import_type;
   bool is_profile_change_expected;
-  base::Optional<AutofillProfile> merge_candidate;
-  base::Optional<AutofillProfile> import_candidate;
+  absl::optional<AutofillProfile> merge_candidate;
+  absl::optional<AutofillProfile> import_candidate;
   std::vector<AutofillProfile> expected_final_profiles;
   std::vector<AutofillMetrics::EditedFieldTypeForMetrics>
       expected_edited_types_for_metrics;
@@ -274,7 +274,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile) {
       .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile}};
 
@@ -293,8 +293,8 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfileOnBlockedDomain) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSuppressedNewProfile,
       .is_profile_change_expected = false,
-      .merge_candidate = base::nullopt,
-      .import_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
       .expected_final_profiles = {},
       .new_profiles_suppresssed_for_domain = true};
 
@@ -314,7 +314,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_UserNotAskedFallback) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile}};
 
@@ -337,7 +337,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Edited) {
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {edited_profile},
       .expected_edited_types_for_metrics = {
@@ -360,7 +360,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Declined) {
       .user_decision = UserDecision::kDeclined,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = false,
-      .merge_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {}};
 
@@ -380,8 +380,8 @@ TEST_F(AddressProfileSaveManagerTest, ImportDuplicateProfile) {
       .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kDuplicateImport,
       .is_profile_change_expected = false,
-      .merge_candidate = base::nullopt,
-      .import_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
       .expected_final_profiles = {existing_profile}};
 
   TestImportScenario(test_scenario);
@@ -401,8 +401,8 @@ TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateProfile) {
       .is_prompt_expected = false,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
-      .import_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
       .expected_final_profiles = {final_profile}};
   TestImportScenario(test_scenario);
 }
@@ -422,8 +422,8 @@ TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateProfileOnBlockedDomain) {
       .is_prompt_expected = false,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
-      .import_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
       .expected_final_profiles = {final_profile},
       .new_profiles_suppresssed_for_domain = true};
   TestImportScenario(test_scenario);
@@ -448,8 +448,8 @@ TEST_F(AddressProfileSaveManagerTest, SilentlyUpdateVerifiedProfile) {
       .is_prompt_expected = false,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
-      .merge_candidate = base::nullopt,
-      .import_candidate = base::nullopt,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = absl::nullopt,
       .expected_final_profiles = {final_profile}};
   TestImportScenario(test_scenario);
 }

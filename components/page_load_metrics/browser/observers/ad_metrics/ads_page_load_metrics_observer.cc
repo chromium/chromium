@@ -473,7 +473,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // logic should be moved into /subresource_filter/ and applied to all of ad
   // tagging, rather than being implemented in AdsPLMO.
   bool should_ignore_detected_ad = false;
-  base::Optional<subresource_filter::LoadPolicy> load_policy =
+  absl::optional<subresource_filter::LoadPolicy> load_policy =
       throttle_manager->LoadPolicyForLastCommittedNavigation(frame_host);
 
   // Only un-tag frames as ads if the navigation has committed. This prevents

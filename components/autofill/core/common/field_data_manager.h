@@ -8,9 +8,9 @@
 #include <map>
 #include <string>
 
-#include "base/optional.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -20,7 +20,7 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
  public:
   using FieldDataMap =
       std::map<FieldRendererId,
-               std::pair<base::Optional<std::u16string>, FieldPropertiesMask>>;
+               std::pair<absl::optional<std::u16string>, FieldPropertiesMask>>;
 
   FieldDataManager();
 

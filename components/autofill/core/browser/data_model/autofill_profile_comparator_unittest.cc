@@ -1638,7 +1638,7 @@ TEST_P(AutofillProfileComparatorTest, GetMergeCandidate) {
   // are the same.
   EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
                 existing_profile, {&existing_profile}, "en_US"),
-            base::nullopt);
+            absl::nullopt);
 
   // Create a new profile that is not mergeable because it has a completely
   // different name.
@@ -1646,7 +1646,7 @@ TEST_P(AutofillProfileComparatorTest, GetMergeCandidate) {
   new_profile.SetRawInfo(NAME_FULL, u"JustAnotherName");
   EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
                 new_profile, {&existing_profile}, "en_US"),
-            base::nullopt);
+            absl::nullopt);
 
   // Use a city name that is a superset of the existing city name. It should be
   // mergeable and the profile should be updated to the new value.
@@ -1654,7 +1654,7 @@ TEST_P(AutofillProfileComparatorTest, GetMergeCandidate) {
   new_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_CITY, u"the City",
       autofill::structured_address::VerificationStatus::kObserved);
-  base::Optional<AutofillProfile> optional_merge_candidate =
+  absl::optional<AutofillProfile> optional_merge_candidate =
       AutofillProfileComparator::GetAutofillProfileMergeCandidate(
           new_profile, {&existing_profile}, "en_US");
   ASSERT_TRUE(optional_merge_candidate.has_value());

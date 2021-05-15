@@ -60,7 +60,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
-    const base::Optional<history::VisitContentModelAnnotations>&
+    const absl::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
@@ -107,12 +107,12 @@ void PageContentAnnotationsService::OnURLQueried(
 }
 #endif
 
-base::Optional<int64_t>
+absl::optional<int64_t>
 PageContentAnnotationsService::GetPageTopicsModelVersion() const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return model_manager_->GetPageTopicsModelVersion();
 #else
-  return base::nullopt;
+  return absl::nullopt;
 #endif
 }
 

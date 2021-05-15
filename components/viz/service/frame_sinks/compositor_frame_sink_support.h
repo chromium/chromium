@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -31,6 +30,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -153,7 +153,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list = base::nullopt,
+      absl::optional<HitTestRegionList> hit_test_region_list = absl::nullopt,
       uint64_t submit_time = 0);
   // Returns false if the notification was not valid (a duplicate).
   bool DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -175,7 +175,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   SubmitResult MaybeSubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list,
+      absl::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback);
 
@@ -275,7 +275,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // If this contains a value then a surface reference from the top-level root
   // to SurfaceId(frame_sink_id_, referenced_local_surface_id_.value()) was
   // added. This will not contain a value if |is_root_| is false.
-  base::Optional<LocalSurfaceId> referenced_local_surface_id_;
+  absl::optional<LocalSurfaceId> referenced_local_surface_id_;
 
   SurfaceResourceHolder surface_resource_holder_;
 

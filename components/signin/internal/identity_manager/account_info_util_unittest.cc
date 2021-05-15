@@ -49,7 +49,7 @@ using AccountInfoUtilTest = PlatformTest;
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
 // extracted from the passed base::Value.
 TEST_F(AccountInfoUtilTest, FromUserInfo) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
@@ -71,7 +71,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with empty or
 // default values if no fields are set in the user_info.
 TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"", /*gaia=*/"", /*hosted_domain=*/"", /*full_name=*/"",
           /*given_name=*/"", /*locale=*/"", /*picture_url=*/""));
@@ -92,7 +92,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
 // extracted from the passed base::Value, with default value for |hosted_domain|
 // if missing.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NoHostedDomain) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
           /*hosted_domain=*/nullptr, /*full_name=*/"full name",
@@ -109,7 +109,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoHostedDomain) {
 // extracted from the passed base::Value, with default value for |picture_url|
 // if missing.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NoPictureUrl) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
@@ -125,7 +125,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoPictureUrl) {
 // Tests that if AccountInfoFromUserInfo fails if the value passed has no
 // value for |email|.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NoEmail) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/nullptr, /*gaia=*/"gaia_id_user_example_com",
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
@@ -138,7 +138,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoEmail) {
 // Tests that if AccountInfoFromUserInfo fails if the value passed has no
 // value for |gaia|.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NoGaiaId) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"user@example.com", /*gaia=*/nullptr,
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
@@ -151,7 +151,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoGaiaId) {
 // Tests that if AccountInfoFromUserInfo fails if the value passed is not a
 // dictionary.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NotADictionary) {
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(base::Value("not a dictionary"));
 
   EXPECT_FALSE(maybe_account_info.has_value());

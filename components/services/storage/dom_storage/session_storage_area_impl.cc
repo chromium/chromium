@@ -71,26 +71,26 @@ void SessionStorageAreaImpl::AddObserver(
 void SessionStorageAreaImpl::Put(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& value,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     PutCallback callback) {
   DCHECK(IsBound());
   DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
   if (shared_data_map_->map_data()->ReferenceCount() > 1)
-    CreateNewMap(NewMapType::FORKED, base::nullopt);
+    CreateNewMap(NewMapType::FORKED, absl::nullopt);
   shared_data_map_->storage_area()->Put(key, value, client_old_value, source,
                                         std::move(callback));
 }
 
 void SessionStorageAreaImpl::Delete(
     const std::vector<uint8_t>& key,
-    const base::Optional<std::vector<uint8_t>>& client_old_value,
+    const absl::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     DeleteCallback callback) {
   DCHECK(IsBound());
   DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
   if (shared_data_map_->map_data()->ReferenceCount() > 1)
-    CreateNewMap(NewMapType::FORKED, base::nullopt);
+    CreateNewMap(NewMapType::FORKED, absl::nullopt);
   shared_data_map_->storage_area()->Delete(key, client_old_value, source,
                                            std::move(callback));
 }
@@ -165,7 +165,7 @@ void SessionStorageAreaImpl::OnDeleteAllResult(
 
 void SessionStorageAreaImpl::CreateNewMap(
     NewMapType map_type,
-    const base::Optional<std::string>& delete_all_source) {
+    const absl::optional<std::string>& delete_all_source) {
   bool bound = IsBound();
   if (bound)
     shared_data_map_->RemoveBindingReference();

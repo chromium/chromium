@@ -108,7 +108,7 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
   if (!navigation_handle->IsInMainFrame())
     return;
 
-  base::Optional<SubresourceFilterLevel> level;
+  absl::optional<SubresourceFilterLevel> level;
   level_for_next_committed_navigation_.swap(level);
 
   // Only care about main frame navigations that commit.
@@ -160,7 +160,7 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
     const subresource_filter::SubresourceFilterSafeBrowsingClient::CheckResult&
         result) {
   DCHECK(navigation_handle->IsInMainFrame());
-  base::Optional<safe_browsing::SubresourceFilterLevel> match_level;
+  absl::optional<safe_browsing::SubresourceFilterLevel> match_level;
   if (result.threat_type ==
       safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
     auto abusive = result.threat_metadata.subresource_filter_match.find(

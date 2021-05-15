@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -22,6 +21,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SaveCardOfferObserver;
@@ -306,8 +306,8 @@ class CreditCardSaveManager {
   int upload_decision_metrics_ = 0;
 
   // |true| if the offer-to-save bubble/infobar should pop-up, |false| if not.
-  // Will be base::nullopt until data has been retrieved from the StrikeSystem.
-  base::Optional<bool> show_save_prompt_;
+  // Will be absl::nullopt until data has been retrieved from the StrikeSystem.
+  absl::optional<bool> show_save_prompt_;
 
   // |true| if the card being offered for upload is already a local card on the
   // device; |false| otherwise.

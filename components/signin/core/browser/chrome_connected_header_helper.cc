@@ -84,7 +84,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
   // this information in the ChromeConnected cookie.
   return chrome_connected_helper.BuildRequestHeader(
       false /* is_header_request */, url, gaia_id,
-      base::nullopt /* is_child_account */, profile_mode_mask, "" /* source */,
+      absl::nullopt /* is_child_account */, profile_mode_mask, "" /* source */,
       false /* force_account_consistency */);
 }
 
@@ -188,7 +188,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
     bool is_header_request,
     const GURL& url,
     const std::string& gaia_id,
-    const base::Optional<bool>& is_child_account,
+    const absl::optional<bool>& is_child_account,
     int profile_mode_mask,
     const std::string& source,
     bool force_account_consistency) {

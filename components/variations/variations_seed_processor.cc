@@ -13,13 +13,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_layers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -40,14 +40,14 @@ void RegisterExperimentParams(const Study& study,
 // Returns the IDCollectionKey with which |experiment| should be associated.
 // Returns nullopt when |experiment| doesn't have a Google web or Google web
 // trigger experiment ID.
-base::Optional<IDCollectionKey> GetKeyForWebExperiment(
+absl::optional<IDCollectionKey> GetKeyForWebExperiment(
     const Study_Experiment& experiment) {
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
   bool has_web_trigger_experiment_id =
       experiment.has_google_web_trigger_experiment_id();
 
   if (!has_web_experiment_id && !has_web_trigger_experiment_id)
-    return base::nullopt;
+    return absl::nullopt;
 
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. This is enforced by the variations
@@ -76,7 +76,7 @@ void RegisterVariationIds(const Study_Experiment& experiment,
                                     variation_id);
   }
 
-  base::Optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
+  absl::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
   if (!key.has_value())
     return;
 

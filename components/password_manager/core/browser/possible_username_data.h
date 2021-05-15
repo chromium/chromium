@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -42,7 +42,7 @@ struct PossibleUsernameData {
   int driver_id;
 
   // Predictions for the form which contains a field with |renderer_id|.
-  base::Optional<FormPredictions> form_predictions;
+  absl::optional<FormPredictions> form_predictions;
 };
 
 // Checks that |possible_username| might represent an username:

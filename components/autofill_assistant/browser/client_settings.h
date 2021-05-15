@@ -6,10 +6,10 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_SETTINGS_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -78,17 +78,17 @@ struct ClientSettings {
   base::TimeDelta tap_shutdown_delay = base::TimeDelta::FromSeconds(5);
 
   // Optional image drawn on top of overlays.
-  base::Optional<OverlayImageProto> overlay_image;
+  absl::optional<OverlayImageProto> overlay_image;
 
   // Optional settings intended for integration tests.
-  base::Optional<ClientSettingsProto::IntegrationTestSettings>
+  absl::optional<ClientSettingsProto::IntegrationTestSettings>
       integration_test_settings;
 
   float talkback_sheet_size_fraction = 0.5f;
 
   // Optional settings to enable back button error in BottomSheet instead of
   // Snackbar.
-  base::Optional<ClientSettingsProto::BackButtonSettings> back_button_settings;
+  absl::optional<ClientSettingsProto::BackButtonSettings> back_button_settings;
 
   // Whether to show warnings related to a slow connection to the user.
   bool enable_slow_connection_warnings = false;

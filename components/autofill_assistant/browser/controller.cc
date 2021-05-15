@@ -254,11 +254,11 @@ int Controller::GetProgress() const {
   return progress_;
 }
 
-base::Optional<int> Controller::GetProgressActiveStep() const {
+absl::optional<int> Controller::GetProgressActiveStep() const {
   return progress_active_step_;
 }
 
-base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
+absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
 Controller::GetStepProgressBarConfiguration() const {
   return step_progress_bar_configuration_;
 }
@@ -1195,7 +1195,7 @@ void Controller::InitFromParameters() {
   if (details->UpdateFromParameters(trigger_context_->GetScriptParameters()))
     SetDetails(std::move(details), base::TimeDelta());
 
-  const base::Optional<std::string> overlay_color =
+  const absl::optional<std::string> overlay_color =
       trigger_context_->GetScriptParameters().GetOverlayColors();
   if (overlay_color) {
     std::unique_ptr<OverlayColors> colors = std::make_unique<OverlayColors>();
@@ -1213,7 +1213,7 @@ void Controller::InitFromParameters() {
 
     SetOverlayColors(std::move(colors));
   }
-  const base::Optional<std::string> password_change_username =
+  const absl::optional<std::string> password_change_username =
       trigger_context_->GetScriptParameters().GetPasswordChangeUsername();
   if (password_change_username) {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
@@ -1393,7 +1393,7 @@ void Controller::OnFormActionLinkClicked(int link) {
 }
 
 void Controller::SetDateTimeRangeStartDate(
-    const base::Optional<DateProto>& date) {
+    const absl::optional<DateProto>& date) {
   if (!user_data_)
     return;
 
@@ -1426,7 +1426,7 @@ void Controller::SetDateTimeRangeStartDate(
 }
 
 void Controller::SetDateTimeRangeStartTimeSlot(
-    const base::Optional<int>& timeslot_index) {
+    const absl::optional<int>& timeslot_index) {
   if (!user_data_)
     return;
 
@@ -1459,7 +1459,7 @@ void Controller::SetDateTimeRangeStartTimeSlot(
 }
 
 void Controller::SetDateTimeRangeEndDate(
-    const base::Optional<DateProto>& date) {
+    const absl::optional<DateProto>& date) {
   if (!user_data_)
     return;
 
@@ -1492,7 +1492,7 @@ void Controller::SetDateTimeRangeEndDate(
 }
 
 void Controller::SetDateTimeRangeEndTimeSlot(
-    const base::Optional<int>& timeslot_index) {
+    const absl::optional<int>& timeslot_index) {
   if (!user_data_)
     return;
 
@@ -1748,7 +1748,7 @@ void Controller::PerformDelayedShutdownIfNecessary() {
   if (delayed_shutdown_reason_ &&
       script_url_.host() != GetCurrentURL().host()) {
     Metrics::DropOutReason reason = delayed_shutdown_reason_.value();
-    delayed_shutdown_reason_ = base::nullopt;
+    delayed_shutdown_reason_ = absl::nullopt;
     tracking_ = false;
     client_->Shutdown(reason);
   }

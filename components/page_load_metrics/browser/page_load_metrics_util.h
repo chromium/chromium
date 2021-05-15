@@ -6,10 +6,10 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 // Up to 10 minutes, with 100 buckets.
@@ -100,11 +100,11 @@ struct PageAbortInfo {
 // consider the event to be logged in the foreground histogram since any
 // background specific handling would not yet have been applied to that event.
 bool WasStartedInForegroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
 
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,
     size_t index);
 
@@ -114,7 +114,7 @@ bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore
 // - Moved to the foreground prior to the event.
 // - Not moved back to the background prior to the event.
 bool WasStartedInBackgroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
 
 // Returns true if |delegate| started in the foreground or became foregrounded
@@ -131,7 +131,7 @@ PageAbortInfo GetPageAbortInfo(const PageLoadMetricsObserverDelegate& delegate);
 // * the render process hosting the page goes away
 // * a new navigation which later commits is initiated in the same tab
 // * the tab hosting the page is backgrounded
-base::Optional<base::TimeDelta> GetInitialForegroundDuration(
+absl::optional<base::TimeDelta> GetInitialForegroundDuration(
     const PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time);
 

@@ -12,7 +12,6 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -46,6 +45,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/opacity_filter_canvas.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -429,7 +429,7 @@ SkYUVAInfo::Subsampling SubsamplingFromTextureSizes(gfx::Size ya_size,
 }  // namespace
 
 // chrome style prevents this from going in skia_renderer.h, but since it
-// uses base::Optional, the style also requires it to have a declared ctor
+// uses absl::optional, the style also requires it to have a declared ctor
 SkiaRenderer::BatchedQuadState::BatchedQuadState() = default;
 
 // Parameters needed to draw a CompositorRenderPassDrawQuad.
@@ -461,13 +461,13 @@ struct SkiaRenderer::DrawRPDQParams {
   // which will be applied using SkCanvas::clipShader in RPDQ's coord space.
   sk_sp<SkShader> mask_shader = nullptr;
   // Backdrop border box for the render pass, to clip backdrop-filtered content
-  base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds;
   // The content space bounds that includes any filtered extents. If empty,
   // the draw can be skipped.
   gfx::Rect filter_bounds;
 
   // Geometry from the bypassed RenderPassDrawQuad.
-  base::Optional<BypassGeometry> bypass_geometry;
+  absl::optional<BypassGeometry> bypass_geometry;
 
   // True when there is an |image_filter| and it's not equivalent to
   // |color_filter|.
@@ -526,13 +526,13 @@ struct SkiaRenderer::DrawQuadParams {
   SkSamplingOptions sampling;
   // Optional restricted draw geometry, will point to a length 4 SkPoint array
   // with its points in CW order matching Skia's vertex/edge expectations.
-  base::Optional<SkDrawRegion> draw_region;
+  absl::optional<SkDrawRegion> draw_region;
   // Optional rounded corner clip to apply. If present, it will have been
   // transformed to device space and ShouldApplyRoundedCorner returns true.
-  base::Optional<gfx::RRectF> rounded_corner_bounds;
+  absl::optional<gfx::RRectF> rounded_corner_bounds;
   // Optional device space clip to apply. If present, it is equal to the current
   // |scissor_rect_| of the renderer.
-  base::Optional<gfx::Rect> scissor_rect;
+  absl::optional<gfx::Rect> scissor_rect;
 
   SkPaint paint(sk_sp<SkColorFilter> color_filter) const {
     SkPaint p;
@@ -1014,8 +1014,8 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
 }
 
 void SkiaRenderer::PrepareCanvas(
-    const base::Optional<gfx::Rect>& scissor_rect,
-    const base::Optional<gfx::RRectF>& rounded_corner_bounds,
+    const absl::optional<gfx::Rect>& scissor_rect,
+    const absl::optional<gfx::RRectF>& rounded_corner_bounds,
     const gfx::Transform* cdt) {
   // Scissor is applied in the device space (CTM == I) and since no changes
   // to the canvas persist, CTM should already be the identity
@@ -1824,7 +1824,7 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
   }
 
   SkCanvas* raster_canvas = current_canvas_;
-  base::Optional<skia::OpacityFilterCanvas> opacity_canvas;
+  absl::optional<skia::OpacityFilterCanvas> opacity_canvas;
   if (disable_image_filtering) {
     // TODO(vmpstr): Fold this canvas into playback and have raster source
     // accept a set of settings on playback that will determine which canvas to
@@ -2503,7 +2503,7 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   // Determine if the backdrop filter has its own clip (which only needs to be
   // checked when we have a backdrop filter to apply)
   if (rpdq_params.backdrop_filter) {
-    const base::Optional<gfx::RRectF> backdrop_filter_bounds =
+    const absl::optional<gfx::RRectF> backdrop_filter_bounds =
         BackdropFilterBoundsForPass(quad->render_pass_id);
     if (backdrop_filter_bounds) {
       // The backdrop filters effect will be cropped by these bounds. If the
@@ -2770,7 +2770,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
 
   // The |clip_rect| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
-  base::Optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
+  absl::optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
   if (shared_quad_state->clip_rect) {
     // TODO(dbaron): This operation is likely not to be valid if
     // quad_to_target_transform_inverse.HasPerspective().

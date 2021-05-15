@@ -43,7 +43,7 @@ void CompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
 void CompositorFrameSinkImpl::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   // Non-root surface frames should not have display transform hint.
   DCHECK_EQ(gfx::OVERLAY_TRANSFORM_NONE, frame.metadata.display_transform_hint);
@@ -55,7 +55,7 @@ void CompositorFrameSinkImpl::SubmitCompositorFrame(
 void CompositorFrameSinkImpl::SubmitCompositorFrameSync(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     SubmitCompositorFrameSyncCallback callback) {
   SubmitCompositorFrameInternal(local_surface_id, std::move(frame),
@@ -66,7 +66,7 @@ void CompositorFrameSinkImpl::SubmitCompositorFrameSync(
 void CompositorFrameSinkImpl::SubmitCompositorFrameInternal(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   const auto result = support_->MaybeSubmitCompositorFrame(

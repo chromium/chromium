@@ -99,7 +99,7 @@ std::string* GetPasswordV11() {
   if (!g_cache.Get().is_password_v11_cached) {
     std::unique_ptr<KeyStorageLinux> key_storage = g_key_storage_provider();
     if (key_storage) {
-      base::Optional<std::string> key = key_storage->GetKey();
+      absl::optional<std::string> key = key_storage->GetKey();
       if (key.has_value()) {
         g_cache.Get().password_v11_cache =
             std::make_unique<std::string>(std::move(*key));

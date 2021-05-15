@@ -9,12 +9,12 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -132,7 +132,7 @@ class SafeBrowsingTriggeredPopupBlocker
 
   // Whether the next main frame navigation that commits should trigger the
   // stronger popup blocker in enforce or warn mode.
-  base::Optional<safe_browsing::SubresourceFilterLevel>
+  absl::optional<safe_browsing::SubresourceFilterLevel>
       level_for_next_committed_navigation_;
 
   // Should never be nullptr.

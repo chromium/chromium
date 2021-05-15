@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/gurl.h"
@@ -257,8 +257,8 @@ class AutocompleteInput {
   }
 
   // Returns the ID of the query tile selected by the user, if any.
-  // If no tile was selected, returns base::nullopt.
-  const base::Optional<std::string>& query_tile_id() const {
+  // If no tile was selected, returns absl::nullopt.
+  const absl::optional<std::string>& query_tile_id() const {
     return query_tile_id_;
   }
 
@@ -313,7 +313,7 @@ class AutocompleteInput {
   bool want_asynchronous_matches_;
   OmniboxFocusType focus_type_ = OmniboxFocusType::DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
-  base::Optional<std::string> query_tile_id_;
+  absl::optional<std::string> query_tile_id_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;

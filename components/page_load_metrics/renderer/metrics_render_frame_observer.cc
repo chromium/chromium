@@ -254,7 +254,7 @@ void MetricsRenderFrameObserver::WillDetach() {
 
 void MetricsRenderFrameObserver::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   // Send current metrics, as we might create a new RenderFrame later due to
   // this navigation (that might end up in a different process entirely, and
   // won't notify us until the current RenderFrameHost in the browser changed).
@@ -538,7 +538,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     for (const auto& restore_timing : restore_timings) {
       double navigation_start = restore_timing.navigation_start;
       double first_paint = restore_timing.first_paint;
-      base::Optional<base::TimeDelta> first_input_delay =
+      absl::optional<base::TimeDelta> first_input_delay =
           restore_timing.first_input_delay;
 
       auto back_forward_cache_timing = mojom::BackForwardCacheTiming::New();

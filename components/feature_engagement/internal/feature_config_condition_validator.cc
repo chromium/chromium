@@ -114,7 +114,7 @@ bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
   if (comparator.type == ANY)
     return true;
 
-  base::Optional<uint32_t> availability_day =
+  absl::optional<uint32_t> availability_day =
       availability_model.GetAvailability(feature);
   if (!availability_day.has_value())
     return false;

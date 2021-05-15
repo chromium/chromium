@@ -38,7 +38,7 @@ class PermissionAuditingService
   typedef base::OnceCallback<void(std::vector<PermissionUsageSession>)>
       PermissionUsageHistoryCallback;
 
-  typedef base::OnceCallback<void(base::Optional<base::Time>)>
+  typedef base::OnceCallback<void(absl::optional<base::Time>)>
       LastPermissionUsageTimeCallback;
 
   explicit PermissionAuditingService(

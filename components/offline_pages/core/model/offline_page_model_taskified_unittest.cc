@@ -1505,7 +1505,7 @@ TEST_F(OfflinePageModelTaskifiedTest, StoreAndCheckThumbnail) {
   PumpLoop();
 
   // Check it exists
-  base::Optional<VisualsAvailability> availability;
+  absl::optional<VisualsAvailability> availability;
   auto exists_callback = base::BindLambdaForTesting(
       [&](VisualsAvailability value) { availability = value; });
   model()->GetVisualsAvailability(visuals.offline_id, exists_callback);
@@ -1535,7 +1535,7 @@ TEST_F(OfflinePageModelTaskifiedTest, StoreAndCheckFavicon) {
   PumpLoop();
 
   // Check if it exists.
-  base::Optional<VisualsAvailability> availability;
+  absl::optional<VisualsAvailability> availability;
   auto exists_callback = base::BindLambdaForTesting(
       [&](VisualsAvailability value) { availability = value; });
   model()->GetVisualsAvailability(visuals.offline_id, exists_callback);

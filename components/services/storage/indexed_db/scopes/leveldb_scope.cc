@@ -10,8 +10,8 @@
 #include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 

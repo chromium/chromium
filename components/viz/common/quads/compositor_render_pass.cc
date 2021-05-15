@@ -87,7 +87,7 @@ void CompositorRenderPass::SetAll(
     const gfx::Transform& transform_to_root_target,
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
-    const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+    const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
     SubtreeCaptureId subtree_capture_id,
     bool has_transparent_background,
     bool cache_render_pass,

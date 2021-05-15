@@ -67,7 +67,7 @@ ImageFetchId ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
 
 void ImageFetcher::OnFetchComplete(ImageFetchId id,
                                    std::unique_ptr<std::string> response_data) {
-  base::Optional<PendingRequest> request = RemovePending(id);
+  absl::optional<PendingRequest> request = RemovePending(id);
   if (!request)
     return;
 
@@ -87,7 +87,7 @@ void ImageFetcher::OnFetchComplete(ImageFetchId id,
 }
 
 void ImageFetcher::Cancel(ImageFetchId id) {
-  base::Optional<PendingRequest> request = RemovePending(id);
+  absl::optional<PendingRequest> request = RemovePending(id);
   if (!request)
     return;
 
@@ -97,13 +97,13 @@ void ImageFetcher::Cancel(ImageFetchId id) {
       .Run({/*response_bytes=*/std::string(), net::Error::ERR_ABORTED});
 }
 
-base::Optional<ImageFetcher::PendingRequest> ImageFetcher::RemovePending(
+absl::optional<ImageFetcher::PendingRequest> ImageFetcher::RemovePending(
     ImageFetchId id) {
   auto iterator = pending_requests_.find(id);
   if (iterator == pending_requests_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
-  auto request = base::make_optional(std::move(iterator->second));
+  auto request = absl::make_optional(std::move(iterator->second));
   pending_requests_.erase(iterator);
   return request;
 }

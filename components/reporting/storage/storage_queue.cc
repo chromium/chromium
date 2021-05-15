@@ -24,7 +24,6 @@
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -46,6 +45,7 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace reporting {
@@ -199,8 +199,8 @@ Status StorageQueue::Init() {
       // Some of them might have been changed earlier.
       next_sequencing_id_ = 0;
       first_sequencing_id_ = 0;
-      first_unconfirmed_sequencing_id_ = base::nullopt;
-      last_record_digest_ = base::nullopt;
+      first_unconfirmed_sequencing_id_ = absl::nullopt;
+      last_record_digest_ = absl::nullopt;
       ReleaseAllFileInstances();
       used_files_set.clear();
     }
@@ -215,7 +215,7 @@ Status StorageQueue::Init() {
   return Status::StatusOK();
 }
 
-base::Optional<std::string> StorageQueue::GetLastRecordDigest() const {
+absl::optional<std::string> StorageQueue::GetLastRecordDigest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   // Attach last record digest, if present.
   return last_record_digest_;
@@ -255,7 +255,7 @@ Status StorageQueue::EnumerateDataFiles(
   // We need to set first_sequencing_id_ to 0 if this is the initialization
   // of an empty StorageQueue, and to the lowest sequencing id among all
   // existing files, if it was already used.
-  base::Optional<int64_t> first_sequencing_id;
+  absl::optional<int64_t> first_sequencing_id;
   base::FileEnumerator dir_enum(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
@@ -1371,7 +1371,7 @@ StorageQueue::CollectFilesForUpload(int64_t sequencing_id) const {
 
 class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
  public:
-  ConfirmContext(base::Optional<int64_t> sequencing_id,
+  ConfirmContext(absl::optional<int64_t> sequencing_id,
                  bool force,
                  base::OnceCallback<void(Status)> end_callback,
                  scoped_refptr<StorageQueue> storage_queue)
@@ -1402,7 +1402,7 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
   }
 
   // Confirmed sequencing id.
-  base::Optional<int64_t> sequencing_id_;
+  absl::optional<int64_t> sequencing_id_;
 
   bool force_;
 
@@ -1411,7 +1411,7 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
   SEQUENCE_CHECKER(confirm_sequence_checker_);
 };
 
-void StorageQueue::Confirm(base::Optional<int64_t> sequencing_id,
+void StorageQueue::Confirm(absl::optional<int64_t> sequencing_id,
                            bool force,
                            base::OnceCallback<void(Status)> completion_cb) {
   Start<ConfirmContext>(sequencing_id, force, std::move(completion_cb), this);
@@ -1536,7 +1536,7 @@ void StorageQueue::SingleFile::Close() {
     return;
   }
   handle_.reset();
-  is_readonly_ = base::nullopt;
+  is_readonly_ = absl::nullopt;
   if (buffer_) {
     buffer_.reset();
     GetMemoryResource()->Discard(buffer_size_);

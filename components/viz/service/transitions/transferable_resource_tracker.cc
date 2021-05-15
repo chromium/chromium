@@ -37,7 +37,7 @@ TransferableResourceTracker::ImportResources(
   // valid.
   CHECK(saved_frame->IsValid());
 
-  base::Optional<SurfaceSavedFrame::FrameResult> frame_copy =
+  absl::optional<SurfaceSavedFrame::FrameResult> frame_copy =
       saved_frame->TakeResult();
 
   ResourceFrame resource_frame;

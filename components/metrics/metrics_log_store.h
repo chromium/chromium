@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "base/metrics/histogram_base.h"
-#include "base/optional.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/unsent_log_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -64,7 +64,7 @@ class MetricsLogStore : public LogStore {
   // Saves |log_data| as the given type.
   void StoreLog(const std::string& log_data,
                 MetricsLog::LogType log_type,
-                base::Optional<base::HistogramBase::Count> samples_count);
+                absl::optional<base::HistogramBase::Count> samples_count);
 
   // LogStore:
   bool has_unsent_logs() const override;

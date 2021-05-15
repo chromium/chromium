@@ -19,7 +19,6 @@
 #include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -54,6 +53,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -634,7 +634,7 @@ void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
     for (const auto& experiment_stat :
          zero_suggest_provider_->experiment_stats()) {
       DCHECK(experiment_stat.is_dict());
-      base::Optional<int> type_int =
+      absl::optional<int> type_int =
           experiment_stat.FindIntPath(kTypeIntFieldNumber);
       const std::string* string_value =
           experiment_stat.FindStringPath(kStringValueFieldNumber);
@@ -683,7 +683,7 @@ void AutocompleteController::UpdateResult(
     bool force_notify_default_match_changed) {
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
 
-  base::Optional<AutocompleteMatch> last_default_match;
+  absl::optional<AutocompleteMatch> last_default_match;
   std::u16string last_default_associated_keyword;
   if (result_.default_match()) {
     last_default_match = *result_.default_match();

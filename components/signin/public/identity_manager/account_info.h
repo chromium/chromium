@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 #if defined(OS_ANDROID)

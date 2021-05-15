@@ -10,7 +10,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -23,6 +22,7 @@
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 using base::UTF16ToUTF8;
@@ -1032,7 +1032,7 @@ bool AutofillProfileComparator::IsMergeCandidate(
 }
 
 // static
-base::Optional<AutofillProfile>
+absl::optional<AutofillProfile>
 AutofillProfileComparator::GetAutofillProfileMergeCandidate(
     const AutofillProfile& new_profile,
     const std::vector<AutofillProfile*>& existing_profiles,
@@ -1045,7 +1045,7 @@ AutofillProfileComparator::GetAutofillProfileMergeCandidate(
   SortProfilesByFrecency(&existing_profiles_copies);
 
   // Find and return the first profile that classifies as a merge candidate. If
-  // not profile classifies, return |base::nullopt|.
+  // not profile classifies, return |absl::nullopt|.
   AutofillProfileComparator comparator(app_locale);
   auto merge_candidate = base::ranges::find_if(
       existing_profiles_copies, [&](const AutofillProfile* existing_profile) {
@@ -1054,8 +1054,8 @@ AutofillProfileComparator::GetAutofillProfileMergeCandidate(
       });
 
   return merge_candidate != existing_profiles_copies.end()
-             ? base::make_optional(**merge_candidate)
-             : base::nullopt;
+             ? absl::make_optional(**merge_candidate)
+             : absl::nullopt;
 }
 
 // static
@@ -1359,9 +1359,9 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
   bool use_alternative_state_name_map_enabled = base::FeatureList::IsEnabled(
       features::kAutofillUseAlternativeStateNameMap);
   if (use_alternative_state_name_map_enabled) {
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+    absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_name_state1 = p1.GetAddress().GetCanonicalizedStateName();
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+    absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_name_state2 = p2.GetAddress().GetCanonicalizedStateName();
     if (canonical_name_state1 && canonical_name_state2) {
       if (canonical_name_state1.value() == canonical_name_state2.value())

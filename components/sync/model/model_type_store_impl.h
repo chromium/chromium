@@ -50,17 +50,17 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void ReadDataDone(ReadDataCallback callback,
                     std::unique_ptr<RecordList> record_list,
                     std::unique_ptr<IdList> missing_id_list,
-                    const base::Optional<ModelError>& error);
+                    const absl::optional<ModelError>& error);
   void ReadAllDataDone(ReadAllDataCallback callback,
                        std::unique_ptr<RecordList> record_list,
-                       const base::Optional<ModelError>& error);
+                       const absl::optional<ModelError>& error);
   void ReadAllMetadataDone(ReadMetadataCallback callback,
                            std::unique_ptr<MetadataBatch> metadata_batch,
-                           const base::Optional<ModelError>& error);
+                           const absl::optional<ModelError>& error);
   void ReadAllDataAndPreprocessDone(CallbackWithResult callback,
-                                    const base::Optional<ModelError>& error);
+                                    const absl::optional<ModelError>& error);
   void WriteModificationsDone(CallbackWithResult callback,
-                              const base::Optional<ModelError>& error);
+                              const absl::optional<ModelError>& error);
 
   const ModelType type_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

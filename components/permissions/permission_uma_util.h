@@ -247,8 +247,8 @@ class PermissionUmaUtil {
       PermissionAction permission_action,
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
-      base::Optional<PermissionPromptDispositionReason> ui_reason,
-      base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PermissionPromptDispositionReason> ui_reason,
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
 
   static void RecordWithBatteryBucket(const std::string& histogram);
 
@@ -257,7 +257,7 @@ class PermissionUmaUtil {
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(
-      const base::Optional<base::Version>& version);
+      const absl::optional<base::Version>& version);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(
@@ -323,11 +323,11 @@ class PermissionUmaUtil {
       PermissionRequestGestureType gesture_type,
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
-      base::Optional<PermissionPromptDispositionReason> ui_reason,
+      absl::optional<PermissionPromptDispositionReason> ui_reason,
       const GURL& requesting_origin,
       const content::WebContents* web_contents,
       content::BrowserContext* browser_context,
-      base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

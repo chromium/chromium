@@ -14,27 +14,27 @@ namespace {
 
 class MatchesNameHashIndexAndKey {
  public:
-  MatchesNameHashIndexAndKey(int name_hash_index, base::Optional<int64_t> key)
+  MatchesNameHashIndexAndKey(int name_hash_index, absl::optional<int64_t> key)
       : name_hash_index_(name_hash_index), key_(key) {}
 
   bool operator()(const CallStackProfile::MetadataItem& item) const {
-    base::Optional<int64_t> item_key_as_optional =
-        item.has_key() ? item.key() : base::Optional<int64_t>();
+    absl::optional<int64_t> item_key_as_optional =
+        item.has_key() ? item.key() : absl::optional<int64_t>();
     return item.name_hash_index() == name_hash_index_ &&
            key_ == item_key_as_optional;
   }
 
  private:
   int name_hash_index_;
-  base::Optional<int64_t> key_;
+  absl::optional<int64_t> key_;
 };
 
 // Finds the last value for a prior metadata application with |name_hash_index|
 // and |key| from |begin| that was still active at |end|. Returns nullopt if no
 // such application exists.
-base::Optional<int64_t> FindLastOpenEndedMetadataValue(
+absl::optional<int64_t> FindLastOpenEndedMetadataValue(
     int name_hash_index,
-    base::Optional<int64_t> key,
+    absl::optional<int64_t> key,
     google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
         begin,
     google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
@@ -56,7 +56,7 @@ base::Optional<int64_t> FindLastOpenEndedMetadataValue(
     if (!item->has_value()) {
       // A matching item was previously applied, but stopped being applied
       // before the last sample in the range.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // Else, a matching item was applied at this sample.
@@ -64,13 +64,13 @@ base::Optional<int64_t> FindLastOpenEndedMetadataValue(
   }
 
   // No matching items were previously applied.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Clears any existing metadata changes between |begin| and |end|.
 void ClearExistingMetadata(
     const int name_hash_index,
-    base::Optional<int64_t> key,
+    absl::optional<int64_t> key,
     google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
         begin,
     google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
@@ -87,8 +87,8 @@ void ClearExistingMetadata(
 
 // Sets the state of |item| to the provided values.
 void SetMetadataItem(int name_hash_index,
-                     base::Optional<int64_t> key,
-                     base::Optional<int64_t> value,
+                     absl::optional<int64_t> key,
+                     absl::optional<int64_t> value,
                      CallStackProfile::MetadataItem* item) {
   item->set_name_hash_index(name_hash_index);
   if (key.has_value())
@@ -181,7 +181,7 @@ void CallStackProfileMetadata::ApplyMetadata(
 
   // The previously set metadata value immediately prior to begin, or nullopt if
   // none.
-  const base::Optional<int64_t> previous_value_before_begin =
+  const absl::optional<int64_t> previous_value_before_begin =
       FindLastOpenEndedMetadataValue(name_hash_index, item.key,
                                      stack_samples->begin(), begin);
 
@@ -195,7 +195,7 @@ void CallStackProfileMetadata::ApplyMetadata(
 
   // The previously set metadata value at *end (or the one to be set on the next
   // sample if range_terminates_at_last_sample).
-  const base::Optional<int64_t> previous_value_at_end =
+  const absl::optional<int64_t> previous_value_at_end =
       FindLastOpenEndedMetadataValue(
           name_hash_index, item.key, stack_samples->begin(),
           // If a sample past the end exists check its value as well, since
@@ -229,7 +229,7 @@ void CallStackProfileMetadata::ApplyMetadata(
                     // that it is being unset.
                     previous_value_at_end.has_value()
                         ? *previous_value_at_end
-                        : base::Optional<int64_t>(),
+                        : absl::optional<int64_t>(),
                     end->mutable_metadata()->Add());
   }
 }
@@ -241,7 +241,7 @@ bool CallStackProfileMetadata::MetadataKeyCompare::operator()(
 }
 
 CallStackProfileMetadata::MetadataKey::MetadataKey(uint64_t name_hash,
-                                                   base::Optional<int64_t> key)
+                                                   absl::optional<int64_t> key)
     : name_hash(name_hash), key(key) {}
 
 CallStackProfileMetadata::MetadataKey::MetadataKey(const MetadataKey& other) =

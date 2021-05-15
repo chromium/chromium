@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/cast_component_export.h"
 #include "components/cast/message_port/message_port.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_api_bindings {
 

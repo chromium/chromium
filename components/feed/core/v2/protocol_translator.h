@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/packing.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -16,6 +15,7 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -64,16 +64,16 @@ struct RefreshResponseData {
   std::unique_ptr<StreamModelUpdateRequest> model_update_request;
 
   // Server-defined request schedule, if provided.
-  base::Optional<RequestSchedule> request_schedule;
+  absl::optional<RequestSchedule> request_schedule;
 
   // Server-defined session id token, if provided.
-  base::Optional<std::string> session_id;
+  absl::optional<std::string> session_id;
 
   // List of experiments from the server, if provided.
-  base::Optional<Experiments> experiments;
+  absl::optional<Experiments> experiments;
 };
 
-base::Optional<feedstore::DataOperation> TranslateDataOperation(
+absl::optional<feedstore::DataOperation> TranslateDataOperation(
     base::Time current_time,
     feedwire::DataOperation wire_operation);
 

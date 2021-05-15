@@ -6,9 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_METADATA_H_
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -30,12 +30,12 @@ class OptimizationMetadata {
       class T,
       class = typename std::enable_if<
           std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
-  base::Optional<T> ParsedMetadata() const {
+  absl::optional<T> ParsedMetadata() const {
     if (!any_metadata_)
-      return base::nullopt;
+      return absl::nullopt;
     return ParsedAnyMetadata<T>(*any_metadata_);
   }
-  const base::Optional<proto::Any>& any_metadata() const {
+  const absl::optional<proto::Any>& any_metadata() const {
     return any_metadata_;
   }
   void set_any_metadata(const proto::Any& any_metadata) {
@@ -45,7 +45,7 @@ class OptimizationMetadata {
   // used for testing purposes.
   void SetAnyMetadataForTesting(const google::protobuf::MessageLite& metadata);
 
-  const base::Optional<proto::PerformanceHintsMetadata>&
+  const absl::optional<proto::PerformanceHintsMetadata>&
   performance_hints_metadata() const {
     return performance_hints_metadata_;
   }
@@ -54,7 +54,7 @@ class OptimizationMetadata {
     performance_hints_metadata_ = performance_hints_metadata;
   }
 
-  const base::Optional<proto::PublicImageMetadata>& public_image_metadata()
+  const absl::optional<proto::PublicImageMetadata>& public_image_metadata()
       const {
     return public_image_metadata_;
   }
@@ -63,7 +63,7 @@ class OptimizationMetadata {
     public_image_metadata_ = public_image_metadata;
   }
 
-  const base::Optional<proto::LoadingPredictorMetadata>&
+  const absl::optional<proto::LoadingPredictorMetadata>&
   loading_predictor_metadata() const {
     return loading_predictor_metadata_;
   }
@@ -77,16 +77,16 @@ class OptimizationMetadata {
   //
   // Optimization types that are not specifically specified below will have
   // metadata populated with this field.
-  base::Optional<proto::Any> any_metadata_;
+  absl::optional<proto::Any> any_metadata_;
 
   // Only applicable for the PERFORMANCE_HINTS optimization type.
-  base::Optional<proto::PerformanceHintsMetadata> performance_hints_metadata_;
+  absl::optional<proto::PerformanceHintsMetadata> performance_hints_metadata_;
 
   // Only applicable for the COMPRESS_PUBLIC_IMAGES optimization type.
-  base::Optional<proto::PublicImageMetadata> public_image_metadata_;
+  absl::optional<proto::PublicImageMetadata> public_image_metadata_;
 
   // Only applicable for the LOADING_PREDICTOR optimization type.
-  base::Optional<proto::LoadingPredictorMetadata> loading_predictor_metadata_;
+  absl::optional<proto::LoadingPredictorMetadata> loading_predictor_metadata_;
 };
 
 }  // namespace optimization_guide

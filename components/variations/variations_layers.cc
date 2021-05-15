@@ -23,7 +23,7 @@ double GetEntropyForLayer(
 
 // Iterates through the members of the given layer proto definition, and
 // returns the ID of the member which contains that slot (if any).
-base::Optional<uint32_t> FindActiveMemberBySlot(uint32_t chosen_slot,
+absl::optional<uint32_t> FindActiveMemberBySlot(uint32_t chosen_slot,
                                                 const Layer& layer_proto) {
   for (const Layer::LayerMember& member : layer_proto.members()) {
     if (!member.id())
@@ -35,13 +35,13 @@ base::Optional<uint32_t> FindActiveMemberBySlot(uint32_t chosen_slot,
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
 
 VariationsLayers::LayerInfo::LayerInfo(
-    base::Optional<uint32_t> active_member_id,
+    absl::optional<uint32_t> active_member_id,
     Layer::EntropyMode entropy_mode)
     : active_member_id(active_member_id), entropy_mode(entropy_mode) {}
 

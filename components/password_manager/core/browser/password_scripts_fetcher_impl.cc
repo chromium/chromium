@@ -247,7 +247,7 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
   base::JSONReader::ValueWithError data =
       base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == base::nullopt) {
+  if (data.value == absl::nullopt) {
     DVLOG(1) << "Parse error: " << data.error_message;
     return {ParsingResult::kInvalidJson};
   }

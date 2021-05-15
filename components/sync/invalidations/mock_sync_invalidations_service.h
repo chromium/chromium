@@ -26,14 +26,14 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
   MOCK_METHOD(void,
               RemoveTokenObserver,
               (FCMRegistrationTokenObserver * observer));
-  MOCK_METHOD(base::Optional<std::string>,
+  MOCK_METHOD(absl::optional<std::string>,
               GetFCMRegistrationToken,
               (),
               (const));
   MOCK_METHOD(void,
               SetInterestedDataTypesHandler,
               (InterestedDataTypesHandler * handler));
-  MOCK_METHOD(base::Optional<ModelTypeSet>,
+  MOCK_METHOD(absl::optional<ModelTypeSet>,
               GetInterestedDataTypes,
               (),
               (const));

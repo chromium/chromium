@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_STATS_H_
 
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "components/download/internal/background_service/controller.h"
 #include "components/download/internal/background_service/download_blockage_status.h"
 #include "components/download/internal/background_service/driver_entry.h"
@@ -14,6 +13,7 @@
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/task/download_task_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 

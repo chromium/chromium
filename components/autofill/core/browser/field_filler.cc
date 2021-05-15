@@ -257,7 +257,7 @@ bool FillStateSelectControl(const std::u16string& value,
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAlternativeStateNameMap)) {
     // Fetch the corresponding entry from AlternativeStateNameMap.
-    base::Optional<StateEntry> state_entry =
+    absl::optional<StateEntry> state_entry =
         AlternativeStateNameMap::GetInstance()->GetEntry(
             AlternativeStateNameMap::CountryCode(country_code),
             AlternativeStateNameMap::StateName(value));
@@ -640,7 +640,7 @@ bool FillStateText(const std::u16string& value,
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAlternativeStateNameMap)) {
-    base::Optional<StateEntry> state =
+    absl::optional<StateEntry> state =
         AlternativeStateNameMap::GetInstance()->GetEntry(
             AlternativeStateNameMap::CountryCode(country_code),
             AlternativeStateNameMap::StateName(value));

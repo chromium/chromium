@@ -52,8 +52,8 @@ class PublisherBase : public apps::mojom::Publisher {
   void ModifyCapabilityAccess(
       const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers,
       const std::string& app_id,
-      base::Optional<bool> accessing_camera,
-      base::Optional<bool> accessing_microphone);
+      absl::optional<bool> accessing_camera,
+      absl::optional<bool> accessing_microphone);
 
   mojo::Receiver<apps::mojom::Publisher>& receiver() { return receiver_; }
 

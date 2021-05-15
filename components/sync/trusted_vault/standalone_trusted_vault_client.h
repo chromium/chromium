@@ -73,7 +73,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // Runs |cb| when all requests have completed.
   void WaitForFlushForTesting(base::OnceClosure cb) const;
   void FetchBackendPrimaryAccountForTesting(
-      base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> callback)
+      base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> callback)
       const;
   void SetRecoverabilityDegradedForTesting();
 

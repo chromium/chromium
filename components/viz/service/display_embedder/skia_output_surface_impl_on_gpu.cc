@@ -7,7 +7,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +40,7 @@
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -660,7 +660,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
-    base::Optional<gfx::Rect> draw_rectangle) {
+    absl::optional<gfx::Rect> draw_rectangle) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!scoped_output_device_paint_);
@@ -693,7 +693,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   dependency_->ScheduleGrContextCleanup();
 
   {
-    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -779,7 +779,7 @@ void SkiaOutputSurfaceImplOnGpu::SetDrawTimings(base::TimeTicks task_posted) {
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SwapBuffersInternal(base::nullopt);
+  SwapBuffersInternal(absl::nullopt);
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
@@ -808,7 +808,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   }
 
   {
-    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -908,7 +908,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   bool need_discard_alpha =
       from_framebuffer && (output_device_->is_emulated_rgbx());
   if (need_discard_alpha) {
-    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -920,7 +920,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     surface->flush();
   }
 
-  base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
   if (dependency_->GetGrShaderCache()) {
     cache_use.emplace(dependency_->GetGrShaderCache(),
                       gpu::kDisplayCompositorClientId);
@@ -1205,7 +1205,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   }
 
   if (!scoped_write_accesses.empty()) {
-    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -1549,7 +1549,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync(uint64_t sync_fence_release) {
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
-    base::Optional<OutputSurfaceFrame> frame) {
+    absl::optional<OutputSurfaceFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
@@ -1582,7 +1582,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
 }
 
 void SkiaOutputSurfaceImplOnGpu::PostSubmit(
-    base::Optional<OutputSurfaceFrame> frame) {
+    absl::optional<OutputSurfaceFrame> frame) {
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
 

@@ -59,13 +59,13 @@ class PrefModelAssociator : public syncer::SyncableService {
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
   void StopSyncing(syncer::ModelType type) override;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   // Note for GetAllSyncDataForTesting: This will build a model of all
@@ -148,7 +148,7 @@ class PrefModelAssociator : public syncer::SyncableService {
                                            const base::Value& to_value);
 
   // Extract preference value from sync specifics.
-  static base::Optional<base::Value> ReadPreferenceSpecifics(
+  static absl::optional<base::Value> ReadPreferenceSpecifics(
       const sync_pb::PreferenceSpecifics& specifics);
 
   void NotifySyncedPrefObservers(const std::string& path, bool from_sync) const;

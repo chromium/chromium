@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/recording_map.h"
@@ -17,6 +16,7 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 

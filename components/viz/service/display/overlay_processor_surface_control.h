@@ -24,7 +24,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   void SetViewportSize(const gfx::Size& size) override;
   void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
   void CheckOverlaySupport(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates) override;

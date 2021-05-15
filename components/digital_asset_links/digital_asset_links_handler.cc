@@ -129,7 +129,7 @@ DigitalAssetLinksHandler::~DigitalAssetLinksHandler() = default;
 
 void DigitalAssetLinksHandler::OnURLLoadComplete(
     std::string relationship,
-    base::Optional<std::string> fingerprint,
+    absl::optional<std::string> fingerprint,
     std::map<std::string, std::set<std::string>> target_values,
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
@@ -166,7 +166,7 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
 
 void DigitalAssetLinksHandler::OnJSONParseResult(
     std::string relationship,
-    base::Optional<std::string> fingerprint,
+    absl::optional<std::string> fingerprint,
     std::map<std::string, std::set<std::string>> target_values,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
@@ -245,14 +245,14 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationshipForWebApk(
     const std::string& manifest_url,
     RelationshipCheckResultCallback callback) {
   return CheckDigitalAssetLinkRelationship(
-      web_domain, "delegate_permission/common.query_webapk", base::nullopt,
+      web_domain, "delegate_permission/common.query_webapk", absl::nullopt,
       {{"namespace", {"web"}}, {"site", {manifest_url}}}, std::move(callback));
 }
 
 bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
     const std::string& web_domain,
     const std::string& relationship,
-    const base::Optional<std::string>& fingerprint,
+    const absl::optional<std::string>& fingerprint,
     const std::map<std::string, std::set<std::string>>& target_values,
     RelationshipCheckResultCallback callback) {
   // TODO(peconn): Propagate the use of url::Origin backwards to clients.

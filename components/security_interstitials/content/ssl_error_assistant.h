@@ -9,9 +9,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/security_interstitials/content/ssl_error_assistant.pb.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -81,7 +81,7 @@ class SSLErrorAssistant {
   // Returns a DynamicInterstitialInfo from |dynamic_interstitial_list_| that
   // matches with |ssl_info|. If there is no match, returns null. Loads
   // |dynamic_interstitial_list_| on the first use.
-  base::Optional<DynamicInterstitialInfo> MatchDynamicInterstitial(
+  absl::optional<DynamicInterstitialInfo> MatchDynamicInterstitial(
       const net::SSLInfo& ssl_info,
       bool is_overridable = false);
 

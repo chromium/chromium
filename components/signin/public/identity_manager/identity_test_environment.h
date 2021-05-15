@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeProfileOAuth2TokenService;
 class IdentityTestEnvironmentProfileAdaptor;
@@ -346,7 +346,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       kPending,
       kAvailable,
     } state;
-    base::Optional<CoreAccountId> account_id;
+    absl::optional<CoreAccountId> account_id;
     base::OnceClosure on_available;
   };
 
@@ -421,7 +421,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Otherwise and runs a nested runloop until a matching access token request
   // is observed.
   void WaitForAccessTokenRequestIfNecessary(
-      base::Optional<CoreAccountId> account_id);
+      absl::optional<CoreAccountId> account_id);
 
   // Returns the FakeProfileOAuth2TokenService owned by IdentityManager.
   FakeProfileOAuth2TokenService* fake_token_service();

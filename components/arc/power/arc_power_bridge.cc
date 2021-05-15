@@ -211,7 +211,7 @@ void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
 
 void ArcPowerBridge::OnConciergeSuspendVmResponse(
     base::UnguessableToken token,
-    base::Optional<vm_tools::concierge::SuspendVmResponse> reply) {
+    absl::optional<vm_tools::concierge::SuspendVmResponse> reply) {
   if (!reply.has_value())
     LOG(ERROR) << "Failed to suspend arcvm, no reply received.";
   else if (!reply.value().success())
@@ -234,7 +234,7 @@ void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void ArcPowerBridge::OnConciergeResumeVmResponse(
-    base::Optional<vm_tools::concierge::ResumeVmResponse> reply) {
+    absl::optional<vm_tools::concierge::ResumeVmResponse> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to resume arcvm, no reply received.";
     return;
@@ -364,7 +364,7 @@ ArcPowerBridge::WakeLockRequestor* ArcPowerBridge::GetWakeLockRequestor(
 }
 
 void ArcPowerBridge::OnGetScreenBrightnessPercent(
-    base::Optional<double> percent) {
+    absl::optional<double> percent) {
   if (!percent.has_value()) {
     LOG(ERROR)
         << "PowerManagerClient::GetScreenBrightnessPercent reports an error";

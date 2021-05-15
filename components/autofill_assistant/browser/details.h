@@ -62,7 +62,7 @@ class Details {
 
   const std::string title() const;
   const std::string imageUrl() const;
-  const base::Optional<std::string> imageAccessibilityHint() const;
+  const absl::optional<std::string> imageAccessibilityHint() const;
   bool imageAllowClickthrough() const;
   const std::string imageDescription() const;
   const std::string imagePositiveText() const;

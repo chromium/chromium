@@ -10,13 +10,13 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager_delegate.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace javascript_dialogs {
 

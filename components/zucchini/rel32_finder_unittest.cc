@@ -234,7 +234,7 @@ TEST(Rel32FinderX86Test, FindNext) {
     EXPECT_FALSE(result->can_point_outside_section);
     rel_finder.Accept();
   }
-  EXPECT_EQ(base::nullopt, rel_finder.GetNext());
+  EXPECT_EQ(absl::nullopt, rel_finder.GetNext());
 }
 
 TEST(Rel32FinderX86Test, Accept) {
@@ -349,7 +349,7 @@ TEST(Rel32FinderX64Test, FindNext) {
     EXPECT_TRUE(result->can_point_outside_section);
     rel_finder.Accept();
   }
-  EXPECT_EQ(base::nullopt, rel_finder.GetNext());
+  EXPECT_EQ(absl::nullopt, rel_finder.GetNext());
 }
 
 // TODO(huangs): Test that integrates Abs32GapFinder and Rel32Finder.

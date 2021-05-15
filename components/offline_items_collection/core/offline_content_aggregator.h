@@ -82,20 +82,20 @@ class OfflineContentAggregator : public OfflineContentProvider,
                   const std::string& name,
                   RenameCallback callback) override;
   void ChangeSchedule(const ContentId& id,
-                      base::Optional<OfflineItemSchedule> schedule) override;
+                      absl::optional<OfflineItemSchedule> schedule) override;
 
  private:
   // OfflineContentProvider::Observer implementation.
   void OnItemsAdded(const OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(OfflineContentProvider* provider,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
-                         const base::Optional<OfflineItem>& item);
+                         const absl::optional<OfflineItem>& item);
 
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the

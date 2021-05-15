@@ -48,7 +48,7 @@ void OnIsImplemented(
   if (response->get_valid()->activity_names.empty()) {
     // If a TWA does not implement PAY intent in any of its activities, then
     // |activity_names| is empty, which is not an error.
-    std::move(callback).Run(/*error_message=*/base::nullopt,
+    std::move(callback).Run(/*error_message=*/absl::nullopt,
                             /*app_descriptions=*/{});
     return;
   }
@@ -74,7 +74,7 @@ void OnIsImplemented(
   std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions;
   app_descriptions.emplace_back(std::move(app));
 
-  std::move(callback).Run(/*error_message=*/base::nullopt,
+  std::move(callback).Run(/*error_message=*/absl::nullopt,
                           std::move(app_descriptions));
 }
 
@@ -97,7 +97,7 @@ void OnIsReadyToPay(AndroidAppCommunication::IsReadyToPayCallback callback,
     return;
   }
 
-  std::move(callback).Run(/*error_message=*/base::nullopt,
+  std::move(callback).Run(/*error_message=*/absl::nullopt,
                           response->get_response());
 }
 
@@ -137,7 +137,7 @@ void OnPaymentAppResponse(
   // Chrome OS TWA currently supports only methods::kGooglePlayBilling payment
   // method identifier.
   std::move(callback).Run(
-      /*error_message=*/base::nullopt,
+      /*error_message=*/absl::nullopt,
       response->get_valid()->is_activity_result_ok,
       /*payment_method_identifier=*/methods::kGooglePlayBilling,
       response->get_valid()->stringified_details);
@@ -150,7 +150,7 @@ arc::mojom::PaymentParametersPtr CreatePaymentParameters(
     const GURL& top_level_origin,
     const GURL& payment_request_origin,
     const std::string& payment_request_id,
-    base::Optional<std::string>* error_message) {
+    absl::optional<std::string>* error_message) {
   // Chrome OS TWA supports only kGooglePlayBilling payment method identifier
   // at this time.
   auto supported_method_iterator =
@@ -216,14 +216,14 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
       // Chrome OS supports Android app payment only through a TWA. An empty
       // |twa_package_name| indicates that Chrome was not launched from a TWA,
       // so there're no payment apps available.
-      std::move(callback).Run(/*error_message=*/base::nullopt,
+      std::move(callback).Run(/*error_message=*/absl::nullopt,
                               /*app_descriptions=*/{});
       return;
     }
 
     if (!package_name_for_testing_.empty()) {
       std::move(callback).Run(
-          /*error_message=*/base::nullopt,
+          /*error_message=*/absl::nullopt,
           CreateAppForTesting(package_name_for_testing_, method_for_testing_));
       return;
     }
@@ -257,7 +257,7 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
       return;
     }
 
-    base::Optional<std::string> error_message;
+    absl::optional<std::string> error_message;
     auto parameters = CreatePaymentParameters(
         package_name, service_name, stringified_method_data, top_level_origin,
         payment_request_origin, payment_request_id, &error_message);
@@ -296,7 +296,7 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
         overlay_manager->RegisterHostWindow(std::move(billing_token),
                                             web_contents->GetNativeView());
 
-    base::Optional<std::string> error_message;
+    absl::optional<std::string> error_message;
     if (package_name_for_testing_ == package_name) {
       std::move(callback).Run(error_message,
                               /*is_activity_result_ok=*/true,

@@ -26,7 +26,7 @@ bool ValueToVector(const base::Value& value,
   if (!value.is_list())
     return false;
   for (const base::Value& entry : value.GetList()) {
-    base::Optional<base::TimeDelta> delta = util::ValueToTimeDelta(entry);
+    absl::optional<base::TimeDelta> delta = util::ValueToTimeDelta(entry);
     if (!delta)
       return false;
     result->push_back(*delta);
@@ -53,7 +53,7 @@ RequestSchedule RequestScheduleFromValue(const base::Value& value) {
   if (!value.is_dict())
     return {};
   RequestSchedule result;
-  base::Optional<base::Time> anchor =
+  absl::optional<base::Time> anchor =
       util::ValueToTime(value.FindKey("anchor"));
   const base::Value* offsets =
       value.FindKeyOfType("offsets", base::Value::Type::LIST);

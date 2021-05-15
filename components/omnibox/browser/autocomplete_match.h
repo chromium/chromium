@@ -642,7 +642,7 @@ struct AutocompleteMatch {
   //
   // If this value exists, it should always be positive and nonzero. In Java and
   // JavaScript, -1 is used as a sentinel value, but should never occur in C++.
-  base::Optional<int> suggestion_group_id;
+  absl::optional<int> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields
   // before displaying.
@@ -651,7 +651,7 @@ struct AutocompleteMatch {
   bool swap_contents_and_description = false;
 
   // A rich-format version of the display for the dropdown.
-  base::Optional<SuggestionAnswer> answer;
+  absl::optional<SuggestionAnswer> answer;
 
   // The transition type to use when the user opens this match.  By default
   // this is TYPED.  Providers whose matches do not look like URLs should set

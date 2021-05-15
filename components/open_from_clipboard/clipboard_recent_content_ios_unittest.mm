@@ -172,9 +172,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
     __block BOOL callback_called = NO;
-    __block base::Optional<GURL> optional_gurl;
+    __block absl::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(base::Optional<GURL> copied_url) {
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));
@@ -197,9 +197,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     }
 
     __block BOOL callback_called = NO;
-    __block base::Optional<GURL> optional_gurl;
+    __block absl::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(base::Optional<GURL> copied_url) {
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));

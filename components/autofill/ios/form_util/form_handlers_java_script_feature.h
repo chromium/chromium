@@ -35,7 +35,7 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   friend class base::NoDestructor<FormHandlersJavaScriptFeature>;
 
   // web::JavaScriptFeature
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

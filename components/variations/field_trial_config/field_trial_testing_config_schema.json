@@ -4,7 +4,7 @@
 
 {
   "type_name": "FieldTrialTestingConfig",
-  "headers": ["base/optional.h", "components/variations/proto/study.pb.h"],
+  "headers": ["third_party/abseil-cpp/absl/types/optional.h", "components/variations/proto/study.pb.h"],
   "schema": [{
     "field": "studies",
     "type": "array",
@@ -34,8 +34,8 @@
               {
                 "field": "is_low_end_device",
                 "type": "class",
-                "ctype": "base::Optional<bool>",
-                "default": "base::nullopt",
+                "ctype": "absl::optional<bool>",
+                "default": "absl::nullopt",
                 "optional": "True"
               },
               {

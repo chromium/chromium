@@ -16,11 +16,11 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -60,7 +60,7 @@ class POLICY_EXPORT PolicyMap {
     Entry(PolicyLevel level,
           PolicyScope scope,
           PolicySource source,
-          base::Optional<base::Value> value,
+          absl::optional<base::Value> value,
           std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
     ~Entry();
 
@@ -73,7 +73,7 @@ class POLICY_EXPORT PolicyMap {
     base::Value* value() { return base::OptionalOrNullptr(value_); }
     const base::Value* value() const { return base::OptionalOrNullptr(value_); }
 
-    void set_value(base::Optional<base::Value> val);
+    void set_value(absl::optional<base::Value> val);
 
     // Returns true if |this| has higher priority than |other|. The priority of
     // the fields are |level| > |scope| > |source|.
@@ -137,13 +137,13 @@ class POLICY_EXPORT PolicyMap {
                                         L10nLookupFunction lookup) const;
 
    private:
-    base::Optional<base::Value> value_;
+    absl::optional<base::Value> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
 
     // Stores all message IDs separated by message types.
     std::map<MessageType,
-             std::map<int, base::Optional<std::vector<std::u16string>>>>
+             std::map<int, absl::optional<std::vector<std::u16string>>>>
         message_ids_;
   };
 
@@ -197,7 +197,7 @@ class POLICY_EXPORT PolicyMap {
            PolicyLevel level,
            PolicyScope scope,
            PolicySource source,
-           base::Optional<base::Value> value,
+           absl::optional<base::Value> value,
            std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
 
   void Set(const std::string& policy, Entry entry);

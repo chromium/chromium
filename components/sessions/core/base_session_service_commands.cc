@@ -187,7 +187,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
     const SessionCommand& command,
     SessionID* tab_id,
     std::string* user_agent_override,
-    base::Optional<std::string>* opaque_ua_metadata_override) {
+    absl::optional<std::string>* opaque_ua_metadata_override) {
   std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
   if (!pickle)
     return false;
@@ -202,7 +202,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
   if (!iterator.ReadBool(&has_ua_metadata_override))
     return false;
   if (!has_ua_metadata_override) {
-    *opaque_ua_metadata_override = base::nullopt;
+    *opaque_ua_metadata_override = absl::nullopt;
     return true;
   }
 

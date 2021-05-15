@@ -35,7 +35,7 @@ class SessionStore {
   };
 
   using OpenCallback = base::OnceCallback<void(
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
 
@@ -141,14 +141,14 @@ class SessionStore {
 
   static void OnStoreCreated(
       std::unique_ptr<Builder> builder,
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore> underlying_store);
   static void OnReadAllMetadata(
       std::unique_ptr<Builder> builder,
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   static void OnReadAllData(std::unique_ptr<Builder> builder,
-                            const base::Optional<syncer::ModelError>& error);
+                            const absl::optional<syncer::ModelError>& error);
 
   // |sessions_client| must not be null and must outlive this object.
   SessionStore(const SessionInfo& local_session_info,

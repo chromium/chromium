@@ -18,13 +18,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/surfaces/surface_reference.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
 #include <iosfwd>
@@ -48,7 +48,7 @@ struct BeginFrameArgs;
 class VIZ_SERVICE_EXPORT SurfaceManager {
  public:
   SurfaceManager(SurfaceManagerDelegate* delegate,
-                 base::Optional<uint32_t> activation_deadline_in_frames);
+                 absl::optional<uint32_t> activation_deadline_in_frames);
   ~SurfaceManager();
 
 #if DCHECK_IS_ON()
@@ -57,12 +57,12 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 #endif
 
   // Sets an alternative system default frame activation deadline for unit
-  // tests. base::nullopt indicates no deadline (in other words, an unlimited
+  // tests. absl::nullopt indicates no deadline (in other words, an unlimited
   // deadline).
   void SetActivationDeadlineInFramesForTesting(
-      base::Optional<uint32_t> deadline);
+      absl::optional<uint32_t> deadline);
 
-  base::Optional<uint32_t> activation_deadline_in_frames() const {
+  absl::optional<uint32_t> activation_deadline_in_frames() const {
     return activation_deadline_in_frames_;
   }
 
@@ -269,7 +269,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Can be nullptr.
   SurfaceManagerDelegate* const delegate_;
 
-  base::Optional<uint32_t> activation_deadline_in_frames_;
+  absl::optional<uint32_t> activation_deadline_in_frames_;
 
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<SurfaceAllocationGroup>>
@@ -318,7 +318,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Timer to remove old temporary references that aren't removed after an
   // interval of time. The timer will started/stopped so it only runs if there
   // are temporary references. Also the timer isn't used with Android WebView.
-  base::Optional<base::RepeatingTimer> expire_timer_;
+  absl::optional<base::RepeatingTimer> expire_timer_;
 
   bool allocation_groups_need_garbage_collection_ = false;
 

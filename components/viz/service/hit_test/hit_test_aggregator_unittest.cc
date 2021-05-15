@@ -1158,7 +1158,7 @@ TEST_F(HitTestAggregatorTest, HitTestDataNotUpdated) {
   // We did not update the hit-test data. Expect the index from Aggregator /
   // Manager to remain unchanged.
   support()->SubmitCompositorFrame(surface_id.local_surface_id(),
-                                   MakeDefaultCompositorFrame(), base::nullopt);
+                                   MakeDefaultCompositorFrame(), absl::nullopt);
   aggregator->Aggregate(surface_id);
   EXPECT_EQ(last_index, aggregator->GetLastSubmitHitTestRegionListIndex());
 

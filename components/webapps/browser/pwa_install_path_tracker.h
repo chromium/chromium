@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_PWA_INSTALL_PATH_TRACKER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_PWA_INSTALL_PATH_TRACKER_H_
 
-#include "base/optional.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
 

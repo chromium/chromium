@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -26,6 +25,7 @@
 #include "components/arc/session/connection_observer.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/ozone/gamepad/gamepad_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -136,9 +136,9 @@ class ArcMetricsService : public KeyedService,
 
   // Finds the boot_progress_arc_upgraded event, removes it from |events|, and
   // returns the event time. If the boot_progress_arc_upgraded event is not
-  // found, base::nullopt is returned. This function is public for testing
+  // found, absl::nullopt is returned. This function is public for testing
   // purposes.
-  base::Optional<base::TimeTicks> GetArcStartTimeFromEvents(
+  absl::optional<base::TimeTicks> GetArcStartTimeFromEvents(
       std::vector<mojom::BootProgressEventPtr>& events);
 
  private:
@@ -215,10 +215,10 @@ class ArcMetricsService : public KeyedService,
   // DBus callbacks.
   void OnArcStartTimeRetrieved(std::vector<mojom::BootProgressEventPtr> events,
                                mojom::BootType boot_type,
-                               base::Optional<base::TimeTicks> arc_start_time);
+                               absl::optional<base::TimeTicks> arc_start_time);
   void OnArcStartTimeForPriAbiMigration(
       base::TimeTicks durationTicks,
-      base::Optional<base::TimeTicks> arc_start_time);
+      absl::optional<base::TimeTicks> arc_start_time);
 
   // Notify AppKillObservers.
   void NotifyLowMemoryKill();

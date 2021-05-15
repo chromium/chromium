@@ -10,7 +10,7 @@
 
 #include <string>
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -31,7 +31,7 @@ class OriginPolicyUI {
  public:
   // Create the error page for the given NavigationHandle.
   // This is intended to implement the ContentBrowserClient interface.
-  static base::Optional<std::string> GetErrorPageAsHTML(
+  static absl::optional<std::string> GetErrorPageAsHTML(
       network::OriginPolicyState error_reason,
       content::NavigationHandle* handle);
 

@@ -12,7 +12,7 @@ namespace optimization_guide {
 TEST(OptimizationMetadataTest, ParsedMetadataAnyMetadataNotPopulatedTest) {
   OptimizationMetadata optimization_metadata;
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
@@ -27,7 +27,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataNoTypeURLTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
@@ -43,7 +43,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataMismatchedTypeTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
@@ -58,7 +58,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataNotSerializableTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
@@ -75,7 +75,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
@@ -90,7 +90,7 @@ TEST(OptimizationMetadataTest, SetAnyMetadataForTestingTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.SetAnyMetadataForTesting(dase_metadata);
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           optimization_metadata
               .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();

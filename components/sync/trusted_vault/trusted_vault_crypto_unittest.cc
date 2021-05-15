@@ -32,18 +32,18 @@ TEST(TrustedVaultCrypto, ShouldHandleDecryptionFailure) {
   EXPECT_THAT(DecryptTrustedVaultWrappedKey(
                   MakeTestKeyPair()->private_key(),
                   /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4}),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 TEST(TrustedVaultCrypto, ShouldEncryptAndDecryptWrappedKey) {
   const std::vector<uint8_t> trusted_vault_key = {1, 2, 3, 4};
   const std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
-  base::Optional<std::vector<uint8_t>> decrypted_trusted_vault_key =
+  absl::optional<std::vector<uint8_t>> decrypted_trusted_vault_key =
       DecryptTrustedVaultWrappedKey(
           key_pair->private_key(),
           /*wrapped_key=*/ComputeTrustedVaultWrappedKey(key_pair->public_key(),
                                                         trusted_vault_key));
-  ASSERT_THAT(decrypted_trusted_vault_key, Ne(base::nullopt));
+  ASSERT_THAT(decrypted_trusted_vault_key, Ne(absl::nullopt));
   EXPECT_THAT(*decrypted_trusted_vault_key, Eq(trusted_vault_key));
 }
 

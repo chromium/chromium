@@ -97,7 +97,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   gfx::RectF uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
   // Clip rect in the target content space after composition, or empty if the
   // quad is not clipped.
-  base::Optional<gfx::Rect> clip_rect;
+  absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
   // If the quad has a mask filter.

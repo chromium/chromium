@@ -165,7 +165,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
   content::RenderFrameHost* frame_host =
       navigation_handle->GetRenderFrameHost();
 
-  base::Optional<blink::FrameAdEvidence> ad_evidence_for_navigation;
+  absl::optional<blink::FrameAdEvidence> ad_evidence_for_navigation;
 
   // Update the ad status of a frame given the new navigation. This may tag or
   // untag a frame as an ad.
@@ -329,7 +329,7 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
   DCHECK(frame_host);
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> filter;
-  base::Optional<mojom::ActivationState> activation_to_inherit;
+  absl::optional<mojom::ActivationState> activation_to_inherit;
   did_inherit_opener_activation = false;
 
   if (navigation_handle->HasCommitted() && throttle) {
@@ -508,14 +508,14 @@ bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
          base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId());
 }
 
-base::Optional<LoadPolicy>
+absl::optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
     content::RenderFrameHost* frame_host) const {
   if (!frame_host)
-    return base::nullopt;
+    return absl::nullopt;
   auto it = navigation_load_policies_.find(frame_host->GetFrameTreeNodeId());
   if (it == navigation_load_policies_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return it->second;
 }
 
@@ -586,12 +586,12 @@ ContentSubresourceFilterThrottleManager::GetParentFrameFilter(
   return GetFrameFilter(parent);
 }
 
-const base::Optional<subresource_filter::mojom::ActivationState>
+const absl::optional<subresource_filter::mojom::ActivationState>
 ContentSubresourceFilterThrottleManager::GetFrameActivationState(
     content::RenderFrameHost* frame_host) {
   if (AsyncDocumentSubresourceFilter* filter = GetFrameFilter(frame_host))
     return filter->activation_state();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 AsyncDocumentSubresourceFilter*
@@ -709,13 +709,13 @@ void ContentSubresourceFilterThrottleManager::SetIsAdSubframeForTesting(
   }
 }
 
-base::Optional<blink::FrameAdEvidence>
+absl::optional<blink::FrameAdEvidence>
 ContentSubresourceFilterThrottleManager::GetAdEvidenceForFrame(
     content::RenderFrameHost* render_frame_host) {
   auto tracked_ad_evidence_it =
       tracked_ad_evidence_.find(render_frame_host->GetFrameTreeNodeId());
   if (tracked_ad_evidence_it == tracked_ad_evidence_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return tracked_ad_evidence_it->second;
 }
 

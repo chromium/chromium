@@ -48,15 +48,15 @@ TEST_F(NigoriStorageImplTest, ShouldBeAbleToRestoreAfterWrite) {
   // Use different NigoriStorageImpl when reading to avoid dependency on its
   // state and emulate browser restart.
   NigoriStorageImpl reader_storage(GetFilePath(), encryptor());
-  base::Optional<sync_pb::NigoriLocalData> read_data =
+  absl::optional<sync_pb::NigoriLocalData> read_data =
       reader_storage.RestoreData();
-  EXPECT_NE(read_data, base::nullopt);
+  EXPECT_NE(read_data, absl::nullopt);
   EXPECT_EQ(read_data->SerializeAsString(), write_data.SerializeAsString());
 }
 
 TEST_F(NigoriStorageImplTest, ShouldReturnNulloptWhenFileNotExists) {
   NigoriStorageImpl storage(GetFilePath(), encryptor());
-  EXPECT_EQ(storage.RestoreData(), base::nullopt);
+  EXPECT_EQ(storage.RestoreData(), absl::nullopt);
 }
 
 TEST_F(NigoriStorageImplTest, ShouldRemoveFile) {

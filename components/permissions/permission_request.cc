@@ -24,8 +24,8 @@ ContentSettingsType PermissionRequest::GetContentSettingsType() const {
 }
 
 #if !defined(OS_ANDROID)
-base::Optional<std::u16string> PermissionRequest::GetChipText() const {
-  return base::nullopt;
+absl::optional<std::u16string> PermissionRequest::GetChipText() const {
+  return absl::nullopt;
 }
 #endif
 

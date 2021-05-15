@@ -7,8 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -25,7 +25,7 @@ class OptimizationTargetModelObserver : public base::CheckedObserver {
   // file path it already has on device, if applicable.
   virtual void OnModelFileUpdated(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       const base::FilePath& file_path) = 0;
 };
 

@@ -16,10 +16,10 @@ uint16_t ParseMessageLength(base::span<const uint8_t> message, size_t offset) {
 
 }  // namespace
 
-base::Optional<ApduCommand> ApduCommand::CreateFromMessage(
+absl::optional<ApduCommand> ApduCommand::CreateFromMessage(
     base::span<const uint8_t> message) {
   if (message.size() < kApduMinHeader || message.size() > kApduMaxLength)
-    return base::nullopt;
+    return absl::nullopt;
 
   uint8_t cla = message[0];
   uint8_t ins = message[1];
@@ -36,12 +36,12 @@ base::Optional<ApduCommand> ApduCommand::CreateFromMessage(
     // Invalid encoding sizes.
     case kApduMinHeader + 1:
     case kApduMinHeader + 2:
-      return base::nullopt;
+      return absl::nullopt;
     // No data present; response expected.
     case kApduMinHeader + 3:
       // Fifth byte must be 0.
       if (message[4] != 0)
-        return base::nullopt;
+        return absl::nullopt;
       response_length = ParseMessageLength(message, kApduCommandLengthOffset);
       // Special case where response length of 0x0000 corresponds to 65536
       // as defined in ISO7816-4.
@@ -51,7 +51,7 @@ base::Optional<ApduCommand> ApduCommand::CreateFromMessage(
     default:
       // Fifth byte must be 0.
       if (message[4] != 0)
-        return base::nullopt;
+        return absl::nullopt;
       auto data_length = ParseMessageLength(message, kApduCommandLengthOffset);
 
       if (message.size() == data_length + kApduCommandDataOffset) {
@@ -69,7 +69,7 @@ base::Optional<ApduCommand> ApduCommand::CreateFromMessage(
         if (response_length == 0)
           response_length = kApduMaxResponseLength;
       } else {
-        return base::nullopt;
+        return absl::nullopt;
       }
       break;
   }

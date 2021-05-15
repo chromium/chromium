@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -43,7 +43,7 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   void SubmitHitTestRegionList(
       const SurfaceId& surface_id,
       const uint64_t frame_index,
-      base::Optional<HitTestRegionList> hit_test_region_list);
+      absl::optional<HitTestRegionList> hit_test_region_list);
 
   // Returns the HitTestRegionList corresponding to the given
   // |frame_sink_id| and the active CompositorFrame matched by frame_index.

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -20,6 +19,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -47,10 +47,10 @@ class AutocompleteSyncBridge
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

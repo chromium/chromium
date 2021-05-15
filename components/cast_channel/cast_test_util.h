@@ -182,19 +182,19 @@ class MockCastMessageHandler : public CastMessageHandler {
                     const std::string&,
                     base::TimeDelta,
                     const std::vector<std::string>&,
-                    const base::Optional<base::Value>&,
+                    const absl::optional<base::Value>&,
                     LaunchSessionCallback callback));
   MOCK_METHOD4(StopSession,
                void(int channel_id,
                     const std::string& session_id,
-                    const base::Optional<std::string>& client_id,
+                    const absl::optional<std::string>& client_id,
                     ResultCallback callback));
   MOCK_METHOD2(SendAppMessage,
                Result(int channel_id, const CastMessage& message));
   MOCK_METHOD2(SendCastMessage,
                Result(int channel_id, const CastMessage& message));
   MOCK_METHOD4(SendMediaRequest,
-               base::Optional<int>(int channel_id,
+               absl::optional<int>(int channel_id,
                                    const base::Value& body,
                                    const std::string& source_id,
                                    const std::string& destination_id));

@@ -37,11 +37,11 @@ class GenericModelExecutionTask
 
   // Executes the model using |args| and returns the output if the model was
   // executed successfully.
-  base::Optional<OutputType> Execute(InputTypes... args) {
+  absl::optional<OutputType> Execute(InputTypes... args) {
     tflite::support::StatusOr<OutputType> maybe_output = this->Infer(args...);
     if (maybe_output.ok())
       return maybe_output.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  protected:

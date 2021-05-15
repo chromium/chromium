@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_map.h"
@@ -15,6 +14,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -24,7 +24,7 @@ namespace syncer {
 namespace {
 
 void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
-  base::Optional<UserSelectableType> type =
+  absl::optional<UserSelectableType> type =
       GetUserSelectableTypeFromString(type_name);
   if (type.has_value()) {
     const char* pref = SyncPrefs::GetPrefNameForType(*type);
@@ -36,7 +36,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   if (chromeos::features::IsSplitSettingsSyncEnabled()) {
     // Check for OS types. This includes types that used to be browser types,
     // like "apps" and "preferences".
-    base::Optional<UserSelectableOsType> os_type =
+    absl::optional<UserSelectableOsType> os_type =
         GetUserSelectableOsTypeFromString(type_name);
     if (os_type.has_value()) {
       const char* os_pref = SyncPrefs::GetPrefNameForOsType(*os_type);

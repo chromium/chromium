@@ -38,8 +38,8 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // filenames).
   explicit BreadcrumbPersistentStorageManager(
       const base::FilePath& directory,
-      const base::Optional<base::FilePath>& old_breadcrumbs_file_path,
-      const base::Optional<base::FilePath>& old_breadcrumbs_temp_file_path);
+      const absl::optional<base::FilePath>& old_breadcrumbs_file_path,
+      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path);
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;
@@ -114,7 +114,7 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
   // NOTE: The optional will not have a value until the size of the existing
   // file, if any, is retrieved.
-  base::Optional<size_t> current_mapped_file_position_;
+  absl::optional<size_t> current_mapped_file_position_;
 
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

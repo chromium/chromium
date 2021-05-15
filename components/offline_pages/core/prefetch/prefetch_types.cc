@@ -197,7 +197,7 @@ bool PrefetchArchiveInfo::empty() const {
   return offline_id == 0;
 }
 
-base::Optional<PrefetchItemState> ToPrefetchItemState(int value) {
+absl::optional<PrefetchItemState> ToPrefetchItemState(int value) {
   switch (static_cast<PrefetchItemState>(value)) {
     case PrefetchItemState::NEW_REQUEST:
     case PrefetchItemState::SENT_GENERATE_PAGE_BUNDLE:
@@ -212,10 +212,10 @@ base::Optional<PrefetchItemState> ToPrefetchItemState(int value) {
     case PrefetchItemState::ZOMBIE:
       return static_cast<PrefetchItemState>(value);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value) {
+absl::optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value) {
   switch (static_cast<PrefetchItemErrorCode>(value)) {
     case PrefetchItemErrorCode::SUCCESS:
     case PrefetchItemErrorCode::TOO_MANY_NEW_URLS:
@@ -241,7 +241,7 @@ base::Optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value) {
     case PrefetchItemErrorCode::SUGGESTION_INVALIDATED:
       return static_cast<PrefetchItemErrorCode>(value);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& out,

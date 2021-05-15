@@ -71,7 +71,7 @@ TEST_F(AdsInterventionManagerTest,
        NoIntervention_NoActiveInterventionReturned) {
   GURL url("https://example.test/");
 
-  base::Optional<AdsInterventionManager::LastAdsIntervention> ads_intervention =
+  absl::optional<AdsInterventionManager::LastAdsIntervention> ads_intervention =
       ads_intervention_manager_->GetLastAdsIntervention(url);
   EXPECT_FALSE(ads_intervention.has_value());
 }
@@ -83,7 +83,7 @@ TEST_F(AdsInterventionManagerTest, SingleIntervention_TimeSinceMatchesClock) {
       url, mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   test_clock()->Advance(base::TimeDelta::FromHours(1));
 
-  base::Optional<AdsInterventionManager::LastAdsIntervention> ads_intervention =
+  absl::optional<AdsInterventionManager::LastAdsIntervention> ads_intervention =
       ads_intervention_manager_->GetLastAdsIntervention(url);
   EXPECT_TRUE(ads_intervention.has_value());
   EXPECT_EQ(ads_intervention->ads_violation,

@@ -4272,7 +4272,7 @@ void AddQuad(gfx::Rect quad_rect,
       /*quad_to_target_transform=*/quad_to_target_transform, quad_rect,
       /*visible_layer_rect=*/quad_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt,
+      /*clip_rect=*/absl::nullopt,
       /*are contents opaque=*/true,
       /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);

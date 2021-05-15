@@ -56,7 +56,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
 
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const base::Optional<std::string>& mime_type) override {}
+  void OnTarget(const absl::optional<std::string>& mime_type) override {}
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
     if (!data_.has_value()) {
       const char kTestData[] = "TestData";
@@ -79,7 +79,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
 
  private:
   bool cancelled_ = false;
-  base::Optional<std::vector<uint8_t>> data_;
+  absl::optional<std::vector<uint8_t>> data_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataSourceDelegate);
 };

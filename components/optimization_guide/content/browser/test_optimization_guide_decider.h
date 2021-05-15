@@ -29,7 +29,7 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       OptimizationGuideTargetDecisionCallback callback) override;
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,

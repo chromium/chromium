@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/packing.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h"
@@ -22,6 +21,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -64,7 +64,7 @@ base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
          base::TimeDelta::FromNanoseconds(v.nanos());
 }
 
-base::Optional<RequestSchedule> TranslateRequestSchedule(
+absl::optional<RequestSchedule> TranslateRequestSchedule(
     base::Time now,
     const feedwire::RequestSchedule& v) {
   RequestSchedule schedule;
@@ -80,14 +80,14 @@ base::Optional<RequestSchedule> TranslateRequestSchedule(
 
 // Fields that should be present at most once in the response.
 struct ConvertedGlobalData {
-  base::Optional<RequestSchedule> request_schedule;
+  absl::optional<RequestSchedule> request_schedule;
 };
 
 struct ConvertedDataOperation {
   feedstore::StreamStructure stream_structure;
-  base::Optional<feedstore::Content> content;
-  base::Optional<feedstore::StreamSharedState> shared_state;
-  base::Optional<std::string> next_page_token;
+  absl::optional<feedstore::Content> content;
+  absl::optional<feedstore::StreamSharedState> shared_state;
+  absl::optional<std::string> next_page_token;
 };
 
 bool TranslateFeature(feedwire::Feature* feature,
@@ -118,11 +118,11 @@ bool TranslateFeature(feedwire::Feature* feature,
   return true;
 }
 
-base::Optional<feedstore::StreamSharedState> TranslateSharedState(
+absl::optional<feedstore::StreamSharedState> TranslateSharedState(
     feedwire::ContentId content_id,
     feedwire::RenderData& wire_shared_state) {
   if (wire_shared_state.render_data_type() != feedwire::RenderData::XSURFACE) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   feedstore::StreamSharedState shared_state;
@@ -178,7 +178,7 @@ bool TranslatePayload(base::Time now,
   return true;
 }
 
-base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
+absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
     base::Time now,
     feedwire::DataOperation operation,
     ConvertedGlobalData* global_data) {
@@ -194,18 +194,18 @@ base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UPDATE_OR_APPEND:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return base::nullopt;
+        return absl::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
 
       if (!TranslatePayload(now, std::move(operation), global_data, result))
-        return base::nullopt;
+        return absl::nullopt;
       break;
 
     case feedstore::StreamStructure::REMOVE:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return base::nullopt;
+        return absl::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
@@ -213,7 +213,7 @@ base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UNKNOWN:  // Fall through
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   return result;
@@ -234,7 +234,7 @@ RefreshResponseData::RefreshResponseData(RefreshResponseData&&) = default;
 RefreshResponseData& RefreshResponseData::operator=(RefreshResponseData&&) =
     default;
 
-base::Optional<feedstore::DataOperation> TranslateDataOperation(
+absl::optional<feedstore::DataOperation> TranslateDataOperation(
     base::Time now,
     feedwire::DataOperation wire_operation) {
   feedstore::DataOperation store_operation;
@@ -242,15 +242,15 @@ base::Optional<feedstore::DataOperation> TranslateDataOperation(
   // actions embedded in the server protobuf. Some data in data operations
   // aren't supported by this function, which is why we're passing in
   // global_data=nullptr.
-  base::Optional<ConvertedDataOperation> converted =
+  absl::optional<ConvertedDataOperation> converted =
       TranslateDataOperationInternal(now, std::move(wire_operation), nullptr);
   if (!converted)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We only support translating StreamSharedStates when they will be attached
   // to StreamModelUpdateRequests.
   if (converted->shared_state)
-    return base::nullopt;
+    return absl::nullopt;
 
   *store_operation.mutable_structure() = std::move(converted->stream_structure);
   if (converted->content)
@@ -276,7 +276,7 @@ RefreshResponseData TranslateWireResponse(
     if (!wire_data_operation.has_operation())
       continue;
 
-    base::Optional<ConvertedDataOperation> operation =
+    absl::optional<ConvertedDataOperation> operation =
         TranslateDataOperationInternal(
             current_time, std::move(wire_data_operation), &global_data);
     if (!operation)
@@ -313,19 +313,19 @@ RefreshResponseData TranslateWireResponse(
     result->stream_data.add_content_ids(content.content_id().id());
   }
 
-  base::Optional<std::string> session_id = base::nullopt;
+  absl::optional<std::string> session_id = absl::nullopt;
   if (was_signed_in_request) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
   } else if (response_metadata.has_session_id()) {
     // Signed-out requests can set a new session token; otherwise, we leave
-    // the default base::nullopt value to keep whatever token is already in
+    // the default absl::nullopt value to keep whatever token is already in
     // play.
     session_id = response_metadata.session_id();
   }
 
-  base::Optional<Experiments> experiments = base::nullopt;
+  absl::optional<Experiments> experiments = absl::nullopt;
   if (response_metadata.experiments_size() > 0) {
     Experiments e;
     for (feedwire::Experiment exp : response_metadata.experiments()) {
@@ -352,7 +352,7 @@ std::vector<feedstore::DataOperation> TranslateDismissData(
     feedpacking::DismissData data) {
   std::vector<feedstore::DataOperation> result;
   for (auto& operation : data.data_operations()) {
-    base::Optional<feedstore::DataOperation> translated_operation =
+    absl::optional<feedstore::DataOperation> translated_operation =
         TranslateDataOperation(current_time, operation);
     if (translated_operation) {
       result.push_back(std::move(translated_operation.value()));

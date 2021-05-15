@@ -2383,7 +2383,7 @@ TEST_F(ControllerTest, SetDateTimeRangeStartDateAfterEndDate) {
             1);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_start_date_->day(), 21);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_date_,
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(ControllerTest, SetDateTimeRangeEndDateBeforeStartDate) {
@@ -2423,7 +2423,7 @@ TEST_F(ControllerTest, SetDateTimeRangeEndDateBeforeStartDate) {
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_date_->month(), 1);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_date_->day(), 19);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_start_date_,
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(ControllerTest, SetDateTimeRangeSameDatesStartTimeAfterEndTime) {
@@ -2460,7 +2460,7 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDatesStartTimeAfterEndTime) {
   controller_->SetDateTimeRangeStartTimeSlot(1);
   EXPECT_EQ(*controller_->GetUserData()->date_time_range_start_timeslot_, 1);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_end_timeslot_,
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(ControllerTest, SetDateTimeRangeSameDatesEndTimeBeforeStartTime) {
@@ -2497,7 +2497,7 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDatesEndTimeBeforeStartTime) {
   controller_->SetDateTimeRangeEndTimeSlot(0);
   EXPECT_EQ(*controller_->GetUserData()->date_time_range_end_timeslot_, 0);
   EXPECT_EQ(controller_->GetUserData()->date_time_range_start_timeslot_,
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(ControllerTest, SetDateTimeRangeSameDateValidTime) {

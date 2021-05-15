@@ -458,7 +458,7 @@ TEST_F(StartupUtilTest, ChooseStartupUrlForIntentFailsIfNotSpecified) {
   EXPECT_THAT(
       StartupUtil().ChooseStartupUrlForIntent(
           {std::make_unique<ScriptParameters>(), TriggerContext::Options{}}),
-      Eq(base::nullopt));
+      Eq(absl::nullopt));
 }
 
 }  // namespace

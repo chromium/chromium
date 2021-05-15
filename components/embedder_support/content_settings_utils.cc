@@ -15,7 +15,7 @@ namespace embedder_support {
 
 bool AllowAppCache(const GURL& manifest_url,
                    const GURL& site_for_cookies,
-                   const base::Optional<url::Origin>& top_frame_origin,
+                   const absl::optional<url::Origin>& top_frame_origin,
                    const content_settings::CookieSettings* cookie_settings) {
   return cookie_settings->IsCookieAccessAllowed(manifest_url, site_for_cookies,
                                                 top_frame_origin);
@@ -24,7 +24,7 @@ bool AllowAppCache(const GURL& manifest_url,
 content::AllowServiceWorkerResult AllowServiceWorker(
     const GURL& scope,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map) {
   GURL first_party_url = top_frame_origin ? top_frame_origin->GetURL() : GURL();
@@ -46,7 +46,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 bool AllowSharedWorker(
     const GURL& worker_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const storage::StorageKey& storage_key,
     int render_process_id,

@@ -182,7 +182,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     std::unique_ptr<base::FeatureList> feature_list,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
-    base::Optional<int> low_entropy_source_value) {
+    absl::optional<int> low_entropy_source_value) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableBenchmarking) ||

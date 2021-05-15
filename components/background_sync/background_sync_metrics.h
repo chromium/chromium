@@ -57,7 +57,7 @@ class BackgroundSyncMetrics {
   friend class BackgroundSyncMetricsBrowserTest;
 
   void DidGetBackgroundSourceId(RecordCallback record_callback,
-                                base::Optional<ukm::SourceId> source_id);
+                                absl::optional<ukm::SourceId> source_id);
 
   void RecordOneShotSyncRegistrationEvent(bool can_fire,
                                           bool is_reregistered,

@@ -11,11 +11,11 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -53,7 +53,7 @@ class ObjectPermissionContextBase : public KeyedService {
     // context represented by |guard_content_settings_type|, if applicable, and
     // |data_content_settings_type|.
     virtual void OnObjectPermissionChanged(
-        base::Optional<ContentSettingsType> guard_content_settings_type,
+        absl::optional<ContentSettingsType> guard_content_settings_type,
         ContentSettingsType data_content_settings_type);
     // Notify observer that an object permission was revoked for |origin|.
     virtual void OnPermissionRevoked(const url::Origin& origin);
@@ -160,7 +160,7 @@ class ObjectPermissionContextBase : public KeyedService {
   void NotifyPermissionChanged();
   void NotifyPermissionRevoked(const url::Origin& origin);
 
-  const base::Optional<ContentSettingsType> guard_content_settings_type_;
+  const absl::optional<ContentSettingsType> guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
   base::ObserverList<PermissionObserver> permission_observer_list_;
 

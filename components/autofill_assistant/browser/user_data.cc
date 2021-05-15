@@ -13,10 +13,10 @@ LoginChoice::LoginChoice(
     const std::string& _identifier,
     const std::string& _label,
     const std::string& _sublabel,
-    const base::Optional<std::string>& _sublabel_accessibility_hint,
+    const absl::optional<std::string>& _sublabel_accessibility_hint,
     int _preselect_priority,
-    const base::Optional<InfoPopupProto>& _info_popup,
-    const base::Optional<std::string>& _edit_button_content_description)
+    const absl::optional<InfoPopupProto>& _info_popup,
+    const absl::optional<std::string>& _edit_button_content_description)
     : identifier(_identifier),
       label(_label),
       sublabel(_sublabel),

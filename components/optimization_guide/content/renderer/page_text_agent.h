@@ -12,12 +12,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
 namespace content {
@@ -59,7 +59,7 @@ class PageTextAgent
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidFinishLoad() override;
 
   PageTextAgent(const PageTextAgent&) = delete;

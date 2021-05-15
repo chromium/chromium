@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +15,7 @@
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
@@ -24,7 +24,7 @@ namespace {
 
 const std::u16string GetLocalizedString(
     PolicyMap::Entry::L10nLookupFunction lookup,
-    const std::map<int, base::Optional<std::vector<std::u16string>>>&
+    const std::map<int, absl::optional<std::vector<std::u16string>>>&
         localized_string_ids) {
   std::u16string result = std::u16string();
   std::u16string line_feed = u"\n";
@@ -59,7 +59,7 @@ PolicyMap::Entry::Entry(
     PolicyLevel level,
     PolicyScope scope,
     PolicySource source,
-    base::Optional<base::Value> value,
+    absl::optional<base::Value> value,
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher)
     : level(level),
       scope(scope),
@@ -74,8 +74,8 @@ PolicyMap::Entry& PolicyMap::Entry::operator=(Entry&&) noexcept = default;
 
 PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   Entry copy(level, scope, source,
-             value_ ? base::make_optional<base::Value>(value_->Clone())
-                    : base::nullopt,
+             value_ ? absl::make_optional<base::Value>(value_->Clone())
+                    : absl::nullopt,
              external_data_fetcher
                  ? std::make_unique<ExternalDataFetcher>(*external_data_fetcher)
                  : nullptr);
@@ -89,7 +89,7 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   return copy;
 }
 
-void PolicyMap::Entry::set_value(base::Optional<base::Value> val) {
+void PolicyMap::Entry::set_value(absl::optional<base::Value> val) {
   value_ = std::move(val);
 }
 
@@ -119,7 +119,7 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
 }
 
 void PolicyMap::Entry::AddMessage(MessageType type, int message_id) {
-  message_ids_[type].emplace(message_id, base::nullopt);
+  message_ids_[type].emplace(message_id, absl::nullopt);
 }
 
 void PolicyMap::Entry::AddMessage(MessageType type,
@@ -284,7 +284,7 @@ void PolicyMap::Set(
     PolicyLevel level,
     PolicyScope scope,
     PolicySource source,
-    base::Optional<base::Value> value,
+    absl::optional<base::Value> value,
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher) {
   Entry entry(level, scope, source, std::move(value),
               std::move(external_data_fetcher));

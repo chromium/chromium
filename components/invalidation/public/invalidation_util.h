@@ -13,8 +13,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/invalidation/public/invalidation_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace invalidation {
 

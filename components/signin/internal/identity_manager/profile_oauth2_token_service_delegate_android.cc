@@ -310,7 +310,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const base::Optional<CoreAccountId>& primary_account_id) {
+        const absl::optional<CoreAccountId>& primary_account_id) {
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> j_account_id =
@@ -326,7 +326,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
     ReloadAllAccountsWithPrimaryAccountAfterSeeding(
         JNIEnv* env,
         const base::android::JavaParamRef<jstring>& account_id) {
-  base::Optional<CoreAccountId> core_account_id;
+  absl::optional<CoreAccountId> core_account_id;
   if (account_id) {
     core_account_id =
         CoreAccountId::FromString(ConvertJavaStringToUTF8(env, account_id));
@@ -335,7 +335,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
-    const base::Optional<CoreAccountId>& signed_in_account_id,
+    const absl::optional<CoreAccountId>& signed_in_account_id,
     const std::vector<CoreAccountId>& prev_ids,
     const std::vector<CoreAccountId>& curr_ids) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList:"
@@ -388,7 +388,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
 }
 
 bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
-    const base::Optional<CoreAccountId>& signed_in_id,
+    const absl::optional<CoreAccountId>& signed_in_id,
     const std::vector<CoreAccountId>& prev_ids,
     const std::vector<CoreAccountId>& curr_ids,
     std::vector<CoreAccountId>* refreshed_ids,

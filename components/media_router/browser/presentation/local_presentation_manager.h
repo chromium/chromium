@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/common/media_route.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/presentation_service_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {
@@ -207,7 +207,7 @@ class LocalPresentationManager : public KeyedService {
     bool IsValid() const;
 
     const blink::mojom::PresentationInfo presentation_info_;
-    base::Optional<MediaRoute> route_;
+    absl::optional<MediaRoute> route_;
     content::WebContents* receiver_web_contents_ = nullptr;
 
     // Callback to invoke whenever a receiver connection is available.

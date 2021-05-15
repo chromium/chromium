@@ -10,12 +10,12 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class VulkanSurface;
@@ -82,7 +82,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   const gpu::SurfaceHandle surface_handle_;
   std::unique_ptr<gpu::VulkanSurface> vulkan_surface_;
 
-  base::Optional<gpu::VulkanSwapChain::ScopedWrite> scoped_write_;
+  absl::optional<gpu::VulkanSwapChain::ScopedWrite> scoped_write_;
 
 #if DCHECK_IS_ON()
   bool image_modified_ = false;

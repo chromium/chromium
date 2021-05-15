@@ -2866,7 +2866,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -2954,7 +2954,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -2993,7 +2993,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3032,7 +3032,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3070,7 +3070,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3095,7 +3095,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3122,7 +3122,7 @@ TEST_P(
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3165,7 +3165,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3214,7 +3214,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3302,7 +3302,7 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
       .WillRepeatedly(QuitMessageLoop(&run_loop));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
       .Times(testing::AnyNumber());
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   // Still returns true because the credit card import was successful.
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -3419,7 +3419,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/false,
       /*credit_card_autofill_enabled=*/true,
@@ -3477,7 +3477,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3539,7 +3539,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressCreditCardDisabled) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/false,
@@ -3596,7 +3596,7 @@ TEST_P(FormDataImporterTest, DontDuplicateMaskedServerCard) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3635,7 +3635,7 @@ TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   // Still returns true because the credit card import was successful.
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
@@ -3671,7 +3671,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -3720,7 +3720,7 @@ TEST_P(FormDataImporterTest, DontDuplicateFullServerCard) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3765,7 +3765,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3814,7 +3814,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3860,7 +3860,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3907,7 +3907,7 @@ TEST_P(
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -3953,7 +3953,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -4002,7 +4002,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure,
       /*profile_autofill_enabled=*/true,
@@ -4052,7 +4052,7 @@ TEST_P(FormDataImporterTest,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   std::unique_ptr<CreditCard> imported_credit_card;
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
@@ -4077,7 +4077,7 @@ TEST_P(FormDataImporterTest, ImportUpiId) {
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   std::unique_ptr<CreditCard> imported_credit_card;  // Discarded.
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
 
   EXPECT_TRUE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/false,
@@ -4102,7 +4102,7 @@ TEST_P(FormDataImporterTest, ImportUpiIdDisabled) {
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   std::unique_ptr<CreditCard> imported_credit_card;  // Discarded.
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
 
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/false,
@@ -4126,7 +4126,7 @@ TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
 
   std::unique_ptr<CreditCard> imported_credit_card;  // Discarded.
-  base::Optional<std::string> imported_upi_id;
+  absl::optional<std::string> imported_upi_id;
 
   EXPECT_FALSE(form_data_importer_->ImportFormData(
       form_structure, /*profile_autofill_enabled=*/false,

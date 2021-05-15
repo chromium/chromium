@@ -155,7 +155,7 @@ TEST_F(InMemoryDownloadDriverTest, DownloadSuccessAndRemove) {
 
   // After starting a download, we should be able to find a record in the
   // driver.
-  base::Optional<DriverEntry> entry = driver()->Find(guid);
+  absl::optional<DriverEntry> entry = driver()->Find(guid);
   EXPECT_TRUE(entry.has_value());
   EXPECT_EQ(guid, entry->guid);
   EXPECT_EQ(DriverEntry::State::IN_PROGRESS, entry->state);
@@ -207,7 +207,7 @@ TEST_F(InMemoryDownloadDriverTest, DownloadFailure) {
   // Trigger download complete.
   factory()->last_created_download()->SimulateDownloadComplete(
       false /* success*/);
-  base::Optional<DriverEntry> entry = driver()->Find(guid);
+  absl::optional<DriverEntry> entry = driver()->Find(guid);
   EXPECT_TRUE(entry.has_value());
   EXPECT_EQ(guid, entry->guid);
   EXPECT_EQ(DriverEntry::State::INTERRUPTED, entry->state);

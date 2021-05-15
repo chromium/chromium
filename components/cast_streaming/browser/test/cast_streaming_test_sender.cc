@@ -68,8 +68,8 @@ CastStreamingTestSender::~CastStreamingTestSender() = default;
 bool CastStreamingTestSender::Start(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     net::IPAddress receiver_address,
-    base::Optional<media::AudioDecoderConfig> audio_config,
-    base::Optional<media::VideoDecoderConfig> video_config) {
+    absl::optional<media::AudioDecoderConfig> audio_config,
+    absl::optional<media::VideoDecoderConfig> video_config) {
   VLOG(1) << __func__;
   CHECK(!is_active_);
   CHECK(!sender_session_);

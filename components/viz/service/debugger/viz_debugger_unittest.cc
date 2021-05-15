@@ -112,7 +112,7 @@ class VisualDebuggerTest : public testing::Test {
     log_calls_.clear();
     draw_text_calls_.clear();
     GetInternal()->common_lock_.Acquire();
-    base::Optional<base::Value> global_dict = GetInternal()->FrameAsJson(
+    absl::optional<base::Value> global_dict = GetInternal()->FrameAsJson(
         frame_counter_, gfx::Size(window_x_, window_y_), base::TimeTicks());
     GetInternal()->common_lock_.Release();
     frame_counter_++;

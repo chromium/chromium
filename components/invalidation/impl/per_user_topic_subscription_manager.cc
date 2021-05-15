@@ -626,12 +626,12 @@ base::DictionaryValue PerUserTopicSubscriptionManager::CollectDebugData()
   return status;
 }
 
-base::Optional<Topic>
+absl::optional<Topic>
 PerUserTopicSubscriptionManager::LookupSubscribedPublicTopicByPrivateTopic(
     const std::string& private_topic) const {
   auto it = private_topic_to_topic_.find(private_topic);
   if (it == private_topic_to_topic_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }

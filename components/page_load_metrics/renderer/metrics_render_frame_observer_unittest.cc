@@ -87,7 +87,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
@@ -110,7 +110,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
 
@@ -132,7 +132,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
@@ -178,7 +178,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
@@ -204,7 +204,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.SetMockTimer(nullptr);
 
   observer.ExpectPageLoadTiming(timing_2);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();

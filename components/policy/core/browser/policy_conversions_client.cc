@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -22,6 +21,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::Value;
@@ -108,7 +108,7 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
 
 Value PolicyConversionsClient::CopyAndMaybeConvert(
     const Value& value,
-    const base::Optional<Schema>& schema) const {
+    const absl::optional<Schema>& schema) const {
   Value value_copy = value.Clone();
   if (schema.has_value())
     schema->MaskSensitiveValues(&value_copy);
@@ -138,9 +138,9 @@ Value PolicyConversionsClient::GetPolicyValue(
     const PoliciesSet& deprecated_policies,
     const PoliciesSet& future_policies,
     PolicyErrorMap* errors,
-    const base::Optional<PolicyConversions::PolicyToSchemaMap>&
+    const absl::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas) const {
-  base::Optional<Schema> known_policy_schema =
+  absl::optional<Schema> known_policy_schema =
       GetKnownPolicySchema(known_policy_schemas, policy_name);
   Value value(Value::Type::DICTIONARY);
   value.SetKey("value",
@@ -266,7 +266,7 @@ Value PolicyConversionsClient::GetPolicyValues(
     PolicyErrorMap* errors,
     const PoliciesSet& deprecated_policies,
     const PoliciesSet& future_policies,
-    const base::Optional<PolicyConversions::PolicyToSchemaMap>&
+    const absl::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas) const {
   base::Value values(base::Value::Type::DICTIONARY);
   for (const auto& entry : map) {
@@ -282,26 +282,26 @@ Value PolicyConversionsClient::GetPolicyValues(
   return values;
 }
 
-base::Optional<Schema> PolicyConversionsClient::GetKnownPolicySchema(
-    const base::Optional<PolicyConversions::PolicyToSchemaMap>&
+absl::optional<Schema> PolicyConversionsClient::GetKnownPolicySchema(
+    const absl::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas,
     const std::string& policy_name) const {
   if (!known_policy_schemas.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   auto known_policy_iterator = known_policy_schemas->find(policy_name);
   if (known_policy_iterator == known_policy_schemas->end())
-    return base::nullopt;
+    return absl::nullopt;
   return known_policy_iterator->second;
 }
 
-base::Optional<PolicyConversions::PolicyToSchemaMap>
+absl::optional<PolicyConversions::PolicyToSchemaMap>
 PolicyConversionsClient::GetKnownPolicies(
     const scoped_refptr<SchemaMap> schema_map,
     const PolicyNamespace& policy_namespace) const {
   const Schema* schema = schema_map->GetSchema(policy_namespace);
   // There is no policy name verification without valid schema.
   if (!schema || !schema->valid())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Build a vector first and construct the PolicyToSchemaMap (which is a
   // |flat_map|) from that. The reason is that insertion into a |flat_map| is

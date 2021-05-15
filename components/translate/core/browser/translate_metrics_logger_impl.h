@@ -203,7 +203,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   RankerDecision ranker_decision_ = RankerDecision::kUninitialized;
   uint32_t ranker_version_ = 0;
   base::TimeTicks ranker_start_time_;
-  base::Optional<base::TimeDelta> ranker_duration_;
+  absl::optional<base::TimeDelta> ranker_duration_;
 
   // Stores the reason for the initial state of the page load. In the case there
   // are multiple reasons, only the first reported reason is stored.

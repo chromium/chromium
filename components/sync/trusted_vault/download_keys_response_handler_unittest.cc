@@ -410,7 +410,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyLastKnownKey) {
   // This test uses custom parameters for the handler ctor, so create new
   // handler instead of using one from the fixture.
-  DownloadKeysResponseHandler handler(base::nullopt, MakeTestKeyPair());
+  DownloadKeysResponseHandler handler(absl::nullopt, MakeTestKeyPair());
 
   const int kLastKeyVersion = 123;
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
@@ -434,7 +434,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldFilterOutConstantKey) {
   // This test uses custom parameters for the handler ctor, so create new
   // handler instead of using one from the fixture.
   DownloadKeysResponseHandler handler(
-      /*last_trusted_vault_key_and_version=*/base::nullopt, MakeTestKeyPair());
+      /*last_trusted_vault_key_and_version=*/absl::nullopt, MakeTestKeyPair());
 
   const int kFirstKeyVersion = 123;
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =

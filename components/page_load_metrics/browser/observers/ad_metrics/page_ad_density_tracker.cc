@@ -5,7 +5,7 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/page_ad_density_tracker.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace page_load_metrics {
 
@@ -95,7 +95,7 @@ class SegmentLength {
 
   // Calculate the combined length of segments in the active set of segments by
   // iterating over the the sorted set of segment events.
-  base::Optional<int> Length() {
+  absl::optional<int> Length() {
     base::CheckedNumeric<int> length = 0;
     int last_event_pos = -1;
     int num_active = 0;
@@ -116,7 +116,7 @@ class SegmentLength {
       }
     }
 
-    base::Optional<int> total_length;
+    absl::optional<int> total_length;
     if (length.IsValid())
       total_length = length.ValueOrDie();
 
@@ -234,7 +234,7 @@ void PageAdDensityTracker::CalculateDensity() {
     DCHECK_LE(current_y, last_y);
 
     // If the segment length value is invalid, skip this ad density calculation.
-    base::Optional<int> segment_length = segment_length_tracker.Length();
+    absl::optional<int> segment_length = segment_length_tracker.Length();
     if (!segment_length)
       return;
 

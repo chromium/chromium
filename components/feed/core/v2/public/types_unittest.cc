@@ -37,7 +37,7 @@ DebugStreamData MakeDebugStreamData() {
 TEST(DebugStreamData, CanSerialize) {
   const DebugStreamData test_data = MakeDebugStreamData();
   const auto serialized = SerializeDebugStreamData(test_data);
-  base::Optional<DebugStreamData> result =
+  absl::optional<DebugStreamData> result =
       DeserializeDebugStreamData(serialized);
   ASSERT_TRUE(result);
 
@@ -68,10 +68,10 @@ TEST(DebugStreamData, CanSerialize) {
 
 TEST(DebugStreamData, CanSerializeWithoutFetchInfo) {
   DebugStreamData input = MakeDebugStreamData();
-  input.fetch_info = base::nullopt;
+  input.fetch_info = absl::nullopt;
 
   const auto serialized = SerializeDebugStreamData(input);
-  base::Optional<DebugStreamData> result =
+  absl::optional<DebugStreamData> result =
       DeserializeDebugStreamData(serialized);
   ASSERT_TRUE(result);
 
@@ -80,10 +80,10 @@ TEST(DebugStreamData, CanSerializeWithoutFetchInfo) {
 
 TEST(DebugStreamData, CanSerializeWithoutUploadInfo) {
   DebugStreamData input = MakeDebugStreamData();
-  input.upload_info = base::nullopt;
+  input.upload_info = absl::nullopt;
 
   const auto serialized = SerializeDebugStreamData(input);
-  base::Optional<DebugStreamData> result =
+  absl::optional<DebugStreamData> result =
       DeserializeDebugStreamData(serialized);
   ASSERT_TRUE(result);
 
@@ -91,7 +91,7 @@ TEST(DebugStreamData, CanSerializeWithoutUploadInfo) {
 }
 
 TEST(DebugStreamData, FailsDeserializationGracefully) {
-  ASSERT_EQ(base::nullopt, DeserializeDebugStreamData({}));
+  ASSERT_EQ(absl::nullopt, DeserializeDebugStreamData({}));
 }
 
 TEST(WebFeedPageInformation, SetUrlStripsFragment) {

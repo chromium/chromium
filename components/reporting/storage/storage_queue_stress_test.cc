@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -30,6 +29,7 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Between;
@@ -56,7 +56,7 @@ class TestUploadClient : public UploaderInterface {
   // generation is uploaded without last record digest.
   using LastRecordDigestMap = base::flat_map<
       std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-      base::Optional<std::string /*digest*/>>;
+      absl::optional<std::string /*digest*/>>;
 
   explicit TestUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {}
@@ -115,7 +115,7 @@ class TestUploadClient : public UploaderInterface {
   void Completed(Status status) override { ASSERT_OK(status); }
 
  private:
-  base::Optional<int64_t> generation_id_;
+  absl::optional<int64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
 
   Sequence test_upload_sequence_;

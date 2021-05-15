@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_ADDITION_RESULT_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_ADDITION_RESULT_H_
 
-#include "base/optional.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -31,9 +31,9 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
 
   Status status;
   // The account that was added.
-  base::Optional<Account> account;
+  absl::optional<Account> account;
   // The error is set only if `status` is set to `kNetworkError`.
-  base::Optional<GoogleServiceAuthError> error;
+  absl::optional<GoogleServiceAuthError> error;
 
   explicit AccountAdditionResult(Status status);
   AccountAdditionResult(Status status, Account account);

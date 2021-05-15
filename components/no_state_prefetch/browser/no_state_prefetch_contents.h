@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -66,7 +66,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
         content::BrowserContext* browser_context,
         const GURL& url,
         const content::Referrer& referrer,
-        const base::Optional<url::Origin>& initiator_origin,
+        const absl::optional<url::Origin>& initiator_origin,
         Origin origin) = 0;
 
    private:
@@ -201,7 +201,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       Origin origin);
 
   // Set the final status for how the NoStatePrefetchContents was used. This
@@ -267,7 +267,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The origin of the page requesting the prerender. Empty when the prerender
   // is browser initiated.
-  const base::Optional<url::Origin> initiator_origin_;
+  const absl::optional<url::Origin> initiator_origin_;
 
   // The browser context being used
   content::BrowserContext* browser_context_;

@@ -356,7 +356,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
   client_count_++;
   VLOGF(2) << "Number of concurrent clients: " << client_count_;
 
-  secure_mode_ = base::nullopt;
+  secure_mode_ = absl::nullopt;
   error_state_ = false;
   pending_requests_ = {};
   pending_flush_callbacks_ = {};

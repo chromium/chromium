@@ -229,7 +229,7 @@ class ExpireHistoryBackend {
   void BroadcastNotifications(DeleteEffects* effects,
                               DeletionType type,
                               const DeletionTimeRange& time_range,
-                              base::Optional<std::set<GURL>> restrict_urls);
+                              absl::optional<std::set<GURL>> restrict_urls);
 
   // Schedules a call to DoExpireIteration.
   void ScheduleExpire();

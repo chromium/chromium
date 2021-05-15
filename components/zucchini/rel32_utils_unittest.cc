@@ -11,12 +11,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
 #include "components/zucchini/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -40,7 +40,7 @@ void CheckReader(const std::vector<Reference>& expected_refs,
     EXPECT_TRUE(ref.has_value());
     EXPECT_EQ(expected_ref, ref.value());
   }
-  EXPECT_EQ(base::nullopt, reader->GetNext());  // Nothing should be left.
+  EXPECT_EQ(absl::nullopt, reader->GetNext());  // Nothing should be left.
 }
 
 // Copies displacements from |bytes1| to |bytes2| and checks results against

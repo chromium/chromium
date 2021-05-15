@@ -24,14 +24,14 @@ AutofillProfileSaveStrikeDatabase::AutofillProfileSaveStrikeDatabase(
 AutofillProfileSaveStrikeDatabase::~AutofillProfileSaveStrikeDatabase() =
     default;
 
-base::Optional<size_t> AutofillProfileSaveStrikeDatabase::GetMaximumEntries()
+absl::optional<size_t> AutofillProfileSaveStrikeDatabase::GetMaximumEntries()
     const {
-  return base::make_optional(kMaxStrikeEntities);
+  return absl::make_optional(kMaxStrikeEntities);
 }
 
-base::Optional<size_t>
+absl::optional<size_t>
 AutofillProfileSaveStrikeDatabase::GetMaximumEntriesAfterCleanup() const {
-  return base::make_optional(kMaxStrikeEntitiesAfterCleanup);
+  return absl::make_optional(kMaxStrikeEntitiesAfterCleanup);
 }
 
 std::string AutofillProfileSaveStrikeDatabase::GetProjectPrefix() const {
@@ -42,7 +42,7 @@ int AutofillProfileSaveStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 AutofillProfileSaveStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 6 months.
   return base::TimeDelta::FromDays(183);

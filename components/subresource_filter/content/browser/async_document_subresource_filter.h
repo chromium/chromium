@@ -11,13 +11,13 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -185,7 +185,7 @@ class AsyncDocumentSubresourceFilter {
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
   base::OnceClosure first_disallowed_load_callback_;
 
-  base::Optional<mojom::ActivationState> activation_state_;
+  absl::optional<mojom::ActivationState> activation_state_;
 
   base::SequenceChecker sequence_checker_;
 
@@ -228,7 +228,7 @@ class AsyncDocumentSubresourceFilter::Core {
                                 const url::Origin& document_origin,
                                 VerifiedRuleset* verified_ruleset);
 
-  base::Optional<DocumentSubresourceFilter> filter_;
+  absl::optional<DocumentSubresourceFilter> filter_;
   base::SequenceChecker sequence_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(Core);

@@ -341,7 +341,7 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   hashdiff_sha256_ = package.hashdiff_sha256;
 
   if (!result.manifest.run.empty()) {
-    install_params_ = base::make_optional(CrxInstaller::InstallParams(
+    install_params_ = absl::make_optional(CrxInstaller::InstallParams(
         result.manifest.run, result.manifest.arguments));
   }
 }
@@ -375,7 +375,7 @@ void Component::Registration(const base::Version& version) {
 }
 
 void Component::SetUpdateCheckResult(
-    const base::Optional<ProtocolParser::Result>& result,
+    const absl::optional<ProtocolParser::Result>& result,
     ErrorCategory error_category,
     int error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

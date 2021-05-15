@@ -53,7 +53,7 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
 
   // If we aren't able to find any matching point, set the pointer ID to null
   // so that FilterPoints and PredictPoints can early out.
-  pointer_id_ = base::nullopt;
+  pointer_id_ = absl::nullopt;
 }
 
 std::vector<gfx::DelegatedInkPoint>

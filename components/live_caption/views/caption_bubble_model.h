@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace captions {
@@ -39,7 +39,7 @@ class CaptionBubble;
 //
 class CaptionBubbleModel {
  public:
-  CaptionBubbleModel(const base::Optional<gfx::Rect>& context_bounds_in_screen,
+  CaptionBubbleModel(const absl::optional<gfx::Rect>& context_bounds_in_screen,
                      base::RepeatingClosure activate_context_callback);
   ~CaptionBubbleModel();
   CaptionBubbleModel(const CaptionBubbleModel&) = delete;
@@ -76,7 +76,7 @@ class CaptionBubbleModel {
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
-  const base::Optional<gfx::Rect>& GetContextBoundsInScreen() const {
+  const absl::optional<gfx::Rect>& GetContextBoundsInScreen() const {
     return context_bounds_in_screen_;
   }
 
@@ -97,7 +97,7 @@ class CaptionBubbleModel {
   // screen of the top level widget of the browser window. When Live Caption is
   // implemented in ash, this will be bounds of the top level widget of the ash
   // window.
-  const base::Optional<gfx::Rect> context_bounds_in_screen_;
+  const absl::optional<gfx::Rect> context_bounds_in_screen_;
 
   // A callback which activates the context for this CaptionBubbleModel. In
   // Live Caption on browser, this activates the browser window and tab of the

@@ -11,13 +11,13 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -38,7 +38,7 @@ namespace {
 
 // Helper to allow use of Optional<> values in LOG() messages.
 std::ostream& operator<<(std::ostream& os,
-                         const base::Optional<base::TimeDelta>& opt) {
+                         const absl::optional<base::TimeDelta>& opt) {
   if (opt)
     os << opt.value();
   else
@@ -48,8 +48,8 @@ std::ostream& operator<<(std::ostream& os,
 
 // If second is non-zero, first must also be non-zero and less than or equal to
 // second.
-bool EventsInOrder(const base::Optional<base::TimeDelta>& first,
-                   const base::Optional<base::TimeDelta>& second) {
+bool EventsInOrder(const absl::optional<base::TimeDelta>& first,
+                   const absl::optional<base::TimeDelta>& second) {
   if (!second) {
     return true;
   }
@@ -239,8 +239,8 @@ internal::PageLoadTimingStatus IsValidPageLoadTiming(
 
 // If the updated value has an earlier time than the current value, log so we
 // can keep track of how often this happens.
-void LogIfOutOfOrderTiming(const base::Optional<base::TimeDelta>& current,
-                           const base::Optional<base::TimeDelta>& update) {
+void LogIfOutOfOrderTiming(const absl::optional<base::TimeDelta>& current,
+                           const absl::optional<base::TimeDelta>& update) {
   if (!current || !update)
     return;
 
@@ -286,9 +286,9 @@ class PageLoadTimingMerger {
   // |navigation_start_offset| contains the delta in navigation start time
   // between the main frame and the frame for |optional_candidate_new_value|.
   bool MaybeUpdateTimeDelta(
-      base::Optional<base::TimeDelta>* inout_existing_value,
+      absl::optional<base::TimeDelta>* inout_existing_value,
       base::TimeDelta navigation_start_offset,
-      const base::Optional<base::TimeDelta>& optional_candidate_new_value) {
+      const absl::optional<base::TimeDelta>& optional_candidate_new_value) {
     // If we don't get a new value, there's nothing to do
     if (!optional_candidate_new_value)
       return false;

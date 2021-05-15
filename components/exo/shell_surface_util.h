@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class PropertyHandler;
@@ -37,13 +37,13 @@ class ShellSurfaceBase;
 // Sets the application ID to the property_handler. The application ID
 // identifies the general class of applications to which the window belongs.
 void SetShellApplicationId(ui::PropertyHandler* property_handler,
-                           const base::Optional<std::string>& id);
+                           const absl::optional<std::string>& id);
 const std::string* GetShellApplicationId(const aura::Window* window);
 
 // Sets the startup ID to the property handler. The startup ID identifies the
 // application using startup notification protocol.
 void SetShellStartupId(ui::PropertyHandler* property_handler,
-                       const base::Optional<std::string>& id);
+                       const absl::optional<std::string>& id);
 const std::string* GetShellStartupId(const aura::Window* window);
 
 // Hides/shows the shelf when fullscreen. If true, shelf is inaccessible
@@ -54,15 +54,15 @@ void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value);
 // Sets the client accessibility ID for the window. The accessibility ID
 // identifies the accessibility tree provided by client.
 void SetShellClientAccessibilityId(aura::Window* window,
-                                   const base::Optional<int32_t>& id);
-const base::Optional<int32_t> GetShellClientAccessibilityId(
+                                   const absl::optional<int32_t>& id);
+const absl::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the ClientControlledShellSurface to the property handler.
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,
-    const base::Optional<ClientControlledShellSurface*>& shell_surface);
+    const absl::optional<ClientControlledShellSurface*>& shell_surface);
 ClientControlledShellSurface* GetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -18,22 +18,22 @@ const char kLocaleKey[] = "locale";
 const char kPictureUrlKey[] = "picture";
 }  // namespace
 
-base::Optional<AccountInfo> AccountInfoFromUserInfo(
+absl::optional<AccountInfo> AccountInfoFromUserInfo(
     const base::Value& user_info) {
   if (!user_info.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Both |gaia_id| and |email| are required value in the JSON reply, so
   // return empty result if any is missing.
   const base::Value* gaia_id_value =
       user_info.FindKeyOfType(kGaiaIdKey, base::Value::Type::STRING);
   if (!gaia_id_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* email_value =
       user_info.FindKeyOfType(kEmailKey, base::Value::Type::STRING);
   if (!email_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   AccountInfo account_info;
   account_info.email = email_value->GetString();

@@ -983,7 +983,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   // Ensure metrics reporter was informed at the start of the operation.
   EXPECT_EQ(surface.GetSurfaceId(), metrics_reporter_->load_more_surface_id);
   WaitForIdleTaskQueue();
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("2 slices +spinner -> 4 slices", surface.DescribeUpdates());
 
   // Load page 3.
@@ -991,7 +991,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
 }
 
@@ -1007,7 +1007,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
   stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1028,7 +1028,7 @@ TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
   CallbackReceiver<bool> callback;
   stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
 
   surface.Detach();
   UnloadModel(kForYouStream);
@@ -1042,7 +1042,7 @@ TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
   stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
   ASSERT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1109,10 +1109,10 @@ TEST_F(FeedApiTest, LoadMoreAbortsIfNoNextPageToken) {
   WaitForIdleTaskQueue();
 
   // LoadMore fails, and does not make an additional request.
-  EXPECT_EQ(base::Optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(base::nullopt, metrics_reporter_->load_more_surface_id)
+  EXPECT_EQ(absl::nullopt, metrics_reporter_->load_more_surface_id)
       << "metrics reporter was informed about a load more operation which "
          "didn't begin";
 }
@@ -1129,7 +1129,7 @@ TEST_F(FeedApiTest, LoadMoreFail) {
   stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(base::Optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   EXPECT_EQ("2 slices +spinner -> 2 slices", surface.DescribeUpdates());
 }
 
@@ -1145,7 +1145,7 @@ TEST_F(FeedApiTest, LoadMoreWithClearAllInResponse) {
   stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1174,7 +1174,7 @@ TEST_F(FeedApiTest, LoadMoreBeforeLoad) {
   TestForYouSurface surface;
   stream_->LoadMore(surface, callback.Bind());
 
-  EXPECT_EQ(base::Optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
 }
 
 TEST_F(FeedApiTest, ReadNetworkResponse) {

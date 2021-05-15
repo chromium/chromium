@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -25,6 +24,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
@@ -132,7 +132,7 @@ class ProcessNodeImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return launch_time_;
   }
-  base::Optional<int32_t> exit_status() const {
+  absl::optional<int32_t> exit_status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return exit_status_;
   }
@@ -191,7 +191,7 @@ class ProcessNodeImpl
   base::ProcessId GetProcessId() const override;
   const base::Process& GetProcess() const override;
   base::Time GetLaunchTime() const override;
-  base::Optional<int32_t> GetExitStatus() const override;
+  absl::optional<int32_t> GetExitStatus() const override;
   bool VisitFrameNodes(const FrameNodeVisitor& visitor) const override;
   base::flat_set<const FrameNode*> GetFrameNodes() const override;
   base::flat_set<const WorkerNode*> GetWorkerNodes() const override;
@@ -222,7 +222,7 @@ class ProcessNodeImpl
       process_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::Time launch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::Optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const content::ProcessType process_type_
       GUARDED_BY_CONTEXT(sequence_checker_);

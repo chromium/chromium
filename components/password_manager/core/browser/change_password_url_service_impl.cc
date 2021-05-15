@@ -152,7 +152,7 @@ void ChangePasswordUrlServiceImpl::OnFetchComplete(
   base::UmaHistogramTimes(kGstaticFetchTimeMetricName, fetch_timer_.Elapsed());
   // TODO(crbug.com/1086141): Log error codes in histograms.
   if (response_body) {
-    base::Optional<base::Value> data = base::JSONReader::Read(*response_body);
+    absl::optional<base::Value> data = base::JSONReader::Read(*response_body);
     if (data && data->is_dict()) {
       state_ = FetchState::kFetchSucceeded;
       base::UmaHistogramEnumeration(

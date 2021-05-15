@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -43,6 +42,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sql/database.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
@@ -98,14 +98,14 @@ DomStorageDatabase::Key CreateMetaDataKey(const url::Origin& origin) {
   return key;
 }
 
-base::Optional<url::Origin> ExtractOriginFromMetaDataKey(
+absl::optional<url::Origin> ExtractOriginFromMetaDataKey(
     const DomStorageDatabase::Key& key) {
   DCHECK_GT(key.size(), base::size(kMetaPrefix));
   const base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
                                      key.size());
   const GURL url(key_string.substr(base::size(kMetaPrefix)));
   if (!url.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
   return url::Origin::Create(url);
 }
 
@@ -225,7 +225,7 @@ std::vector<mojom::StorageUsageInfoPtr> GetLegacyLocalStorageUsage(
   for (const auto& path : result.value()) {
     if (!path.MatchesExtension(kLegacyDatabaseFileExtension))
       continue;
-    base::Optional<base::File::Info> info = fs->GetFileInfo(path);
+    absl::optional<base::File::Info> info = fs->GetFileInfo(path);
     if (!info)
       continue;
     infos.emplace_back(mojom::StorageUsageInfo::New(
@@ -391,7 +391,7 @@ class LocalStorageImpl::StorageAreaHolder final
         key[out] = char_val;
       }
       // Delete incorrect key.
-      changes.push_back(std::make_pair(it.first, base::nullopt));
+      changes.push_back(std::make_pair(it.first, absl::nullopt));
       fix_count++;
       // Check if correct key already exists in data.
       auto new_it = data.find(key);
@@ -1044,7 +1044,7 @@ void LocalStorageImpl::OnGotMetaData(
   std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<url::Origin> origins;
   for (const auto& row : data) {
-    base::Optional<url::Origin> origin = ExtractOriginFromMetaDataKey(row.key);
+    absl::optional<url::Origin> origin = ExtractOriginFromMetaDataKey(row.key);
     origins.insert(origin.value_or(url::Origin()));
     if (!origin) {
       // TODO(mek): Deal with database corruption.

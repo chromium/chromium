@@ -222,7 +222,7 @@ class LocalCardMigrationManager {
   PersonalDataManager* personal_data_manager_;
 
   // The imported credit card number from the form submission.
-  base::Optional<std::u16string> imported_credit_card_number_;
+  absl::optional<std::u16string> imported_credit_card_number_;
 
   // The imported credit card record type from the form submission.
   int imported_credit_card_record_type_;

@@ -13,12 +13,12 @@ namespace {
 // Converts a value to a target type. Returns nullopt for invalid or
 // non-existent values. Expects bool parameters as 'false' and 'true'.
 template <typename T>
-base::Optional<T> GetTypedParameter(
+absl::optional<T> GetTypedParameter(
     const std::map<std::string, std::string> parameters,
     const std::string& key) {
   auto iter = parameters.find(key);
   if (iter == parameters.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::stringstream ss;
   ss << iter->second;
@@ -26,7 +26,7 @@ base::Optional<T> GetTypedParameter(
   if (!(ss >> std::boolalpha >> out)) {
     LOG(ERROR) << "Error trying to convert parameter '" << key
                << "' with value '" << iter->second << "' to target type";
-    return base::nullopt;
+    return absl::nullopt;
   }
   return out;
 }
@@ -156,102 +156,102 @@ ScriptParameters::ToProto(bool only_trigger_script_allowlisted) const {
   return out;
 }
 
-base::Optional<std::string> ScriptParameters::GetParameter(
+absl::optional<std::string> ScriptParameters::GetParameter(
     const std::string& name) const {
   auto iter = parameters_.find(name);
   if (iter == parameters_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return iter->second;
 }
 
-base::Optional<std::string> ScriptParameters::GetOverlayColors() const {
+absl::optional<std::string> ScriptParameters::GetOverlayColors() const {
   return GetParameter(kOverlayColorParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetPasswordChangeUsername()
+absl::optional<std::string> ScriptParameters::GetPasswordChangeUsername()
     const {
   return GetParameter(kPasswordChangeUsernameParameterName);
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 ScriptParameters::GetBase64TriggerScriptsResponseProto() const {
   return GetParameter(kBase64TriggerScriptsResponseProtoParameterName);
 }
 
-base::Optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
+absl::optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
   return GetTypedParameter<bool>(parameters_,
                                  kRequestTriggerScriptParameterName);
 }
 
-base::Optional<bool> ScriptParameters::GetStartImmediately() const {
+absl::optional<bool> ScriptParameters::GetStartImmediately() const {
   return GetTypedParameter<bool>(parameters_, kStartImmediatelyParameterName);
 }
 
-base::Optional<bool> ScriptParameters::GetEnabled() const {
+absl::optional<bool> ScriptParameters::GetEnabled() const {
   return GetTypedParameter<bool>(parameters_, kEnabledParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetOriginalDeeplink() const {
+absl::optional<std::string> ScriptParameters::GetOriginalDeeplink() const {
   return GetParameter(kOriginalDeeplinkParameterName);
 }
 
-base::Optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
+absl::optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
   return GetTypedParameter<bool>(parameters_,
                                  kTriggerScriptExperimentParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetIntent() const {
+absl::optional<std::string> ScriptParameters::GetIntent() const {
   return GetParameter(kIntent);
 }
 
-base::Optional<std::string> ScriptParameters::GetCallerEmail() const {
+absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
   return GetParameter(kCallerEmailParameterName);
 }
 
-base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {
+absl::optional<bool> ScriptParameters::GetDetailsShowInitial() const {
   return GetTypedParameter<bool>(parameters_, kDetailsShowInitialParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsTitle() const {
+absl::optional<std::string> ScriptParameters::GetDetailsTitle() const {
   return GetParameter(kDetailsTitleParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine1()
+absl::optional<std::string> ScriptParameters::GetDetailsDescriptionLine1()
     const {
   return GetParameter(kDetailsDescriptionLine1ParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine2()
+absl::optional<std::string> ScriptParameters::GetDetailsDescriptionLine2()
     const {
   return GetParameter(kDetailsDescriptionLine2ParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine3()
+absl::optional<std::string> ScriptParameters::GetDetailsDescriptionLine3()
     const {
   return GetParameter(kDetailsDescriptionLine3ParameterName);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsImageUrl() const {
+absl::optional<std::string> ScriptParameters::GetDetailsImageUrl() const {
   return GetParameter(kDetailsImageUrl);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsImageAccessibilityHint()
+absl::optional<std::string> ScriptParameters::GetDetailsImageAccessibilityHint()
     const {
   return GetParameter(kDetailsImageAccessibilityHint);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsImageClickthroughUrl()
+absl::optional<std::string> ScriptParameters::GetDetailsImageClickthroughUrl()
     const {
   return GetParameter(kDetailsImageClickthroughUrl);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsTotalPriceLabel()
+absl::optional<std::string> ScriptParameters::GetDetailsTotalPriceLabel()
     const {
   return GetParameter(kDetailsTotalPriceLabel);
 }
 
-base::Optional<std::string> ScriptParameters::GetDetailsTotalPrice() const {
+absl::optional<std::string> ScriptParameters::GetDetailsTotalPrice() const {
   return GetParameter(kDetailsTotalPrice);
 }
 

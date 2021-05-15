@@ -73,7 +73,7 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
 TrustedVaultRequest::TrustedVaultRequest(
     HttpMethod http_method,
     const GURL& request_url,
-    const base::Optional<std::string>& serialized_request_proto)
+    const absl::optional<std::string>& serialized_request_proto)
     : http_method_(http_method),
       request_url_(request_url),
       serialized_request_proto_(serialized_request_proto) {
@@ -99,7 +99,7 @@ void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
 
 void TrustedVaultRequest::OnAccessTokenFetched(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Optional<signin::AccessTokenInfo> access_token_info) {
+    absl::optional<signin::AccessTokenInfo> access_token_info) {
   if (!access_token_info.has_value()) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
                                              /*response_body=*/std::string());

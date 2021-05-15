@@ -207,7 +207,7 @@ void CastMessageHandler::LaunchSession(
     const std::string& app_id,
     base::TimeDelta launch_timeout,
     const std::vector<std::string>& supported_app_types,
-    const base::Optional<base::Value>& app_params,
+    const absl::optional<base::Value>& app_params,
     LaunchSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
@@ -240,7 +240,7 @@ void CastMessageHandler::LaunchSession(
 void CastMessageHandler::StopSession(
     int channel_id,
     const std::string& session_id,
-    const base::Optional<std::string>& client_id,
+    const absl::optional<std::string>& client_id,
     ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
@@ -286,7 +286,7 @@ Result CastMessageHandler::SendAppMessage(int channel_id,
   return SendCastMessage(channel_id, message);
 }
 
-base::Optional<int> CastMessageHandler::SendMediaRequest(
+absl::optional<int> CastMessageHandler::SendMediaRequest(
     int channel_id,
     const base::Value& body,
     const std::string& source_id,
@@ -296,7 +296,7 @@ base::Optional<int> CastMessageHandler::SendMediaRequest(
   CastSocket* socket = socket_service_->GetSocket(channel_id);
   if (!socket) {
     DVLOG(2) << __func__ << ": socket not found: " << channel_id;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int request_id = NextRequestId();
@@ -407,7 +407,7 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  base::Optional<int> request_id = GetRequestIdFromResponse(payload);
+  absl::optional<int> request_id = GetRequestIdFromResponse(payload);
   if (request_id) {
     auto requests_it = pending_requests_.find(channel_id);
     if (requests_it != pending_requests_.end())

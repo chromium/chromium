@@ -22,7 +22,7 @@ class AutofillSaveCardInfoBarDelegateMobile;
 // shown at the bottom of the Infobar.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
-    base::Optional<AccountInfo> accountInfo);
+    absl::optional<AccountInfo> accountInfo);
 
 }  // namespace autofill
 

@@ -88,7 +88,7 @@ class ExternalMetricsTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ExternalMetrics> external_metrics_;
-  base::Optional<EventsProto> proto_;
+  absl::optional<EventsProto> proto_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

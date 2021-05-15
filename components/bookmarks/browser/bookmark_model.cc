@@ -579,7 +579,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
     size_t index,
     const std::u16string& title,
     const BookmarkNode::MetaInfoMap* meta_info,
-    base::Optional<base::GUID> guid) {
+    absl::optional<base::GUID> guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(parent);
@@ -606,8 +606,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info,
-    base::Optional<base::Time> creation_time,
-    base::Optional<base::GUID> guid) {
+    absl::optional<base::Time> creation_time,
+    absl::optional<base::GUID> guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(url.is_valid());

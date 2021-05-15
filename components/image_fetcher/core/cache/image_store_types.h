@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace image_fetcher {
 
@@ -40,13 +40,13 @@ using ImageStoreOperationCallback = base::OnceCallback<void(bool)>;
 // CachedImageMetadataProto will be returned if image metadata is loaded
 // successfully.
 using ImageMetadataCallback =
-    base::OnceCallback<void(base::Optional<CachedImageMetadataProto>)>;
+    base::OnceCallback<void(absl::optional<CachedImageMetadataProto>)>;
 
 // Returns a vector of keys.
 using KeysCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
 // The expiration interval for CacheStrategy::HOLD_UNTIL_EXPIRED.
-using ExpirationInterval = base::Optional<base::TimeDelta>;
+using ExpirationInterval = absl::optional<base::TimeDelta>;
 
 }  // namespace image_fetcher
 

@@ -58,7 +58,7 @@ class PasswordSyncBridge;
 struct FieldInfo;
 struct InteractionsStats;
 
-using PasswordHashDataList = base::Optional<std::vector<PasswordHashData>>;
+using PasswordHashDataList = absl::optional<std::vector<PasswordHashData>>;
 
 // Interface for storing form passwords in a platform-specific secure way.
 // The login request/manipulation API is not threadsafe and must be used
@@ -432,7 +432,7 @@ class PasswordStore : protected PasswordStoreSync,
     void OnReuseCheckDone(
         bool is_reuse_found,
         size_t password_length,
-        base::Optional<PasswordHashData> reused_protected_password_hash,
+        absl::optional<PasswordHashData> reused_protected_password_hash,
         const std::vector<MatchingReusedCredential>&
             matching_reused_credentials,
         int saved_passwords) override;

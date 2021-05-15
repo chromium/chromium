@@ -215,7 +215,7 @@ base::Value DefaultPopularSites() {
   if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature))
     return base::Value(base::Value::Type::LIST);
 
-  base::Optional<base::Value> sites = base::JSONReader::Read(
+  absl::optional<base::Value> sites = base::JSONReader::Read(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DEFAULT_POPULAR_SITES_JSON));
   for (base::Value& site : sites.value().GetList())

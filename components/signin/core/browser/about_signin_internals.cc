@@ -652,7 +652,7 @@ AboutSigninInternals::SigninStatus::ToValue(
     if (signin_error_controller->HasError()) {
       const CoreAccountId error_account_id =
           signin_error_controller->error_account_id();
-      const base::Optional<AccountInfo> error_account_info =
+      const absl::optional<AccountInfo> error_account_info =
           identity_manager
               ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
                   error_account_id);

@@ -95,7 +95,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Overridden from ShellSurfaceBase:
   void InitializeWindowState(ash::WindowState* window_state) override;
-  base::Optional<gfx::Rect> GetWidgetBounds() const override;
+  absl::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
 
   // Overridden from aura::WindowObserver:

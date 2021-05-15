@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -19,6 +18,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -144,9 +144,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // The visible height of the top-controls. If the value is not set, then the
   // visible height should be the same as in the latest submitted frame with a
   // value set.
-  base::Optional<float> top_controls_visible_height;
+  absl::optional<float> top_controls_visible_height;
 
-  base::Optional<base::TimeDelta> preferred_frame_interval;
+  absl::optional<base::TimeDelta> preferred_frame_interval;
 
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.

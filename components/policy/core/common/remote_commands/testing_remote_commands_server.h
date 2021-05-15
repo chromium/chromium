@@ -104,7 +104,7 @@ class TestingRemoteCommandsServer {
 
   void DoIssueCommand(
       const enterprise_management::RemoteCommand& command,
-      const base::Optional<enterprise_management::SignedData>& signed_data,
+      const absl::optional<enterprise_management::SignedData>& signed_data,
       ResultReportedCallback reported_callback,
       bool skip_next_fetch);
   void ReportJobResult(

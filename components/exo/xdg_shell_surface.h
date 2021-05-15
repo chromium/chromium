@@ -10,10 +10,10 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"

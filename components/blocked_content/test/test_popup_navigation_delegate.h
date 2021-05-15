@@ -22,7 +22,7 @@ class TestPopupNavigationDelegate : public PopupNavigationDelegate {
 
     bool did_navigate = false;
     blink::mojom::WindowFeatures navigation_window_features;
-    base::Optional<WindowOpenDisposition> navigation_disposition;
+    absl::optional<WindowOpenDisposition> navigation_disposition;
     int total_popups_blocked_on_page = 0;
   };
 
@@ -34,7 +34,7 @@ class TestPopupNavigationDelegate : public PopupNavigationDelegate {
   const GURL& GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      base::Optional<WindowOpenDisposition> updated_disposition) override;
+      absl::optional<WindowOpenDisposition> updated_disposition) override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 

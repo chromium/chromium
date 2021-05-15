@@ -51,7 +51,7 @@ class FileManager : public base::RefCountedThreadSafe<FileManager> {
 
   // Get statistics about the time of creation and size of artifacts.
   size_t GetSizeOfArtifacts(const DirectoryKey& key) const;
-  base::Optional<base::File::Info> GetInfo(const DirectoryKey& key) const;
+  absl::optional<base::File::Info> GetInfo(const DirectoryKey& key) const;
 
   // Returns the total disk usage of all paint previews.
   size_t GetTotalDiskUsage() const;
@@ -67,7 +67,7 @@ class FileManager : public base::RefCountedThreadSafe<FileManager> {
   // assigns it to |directory|. The directory will be wiped if |clear| is true.
   // Returns a path on success or nullopt on failure. If the directory was
   // compressed then it will be uncompressed automatically.
-  base::Optional<base::FilePath> CreateOrGetDirectory(const DirectoryKey& key,
+  absl::optional<base::FilePath> CreateOrGetDirectory(const DirectoryKey& key,
                                                       bool clear) const;
 
   // Compresses the directory associated with |key|. Returns true on success or

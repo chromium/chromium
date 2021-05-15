@@ -78,7 +78,7 @@ class MetricsRenderFrameObserver
                                       bool from_archive) override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidSetPageLifecycleState() override;
 
   void ReadyToCommitNavigation(

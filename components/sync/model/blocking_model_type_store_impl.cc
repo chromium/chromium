@@ -10,12 +10,12 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -163,7 +163,7 @@ BlockingModelTypeStoreImpl::~BlockingModelTypeStoreImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadData(
+absl::optional<ModelError> BlockingModelTypeStoreImpl::ReadData(
     const IdList& id_list,
     RecordList* data_records,
     IdList* missing_id_list) {
@@ -174,14 +174,14 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadData(
                                          missing_id_list);
 }
 
-base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadAllData(
+absl::optional<ModelError> BlockingModelTypeStoreImpl::ReadAllData(
     RecordList* data_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_records);
   return backend_->ReadAllRecordsWithPrefix(data_prefix_, data_records);
 }
 
-base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
+absl::optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
     MetadataBatch* metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(metadata_batch);
@@ -189,7 +189,7 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
   // Read global metadata.
   RecordList global_metadata_records;
   IdList missing_global_metadata_id;
-  base::Optional<ModelError> error = backend_->ReadRecordsWithPrefix(
+  absl::optional<ModelError> error = backend_->ReadRecordsWithPrefix(
       /*prefix=*/std::string(), {global_metadata_key_},
       &global_metadata_records, &missing_global_metadata_id);
   if (error.has_value()) {
@@ -226,7 +226,7 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
     metadata_batch->AddMetadata(r.id, std::move(entity_metadata));
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<BlockingModelTypeStoreImpl::WriteBatch>
@@ -235,7 +235,7 @@ BlockingModelTypeStoreImpl::CreateWriteBatch() {
   return CreateWriteBatchForType(type_);
 }
 
-base::Optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
+absl::optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
     std::unique_ptr<WriteBatch> write_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(write_batch);
@@ -261,7 +261,7 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
   return result;
 }
 
-base::Optional<ModelError>
+absl::optional<ModelError>
 BlockingModelTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return backend_->DeleteDataAndMetadataForPrefix(GetModelTypeRootTag(type_));

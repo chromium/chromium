@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -67,7 +67,7 @@ class ScopedReservation {
 
  private:
   ResourceInterface* const resource_interface_;
-  base::Optional<uint64_t> size_;
+  absl::optional<uint64_t> size_;
 };
 
 ResourceInterface* GetMemoryResource();

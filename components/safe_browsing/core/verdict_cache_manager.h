@@ -153,14 +153,14 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CacheArtificialPhishGuardVerdict();
 
   // Number of verdict stored for this profile for password on focus pings.
-  base::Optional<size_t> stored_verdict_count_password_on_focus_;
+  absl::optional<size_t> stored_verdict_count_password_on_focus_;
 
   // Number of verdict stored for this profile for protected password entry
   // pings.
-  base::Optional<size_t> stored_verdict_count_password_entry_;
+  absl::optional<size_t> stored_verdict_count_password_entry_;
 
   // Number of verdict stored for this profile for real time url check pings.
-  base::Optional<size_t> stored_verdict_count_real_time_url_check_;
+  absl::optional<size_t> stored_verdict_count_real_time_url_check_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

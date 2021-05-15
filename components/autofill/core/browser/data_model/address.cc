@@ -54,9 +54,9 @@ bool Address::operator==(const Address& other) const {
       !are_states_equal) {
     // If the canonical state name exists for |state_| and |other.state_|, they
     // are compared otherwise.
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+    absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_cur = GetCanonicalizedStateName();
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+    absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_other = other.GetCanonicalizedStateName();
     if (canonical_state_name_cur && canonical_state_name_other) {
       are_states_equal =
@@ -102,7 +102,7 @@ bool Address::MergeStructuredAddress(const Address& newer,
                                                 newer_was_more_recently_used);
 }
 
-base::Optional<AlternativeStateNameMap::CanonicalStateName>
+absl::optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
   return AlternativeStateNameMap::GetCanonicalStateName(
       base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),

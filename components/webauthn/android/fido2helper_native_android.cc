@@ -30,7 +30,7 @@ static jboolean JNI_Fido2Helper_ParseAttestationObject(
   JavaByteArrayToByteVector(env, jattestation_object_bytes,
                             &attestation_object_bytes);
 
-  base::Optional<cbor::Value> attestation_object =
+  absl::optional<cbor::Value> attestation_object =
       cbor::Reader::Read(attestation_object_bytes);
   if (!attestation_object || !attestation_object->is_map()) {
     return false;
@@ -66,7 +66,7 @@ static jboolean JNI_Fido2Helper_ParseAttestationObject(
       ToJavaByteArray(env, auth_data));
 
   const device::PublicKey* pub_key = result->first.public_key();
-  const base::Optional<std::vector<uint8_t>>& der_bytes(pub_key->der_bytes);
+  const absl::optional<std::vector<uint8_t>>& der_bytes(pub_key->der_bytes);
   ScopedJavaLocalRef<jbyteArray> spki_java;
   if (der_bytes) {
     spki_java.Reset(ToJavaByteArray(env, *der_bytes));

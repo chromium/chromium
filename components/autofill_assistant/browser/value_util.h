@@ -8,8 +8,8 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/model.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -94,7 +94,7 @@ int GetValueSize(const ValueProto& value);
 
 // Returns the |index|'th item of |value| or nullopt if |index| is
 // out-of-bounds.
-base::Optional<ValueProto> GetNthValue(const ValueProto& value, int index);
+absl::optional<ValueProto> GetNthValue(const ValueProto& value, int index);
 
 }  //  namespace autofill_assistant
 

@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
@@ -42,7 +42,7 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual LiveTab* GetLiveTabAt(int index) const = 0;
   virtual LiveTab* GetActiveLiveTab() const = 0;
   virtual bool IsTabPinned(int index) const = 0;
-  virtual base::Optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const = 0;
   // Should not be called for |group| unless GetTabGroupForTab() returned
   // |group|.
@@ -67,7 +67,7 @@ class SESSIONS_EXPORT LiveTabContext {
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
@@ -80,7 +80,7 @@ class SESSIONS_EXPORT LiveTabContext {
   // platform-specific data).
   virtual LiveTab* ReplaceRestoredTab(
       const std::vector<SerializedNavigationEntry>& navigations,
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
       const std::string& extension_app_id,
       const PlatformSpecificTabData* tab_platform_data,

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METADATA_RECORDER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METADATA_RECORDER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace page_load_metrics {
 
@@ -25,8 +25,8 @@ class PageTimingMetadataRecorder {
     MonotonicTiming(MonotonicTiming&&);
     MonotonicTiming& operator=(MonotonicTiming&&);
 
-    base::Optional<base::TimeTicks> navigation_start;
-    base::Optional<base::TimeTicks> first_contentful_paint;
+    absl::optional<base::TimeTicks> navigation_start;
+    absl::optional<base::TimeTicks> first_contentful_paint;
   };
 
   PageTimingMetadataRecorder(const MonotonicTiming& initial_timing);

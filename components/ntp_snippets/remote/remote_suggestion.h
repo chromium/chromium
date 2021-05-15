@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestion.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -80,7 +80,7 @@ class RemoteSuggestion {
   // directly.
   const GURL& salient_image_url() const { return salient_image_url_; }
 
-  const base::Optional<uint32_t>& optional_image_dominant_color() const {
+  const absl::optional<uint32_t>& optional_image_dominant_color() const {
     return image_dominant_color_;
   }
 
@@ -140,7 +140,7 @@ class RemoteSuggestion {
 
   GURL salient_image_url_;
   // Encoded as an Android @ColorInt.
-  base::Optional<uint32_t> image_dominant_color_;
+  absl::optional<uint32_t> image_dominant_color_;
 
   std::string snippet_;
   base::Time publish_date_;

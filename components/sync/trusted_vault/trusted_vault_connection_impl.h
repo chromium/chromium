@@ -38,7 +38,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const base::Optional<TrustedVaultKeyAndVersion>&
+      const absl::optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
@@ -46,7 +46,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
-      const base::Optional<TrustedVaultKeyAndVersion>&
+      const absl::optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) override;

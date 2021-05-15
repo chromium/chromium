@@ -630,7 +630,7 @@ struct FillingAssistanceTestCase {
   std::vector<std::string> saved_passwords;
   std::vector<InteractionsStats> interactions_stats;
 
-  base::Optional<PasswordFormMetricsRecorder::FillingAssistance> expectation;
+  absl::optional<PasswordFormMetricsRecorder::FillingAssistance> expectation;
 };
 
 FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
@@ -1125,7 +1125,7 @@ struct FillingSourceTestCase {
   std::vector<std::string> saved_account_usernames;
   std::vector<std::string> saved_account_passwords;
 
-  base::Optional<PasswordFormMetricsRecorder::FillingSource> expectation;
+  absl::optional<PasswordFormMetricsRecorder::FillingSource> expectation;
 };
 
 void CheckFillingSourceTestCase(const FillingSourceTestCase& test_case) {

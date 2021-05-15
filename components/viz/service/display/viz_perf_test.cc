@@ -37,7 +37,7 @@ bool CompositorRenderPassListFromJSON(
   std::string json_text;
   if (!base::ReadFileToString(json_path, &json_text))
     return false;
-  base::Optional<base::Value> dict = base::JSONReader::Read(json_text);
+  absl::optional<base::Value> dict = base::JSONReader::Read(json_text);
   if (!dict.has_value())
     return false;
   return CompositorRenderPassListFromDict(dict.value(), render_pass_list);

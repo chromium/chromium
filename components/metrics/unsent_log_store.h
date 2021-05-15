@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_base.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -71,7 +71,7 @@ class UnsentLogStore : public LogStore {
   // Adds a UMA log to the list, |samples_count| is the total number of samples
   // in the log (if available).
   void StoreLog(const std::string& log_data,
-                base::Optional<base::HistogramBase::Count> samples_count);
+                absl::optional<base::HistogramBase::Count> samples_count);
 
   // Gets log data at the given index in the list.
   const std::string& GetLogAtIndex(size_t index);
@@ -81,7 +81,7 @@ class UnsentLogStore : public LogStore {
   std::string ReplaceLogAtIndex(
       size_t index,
       const std::string& new_log_data,
-      base::Optional<base::HistogramBase::Count> samples_count);
+      absl::optional<base::HistogramBase::Count> samples_count);
 
   // Deletes all logs, in memory and on disk.
   void Purge();
@@ -165,7 +165,7 @@ class UnsentLogStore : public LogStore {
               const std::string& log_data,
               const std::string& log_timestamp,
               const std::string& signing_key,
-              base::Optional<base::HistogramBase::Count> samples_count);
+              absl::optional<base::HistogramBase::Count> samples_count);
 
     // Compressed log data - a serialized protobuf that's been gzipped.
     std::string compressed_log_data;
@@ -183,7 +183,7 @@ class UnsentLogStore : public LogStore {
     std::string timestamp;
 
     // The total number of samples in this log if applicable.
-    base::Optional<base::HistogramBase::Count> samples_count;
+    absl::optional<base::HistogramBase::Count> samples_count;
   };
   // A list of all of the stored logs, stored with SHA1 hashes to check for
   // corruption while they are stored in memory.

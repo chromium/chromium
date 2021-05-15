@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -16,6 +15,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -209,7 +209,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
   badmap.Set("object", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   badmap.Set("string", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-             POLICY_SOURCE_CLOUD, base::nullopt,
+             POLICY_SOURCE_CLOUD, absl::nullopt,
              std::make_unique<ExternalDataFetcher>(nullptr, std::string()));
 
   schema_map->FilterBundle(&bundle, /*drop_invalid_component_policies=*/true);

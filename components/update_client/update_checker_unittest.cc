@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -36,6 +35,7 @@
 #include "components/update_client/update_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using std::string;
@@ -68,7 +68,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void TearDown() override;
 
   void UpdateCheckComplete(
-      const base::Optional<ProtocolParser::Results>& results,
+      const absl::optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec);
@@ -88,7 +88,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<URLLoaderPostInterceptor> post_interceptor_;
 
-  base::Optional<ProtocolParser::Results> results_;
+  absl::optional<ProtocolParser::Results> results_;
   ErrorCategory error_category_ = ErrorCategory::kNone;
   int error_ = 0;
   int retry_after_sec_ = 0;
@@ -161,7 +161,7 @@ void UpdateCheckerTest::Quit() {
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
-    const base::Optional<ProtocolParser::Results>& results,
+    const absl::optional<ProtocolParser::Results>& results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {

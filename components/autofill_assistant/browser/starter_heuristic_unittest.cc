@@ -24,7 +24,7 @@ class StarterHeuristicTest : public testing::Test {
   ~StarterHeuristicTest() override = default;
 
   // Synchronous evaluation of the heuristic for easier testing.
-  base::Optional<std::string> IsHeuristicMatchForTest(
+  absl::optional<std::string> IsHeuristicMatchForTest(
       const StarterHeuristic& starter_heuristic,
       const GURL& url) {
     return starter_heuristic.IsHeuristicMatch(url);
@@ -53,9 +53,9 @@ TEST_F(StarterHeuristicTest, SmokeTest) {
               Eq("FAKE_INTENT_CART"));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic, GURL("invalid/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 TEST_F(StarterHeuristicTest, RunHeuristicAsync) {
@@ -76,7 +76,7 @@ TEST_F(StarterHeuristicTest, RunHeuristicAsync) {
         )"}});
 
   base::test::TaskEnvironment task_environment;
-  base::MockCallback<base::OnceCallback<void(base::Optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
       callback;
   EXPECT_CALL(callback, Run(Optional(std::string("FAKE_INTENT_CART"))));
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
@@ -117,7 +117,7 @@ TEST_F(StarterHeuristicTest, MultipleIntentHeuristics) {
               Eq("FAKE_INTENT_OTHER"));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
   // If both match, FAKE_INTENT_CART has precedence because it was specified
   // first.
   EXPECT_THAT(
@@ -149,21 +149,21 @@ TEST_F(StarterHeuristicTest, DenylistedDomains) {
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://example.com/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
   EXPECT_THAT(
       IsHeuristicMatchForTest(*starter_heuristic,
                               GURL("https://subdomain.example.com/cart")),
-      Eq(base::nullopt));
+      Eq(absl::nullopt));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
   EXPECT_THAT(
       IsHeuristicMatchForTest(*starter_heuristic,
                               GURL("https://www.other-example.com/cart")),
-      Eq(base::nullopt));
+      Eq(absl::nullopt));
 
   // URLs on non-denylisted domains still work.
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
@@ -203,7 +203,7 @@ TEST_F(StarterHeuristicTest, MultipleConditionSetsForSameIntent) {
               Eq("FAKE_INTENT_CART"));
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 TEST_F(StarterHeuristicTest, FieldTrialNotSet) {
@@ -211,7 +211,7 @@ TEST_F(StarterHeuristicTest, FieldTrialNotSet) {
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 TEST_F(StarterHeuristicTest, FieldTrialInvalid) {
@@ -223,7 +223,7 @@ TEST_F(StarterHeuristicTest, FieldTrialInvalid) {
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 TEST_F(StarterHeuristicTest, PartiallyInvalidFieldTrialsAreCompletelyIgnored) {
@@ -248,7 +248,7 @@ TEST_F(StarterHeuristicTest, PartiallyInvalidFieldTrialsAreCompletelyIgnored) {
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://www.example.com/cart")),
-              Eq(base::nullopt));
+              Eq(absl::nullopt));
 }
 
 }  // namespace autofill_assistant

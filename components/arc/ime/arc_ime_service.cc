@@ -43,7 +43,7 @@ namespace arc {
 
 namespace {
 
-base::Optional<double> g_override_default_device_scale_factor;
+absl::optional<double> g_override_default_device_scale_factor;
 
 // Return true when a rich text editing is available on a text field with the
 // given type.
@@ -674,11 +674,11 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
   return false;
 }
 
-base::Optional<ui::GrammarFragment> ArcImeService::GetGrammarFragment(
+absl::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragment(
     const gfx::Range& range) {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
@@ -726,7 +726,7 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
 
 // static
 void ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(
-    base::Optional<double> scale_factor) {
+    absl::optional<double> scale_factor) {
   g_override_default_device_scale_factor = scale_factor;
 }
 

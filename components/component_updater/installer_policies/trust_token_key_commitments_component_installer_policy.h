@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -58,7 +58,7 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
   // return them as an optional string. `on_commitments_ready` loads trust
   // tokens in network service.
   static void LoadTrustTokensFromString(
-      base::OnceCallback<base::Optional<std::string>()> load_keys_from_disk,
+      base::OnceCallback<absl::optional<std::string>()> load_keys_from_disk,
       base::OnceCallback<void(const std::string&)> on_commitments_ready);
 
  protected:

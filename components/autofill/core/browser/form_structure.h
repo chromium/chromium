@@ -16,7 +16,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -28,6 +27,7 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -300,7 +300,7 @@ class FormStructure {
     password_attributes_vote_ = vote;
   }
 
-  base::Optional<std::pair<PasswordAttribute, bool>>
+  absl::optional<std::pair<PasswordAttribute, bool>>
   get_password_attributes_vote() const {
     return password_attributes_vote_;
   }
@@ -628,7 +628,7 @@ class FormStructure {
 
   // The vote about password attributes (e.g. whether the password has a numeric
   // character).
-  base::Optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
+  absl::optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
 
   // If |password_attribute_vote_| contains (kHasSpecialSymbol, true), this
   // field contains nosified information about a special symbol in a

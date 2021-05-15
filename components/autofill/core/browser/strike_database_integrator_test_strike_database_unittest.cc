@@ -39,7 +39,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
             strike_database_service_.get());
     no_expiry_strike_database_ =
         std::make_unique<StrikeDatabaseIntegratorTestStrikeDatabase>(
-            strike_database_service_.get(), base::nullopt);
+            strike_database_service_.get(), absl::nullopt);
   }
 
   void TearDown() override {

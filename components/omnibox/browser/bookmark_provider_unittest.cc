@@ -13,7 +13,6 @@
 
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -31,6 +30,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 using bookmarks::BookmarkModel;
@@ -185,7 +185,7 @@ class BookmarkProviderTest : public testing::Test {
   void TestNumMatchesAndTriggeredFeature(
       std::string input_text,
       size_t expected_matches_count,
-      base::Optional<OmniboxTriggeredFeatureService::Feature>
+      absl::optional<OmniboxTriggeredFeatureService::Feature>
           expected_triggered_feature = {});
 
   std::unique_ptr<MockAutocompleteProviderClient> provider_client_;
@@ -218,7 +218,7 @@ void BookmarkProviderTest::SetUp() {
 void BookmarkProviderTest::TestNumMatchesAndTriggeredFeature(
     std::string input_text,
     size_t expected_matches_count,
-    base::Optional<OmniboxTriggeredFeatureService::Feature>
+    absl::optional<OmniboxTriggeredFeatureService::Feature>
         expected_triggered_feature) {
   SCOPED_TRACE("[" + input_text + "]");  // Wrap |input_text| in `[]` to make
                                          // trailing whitespace apparent.

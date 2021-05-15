@@ -5,7 +5,6 @@
 #include "components/payments/core/payment_manifest_downloader.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,6 +16,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace payments {
 namespace {
@@ -25,7 +25,7 @@ using testing::_;
 
 static constexpr char kNoContent[] = "";
 static constexpr char kNoError[] = "";
-static constexpr base::nullopt_t kNoLinkHeader = base::nullopt;
+static constexpr absl::nullopt_t kNoLinkHeader = absl::nullopt;
 static constexpr char kEmptyLinkHeader[] = "";
 static constexpr char kNoResponseBody[] = "";
 
@@ -58,7 +58,7 @@ class PaymentMethodManifestDownloaderTest : public testing::Test {
 
   void ServerResponse(int response_code,
                       Headers send_headers,
-                      base::Optional<std::string> link_header,
+                      absl::optional<std::string> link_header,
                       const std::string& response_body,
                       int net_error) {
     scoped_refptr<net::HttpResponseHeaders> headers;

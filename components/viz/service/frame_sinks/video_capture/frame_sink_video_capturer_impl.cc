@@ -226,7 +226,7 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
-    const base::Optional<FrameSinkId>& frame_sink_id,
+    const absl::optional<FrameSinkId>& frame_sink_id,
     const SubtreeCaptureId& subtree_capture_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

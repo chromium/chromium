@@ -145,14 +145,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
 
-  // This function takes a pointer to the base::Optional instance so the
+  // This function takes a pointer to the absl::optional instance so the
   // instance can be reset. When overlay strategy covers the entire output
   // surface, we no longer need the output surface as a separate overlay. This
   // is also used by SurfaceControl to adjust rotation.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   OverlayProcessorUsingStrategy();
 

@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -50,7 +50,7 @@ bool ShouldPurgeModelAndFeaturesStoreOnStartup();
 // Parses a list of hosts to have hints fetched for. This overrides scheduling
 // of the first hints fetch and forces it to occur immediately. If no hosts are
 // provided, nullopt is returned.
-base::Optional<std::vector<std::string>>
+absl::optional<std::vector<std::string>>
 ParseHintsFetchOverrideFromCommandLine();
 
 // Whether the hints fetcher timer should be overridden.
@@ -83,8 +83,8 @@ bool IsModelOverridePresent();
 
 // Returns the file path string and metadata for the model provided via
 // command-line for |optimization_target|, if applicable.
-base::Optional<
-    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+absl::optional<
+    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target);
 

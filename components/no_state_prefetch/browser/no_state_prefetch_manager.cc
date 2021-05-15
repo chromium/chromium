@@ -212,7 +212,7 @@ NoStatePrefetchManager::AddPrerenderFromOmnibox(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
   return AddPrerenderWithPreconnectFallback(
-      ORIGIN_OMNIBOX, url, content::Referrer(), base::nullopt, gfx::Rect(size),
+      ORIGIN_OMNIBOX, url, content::Referrer(), absl::nullopt, gfx::Rect(size),
       session_storage_namespace);
 }
 
@@ -222,7 +222,7 @@ NoStatePrefetchManager::AddPrerenderFromNavigationPredictor(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
   return AddPrerenderWithPreconnectFallback(
-      ORIGIN_NAVIGATION_PREDICTOR, url, content::Referrer(), base::nullopt,
+      ORIGIN_NAVIGATION_PREDICTOR, url, content::Referrer(), absl::nullopt,
       gfx::Rect(size), session_storage_namespace);
 }
 
@@ -233,7 +233,7 @@ NoStatePrefetchManager::AddIsolatedPrerender(
     const gfx::Size& size) {
   // The preconnect fallback won't happen.
   return AddPrerenderWithPreconnectFallback(
-      ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), base::nullopt,
+      ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), absl::nullopt,
       gfx::Rect(size), session_storage_namespace);
 }
 
@@ -244,7 +244,7 @@ NoStatePrefetchManager::AddPrerenderFromExternalRequest(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
   return AddPrerenderWithPreconnectFallback(ORIGIN_EXTERNAL_REQUEST, url,
-                                            referrer, base::nullopt, bounds,
+                                            referrer, absl::nullopt, bounds,
                                             session_storage_namespace);
 }
 
@@ -255,7 +255,7 @@ NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
   return AddPrerenderWithPreconnectFallback(
-      ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, base::nullopt,
+      ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, absl::nullopt,
       bounds, session_storage_namespace);
 }
 
@@ -502,7 +502,7 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     Origin origin,
     const GURL& url_arg,
     const content::Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     const gfx::Rect& bounds,
     SessionStorageNamespace* session_storage_namespace) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -769,7 +769,7 @@ std::unique_ptr<NoStatePrefetchContents>
 NoStatePrefetchManager::CreateNoStatePrefetchContents(
     const GURL& url,
     const content::Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     Origin origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::WrapUnique(
@@ -1009,7 +1009,7 @@ std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderWithPreconnectFallbackForTesting(
     Origin origin,
     const GURL& url,
-    const base::Optional<url::Origin>& initiator_origin) {
+    const absl::optional<url::Origin>& initiator_origin) {
   return AddPrerenderWithPreconnectFallback(
       origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
 }

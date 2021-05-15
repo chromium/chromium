@@ -211,7 +211,7 @@ class BookmarkModel : public BookmarkUndoProvider,
       size_t index,
       const std::u16string& title,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      base::Optional<base::GUID> guid = base::nullopt);
+      absl::optional<base::GUID> guid = absl::nullopt);
 
   // Adds a url at the specified position with the given |creation_time|,
   // |meta_info| and |guid|. If no GUID is provided (i.e. nullopt), then a
@@ -222,8 +222,8 @@ class BookmarkModel : public BookmarkUndoProvider,
       const std::u16string& title,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      base::Optional<base::Time> creation_time = base::nullopt,
-      base::Optional<base::GUID> guid = base::nullopt);
+      absl::optional<base::Time> creation_time = absl::nullopt,
+      absl::optional<base::GUID> guid = absl::nullopt);
 
   // Sorts the children of |parent|, notifying observers by way of the
   // BookmarkNodeChildrenReordered method.

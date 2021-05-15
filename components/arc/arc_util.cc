@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -24,6 +23,7 @@
 #include "components/arc/arc_features.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/types/display_constants.h"
@@ -64,7 +64,7 @@ void SetArcCpuRestrictionCallback(
 }
 
 void OnSetArcVmCpuRestriction(
-    base::Optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
+    absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call SetVmCpuRestriction";
     return;

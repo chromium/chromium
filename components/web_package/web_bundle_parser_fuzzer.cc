@@ -25,7 +25,7 @@ class DataSource : public web_package::mojom::BundleDataSource {
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     if (offset >= size_) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     const uint8_t* start = data_ + offset;

@@ -572,7 +572,7 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
   DeleteLastSession();
 
   // Move current session to last.
-  base::Optional<SessionInfo> new_last_session_info;
+  absl::optional<SessionInfo> new_last_session_info;
   if (use_marker_) {
     if (last_file_with_valid_marker_) {
       new_last_session_info =
@@ -798,7 +798,7 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
   return true;
 }
 
-base::Optional<CommandStorageBackend::SessionInfo>
+absl::optional<CommandStorageBackend::SessionInfo>
 CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
   // at startup, before `current_path_` is set, so no need to check it.
@@ -815,7 +815,7 @@ CommandStorageBackend::FindLastSessionFile() const {
       GetLegacySessionPath(type_, supplied_path_, true);
   if (base::PathExists(legacy_session))
     return SessionInfo{legacy_session, base::Time()};
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CommandStorageBackend::DeleteLastSessionFiles() const {

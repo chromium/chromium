@@ -100,7 +100,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     const std::string& client_id,
     bool critical,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     Callback callback)
     : JobConfigurationBase(type, std::move(auth_data), oauth_token, factory),
@@ -125,7 +125,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     CloudPolicyClient* client,
     bool critical,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     Callback callback)
     : DMServerJobConfiguration(client->service(),
                                type,
@@ -281,7 +281,7 @@ RegistrationJobConfiguration::RegistrationJobConfiguration(
     JobType type,
     CloudPolicyClient* client,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     Callback callback)
     : DMServerJobConfiguration(type,
                                client,

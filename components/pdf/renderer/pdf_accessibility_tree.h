@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/shared_impl/pdf_accessibility_shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_source.h"
@@ -64,7 +64,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects);
   void HandleAction(const PP_PdfAccessibilityActionData& action_data);
-  base::Optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
+  absl::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
       int32_t ax_node_id) const;
 
   // Given the AXNode and the character offset within the AXNode, finds the

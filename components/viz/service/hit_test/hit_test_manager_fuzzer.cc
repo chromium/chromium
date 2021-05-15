@@ -109,7 +109,7 @@ void SubmitHitTestRegionList(
     return;
   }
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list;
   if (fuzz->ConsumeBool()) {
     hit_test_region_list.emplace();
     hit_test_region_list->flags = fuzz->ConsumeIntegral<uint32_t>();

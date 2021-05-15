@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FALLBACK_HANDLER_REQUIRED_FIELD_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FALLBACK_HANDLER_REQUIRED_FIELD_H_
 
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -62,7 +62,7 @@ struct RequiredField {
   // For JavaScript driven dropdowns. This defines the option to be clicked.
   // The selector must match a generic option, a |inner_text_pattern| will be
   // attached for matching to a unique option.
-  base::Optional<Selector> fallback_click_element = base::nullopt;
+  absl::optional<Selector> fallback_click_element = absl::nullopt;
   // Optional. The click type to be used for clicking JavaScript driven
   // dropdown elements.
   ClickType click_type = ClickType::NOT_SET;

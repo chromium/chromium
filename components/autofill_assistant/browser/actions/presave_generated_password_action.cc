@@ -5,7 +5,7 @@
 #include "components/autofill_assistant/browser/actions/presave_generated_password_action.h"
 
 #include <utility>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"

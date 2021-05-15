@@ -161,13 +161,13 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   // Convert to dictionary and parse the results.
   ASSERT_TRUE(result_.is_dict()) << "Result is not a dictionary: " << result_;
 
-  base::Optional<bool> success = result_.FindBoolKey("success");
+  absl::optional<bool> success = result_.FindBoolKey("success");
   ASSERT_TRUE(success.has_value());
-  base::Optional<int> num_tests = result_.FindIntKey("numTests");
+  absl::optional<int> num_tests = result_.FindIntKey("numTests");
   ASSERT_TRUE(num_tests.has_value());
-  base::Optional<int> failed = result_.FindIntKey("failed");
+  absl::optional<int> failed = result_.FindIntKey("failed");
   ASSERT_TRUE(failed.has_value());
-  base::Optional<int> skipped = result_.FindIntKey("skipped");
+  absl::optional<int> skipped = result_.FindIntKey("skipped");
   ASSERT_TRUE(skipped.has_value());
 
   VLOG(0) << "Ran " << num_tests.value()

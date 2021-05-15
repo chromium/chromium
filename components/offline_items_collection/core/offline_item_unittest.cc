@@ -4,15 +4,15 @@
 
 #include "components/offline_items_collection/core/offline_item.h"
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_items_collection {
 namespace {
 
 TEST(OfflineItemTest, OfflineItemSchedule) {
-  OfflineItemSchedule schedule(true, base::nullopt);
+  OfflineItemSchedule schedule(true, absl::nullopt);
   EXPECT_TRUE(schedule.only_on_wifi);
   EXPECT_FALSE(schedule.start_time.has_value());
 

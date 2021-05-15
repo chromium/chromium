@@ -6,11 +6,11 @@
 #define COMPONENTS_SCHEDULING_METRICS_THREAD_METRICS_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/thread_type.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace scheduling_metrics {
 

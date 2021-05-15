@@ -6,9 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_service_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace metrics {
@@ -51,11 +51,11 @@ DemographicMetricsProvider::DemographicMetricsProvider(
 
 DemographicMetricsProvider::~DemographicMetricsProvider() {}
 
-base::Optional<UserDemographics>
+absl::optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // Skip if feature disabled.
   if (!base::FeatureList::IsEnabled(kDemographicMetricsReporting))
-    return base::nullopt;
+    return absl::nullopt;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Skip if not exactly one Profile on disk. Having more than one Profile that
@@ -71,7 +71,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kMoreThanOneProfile);
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -80,13 +80,13 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (!sync_service) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kNoSyncService);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!CanUploadDemographicsToGoogle(sync_service)) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kSyncNotEnabled);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   UserDemographicsResult demographics_result =
@@ -97,7 +97,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (demographics_result.IsSuccess())
     return demographics_result.value();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DemographicMetricsProvider::ProvideCurrentSessionData(

@@ -42,10 +42,10 @@ bool KeyStorageKeyring::Init() {
   return GnomeKeyringLoader::LoadGnomeKeyring();
 }
 
-base::Optional<std::string> KeyStorageKeyring::GetKeyImpl() {
+absl::optional<std::string> KeyStorageKeyring::GetKeyImpl() {
   DCHECK(main_thread_runner_->RunsTasksInCurrentSequence());
 
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   gchar* password_c = nullptr;
   GnomeKeyringResult result =
       GnomeKeyringLoader::gnome_keyring_find_password_sync_ptr(
@@ -62,7 +62,7 @@ base::Optional<std::string> KeyStorageKeyring::GetKeyImpl() {
   return password;
 }
 
-base::Optional<std::string> KeyStorageKeyring::AddRandomPasswordInKeyring() {
+absl::optional<std::string> KeyStorageKeyring::AddRandomPasswordInKeyring() {
   // Generate password
   std::string password;
   base::Base64Encode(base::RandBytesAsString(16), &password);
@@ -74,7 +74,7 @@ base::Optional<std::string> KeyStorageKeyring::AddRandomPasswordInKeyring() {
           password.c_str(), "application", kApplicationName, nullptr);
   if (result != GNOME_KEYRING_RESULT_OK) {
     VLOG(1) << "OSCrypt failed to store generated password to gnome-keyring";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   VLOG(1) << "OSCrypt generated a new password and stored it to gnome-keyring";

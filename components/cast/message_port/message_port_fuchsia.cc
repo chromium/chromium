@@ -290,7 +290,7 @@ MessagePortFuchsia::MessagePortFuchsia(PortType port_type)
     : receiver_(nullptr), port_type_(port_type) {}
 MessagePortFuchsia::~MessagePortFuchsia() = default;
 
-base::Optional<fuchsia::web::FrameError>
+absl::optional<fuchsia::web::FrameError>
 MessagePortFuchsia::ExtractAndHandleMessageFromFidl(
     fuchsia::web::WebMessage message) {
   DCHECK(receiver_);
@@ -322,7 +322,7 @@ MessagePortFuchsia::ExtractAndHandleMessageFromFidl(
     return fuchsia::web::FrameError::INTERNAL_ERROR;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void MessagePortFuchsia::OnZxError(zx_status_t status) {

@@ -121,7 +121,7 @@ void DownloadUIAdapter::OfflinePageAdded(OfflinePageModel* model,
   // since they're added to Offline Page database directly, so OnItemsAdded is
   // used.
   if (!is_suggested)
-    NotifyItemUpdated(offline_item, base::nullopt);
+    NotifyItemUpdated(offline_item, absl::nullopt);
   else
     NotifyItemsAdded({offline_item});
 }
@@ -180,7 +180,7 @@ void DownloadUIAdapter::OnCompleted(
     // Actual cause could be server or network related, but we need to pick
     // a fail_state.
     item.fail_state = offline_items_collection::FailState::SERVER_FAILED;
-    NotifyItemUpdated(item, base::nullopt);
+    NotifyItemUpdated(item, absl::nullopt);
   }
 }
 
@@ -190,7 +190,7 @@ void DownloadUIAdapter::OnChanged(const SavePageRequest& request) {
     return;
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
-  NotifyItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, absl::nullopt);
 }
 
 // RequestCoordinator::Observer
@@ -201,7 +201,7 @@ void DownloadUIAdapter::OnNetworkProgress(const SavePageRequest& request,
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
   offline_item.received_bytes = received_bytes;
-  NotifyItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, absl::nullopt);
 }
 
 void DownloadUIAdapter::GetAllItems(
@@ -238,7 +238,7 @@ void DownloadUIAdapter::RenameItem(const ContentId& id,
 
 void DownloadUIAdapter::ChangeSchedule(
     const ContentId& id,
-    base::Optional<OfflineItemSchedule> schedule) {
+    absl::optional<OfflineItemSchedule> schedule) {
   NOTREACHED();
 }
 
@@ -382,7 +382,7 @@ void DownloadUIAdapter::OnAllRequestsGetForGetItem(
     const ContentId& id,
     OfflineContentProvider::SingleItemCallback callback,
     std::vector<std::unique_ptr<SavePageRequest>> requests) {
-  base::Optional<OfflineItem> offline_item;
+  absl::optional<OfflineItem> offline_item;
   for (const auto& request : requests) {
     if (request->client_id().id == id.id)
       offline_item = OfflineItemConversions::CreateOfflineItem(*request);

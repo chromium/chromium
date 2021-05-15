@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/metrics/histogram.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace scheduling_metrics {
 
@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) TotalDurationMetricReporter {
   void Reset();
 
  private:
-  base::Optional<base::TimeDelta> reported_value_;
+  absl::optional<base::TimeDelta> reported_value_;
 
   base::HistogramBase* positive_histogram_;
   base::HistogramBase* negative_histogram_;

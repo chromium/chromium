@@ -890,7 +890,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
 
 TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
   for (const auto& capacity : kTestRangeCapabilities) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(capacity.json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -905,7 +905,7 @@ TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
       kInvalidBoundariesRangeVendorCapabilityJson,
       kInvalidDefaultValueRangeVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -929,7 +929,7 @@ TEST(PrinterDescriptionTest, CddSetRangeVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
   {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(kSelectVendorCapabilityJson);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -944,7 +944,7 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
               select_capability.GetDefault());
   }
   {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(kNoDefaultSelectVendorCapabilityJson);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -964,7 +964,7 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
       kMissingDisplayNameSelectVendorCapabilityJson,
       kSeveralDefaultsSelectVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -1008,7 +1008,7 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
   for (const auto& capacity : kTestTypedValueCapabilities) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(capacity.json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -1023,7 +1023,7 @@ TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
       kInvalidFloatTypedValueVendorCapabilityJson,
       kInvalidIntegerTypedValueVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);

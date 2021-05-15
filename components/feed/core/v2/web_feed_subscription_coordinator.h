@@ -139,8 +139,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   void EnqueueInFlightChange(
       bool subscribing,
-      base::Optional<WebFeedPageInformation> page_information,
-      base::Optional<feedstore::WebFeedInfo> info);
+      absl::optional<WebFeedPageInformation> page_information,
+      absl::optional<feedstore::WebFeedInfo> info);
   const InFlightChange* FindInflightChange(
       const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info);

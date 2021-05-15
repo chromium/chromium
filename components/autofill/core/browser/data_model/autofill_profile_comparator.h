@@ -56,9 +56,9 @@ class AutofillProfileComparator {
                WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
 
   // Returns the first merge candidate from |existing_profiles| for
-  // |new_profile| as an optional. If no merge candidate exists |base::nullopt|
+  // |new_profile| as an optional. If no merge candidate exists |absl::nullopt|
   // is returned.
-  static base::Optional<AutofillProfile> GetAutofillProfileMergeCandidate(
+  static absl::optional<AutofillProfile> GetAutofillProfileMergeCandidate(
       const AutofillProfile& new_profile,
       const std::vector<AutofillProfile*>& existing_profiles,
       const std::string& app_locale);

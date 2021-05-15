@@ -103,7 +103,7 @@ SessionStorageMetadata::SetupNewDatabase() {
 }
 
 bool SessionStorageMetadata::ParseDatabaseVersion(
-    base::Optional<std::vector<uint8_t>> value,
+    absl::optional<std::vector<uint8_t>> value,
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* upgrade_tasks) {
   if (!value) {
     initial_database_version_from_disk_ = 0;

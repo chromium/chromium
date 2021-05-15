@@ -23,11 +23,11 @@
 namespace sessions {
 namespace {
 
-base::Optional<SerializedNavigationEntry::ReplacedNavigationEntryData>
+absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>
 ConvertReplacedEntryData(
-    const base::Optional<content::ReplacedNavigationEntryData>& input_data) {
+    const absl::optional<content::ReplacedNavigationEntryData>& input_data) {
   if (!input_data.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   SerializedNavigationEntry::ReplacedNavigationEntryData output_data;
   output_data.first_committed_url = input_data->first_committed_url;
@@ -99,7 +99,7 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   // in favor of using the data stored in |navigation->encoded_page_state|.
   GURL temporary_url;
   content::Referrer temporary_referrer;
-  base::Optional<url::Origin> temporary_initiator_origin;
+  absl::optional<url::Origin> temporary_initiator_origin;
 
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(

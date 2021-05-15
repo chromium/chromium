@@ -57,7 +57,7 @@ TEST_F(ArcLockScreenBridgeTest, ConstructDestruct) {
 }
 
 TEST_F(ArcLockScreenBridgeTest, OnConnectionReady) {
-  const base::Optional<bool>& is_locked = lock_screen_instance()->is_locked();
+  const absl::optional<bool>& is_locked = lock_screen_instance()->is_locked();
   // The state should have been set already. See SetUp().
   ASSERT_TRUE(is_locked);
   // And the state should be "not locked";
@@ -65,7 +65,7 @@ TEST_F(ArcLockScreenBridgeTest, OnConnectionReady) {
 }
 
 TEST_F(ArcLockScreenBridgeTest, OnSessionStateChanged) {
-  const base::Optional<bool>& is_locked = lock_screen_instance()->is_locked();
+  const absl::optional<bool>& is_locked = lock_screen_instance()->is_locked();
   // The state should have been set already. See SetUp().
   ASSERT_TRUE(is_locked);
   // Lock the screen and check the instance state.

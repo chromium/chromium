@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -61,7 +61,7 @@ class PostSaveCompromisedHelper {
       std::vector<InsecureCredential> insecure_credentials);
 
   // Contains the entry for the currently leaked credentials if it was leaked.
-  base::Optional<InsecureCredential> current_leak_;
+  absl::optional<InsecureCredential> current_leak_;
   // Callback to notify the caller about the bubble type.
   BubbleCallback callback_;
   // BubbleType after the callback was executed.

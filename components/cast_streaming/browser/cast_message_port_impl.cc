@@ -60,7 +60,7 @@ void CastMessagePortImpl::ResetClient() {
 
 void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
                                              const std::string& message) {
-  base::Optional<base::Value> value = base::JSONReader::Read(message);
+  absl::optional<base::Value> value = base::JSONReader::Read(message);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": not a json payload:" << message;
@@ -85,7 +85,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
     return;
   }
 
-  base::Optional<int> request_id = value->FindIntKey(kKeyRequestId);
+  absl::optional<int> request_id = value->FindIntKey(kKeyRequestId);
   if (!request_id) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no request id: " << message;

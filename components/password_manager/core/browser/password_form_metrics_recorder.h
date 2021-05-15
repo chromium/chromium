@@ -14,7 +14,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -22,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -439,7 +439,7 @@ class PasswordFormMetricsRecorder
 
   // Contains the generated password's status, which resulted from a user
   // action.
-  base::Optional<GeneratedPasswordStatus> generated_password_status_;
+  absl::optional<GeneratedPasswordStatus> generated_password_status_;
 
   // Tracks which bubble is currently being displayed to the user.
   CurrentBubbleOfInterest current_bubble_ = CurrentBubbleOfInterest::kNone;
@@ -482,9 +482,9 @@ class PasswordFormMetricsRecorder
   // 1 = the fallback was shown.
   // 2 = the password was generated.
   // 4 = this was an update prompt.
-  base::Optional<uint32_t> showed_manual_fallback_for_saving_;
+  absl::optional<uint32_t> showed_manual_fallback_for_saving_;
 
-  base::Optional<uint32_t> form_changes_bitmask_;
+  absl::optional<uint32_t> form_changes_bitmask_;
 
   bool recorded_first_filling_result_ = false;
 
@@ -493,15 +493,15 @@ class PasswordFormMetricsRecorder
   bool user_typed_password_on_chrome_sign_in_page_ = false;
   bool password_hash_saved_on_chrome_sing_in_page_ = false;
 
-  base::Optional<FillingAssistance> filling_assistance_;
-  base::Optional<FillingSource> filling_source_;
-  base::Optional<metrics_util::PasswordAccountStorageUsageLevel>
+  absl::optional<FillingAssistance> filling_assistance_;
+  absl::optional<FillingSource> filling_source_;
+  absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
 
   bool possible_username_used_ = false;
   bool username_updated_in_bubble_ = false;
 
-  base::Optional<JsOnlyInput> js_only_input_;
+  absl::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
 

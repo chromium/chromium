@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_mode.h"
@@ -23,6 +22,7 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
@@ -60,10 +60,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  base::Optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  base::Optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -109,16 +109,16 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void NotifyObservers();
 
   // Methods used as callbacks given to DataTypeStore.
-  void OnStoreCreated(const base::Optional<syncer::ModelError>& error,
+  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<ModelTypeStore> store);
   void OnLocalDeviceNameInfoRetrieved(
       LocalDeviceNameInfo local_device_name_info);
   void OnReadAllData(std::unique_ptr<ClientIdToSpecifics> all_data,
-                     const base::Optional<syncer::ModelError>& error);
+                     const absl::optional<syncer::ModelError>& error);
   void OnSyncInvalidationsInitialized();
-  void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
+  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<MetadataBatch> metadata_batch);
-  void OnCommit(const base::Optional<syncer::ModelError>& error);
+  void OnCommit(const absl::optional<syncer::ModelError>& error);
 
   // Performs reconciliation between the locally provided device info and the
   // stored device info data. If the sets of data differ, then we consider this
@@ -157,7 +157,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   LocalDeviceNameInfo local_device_name_info_;
 
-  base::Optional<SyncMode> sync_mode_;
+  absl::optional<SyncMode> sync_mode_;
 
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;

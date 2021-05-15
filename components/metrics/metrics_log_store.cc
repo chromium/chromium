@@ -51,7 +51,7 @@ void MetricsLogStore::LoadPersistedUnsentLogs() {
 void MetricsLogStore::StoreLog(
     const std::string& log_data,
     MetricsLog::LogType log_type,
-    base::Optional<base::HistogramBase::Count> samples_count) {
+    absl::optional<base::HistogramBase::Count> samples_count) {
   switch (log_type) {
     case MetricsLog::INITIAL_STABILITY_LOG:
       initial_log_queue_.StoreLog(log_data, samples_count);

@@ -109,7 +109,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   // A valid description of a main frame.
   auto desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-      /* world_name */ base::nullopt, mock_graph.frame->frame_token());
+      /* world_name */ absl::nullopt, mock_graph.frame->frame_token());
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -118,7 +118,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   // A valid description of a cross-process child frame.
   desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-      /* world_name */ base::nullopt, mock_graph.child_frame->frame_token());
+      /* world_name */ absl::nullopt, mock_graph.child_frame->frame_token());
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -127,7 +127,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   // A valid description of a same-process child frame.
   desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-      /* world_name */ base::nullopt, child_frame->frame_token());
+      /* world_name */ absl::nullopt, child_frame->frame_token());
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(true,
@@ -138,8 +138,8 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   // IframeAttributionData should accompany the V8ContextDescription.
   desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-      /* world_name */ base::nullopt, blink::LocalFrameToken());
-  EXPECT_EQ(base::nullopt,
+      /* world_name */ absl::nullopt, blink::LocalFrameToken());
+  EXPECT_EQ(absl::nullopt,
             ExpectIframeAttributionDataForV8ContextDescription(desc, graph()));
 
   // A main-world should not have a world name.
@@ -152,15 +152,15 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionMainWorld) {
   EXPECT_EQ(V8ContextDescriptionStatus::kMissingExecutionContextToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-                /* world_name */ base::nullopt,
-                /* execution_context_token */ base::nullopt)));
+                /* world_name */ absl::nullopt,
+                /* execution_context_token */ absl::nullopt)));
 
   // A main world must have an blink::LocalFrameToken.
   blink::ExecutionContextToken worker_token((blink::SharedWorkerToken()));
   EXPECT_EQ(V8ContextDescriptionStatus::kMissingLocalFrameToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kMain,
-                /* world_name */ base::nullopt, worker_token)));
+                /* world_name */ absl::nullopt, worker_token)));
 }
 
 TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionWorkerWorld) {
@@ -172,7 +172,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionWorkerWorld) {
   // A valid worker description.
   auto desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kWorkerOrWorklet,
-      /* world_name */ base::nullopt, worker_token);
+      /* world_name */ absl::nullopt, worker_token);
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -190,15 +190,15 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionWorkerWorld) {
       V8ContextDescriptionStatus::kMissingExecutionContextToken,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
           blink::V8ContextToken(), mojom::V8ContextWorldType::kWorkerOrWorklet,
-          /* world_name */ base::nullopt,
-          /* execution_context_token */ base::nullopt)));
+          /* world_name */ absl::nullopt,
+          /* execution_context_token */ absl::nullopt)));
 
   // A worker must have a valid worker token, not a LocalFrameToken.
   EXPECT_EQ(
       V8ContextDescriptionStatus::kUnexpectedLocalFrameToken,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
           blink::V8ContextToken(), mojom::V8ContextWorldType::kWorkerOrWorklet,
-          /* world_name */ base::nullopt, blink::LocalFrameToken())));
+          /* world_name */ absl::nullopt, blink::LocalFrameToken())));
 }
 
 TEST_F(V8ContextTrackerHelpersTest,
@@ -217,7 +217,7 @@ TEST_F(V8ContextTrackerHelpersTest,
       V8ContextDescriptionStatus::kMissingWorldName,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
           blink::V8ContextToken(), mojom::V8ContextWorldType::kExtension,
-          /* world_name */ base::nullopt, mock_graph.frame->frame_token())));
+          /* world_name */ absl::nullopt, mock_graph.frame->frame_token())));
 
   // An invalid extension name should fail.
   EXPECT_EQ(V8ContextDescriptionStatus::kInvalidExtensionWorldName,
@@ -230,7 +230,7 @@ TEST_F(V8ContextTrackerHelpersTest,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kExtension,
                 kValidExtensionWorldName,
-                /* execution_context_token */ base::nullopt)));
+                /* execution_context_token */ absl::nullopt)));
 
   // An extension can't inject into a worklet.
   EXPECT_EQ(V8ContextDescriptionStatus::kUnexpectedWorkletToken,
@@ -243,7 +243,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionIsolatedWorld) {
   // An isolated world may or may not have a |world_name|.
   auto desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kIsolated,
-      /* world_name */ base::nullopt, mock_graph.frame->frame_token());
+      /* world_name */ absl::nullopt, mock_graph.frame->frame_token());
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -261,14 +261,14 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionIsolatedWorld) {
   EXPECT_EQ(V8ContextDescriptionStatus::kMissingExecutionContextToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kIsolated,
-                /* world_name */ base::nullopt,
-                /* execution_context_token */ base::nullopt)));
+                /* world_name */ absl::nullopt,
+                /* execution_context_token */ absl::nullopt)));
 
   // An isolated world can not inject into a worklet.
   EXPECT_EQ(V8ContextDescriptionStatus::kUnexpectedWorkletToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kIsolated,
-                /* world_name */ base::nullopt, blink::AudioWorkletToken())));
+                /* world_name */ absl::nullopt, blink::AudioWorkletToken())));
 }
 
 TEST_F(V8ContextTrackerHelpersTest,
@@ -276,7 +276,7 @@ TEST_F(V8ContextTrackerHelpersTest,
   // A valid inspector world.
   auto desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kInspector,
-      /* world_name */ base::nullopt, mock_graph.frame->frame_token());
+      /* world_name */ absl::nullopt, mock_graph.frame->frame_token());
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -286,22 +286,22 @@ TEST_F(V8ContextTrackerHelpersTest,
   EXPECT_EQ(V8ContextDescriptionStatus::kMissingExecutionContextToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kInspector,
-                /* world_name */ base::nullopt,
-                /* execution_context_token */ base::nullopt)));
+                /* world_name */ absl::nullopt,
+                /* execution_context_token */ absl::nullopt)));
 
   // An inspector world can not inject into a worklet.
   EXPECT_EQ(V8ContextDescriptionStatus::kUnexpectedWorkletToken,
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kInspector,
-                /* world_name */ base::nullopt, blink::AudioWorkletToken())));
+                /* world_name */ absl::nullopt, blink::AudioWorkletToken())));
 }
 
 TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionRegExpWorld) {
   // A valid regexp world.
   auto desc = mojom::V8ContextDescription(
       blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
-      /* world_name */ base::nullopt,
-      /* execution_context_token */ base::nullopt);
+      /* world_name */ absl::nullopt,
+      /* execution_context_token */ absl::nullopt);
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
             ValidateV8ContextDescription(desc));
   EXPECT_EQ(false,
@@ -312,14 +312,14 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionRegExpWorld) {
             ValidateV8ContextDescription(mojom::V8ContextDescription(
                 blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
                 kWorldName,
-                /* execution_context_token */ base::nullopt)));
+                /* execution_context_token */ absl::nullopt)));
 
   // A regexp world must not have an |execution_context_token|.
   EXPECT_EQ(
       V8ContextDescriptionStatus::kUnexpectedExecutionContextToken,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
           blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
-          /* world_name */ base::nullopt, mock_graph.frame->frame_token())));
+          /* world_name */ absl::nullopt, mock_graph.frame->frame_token())));
 }
 
 }  // namespace v8_memory

@@ -26,7 +26,7 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(GetLocale, std::string());
   MOCK_CONST_METHOD0(GetCountryCode, std::string());
   MOCK_CONST_METHOD0(GetDeviceContext, DeviceContext());
-  MOCK_CONST_METHOD0(GetWindowSize, base::Optional<std::pair<int, int>>());
+  MOCK_CONST_METHOD0(GetWindowSize, absl::optional<std::pair<int, int>>());
   MOCK_CONST_METHOD0(GetScreenOrientation,
                      ClientContextProto::ScreenOrientation());
   MOCK_CONST_METHOD0(IsAccessibilityEnabled, bool());

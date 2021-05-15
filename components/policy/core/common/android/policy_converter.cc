@@ -103,7 +103,7 @@ base::Value PolicyConverter::ConvertJavaStringArrayToListValue(
 }
 
 // static
-base::Optional<base::Value> PolicyConverter::ConvertValueToSchema(
+absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
     base::Value value,
     const Schema& schema) {
   if (!schema.valid())
@@ -170,8 +170,8 @@ base::Optional<base::Value> PolicyConverter::ConvertValueToSchema(
         // Do not try to convert empty string to list/dictionaries, since most
         // likely the value was not simply not set by the UEM.
         if (str_value.empty())
-          return base::nullopt;
-        base::Optional<base::Value> decoded_value = base::JSONReader::Read(
+          return absl::nullopt;
+        absl::optional<base::Value> decoded_value = base::JSONReader::Read(
             str_value, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
         if (decoded_value.has_value())
           return decoded_value;
@@ -181,14 +181,14 @@ base::Optional<base::Value> PolicyConverter::ConvertValueToSchema(
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void PolicyConverter::SetPolicyValue(const std::string& key,
                                      base::Value value) {
   const Schema schema = policy_schema_->GetKnownProperty(key);
   const PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
-  base::Optional<base::Value> converted_value =
+  absl::optional<base::Value> converted_value =
       ConvertValueToSchema(std::move(value), schema);
   if (converted_value) {
     // Do not set list/dictionary policies that are sent as empty strings from

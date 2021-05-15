@@ -10,13 +10,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -157,9 +157,9 @@ class TestPersonalDataManager : public PersonalDataManager {
   int num_times_save_imported_profile_called_ = 0;
   int num_times_save_imported_credit_card_called_ = 0;
   int num_times_save_upi_id_called_ = 0;
-  base::Optional<bool> autofill_profile_enabled_;
-  base::Optional<bool> autofill_credit_card_enabled_;
-  base::Optional<bool> autofill_wallet_import_enabled_;
+  absl::optional<bool> autofill_profile_enabled_;
+  absl::optional<bool> autofill_credit_card_enabled_;
+  absl::optional<bool> autofill_wallet_import_enabled_;
   bool sync_feature_enabled_ = false;
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;

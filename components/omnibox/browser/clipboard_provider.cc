@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -33,6 +32,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
@@ -152,7 +152,7 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
 
   bool read_clipboard_content = false;
   bool read_clipboard_url;
-  base::Optional<AutocompleteMatch> optional_match =
+  absl::optional<AutocompleteMatch> optional_match =
       CreateURLMatch(input, &read_clipboard_url);
   read_clipboard_content |= read_clipboard_url;
   if (!optional_match) {
@@ -176,7 +176,7 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
 
   // On iOS 14, accessing the clipboard contents shows a notification to the
   // user. To avoid this, all the methods above will not check the contents and
-  // will return false/base::nullopt. Instead, check the existence of content
+  // will return false/absl::nullopt. Instead, check the existence of content
   // without accessing the actual content and create blank matches.
   done_ = false;
   // Image matched was kicked off asynchronously, so proceed when that ends.
@@ -337,19 +337,19 @@ void ClipboardProvider::OnReceiveClipboardContent(
   done_ = true;
 }
 
-base::Optional<AutocompleteMatch> ClipboardProvider::CreateURLMatch(
+absl::optional<AutocompleteMatch> ClipboardProvider::CreateURLMatch(
     const AutocompleteInput& input,
     bool* read_clipboard_content) {
   *read_clipboard_content = false;
   if (base::FeatureList::IsEnabled(
           omnibox::kClipboardSuggestionContentHidden)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   // The clipboard does not contain a URL worth suggesting.
-  base::Optional<GURL> optional_gurl =
+  absl::optional<GURL> optional_gurl =
       clipboard_content_->GetRecentURLFromClipboard();
   if (!optional_gurl)
-    return base::nullopt;
+    return absl::nullopt;
 
   *read_clipboard_content = true;
   GURL url = std::move(optional_gurl).value();
@@ -357,36 +357,36 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateURLMatch(
   // The URL on the page is the same as the URL in the clipboard.  Don't
   // bother suggesting it.
   if (url == input.current_url())
-    return base::nullopt;
+    return absl::nullopt;
 
   return NewClipboardURLMatch(url);
 }
 
-base::Optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
+absl::optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
     const AutocompleteInput& input,
     bool* read_clipboard_content) {
   *read_clipboard_content = false;
   if (base::FeatureList::IsEnabled(
           omnibox::kClipboardSuggestionContentHidden)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::u16string> optional_text =
+  absl::optional<std::u16string> optional_text =
       clipboard_content_->GetRecentTextFromClipboard();
   if (!optional_text)
-    return base::nullopt;
+    return absl::nullopt;
 
   *read_clipboard_content = true;
   std::u16string text = std::move(optional_text).value();
 
   // The clipboard can contain the empty string, which shouldn't be suggested.
   if (text.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // The text in the clipboard is a url. We don't want to prompt the user to
   // search for a url.
   if (GURL(text).is_valid())
-    return base::nullopt;
+    return absl::nullopt;
 
   return NewClipboardTextMatch(text);
 }
@@ -422,7 +422,7 @@ bool ClipboardProvider::CreateImageMatch(const AutocompleteInput& input) {
 void ClipboardProvider::CreateImageMatchCallback(
     const AutocompleteInput& input,
     const base::TimeDelta clipboard_contents_age,
-    base::Optional<gfx::Image> optional_image) {
+    absl::optional<gfx::Image> optional_image) {
   NewClipboardImageMatch(
       optional_image, base::BindOnce(&ClipboardProvider::AddImageMatchCallback,
                                      callback_weak_ptr_factory_.GetWeakPtr(),
@@ -432,7 +432,7 @@ void ClipboardProvider::CreateImageMatchCallback(
 void ClipboardProvider::AddImageMatchCallback(
     const AutocompleteInput& input,
     const base::TimeDelta clipboard_contents_age,
-    base::Optional<AutocompleteMatch> match) {
+    absl::optional<AutocompleteMatch> match) {
   if (!match) {
     return;
   }
@@ -475,12 +475,12 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
   return match;
 }
 
-base::Optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
+absl::optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
     std::u16string text) {
   AutocompleteMatch match = NewBlankTextMatch();
 
   if (!UpdateClipboardTextContent(text, &match))
-    return base::nullopt;
+    return absl::nullopt;
 
   return match;
 }
@@ -505,13 +505,13 @@ AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
 }
 
 void ClipboardProvider::NewClipboardImageMatch(
-    base::Optional<gfx::Image> optional_image,
+    absl::optional<gfx::Image> optional_image,
     ClipboardImageMatchCallback callback) {
   // ImageSkia::ToImageSkia should only be called if the gfx::Image is
   // non-empty. It is unclear when the clipboard returns a non-optional but
   // empty image. See crbug.com/1136759 for more details.
   if (!optional_image || optional_image.value().IsEmpty()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   gfx::ImageSkia image_skia = *optional_image.value().ToImageSkia();
@@ -585,7 +585,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
 void ClipboardProvider::OnReceiveURLForMatchWithContent(
     ClipboardMatchCallback callback,
     AutocompleteMatch* match,
-    base::Optional<GURL> optional_gurl) {
+    absl::optional<GURL> optional_gurl) {
   if (!optional_gurl)
     return;
 
@@ -597,7 +597,7 @@ void ClipboardProvider::OnReceiveURLForMatchWithContent(
 void ClipboardProvider::OnReceiveTextForMatchWithContent(
     ClipboardMatchCallback callback,
     AutocompleteMatch* match,
-    base::Optional<std::u16string> optional_text) {
+    absl::optional<std::u16string> optional_text) {
   if (!optional_text)
     return;
 
@@ -611,7 +611,7 @@ void ClipboardProvider::OnReceiveTextForMatchWithContent(
 void ClipboardProvider::OnReceiveImageForMatchWithContent(
     ClipboardMatchCallback callback,
     AutocompleteMatch* match,
-    base::Optional<gfx::Image> optional_image) {
+    absl::optional<gfx::Image> optional_image) {
   if (!optional_image)
     return;
 
@@ -626,7 +626,7 @@ void ClipboardProvider::OnReceiveImageForMatchWithContent(
 void ClipboardProvider::OnReceiveImageMatchForMatchWithContent(
     ClipboardMatchCallback callback,
     AutocompleteMatch* match,
-    base::Optional<AutocompleteMatch> optional_match) {
+    absl::optional<AutocompleteMatch> optional_match) {
   DCHECK(match);
   if (!optional_match)
     return;

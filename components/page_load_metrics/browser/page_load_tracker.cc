@@ -853,12 +853,12 @@ base::TimeTicks PageLoadTracker::GetNavigationStart() const {
   return navigation_start_;
 }
 
-const base::Optional<base::TimeDelta>& PageLoadTracker::GetFirstBackgroundTime()
+const absl::optional<base::TimeDelta>& PageLoadTracker::GetFirstBackgroundTime()
     const {
   return first_background_time_;
 }
 
-const base::Optional<base::TimeDelta>& PageLoadTracker::GetFirstForegroundTime()
+const absl::optional<base::TimeDelta>& PageLoadTracker::GetFirstForegroundTime()
     const {
   return first_foreground_time_;
 }
@@ -896,8 +896,8 @@ const UserInitiatedInfo& PageLoadTracker::GetPageEndUserInitiatedInfo() const {
   return page_end_user_initiated_info_;
 }
 
-base::Optional<base::TimeDelta> PageLoadTracker::GetPageEndTime() const {
-  base::Optional<base::TimeDelta> page_end_time;
+absl::optional<base::TimeDelta> PageLoadTracker::GetPageEndTime() const {
+  absl::optional<base::TimeDelta> page_end_time;
 
   if (page_end_reason_ != END_NONE) {
     DCHECK_GE(page_end_time_, navigation_start_);

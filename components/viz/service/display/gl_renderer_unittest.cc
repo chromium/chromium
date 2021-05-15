@@ -868,7 +868,7 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionHigh) {
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
                        gfx::Rect(1023, 1023), gfx::MaskFilterInfo(),
-                       base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(1023, 1023),
                        gfx::Rect(1023, 1023), needs_blending, resource_id,
                        premultiplied_alpha, uv_top_left, uv_bottom_right,
@@ -930,7 +930,7 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionMedium) {
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
                        gfx::Rect(1025, 1025), gfx::MaskFilterInfo(),
-                       base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(1025, 1025),
                        gfx::Rect(1025, 1025), needs_blending, resource_id,
                        premultiplied_alpha, uv_top_left, uv_bottom_right,
@@ -987,7 +987,7 @@ class GLRendererTextureDrawQuadHDRTest
     SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
                          gfx::Rect(kTextureSize), gfx::MaskFilterInfo(),
-                         base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                         absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
     overlay_quad->SetNew(shared_state, gfx::Rect(kTextureSize),
                          gfx::Rect(kTextureSize), needs_blending, resource_id,
                          premultiplied_alpha, uv_top_left, uv_bottom_right,
@@ -1495,7 +1495,7 @@ TEST_F(GLRendererTest, DrawYUVVideoDrawQuadWithVisibleRect) {
 
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(), rect,
-                       gfx::MaskFilterInfo(), base::nullopt, false, 1,
+                       gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                        SkBlendMode::kSrcOver, 0);
 
   YUVVideoDrawQuad* quad =
@@ -2968,7 +2968,7 @@ TEST_F(GLRendererTest, OverlaySyncTokensAreProcessed) {
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
                        gfx::Rect(viewport_size), gfx::MaskFilterInfo(),
-                       base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(viewport_size),
                        gfx::Rect(viewport_size), needs_blending,
                        parent_resource_id, premultiplied_alpha, uv_top_left,
@@ -3743,7 +3743,7 @@ TEST_F(GLRendererTest, DCLayerOverlaySwitch) {
       SharedQuadState* shared_state =
           root_pass->CreateAndAppendSharedQuadState();
       shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                           base::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                           absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
       YUVVideoDrawQuad* quad =
           root_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
       quad->SetNew(shared_state, rect, rect, needs_blending, tex_coord_rect,
@@ -5170,7 +5170,7 @@ TEST_F(GLRendererWithGpuFenceTest,
       root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                       gfx::Rect(50, 50), gfx::MaskFilterInfo(), base::nullopt,
+                       gfx::Rect(50, 50), gfx::MaskFilterInfo(), absl::nullopt,
                        false, 1, SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(
       shared_state, gfx::Rect(viewport_size), gfx::Rect(viewport_size),

@@ -55,7 +55,7 @@ void FullCardRequest::GetFullCard(const CreditCard& card,
                                   base::WeakPtr<UIDelegate> ui_delegate) {
   DCHECK(ui_delegate);
   GetFullCard(card, reason, result_delegate, ui_delegate,
-              /*fido_assertion_info=*/base::nullopt);
+              /*fido_assertion_info=*/absl::nullopt);
 }
 
 void FullCardRequest::GetFullCardViaFIDO(
@@ -73,7 +73,7 @@ void FullCardRequest::GetFullCard(
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
-    base::Optional<base::Value> fido_assertion_info) {
+    absl::optional<base::Value> fido_assertion_info) {
   // Retrieval of card information should happen via CVC auth or FIDO, but not
   // both. Use |ui_delegate|'s existence as evidence of doing CVC auth and
   // |fido_assertion_info| as evidence of doing FIDO auth.

@@ -109,7 +109,7 @@ class DownloadUIAdapter : public OfflineContentProvider,
                   const std::string& name,
                   RenameCallback callback) override;
   void ChangeSchedule(const ContentId& id,
-                      base::Optional<OfflineItemSchedule> schedule) override;
+                      absl::optional<OfflineItemSchedule> schedule) override;
 
   // OfflinePageModel::Observer
   void OfflinePageModelLoaded(OfflinePageModel* model) override;

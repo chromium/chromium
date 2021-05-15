@@ -118,8 +118,8 @@ class PermissionRequestManager
   bool ShouldCurrentRequestUseQuietUI() const;
 
   // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a reason
-  // as to why the quiet UI needs to be used. Returns `base::nullopt` otherwise.
-  base::Optional<QuietUiReason> ReasonForUsingQuietUi() const;
+  // as to why the quiet UI needs to be used. Returns `absl::nullopt` otherwise.
+  absl::optional<QuietUiReason> ReasonForUsingQuietUi() const;
 
   bool IsRequestInProgress() const;
 
@@ -184,12 +184,12 @@ class PermissionRequestManager
 
   PermissionPrompt* view_for_testing() { return view_.get(); }
 
-  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() {
     return prediction_grant_likelihood_;
   }
 
-  base::Optional<permissions::PermissionPromptDisposition>
+  absl::optional<permissions::PermissionPromptDisposition>
   current_request_prompt_disposition_for_testing() {
     return current_request_prompt_disposition_;
   }
@@ -275,7 +275,7 @@ class PermissionRequestManager
   // The disposition for the currently active permission prompt, if any.
   // Recorded separately because the `view_` might not be available at prompt
   // resolution in order to determine the disposition.
-  base::Optional<permissions::PermissionPromptDisposition>
+  absl::optional<permissions::PermissionPromptDisposition>
       current_request_prompt_disposition_;
 
   // We only show new prompts when |tab_is_hidden_| is false.
@@ -325,7 +325,7 @@ class PermissionRequestManager
   // Holds the decisions returned by selectors. Needed in case a lower priority
   // selector returns a decision first and we need to wait for the decisions of
   // higher priority selectors before making use of it.
-  std::vector<base::Optional<NotificationPermissionUiSelector::Decision>>
+  std::vector<absl::optional<NotificationPermissionUiSelector::Decision>>
       selector_decisions_;
 
   // Whether the view for the current |requests_| has been shown to the user at
@@ -339,11 +339,11 @@ class PermissionRequestManager
   // Whether to use the normal or quiet UI to display the current permission
   // |requests_|, and whether to show warnings. This will be nullopt if we are
   // still waiting on the result from |notification_permission_ui_selectors_|.
-  base::Optional<UiDecision> current_request_ui_to_use_;
+  absl::optional<UiDecision> current_request_ui_to_use_;
 
   // The likelihood value returned by the Web Permission Predictions Service,
   // to be recoreded in UKM.
-  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
 
   // True when the prompt is being temporary destroyed to be recreated for the

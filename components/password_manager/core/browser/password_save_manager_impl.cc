@@ -163,7 +163,7 @@ void PasswordSaveManagerImpl::CreatePendingCredentials(
   std::tie(similar_saved_form, pending_credentials_state_) =
       FindSimilarSavedFormAndComputeState(parsed_submitted_form);
 
-  base::Optional<std::u16string> generated_password;
+  absl::optional<std::u16string> generated_password;
   if (HasGeneratedPassword())
     generated_password = generation_manager_->generated_password();
 
@@ -374,7 +374,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     const PasswordForm& parsed_submitted_form,
     const FormData* observed_form,
     const FormData& submitted_form,
-    const base::Optional<std::u16string>& generated_password,
+    const absl::optional<std::u16string>& generated_password,
     bool is_http_auth,
     bool is_credential_api_save,
     const PasswordForm* similar_saved_form) {

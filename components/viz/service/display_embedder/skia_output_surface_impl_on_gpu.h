@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -32,6 +31,7 @@
 #include "gpu/ipc/service/display_context.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -132,7 +132,7 @@ class SkiaOutputSurfaceImplOnGpu
                                std::vector<ImageContextImpl*> image_contexts,
                                std::vector<gpu::SyncToken> sync_tokens,
                                base::OnceClosure on_finished,
-                               base::Optional<gfx::Rect> draw_rectangle);
+                               absl::optional<gfx::Rect> draw_rectangle);
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
@@ -249,8 +249,8 @@ class SkiaOutputSurfaceImplOnGpu
       const gpu::SyncToken& sync_token,
       bool is_lost);
 
-  void SwapBuffersInternal(base::Optional<OutputSurfaceFrame> frame);
-  void PostSubmit(base::Optional<OutputSurfaceFrame> frame);
+  void SwapBuffersInternal(absl::optional<OutputSurfaceFrame> frame);
+  void PostSubmit(absl::optional<OutputSurfaceFrame> frame);
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
@@ -294,7 +294,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   // This must remain the first member variable to ensure that other member
   // dtors are called first.
-  base::Optional<ReleaseCurrent> release_current_last_;
+  absl::optional<ReleaseCurrent> release_current_last_;
 
   SkiaOutputSurfaceDependency* const dependency_;
   gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps_;
@@ -350,7 +350,7 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<SkiaOutputDevice> output_device_;
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;
 
-  base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
 
   base::flat_map<AggregatedRenderPassId, OffscreenSurface> offscreen_surfaces_;

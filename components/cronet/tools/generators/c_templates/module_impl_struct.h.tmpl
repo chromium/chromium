@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 {%- for struct in structs %}
 {%- set struct_name = struct|get_name_for_kind %}
@@ -42,7 +42,7 @@ struct {{struct_name}} {
 {%-  if kind|is_array_kind %}
 std::vector<{{kind.kind|cpp_wrapper_type}}> {{packed_field.field.name}};
 {%-  elif kind|is_struct_kind %}
-base::Optional<{{kind|cpp_wrapper_type}}> {{packed_field.field.name}};
+absl::optional<{{kind|cpp_wrapper_type}}> {{packed_field.field.name}};
 {%-  else %}
 {{packed_field.field.kind|cpp_wrapper_type}} {{packed_field.field.name}}
 {%-    if packed_field.field.default %} = {{packed_field.field|default_value}} {%- endif %}

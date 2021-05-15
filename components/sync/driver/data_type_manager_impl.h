@@ -12,12 +12,12 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

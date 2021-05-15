@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +39,7 @@ class VectorTester {
 
     const FindType& sought_item() const { return sought_item_; }
 
-    const base::Optional<FindType>& found_result() const {
+    const absl::optional<FindType>& found_result() const {
       return found_result_;
     }
 
@@ -52,7 +52,7 @@ class VectorTester {
     const FindType sought_item_;
     std::unique_ptr<base::RunLoop> run_loop_;
 
-    base::Optional<FindType> found_result_;
+    absl::optional<FindType> found_result_;
   };
 
   template <typename ExecuteType>
@@ -107,8 +107,8 @@ class VectorTester {
   }
 
   // Resets |insert_success| before returning its value.
-  base::Optional<bool> GetPushBackSuccess() {
-    base::Optional<bool> return_value;
+  absl::optional<bool> GetPushBackSuccess() {
+    absl::optional<bool> return_value;
     return_value.swap(insert_success_);
     return return_value;
   }
@@ -129,8 +129,8 @@ class VectorTester {
                                   base::Unretained(this)));
   }
 
-  base::Optional<uint64_t> GetEraseValue() {
-    base::Optional<uint64_t> return_value;
+  absl::optional<uint64_t> GetEraseValue() {
+    absl::optional<uint64_t> return_value;
     return_value.swap(number_deleted_);
     return return_value;
   }
@@ -187,8 +187,8 @@ class VectorTester {
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  base::Optional<bool> insert_success_;
-  base::Optional<uint64_t> number_deleted_;
+  absl::optional<bool> insert_success_;
+  absl::optional<uint64_t> number_deleted_;
 };
 
 // Ensures that the vector accept values, and will erase inserted values.

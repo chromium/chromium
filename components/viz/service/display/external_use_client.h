@@ -11,11 +11,11 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -37,7 +37,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     ImageContext(const gpu::MailboxHolder& mailbox_holder,
                  const gfx::Size& size,
                  ResourceFormat resource_format,
-                 const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                 const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space);
     virtual ~ImageContext();
     virtual void OnContextLost();
@@ -66,7 +66,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       origin_ = origin;
     }
 
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
 
     bool has_image() { return !!image_; }
     sk_sp<SkImage> image() { return image_; }
@@ -86,7 +86,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     // Sampler conversion information which is used in vulkan context for
     // android video.
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
@@ -102,7 +102,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       const gfx::Size& size,
       ResourceFormat format,
       bool maybe_concurrent_reads,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(

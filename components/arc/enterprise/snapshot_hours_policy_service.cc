@@ -131,7 +131,7 @@ void SnapshotHoursPolicyService::UpdateTimer() {
   namespace wtu = ::policy::weekly_time_utils;
   const base::Time now = base::Time::Now();
   const bool in_interval = wtu::Contains(now, intervals_);
-  const base::Optional<base::Time> update_time =
+  const absl::optional<base::Time> update_time =
       wtu::GetNextEventTime(now, intervals_);
 
   SetEndTime(in_interval ? update_time.value() : base::Time{});

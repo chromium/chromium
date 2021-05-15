@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -33,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -649,7 +649,7 @@ void AppBannerManager::DidActivatePortal(
 
 void AppBannerManager::DidUpdateWebManifestURL(
     content::RenderFrameHost* target_frame,
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   GURL url = validated_url_;
   switch (state_) {
     case State::INACTIVE:
@@ -879,7 +879,7 @@ void AppBannerManager::ShowBanner() {
 
   // If this is the first time that we are showing the banner for this site,
   // record how long it's been since the first visit.
-  base::Optional<base::Time> did_show_time =
+  absl::optional<base::Time> did_show_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents(), validated_url_, GetAppIdentifier(),
           AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW);

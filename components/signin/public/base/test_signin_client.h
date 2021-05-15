@@ -21,8 +21,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/optional.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 class PrefService;
@@ -96,7 +96,7 @@ class TestSigninClient : public SigninClient {
   void SetDiceMigrationCompleted() override;
   bool IsNonEnterpriseUser(const std::string& email) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -119,7 +119,7 @@ class TestSigninClient : public SigninClient {
   std::vector<base::OnceClosure> delayed_network_calls_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Optional<account_manager::Account> initial_primary_account_;
+  absl::optional<account_manager::Account> initial_primary_account_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(TestSigninClient);

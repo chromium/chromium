@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -52,7 +52,7 @@ class Abs32GapFinder {
   ~Abs32GapFinder();
 
   // Returns the next available gap, or nullopt if exhausted.
-  base::Optional<ConstBufferView> GetNext();
+  absl::optional<ConstBufferView> GetNext();
 
  private:
   const ConstBufferView::const_iterator base_;
@@ -134,10 +134,10 @@ class Rel32FinderIntel : public Rel32Finder {
   using Rel32Finder::Rel32Finder;
 
   // Returns the next available Result, or nullopt if exhausted.
-  base::Optional<Result> GetNext() {
+  absl::optional<Result> GetNext() {
     if (FindNext())
       return rel32_;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  protected:

@@ -42,8 +42,8 @@ class AccountsMutatorImpl : public AccountsMutator {
       signin_metrics::SourceForRefreshTokenOperation source) override;
   void UpdateAccountInfo(
       const CoreAccountId& account_id,
-      base::Optional<bool> is_child_account,
-      base::Optional<bool> is_under_advanced_protection) override;
+      absl::optional<bool> is_child_account,
+      absl::optional<bool> is_under_advanced_protection) override;
   void RemoveAccount(
       const CoreAccountId& account_id,
       signin_metrics::SourceForRefreshTokenOperation source) override;

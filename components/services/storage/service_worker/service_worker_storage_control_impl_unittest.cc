@@ -42,7 +42,7 @@ struct FindRegistrationResult {
 struct ReadResponseHeadResult {
   int status;
   network::mojom::URLResponseHeadPtr response_head;
-  base::Optional<mojo_base::BigBuffer> metadata;
+  absl::optional<mojo_base::BigBuffer> metadata;
 };
 
 struct ReadDataResult {
@@ -91,7 +91,7 @@ ReadResponseHeadResult ReadResponseHead(
   base::RunLoop loop;
   reader->ReadResponseHead(base::BindLambdaForTesting(
       [&](int status, network::mojom::URLResponseHeadPtr response_head,
-          base::Optional<mojo_base::BigBuffer> metadata) {
+          absl::optional<mojo_base::BigBuffer> metadata) {
         result.status = status;
         result.response_head = std::move(response_head);
         result.metadata = std::move(metadata);
@@ -235,7 +235,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
 
   FindRegistrationResult FindRegistrationForId(
       int64_t registration_id,
-      const base::Optional<StorageKey>& key) {
+      const absl::optional<StorageKey>& key) {
     FindRegistrationResult return_value;
     base::RunLoop loop;
     storage()->FindRegistrationForId(
@@ -707,7 +707,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, FindRegistration_NoRegistration) {
 
   {
     FindRegistrationResult result =
-        FindRegistrationForId(kRegistrationId, base::nullopt);
+        FindRegistrationForId(kRegistrationId, absl::nullopt);
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
   }
 }
@@ -767,7 +767,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
     result = FindRegistrationForId(kRegistrationId, kKey);
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
-    result = FindRegistrationForId(kRegistrationId, base::nullopt);
+    result = FindRegistrationForId(kRegistrationId, absl::nullopt);
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
   }
 
@@ -1027,7 +1027,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
     EXPECT_TRUE(result.response_head->ssl_info->is_valid());
     EXPECT_EQ(result.response_head->ssl_info->cert->serial_number(),
               ssl_info.cert->serial_number());
-    EXPECT_EQ(result.metadata, base::nullopt);
+    EXPECT_EQ(result.metadata, absl::nullopt);
 
     ReadDataResult data_result = ReadResponseData(reader.get(), data_size);
     ASSERT_EQ(data_result.status, data_size);

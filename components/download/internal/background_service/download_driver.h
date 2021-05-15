@@ -8,10 +8,10 @@
 #include <set>
 #include <string>
 
-#include "base/optional.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/internal/background_service/memory_tracker.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -109,7 +109,7 @@ class DownloadDriver : public MemoryTracker {
   virtual void Resume(const std::string& guid) = 0;
 
   // Finds a download record from low level download library.
-  virtual base::Optional<DriverEntry> Find(const std::string& guid) = 0;
+  virtual absl::optional<DriverEntry> Find(const std::string& guid) = 0;
 
   // Called to query the current set of active downloads.  This doesn't
   // necessarily mean downloads started by the service.

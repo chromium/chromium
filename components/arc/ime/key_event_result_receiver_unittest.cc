@@ -38,7 +38,7 @@ class KeyEventResultReceiverTest : public testing::Test {
 };
 
 TEST_F(KeyEventResultReceiverTest, ExpireCallback) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -52,7 +52,7 @@ TEST_F(KeyEventResultReceiverTest, ExpireCallback) {
 }
 
 TEST_F(KeyEventResultReceiverTest, EventStoppedPropagation) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -68,7 +68,7 @@ TEST_F(KeyEventResultReceiverTest, EventStoppedPropagation) {
 }
 
 TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -85,7 +85,7 @@ TEST_F(KeyEventResultReceiverTest, EventConsumedByIME) {
 }
 
 TEST_F(KeyEventResultReceiverTest, EventNotCharacter) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -103,7 +103,7 @@ TEST_F(KeyEventResultReceiverTest, EventNotCharacter) {
 }
 
 TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -135,7 +135,7 @@ TEST_F(KeyEventResultReceiverTest, UnmodifiedEnterAndBackspace) {
 }
 
 TEST_F(KeyEventResultReceiverTest, ControlCharacters) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -151,7 +151,7 @@ TEST_F(KeyEventResultReceiverTest, ControlCharacters) {
 }
 
 TEST_F(KeyEventResultReceiverTest, EventWithSystemModifier) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 
@@ -167,7 +167,7 @@ TEST_F(KeyEventResultReceiverTest, EventWithSystemModifier) {
 }
 
 TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   auto callback =
       base::BindLambdaForTesting([&result](bool res) { result = res; });
 

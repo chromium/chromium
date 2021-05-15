@@ -122,7 +122,7 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
 
   BlockedRequest* popup = it->second.get();
 
-  base::Optional<WindowOpenDisposition> updated_disposition;
+  absl::optional<WindowOpenDisposition> updated_disposition;
   if (disposition != WindowOpenDisposition::CURRENT_TAB)
     updated_disposition = disposition;
 

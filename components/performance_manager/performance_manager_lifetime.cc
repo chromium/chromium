@@ -31,8 +31,8 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
   return additional_graph_created_callback.get();
 }
 
-base::Optional<Decorators>* GetDecoratorsOverride() {
-  static base::NoDestructor<base::Optional<Decorators>> decorators_override;
+absl::optional<Decorators>* GetDecoratorsOverride() {
+  static base::NoDestructor<absl::optional<Decorators>> decorators_override;
   return decorators_override.get();
 }
 
@@ -92,7 +92,7 @@ void PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
 
 // static
 void PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
-    base::Optional<Decorators> decorators_override) {
+    absl::optional<Decorators> decorators_override) {
   *GetDecoratorsOverride() = decorators_override;
 }
 

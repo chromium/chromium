@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -50,6 +49,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -801,7 +801,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   bool should_draw = have_copy_requests || (have_damage && size_matches);
   client_->DisplayWillDrawAndSwap(should_draw, &frame.render_pass_list);
 
-  base::Optional<base::ElapsedTimer> draw_timer;
+  absl::optional<base::ElapsedTimer> draw_timer;
   if (should_draw) {
     TRACE_EVENT_ASYNC_STEP_INTO0("viz,benchmark",
                                  "Graphics.Pipeline.DrawAndSwap",

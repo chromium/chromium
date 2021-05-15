@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -83,7 +83,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void GetAccessToken(const GURL& url,
                       RTLookupRequestCallback request_callback,
                       RTLookupResponseCallback response_callback) override;
-  base::Optional<std::string> GetDMTokenString() const override;
+  absl::optional<std::string> GetDMTokenString() const override;
   std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;

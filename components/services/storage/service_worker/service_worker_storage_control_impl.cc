@@ -150,7 +150,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForId(
     int64_t registration_id,
-    const base::Optional<StorageKey>& key,
+    const absl::optional<StorageKey>& key,
     FindRegistrationForClientUrlCallback callback) {
   if (key.has_value()) {
     storage_->FindRegistrationForId(

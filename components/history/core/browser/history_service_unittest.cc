@@ -707,7 +707,7 @@ DomainDiversityResults GetDomainDiversityHelper(
 
 // Test one domain visit metric. A negative value indicates that an invalid
 // metric is expected.
-void TestDomainMetric(const base::Optional<DomainMetricCountType>& metric,
+void TestDomainMetric(const absl::optional<DomainMetricCountType>& metric,
                       int expected) {
   if (expected >= 0) {
     ASSERT_TRUE(metric.has_value());

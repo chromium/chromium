@@ -203,7 +203,7 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
 JobConfigurationBase::JobConfigurationBase(
     JobType type,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),

@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -21,6 +20,7 @@
 #include "components/optimization_guide/core/memory_hint.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -474,7 +474,7 @@ class OptimizationGuideStore {
   // The current component version of the store. This should only be updated
   // via SetComponentVersion(), which ensures that both |component_version_|
   // and |component_hint_key_prefix_| are updated at the same time.
-  base::Optional<base::Version> component_version_;
+  absl::optional<base::Version> component_version_;
 
   // The current entry key prefix shared by all component hints containd within
   // the store. While this could be generated on the fly using

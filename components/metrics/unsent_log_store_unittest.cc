@@ -150,7 +150,7 @@ TEST_F(UnsentLogStoreTest, EmptyLogList) {
 TEST_F(UnsentLogStoreTest, SingleElementLogList) {
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
 
-  unsent_log_store.StoreLog("Hello world!", base::nullopt);
+  unsent_log_store.StoreLog("Hello world!", absl::nullopt);
   unsent_log_store.TrimAndPersistUnsentLogs();
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
@@ -177,7 +177,7 @@ TEST_F(UnsentLogStoreTest, LongButTinyLogList) {
 
   size_t log_count = kLogCountLimit * 5;
   for (size_t i = 0; i < log_count; ++i)
-    unsent_log_store.StoreLog("x", base::nullopt);
+    unsent_log_store.StoreLog("x", absl::nullopt);
 
   EXPECT_EQ(log_count, unsent_log_store.size());
   unsent_log_store.TrimAndPersistUnsentLogs();
@@ -210,13 +210,13 @@ TEST_F(UnsentLogStoreTest, LongButSmallLogList) {
       (log_count - 4) * Compress(blank_log).length();
   TestUnsentLogStore unsent_log_store(&prefs_, min_log_bytes);
 
-  unsent_log_store.StoreLog("one", base::nullopt);
-  unsent_log_store.StoreLog("two", base::nullopt);
-  unsent_log_store.StoreLog(first_kept, base::nullopt);
+  unsent_log_store.StoreLog("one", absl::nullopt);
+  unsent_log_store.StoreLog("two", absl::nullopt);
+  unsent_log_store.StoreLog(first_kept, absl::nullopt);
   for (size_t i = unsent_log_store.size(); i < log_count - 1; ++i) {
-    unsent_log_store.StoreLog(blank_log, base::nullopt);
+    unsent_log_store.StoreLog(blank_log, absl::nullopt);
   }
-  unsent_log_store.StoreLog(last_kept, base::nullopt);
+  unsent_log_store.StoreLog(last_kept, absl::nullopt);
 
   size_t original_size = unsent_log_store.size();
   unsent_log_store.TrimAndPersistUnsentLogs();
@@ -245,7 +245,7 @@ TEST_F(UnsentLogStoreTest, ShortButLargeLogList) {
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
   for (size_t i = 0; i < log_count; ++i) {
-    unsent_log_store.StoreLog(log_data, base::nullopt);
+    unsent_log_store.StoreLog(log_data, absl::nullopt);
   }
   unsent_log_store.TrimAndPersistUnsentLogs();
 
@@ -272,9 +272,9 @@ TEST_F(UnsentLogStoreTest, LongAndLargeLogList) {
   std::string log_data = GenerateLogWithMinCompressedSize(log_size);
   for (size_t i = 0; i < log_count; ++i) {
     if (i == log_count - kLogCountLimit)
-      unsent_log_store.StoreLog(target_log, base::nullopt);
+      unsent_log_store.StoreLog(target_log, absl::nullopt);
     else
-      unsent_log_store.StoreLog(log_data, base::nullopt);
+      unsent_log_store.StoreLog(log_data, absl::nullopt);
   }
 
   unsent_log_store.TrimAndPersistUnsentLogs();
@@ -297,13 +297,13 @@ TEST_F(UnsentLogStoreTest, Staging) {
   std::string tmp;
 
   EXPECT_FALSE(unsent_log_store.has_staged_log());
-  unsent_log_store.StoreLog("one", base::nullopt);
+  unsent_log_store.StoreLog("one", absl::nullopt);
   EXPECT_FALSE(unsent_log_store.has_staged_log());
-  unsent_log_store.StoreLog("two", base::nullopt);
+  unsent_log_store.StoreLog("two", absl::nullopt);
   unsent_log_store.StageNextLog();
   EXPECT_TRUE(unsent_log_store.has_staged_log());
   EXPECT_EQ(unsent_log_store.staged_log(), Compress("two"));
-  unsent_log_store.StoreLog("three", base::nullopt);
+  unsent_log_store.StoreLog("three", absl::nullopt);
   EXPECT_EQ(unsent_log_store.staged_log(), Compress("two"));
   EXPECT_EQ(unsent_log_store.size(), 3U);
   unsent_log_store.DiscardStagedLog();
@@ -324,9 +324,9 @@ TEST_F(UnsentLogStoreTest, DiscardOrder) {
   // a log is staged.
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
 
-  unsent_log_store.StoreLog("one", base::nullopt);
+  unsent_log_store.StoreLog("one", absl::nullopt);
   unsent_log_store.StageNextLog();
-  unsent_log_store.StoreLog("two", base::nullopt);
+  unsent_log_store.StoreLog("two", absl::nullopt);
   unsent_log_store.DiscardStagedLog();
   unsent_log_store.TrimAndPersistUnsentLogs();
 
@@ -342,7 +342,7 @@ TEST_F(UnsentLogStoreTest, Hashes) {
   const std::string foo_hash = base::SHA1HashString(kFooText);
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  unsent_log_store.StoreLog(kFooText, base::nullopt);
+  unsent_log_store.StoreLog(kFooText, absl::nullopt);
   unsent_log_store.StageNextLog();
 
   EXPECT_EQ(Compress(kFooText), unsent_log_store.staged_log());
@@ -353,7 +353,7 @@ TEST_F(UnsentLogStoreTest, Signatures) {
   const char kFooText[] = "foo";
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  unsent_log_store.StoreLog(kFooText, base::nullopt);
+  unsent_log_store.StoreLog(kFooText, absl::nullopt);
   unsent_log_store.StageNextLog();
 
   EXPECT_EQ(Compress(kFooText), unsent_log_store.staged_log());
@@ -379,7 +379,7 @@ TEST_F(UnsentLogStoreTest, Signatures) {
   TestUnsentLogStore unsent_log_store_different_key(&prefs_, kLogByteLimit,
     key);
 
-  unsent_log_store_different_key.StoreLog(kFooText, base::nullopt);
+  unsent_log_store_different_key.StoreLog(kFooText, absl::nullopt);
   unsent_log_store_different_key.StageNextLog();
 
   EXPECT_EQ(Compress(kFooText), unsent_log_store_different_key.staged_log());
@@ -420,14 +420,14 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
 
   unsent_log_store.StoreLog(
       oversize_log,
-      base::make_optional<base::HistogramBase::Count>(kOversizeLogSampleCount));
-  unsent_log_store.StoreLog(kNoSampleLog, base::nullopt);
+      absl::make_optional<base::HistogramBase::Count>(kOversizeLogSampleCount));
+  unsent_log_store.StoreLog(kNoSampleLog, absl::nullopt);
   unsent_log_store.StoreLog(
-      kFooText, base::Optional<base::HistogramBase::Count>(kFooSampleCount));
+      kFooText, absl::optional<base::HistogramBase::Count>(kFooSampleCount));
   // The foobar_log will be staged first.
   unsent_log_store.StoreLog(
       foobar_log,
-      base::Optional<base::HistogramBase::Count>(kFooBarSampleCount));
+      absl::optional<base::HistogramBase::Count>(kFooBarSampleCount));
 
   unsent_log_store.TrimAndPersistUnsentLogs();
 

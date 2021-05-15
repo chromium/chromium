@@ -14,7 +14,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -26,6 +25,7 @@
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -280,7 +280,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   AddPrerenderWithPreconnectFallbackForTesting(
       Origin origin,
       const GURL& url,
-      const base::Optional<url::Origin>& initiator_origin);
+      const absl::optional<url::Origin>& initiator_origin);
 
  protected:
   class NoStatePrefetchData
@@ -381,7 +381,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       Origin origin,
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace);
 
@@ -413,7 +413,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   CreateNoStatePrefetchContents(
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       Origin origin);
 
   // Insures the |active_prefetches_| are sorted by increasing expiry time. Call

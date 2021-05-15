@@ -102,7 +102,7 @@ bool QueryContainsComponentHelper(const base::StringPiece query,
 }  // namespace
 
 bool WasStartedInForegroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() && event &&
          (!delegate.GetFirstBackgroundTime() ||
@@ -110,12 +110,12 @@ bool WasStartedInForegroundOptionalEventInForeground(
 }
 
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,
     size_t index) {
   const auto& back_forward_cache_restore =
       delegate.GetBackForwardCacheRestore(index);
-  base::Optional<base::TimeDelta> first_background_time =
+  absl::optional<base::TimeDelta> first_background_time =
       back_forward_cache_restore.first_background_time;
   return back_forward_cache_restore.was_in_foreground && event &&
          (!first_background_time ||
@@ -123,7 +123,7 @@ bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore
 }
 
 bool WasStartedInBackgroundOptionalEventInForeground(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return !delegate.StartedInForeground() && event &&
          delegate.GetFirstForegroundTime() &&
@@ -156,13 +156,13 @@ PageAbortInfo GetPageAbortInfo(
           delegate.GetPageEndTime().value()};
 }
 
-base::Optional<base::TimeDelta> GetInitialForegroundDuration(
+absl::optional<base::TimeDelta> GetInitialForegroundDuration(
     const PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time) {
   if (!delegate.StartedInForeground())
-    return base::Optional<base::TimeDelta>();
+    return absl::optional<base::TimeDelta>();
 
-  base::Optional<base::TimeDelta> time_on_page =
+  absl::optional<base::TimeDelta> time_on_page =
       OptionalMin(delegate.GetFirstBackgroundTime(), delegate.GetPageEndTime());
 
   // If we don't have a time_on_page value yet, and we have an app background
@@ -188,7 +188,7 @@ bool DidObserveLoadingBehaviorInAnyFrame(
 }
 
 bool IsGoogleSearchHostname(const GURL& url) {
-  base::Optional<std::string> result =
+  absl::optional<std::string> result =
       page_load_metrics::GetGoogleHostnamePrefix(url);
   return result && result.value() == "www";
 }

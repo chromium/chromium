@@ -277,7 +277,7 @@ void PerFrameContentTranslateDriver::DidFinishNavigation(
       navigation_handle->GetReloadType() != content::ReloadType::NONE ||
       navigation_handle->IsSameDocument();
 
-  const base::Optional<url::Origin>& initiator_origin =
+  const absl::optional<url::Origin>& initiator_origin =
       navigation_handle->GetInitiatorOrigin();
 
   bool navigation_from_google =

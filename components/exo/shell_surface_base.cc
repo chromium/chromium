@@ -1160,7 +1160,7 @@ bool ShellSurfaceBase::IsResizing() const {
 void ShellSurfaceBase::UpdateWidgetBounds() {
   DCHECK(widget_);
 
-  base::Optional<gfx::Rect> bounds = GetWidgetBounds();
+  absl::optional<gfx::Rect> bounds = GetWidgetBounds();
   if (bounds && overlay_widget_) {
     gfx::Rect content_bounds(bounds->size());
     int height = 0;

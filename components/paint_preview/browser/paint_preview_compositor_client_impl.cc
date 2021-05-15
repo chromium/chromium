@@ -25,7 +25,7 @@ PaintPreviewCompositorClientImpl::~PaintPreviewCompositorClientImpl() {
   NotifyServiceOfInvalidation();
 }
 
-const base::Optional<base::UnguessableToken>&
+const absl::optional<base::UnguessableToken>&
 PaintPreviewCompositorClientImpl::Token() const {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   return token_;

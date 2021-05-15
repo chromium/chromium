@@ -73,7 +73,7 @@ class Client {
   virtual bool IsAccessibilityEnabled() const = 0;
 
   // Returns the width and height of the window.
-  virtual base::Optional<std::pair<int, int>> GetWindowSize() const = 0;
+  virtual absl::optional<std::pair<int, int>> GetWindowSize() const = 0;
 
   // Returns the orientation of the screen.
   virtual ClientContextProto::ScreenOrientation GetScreenOrientation()

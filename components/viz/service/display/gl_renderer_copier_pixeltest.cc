@@ -291,7 +291,7 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequest) {
     ASSERT_EQ(kRequestArea, result->rect());
 
   // Examine the image in the |result|, and compare it to the baseline PNG file.
-  base::Optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
+  absl::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
   SkBitmap actual;
   if (result_format_ == CopyOutputResult::Format::RGBA_BITMAP) {
     scoped_bitmap = result->ScopedAccessSkBitmap();

@@ -53,11 +53,11 @@ void PageContentAnnotationsModelManager::Annotate(
   if (!page_topics_model_executor_handle_->ModelAvailable()) {
     // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
     // model isn't ready, but if we call this when the model isn't ready, it
-    // will just return base::nullopt for now.
+    // will just return absl::nullopt for now.
     return;
   }
 
-  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
+  absl::optional<proto::PageTopicsModelMetadata> model_metadata =
       page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
           proto::PageTopicsModelMetadata>();
   if (!model_metadata) {
@@ -89,8 +89,8 @@ void PageContentAnnotationsModelManager::Annotate(
 void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
     PageContentAnnotatedCallback callback,
     const proto::PageTopicsModelMetadata& model_metadata,
-    const base::Optional<std::vector<tflite::task::core::Category>>& output) {
-  base::Optional<history::VisitContentModelAnnotations> content_annotations;
+    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+  absl::optional<history::VisitContentModelAnnotations> content_annotations;
   if (output) {
     content_annotations =
         GetContentModelAnnotationsFromOutput(model_metadata, *output);
@@ -98,21 +98,21 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
   std::move(callback).Run(content_annotations);
 }
 
-base::Optional<int64_t>
+absl::optional<int64_t>
 PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
-  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
+  absl::optional<proto::PageTopicsModelMetadata> model_metadata =
       page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
           proto::PageTopicsModelMetadata>();
   if (model_metadata)
     return model_metadata->version();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 history::VisitContentModelAnnotations
 PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
     const proto::PageTopicsModelMetadata& model_metadata,
     const std::vector<tflite::task::core::Category>& model_output) const {
-  base::Optional<std::string> floc_protected_category_name;
+  absl::optional<std::string> floc_protected_category_name;
   if (model_metadata.output_postprocessing_params()
           .has_floc_protected_params()) {
     floc_protected_category_name = model_metadata.output_postprocessing_params()
@@ -157,7 +157,7 @@ PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
   size_t max_categories = static_cast<size_t>(category_params.max_categories());
   float total_weight = 0.0;
   float sum_positive_scores = 0.0;
-  base::Optional<std::pair<size_t, float>> none_idx_and_weight;
+  absl::optional<std::pair<size_t, float>> none_idx_and_weight;
   std::vector<std::pair<int, float>> categories;
   categories.reserve(max_categories);
   for (size_t i = 0; i < category_candidates.size() && i < max_categories;

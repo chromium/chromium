@@ -288,11 +288,11 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
 }
 
 void ContentAutofillDriver::SetFormToBeProbablySubmitted(
-    const base::Optional<FormData>& raw_form) {
+    const absl::optional<FormData>& raw_form) {
   potentially_submitted_form_ =
-      raw_form ? base::make_optional<FormData>(
+      raw_form ? absl::make_optional<FormData>(
                      GetFormWithFrameAndFormMetaData(*raw_form))
-               : base::nullopt;
+               : absl::nullopt;
 }
 
 void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& raw_forms) {

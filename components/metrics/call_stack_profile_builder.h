@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
@@ -22,6 +21,7 @@
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/child_call_stack_profile_collector.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {

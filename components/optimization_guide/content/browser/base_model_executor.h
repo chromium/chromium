@@ -29,7 +29,7 @@ class BaseModelExecutor : public ModelExecutor<OutputType, InputTypes...>,
   BaseModelExecutor& operator=(const BaseModelExecutor&) = delete;
 
  protected:
-  base::Optional<OutputType> Execute(ModelExecutionTask* execution_task,
+  absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
                                      InputTypes... args) override {
     return static_cast<GenericModelExecutionTask<OutputType, InputTypes...>*>(
                execution_task)

@@ -359,22 +359,22 @@ TEST_P(FilesystemProxyTest, DeletePathRecursively) {
 TEST_P(FilesystemProxyTest, GetMaximumPathComponentLength) {
   // This has different values on different platforms, so merely smoke test
   // this to make sure it returns a reasonable valid value.
-  base::Optional<int> max = proxy().GetMaximumPathComponentLength(kDir1);
+  absl::optional<int> max = proxy().GetMaximumPathComponentLength(kDir1);
   ASSERT_TRUE(max.has_value());
   EXPECT_GT(*max, 50);
 }
 
 TEST_P(FilesystemProxyTest, GetFileInfo) {
-  base::Optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
+  absl::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
   ASSERT_TRUE(file1_info.has_value());
   EXPECT_FALSE(file1_info->is_directory);
   EXPECT_EQ(static_cast<int>(base::size(kFile1Contents) - 1), file1_info->size);
 
-  base::Optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
+  absl::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
   ASSERT_TRUE(dir1_info.has_value());
   EXPECT_TRUE(dir1_info->is_directory);
 
-  base::Optional<base::File::Info> dir1_file1_info =
+  absl::optional<base::File::Info> dir1_file1_info =
       proxy().GetFileInfo(kDir1.Append(kDir1File1));
   ASSERT_TRUE(dir1_file1_info.has_value());
   EXPECT_FALSE(dir1_file1_info->is_directory);

@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -18,6 +17,7 @@
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -88,7 +88,7 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   std::vector<Link> current_links_;
   // The state of the current list of links before the last action was
   // performed.
-  base::Optional<std::vector<Link>> previous_links_;
+  absl::optional<std::vector<Link>> previous_links_;
 
   // List of closures to be invoked when custom links are updated by outside
   // sources.

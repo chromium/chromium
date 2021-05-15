@@ -68,7 +68,7 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
     metadata_store()->SaveImageMetadata(
         kImageKey, kImageDataLength,
         /* needs_transcoding */ false,
-        /* expiration_interval */ base::nullopt);
+        /* expiration_interval */ absl::nullopt);
     ASSERT_TRUE(IsDataPresent(kImageKey));
 
     if (!initialize) {
@@ -110,7 +110,7 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
       base::Time creation_time,
       base::Time last_used_time,
       bool needs_transcoding,
-      ExpirationInterval expiration_interval = base::nullopt) {
+      ExpirationInterval expiration_interval = absl::nullopt) {
     if (!IsDataPresent(key)) {
       ASSERT_TRUE(false);
     }
@@ -142,7 +142,7 @@ class CachedImageFetcherImageMetadataStoreLevelDBTest : public testing::Test {
   MOCK_METHOD1(OnKeysReturned, void(std::vector<std::string>));
   MOCK_METHOD1(OnStoreOperationComplete, void(bool));
   MOCK_METHOD1(OnImageMetadataLoaded,
-               void(base::Optional<CachedImageMetadataProto>));
+               void(absl::optional<CachedImageMetadataProto>));
 
  private:
   std::unique_ptr<base::SimpleTestClock> clock_;
@@ -170,7 +170,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, SaveBeforeInit) {
   // Start an image load before the database is initialized.
   metadata_store()->SaveImageMetadata(kImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
 
   InitializeDatabase();
   EXPECT_TRUE(metadata_store()->IsInitialized());
@@ -184,7 +184,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Save) {
 
   metadata_store()->SaveImageMetadata(kImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
   AssertDataPresent(kImageKey, kImageDataLength, clock()->Now(), clock()->Now(),
                     /* needs_transcoding */ false);
 
@@ -210,7 +210,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Delete) {
   InitializeDatabase();
   metadata_store()->SaveImageMetadata(kImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
   ASSERT_TRUE(IsDataPresent(kImageKey));
 
   // Delete the data.
@@ -226,7 +226,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, DeleteDifferentKey) {
   InitializeDatabase();
   metadata_store()->SaveImageMetadata(kImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
   ASSERT_TRUE(IsDataPresent(kImageKey));
 
   // Delete the data.
@@ -303,7 +303,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, GetAllKeys) {
   PrepareDatabase(true);
   metadata_store()->SaveImageMetadata(kOtherImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
 
   // A GC call before the db is initialized should be ignore.
   EXPECT_CALL(
@@ -319,7 +319,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, GetAllKeysLoadFailed) {
   PrepareDatabase(true);
   metadata_store()->SaveImageMetadata(kOtherImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval */ base::nullopt);
+                                      /* expiration_interval */ absl::nullopt);
 
   // A GC call before the db is initialized should be ignore.
   EXPECT_CALL(*this, OnKeysReturned(std::vector<std::string>({})));
@@ -425,7 +425,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
   clock()->SetNow(clock()->Now() + base::TimeDelta::FromHours(1));
   metadata_store()->SaveImageMetadata(kOtherImageKey, kImageDataLength,
                                       /* needs_transcoding */ false,
-                                      /* expiration_interval*/ base::nullopt);
+                                      /* expiration_interval*/ absl::nullopt);
   clock()->SetNow(clock()->Now() - base::TimeDelta::FromHours(1));
   ASSERT_TRUE(IsDataPresent(kOtherImageKey));
 
@@ -498,7 +498,7 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, LoadImageMetadata) {
   PrepareDatabase(true);
   metadata_store()->SaveImageMetadata(kOtherImageKey, kImageDataLength,
                                       /* needs_transcoding */ true,
-                                      /* expiration_interval*/ base::nullopt);
+                                      /* expiration_interval*/ absl::nullopt);
 
   EXPECT_CALL(*this, OnImageMetadataLoaded(_));
   metadata_store()->LoadImageMetadata(

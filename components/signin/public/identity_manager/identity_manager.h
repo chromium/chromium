@@ -254,14 +254,14 @@ class IdentityManager : public KeyedService,
   // Returns extended information for account identified by |account_info|.
   // The information will be returned if the information is available and
   // refresh token is available for account.
-  base::Optional<AccountInfo> FindExtendedAccountInfoForAccountWithRefreshToken(
+  absl::optional<AccountInfo> FindExtendedAccountInfoForAccountWithRefreshToken(
       const CoreAccountInfo& account_info) const;
 
   // Looks up and returns information for account with given |account_id|. If
   // the account cannot be found, return an empty optional. This is equivalent
   // to searching on the vector returned by GetAccountsWithRefreshTokens() but
   // without allocating memory for the vector.
-  base::Optional<AccountInfo>
+  absl::optional<AccountInfo>
   FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
       const CoreAccountId& account_id) const;
 
@@ -269,7 +269,7 @@ class IdentityManager : public KeyedService,
   // the account cannot be found, return an empty optional. This is equivalent
   // to searching on the vector returned by GetAccountsWithRefreshTokens() but
   // without allocating memory for the vector.
-  base::Optional<AccountInfo>
+  absl::optional<AccountInfo>
   FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
       const std::string& email_address) const;
 
@@ -277,7 +277,7 @@ class IdentityManager : public KeyedService,
   // account cannot be found, return an empty optional. This is equivalent to
   // searching on the vector returned by GetAccountsWithRefreshTokens() but
   // without allocating memory for the vector.
-  base::Optional<AccountInfo>
+  absl::optional<AccountInfo>
   FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
       const std::string& gaia_id) const;
 

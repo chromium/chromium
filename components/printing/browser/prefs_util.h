@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PRINTING_BROWSER_PREFS_UTIL_H_
 #define COMPONENTS_PRINTING_BROWSER_PREFS_UTIL_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 class PrefService;
@@ -13,7 +13,7 @@ class PrefService;
 namespace printing {
 
 // Parse the printing.paper_size_default preference.
-base::Optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs);
+absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs);
 
 }  // namespace printing
 

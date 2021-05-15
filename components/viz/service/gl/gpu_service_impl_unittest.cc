@@ -85,7 +85,7 @@ class GpuServiceTest : public testing::Test {
     io_thread_.Stop();
   }
 
-  base::Optional<bool> visible_;
+  absl::optional<bool> visible_;
 
  private:
   base::Thread io_thread_;

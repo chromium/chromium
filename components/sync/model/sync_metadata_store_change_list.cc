@@ -6,7 +6,7 @@
 
 #include "base/location.h"
 
-using base::Optional;
+using absl::optional;
 using syncer::ModelError;
 
 namespace syncer {
@@ -68,8 +68,8 @@ void SyncMetadataStoreChangeList::ClearMetadata(
   }
 }
 
-Optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
-  Optional<ModelError> temp = error_;
+optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
+  optional<ModelError> temp = error_;
   error_.reset();
   return temp;
 }

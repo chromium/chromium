@@ -11,13 +11,13 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -50,7 +50,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    const gfx::Size& size,
                    ResourceFormat resource_format,
                    bool maybe_concurrent_reads,
-                   const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                   const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space);
 
   // TODO(https://crbug.com/991659): The use of ImageContext for

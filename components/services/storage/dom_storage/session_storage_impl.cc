@@ -891,7 +891,7 @@ SessionStorageImpl::ParseDatabaseVersion(
 
   if (version.status.IsNotFound()) {
     // treat as v0 or new database
-    metadata_.ParseDatabaseVersion(base::nullopt, migration_tasks);
+    metadata_.ParseDatabaseVersion(absl::nullopt, migration_tasks);
     return {OpenResult::kSuccess, ""};
   }
 

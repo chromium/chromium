@@ -89,7 +89,7 @@ void PreferredAppsList::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::Optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
+absl::optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
     const GURL& url) {
   auto intent = apps_util::CreateIntentFromUrl(url);
   return FindPreferredAppForIntent(intent);
@@ -215,9 +215,9 @@ const PreferredAppsList::PreferredApps& PreferredAppsList::GetReference()
   return preferred_apps_;
 }
 
-base::Optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
+absl::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
     const apps::mojom::IntentPtr& intent) {
-  base::Optional<std::string> best_match_app_id = base::nullopt;
+  absl::optional<std::string> best_match_app_id = absl::nullopt;
   int best_match_level = apps_util::IntentFilterMatchLevel::kNone;
   for (auto& preferred_app : preferred_apps_) {
     if (apps_util::IntentMatchesFilter(intent, preferred_app->intent_filter)) {

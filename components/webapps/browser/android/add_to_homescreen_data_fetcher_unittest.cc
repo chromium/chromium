@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -494,7 +494,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
     // Check the case where we have no icons.
     blink::Manifest manifest = BuildDefaultManifest();
     manifest.icons.clear();
-    manifest.short_name = base::nullopt;
+    manifest.short_name = absl::nullopt;
     SetManifest(manifest);
 
     ObserverWaiter waiter;
@@ -508,7 +508,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
   }
 
   blink::Manifest manifest(BuildDefaultManifest());
-  manifest.short_name = base::nullopt;
+  manifest.short_name = absl::nullopt;
   SetManifest(manifest);
 
   {
@@ -565,8 +565,8 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   //  - WebApplicationInfo::title is used as the "name".
   //  - We still use the icons from the manifest.
   blink::Manifest manifest(BuildDefaultManifest());
-  manifest.name = base::nullopt;
-  manifest.short_name = base::nullopt;
+  manifest.name = absl::nullopt;
+  manifest.short_name = absl::nullopt;
 
   // Check the case where we don't time out waiting for the service worker.
   SetManifest(manifest);

@@ -43,7 +43,7 @@ class ArcCrashCollectorBridge
   // mojom::CrashCollectorHost overrides.
   void DumpCrash(const std::string& type,
                  mojo::ScopedHandle pipe,
-                 base::Optional<base::TimeDelta> uptime) override;
+                 absl::optional<base::TimeDelta> uptime) override;
   void DumpNativeCrash(const std::string& exec_name,
                        int32_t pid,
                        int64_t timestamp,
@@ -53,7 +53,7 @@ class ArcCrashCollectorBridge
       const std::string& device,
       const std::string& board,
       const std::string& cpu_abi,
-      const base::Optional<std::string>& fingerprint) override;
+      const absl::optional<std::string>& fingerprint) override;
 
  private:
   std::vector<std::string> CreateCrashReporterArgs();
@@ -63,7 +63,7 @@ class ArcCrashCollectorBridge
   std::string device_;
   std::string board_;
   std::string cpu_abi_;
-  base::Optional<std::string> fingerprint_;
+  absl::optional<std::string> fingerprint_;
 };
 
 }  // namespace arc

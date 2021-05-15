@@ -365,7 +365,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     DCHECK(context->origin() == kTopLeft_GrSurfaceOrigin);
     formats[i] = GetGrBackendFormatForTexture(
         context->resource_format(), context->mailbox_holder().texture_target,
-        /*ycbcr_info=*/base::nullopt);
+        /*ycbcr_info=*/absl::nullopt);
 
     // NOTE: We don't have promises for individual planes, but still need format
     // for fallback
@@ -409,7 +409,7 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     const gfx::Size& size,
     ResourceFormat format,
     bool maybe_concurrent_reads,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space) {
   return std::make_unique<ImageContextImpl>(holder, size, format,
                                             maybe_concurrent_reads, ycbcr_info,
@@ -620,7 +620,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     SkColorType color_type =
         ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, GL_TEXTURE_2D, /*ycbcr_info=*/base::nullopt);
+        format, GL_TEXTURE_2D, /*ycbcr_info=*/absl::nullopt);
     image_context->SetImage(
         current_paint_->recorder()->makePromiseTexture(
             backend_format, image_context->size().width(),
@@ -1027,7 +1027,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
 GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     ResourceFormat resource_format,
     uint32_t gl_texture_target,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {

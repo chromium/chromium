@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/render_process_host_id.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
@@ -226,7 +226,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   // Wrapper for memory usage bytes to improve test readability.
-  using Bytes = base::Optional<uint64_t>;
+  using Bytes = absl::optional<uint64_t>;
 
   WebMemoryTestHarness();
   ~WebMemoryTestHarness() override;
@@ -238,21 +238,21 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
                             /*opener=*/nullptr, process_.get(), id_attribute,
                             src_attribute);
   }
 
   // Creates a frame node as if from window.open and adds it to the graph.
-  FrameNodeImpl* AddFrameNodeFromOpener(base::Optional<std::string> url,
+  FrameNodeImpl* AddFrameNodeFromOpener(absl::optional<std::string> url,
                                         Bytes bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
-                            /*id_attribute=*/base::nullopt,
-                            /*src_attribute=*/base::nullopt);
+                            /*id_attribute=*/absl::nullopt,
+                            /*src_attribute=*/absl::nullopt);
   }
 
   // Creates a frame node in a different browsing instance and adds it to the
@@ -261,8 +261,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
                             /*opener=*/nullptr, process_.get(), id_attribute,
                             src_attribute);
@@ -276,8 +276,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
-                            /*id_attribute=*/base::nullopt,
-                            /*src_attribute=*/base::nullopt);
+                            /*id_attribute=*/absl::nullopt,
+                            /*src_attribute=*/absl::nullopt);
   }
 
   // Creates a frame node in a different process and adds it to the graph.
@@ -285,8 +285,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
                             /*opener=*/nullptr, other_process_.get(),
                             id_attribute, src_attribute);
@@ -313,14 +313,14 @@ class WebMemoryTestHarness : public GraphTestHarness {
   static constexpr int kDefaultBrowsingInstanceId = 0;
 
   // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNodeImpl(base::Optional<std::string> url,
+  FrameNodeImpl* AddFrameNodeImpl(absl::optional<std::string> url,
                                   int browsing_instance_id,
                                   Bytes bytes,
                                   FrameNodeImpl* parent,
                                   FrameNodeImpl* opener,
                                   ProcessNodeImpl* process,
-                                  base::Optional<std::string> id_attribute,
-                                  base::Optional<std::string> src_attribute);
+                                  absl::optional<std::string> id_attribute,
+                                  absl::optional<std::string> src_attribute);
   WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
                                     std::string url,
                                     Bytes bytes);

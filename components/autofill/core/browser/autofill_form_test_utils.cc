@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 
-#include "base/optional.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

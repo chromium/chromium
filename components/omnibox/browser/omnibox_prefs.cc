@@ -6,13 +6,13 @@
 
 #include "base/check.h"
 #include "base/metrics/sparse_histogram.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace omnibox {
 
@@ -59,7 +59,7 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
       prefs->GetDictionary(kSuggestionGroupVisibility);
   DCHECK(dictionary);
 
-  base::Optional<int> value =
+  absl::optional<int> value =
       dictionary->FindIntKey(base::NumberToString(suggestion_group_id));
 
   if (value == SuggestionGroupVisibility::HIDDEN ||

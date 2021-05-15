@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -44,7 +44,7 @@ DomainReliabilityConfig::~DomainReliabilityConfig() {}
 // static
 std::unique_ptr<const DomainReliabilityConfig>
 DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     return nullptr;
 

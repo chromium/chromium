@@ -25,7 +25,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void StartRegularScript(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script) override;
+      const absl::optional<TriggerScriptProto>& trigger_script) override;
   bool IsRegularScriptRunning() const override;
   bool IsRegularScriptVisible() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
@@ -72,7 +72,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   base::OnceCallback<void(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script)>
+      const absl::optional<TriggerScriptProto>& trigger_script)>
       start_regular_script_callback_;
   bool is_regular_script_running_ = false;
   bool is_regular_script_visible_ = false;

@@ -51,15 +51,15 @@ TEST_F(PreferredAppListTest, AddPreferredAppForURL) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_in_scope));
 
   GURL url_wrong_scheme = GURL("tel://www.google.com/");
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_wrong_scheme));
 
   GURL url_wrong_host = GURL("https://www.hahaha.com/");
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_wrong_host));
 
   GURL url_not_in_scope = GURL("https://www.google.com/a");
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_not_in_scope));
 }
 
@@ -73,7 +73,7 @@ TEST_F(PreferredAppListTest, TopLayerFilters) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_in_scope));
 
   GURL url_not_in_scope = GURL("http://www.google.com");
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_not_in_scope));
 }
 
@@ -99,7 +99,7 @@ TEST_F(PreferredAppListTest, MixLayerFilters) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_1));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(url_2));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(url_3));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_out_scope));
 }
 
@@ -144,9 +144,9 @@ TEST_F(PreferredAppListTest, MultipleConditionValues) {
 
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_https));
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_http));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_http_out_of_scope));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_wrong_scheme));
 }
 
@@ -171,7 +171,7 @@ TEST_F(PreferredAppListTest, DifferentPatterns) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_1));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(url_2));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(url_3));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_out_scope));
 }
 
@@ -212,7 +212,7 @@ TEST_F(PreferredAppListTest, OverlapPreferredApp) {
       apps_util::MakeConditionValue(filter_url_2.host(),
                                     apps::mojom::PatternMatchType::kNone));
   preferred_apps_.AddPreferredApp(kAppId2, intent_filter_2);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
@@ -310,7 +310,7 @@ TEST_F(PreferredAppListTest, DeletePreferredAppForURL) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url));
 
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(filter_url));
 }
 
 // Test for preferred app with filter that does not have all condition
@@ -323,7 +323,7 @@ TEST_F(PreferredAppListTest, DeleteForTopLayerFilters) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_in_scope));
 
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(url_in_scope));
 }
 
@@ -344,8 +344,8 @@ TEST_F(PreferredAppListTest, DeleteMultipleConditionValues) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_http));
 
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_https));
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_http));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_https));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_http));
 }
 
 // Test for more than one pattern available, we can delete the filter.
@@ -370,14 +370,14 @@ TEST_F(PreferredAppListTest, DeleteDifferentPatterns) {
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(url_3));
 
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter_literal);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_1));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_1));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(url_2));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(url_3));
   preferred_apps_.DeletePreferredApp(kAppId2, intent_filter_prefix);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_2));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_2));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(url_3));
   preferred_apps_.DeletePreferredApp(kAppId3, intent_filter_glob);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_3));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_3));
 }
 
 // Test that can delete properly for super set filters. E.g. the filter
@@ -400,7 +400,7 @@ TEST_F(PreferredAppListTest, DeleteForNotCompletedFilter) {
 
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter_to_delete);
 
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url));
 }
 
 // Test that when there are more than one entry has overlap filter.
@@ -447,13 +447,13 @@ TEST_F(PreferredAppListTest, DeleteOverlapFilters) {
   // Filter 2 has overlap with both filter 1 and 3, delete this should remove
   // all entries.
   preferred_apps_.DeletePreferredApp(kAppId1, intent_filter_2);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_3));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_4));
 }
 
@@ -467,7 +467,7 @@ TEST_F(PreferredAppListTest, DeleteAppIdForOneFilter) {
 
   preferred_apps_.DeleteAppId(kAppId1);
 
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(filter_url));
 }
 
 // Test that when multiple filters set to the same app id, DeleteAppId() can
@@ -493,11 +493,11 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleFilters) {
 
   preferred_apps_.DeleteAppId(kAppId1);
 
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_3));
 }
 
@@ -518,8 +518,8 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleConditionValues) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(url_http));
 
   preferred_apps_.DeleteAppId(kAppId1);
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_https));
-  EXPECT_EQ(base::nullopt, preferred_apps_.FindPreferredAppForUrl(url_http));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_https));
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(url_http));
 }
 
 // Test that for multiple filters set to different app ids, DeleteAppId() only
@@ -562,24 +562,24 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleAppIds) {
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_6));
 
   preferred_apps_.DeleteAppId(kAppId1);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_2));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_4));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_5));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_6));
   preferred_apps_.DeleteAppId(kAppId2);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_3));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_4));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_5));
   EXPECT_EQ(kAppId3, preferred_apps_.FindPreferredAppForUrl(filter_url_6));
   preferred_apps_.DeleteAppId(kAppId3);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_5));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_6));
 }

@@ -166,7 +166,7 @@ bool CustomLinksManagerImpl::UndoAction() {
 
   // Replace the current links with the previous state.
   current_links_ = *previous_links_;
-  previous_links_ = base::nullopt;
+  previous_links_ = absl::nullopt;
   StoreLinks();
   return true;
 }
@@ -177,7 +177,7 @@ void CustomLinksManagerImpl::ClearLinks() {
     store_.ClearLinks();
   }
   current_links_.clear();
-  previous_links_ = base::nullopt;
+  previous_links_ = absl::nullopt;
 }
 
 void CustomLinksManagerImpl::StoreLinks() {
@@ -217,7 +217,7 @@ void CustomLinksManagerImpl::OnURLsDeleted(
     }
   }
   StoreLinks();
-  previous_links_ = base::nullopt;
+  previous_links_ = absl::nullopt;
 
   // Alert MostVisitedSites that some links have been deleted.
   if (initial_size != current_links_.size())
@@ -238,7 +238,7 @@ void CustomLinksManagerImpl::OnPreferenceChanged() {
     current_links_ = store_.RetrieveLinks();
   else
     current_links_.clear();
-  previous_links_ = base::nullopt;
+  previous_links_ = absl::nullopt;
   closure_list_.Notify();
 }
 

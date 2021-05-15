@@ -161,7 +161,7 @@ base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
 
   // Handle the case of a JSON-encoded string for a dict policy.
   if (schema.type() == base::Value::Type::DICTIONARY && value.is_string()) {
-    base::Optional<base::Value> decoded_value = base::JSONReader::Read(
+    absl::optional<base::Value> decoded_value = base::JSONReader::Read(
         value.GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (decoded_value.has_value()) {
       return std::move(decoded_value.value());

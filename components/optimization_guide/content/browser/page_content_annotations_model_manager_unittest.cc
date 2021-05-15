@@ -20,7 +20,7 @@ class PageTopicsModelObserverTracker : public TestOptimizationGuideDecider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     // Make sure we send what is expected.
     if (target != proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS) {
@@ -29,12 +29,12 @@ class PageTopicsModelObserverTracker : public TestOptimizationGuideDecider {
     registered_model_metadata_ = model_metadata;
   }
 
-  base::Optional<proto::Any> registered_model_metadata() const {
+  absl::optional<proto::Any> registered_model_metadata() const {
     return registered_model_metadata_;
   }
 
  private:
-  base::Optional<proto::Any> registered_model_metadata_;
+  absl::optional<proto::Any> registered_model_metadata_;
 };
 
 class PageContentAnnotationsModelManagerTest : public testing::Test {
@@ -94,11 +94,11 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 };
 
 TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
-  base::Optional<proto::Any> registered_model_metadata =
+  absl::optional<proto::Any> registered_model_metadata =
       model_observer_tracker()->registered_model_metadata();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_TRUE(registered_model_metadata.has_value());
-  base::Optional<proto::PageTopicsModelMetadata> page_topics_model_metadata =
+  absl::optional<proto::PageTopicsModelMetadata> page_topics_model_metadata =
       ParsedAnyMetadata<proto::PageTopicsModelMetadata>(
           *registered_model_metadata);
   EXPECT_TRUE(page_topics_model_metadata.has_value());
@@ -127,7 +127,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
   SendPageTopicsModelToExecutor(any_metadata);
 
-  base::Optional<int64_t> model_version =
+  absl::optional<int64_t> model_version =
       model_manager()->GetPageTopicsModelVersion();
   EXPECT_TRUE(model_version.has_value());
   EXPECT_EQ(model_version.value(), 123);
@@ -141,7 +141,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   any_metadata.set_value("123");
   SendPageTopicsModelToExecutor(any_metadata);
 
-  base::Optional<int64_t> model_version =
+  absl::optional<int64_t> model_version =
       model_manager()->GetPageTopicsModelVersion();
   EXPECT_FALSE(model_version.has_value());
 }

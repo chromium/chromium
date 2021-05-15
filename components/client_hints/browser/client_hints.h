@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 class GURL;

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -19,6 +18,7 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -32,32 +32,32 @@ namespace paint_preview {
 namespace {
 
 // Returns |nullopt| if |proto_memory| cannot be mapped or parsed.
-base::Optional<PaintPreviewProto> ParsePaintPreviewProto(
+absl::optional<PaintPreviewProto> ParsePaintPreviewProto(
     const base::ReadOnlySharedMemoryRegion& proto_memory) {
   auto mapping = proto_memory.Map();
   if (!mapping.IsValid()) {
     DVLOG(1) << "Failed to map proto in shared memory.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   PaintPreviewProto paint_preview;
   bool ok = paint_preview.ParseFromArray(mapping.memory(), mapping.size());
   if (!ok) {
     DVLOG(1) << "Failed to parse proto.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return {paint_preview};
 }
 
-base::Optional<PaintPreviewFrame> BuildFrame(
+absl::optional<PaintPreviewFrame> BuildFrame(
     const base::UnguessableToken& token,
     const PaintPreviewFrameProto& frame_proto,
     const base::flat_map<base::UnguessableToken, SkpResult>& results) {
   TRACE_EVENT0("paint_preview", "PaintPreviewCompositorImpl::BuildFrame");
   auto it = results.find(token);
   if (it == results.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   const SkpResult& result = it->second;
   PaintPreviewFrame frame;
@@ -127,7 +127,7 @@ gfx::Rect AdjustClipRect(const gfx::Rect& clip_rect,
 
 // Holds a ref to the discardable_shared_memory_manager so it sticks around
 // until at least after skia is finished with it.
-base::Optional<SkBitmap> CreateBitmap(
+absl::optional<SkBitmap> CreateBitmap(
     scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
         discardable_shared_memory_manager,
     sk_sp<SkPicture> skp,
@@ -139,7 +139,7 @@ base::Optional<SkBitmap> CreateBitmap(
   SkBitmap bitmap;
   if (!bitmap.tryAllocPixels(
           SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   SkMatrix matrix;
@@ -179,7 +179,7 @@ void PaintPreviewCompositorImpl::BeginSeparatedFrameComposite(
   frames_.clear();
 
   auto response = mojom::PaintPreviewBeginCompositeResponse::New();
-  base::Optional<PaintPreviewProto> paint_preview =
+  absl::optional<PaintPreviewProto> paint_preview =
       ParsePaintPreviewProto(request->proto);
   if (!paint_preview.has_value()) {
     // Cannot send a null token over mojo. This will be ignored downstream.
@@ -251,7 +251,7 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
                      frame_it->second.skp, clip_rect, scale_factor),
       base::BindOnce(
           [](BitmapForSeparatedFrameCallback callback,
-             const base::Optional<SkBitmap>& maybe_bitmap) {
+             const absl::optional<SkBitmap>& maybe_bitmap) {
             if (!maybe_bitmap.has_value()) {
               std::move(callback).Run(
                   mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed,
@@ -272,7 +272,7 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
                "PaintPreviewCompositorImpl::BeginMainFrameComposite");
   frames_.clear();
   auto response = mojom::PaintPreviewBeginCompositeResponse::New();
-  base::Optional<PaintPreviewProto> paint_preview =
+  absl::optional<PaintPreviewProto> paint_preview =
       ParsePaintPreviewProto(request->proto);
   if (!paint_preview.has_value()) {
     response->root_frame_guid = base::UnguessableToken::Create();
@@ -351,7 +351,7 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
                      root_frame_, clip_rect, scale_factor),
       base::BindOnce(
           [](BitmapForMainFrameCallback callback,
-             const base::Optional<SkBitmap>& maybe_bitmap) {
+             const absl::optional<SkBitmap>& maybe_bitmap) {
             if (!maybe_bitmap.has_value()) {
               std::move(callback).Run(
                   mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed,
@@ -376,7 +376,7 @@ bool PaintPreviewCompositorImpl::AddFrame(
   base::UnguessableToken guid = base::UnguessableToken::Deserialize(
       frame_proto.embedding_token_high(), frame_proto.embedding_token_low());
 
-  base::Optional<PaintPreviewFrame> maybe_frame =
+  absl::optional<PaintPreviewFrame> maybe_frame =
       BuildFrame(guid, frame_proto, skp_map);
   if (!maybe_frame.has_value())
     return false;
@@ -406,7 +406,7 @@ PaintPreviewCompositorImpl::DeserializeAllFrames(RecordingMap&& recording_map) {
   results.reserve(recording_map.size());
 
   for (auto& it : recording_map) {
-    base::Optional<SkpResult> maybe_result = std::move(it.second).Deserialize();
+    absl::optional<SkpResult> maybe_result = std::move(it.second).Deserialize();
     if (!maybe_result.has_value())
       continue;
 

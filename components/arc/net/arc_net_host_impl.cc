@@ -872,7 +872,7 @@ void ArcNetHostImpl::NetworkPropertiesUpdated(
 
 void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
-    base::Optional<base::Value> shill_properties) {
+    absl::optional<base::Value> shill_properties) {
   if (!shill_properties) {
     LOG(ERROR) << "Failed to get shill Service properties for " << service_path;
     return;

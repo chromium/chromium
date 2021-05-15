@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +26,7 @@
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/translate_util.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -313,7 +313,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   //   "tl": {"XX": "LanguageName", ...}
   // }
   // Where "tl" is set in kTargetLanguagesKey.
-  base::Optional<base::Value> json_value =
+  absl::optional<base::Value> json_value =
       base::JSONReader::Read(language_list, base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!json_value || !json_value->is_dict()) {

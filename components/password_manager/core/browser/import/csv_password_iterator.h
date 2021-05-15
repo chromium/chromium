@@ -9,9 +9,9 @@
 
 #include <iterator>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -63,7 +63,7 @@ class CSVPasswordIterator {
   // |csv_row_| contains the CSV row which the iterator points at.
   base::StringPiece csv_row_;
   // Contains a CSVPassword created from |map_| and |csv_row_| if possible.
-  base::Optional<CSVPassword> password_;
+  absl::optional<CSVPassword> password_;
 };
 
 // ConsumeCSVLine is a shared utility between CSVPasswordIterator (which uses

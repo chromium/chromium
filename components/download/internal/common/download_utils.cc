@@ -448,13 +448,13 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
 }
 
 std::unique_ptr<DownloadEntry> CreateDownloadEntryFromDownloadDBEntry(
-    base::Optional<DownloadDBEntry> entry) {
+    absl::optional<DownloadDBEntry> entry) {
   if (!entry || !entry->download_info)
     return nullptr;
 
-  base::Optional<InProgressInfo> in_progress_info =
+  absl::optional<InProgressInfo> in_progress_info =
       entry->download_info->in_progress_info;
-  base::Optional<UkmInfo> ukm_info = entry->download_info->ukm_info;
+  absl::optional<UkmInfo> ukm_info = entry->download_info->ukm_info;
   if (!ukm_info || !in_progress_info)
     return nullptr;
 

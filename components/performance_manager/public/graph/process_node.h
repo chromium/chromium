@@ -69,7 +69,7 @@ class ProcessNode : public Node {
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.
-  virtual base::Optional<int32_t> GetExitStatus() const = 0;
+  virtual absl::optional<int32_t> GetExitStatus() const = 0;
 
   // Visits the frame nodes that are hosted in this process. The iteration is
   // halted if the visitor returns false. Returns true if every call to the

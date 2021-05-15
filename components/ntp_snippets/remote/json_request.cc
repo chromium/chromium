@@ -121,7 +121,7 @@ std::string GetUserClassString(UserClassifier::UserClass user_class) {
 }  // namespace
 
 JsonRequest::JsonRequest(
-    base::Optional<Category> exclusive_category,
+    absl::optional<Category> exclusive_category,
     const base::Clock* clock,  // Needed until destruction of the request.
     const ParseJSONCallback& callback)
     : exclusive_category_(exclusive_category),

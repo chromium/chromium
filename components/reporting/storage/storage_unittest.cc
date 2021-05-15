@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +34,7 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Between;
@@ -182,7 +182,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   using LastRecordDigestMap = std::map<std::tuple<Priority,
                                                   int64_t /*generation id*/,
                                                   int64_t /*sequencing id*/>,
-                                       base::Optional<std::string /*digest*/>>;
+                                       absl::optional<std::string /*digest*/>>;
 
   explicit MockUploadClient(
       LastRecordDigestMap* last_record_digest_map,
@@ -253,7 +253,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
         std::make_tuple(sequencing_information.priority(),
                         sequencing_information.sequencing_id(),
                         sequencing_information.generation_id()),
-        base::nullopt);
+        absl::nullopt);
 
     for (uint64_t c = 0; c < count; ++c) {
       EncounterSeqId(
@@ -475,7 +475,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
                           wrapped_record.record().data()));
   }
 
-  base::Optional<int64_t> generation_id_;
+  absl::optional<int64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
@@ -655,7 +655,7 @@ class StorageTest
   }
 
   void ConfirmOrDie(Priority priority,
-                    base::Optional<std::int64_t> sequencing_id,
+                    absl::optional<std::int64_t> sequencing_id,
                     bool force = false) {
     test::TestEvent<Status> c;
     storage_->Confirm(priority, sequencing_id, force, c.cb());
@@ -1419,7 +1419,7 @@ TEST_P(StorageTest, ForceConfirm) {
   }
 
   // Now force confirm #0 and forward time again.
-  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/base::nullopt, /*force=*/true);
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/absl::nullopt, /*force=*/true);
   // Set uploader expectations: #0 and #1 could be returned as Gaps
   {
     test::TestCallbackAutoWaiter waiter;

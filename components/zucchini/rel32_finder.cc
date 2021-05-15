@@ -41,7 +41,7 @@ Abs32GapFinder::Abs32GapFinder(ConstBufferView image,
 
 Abs32GapFinder::~Abs32GapFinder() = default;
 
-base::Optional<ConstBufferView> Abs32GapFinder::GetNext() {
+absl::optional<ConstBufferView> Abs32GapFinder::GetNext() {
   // Iterate over |[abs32_current_, abs32_end_)| and emit segments.
   while (abs32_current_ != abs32_end_ &&
          base_ + *abs32_current_ < region_end_) {
@@ -58,7 +58,7 @@ base::Optional<ConstBufferView> Abs32GapFinder::GetNext() {
     current_lo_ = region_end_;
     return gap;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 /******** Rel32Finder ********/

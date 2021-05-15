@@ -529,7 +529,7 @@ TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
   // is never deserialized to proto, so we're just passing some dummy content.
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(0u, test_log_store->ongoing_log_count());
-  test_log_store->StoreLog("blah_blah", MetricsLog::ONGOING_LOG, base::nullopt);
+  test_log_store->StoreLog("blah_blah", MetricsLog::ONGOING_LOG, absl::nullopt);
   // Note: |initial_log_count()| refers to initial stability logs, so the above
   // log is counted an ongoing log (per its type).
   ASSERT_EQ(0u, test_log_store->initial_log_count());

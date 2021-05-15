@@ -83,11 +83,11 @@ class ProfileImportProcess {
   // a merge candidate exists.
   bool ImportIsMerge() const;
 
-  const base::Optional<AutofillProfile>& import_candidate() const {
+  const absl::optional<AutofillProfile>& import_candidate() const {
     return import_candidate_;
   }
 
-  const base::Optional<AutofillProfile>& merge_candidate() const {
+  const absl::optional<AutofillProfile>& merge_candidate() const {
     return merge_candidate_;
   }
 
@@ -140,7 +140,7 @@ class ProfileImportProcess {
   // |edited_profile| reflect user edits to the import candidate.
   void SetUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      base::Optional<AutofillProfile> edited_profile = base::nullopt);
+      absl::optional<AutofillProfile> edited_profile = absl::nullopt);
 
   // Records UMA metrics. Should only be called after a user decision was
   // supplied.
@@ -172,10 +172,10 @@ class ProfileImportProcess {
 
   // A profile in its original state that can be merged with the observed
   // profile.
-  base::Optional<AutofillProfile> merge_candidate_;
+  absl::optional<AutofillProfile> merge_candidate_;
 
   // The import candidate that is presented to the user.
-  base::Optional<AutofillProfile> import_candidate_;
+  absl::optional<AutofillProfile> import_candidate_;
 
   // The type of the import indicates if the profile is just a duplicate of an
   // existing profile, if an existing profile can be silently updated, or if
@@ -186,7 +186,7 @@ class ProfileImportProcess {
 
   // The profile as it was confirmed by the user or as it should be imported if
   // user interactions are disabled.
-  base::Optional<AutofillProfile> confirmed_import_candidate_;
+  absl::optional<AutofillProfile> confirmed_import_candidate_;
 
   // The decision the user made when prompted.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{

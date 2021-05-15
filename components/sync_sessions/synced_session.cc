@@ -270,7 +270,7 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
     }
   }
 
-  const base::Optional<SerializedNavigationEntry::ReplacedNavigationEntryData>&
+  const absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>&
       replaced_entry_data = navigation.replaced_entry_data();
   if (replaced_entry_data.has_value()) {
     sync_pb::ReplacedNavigation* replaced_navigation =
@@ -310,7 +310,7 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    base::Optional<sync_pb::SessionWindow::BrowserType> browser_type) {
+    absl::optional<sync_pb::SessionWindow::BrowserType> browser_type) {
   sync_pb::SessionTab sync_data;
   sync_data.set_tab_id(tab.tab_id.id());
   sync_data.set_window_id(tab.window_id.id());

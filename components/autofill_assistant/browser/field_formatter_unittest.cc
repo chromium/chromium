@@ -38,8 +38,8 @@ TEST(FieldFormatterTest, FormatString) {
   EXPECT_EQ(*FormatString("Price: $${keyA}", mappings), "Price: $valueA");
   EXPECT_EQ(*FormatString("Price: ${keyD}", mappings), "Price: $30.5");
   EXPECT_EQ(*FormatString("Price: ${keyE}", mappings), "Price: 30.5$");
-  EXPECT_EQ(FormatString("${keyF}", mappings), base::nullopt);
-  EXPECT_EQ(FormatString("${keyA}${keyF}", mappings), base::nullopt);
+  EXPECT_EQ(FormatString("${keyF}", mappings), absl::nullopt);
+  EXPECT_EQ(FormatString("${keyA}${keyF}", mappings), absl::nullopt);
 
   EXPECT_EQ(*FormatString("${keyF}", mappings, /*strict = */ false), "${keyF}");
   EXPECT_EQ(*FormatString("${keyA}${keyF}", mappings, /*strict = */ false),
@@ -136,14 +136,14 @@ TEST(FieldFormatterTest, AutofillProfile) {
                                  "", "", "", "", "XY", "", "US", "");
   EXPECT_EQ(FormatString("${34}", CreateAutofillMappings(unknown_state_profile,
                                                          "en-US")),
-            base::nullopt);
+            absl::nullopt);
   EXPECT_EQ(FormatString("${-6}", CreateAutofillMappings(unknown_state_profile,
                                                          "en-US")),
             "XY");
 
   // UNKNOWN_TYPE
   EXPECT_EQ(FormatString("${1}", CreateAutofillMappings(profile, "en-US")),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST(FieldFormatterTest, CreditCard) {
@@ -193,12 +193,12 @@ TEST(FieldFormatterTest, SpecialCases) {
   EXPECT_EQ(*FormatString("${3}", CreateAutofillMappings(profile, "en-US")),
             "John");
   EXPECT_EQ(FormatString("${-1}", CreateAutofillMappings(profile, "en-US")),
-            base::nullopt);
+            absl::nullopt);
   EXPECT_EQ(
       FormatString(
           "${" + base::NumberToString(autofill::MAX_VALID_FIELD_TYPE) + "}",
           CreateAutofillMappings(profile, "en-US")),
-      base::nullopt);
+      absl::nullopt);
 
   // Second {} is not prefixed with $.
   EXPECT_EQ(

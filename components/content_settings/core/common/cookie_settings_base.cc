@@ -82,7 +82,7 @@ bool CookieSettingsBase::IsCookieAccessAllowed(
 bool CookieSettingsBase::IsCookieAccessAllowed(
     const GURL& url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   ContentSetting setting = GetCookieSettingInternal(
       url, top_frame_origin ? top_frame_origin->GetURL() : site_for_cookies,
       IsThirdPartyRequest(url, site_for_cookies), nullptr);

@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
@@ -29,6 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;

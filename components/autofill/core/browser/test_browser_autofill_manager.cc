@@ -64,7 +64,7 @@ void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
     bool observed_submission) {
   run_loop_->Quit();
 
-  if (expected_observed_submission_ != base::nullopt)
+  if (expected_observed_submission_ != absl::nullopt)
     EXPECT_EQ(expected_observed_submission_, observed_submission);
 
   // If we have expected field types set, make sure they match.

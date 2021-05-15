@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 namespace {

@@ -10,9 +10,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -34,7 +34,7 @@ class DynamicTriggerConditions {
   // Returns whether |selector| currently matches the DOM tree. |Update| must
   // be called prior to this method. Only selectors that have previously been
   // added via |AddSelectorsFromTriggerScript| can be queried.
-  virtual base::Optional<bool> GetSelectorMatches(
+  virtual absl::optional<bool> GetSelectorMatches(
       const Selector& selector) const;
 
   // Sets whether the keyboard is currently visible.

@@ -33,13 +33,13 @@ class ContentfulPaintTimingInfo {
   explicit ContentfulPaintTimingInfo(LargestContentType largest_content_type,
                                      bool in_main_frame);
   explicit ContentfulPaintTimingInfo(
-      const base::Optional<base::TimeDelta>&,
+      const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
       const LargestContentType largest_content_type,
       bool in_main_frame);
   explicit ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
-  void Reset(const base::Optional<base::TimeDelta>&, const uint64_t& size);
-  base::Optional<base::TimeDelta> Time() const { return time_; }
+  void Reset(const absl::optional<base::TimeDelta>&, const uint64_t& size);
+  absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
   uint64_t Size() const { return size_; }
   LargestContentType Type() const { return type_; }
@@ -62,7 +62,7 @@ class ContentfulPaintTimingInfo {
  private:
   ContentfulPaintTimingInfo() = delete;
   std::string TypeInString() const;
-  base::Optional<base::TimeDelta> time_;
+  absl::optional<base::TimeDelta> time_;
   uint64_t size_;
   LargestContentType type_;
   bool in_main_frame_;
@@ -93,14 +93,14 @@ class LargestContentfulPaintHandler {
   static bool AssignTimeAndSizeForLargestContentfulPaint(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
-      base::Optional<base::TimeDelta>* largest_content_paint_time,
+      absl::optional<base::TimeDelta>* largest_content_paint_time,
       uint64_t* largest_content_paint_size,
       ContentfulPaintTimingInfo::LargestContentType* largest_content_type);
 
   void RecordTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
-      const base::Optional<base::TimeDelta>&
+      const absl::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
       content::RenderFrameHost* subframe_rfh);
   inline void RecordMainFrameTreeNodeId(int main_frame_tree_node_id) {
@@ -138,23 +138,23 @@ class LargestContentfulPaintHandler {
   void RecordSubframeTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
-      const base::Optional<base::TimeDelta>&
+      const absl::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
       const base::TimeDelta& navigation_start_offset);
   void RecordMainFrameTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
-      const base::Optional<base::TimeDelta>&
+      const absl::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp);
   void UpdateFirstInputOrScrollNotified(
-      const base::Optional<base::TimeDelta>& candidate_new_time,
+      const absl::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);
   void MergeForSubframes(
       ContentfulPaintTimingInfo* inout_timing,
-      const base::Optional<base::TimeDelta>& candidate_new_time,
+      const absl::optional<base::TimeDelta>& candidate_new_time,
       const uint64_t& candidate_new_size,
       base::TimeDelta navigation_start_offset);
-  bool IsValid(const base::Optional<base::TimeDelta>& time) {
+  bool IsValid(const absl::optional<base::TimeDelta>& time) {
     // When |time| is not present, this means that there is no current
     // candidate. If |time| is 0, it corresponds to an image that has not
     // finished loading. In both cases, we do not know the timestamp at which
@@ -169,7 +169,7 @@ class LargestContentfulPaintHandler {
 
   // Used for Telemetry to distinguish the LCP events from different
   // navigations.
-  base::Optional<int> main_frame_tree_node_id_;
+  absl::optional<int> main_frame_tree_node_id_;
 
   // The first input or scroll across all frames in the page. Used to filter out
   // paints that occur on other frames but after this time.

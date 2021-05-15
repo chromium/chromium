@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_enums.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace permissions {
@@ -45,7 +45,7 @@ class PermissionRequest {
 
 #if !defined(OS_ANDROID)
   // Returns the short text for the chip button related to this permission.
-  virtual base::Optional<std::u16string> GetChipText() const;
+  virtual absl::optional<std::u16string> GetChipText() const;
 
   // Returns the shortened prompt text for this permission. The permission
   // bubble may coalesce different requests, and if it does, this text will

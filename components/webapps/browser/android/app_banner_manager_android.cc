@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -39,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 using base::android::ConvertJavaStringToUTF16;

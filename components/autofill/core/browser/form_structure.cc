@@ -2418,7 +2418,7 @@ void FormStructure::ExtractParseableFieldLabels() {
   }
 
   // Determine the parsable labels and write them back.
-  base::Optional<std::vector<std::u16string>> parsable_labels =
+  absl::optional<std::vector<std::u16string>> parsable_labels =
       GetParseableLabels(field_labels);
   // If not single label was split, the function can return, because the
   // |parsable_label_| is assigned to |label| by default.

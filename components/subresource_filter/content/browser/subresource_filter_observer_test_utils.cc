@@ -71,12 +71,12 @@ void TestSubresourceFilterObserver::DidFinishNavigation(
   }
 }
 
-base::Optional<mojom::ActivationLevel>
+absl::optional<mojom::ActivationLevel>
 TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   auto it = page_activations_.find(url);
   if (it != page_activations_.end())
     return it->second;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool TestSubresourceFilterObserver::GetIsAdSubframe(
@@ -84,25 +84,25 @@ bool TestSubresourceFilterObserver::GetIsAdSubframe(
   return base::Contains(ad_frames_, frame_tree_node_id);
 }
 
-base::Optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
+absl::optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
     const GURL& url) const {
   auto it = subframe_load_evaluations_.find(url);
   if (it != subframe_load_evaluations_.end())
     return it->second;
-  return base::Optional<LoadPolicy>();
+  return absl::optional<LoadPolicy>();
 }
 
-base::Optional<mojom::ActivationLevel>
+absl::optional<mojom::ActivationLevel>
 TestSubresourceFilterObserver::GetPageActivationForLastCommittedLoad() const {
   return last_committed_activation_;
 }
 
-base::Optional<TestSubresourceFilterObserver::SafeBrowsingCheck>
+absl::optional<TestSubresourceFilterObserver::SafeBrowsingCheck>
 TestSubresourceFilterObserver::GetSafeBrowsingResult(const GURL& url) const {
   auto it = safe_browsing_checks_.find(url);
   if (it != safe_browsing_checks_.end())
     return it->second;
-  return base::Optional<SafeBrowsingCheck>();
+  return absl::optional<SafeBrowsingCheck>();
 }
 
 }  // namespace subresource_filter

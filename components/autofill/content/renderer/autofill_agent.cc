@@ -16,7 +16,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/location.h"
 #include "base/metrics/field_trial.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -49,6 +48,7 @@
 #include "content/public/renderer/render_view.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -1038,7 +1038,7 @@ void AutofillAgent::OnProvisionallySaveForm(
       }
       formless_elements_user_edited_.insert(
           FieldRendererId(element.UniqueRendererFormControlId()));
-      provisionally_saved_form_ = base::make_optional<FormData>();
+      provisionally_saved_form_ = absl::make_optional<FormData>();
       if (!CollectFormlessElements(&provisionally_saved_form_.value())) {
         provisionally_saved_form_.reset();
       } else {
@@ -1064,7 +1064,7 @@ void AutofillAgent::OnProvisionallySaveForm(
 }
 
 void AutofillAgent::OnProbablyFormSubmitted() {
-  base::Optional<FormData> form_data = GetSubmittedForm();
+  absl::optional<FormData> form_data = GetSubmittedForm();
   if (form_data.has_value()) {
     FireHostSubmitEvents(form_data.value(), /*known_success=*/false,
                          SubmissionSource::PROBABLY_FORM_SUBMITTED);
@@ -1104,7 +1104,7 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       FireHostSubmitEvents(provisionally_saved_form_.value(),
                            /*known_success=*/true, source);
   } else {
-    base::Optional<FormData> form_data = GetSubmittedForm();
+    absl::optional<FormData> form_data = GetSubmittedForm();
     if (form_data.has_value())
       FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
   }
@@ -1126,14 +1126,14 @@ void AutofillAgent::TrackAutofilledElement(
   form_tracker_.TrackAutofilledElement(element);
 }
 
-base::Optional<FormData> AutofillAgent::GetSubmittedForm() const {
+absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   if (!last_interacted_form_.IsNull()) {
     FormData form;
     if (form_util::ExtractFormData(last_interacted_form_,
                                    *field_data_manager_.get(), &form)) {
-      return base::make_optional(form);
+      return absl::make_optional(form);
     } else if (provisionally_saved_form_.has_value()) {
-      return base::make_optional(provisionally_saved_form_.value());
+      return absl::make_optional(provisionally_saved_form_.value());
     }
   } else if (formless_elements_user_edited_.size() != 0 &&
              !form_util::IsSomeControlElementVisible(
@@ -1145,12 +1145,12 @@ base::Optional<FormData> AutofillAgent::GetSubmittedForm() const {
     // construct form.
     FormData form;
     if (CollectFormlessElements(&form)) {
-      return base::make_optional(form);
+      return absl::make_optional(form);
     } else if (provisionally_saved_form_.has_value()) {
-      return base::make_optional(provisionally_saved_form_.value());
+      return absl::make_optional(provisionally_saved_form_.value());
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
@@ -1166,7 +1166,7 @@ void AutofillAgent::ResetLastInteractedElements() {
 
 void AutofillAgent::UpdateLastInteractedForm(blink::WebFormElement form) {
   last_interacted_form_ = form;
-  provisionally_saved_form_ = base::make_optional<FormData>();
+  provisionally_saved_form_ = absl::make_optional<FormData>();
   if (!form_util::ExtractFormData(last_interacted_form_,
                                   *field_data_manager_.get(),
                                   &provisionally_saved_form_.value())) {

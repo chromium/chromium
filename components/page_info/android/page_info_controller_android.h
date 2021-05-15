@@ -11,8 +11,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/page_info/page_info_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -44,7 +44,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
   // displayed in Page Info. Most permissions will only be displayed if they are
   // set to some non-default value, but there are some permissions which require
   // customized behavior.
-  base::Optional<ContentSetting> GetSettingToDisplay(
+  absl::optional<ContentSetting> GetSettingToDisplay(
       const PageInfo::PermissionInfo& permission);
 
   // The presenter that controlls the Page Info UI.

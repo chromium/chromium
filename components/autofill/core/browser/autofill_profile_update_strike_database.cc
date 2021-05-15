@@ -23,12 +23,12 @@ AutofillProfileUpdateStrikeDatabase::AutofillProfileUpdateStrikeDatabase(
 AutofillProfileUpdateStrikeDatabase::~AutofillProfileUpdateStrikeDatabase() =
     default;
 
-base::Optional<size_t> AutofillProfileUpdateStrikeDatabase::GetMaximumEntries()
+absl::optional<size_t> AutofillProfileUpdateStrikeDatabase::GetMaximumEntries()
     const {
   return base::make_optional(kMaxStrikeEntities);
 }
 
-base::Optional<size_t>
+absl::optional<size_t>
 AutofillProfileUpdateStrikeDatabase::GetMaximumEntriesAfterCleanup() const {
   return base::make_optional(kMaxStrikeEntitiesAfterCleanup);
 }
@@ -41,7 +41,7 @@ int AutofillProfileUpdateStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 AutofillProfileUpdateStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 6 months.
   return base::TimeDelta::FromDays(183);

@@ -12,12 +12,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -55,22 +55,22 @@ class UserModel {
   // replaced (see |AddIdentifierPlaceholders|).
   // - Also supports the array operator to retrieve
   // a specific element of a list, e.g., "identifier[0]" to get the first item.
-  base::Optional<ValueProto> GetValue(const std::string& identifier) const;
+  absl::optional<ValueProto> GetValue(const std::string& identifier) const;
 
   // Returns the value for |reference| or nullopt if there is no such value.
-  base::Optional<ValueProto> GetValue(
+  absl::optional<ValueProto> GetValue(
       const ValueReferenceProto& reference) const;
 
   // Returns all specified values in a new std::vector. Returns nullopt if any
   // of the requested values was not found.
   template <class T>
-  base::Optional<std::vector<ValueProto>> GetValues(
+  absl::optional<std::vector<ValueProto>> GetValues(
       const T& value_references) const {
     std::vector<ValueProto> values;
     for (const auto& reference : value_references) {
       auto value = GetValue(reference);
       if (!value.has_value()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       values.emplace_back(*value);
     }

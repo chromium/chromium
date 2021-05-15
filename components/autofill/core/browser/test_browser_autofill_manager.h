@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::TimeTicks;
 
@@ -78,7 +78,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   bool call_parent_upload_form_data_ = false;
-  base::Optional<bool> expected_observed_submission_;
+  absl::optional<bool> expected_observed_submission_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

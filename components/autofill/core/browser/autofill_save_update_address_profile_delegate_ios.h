@@ -86,7 +86,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   // The original profile that will be updated if the user accepts the update
   // prompt. NULL if saving a new profile.
-  base::Optional<AutofillProfile> original_profile_;
+  absl::optional<AutofillProfile> original_profile_;
 
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback

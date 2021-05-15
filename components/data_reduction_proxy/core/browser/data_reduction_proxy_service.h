@@ -174,8 +174,7 @@ class DataReductionProxyService
   const std::string channel_;
 
   // Dictionary of save-data savings estimates by origin.
-  const base::Optional<base::Value> save_data_savings_estimate_dict_;
-
+  const absl::optional<base::Value> save_data_savings_estimate_dict_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

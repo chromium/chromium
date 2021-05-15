@@ -91,7 +91,7 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
   }
 }
 
-base::Optional<account_manager::AccountAdditionResult::Status>
+absl::optional<account_manager::AccountAdditionResult::Status>
 FromMojoAccountAdditionStatus(
     crosapi::mojom::AccountAdditionResult::Status mojo_status) {
   switch (mojo_status) {
@@ -109,7 +109,7 @@ FromMojoAccountAdditionStatus(
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::AccountAdditionResult::Status: "
                    << mojo_status;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -131,12 +131,12 @@ crosapi::mojom::AccountAdditionResult::Status ToMojoAccountAdditionStatus(
 
 }  // namespace
 
-base::Optional<account_manager::Account> FromMojoAccount(
+absl::optional<account_manager::Account> FromMojoAccount(
     const crosapi::mojom::AccountPtr& mojom_account) {
-  const base::Optional<account_manager::AccountKey> account_key =
+  const absl::optional<account_manager::AccountKey> account_key =
       FromMojoAccountKey(mojom_account->key);
   if (!account_key.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   account_manager::Account account;
   account.key = account_key.value();
@@ -152,12 +152,12 @@ crosapi::mojom::AccountPtr ToMojoAccount(
   return mojom_account;
 }
 
-base::Optional<account_manager::AccountKey> FromMojoAccountKey(
+absl::optional<account_manager::AccountKey> FromMojoAccountKey(
     const crosapi::mojom::AccountKeyPtr& mojom_account_key) {
-  const base::Optional<account_manager::AccountType> account_type =
+  const absl::optional<account_manager::AccountType> account_type =
       FromMojoAccountType(mojom_account_key->account_type);
   if (!account_type.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   account_manager::AccountKey account_key;
   account_key.id = mojom_account_key->id;
@@ -174,7 +174,7 @@ crosapi::mojom::AccountKeyPtr ToMojoAccountKey(
   return mojom_account_key;
 }
 
-base::Optional<account_manager::AccountType> FromMojoAccountType(
+absl::optional<account_manager::AccountType> FromMojoAccountType(
     const crosapi::mojom::AccountType& account_type) {
   switch (account_type) {
     case crosapi::mojom::AccountType::kGaia:
@@ -192,7 +192,7 @@ base::Optional<account_manager::AccountType> FromMojoAccountType(
       // Don't consider this as as error to preserve forwards compatibility with
       // lacros.
       LOG(WARNING) << "Unknown account type: " << account_type;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -206,7 +206,7 @@ crosapi::mojom::AccountType ToMojoAccountType(
   }
 }
 
-base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
+absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     const crosapi::mojom::GoogleServiceAuthErrorPtr& mojo_error) {
   switch (mojo_error->state) {
     case cm::GoogleServiceAuthError::State::kNone:
@@ -236,7 +236,7 @@ base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::GoogleServiceAuthError::State: "
                    << mojo_error->state;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -258,13 +258,13 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
   return mojo_result;
 }
 
-base::Optional<account_manager::AccountAdditionResult>
+absl::optional<account_manager::AccountAdditionResult>
 FromMojoAccountAdditionResult(
     const crosapi::mojom::AccountAdditionResultPtr& mojo_result) {
-  base::Optional<account_manager::AccountAdditionResult::Status> status =
+  absl::optional<account_manager::AccountAdditionResult::Status> status =
       FromMojoAccountAdditionStatus(mojo_result->status);
   if (!status.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   account_manager::AccountAdditionResult result(status.value());
   result.status = status.value();

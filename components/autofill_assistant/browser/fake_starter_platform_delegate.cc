@@ -22,7 +22,7 @@ FakeStarterPlatformDelegate::GetTriggerScriptRequestSenderToInject() {
 void FakeStarterPlatformDelegate::StartRegularScript(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
+    const absl::optional<TriggerScriptProto>& trigger_script) {
   if (start_regular_script_callback_) {
     std::move(start_regular_script_callback_)
         .Run(url, std::move(trigger_context), trigger_script);

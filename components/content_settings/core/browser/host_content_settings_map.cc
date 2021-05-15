@@ -393,7 +393,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
 void HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
-    base::Optional<content_settings::SessionModel> session_model) const {
+    absl::optional<content_settings::SessionModel> session_model) const {
   DCHECK(settings);
   UsedContentSettingsProviders();
 
@@ -768,7 +768,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
     bool incognito,
-    base::Optional<content_settings::SessionModel> session_model) const {
+    absl::optional<content_settings::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       provider->GetRuleIterator(content_type, incognito));
   if (!rule_iterator)

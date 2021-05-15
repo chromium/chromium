@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 class IsPublicSuffixMatchTag;
@@ -211,7 +211,7 @@ class AccessorySheetData {
   void set_option_toggle(OptionToggle toggle) {
     option_toggle_ = std::move(toggle);
   }
-  const base::Optional<OptionToggle>& option_toggle() const {
+  const absl::optional<OptionToggle>& option_toggle() const {
     return option_toggle_;
   }
 
@@ -243,7 +243,7 @@ class AccessorySheetData {
   AccessoryTabType sheet_type_;
   std::u16string title_;
   std::u16string warning_;
-  base::Optional<OptionToggle> option_toggle_;
+  absl::optional<OptionToggle> option_toggle_;
   std::vector<UserInfo> user_info_list_;
   std::vector<FooterCommand> footer_commands_;
 };

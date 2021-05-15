@@ -7,10 +7,9 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/common/viz_common_export.h"
-
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace features {
 
@@ -59,7 +58,7 @@ VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if defined(OS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // OS_WIN
-VIZ_COMMON_EXPORT base::Optional<int> ShouldDrawPredictedInkPoints();
+VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();

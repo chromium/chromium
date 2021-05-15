@@ -116,7 +116,7 @@ TEST_F(LeakDetectionRequestTest, WellformedServerResponse) {
                              {kUsernameHash, kEncryptedPayload},
                              callback.Get());
   EXPECT_CALL(callback,
-              Run(testing::Pointee(SingleLookupResponse()), Eq(base::nullopt)));
+              Run(testing::Pointee(SingleLookupResponse()), Eq(absl::nullopt)));
   task_env().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(

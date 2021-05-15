@@ -326,7 +326,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
     // Reset to the original behavior.
     RemoveUpstartStartStopJobFailures();
-    SetArcVmBootNotificationServerFdForTesting(base::nullopt);
+    SetArcVmBootNotificationServerFdForTesting(absl::nullopt);
 
     const std::string abstract_addr(GenerateAbstractAddress());
     boot_server_ = std::make_unique<TestArcVmBootNotificationServer>();
@@ -1041,7 +1041,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_SetVmIdEmptyReply) {
   StartMiniArc();
 
   // Inject failure
-  GetTestConciergeClient()->set_set_vm_id_response(base::nullopt);
+  GetTestConciergeClient()->set_set_vm_id_response(absl::nullopt);
 
   UpgradeArcWithParamsAndStopVmCount(false, {}, /*run_until_stop_vm_count=*/3);
   ExpectArcStopped(/*stale_full_vm_stopped=*/true);
@@ -1075,7 +1075,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailure) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailureEmptyReply) {
   // Inject failure.
-  GetTestConciergeClient()->set_stop_vm_response(base::nullopt);
+  GetTestConciergeClient()->set_stop_vm_response(absl::nullopt);
 
   StartMiniArcWithParams(false, {});
 
@@ -1101,7 +1101,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopExistingVmFailureEmptyReply) {
   StartMiniArc();
 
   // Inject failure.
-  GetTestConciergeClient()->set_stop_vm_response(base::nullopt);
+  GetTestConciergeClient()->set_stop_vm_response(absl::nullopt);
 
   UpgradeArcWithParamsAndStopVmCount(false, {}, /*run_until_stop_vm_count=*/3);
   ExpectArcStopped(/*stale_full_vm_stopped=*/true);
@@ -1136,7 +1136,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailure) {
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailureEmptyReply) {
   SetValidUserInfo();
   // Inject failure to StartArcVm(). This emulates D-Bus timeout situations.
-  GetTestConciergeClient()->set_start_vm_response(base::nullopt);
+  GetTestConciergeClient()->set_start_vm_response(absl::nullopt);
 
   StartMiniArcWithParams(false, {});
 

@@ -389,7 +389,7 @@ bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
   return CreateSchemaSync(db);
 }
 
-base::Optional<std::vector<std::unique_ptr<SavePageRequest>>>
+absl::optional<std::vector<std::unique_ptr<SavePageRequest>>>
 GetAllRequestsSync(sql::Database* db) {
   static const char kSql[] =
       "SELECT " REQUEST_QUEUE_FIELDS " FROM " REQUEST_QUEUE_TABLE_NAME;
@@ -398,14 +398,14 @@ GetAllRequestsSync(sql::Database* db) {
   while (statement.Step())
     requests.push_back(MakeSavePageRequest(statement));
   if (!statement.Succeeded())
-    return base::nullopt;
+    return absl::nullopt;
   return requests;
 }
 
 // Calls |callback| with the result of |requests|.
 void InvokeGetRequestsCallback(
     RequestQueueStore::GetRequestsCallback callback,
-    base::Optional<std::vector<std::unique_ptr<SavePageRequest>>> requests) {
+    absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests) {
   if (requests) {
     std::move(callback).Run(true, std::move(requests).value());
   } else {
@@ -452,7 +452,7 @@ AddRequestResult AddRequestSync(sql::Database* db,
   // check preconditions.
   if (options.maximum_in_flight_requests_for_namespace > 0 ||
       options.disallow_duplicate_requests) {
-    base::Optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
+    absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
         GetAllRequestsSync(db);
     if (!requests)
       return AddRequestResult::STORE_FAILURE;
@@ -559,7 +559,7 @@ UpdateRequestsResult RemoveRequestsIfSync(
     sql::Database* db,
     const base::RepeatingCallback<bool(const SavePageRequest&)>&
         remove_predicate) {
-  base::Optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
+  absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
       GetAllRequestsSync(db);
   if (!requests)
     return UpdateRequestsResult(StoreState::LOADED);

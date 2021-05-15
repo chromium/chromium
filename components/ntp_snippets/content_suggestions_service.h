@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -28,6 +27,7 @@
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_snippets/user_classifier.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -125,7 +125,7 @@ class ContentSuggestionsService : public KeyedService,
   CategoryStatus GetCategoryStatus(Category category) const;
 
   // Gets the meta information of a category.
-  base::Optional<CategoryInfo> GetCategoryInfo(Category category) const;
+  absl::optional<CategoryInfo> GetCategoryInfo(Category category) const;
 
   // Gets the available suggestions for a category. The result is empty if the
   // category is available and empty, but also if the category is unavailable

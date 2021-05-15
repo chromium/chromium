@@ -114,7 +114,7 @@ void CountEntriesInEachState(sql::Database* db) {
       "SELECT state, COUNT (*) FROM prefetch_items GROUP BY state";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   while (statement.Step()) {
-    base::Optional<PrefetchItemState> state =
+    absl::optional<PrefetchItemState> state =
         ToPrefetchItemState(statement.ColumnInt(0));
     if (!state)
       continue;

@@ -96,7 +96,7 @@ class CommandStorageBackendTest : public testing::TestWithParam<bool> {
   }
 
   // Functions that call into private members of CommandStorageBackend.
-  base::Optional<CommandStorageBackend::SessionInfo> GetLastSessionInfo(
+  absl::optional<CommandStorageBackend::SessionInfo> GetLastSessionInfo(
       CommandStorageBackend* backend) {
     // Force `last_session_info_` to be updated.
     backend->InitIfNecessary();

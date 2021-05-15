@@ -19,9 +19,9 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -352,7 +352,7 @@ void FakeFileSystemInstance::GetMimeType(const std::string& url,
   auto iter = files_.find(url);
   if (iter == files_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   const File& file = iter->second;
@@ -466,7 +466,7 @@ void FakeFileSystemInstance::GetChildDocuments(
       child_documents_.find(DocumentKey(authority, parent_document_id));
   if (child_iter == child_documents_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> children;
@@ -477,7 +477,7 @@ void FakeFileSystemInstance::GetChildDocuments(
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(children))));
+                                absl::make_optional(std::move(children))));
 }
 
 void FakeFileSystemInstance::GetRecentDocuments(
@@ -488,7 +488,7 @@ void FakeFileSystemInstance::GetRecentDocuments(
   auto recent_iter = recent_documents_.find(RootKey(authority, root_id));
   if (recent_iter == recent_documents_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> recents;
@@ -496,7 +496,7 @@ void FakeFileSystemInstance::GetRecentDocuments(
     recents.emplace_back(MakeDocument(document));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(recents))));
+                                absl::make_optional(std::move(recents))));
 }
 
 void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
@@ -506,7 +506,7 @@ void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
     roots.emplace_back(MakeRoot(root));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(roots))));
+                                absl::make_optional(std::move(roots))));
 }
 
 void FakeFileSystemInstance::GetRootSize(const std::string& authority,

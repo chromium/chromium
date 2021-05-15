@@ -225,19 +225,19 @@ const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
   return tab_iter->second;
 }
 
-base::Optional<sync_pb::SessionWindow::BrowserType>
+absl::optional<sync_pb::SessionWindow::BrowserType>
 SyncedSessionTracker::LookupWindowType(const std::string& session_tag,
                                        SessionID window_id) const {
   if (!base::FeatureList::IsEnabled(kSyncPopulateTabBrowserTypeInGetData))
-    return base::nullopt;
+    return absl::nullopt;
 
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto window_iter = session->synced_window_map.find(window_id);
   if (window_iter == session->synced_window_map.end())
-    return base::nullopt;  // We have no record of this window.
+    return absl::nullopt;  // We have no record of this window.
 
   return window_iter->second->window_type;
 }

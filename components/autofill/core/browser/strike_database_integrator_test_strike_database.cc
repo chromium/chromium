@@ -14,7 +14,7 @@ const int kMaxStrikesLimit = 6;
 StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(
         StrikeDatabase* strike_database,
-        base::Optional<base::TimeDelta> expiry_time_delta)
+        absl::optional<base::TimeDelta> expiry_time_delta)
     : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database) {
   expiry_time_delta_ = expiry_time_delta;
 }
@@ -37,7 +37,7 @@ int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() const {
   return kMaxStrikesLimit;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeDelta() const {
   return expiry_time_delta_;
 }
@@ -51,12 +51,12 @@ void StrikeDatabaseIntegratorTestStrikeDatabase::SetUniqueIdsRequired(
   unique_ids_required_ = unique_ids_required;
 }
 
-base::Optional<size_t>
+absl::optional<size_t>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntries() const {
   return maximum_entries_;
 }
 
-base::Optional<size_t>
+absl::optional<size_t>
 StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntriesAfterCleanup()
     const {
   return maximum_entries_after_cleanup_;

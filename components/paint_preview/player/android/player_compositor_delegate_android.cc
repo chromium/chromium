@@ -253,7 +253,7 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
       ScopedJavaGlobalRef<jobject>(j_error_callback), request_id_);
   ++request_id_;
 
-  base::Optional<base::UnguessableToken> frame_guid;
+  absl::optional<base::UnguessableToken> frame_guid;
   if (j_frame_guid) {
     frame_guid =
         base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(

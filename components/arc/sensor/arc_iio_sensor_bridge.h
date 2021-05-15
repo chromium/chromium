@@ -6,11 +6,11 @@
 #define COMPONENTS_ARC_SENSOR_ARC_IIO_SENSOR_BRIDGE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/mojom/iio_sensor.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -58,10 +58,10 @@ class ArcIioSensorBridge : public KeyedService,
 
   // Called with PowerManagerClient::GetSwitchStates() result.
   void OnGetSwitchStates(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> states);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> states);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-  base::Optional<bool> is_tablet_mode_on_;
+  absl::optional<bool> is_tablet_mode_on_;
 
   base::WeakPtrFactory<ArcIioSensorBridge> weak_ptr_factory_{this};
 };

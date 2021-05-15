@@ -112,7 +112,7 @@ class TestGeolocationPermissionContextDelegate
 
  private:
   TestingPrefServiceSimple prefs_;
-  base::Optional<url::Origin> dse_origin_;
+  absl::optional<url::Origin> dse_origin_;
 };
 }  // namespace
 

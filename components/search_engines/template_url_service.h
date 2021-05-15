@@ -376,13 +376,13 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Process new search engine changes from Sync, merging them into our local
   // data. This may send notifications if local search engines are added,
   // updated or removed.
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   // Merge initial search engine data from Sync and push any local changes up
   // to Sync. This may send notifications if local search engines are added,
   // updated or removed.
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,

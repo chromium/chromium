@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_item_filter.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/pending_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -45,7 +45,7 @@ struct ContentId {
 // Contains all the information to schedule the download of the offline item.
 struct OfflineItemSchedule {
  public:
-  OfflineItemSchedule(bool only_on_wifi, base::Optional<base::Time> start_time);
+  OfflineItemSchedule(bool only_on_wifi, absl::optional<base::Time> start_time);
 
   OfflineItemSchedule(const OfflineItemSchedule& other);
   OfflineItemSchedule& operator=(const OfflineItemSchedule& other);
@@ -58,7 +58,7 @@ struct OfflineItemSchedule {
 
   // Time to start downloading the offline item. Will be ignored if
   // |only_on_wifi_| is true.
-  base::Optional<base::Time> start_time;
+  absl::optional<base::Time> start_time;
 };
 
 // A Java counterpart will be generated for this enum.
@@ -91,7 +91,7 @@ struct OfflineItem {
 
     // The maximum value of the download progress. Absence of the value implies
     // indeterminate progress.
-    base::Optional<int64_t> max;
+    absl::optional<int64_t> max;
 
     // The unit of progress to be displayed in the UI.
     OfflineItemProgressUnit unit;
@@ -237,7 +237,7 @@ struct OfflineItem {
   bool is_dangerous;
 
   // The criteria for when the offline item is likely to download.
-  base::Optional<OfflineItemSchedule> schedule;
+  absl::optional<OfflineItemSchedule> schedule;
 };
 
 // Implemented for test-only. See test_support/offline_item_test_support.cc.

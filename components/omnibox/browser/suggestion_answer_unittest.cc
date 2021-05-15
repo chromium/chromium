@@ -16,7 +16,7 @@
 namespace {
 
 bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
-  base::Optional<base::Value> value = base::JSONReader::Read(answer_json);
+  absl::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict())
     return false;
 
@@ -325,7 +325,7 @@ TEST(SuggestionAnswerTest, AddImageURLsTo) {
 TEST(SuggestionAnswerTest, LogAnswerUsed) {
   {
     base::HistogramTester histograms;
-    base::Optional<SuggestionAnswer> answer;
+    absl::optional<SuggestionAnswer> answer;
     SuggestionAnswer::LogAnswerUsed(answer);
     histograms.ExpectUniqueSample(SuggestionAnswer::kAnswerUsedUmaHistogramName,
                                   0, 1);

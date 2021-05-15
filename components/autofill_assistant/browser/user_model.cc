@@ -19,10 +19,10 @@ static const char* const kExtractArraySubidentifierRegex = R"(^(\w+)\[(.+)\]$)";
 
 // Simple wrapper around value_util::GetNthValue to unwrap the base::optional
 // |value|.
-base::Optional<ValueProto> GetNthValue(const base::Optional<ValueProto>& value,
+absl::optional<ValueProto> GetNthValue(const absl::optional<ValueProto>& value,
                                        int index) {
   if (!value.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return GetNthValue(*value, index);
@@ -30,15 +30,15 @@ base::Optional<ValueProto> GetNthValue(const base::Optional<ValueProto>& value,
 
 // Same as above, but expects |index_value| to point to a single integer value
 // specifying the index to retrieve.
-base::Optional<ValueProto> GetNthValue(
-    const base::Optional<ValueProto>& value,
-    const base::Optional<ValueProto>& index_value) {
+absl::optional<ValueProto> GetNthValue(
+    const absl::optional<ValueProto>& value,
+    const absl::optional<ValueProto>& index_value) {
   if (!value.has_value() || !index_value.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (!AreAllValuesOfSize({*index_value}, 1) ||
       !AreAllValuesOfType({*index_value}, ValueProto::kInts)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return GetNthValue(*value, index_value->ints().values().at(0));
@@ -73,7 +73,7 @@ void UserModel::SetValue(const std::string& identifier,
   }
 }
 
-base::Optional<ValueProto> UserModel::GetValue(
+absl::optional<ValueProto> UserModel::GetValue(
     const std::string& identifier) const {
   auto it = values_.find(identifier);
   if (it != values_.end()) {
@@ -94,10 +94,10 @@ base::Optional<ValueProto> UserModel::GetValue(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<ValueProto> UserModel::GetValue(
+absl::optional<ValueProto> UserModel::GetValue(
     const ValueReferenceProto& reference) const {
   switch (reference.kind_case()) {
     case ValueReferenceProto::kValue:
@@ -105,7 +105,7 @@ base::Optional<ValueProto> UserModel::GetValue(
     case ValueReferenceProto::kModelIdentifier:
       return GetValue(reference.model_identifier());
     case ValueReferenceProto::KIND_NOT_SET:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

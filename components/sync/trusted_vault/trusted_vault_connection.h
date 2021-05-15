@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct CoreAccountInfo;
 
@@ -94,13 +94,13 @@ class TrustedVaultConnection {
   // Asynchronously attempts to register the authentication factor on the
   // trusted vault server to allow further vault server API calls using this
   // authentication factor. If |last_trusted_vault_key_and_version| is
-  // base::nullopt, registration attempt with constant key will be made. Calls
+  // absl::nullopt, registration attempt with constant key will be made. Calls
   // |callback| upon completion, unless the returned object is destroyed
   // earlier. Caller should hold returned request object until |callback| call
   // or until request needs to be cancelled.
   virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const base::Optional<TrustedVaultKeyAndVersion>&
+      const absl::optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
@@ -112,7 +112,7 @@ class TrustedVaultConnection {
   // |callback| call or until request needs to be cancelled.
   virtual std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
-      const base::Optional<TrustedVaultKeyAndVersion>&
+      const absl::optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;

@@ -2738,7 +2738,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
   }
 
   for (const auto& profile : profiles) {
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
+    absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =
             profile.GetAddress().GetCanonicalizedStateName();
 
@@ -2753,7 +2753,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       if (field->state_is_a_matching_type())
         continue;
 
-      base::Optional<AlternativeStateNameMap::CanonicalStateName>
+      absl::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(
                   base::UTF16ToUTF8(country_code), field->value);

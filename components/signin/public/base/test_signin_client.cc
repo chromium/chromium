@@ -14,8 +14,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/optional.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 TestSigninClient::TestSigninClient(
@@ -122,14 +122,14 @@ bool TestSigninClient::IsNonEnterpriseUser(const std::string& email) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-base::Optional<account_manager::Account>
+absl::optional<account_manager::Account>
 TestSigninClient::GetInitialPrimaryAccount() {
   return initial_primary_account_;
 }
 
 void TestSigninClient::SetInitialPrimaryAccountForTests(
     const account_manager::Account& account) {
-  initial_primary_account_ = base::make_optional(account);
+  initial_primary_account_ = absl::make_optional(account);
 }
 
 #endif

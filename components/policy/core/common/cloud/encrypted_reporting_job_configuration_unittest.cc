@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -20,6 +19,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
@@ -129,12 +129,12 @@ class RequestPayloadBuilder {
 
 class ResponseValueBuilder {
  public:
-  static base::Optional<base::Value> CreateUploadFailure(
+  static absl::optional<base::Value> CreateUploadFailure(
       const ::reporting::SequencingInformation& sequencing_information) {
     if (!sequencing_information.has_sequencing_id() ||
         !sequencing_information.has_generation_id() ||
         !sequencing_information.has_priority()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     base::Value upload_failure{base::Value::Type::DICTIONARY};
@@ -151,7 +151,7 @@ class ResponseValueBuilder {
 
   static base::Value CreateResponse(
       const base::Value& sequencing_information,
-      base::Optional<base::Value> upload_failure) {
+      absl::optional<base::Value> upload_failure) {
     base::Value response{base::Value::Type::DICTIONARY};
 
     response.SetKey(kLastSucceedUploadedRecordKey,
@@ -268,7 +268,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
-    base::Optional<base::Value> payload_result =
+    absl::optional<base::Value> payload_result =
         base::JSONReader::Read(configuration->GetPayload());
 
     EXPECT_TRUE(payload_result.has_value());
@@ -495,7 +495,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
   base::Value record_value = GenerateSingleRecord(kEncryptedWrappedRecord);
 
   base::Value response = ResponseValueBuilder::CreateResponse(
-      *record_value.FindDictKey(kSequencingInformationKey), base::nullopt);
+      *record_value.FindDictKey(kSequencingInformationKey), absl::nullopt);
 
   EXPECT_CALL(complete_cb_,
               Call(&job_, DM_STATUS_SUCCESS, net::OK, Eq(ByRef(response))))

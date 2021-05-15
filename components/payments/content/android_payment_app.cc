@@ -170,7 +170,7 @@ bool AndroidPaymentApp::IsPreferred() const {
 
 void AndroidPaymentApp::OnPaymentAppResponse(
     base::WeakPtr<Delegate> delegate,
-    const base::Optional<std::string>& error_message,
+    const absl::optional<std::string>& error_message,
     bool is_activity_result_ok,
     const std::string& payment_method_identifier,
     const std::string& stringified_details) {

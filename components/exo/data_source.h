@@ -43,7 +43,7 @@ class DataSource {
 
   // Notifies the client of the mime type that will be used by the
   // recipient. Only used during drag drop operations.
-  void Target(const base::Optional<std::string>& mime_type);
+  void Target(const absl::optional<std::string>& mime_type);
 
   // Notifies the client of the dnd action that will be performed if the
   // currently running drag operation ends now. Only used during drag drop
@@ -94,7 +94,7 @@ class DataSource {
   void OnDataRead(ReadDataCallback callback,
                   const std::string& mime_type,
                   base::OnceClosure failure_callback,
-                  const base::Optional<std::vector<uint8_t>>& data);
+                  const absl::optional<std::vector<uint8_t>>& data);
 
   void OnTextRead(ReadTextDataCallback callback,
                   const std::string& mime_type,

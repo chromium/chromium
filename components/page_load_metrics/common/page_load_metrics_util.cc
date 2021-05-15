@@ -31,7 +31,7 @@ const char* kBufferTimerDelayParamName = "BufferTimerDelayMillis";
 
 }  // namespace
 
-base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
+absl::optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
   const size_t registry_length =
       net::registry_controlled_domains::GetRegistryLength(
           url,
@@ -47,7 +47,7 @@ base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
   const base::StringPiece hostname = url.host_piece();
   if (registry_length == 0 || registry_length == std::string::npos ||
       registry_length >= hostname.length()) {
-    return base::Optional<std::string>();
+    return absl::optional<std::string>();
   }
 
   // Removes the tld and the preceding dot.
@@ -59,7 +59,7 @@ base::Optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
 
   if (!base::EndsWith(hostname_minus_registry, ".google",
                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return base::Optional<std::string>();
+    return absl::optional<std::string>();
   }
 
   return std::string(hostname_minus_registry.substr(
@@ -70,16 +70,16 @@ bool IsGoogleHostname(const GURL& url) {
   return GetGoogleHostnamePrefix(url).has_value();
 }
 
-base::Optional<base::TimeDelta> OptionalMin(
-    const base::Optional<base::TimeDelta>& a,
-    const base::Optional<base::TimeDelta>& b) {
+absl::optional<base::TimeDelta> OptionalMin(
+    const absl::optional<base::TimeDelta>& a,
+    const absl::optional<base::TimeDelta>& b) {
   if (a && !b)
     return a;
   if (b && !a)
     return b;
   if (!a && !b)
     return a;  // doesn't matter which
-  return base::Optional<base::TimeDelta>(std::min(a.value(), b.value()));
+  return absl::optional<base::TimeDelta>(std::min(a.value(), b.value()));
 }
 
 int GetBufferTimerDelayMillis(TimerType timer_type) {

@@ -48,21 +48,21 @@ class TestModelExecutorHandle
             background_task_runner,
             std::make_unique<TestModelExecutor>(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/base::nullopt) {}
+            /*model_metadata=*/absl::nullopt) {}
   ~TestModelExecutorHandle() override = default;
   TestModelExecutorHandle(const TestModelExecutorHandle&) = delete;
   TestModelExecutorHandle& operator=(const TestModelExecutorHandle&) = delete;
 
   // There is a method on the base class that exposes the returned supported
   // features, if provided by the loaded model received from the server.
-  // base::Optional<proto::Any> supported_features_for_loaded_model();
+  // absl::optional<proto::Any> supported_features_for_loaded_model();
 };
 
 class ModelObserverTracker : public TestOptimizationGuideDecider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     // Make sure we send what is expected based on
     // TestModelExecutorHandle ctor.
@@ -70,7 +70,7 @@ class ModelObserverTracker : public TestOptimizationGuideDecider {
         proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
       return;
     }
-    if (model_metadata != base::nullopt)
+    if (model_metadata != absl::nullopt)
       return;
 
     add_observer_called_ = true;
@@ -131,7 +131,7 @@ class BaseModelExecutorTest : public testing::Test {
 
   void PushModelFileToModelExecutor(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata) {
+      const absl::optional<proto::Any>& model_metadata) {
     DCHECK(model_executor_handle_);
     model_executor_handle_->OnModelFileUpdated(
         optimization_target, model_metadata, model_file_path_);
@@ -182,7 +182,7 @@ TEST_F(ModelExecutorTest, ModelFileUpdatedWrongTarget) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/base::nullopt);
+      /*model_metadata=*/absl::nullopt);
 
   EXPECT_FALSE(model_executor_handle()->ModelAvailable());
 }
@@ -193,7 +193,7 @@ TEST_F(ModelExecutorTest, ModelFileUpdatedCorrectTarget) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt);
+      /*model_metadata=*/absl::nullopt);
 
   EXPECT_TRUE(model_executor_handle()->ModelAvailable());
   histogram_tester.ExpectBucketCount(
@@ -218,7 +218,7 @@ TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();
           },
@@ -248,7 +248,7 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt);
+      /*model_metadata=*/absl::nullopt);
   EXPECT_TRUE(model_executor_handle()->ModelAvailable());
 
   std::vector<float> input;
@@ -261,7 +261,7 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
 
             std::vector<float> expected_output = {
@@ -298,7 +298,7 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt);
+      /*model_metadata=*/absl::nullopt);
   EXPECT_TRUE(model_executor_handle()->ModelAvailable());
 
   std::vector<float> input;
@@ -312,7 +312,7 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -331,7 +331,7 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -366,7 +366,7 @@ TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt);
+      /*model_metadata=*/absl::nullopt);
   EXPECT_TRUE(model_executor_handle()->ModelAvailable());
 
   EXPECT_FALSE(model_executor_handle()
@@ -387,7 +387,7 @@ TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
       any_metadata);
   EXPECT_TRUE(model_executor_handle()->ModelAvailable());
 
-  base::Optional<proto::Duration> supported_features_for_loaded_model =
+  absl::optional<proto::Duration> supported_features_for_loaded_model =
       model_executor_handle()
           ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
   ASSERT_TRUE(supported_features_for_loaded_model.has_value());
@@ -435,7 +435,7 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -471,7 +471,7 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<float>>& output) {
+             const absl::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },

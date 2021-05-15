@@ -522,7 +522,7 @@ void FakeServer::SetHttpError(net::HttpStatusCode http_status_code) {
 
 void FakeServer::ClearHttpError() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  http_error_status_code_ = base::nullopt;
+  http_error_status_code_ = absl::nullopt;
 }
 
 void FakeServer::SetClientCommand(

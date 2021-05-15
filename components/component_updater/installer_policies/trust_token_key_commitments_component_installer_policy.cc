@@ -40,17 +40,17 @@ const char kTrustTokenKeyCommitmentsManifestName[] =
 
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
-base::Optional<std::string> LoadKeyCommitmentsFromDisk(
+absl::optional<std::string> LoadKeyCommitmentsFromDisk(
     const base::FilePath& path) {
   if (path.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   VLOG(1) << "Reading trust token key commitments from file: " << path.value();
 
   std::string ret;
   if (!base::ReadFileToString(path, &ret)) {
     VLOG(1) << "Failed reading from " << path.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ret;
@@ -158,7 +158,7 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::GetPublicKeyHash(
 // static
 void TrustTokenKeyCommitmentsComponentInstallerPolicy::
     LoadTrustTokensFromString(
-        base::OnceCallback<base::Optional<std::string>()> load_keys_from_disk,
+        base::OnceCallback<absl::optional<std::string>()> load_keys_from_disk,
         base::OnceCallback<void(const std::string&)> on_commitments_ready) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -167,7 +167,7 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::
           // Only bother sending commitments to the network service if we loaded
           // them successfully.
           [](base::OnceCallback<void(const std::string&)> on_commitments_ready,
-             base::Optional<std::string> loaded_commitments) {
+             absl::optional<std::string> loaded_commitments) {
             if (loaded_commitments.has_value()) {
               std::move(on_commitments_ready).Run(loaded_commitments.value());
             }

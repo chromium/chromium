@@ -22,8 +22,8 @@ void Close(int* close_call_count, bool by_user) {
 }
 
 void Click(int* click_call_count,
-           base::Optional<int>* passed_button_index,
-           const base::Optional<int>& button_index) {
+           absl::optional<int>* passed_button_index,
+           const absl::optional<int>& button_index) {
   (*click_call_count)++;
   *passed_button_index = button_index;
 }
@@ -87,7 +87,7 @@ TEST_F(NotificationTest, ClickCallback) {
 
   // For the click callback.
   int click_call_count = 0;
-  base::Optional<int> passed_button_index;
+  absl::optional<int> passed_button_index;
 
   Notification notification(
       title, message, display_source, notification_id, notifier_id, buttons,
@@ -105,7 +105,7 @@ TEST_F(NotificationTest, ClickCallback) {
 
   // Expected to be called once without button index
   EXPECT_EQ(click_call_count, 1);
-  EXPECT_EQ(passed_button_index, base::nullopt);
+  EXPECT_EQ(passed_button_index, absl::nullopt);
 
   // Clicks on button.
   message_center->ClickOnNotificationButton(notification_id, 0);

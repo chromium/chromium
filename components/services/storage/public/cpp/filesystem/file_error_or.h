@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -39,7 +39,7 @@ class FileErrorOr {
 
  private:
   base::File::Error error_ = base::File::FILE_ERROR_FAILED;
-  base::Optional<ValueType> maybe_value_;
+  absl::optional<ValueType> maybe_value_;
 };
 
 }  // namespace storage

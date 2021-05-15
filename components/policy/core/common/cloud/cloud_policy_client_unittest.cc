@@ -58,7 +58,7 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 
-// Matcher for base::Optional. Can be combined with Not().
+// Matcher for absl::optional. Can be combined with Not().
 MATCHER(HasValue, "Has value") {
   return arg.has_value();
 }
@@ -192,7 +192,7 @@ struct MockRobotAuthCodeCallbackObserver {
 };
 
 struct MockResponseCallbackObserver {
-  MOCK_METHOD(void, OnResponseReceived, (base::Optional<base::Value>));
+  MOCK_METHOD(void, OnResponseReceived, (absl::optional<base::Value>));
 };
 
 std::string CreatePolicyData(const std::string& policy_value) {
@@ -533,7 +533,7 @@ class CloudPolicyClientTest : public testing::Test {
 
   void AttemptUploadEncryptedWaitUntilIdle(
       const ::reporting::EncryptedRecord& record,
-      base::Optional<base::Value> context = base::nullopt) {
+      absl::optional<base::Value> context = absl::nullopt) {
     CloudPolicyClient::ResponseCallback response_callback =
         base::BindOnce(&MockResponseCallbackObserver::OnResponseReceived,
                        base::Unretained(&response_callback_observer_));
@@ -1678,7 +1678,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 
-  base::Optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  absl::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
   ASSERT_TRUE(payload);
 
   ASSERT_FALSE(policy::GetDeviceName().empty());
@@ -1795,7 +1795,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
 
   // The second config should trump the first.
   DeviceManagementService::JobConfiguration* job_config = config.get();
-  base::Optional<base::Value> payload =
+  absl::optional<base::Value> payload =
       base::JSONReader::Read(job_config->GetPayload());
   ASSERT_TRUE(payload);
 
@@ -2459,8 +2459,8 @@ struct MockClientCertProvisioningStartCsrCallbackObserver {
   MOCK_METHOD(void,
               Callback,
               (DeviceManagementStatus,
-               base::Optional<CertProvisioningResponseErrorType>,
-               base::Optional<int64_t> try_later,
+               absl::optional<CertProvisioningResponseErrorType>,
+               absl::optional<int64_t> try_later,
                const std::string& invalidation_topic,
                const std::string& va_challenge,
                em::HashingAlgorithm hash_algorithm,
@@ -2559,7 +2559,7 @@ TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
   EXPECT_CALL(
       callback_observer,
       Callback(DeviceManagementStatus::DM_STATUS_SUCCESS,
-               testing::Eq(base::nullopt), testing::Eq(base::nullopt),
+               testing::Eq(absl::nullopt), testing::Eq(absl::nullopt),
                invalidation_topic, va_challenge, hash_algorithm, data_to_sign))
       .Times(1);
 
@@ -2582,7 +2582,7 @@ TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
   MockClientCertProvisioningStartCsrCallbackObserver callback_observer;
   EXPECT_CALL(callback_observer,
               Callback(DeviceManagementStatus::DM_STATUS_SUCCESS,
-                       testing::Eq(base::nullopt), testing::Eq(try_later),
+                       testing::Eq(absl::nullopt), testing::Eq(try_later),
                        std::string(), std::string(),
                        em::HashingAlgorithm::HASHING_ALGORITHM_UNSPECIFIED,
                        std::string()))
@@ -2609,7 +2609,7 @@ TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
   EXPECT_CALL(
       callback_observer,
       Callback(DeviceManagementStatus::DM_STATUS_SUCCESS, testing::Eq(error),
-               testing::Eq(base::nullopt), std::string(), std::string(),
+               testing::Eq(absl::nullopt), std::string(), std::string(),
                em::HashingAlgorithm::HASHING_ALGORITHM_UNSPECIFIED,
                std::string()))
       .Times(1);
@@ -2628,8 +2628,8 @@ class MockClientCertProvisioningFinishCsrCallbackObserver {
   MOCK_METHOD(void,
               Callback,
               (DeviceManagementStatus,
-               base::Optional<CertProvisioningResponseErrorType>,
-               base::Optional<int64_t> try_later),
+               absl::optional<CertProvisioningResponseErrorType>,
+               absl::optional<int64_t> try_later),
               (const));
 };
 
@@ -2718,7 +2718,7 @@ TEST_P(CloudPolicyClientCertProvisioningFinishCsrTest,
   MockClientCertProvisioningFinishCsrCallbackObserver callback_observer;
   EXPECT_CALL(callback_observer,
               Callback(DeviceManagementStatus::DM_STATUS_SUCCESS,
-                       testing::Eq(base::nullopt), testing::Eq(base::nullopt)))
+                       testing::Eq(absl::nullopt), testing::Eq(absl::nullopt)))
       .Times(1);
 
   RunTest(fake_response, callback_observer);
@@ -2741,7 +2741,7 @@ TEST_P(CloudPolicyClientCertProvisioningFinishCsrTest,
   MockClientCertProvisioningFinishCsrCallbackObserver callback_observer;
   EXPECT_CALL(callback_observer,
               Callback(DeviceManagementStatus::DM_STATUS_SUCCESS,
-                       testing::Eq(error), testing::Eq(base::nullopt)))
+                       testing::Eq(error), testing::Eq(absl::nullopt)))
       .Times(1);
 
   RunTest(fake_response, callback_observer);
@@ -2758,8 +2758,8 @@ class MockClientCertProvisioningDownloadCertCallbackObserver {
   MOCK_METHOD(void,
               Callback,
               (DeviceManagementStatus,
-               base::Optional<CertProvisioningResponseErrorType>,
-               base::Optional<int64_t> try_later,
+               absl::optional<CertProvisioningResponseErrorType>,
+               absl::optional<int64_t> try_later,
                const std::string& pem_encoded_certificate),
               (const));
 };
@@ -2847,7 +2847,7 @@ TEST_P(CloudPolicyClientCertProvisioningDownloadCertTest,
   MockClientCertProvisioningDownloadCertCallbackObserver callback_observer;
   EXPECT_CALL(callback_observer,
               Callback(DeviceManagementStatus::DM_STATUS_SUCCESS,
-                       testing::Eq(base::nullopt), testing::Eq(base::nullopt),
+                       testing::Eq(absl::nullopt), testing::Eq(absl::nullopt),
                        pem_encoded_cert))
       .Times(1);
 
@@ -2873,7 +2873,7 @@ TEST_P(CloudPolicyClientCertProvisioningDownloadCertTest,
   EXPECT_CALL(
       callback_observer,
       Callback(DeviceManagementStatus::DM_STATUS_SUCCESS, testing::Eq(error),
-               testing::Eq(base::nullopt), std::string()))
+               testing::Eq(absl::nullopt), std::string()))
       .Times(1);
 
   RunTest(fake_response, callback_observer);

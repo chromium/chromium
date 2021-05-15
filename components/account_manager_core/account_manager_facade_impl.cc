@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -23,6 +22,7 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -39,7 +39,7 @@ void UnmarshalAccounts(
     std::vector<crosapi::mojom::AccountPtr> mojo_accounts) {
   std::vector<Account> accounts;
   for (const auto& mojo_account : mojo_accounts) {
-    base::Optional<Account> maybe_account = FromMojoAccount(mojo_account);
+    absl::optional<Account> maybe_account = FromMojoAccount(mojo_account);
     if (!maybe_account) {
       // Skip accounts we couldn't unmarshal. No logging, as it would produce
       // a lot of noise.
@@ -53,7 +53,7 @@ void UnmarshalAccounts(
 void UnmarshalPersistentError(
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
     crosapi::mojom::GoogleServiceAuthErrorPtr mojo_error) {
-  base::Optional<GoogleServiceAuthError> maybe_error =
+  absl::optional<GoogleServiceAuthError> maybe_error =
       FromMojoGoogleServiceAuthError(mojo_error);
   if (!maybe_error) {
     // Couldn't unmarshal GoogleServiceAuthError, report the account as not
@@ -158,7 +158,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
     is_request_pending_ = false;
 
     if (result->is_error()) {
-      base::Optional<GoogleServiceAuthError> maybe_error =
+      absl::optional<GoogleServiceAuthError> maybe_error =
           account_manager::FromMojoGoogleServiceAuthError(result->get_error());
 
       if (!maybe_error.has_value()) {
@@ -368,7 +368,7 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback,
     crosapi::mojom::AccountAdditionResultPtr mojo_result) {
-  base::Optional<account_manager::AccountAdditionResult> result =
+  absl::optional<account_manager::AccountAdditionResult> result =
       account_manager::FromMojoAccountAdditionResult(mojo_result);
   if (!result.has_value()) {
     FinishAddAccount(std::move(callback),
@@ -390,7 +390,7 @@ void AccountManagerFacadeImpl::FinishAddAccount(
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
-  base::Optional<Account> maybe_account = FromMojoAccount(account);
+  absl::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;
@@ -403,7 +403,7 @@ void AccountManagerFacadeImpl::OnTokenUpserted(
 
 void AccountManagerFacadeImpl::OnAccountRemoved(
     crosapi::mojom::AccountPtr account) {
-  base::Optional<Account> maybe_account = FromMojoAccount(account);
+  absl::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;

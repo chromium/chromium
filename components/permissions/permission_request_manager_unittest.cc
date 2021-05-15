@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +24,7 @@
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 
@@ -685,8 +685,8 @@ class MockNotificationPermissionUiSelector
     : public NotificationPermissionUiSelector {
  public:
   explicit MockNotificationPermissionUiSelector(
-      base::Optional<QuietUiReason> quiet_ui_reason,
-      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      absl::optional<QuietUiReason> quiet_ui_reason,
+      absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
           prediction_likelihood,
       bool async)
       : quiet_ui_reason_(quiet_ui_reason),
@@ -704,25 +704,25 @@ class MockNotificationPermissionUiSelector
     }
   }
 
-  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM() override {
     return prediction_likelihood_;
   }
 
   static void CreateForManager(
       PermissionRequestManager* manager,
-      base::Optional<QuietUiReason> quiet_ui_reason,
+      absl::optional<QuietUiReason> quiet_ui_reason,
       bool async,
-      base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
-          prediction_likelihood = base::nullopt) {
+      absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+          prediction_likelihood = absl::nullopt) {
     manager->add_notification_permission_ui_selector_for_testing(
         std::make_unique<MockNotificationPermissionUiSelector>(
             quiet_ui_reason, prediction_likelihood, async));
   }
 
  private:
-  base::Optional<QuietUiReason> quiet_ui_reason_;
-  base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  absl::optional<QuietUiReason> quiet_ui_reason_;
+  absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_likelihood_;
   bool async_;
 };
@@ -749,7 +749,7 @@ TEST_P(PermissionRequestManagerTest,
 
 TEST_P(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
   const struct {
-    base::Optional<NotificationPermissionUiSelector::QuietUiReason>
+    absl::optional<NotificationPermissionUiSelector::QuietUiReason>
         quiet_ui_reason;
     bool async;
   } kTests[] = {
@@ -809,9 +809,9 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
 
   const struct {
-    std::vector<base::Optional<QuietUiReason>> quiet_ui_reasons;
+    std::vector<absl::optional<QuietUiReason>> quiet_ui_reasons;
     std::vector<bool> simulate_delayed_decision;
-    base::Optional<QuietUiReason> expected_reason;
+    absl::optional<QuietUiReason> expected_reason;
   } kTests[] = {
       // Simple sync selectors, first one should take priority.
       {{QuietUiReason::kTriggeredByCrowdDeny, QuietUiReason::kEnabledInPrefs},
@@ -823,30 +823,30 @@ TEST_P(PermissionRequestManagerTest, MultipleUiSelectors) {
        {true, false},
        QuietUiReason::kTriggeredByCrowdDeny},
       // The first selector that has a quiet ui decision should be used.
-      {{base::nullopt, base::nullopt,
+      {{absl::nullopt, absl::nullopt,
         QuietUiReason::kTriggeredDueToAbusiveContent,
         QuietUiReason::kEnabledInPrefs},
        {false, true, true, false},
        QuietUiReason::kTriggeredDueToAbusiveContent},
       // If all selectors return a normal ui, it should use a normal ui.
-      {{base::nullopt, base::nullopt}, {false, true}, base::nullopt},
+      {{absl::nullopt, absl::nullopt}, {false, true}, absl::nullopt},
 
       // Use a bunch of selectors both async and sync.
-      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
-        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
-        base::nullopt, QuietUiReason::kEnabledInPrefs},
+      {{absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        absl::nullopt, QuietUiReason::kEnabledInPrefs},
        {false, true, false, true, true, true, false, false},
        QuietUiReason::kTriggeredDueToAbusiveRequests},
       // Use a bunch of selectors all sync.
-      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
-        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
-        base::nullopt, QuietUiReason::kEnabledInPrefs},
+      {{absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        absl::nullopt, QuietUiReason::kEnabledInPrefs},
        {false, false, false, false, false, false, false, false},
        QuietUiReason::kTriggeredDueToAbusiveRequests},
       // Use a bunch of selectors all async.
-      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
-        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
-        base::nullopt, QuietUiReason::kEnabledInPrefs},
+      {{absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        absl::nullopt, QuietUiReason::kEnabledInPrefs},
        {true, true, true, true, true, true, true, true},
        QuietUiReason::kTriggeredDueToAbusiveRequests},
   };
@@ -888,17 +888,17 @@ TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
 
   const struct {
     std::vector<bool> enable_quiet_uis;
-    std::vector<base::Optional<PredictionLikelihood>> prediction_likelihoods;
-    base::Optional<PredictionLikelihood> expected_prediction_likelihood;
+    std::vector<absl::optional<PredictionLikelihood>> prediction_likelihoods;
+    absl::optional<PredictionLikelihood> expected_prediction_likelihood;
   } kTests[] = {
       // Sanity check: prediction likelihood is populated correctly.
       {{true}, {VeryLikely}, VeryLikely},
       {{false}, {Neutral}, Neutral},
 
       // Prediction likelihood is populated only if the selector was considered.
-      {{true, true}, {base::nullopt, VeryLikely}, base::nullopt},
-      {{false, true}, {base::nullopt, VeryLikely}, VeryLikely},
-      {{false, false}, {base::nullopt, VeryLikely}, VeryLikely},
+      {{true, true}, {absl::nullopt, VeryLikely}, absl::nullopt},
+      {{false, true}, {absl::nullopt, VeryLikely}, VeryLikely},
+      {{false, false}, {absl::nullopt, VeryLikely}, VeryLikely},
 
       // First considered selector is preserved.
       {{true, true}, {Neutral, VeryLikely}, Neutral},
@@ -912,8 +912,8 @@ TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
       MockNotificationPermissionUiSelector::CreateForManager(
           manager_,
           test.enable_quiet_uis[i]
-              ? base::Optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)
-              : base::nullopt,
+              ? absl::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)
+              : absl::nullopt,
           false /* async */, test.prediction_likelihoods[i]);
     }
 

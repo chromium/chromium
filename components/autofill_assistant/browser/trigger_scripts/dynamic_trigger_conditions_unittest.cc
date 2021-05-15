@@ -48,7 +48,7 @@ TEST_F(DynamicTriggerConditionsTest, UpdateWithoutSelectorsDoesNothing) {
 TEST_F(DynamicTriggerConditionsTest, LookupInvalidSelectorsFails) {
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("not_evaluated"))),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(DynamicTriggerConditionsTest, AddSelectorsFromTriggerScript) {
@@ -106,13 +106,13 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
 
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("a"))),
-            base::make_optional(true));
+            absl::make_optional(true));
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("b"))),
-            base::make_optional(false));
+            absl::make_optional(false));
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("c"))),
-            base::make_optional(true));
+            absl::make_optional(true));
 }
 
 TEST_F(DynamicTriggerConditionsTest, ClearSelectors) {
@@ -148,7 +148,7 @@ TEST_F(DynamicTriggerConditionsTest, HasResults) {
             // previous results.
             EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                           Selector(ToSelectorProto("a"))),
-                      base::make_optional(true));
+                      absl::make_optional(true));
             std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
                                     nullptr);
           });
@@ -158,7 +158,7 @@ TEST_F(DynamicTriggerConditionsTest, HasResults) {
   // After the update, the new result is returned.
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("a"))),
-            base::make_optional(false));
+            absl::make_optional(false));
 }
 
 TEST_F(DynamicTriggerConditionsTest, GetPathPatternMatches) {

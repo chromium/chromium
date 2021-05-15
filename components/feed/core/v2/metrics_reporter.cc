@@ -119,7 +119,7 @@ void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
     persistent_data_.accumulated_time_spent_in_feed +=
         std::min(kTimeSpentInFeedInteractionTimeout,
                  base::TimeTicks::Now() - *time_in_feed_start_);
-    time_in_feed_start_ = base::nullopt;
+    time_in_feed_start_ = absl::nullopt;
   }
 
   if (interacted_or_scrolled) {

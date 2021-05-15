@@ -9,9 +9,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -82,7 +82,7 @@ class PasswordGenerationManager {
   // The client for the password form.
   PasswordManagerClient* const client_;
   // Stores the pre-saved credential.
-  base::Optional<PasswordForm> presaved_;
+  absl::optional<PasswordForm> presaved_;
   // Interface to get current time.
   std::unique_ptr<base::Clock> clock_;
   // Used to produce callbacks.

@@ -582,7 +582,7 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
                            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                            .email;
 
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       autofill_client_->GetIdentityManager()
           ->FindExtendedAccountInfoForAccountWithRefreshToken(
               autofill_client_->GetPersonalDataManager()
@@ -659,7 +659,7 @@ CreditCardFIDOAuthenticator::ParseCredentialDescriptor(
       "authenticator_transport_support", base::Value::Type::LIST);
   if (transports && !transports->GetList().empty()) {
     for (const base::Value& transport_type : transports->GetList()) {
-      base::Optional<FidoTransportProtocol> protocol =
+      absl::optional<FidoTransportProtocol> protocol =
           device::ConvertToFidoTransportProtocol(
               base::ToLowerASCII(transport_type.GetString()));
       if (protocol.has_value())

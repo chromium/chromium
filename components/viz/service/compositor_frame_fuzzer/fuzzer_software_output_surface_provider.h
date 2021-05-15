@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -18,7 +18,7 @@ namespace viz {
 class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
  public:
   explicit FuzzerSoftwareOutputSurfaceProvider(
-      base::Optional<base::FilePath> png_dir_path);
+      absl::optional<base::FilePath> png_dir_path);
   ~FuzzerSoftwareOutputSurfaceProvider() override;
 
   // OutputSurfaceProvider implementation.
@@ -35,7 +35,7 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
       const DebugRendererSettings* debug_settings) override;
 
  private:
-  base::Optional<base::FilePath> png_dir_path_;
+  absl::optional<base::FilePath> png_dir_path_;
 
   DISALLOW_COPY_AND_ASSIGN(FuzzerSoftwareOutputSurfaceProvider);
 };

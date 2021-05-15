@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -28,6 +27,7 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -81,13 +81,13 @@ class POLICY_EXPORT CloudPolicyClient {
   // Callback that processes response value received from the server,
   // or nullopt, if there was a failure.
   using ResponseCallback =
-      base::OnceCallback<void(base::Optional<base::Value>)>;
+      base::OnceCallback<void(absl::optional<base::Value>)>;
 
   using ClientCertProvisioningStartCsrCallback = base::OnceCallback<void(
       DeviceManagementStatus,
-      base::Optional<
+      absl::optional<
           enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      base::Optional<int64_t> try_later,
+      absl::optional<int64_t> try_later,
       const std::string& invalidation_topic,
       const std::string& va_challenge,
       enterprise_management::HashingAlgorithm hash_algorithm,
@@ -95,15 +95,15 @@ class POLICY_EXPORT CloudPolicyClient {
 
   using ClientCertProvisioningFinishCsrCallback = base::OnceCallback<void(
       DeviceManagementStatus,
-      base::Optional<
+      absl::optional<
           enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      base::Optional<int64_t> try_later)>;
+      absl::optional<int64_t> try_later)>;
 
   using ClientCertProvisioningDownloadCertCallback = base::OnceCallback<void(
       DeviceManagementStatus,
-      base::Optional<
+      absl::optional<
           enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      base::Optional<int64_t> try_later,
+      absl::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate)>;
 
   // Observer interface for state and policy changes.
@@ -325,7 +325,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // payload of the job). The client must be in a registered state. The
   // |callback| will be called when the operation completes.
   virtual void UploadEncryptedReport(base::Value merging_payload,
-                                     base::Optional<base::Value> context,
+                                     absl::optional<base::Value> context,
                                      ResponseCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in

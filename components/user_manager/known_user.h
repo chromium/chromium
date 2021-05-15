@@ -209,9 +209,9 @@ class USER_MANAGER_EXPORT KnownUser final {
   base::Time GetLastOnlineSignin(const AccountId& account_id);
 
   void SetOfflineSigninLimit(const AccountId& account_id,
-                             base::Optional<base::TimeDelta> time_limit);
+                             absl::optional<base::TimeDelta> time_limit);
 
-  base::Optional<base::TimeDelta> GetOfflineSigninLimit(
+  absl::optional<base::TimeDelta> GetOfflineSigninLimit(
       const AccountId& account_id);
 
   void SetIsEnterpriseManaged(const AccountId& account_id,
@@ -531,11 +531,11 @@ base::Time USER_MANAGER_EXPORT GetLastOnlineSignin(const AccountId& account_id);
 // KnownUser::SetOfflineSigninLimit instead.
 void USER_MANAGER_EXPORT
 SetOfflineSigninLimit(const AccountId& account_id,
-                      base::Optional<base::TimeDelta> time_limit);
+                      absl::optional<base::TimeDelta> time_limit);
 
 // TODO(https://crbug.com/1150434): Deprecated, use
 // KnownUser::GetOfflineSigninLimit instead.
-base::Optional<base::TimeDelta> USER_MANAGER_EXPORT
+absl::optional<base::TimeDelta> USER_MANAGER_EXPORT
 GetOfflineSigninLimit(const AccountId& account_id);
 
 // TODO(https://crbug.com/1150434): Deprecated, use

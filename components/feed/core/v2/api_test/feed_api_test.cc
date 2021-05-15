@@ -183,8 +183,8 @@ void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
 }
 
 void TestSurfaceBase::Clear() {
-  initial_state = base::nullopt;
-  update = base::nullopt;
+  initial_state = absl::nullopt;
+  update = absl::nullopt;
   described_updates_.clear();
 }
 
@@ -450,7 +450,7 @@ void TestFeedNetwork::InjectEmptyActionRequestResult() {
   InjectApiRawResponse<UploadActionsDiscoverApi>({});
 }
 
-base::Optional<feedwire::UploadActionsRequest>
+absl::optional<feedwire::UploadActionsRequest>
 TestFeedNetwork::GetActionRequestSent() {
   return GetApiRequestSent<UploadActionsDiscoverApi>();
 }
@@ -522,7 +522,7 @@ RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
 }
 void TestWireResponseTranslator::InjectResponse(
     std::unique_ptr<StreamModelUpdateRequest> response,
-    base::Optional<std::string> session_id) {
+    absl::optional<std::string> session_id) {
   DCHECK(!response->stream_data.signed_in() || !session_id);
   RefreshResponseData data;
   data.model_update_request = std::move(response);

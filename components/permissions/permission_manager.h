@@ -117,7 +117,7 @@ class PermissionManager : public KeyedService,
       const GURL& requesting_origin) override;
   bool IsPermissionOverridableByDevTools(
       content::PermissionType permission,
-      const base::Optional<url::Origin>& origin) override;
+      const absl::optional<url::Origin>& origin) override;
   SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
@@ -135,7 +135,7 @@ class PermissionManager : public KeyedService,
   // For the given |origin|, overrides permissions that belong to |overrides|.
   // These permissions are in-sync with the PermissionController.
   void SetPermissionOverridesForDevTools(
-      const base::Optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& origin,
       const PermissionOverrides& overrides) override;
   void ResetPermissionOverridesForDevTools() override;
 

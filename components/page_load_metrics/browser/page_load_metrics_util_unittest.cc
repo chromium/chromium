@@ -68,7 +68,7 @@ TEST_F(PageLoadMetricsUtilTest, GetGoogleHostnamePrefix) {
       {true, "www.www", "https://www.www.google.com/"},
   };
   for (const auto& test : test_cases) {
-    base::Optional<std::string> result =
+    absl::optional<std::string> result =
         page_load_metrics::GetGoogleHostnamePrefix(GURL(test.url));
     EXPECT_EQ(test.expected_result, result.has_value())
         << "For URL: " << test.url;

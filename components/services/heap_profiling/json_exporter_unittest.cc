@@ -27,7 +27,7 @@ static constexpr int kNoParent = -1;
 // Finds the first vm region in the given periodic interval. Returns null on
 // failure.
 const base::Value* FindFirstRegionWithAnyName(
-    const base::Optional<base::Value>& root) {
+    const absl::optional<base::Value>& root) {
   const base::Value* found_mmaps =
       root->FindKeyOfType("process_mmaps", base::Value::Type::DICTIONARY);
   if (!found_mmaps)
@@ -155,7 +155,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::Optional<base::Value> root = base::JSONReader::Read(json);
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   // Validate the allocators summary.
@@ -292,7 +292,7 @@ TEST(ProfilingJsonExporterTest, MemoryMaps) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::Optional<base::Value> root = base::JSONReader::Read(json);
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   const base::Value* region = FindFirstRegionWithAnyName(root);
@@ -340,7 +340,7 @@ TEST(ProfilingJsonExporterTest, Context) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::Optional<base::Value> root = base::JSONReader::Read(json);
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   // Retrieve the allocations.

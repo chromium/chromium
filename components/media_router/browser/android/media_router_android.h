@@ -84,7 +84,7 @@ class MediaRouterAndroid : public MediaRouterBase {
   // Notifies the media router when the route was closed with an optional error.
   // Null error indicates no error.
   void OnRouteClosed(const MediaRoute::Id& route_id,
-                     const base::Optional<std::string>& error);
+                     const absl::optional<std::string>& error);
 
   // Notifies the media router about a message received from the media route.
   void OnMessage(const MediaRoute::Id& route_id, const std::string& message);

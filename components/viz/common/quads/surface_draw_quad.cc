@@ -5,9 +5,9 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 
 #include "base/check_op.h"
-#include "base/optional.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 

@@ -207,19 +207,19 @@ GURL LocalPolicyTestServer::GetServiceURL() const {
   return GetURL("device_management");
 }
 
-base::Optional<std::vector<base::FilePath>>
+absl::optional<std::vector<base::FilePath>>
 LocalPolicyTestServer::GetPythonPath() const {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::Optional<std::vector<base::FilePath>> ret =
+  absl::optional<std::vector<base::FilePath>> ret =
       net::LocalTestServer::GetPythonPath();
   if (!ret)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Add the net/tools/testserver directory to the path.
   base::FilePath net_testserver_path;
   if (!LocalTestServer::GetTestServerPath(&net_testserver_path)) {
     LOG(ERROR) << "Failed to get net testserver path.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   ret->push_back(net_testserver_path.DirName());
 
@@ -227,7 +227,7 @@ LocalPolicyTestServer::GetPythonPath() const {
   base::FilePath third_party_dir;
   if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &third_party_dir)) {
     LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
-    return base::nullopt;
+    return absl::nullopt;
   }
   ret->push_back(third_party_dir.AppendASCII("third_party")
                      .AppendASCII("protobuf")
@@ -237,7 +237,7 @@ LocalPolicyTestServer::GetPythonPath() const {
   base::FilePath pyproto_dir;
   if (!GetPyProtoPath(&pyproto_dir)) {
     LOG(ERROR) << "Cannot find pyproto dir for generated code.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret->push_back(pyproto_dir.AppendASCII("components")

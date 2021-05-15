@@ -41,9 +41,9 @@ TEST_F(ArcCrashCollectorBridgeTest, ConstructDestruct) {}
 TEST_F(ArcCrashCollectorBridgeTest, SetBuildProperties) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
-                               base::Optional<std::string>());
+                               absl::optional<std::string>());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
-                               base::Optional<std::string>("fingerprint"));
+                               absl::optional<std::string>("fingerprint"));
 }
 
 // Tests that DumpCrash doesn't crash.
@@ -51,8 +51,8 @@ TEST_F(ArcCrashCollectorBridgeTest, SetBuildProperties) {
 TEST_F(ArcCrashCollectorBridgeTest, DumpCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
-                               base::Optional<std::string>());
-  bridge()->DumpCrash("type", mojo::ScopedHandle(), base::nullopt);
+                               absl::optional<std::string>());
+  bridge()->DumpCrash("type", mojo::ScopedHandle(), absl::nullopt);
 }
 
 // Tests that DumpNativeCrash doesn't crash.
@@ -60,7 +60,7 @@ TEST_F(ArcCrashCollectorBridgeTest, DumpCrash) {
 TEST_F(ArcCrashCollectorBridgeTest, DumpNativeCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
-                               base::Optional<std::string>());
+                               absl::optional<std::string>());
   bridge()->DumpNativeCrash("exec_name", getpid(), /*timestamp=*/42,
                             mojo::ScopedHandle());
 }
@@ -70,7 +70,7 @@ TEST_F(ArcCrashCollectorBridgeTest, DumpNativeCrash) {
 TEST_F(ArcCrashCollectorBridgeTest, DumpKernelCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
-                               base::Optional<std::string>());
+                               absl::optional<std::string>());
   bridge()->DumpKernelCrash(mojo::ScopedHandle());
 }
 

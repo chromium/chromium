@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
@@ -20,6 +19,7 @@
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 

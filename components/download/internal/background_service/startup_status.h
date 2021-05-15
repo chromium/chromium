@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_STARTUP_STATUS_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -16,9 +16,9 @@ struct StartupStatus {
   StartupStatus();
   ~StartupStatus();
 
-  base::Optional<bool> driver_ok;
-  base::Optional<bool> model_ok;
-  base::Optional<bool> file_monitor_ok;
+  absl::optional<bool> driver_ok;
+  absl::optional<bool> model_ok;
+  absl::optional<bool> file_monitor_ok;
 
   // Resets all startup state tracking.
   void Reset();

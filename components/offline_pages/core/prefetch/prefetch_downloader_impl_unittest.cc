@@ -76,7 +76,7 @@ class PrefetchDownloaderImplTest : public PrefetchRequestTestBase {
                                          operation_name);
   }
 
-  const base::Optional<download::DownloadParams>& GetDownload(
+  const absl::optional<download::DownloadParams>& GetDownload(
       const std::string& guid) const {
     return download_service_.GetDownload(guid);
   }
@@ -109,7 +109,7 @@ TEST_F(PrefetchDownloaderImplTest, DownloadParams) {
   clock()->SetNow(epoch);
 
   StartDownload(kDownloadId, kDownloadLocation, kOperationName);
-  const base::Optional<download::DownloadParams>& params =
+  const absl::optional<download::DownloadParams>& params =
       GetDownload(kDownloadId);
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(kDownloadId, params->guid);
@@ -138,7 +138,7 @@ TEST_F(PrefetchDownloaderImplTest, ExperimentHeaderInDownloadParams) {
   SetUpExperimentOption();
 
   StartDownload(kDownloadId, kDownloadLocation, kOperationName);
-  const base::Optional<download::DownloadParams>& params =
+  const absl::optional<download::DownloadParams>& params =
       GetDownload(kDownloadId);
   ASSERT_TRUE(params.has_value());
   std::string header_value;

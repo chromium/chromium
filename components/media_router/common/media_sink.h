@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/media_router/common/media_route_provider_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 namespace U_ICU_NAMESPACE {
@@ -62,12 +62,12 @@ class MediaSink {
   void set_description(const std::string& description) {
     description_ = description;
   }
-  const base::Optional<std::string>& description() const {
+  const absl::optional<std::string>& description() const {
     return description_;
   }
 
   void set_domain(const std::string& domain) { domain_ = domain; }
-  const base::Optional<std::string>& domain() const { return domain_; }
+  const absl::optional<std::string>& domain() const { return domain_; }
 
   void set_icon_type(SinkIconType icon_type) { icon_type_ = icon_type; }
   SinkIconType icon_type() const { return icon_type_; }
@@ -93,10 +93,10 @@ class MediaSink {
   std::string name_;
 
   // Optional description of the MediaSink.
-  base::Optional<std::string> description_;
+  absl::optional<std::string> description_;
 
   // Optional domain of the MediaSink.
-  base::Optional<std::string> domain_;
+  absl::optional<std::string> domain_;
 
   // The type of icon that corresponds with the MediaSink.
   SinkIconType icon_type_ = SinkIconType::GENERIC;

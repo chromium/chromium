@@ -200,7 +200,7 @@ class MockSuggestionsService : public SuggestionsService {
  public:
   MOCK_METHOD0(FetchSuggestionsData, bool());
   MOCK_CONST_METHOD0(GetSuggestionsDataFromCache,
-                     base::Optional<SuggestionsProfile>());
+                     absl::optional<SuggestionsProfile>());
   MOCK_METHOD1(
       AddCallback,
       base::CallbackListSubscription(const ResponseCallback& callback));
@@ -236,14 +236,14 @@ class FakeHomepageClient : public MostVisitedSites::HomepageClient {
 
   void SetHomepageUrl(GURL homepage_url) { homepage_url_ = homepage_url; }
 
-  void SetHomepageTitle(const base::Optional<std::u16string>& homepage_title) {
+  void SetHomepageTitle(const absl::optional<std::u16string>& homepage_title) {
     homepage_title_ = homepage_title;
   }
 
  private:
   bool homepage_tile_enabled_;
   GURL homepage_url_;
-  base::Optional<std::u16string> homepage_title_;
+  absl::optional<std::u16string> homepage_title_;
 };
 
 class FakeExploreSitesClient : public MostVisitedSites::ExploreSitesClient {
@@ -2187,7 +2187,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesWithPersonalOnly) {
   EXPECT_THAT(MostVisitedSites::MergeTiles(std::move(personal_tiles),
                                            /*allowlist_tiles=*/NTPTilesVector(),
                                            /*popular_tiles=*/NTPTilesVector(),
-                                           /*explore_tile=*/base::nullopt),
+                                           /*explore_tile=*/absl::nullopt),
               ElementsAre(MatchesTile(u"Site 1", "https://www.site1.com/",
                                       TileSource::TOP_SITES),
                           MatchesTile(u"Site 2", "https://www.site2.com/",
@@ -2211,7 +2211,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesWithPopularOnly) {
       MostVisitedSites::MergeTiles(/*personal_tiles=*/NTPTilesVector(),
                                    /*allowlist_tiles=*/NTPTilesVector(),
                                    /*popular_tiles=*/std::move(popular_tiles),
-                                   /*explore_tile=*/base::nullopt),
+                                   /*explore_tile=*/absl::nullopt),
       ElementsAre(
           MatchesTile(u"Site 1", "https://www.site1.com/", TileSource::POPULAR),
           MatchesTile(u"Site 2", "https://www.site2.com/", TileSource::POPULAR),
@@ -2229,7 +2229,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesFavoringPersonalOverPopular) {
       MakeTile(u"Site 3", "https://www.site3.com/", TileSource::TOP_SITES),
       MakeTile(u"Site 4", "https://www.site4.com/", TileSource::TOP_SITES),
   };
-  base::Optional<NTPTile> explore_tile{
+  absl::optional<NTPTile> explore_tile{
       MakeTile(u"Explore", "https://explore.example.com/", TileSource::EXPLORE),
   };
   EXPECT_THAT(

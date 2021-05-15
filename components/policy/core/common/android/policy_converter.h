@@ -12,8 +12,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -66,7 +66,7 @@ class POLICY_EXPORT PolicyConverter {
   // additional restrictions, or the schema for value's items or properties in
   // the case of a list or dictionary value.
   // Public for testing.
-  static base::Optional<base::Value> ConvertValueToSchema(base::Value value,
+  static absl::optional<base::Value> ConvertValueToSchema(base::Value value,
                                                           const Schema& schema);
 
   // Public for testing.

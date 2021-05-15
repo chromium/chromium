@@ -181,9 +181,9 @@ void CheckPendingCredentials(const PasswordForm& expected,
 }
 
 struct ExpectedGenerationUKM {
-  base::Optional<int64_t> generation_popup_shown;
+  absl::optional<int64_t> generation_popup_shown;
   int64_t has_generated_password;
-  base::Optional<int64_t> generated_password_modified;
+  absl::optional<int64_t> generated_password_modified;
 };
 
 // Check that UKM |metric_name| in |entry| is equal to |expected|. |expected| ==
@@ -1476,9 +1476,9 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      base::make_optional(1u) /* shown automatically */,
+      absl::make_optional(1u) /* shown automatically */,
       1 /* password generated */,
-      base::make_optional(1u) /* password modified */};
+      absl::make_optional(1u) /* password modified */};
 
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
 }
@@ -1522,9 +1522,9 @@ TEST_P(PasswordFormManagerTest, PresaveGenerated_ModifiedUsername) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      base::make_optional(1u) /* shown automatically */,
+      absl::make_optional(1u) /* shown automatically */,
       1 /* password generated */,
-      base::make_optional(0u) /* password modified */};
+      absl::make_optional(0u) /* password modified */};
 
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
 }
@@ -1613,7 +1613,7 @@ TEST_P(PasswordFormManagerTest, PasswordNoLongerGenerated) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      base::make_optional(2u) /* shown manually */,
+      absl::make_optional(2u) /* shown manually */,
       0 /* password generated */,
       {} /* generated password is not modified */};
 
@@ -2804,7 +2804,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      base::make_optional(2u) /* shown manually */,
+      absl::make_optional(2u) /* shown manually */,
       0 /* password generated */,
       {} /* generated password is not modified */};
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"
 
 namespace mojo {
@@ -50,12 +50,12 @@ struct StructTraits<blink::mojom::CredentialInfoDataView,
     return r.type;
   }
 
-  static const base::Optional<std::u16string>& id(
+  static const absl::optional<std::u16string>& id(
       const password_manager::CredentialInfo& r) {
     return r.id;
   }
 
-  static const base::Optional<std::u16string>& name(
+  static const absl::optional<std::u16string>& name(
       const password_manager::CredentialInfo& r) {
     return r.name;
   }
@@ -64,7 +64,7 @@ struct StructTraits<blink::mojom::CredentialInfoDataView,
     return r.icon;
   }
 
-  static const base::Optional<std::u16string>& password(
+  static const absl::optional<std::u16string>& password(
       const password_manager::CredentialInfo& r) {
     return r.password;
   }

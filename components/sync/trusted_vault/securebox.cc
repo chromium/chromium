@@ -171,7 +171,7 @@ std::vector<uint8_t> SecureBoxAesGcmEncrypt(
 }
 
 // Decrypts using AES-GCM.
-base::Optional<std::vector<uint8_t>> SecureBoxAesGcmDecrypt(
+absl::optional<std::vector<uint8_t>> SecureBoxAesGcmDecrypt(
     base::span<const uint8_t> secret_key,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> ciphertext,
@@ -192,7 +192,7 @@ base::Optional<std::vector<uint8_t>> SecureBoxAesGcmDecrypt(
                          ciphertext.data(), ciphertext.size(),
                          associated_data.data(), associated_data.size())) {
     // |ciphertext| can't be decrypted with given parameters.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DCHECK_LE(output_length, max_output_length);
@@ -265,7 +265,7 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
 
 // |our_private_key| may be null. |shared_secret|, |header| and |payload| may be
 // empty. Returns nullopt if decryption failed.
-base::Optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
+absl::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
     const EC_KEY* our_private_key,
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
@@ -280,7 +280,7 @@ base::Optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
   if (encrypted_payload.size() < min_payload_size ||
       encrypted_payload[0] != kSecureBoxVersion[0] ||
       encrypted_payload[1] != kSecureBoxVersion[1]) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   size_t offset = kVersionLength;
@@ -290,7 +290,7 @@ base::Optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
     their_ec_public_key = ECPublicKeyFromBytes(
         encrypted_payload.subspan(offset, kECPointLength), err_tracer);
     if (!their_ec_public_key) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     their_ec_public_key_point =
         EC_KEY_get0_public_key(their_ec_public_key.get());
@@ -322,7 +322,7 @@ std::vector<uint8_t> SecureBoxSymmetricEncrypt(
                               header, payload, err_tracer);
 }
 
-base::Optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
+absl::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) {
@@ -421,7 +421,7 @@ std::vector<uint8_t> SecureBoxPrivateKey::ExportToBytes() const {
   return result;
 }
 
-base::Optional<std::vector<uint8_t>> SecureBoxPrivateKey::Decrypt(
+absl::optional<std::vector<uint8_t>> SecureBoxPrivateKey::Decrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) const {

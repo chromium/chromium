@@ -187,7 +187,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
   CoreAccountInfo account_info =
       SetPrimaryAccount(identity_manager, email, ConsentLevel::kSync);
   SetRefreshTokenForPrimaryAccount(identity_manager);
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_info.account_id);

@@ -79,7 +79,7 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), base::nullopt, are_contents_opaque,
+                gfx::MaskFilterInfo(), absl::nullopt, are_contents_opaque,
                 opacity, blend_mode, sorting_context_id);
   return state;
 }
@@ -601,7 +601,7 @@ TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(SurfaceDrawQuad, visible_rect,
-                  SurfaceRange(base::nullopt, surface_id), SK_ColorWHITE,
+                  SurfaceRange(absl::nullopt, surface_id), SK_ColorWHITE,
                   /*stretch_content_to_fill_bounds=*/false);
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }

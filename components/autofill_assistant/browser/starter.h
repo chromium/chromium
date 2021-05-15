@@ -10,7 +10,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/controller.h"
@@ -23,6 +22,7 @@
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -79,7 +79,7 @@ class Starter : public content::WebContentsObserver {
   // This will also hide any currently shown UI (such as a trigger script or the
   // onboarding).
   void CancelPendingStartup(
-      base::Optional<Metrics::TriggerScriptFinishedState> state);
+      absl::optional<Metrics::TriggerScriptFinishedState> state);
 
   // Installs the feature module if necessary, otherwise directly invokes
   // |OnFeatureModuleInstalled|.
@@ -99,26 +99,26 @@ class Starter : public content::WebContentsObserver {
   void OnTriggerScriptFinished(
       Metrics::TriggerScriptFinishedState state,
       std::unique_ptr<TriggerContext> trigger_context,
-      base::Optional<TriggerScriptProto> trigger_script);
+      absl::optional<TriggerScriptProto> trigger_script);
 
   // Shows the onboarding if necessary, otherwise directly invokes
   // |OnOnboardingFinished|.
   void MaybeShowOnboarding(
-      base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
+      absl::optional<TriggerScriptProto> trigger_script = absl::nullopt);
 
   // Starts the regular script if onboarding was accepted. Stops the startup
   // process if onboarding was rejected.
-  void OnOnboardingFinished(base::Optional<TriggerScriptProto> trigger_script,
+  void OnOnboardingFinished(absl::optional<TriggerScriptProto> trigger_script,
                             bool shown,
                             OnboardingResult result);
 
   // Called at the end of each |Start| invocation.
   void OnStartDone(
       bool start_regular_script,
-      base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
+      absl::optional<TriggerScriptProto> trigger_script = absl::nullopt);
 
   // Called when the heuristic result for |url| is available.
-  void OnHeuristicMatch(const GURL& url, base::Optional<std::string> intent);
+  void OnHeuristicMatch(const GURL& url, absl::optional<std::string> intent);
 
   // Returns whether there is a currently pending call to |Start| or not.
   bool IsStartupPending() const;

@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -20,6 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 
@@ -124,7 +124,7 @@ class ModelExecutor {
   // Starts the execution of the model. When complete, |ui_callback_on_complete|
   // will be run on the UI thread with the output of the model.
   using ExecutionCallback =
-      base::OnceCallback<void(const base::Optional<OutputType>&)>;
+      base::OnceCallback<void(const absl::optional<OutputType>&)>;
   void SendForExecution(ExecutionCallback ui_callback_on_complete,
                         base::TimeTicks start_time,
                         InputTypes... args) {
@@ -145,7 +145,7 @@ class ModelExecutor {
     if (!loaded_model_ && !LoadModelFile()) {
       reply_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(ui_callback_on_complete), base::nullopt));
+          base::BindOnce(std::move(ui_callback_on_complete), absl::nullopt));
       return;
     }
 
@@ -160,7 +160,7 @@ class ModelExecutor {
     last_execution_time_ = base::TimeTicks::Now();
 
     DCHECK(loaded_model_);
-    base::Optional<OutputType> output = Execute(loaded_model_.get(), args...);
+    absl::optional<OutputType> output = Execute(loaded_model_.get(), args...);
 
     DCHECK(ui_callback_on_complete);
     reply_task_runner_->PostTask(
@@ -190,7 +190,7 @@ class ModelExecutor {
       tflite::task::core::BaseTaskApi<OutputType, InputTypes...>;
 
   // Executes the model using |execution_task| on |args|.
-  virtual base::Optional<OutputType> Execute(ModelExecutionTask* execution_task,
+  virtual absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
                                              InputTypes... args) = 0;
 
   // Builds a model execution task using |model_file|.
@@ -249,12 +249,12 @@ class ModelExecutor {
 
   // The time that the model was last executed. Logged in metrics for the second
   // and following runs.
-  base::Optional<base::TimeTicks> last_execution_time_
+  absl::optional<base::TimeTicks> last_execution_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The model file path to be loaded. May be nullopt if no model has been
   // downloaded yet.
-  base::Optional<base::FilePath> model_file_path_
+  absl::optional<base::FilePath> model_file_path_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Note on lifetimes: |loaded_model_| and |model_fb_| both share the same
@@ -286,7 +286,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
                std::unique_ptr<ModelExecutor<OutputType, InputTypes...>>
                    background_executor,
                proto::OptimizationTarget optimization_target,
-               const base::Optional<proto::Any>& model_metadata)
+               const absl::optional<proto::Any>& model_metadata)
       : decider_(decider),
         optimization_target_(optimization_target),
         background_executor_(std::move(background_executor)),
@@ -320,7 +320,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // when completed.
   // TODO(crbug/1173328): Add a way to surface errors.
   using ExecutionCallback =
-      base::OnceCallback<void(const base::Optional<OutputType>&)>;
+      base::OnceCallback<void(const absl::optional<OutputType>&)>;
   void ExecuteModelWithInput(ExecutionCallback callback, InputTypes... input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::TimeTicks now = base::TimeTicks::Now();
@@ -338,7 +338,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // OptimizationTargetModelObserver:
   void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const base::Optional<proto::Any>& model_metadata,
+                          const absl::optional<proto::Any>& model_metadata,
                           const base::FilePath& file_path) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -363,7 +363,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // Returns the supported features for the loaded model, if the server provided
   // any.
-  base::Optional<proto::Any> supported_features_for_loaded_model() const {
+  absl::optional<proto::Any> supported_features_for_loaded_model() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return supported_features_for_loaded_model_;
   }
@@ -374,10 +374,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
       class T,
       class = typename std::enable_if<
           std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
-  base::Optional<T> ParsedSupportedFeaturesForLoadedModel() const {
+  absl::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!supported_features_for_loaded_model_)
-      return base::nullopt;
+      return absl::nullopt;
     return ParsedAnyMetadata<T>(*supported_features_for_loaded_model_);
   }
 
@@ -389,7 +389,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       ExecutionCallback callback,
       proto::OptimizationTarget optimization_target,
       base::TimeTicks model_execute_start_time,
-      const base::Optional<OutputType>& output) {
+      const absl::optional<OutputType>& output) {
     if (!output) {
       std::move(callback).Run(output);
       return;
@@ -422,7 +422,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Set in |OnModelFileUpdated|.
-  base::Optional<proto::Any> supported_features_for_loaded_model_
+  absl::optional<proto::Any> supported_features_for_loaded_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set in |OnModelFileUpdated|.

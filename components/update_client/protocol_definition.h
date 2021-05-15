@@ -12,9 +12,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -56,8 +56,8 @@ struct Updater {
   std::string version;
   bool is_machine = false;
   bool autoupdate_check_enabled = false;
-  base::Optional<int> last_started;
-  base::Optional<int> last_checked;
+  absl::optional<int> last_started;
+  absl::optional<int> last_checked;
   int update_policy = 0;
 };
 
@@ -75,11 +75,11 @@ struct Ping {
   ~Ping();
 
   // Preferred user count metrics ("ad" and "rd").
-  base::Optional<int> date_last_active;
-  base::Optional<int> date_last_roll_call;
+  absl::optional<int> date_last_active;
+  absl::optional<int> date_last_roll_call;
 
   // Legacy user count metrics ("a" and "r").
-  base::Optional<int> days_since_last_active_ping;
+  absl::optional<int> days_since_last_active_ping;
   int days_since_last_roll_call = 0;
 
   std::string ping_freshness;
@@ -105,17 +105,17 @@ struct App {
 
   std::string release_channel;
 
-  base::Optional<bool> enabled;
-  base::Optional<std::vector<int>> disabled_reasons;
+  absl::optional<bool> enabled;
+  absl::optional<std::vector<int>> disabled_reasons;
 
   // Optional update check.
-  base::Optional<UpdateCheck> update_check;
+  absl::optional<UpdateCheck> update_check;
 
   // Optional 'did run' ping.
-  base::Optional<Ping> ping;
+  absl::optional<Ping> ping;
 
   // Progress/result pings.
-  base::Optional<std::vector<base::Value>> events;
+  absl::optional<std::vector<base::Value>> events;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(App);
@@ -156,7 +156,7 @@ struct Request {
   std::string dlpref;
 
   // True if this machine is part of a managed enterprise domain.
-  base::Optional<bool> domain_joined;
+  absl::optional<bool> domain_joined;
 
   base::flat_map<std::string, std::string> additional_attributes;
 
@@ -164,7 +164,7 @@ struct Request {
 
   OS os;
 
-  base::Optional<Updater> updater;
+  absl::optional<Updater> updater;
 
   std::vector<App> apps;
 

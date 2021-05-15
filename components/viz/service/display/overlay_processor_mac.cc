@@ -108,7 +108,7 @@ void OverlayProcessorMac::ProcessForOverlays(
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
-    base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   if (!output_surface_plane->has_value())
     return;
 

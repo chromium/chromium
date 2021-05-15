@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
@@ -29,6 +28,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace switches {
 
@@ -269,7 +269,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   std::vector<std::unique_ptr<testing::ScopedTrace>> gtest_scoped_traces_;
 
   // If set, the server will return HTTP errors.
-  base::Optional<net::HttpStatusCode> http_error_status_code_;
+  absl::optional<net::HttpStatusCode> http_error_status_code_;
 
   // All URLs received via history sync (powered by SESSIONS).
   std::set<std::string> committed_history_urls_;

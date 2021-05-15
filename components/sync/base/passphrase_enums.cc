@@ -31,7 +31,7 @@ sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
              : sync_pb::NigoriSpecifics::UNKNOWN;
 }
 
-base::Optional<PassphraseType> ProtoPassphraseInt32ToEnum(
+absl::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
     ::google::protobuf::int32 type) {
   switch (ProtoPassphraseInt32ToProtoEnum(type)) {
     case sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE:
@@ -50,7 +50,7 @@ base::Optional<PassphraseType> ProtoPassphraseInt32ToEnum(
       break;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(

@@ -26,7 +26,7 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
       std::vector<GURL>* observed_committed_urls,
       std::vector<GURL>* observed_aborted_urls,
       std::vector<blink::UseCounterFeature>* observed_features,
-      base::Optional<bool>* is_first_navigation_in_web_contents,
+      absl::optional<bool>* is_first_navigation_in_web_contents,
       int* count_on_enter_back_forward_cache)
       : updated_timings_(updated_timings),
         updated_subframe_timings_(updated_subframe_timings),
@@ -105,7 +105,7 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
   std::vector<blink::UseCounterFeature>* const observed_features_;
   std::vector<GURL>* const observed_committed_urls_;
   std::vector<GURL>* const observed_aborted_urls_;
-  base::Optional<bool>* is_first_navigation_in_web_contents_;
+  absl::optional<bool>* is_first_navigation_in_web_contents_;
   int* const count_on_enter_back_forward_cache_;
 };
 

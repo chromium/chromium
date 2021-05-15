@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -44,8 +44,8 @@ class JsCommunicationHost : public content::WebContentsObserver {
     AddScriptResult& operator=(const AddScriptResult&);
     ~AddScriptResult();
 
-    base::Optional<std::string> error_message;
-    base::Optional<int> script_id;
+    absl::optional<std::string> error_message;
+    absl::optional<int> script_id;
   };
 
   // Native side AddDocumentStartJavaScript, returns an error message if the

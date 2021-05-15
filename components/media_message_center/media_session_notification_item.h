@@ -12,12 +12,12 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace media_message_center {
@@ -47,14 +47,14 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override;
+      const absl::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override {}
+      const absl::optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
@@ -135,11 +135,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
 
   base::flat_set<media_session::mojom::MediaSessionAction> session_actions_;
 
-  base::Optional<media_session::MediaPosition> session_position_;
+  absl::optional<media_session::MediaPosition> session_position_;
 
-  base::Optional<gfx::ImageSkia> session_artwork_;
+  absl::optional<gfx::ImageSkia> session_artwork_;
 
-  base::Optional<gfx::ImageSkia> session_favicon_;
+  absl::optional<gfx::ImageSkia> session_favicon_;
 
   // True if the metadata needs to be updated on |view_|. Used to prevent
   // updating |view_|'s metadata twice on a single change.

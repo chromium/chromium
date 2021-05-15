@@ -91,7 +91,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
     // Use an initial request to start the cache up.
     image_cache_->SaveImage(ImageUrl().spec(), kImageData,
                             /* needs_transcoding */ false,
-                            /* expiration_interval */ base::nullopt);
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     image_cache_->DeleteImage(ImageUrl().spec());
@@ -167,7 +167,7 @@ TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
   // Save the image that needs transcoding in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageData,
                            /* needs_transcoding */ true,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 
@@ -175,7 +175,7 @@ TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
   // Save the image that doesn't need transcoding in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 

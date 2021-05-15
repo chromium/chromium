@@ -40,7 +40,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
       last_updated_timestamp,
       base::TimeDelta::FromMinutes(kPulseIntervalMinutes),
       /*send_tab_to_self_receiving_enabled=*/false,
-      /*sharing_info=*/base::nullopt, /*paask_info=*/base::nullopt,
+      /*sharing_info=*/absl::nullopt, /*paask_info=*/absl::nullopt,
       fcm_registration_token,
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

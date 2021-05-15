@@ -154,7 +154,7 @@ class CastMessageHandlerTest : public testing::Test {
   void CreatePendingRequests() {
     EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
     handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(),
-                           {"WEB"}, /* appParams */ base::nullopt,
+                           {"WEB"}, /* appParams */ absl::nullopt,
                            launch_session_callback_.Get());
     for (int i = 0; i < 2; i++) {
       handler_.RequestAppAvailability(&cast_socket_, kAppId1,
@@ -392,7 +392,7 @@ TEST_F(CastMessageHandlerTest, CloseConnectionFromReceiver) {
 TEST_F(CastMessageHandlerTest, LaunchSession) {
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
-  const base::Optional<base::Value> json = base::JSONReader::Read(kAppParams);
+  const absl::optional<base::Value> json = base::JSONReader::Read(kAppParams);
 
   handler_.LaunchSession(
       channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"}, json,
@@ -437,7 +437,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {
 
   handler_.LaunchSession(
       channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"},
-      /* appParams */ base::nullopt,
+      /* appParams */ absl::nullopt,
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kTimedOut));
@@ -452,7 +452,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
   json.SetKey("key", base::Value(invalid_URL));
   handler_.LaunchSession(
       channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"},
-      base::make_optional<base::Value>(std::move(json)),
+      absl::make_optional<base::Value>(std::move(json)),
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kError));
@@ -525,7 +525,7 @@ TEST_F(CastMessageHandlerTest, SendMediaRequest) {
   std::string message_str = R"({
     "type": "PLAY",
   })";
-  base::Optional<int> request_id = handler_.SendMediaRequest(
+  absl::optional<int> request_id = handler_.SendMediaRequest(
       channel_id_, ParseJson(message_str), "theSourceId", kDestinationId);
   EXPECT_EQ(1, request_id);
 }
@@ -597,7 +597,7 @@ TEST_F(CastMessageHandlerTest, PendingRequestsDestructor) {
   EXPECT_CALL(launch_session_callback_, Run(_))
       .WillOnce([&](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::kError, response.result);
-        EXPECT_EQ(base::nullopt, response.receiver_status);
+        EXPECT_EQ(absl::nullopt, response.receiver_status);
       });
   EXPECT_CALL(get_app_availability_callback_,
               Run(kAppId1, GetAppAvailabilityResult::kUnknown))
@@ -672,12 +672,12 @@ TEST_F(CastMessageHandlerTest, SendMultipleLaunchRequests) {
       }));
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ base::nullopt,
+                         /* appParams */ absl::nullopt,
                          expect_success_callback.Get());
   // When there already is a launch request queued, we expect subsequent
   // requests to fail.
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ base::nullopt,
+                         /* appParams */ absl::nullopt,
                          expect_failure_callback.Get());
   // This resolves the first launch request.
   HandlePendingLaunchSessionRequest(next_request_id++);
@@ -690,7 +690,7 @@ TEST_F(CastMessageHandlerTest, SendMultipleStopRequests) {
 
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ base::nullopt,
+                         /* appParams */ absl::nullopt,
                          launch_session_callback_.Get());
   HandlePendingLaunchSessionRequest(next_request_id++);
 

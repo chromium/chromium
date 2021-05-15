@@ -151,7 +151,7 @@ class ArcNetHostImpl : public KeyedService,
 
   // Callback for chromeos::NetworkHandler::GetShillProperties
   void ReceiveShillProperties(const std::string& service_path,
-                              base::Optional<base::Value> shill_properties);
+                              absl::optional<base::Value> shill_properties);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

@@ -347,7 +347,7 @@ class Surface final : public ui::PropertyHandler {
     bool operator!=(const State& other) const { return !(*this == other); }
 
     cc::Region opaque_region;
-    base::Optional<cc::Region> input_region;
+    absl::optional<cc::Region> input_region;
     int input_outset = 0;
     float buffer_scale = 1.0f;
     Transform buffer_transform = Transform::NORMAL;

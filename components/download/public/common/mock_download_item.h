@@ -13,13 +13,13 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -71,7 +71,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetSiteUrl, const GURL&());
   MOCK_CONST_METHOD0(GetTabUrl, const GURL&());
   MOCK_CONST_METHOD0(GetTabReferrerUrl, const GURL&());
-  MOCK_CONST_METHOD0(GetRequestInitiator, const base::Optional<url::Origin>&());
+  MOCK_CONST_METHOD0(GetRequestInitiator, const absl::optional<url::Origin>&());
   MOCK_CONST_METHOD0(GetSuggestedFilename, std::string());
   MOCK_CONST_METHOD0(GetContentDisposition, std::string());
   MOCK_CONST_METHOD0(GetResponseHeaders,
@@ -127,7 +127,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
   MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
   MOCK_CONST_METHOD0(GetDownloadSchedule,
-                     const base::Optional<DownloadSchedule>&());
+                     const absl::optional<DownloadSchedule>&());
   MOCK_METHOD2(OnContentCheckCompleted,
                void(DownloadDangerType, DownloadInterruptReason));
   MOCK_METHOD1(SetOpenWhenComplete, void(bool));
@@ -141,7 +141,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD1(OnAsyncScanningCompleted, void(DownloadDangerType));
   MOCK_METHOD(void,
               OnDownloadScheduleChanged,
-              (base::Optional<DownloadSchedule>),
+              (absl::optional<DownloadSchedule>),
               (override));
 
  private:

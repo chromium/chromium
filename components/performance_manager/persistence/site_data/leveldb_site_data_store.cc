@@ -101,8 +101,8 @@ bool ShouldAttemptDbRepair(const leveldb::Status& status) {
 }
 
 struct DatabaseSizeResult {
-  base::Optional<int64_t> num_rows;
-  base::Optional<int64_t> on_disk_size_kb;
+  absl::optional<int64_t> num_rows;
+  absl::optional<int64_t> on_disk_size_kb;
 };
 
 std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin) {
@@ -151,7 +151,7 @@ class LevelDBSiteDataStore::AsyncHelper {
 
   // Implementations of the DB manipulation functions of
   // LevelDBSiteDataStore that run on a blocking sequence.
-  base::Optional<SiteDataProto> ReadSiteDataFromDB(const url::Origin& origin);
+  absl::optional<SiteDataProto> ReadSiteDataFromDB(const url::Origin& origin);
   void WriteSiteDataIntoDB(const url::Origin& origin,
                            const SiteDataProto& site_characteristic_proto);
   void RemoveSiteDataFromDB(const std::vector<url::Origin>& site_origin);
@@ -252,13 +252,13 @@ void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {
   }
 }
 
-base::Optional<SiteDataProto>
+absl::optional<SiteDataProto>
 LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!db_)
-    return base::nullopt;
+    return absl::nullopt;
 
   leveldb::Status s;
   std::string protobuf_value;
@@ -268,11 +268,11 @@ LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB(
     s = db_->Get(read_options_, SerializeOriginIntoDatabaseKey(origin),
                  &protobuf_value);
   }
-  base::Optional<SiteDataProto> site_characteristic_proto;
+  absl::optional<SiteDataProto> site_characteristic_proto;
   if (s.ok()) {
     site_characteristic_proto = SiteDataProto();
     if (!site_characteristic_proto->ParseFromString(protobuf_value)) {
-      site_characteristic_proto = base::nullopt;
+      site_characteristic_proto = absl::nullopt;
       DLOG(ERROR) << "Error while trying to parse a SiteDataProto "
                   << "protobuf.";
     }

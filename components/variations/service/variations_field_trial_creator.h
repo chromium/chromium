@@ -91,7 +91,7 @@ class VariationsFieldTrialCreator {
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManager* safe_seed_manager,
-      base::Optional<int> low_entropy_source_value);
+      absl::optional<int> low_entropy_source_value);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.

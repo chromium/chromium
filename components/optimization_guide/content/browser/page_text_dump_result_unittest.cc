@@ -130,9 +130,9 @@ TEST(FrameTextDumpResultTest, Ordering) {
 TEST(PageTextDumpResultTest, Empty) {
   PageTextDumpResult page_result;
   EXPECT_TRUE(page_result.empty());
-  EXPECT_EQ(base::nullopt, page_result.GetAMPTextContent());
-  EXPECT_EQ(base::nullopt, page_result.GetMainFrameTextContent());
-  EXPECT_EQ(base::nullopt, page_result.GetAllFramesTextContent());
+  EXPECT_EQ(absl::nullopt, page_result.GetAMPTextContent());
+  EXPECT_EQ(absl::nullopt, page_result.GetMainFrameTextContent());
+  EXPECT_EQ(absl::nullopt, page_result.GetAllFramesTextContent());
 }
 
 TEST(PageTextDumpResultTest, OneAMP) {

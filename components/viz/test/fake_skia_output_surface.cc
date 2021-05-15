@@ -182,7 +182,7 @@ FakeSkiaOutputSurface::CreateImageContext(
     const gfx::Size& size,
     ResourceFormat format,
     bool concurrent_reads,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space) {
   return std::make_unique<ExternalUseClient::ImageContext>(
       holder, size, format, ycbcr_info, std::move(color_space));

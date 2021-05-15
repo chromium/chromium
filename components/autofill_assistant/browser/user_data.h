@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class AutofillProfile;
@@ -56,10 +56,10 @@ struct LoginChoice {
       const std::string& id,
       const std::string& label,
       const std::string& sublabel,
-      const base::Optional<std::string>& sublabel_accessibility_hint,
+      const absl::optional<std::string>& sublabel_accessibility_hint,
       int priority,
-      const base::Optional<InfoPopupProto>& info_popup,
-      const base::Optional<std::string>& edit_button_content_description);
+      const absl::optional<InfoPopupProto>& info_popup,
+      const absl::optional<std::string>& edit_button_content_description);
   LoginChoice(const LoginChoice& another);
   ~LoginChoice();
 
@@ -70,13 +70,13 @@ struct LoginChoice {
   // The sublabel to display to the user.
   std::string sublabel;
   // The a11y hint for |sublabel|.
-  base::Optional<std::string> sublabel_accessibility_hint;
+  absl::optional<std::string> sublabel_accessibility_hint;
   // The priority to pre-select this choice (-1 == not set/automatic).
   int preselect_priority = -1;
   // The popup to show to provide more information about this login choice.
-  base::Optional<InfoPopupProto> info_popup;
+  absl::optional<InfoPopupProto> info_popup;
   // The a11y hint for the edit button.
-  base::Optional<std::string> edit_button_content_description;
+  absl::optional<std::string> edit_button_content_description;
 };
 
 // Tuple for holding credit card and billing address;
@@ -114,10 +114,10 @@ class UserData {
 
   std::string login_choice_identifier_;
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
-  base::Optional<DateProto> date_time_range_start_date_;
-  base::Optional<DateProto> date_time_range_end_date_;
-  base::Optional<int> date_time_range_start_timeslot_;
-  base::Optional<int> date_time_range_end_timeslot_;
+  absl::optional<DateProto> date_time_range_start_date_;
+  absl::optional<DateProto> date_time_range_end_date_;
+  absl::optional<int> date_time_range_start_timeslot_;
+  absl::optional<int> date_time_range_end_timeslot_;
 
   // A set of additional key/value pairs to be stored in client_memory.
   std::map<std::string, ValueProto> additional_values_;
@@ -126,7 +126,7 @@ class UserData {
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
 
-  base::Optional<WebsiteLoginManager::Login> selected_login_;
+  absl::optional<WebsiteLoginManager::Login> selected_login_;
 
   // Return true if address has been selected, otherwise return false.
   // Note that selected_address() might return nullptr when
@@ -151,7 +151,7 @@ class UserData {
   // password generation (GeneratePasswordForFormFieldProto) to allow a
   // subsequent PresaveGeneratedPasswordProto to presave the password prior to
   // submission.
-  base::Optional<autofill::FormData> password_form_data_;
+  absl::optional<autofill::FormData> password_form_data_;
 
   std::string GetAllAddressKeyNames() const;
 
@@ -212,9 +212,9 @@ struct CollectUserDataOptions {
   DateTimeRangeProto date_time_range;
   std::vector<UserFormSectionProto> additional_prepended_sections;
   std::vector<UserFormSectionProto> additional_appended_sections;
-  base::Optional<GenericUserInterfaceProto> generic_user_interface_prepended;
-  base::Optional<GenericUserInterfaceProto> generic_user_interface_appended;
-  base::Optional<std::string> additional_model_identifier_to_check;
+  absl::optional<GenericUserInterfaceProto> generic_user_interface_prepended;
+  absl::optional<GenericUserInterfaceProto> generic_user_interface_appended;
+  absl::optional<std::string> additional_model_identifier_to_check;
 
   base::OnceCallback<void(UserData*, const UserModel*)> confirm_callback;
   base::OnceCallback<void(int, UserData*, const UserModel*)>

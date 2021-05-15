@@ -22,7 +22,7 @@ class BertModelExecutorHandle
       OptimizationGuideDecider* decider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata);
+      const absl::optional<proto::Any>& model_metadata);
   ~BertModelExecutorHandle() override;
 
   BertModelExecutorHandle(const BertModelExecutorHandle&) = delete;
@@ -42,7 +42,7 @@ class BertModelExecutor
                                       const std::string&>;
 
   // ModelExecutor:
-  base::Optional<std::vector<tflite::task::core::Category>> Execute(
+  absl::optional<std::vector<tflite::task::core::Category>> Execute(
       ModelExecutionTask* execution_task,
       const std::string& input) override;
   std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(

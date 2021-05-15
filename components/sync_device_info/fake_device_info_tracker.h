@@ -11,8 +11,8 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -49,7 +49,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // DeviceInfo stored here are not owned.
   std::vector<const DeviceInfo*> devices_;
   std::string local_device_cache_guid_;
-  base::Optional<int> active_device_count_;
+  absl::optional<int> active_device_count_;
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;
 

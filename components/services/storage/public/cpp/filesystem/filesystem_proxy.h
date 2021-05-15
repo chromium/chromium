@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
 
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.
-  base::Optional<base::File::Info> GetFileInfo(const base::FilePath& path);
+  absl::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
 
   // Retrieves information about access rights for a path in the filesystem.
   // Returns a valid PathAccessInfo on success, or null on failure.
@@ -115,11 +115,11 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     bool can_read = false;
     bool can_write = false;
   };
-  base::Optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
+  absl::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
 
   // Returns the maximum length of path component on the volume containing the
   // directory |path|, in the number of FilePath::CharType, or -1 on failure.
-  base::Optional<int> GetMaximumPathComponentLength(const base::FilePath& path);
+  absl::optional<int> GetMaximumPathComponentLength(const base::FilePath& path);
 
   // Renames a file from |old_path| to |new_path|. Must be atomic.
   base::File::Error RenameFile(const base::FilePath& old_path,

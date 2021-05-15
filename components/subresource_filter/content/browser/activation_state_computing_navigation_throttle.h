@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace subresource_filter {
 
@@ -97,11 +97,11 @@ class ActivationStateComputingNavigationThrottle
 
   ActivationStateComputingNavigationThrottle(
       content::NavigationHandle* navigation_handle,
-      const base::Optional<mojom::ActivationState> parent_activation_state,
+      const absl::optional<mojom::ActivationState> parent_activation_state,
       VerifiedRuleset::Handle* ruleset_handle);
 
   // Optional to allow for DCHECKing.
-  base::Optional<mojom::ActivationState> parent_activation_state_;
+  absl::optional<mojom::ActivationState> parent_activation_state_;
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> async_filter_;
 

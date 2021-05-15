@@ -70,7 +70,7 @@ void ProfileInteractionManager::OnAdsViolationTriggered(
   // TODO(https://crbug.com/1131971): Add support for enabling ads interventions
   // separately for different ads violations.
   const GURL& url = rfh->GetLastCommittedURL();
-  base::Optional<AdsInterventionManager::LastAdsIntervention>
+  absl::optional<AdsInterventionManager::LastAdsIntervention>
       last_intervention =
           profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
               url);

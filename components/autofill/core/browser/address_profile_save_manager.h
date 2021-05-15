@@ -76,7 +76,7 @@ class AddressProfileSaveManager {
   PersonalDataManager* const personal_data_manager_{nullptr};
 
   // Data including the request id for the currently ongoing profile import.
-  base::Optional<ProfileImportProcess> pending_import_;
+  absl::optional<ProfileImportProcess> pending_import_;
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };

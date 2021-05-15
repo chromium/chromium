@@ -11,13 +11,13 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {

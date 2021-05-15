@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +27,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -62,7 +62,7 @@ class HintsFetcherTest : public testing::Test,
 
   ~HintsFetcherTest() override = default;
 
-  void OnHintsFetched(base::Optional<std::unique_ptr<proto::GetHintsResponse>>
+  void OnHintsFetched(absl::optional<std::unique_ptr<proto::GetHintsResponse>>
                           get_hints_response) {
     if (get_hints_response)
       hints_fetched_ = true;
@@ -392,7 +392,7 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
 
   const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
-  base::Optional<double> value;
+  absl::optional<double> value;
   for (const std::string& host : hosts) {
     value = hosts_fetched->FindDoubleKey(HashHostForDictionary(host));
     // This reduces the necessary precision for the check on the expiry time for

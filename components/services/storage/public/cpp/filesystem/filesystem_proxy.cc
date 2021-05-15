@@ -248,21 +248,21 @@ bool FilesystemProxy::DeletePathRecursively(const base::FilePath& path) {
   return success;
 }
 
-base::Optional<base::File::Info> FilesystemProxy::GetFileInfo(
+absl::optional<base::File::Info> FilesystemProxy::GetFileInfo(
     const base::FilePath& path) {
   if (!remote_directory_) {
     base::File::Info info;
     if (base::GetFileInfo(MaybeMakeAbsolute(path), &info))
       return info;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<base::File::Info> info;
+  absl::optional<base::File::Info> info;
   remote_directory_->GetFileInfo(MakeRelative(path), &info);
   return info;
 }
 
-base::Optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
+absl::optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
     const base::FilePath& path) {
   mojom::PathAccessInfoPtr info;
   if (!remote_directory_)
@@ -271,12 +271,12 @@ base::Optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
     remote_directory_->GetPathAccess(MakeRelative(path), &info);
 
   if (!info)
-    return base::nullopt;
+    return absl::nullopt;
 
   return PathAccessInfo{info->can_read, info->can_write};
 }
 
-base::Optional<int> FilesystemProxy::GetMaximumPathComponentLength(
+absl::optional<int> FilesystemProxy::GetMaximumPathComponentLength(
     const base::FilePath& path) {
   if (!remote_directory_)
     return base::GetMaximumPathComponentLength(MaybeMakeAbsolute(path));
@@ -286,7 +286,7 @@ base::Optional<int> FilesystemProxy::GetMaximumPathComponentLength(
   remote_directory_->GetMaximumPathComponentLength(MakeRelative(path), &success,
                                                    &len);
   if (!success)
-    return base::nullopt;
+    return absl::nullopt;
   return len;
 }
 
@@ -357,7 +357,7 @@ int64_t FilesystemProxy::ComputeDirectorySize(const base::FilePath& path) {
     return running_size;
 
   for (auto& entry : entries) {
-    base::Optional<base::File::Info> info;
+    absl::optional<base::File::Info> info;
     base::FilePath path = entry;
     remote_directory_->GetFileInfo(relative_path.Append(entry), &info);
     if (info.has_value())

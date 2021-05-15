@@ -134,7 +134,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     const std::u16string& default_app_name,
     int notification_width,
     bool should_show_icon,
-    base::Optional<NotificationTheme> theme)
+    absl::optional<NotificationTheme> theme)
     : container_(container),
       item_(std::move(item)),
       default_app_name_(default_app_name),
@@ -345,7 +345,7 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   } else {
     if (!forced_expanded_state_.has_value())
       return;
-    forced_expanded_state_ = base::nullopt;
+    forced_expanded_state_ = absl::nullopt;
   }
 
   if (header_row_)

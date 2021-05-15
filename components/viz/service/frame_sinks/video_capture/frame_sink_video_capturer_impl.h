@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -36,6 +35,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -112,7 +112,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const base::Optional<FrameSinkId>& frame_sink_id,
+  void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
                     const SubtreeCaptureId& subtree_capture_id) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
@@ -299,7 +299,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frame, when RequestRefreshFrame() has been called.
   //
   // Note: This is always set, but the instance is overridden for unit testing.
-  base::Optional<base::OneShotTimer> refresh_frame_retry_timer_;
+  absl::optional<base::OneShotTimer> refresh_frame_retry_timer_;
 
   // Provides a pool of VideoFrames that can be efficiently delivered across
   // processes. The size of this pool is used to limit the maximum number of
@@ -333,7 +333,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The Oracle-provided media timestamp of the first frame. This is used to
   // compute the relative media stream timestamps for each successive frame.
-  base::Optional<base::TimeTicks> first_frame_media_ticks_;
+  absl::optional<base::TimeTicks> first_frame_media_ticks_;
 
   // Zero or more overlays to be rendered over each captured video frame. The
   // order of the entries in this map determines the order in which each overlay

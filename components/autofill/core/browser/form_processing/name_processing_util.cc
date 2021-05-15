@@ -31,7 +31,7 @@ constexpr int kMinCommonNameLongPrefixLength = 16;
 constexpr char16_t kParseableNameValidationRe[] = u"\\D";
 
 using NamePieces = std::vector<base::StringPiece16>;
-using OptionalNamePieces = base::Optional<NamePieces>;
+using OptionalNamePieces = absl::optional<NamePieces>;
 
 // Returns the length of the longest common prefix.
 // If |findCommonSuffix| is set, the length of the longest common suffix is
@@ -91,7 +91,7 @@ bool IsValidParseableName(const base::StringPiece16 parseable_name) {
 
 // Tries to strip |offset_left| and |offset_right| from entriees in
 // |field_names| and checks if the resulting names are still valid parseable
-// names. If not possible, return |base::nullopt|.
+// names. If not possible, return |absl::nullopt|.
 OptionalNamePieces GetStrippedParseableNamesIfValid(
     const NamePieces& field_names,
     size_t offset_left,
@@ -110,15 +110,15 @@ OptionalNamePieces GetStrippedParseableNamesIfValid(
             : parseable_name);
 
     if (!IsValidParseableName(stripped_names.back()))
-      return base::nullopt;
+      return absl::nullopt;
   }
 
-  return base::make_optional(stripped_names);
+  return absl::make_optional(stripped_names);
 }
 
 // Tries to remove common affixes from |field_names| and returns the result. If
 // neither a common affix exists, or if one or more of the resulting strings is
-// not a valid parseable name, |base::nullopt| is returned.
+// not a valid parseable name, |absl::nullopt| is returned.
 // The number of names in |field_names| must exceed
 // |kCommonNameAffixRemovalFieldNumberThreshold| in order to make the affix
 // removal possible. Also, the length of an affix must exceed
@@ -128,7 +128,7 @@ OptionalNamePieces RemoveCommonAffixesIfPossible(
   // Updates the field name parsed by heuristics if several criteria are met.
   // Several fields must be present in the form.
   if (field_names.size() < kCommonNameAffixRemovalFieldNumberThreshold)
-    return base::nullopt;
+    return absl::nullopt;
 
   size_t longest_prefix_length =
       FindLongestCommonAffixLength(field_names, false);
@@ -144,7 +144,7 @@ OptionalNamePieces RemoveCommonAffixesIfPossible(
 
   // If neither a common prefix of suffix was found return false.
   if (longest_prefix_length == 0 && longest_suffix_length == 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Otherwise try to reduce the names.
@@ -155,7 +155,7 @@ OptionalNamePieces RemoveCommonAffixesIfPossible(
 
 // Tries to remove common prefixes from |field_names| and returns the result. If
 // neither a common prefix exists, or if one or more of the resulting strings is
-// not a valid parseable name, |base::nullopt| is returned.
+// not a valid parseable name, |absl::nullopt| is returned.
 // The number of names in |field_names| must exceed
 // |kCommonNamePrefixRemovalFieldThreshold| in order to make the prefix
 // removal possible. Also, the length of a prefix must exceed
@@ -164,14 +164,14 @@ OptionalNamePieces RemoveCommonPrefixIfPossible(const NamePieces& field_names) {
   // Updates the field name parsed by heuristics if several criteria are met.
   // Several fields must be present in the form.
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
-    return base::nullopt;
+    return absl::nullopt;
 
   size_t longest_prefix_length =
       FindLongestCommonAffixLength(field_names, false);
 
   // Don't remove the common affix if it's not long enough.
   if (longest_prefix_length < kMinCommonNamePrefixLength)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Otherwise try to reduce the names.
   return GetStrippedParseableNamesIfValid(
@@ -191,13 +191,13 @@ OptionalNamePieces RemoveCommonPrefixForNamesWithMinimalLengthIfPossible(
   // Update the field name parsed by heuristics if several criteria are met.
   // Several fields must be present in the form.
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
-    return base::nullopt;
+    return absl::nullopt;
 
   const size_t longest_prefix =
       FindLongestCommonPrefixLengthInStringsWithMinimalLength(
           field_names, kMinCommonNameLongPrefixLength);
   if (longest_prefix < kMinCommonNameLongPrefixLength) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return GetStrippedParseableNamesIfValid(field_names, longest_prefix, 0,
@@ -205,7 +205,7 @@ OptionalNamePieces RemoveCommonPrefixForNamesWithMinimalLengthIfPossible(
 }
 
 std::vector<std::u16string> GetParseableNames(const NamePieces& field_names) {
-  OptionalNamePieces parseable_names = base::nullopt;
+  OptionalNamePieces parseable_names = absl::nullopt;
 
   std::vector<std::u16string> result;
   result.reserve(field_names.size());

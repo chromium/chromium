@@ -113,7 +113,7 @@ void ReadingListStore::RemoveEntry(const ReadingListEntry& entry) {
 }
 
 void ReadingListStore::OnDatabaseLoad(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -148,7 +148,7 @@ void ReadingListStore::OnDatabaseLoad(
 }
 
 void ReadingListStore::OnReadAllMetadata(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -159,12 +159,12 @@ void ReadingListStore::OnReadAllMetadata(
 }
 
 void ReadingListStore::OnDatabaseSave(
-    const base::Optional<syncer::ModelError>& error) {
+    const absl::optional<syncer::ModelError>& error) {
   return;
 }
 
 void ReadingListStore::OnStoreCreated(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -196,7 +196,7 @@ ReadingListStore::CreateMetadataChangeList() {
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.
-base::Optional<syncer::ModelError> ReadingListStore::MergeSyncData(
+absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -282,7 +282,7 @@ base::Optional<syncer::ModelError> ReadingListStore::MergeSyncData(
 // |metadata_change_list| in case when some of the data changes are filtered
 // out, or even be empty in case when a commit confirmation is processed and
 // only the metadata needs to persisted.
-base::Optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
+absl::optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

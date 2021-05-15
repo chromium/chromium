@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,7 +32,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   // Providing both |sub_buffer_rect| and |content_bounds| is not supported;
   // if neither is present, regular swap is used.
   // Optional rect for partial or empty swap.
-  base::Optional<gfx::Rect> sub_buffer_rect;
+  absl::optional<gfx::Rect> sub_buffer_rect;
   // Optional content area for SwapWithBounds. Rectangles may overlap.
   std::vector<gfx::Rect> content_bounds;
   std::vector<ui::LatencyInfo> latency_info;

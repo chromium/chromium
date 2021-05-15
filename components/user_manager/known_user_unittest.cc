@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
@@ -15,10 +14,11 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
-base::Optional<std::string> GetStringPrefValue(KnownUser* known_user,
+absl::optional<std::string> GetStringPrefValue(KnownUser* known_user,
                                                const AccountId& account_id,
                                                const char* pref_name) {
   std::string value;
@@ -238,9 +238,9 @@ TEST_F(KnownUserTest, UpdatePrefsWithoutClear) {
     known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/false);
   }
 
-  EXPECT_EQ(base::make_optional(std::string("pref1_value2")),
+  EXPECT_EQ(absl::make_optional(std::string("pref1_value2")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
-  EXPECT_EQ(base::make_optional(std::string("pref2_value1")),
+  EXPECT_EQ(absl::make_optional(std::string("pref2_value1")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName2));
 }
 
@@ -261,9 +261,9 @@ TEST_F(KnownUserTest, UpdatePrefsWithClear) {
     known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/true);
   }
 
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
-  EXPECT_EQ(base::make_optional(std::string("pref2_value1")),
+  EXPECT_EQ(absl::make_optional(std::string("pref2_value1")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName2));
 }
 

@@ -10,10 +10,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -36,7 +36,7 @@ const char kUiBypassedKey[] = "ui_bypassed";
 const char kExtrasKey[] = "extras";
 
 // Get the intent condition value based on the condition type.
-base::Optional<std::string> GetIntentConditionValueByType(
+absl::optional<std::string> GetIntentConditionValueByType(
     apps::mojom::ConditionType condition_type,
     const apps::mojom::IntentPtr& intent) {
   switch (condition_type) {
@@ -44,16 +44,16 @@ base::Optional<std::string> GetIntentConditionValueByType(
       return intent->action;
     case apps::mojom::ConditionType::kScheme:
       return intent->url.has_value()
-                 ? base::Optional<std::string>(intent->url->scheme())
-                 : base::nullopt;
+                 ? absl::optional<std::string>(intent->url->scheme())
+                 : absl::nullopt;
     case apps::mojom::ConditionType::kHost:
       return intent->url.has_value()
-                 ? base::Optional<std::string>(intent->url->host())
-                 : base::nullopt;
+                 ? absl::optional<std::string>(intent->url->host())
+                 : absl::nullopt;
     case apps::mojom::ConditionType::kPattern:
       return intent->url.has_value()
-                 ? base::Optional<std::string>(intent->url->path())
-                 : base::nullopt;
+                 ? absl::optional<std::string>(intent->url->path())
+                 : absl::nullopt;
     case apps::mojom::ConditionType::kMimeType:
       return intent->mime_type;
   }
@@ -247,7 +247,7 @@ bool ConditionValueMatches(
 
 bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
                             const apps::mojom::ConditionPtr& condition) {
-  base::Optional<std::string> value_to_match =
+  absl::optional<std::string> value_to_match =
       GetIntentConditionValueByType(condition->condition_type, intent);
   if (!value_to_match.has_value()) {
     return false;
@@ -450,15 +450,15 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   return intent_value;
 }
 
-base::Optional<std::string> GetStringValueFromDict(
+absl::optional<std::string> GetStringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* value = dict.FindStringKey(key_name);
   if (!value || value->empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   return *value;
 }
@@ -469,7 +469,7 @@ apps::mojom::OptionalBool GetBoolValueFromDict(
   if (!dict.HasKey(key_name))
     return apps::mojom::OptionalBool::kUnknown;
 
-  base::Optional<bool> value = dict.FindBoolKey(key_name);
+  absl::optional<bool> value = dict.FindBoolKey(key_name);
   if (!value.has_value())
     return apps::mojom::OptionalBool::kUnknown;
 
@@ -477,31 +477,31 @@ apps::mojom::OptionalBool GetBoolValueFromDict(
                        : apps::mojom::OptionalBool::kFalse;
 }
 
-base::Optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
+absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* url_spec = dict.FindStringKey(key_name);
   if (!url_spec)
-    return base::nullopt;
+    return absl::nullopt;
 
   GURL url(*url_spec);
   if (!url.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
 
   return url;
 }
 
-base::Optional<std::vector<::GURL>> GetFileUrlsFromDict(
+absl::optional<std::vector<::GURL>> GetFileUrlsFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetList().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<::GURL> file_urls;
   for (const auto& item : value->GetList()) {
@@ -512,15 +512,15 @@ base::Optional<std::vector<::GURL>> GetFileUrlsFromDict(
   return file_urls;
 }
 
-base::Optional<std::vector<std::string>> GetCategoriesFromDict(
+absl::optional<std::vector<std::string>> GetCategoriesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetList().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<std::string> categories;
   for (const auto& item : value->GetList())
@@ -529,15 +529,15 @@ base::Optional<std::vector<std::string>> GetCategoriesFromDict(
   return categories;
 }
 
-base::Optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
+absl::optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* value = dict.FindDictKey(key_name);
   if (!value || !value->is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::flat_map<std::string, std::string> extras;
   for (const auto& pair : value->DictItems()) {

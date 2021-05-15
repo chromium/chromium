@@ -54,7 +54,7 @@ class NoStatePrefetchProcessorImpl
 
   // The ID of NoStatePrefetchLinkManager::LinkTrigger. Used for canceling or
   // abandoning prefetch.
-  base::Optional<int> link_trigger_id_;
+  absl::optional<int> link_trigger_id_;
 
   mojo::Receiver<blink::mojom::NoStatePrefetchProcessor> receiver_{this};
 };

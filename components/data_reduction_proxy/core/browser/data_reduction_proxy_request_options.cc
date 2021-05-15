@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/safe_sprintf.h"
@@ -25,6 +24,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_GOOGLE_API_KEYS_FOR_AUTH_KEY)
 #include "google_apis/google_api_keys.h"
@@ -125,7 +125,7 @@ void DataReductionProxyRequestOptions::AddPageIDRequestHeader(
 
 void DataReductionProxyRequestOptions::AddRequestHeader(
     net::HttpRequestHeaders* request_headers,
-    base::Optional<uint64_t> page_id) {
+    absl::optional<uint64_t> page_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   AddRequestHeader(request_headers, page_id, header_value_);
 }
@@ -133,7 +133,7 @@ void DataReductionProxyRequestOptions::AddRequestHeader(
 // static
 void DataReductionProxyRequestOptions::AddRequestHeader(
     net::HttpRequestHeaders* request_headers,
-    base::Optional<uint64_t> page_id,
+    absl::optional<uint64_t> page_id,
     const std::string& session_header_value) {
   DCHECK(!page_id || page_id.value() > 0u);
   std::string header_value;
@@ -232,12 +232,12 @@ void DataReductionProxyRequestOptions::RegenerateRequestHeaderValue() {
 }
 
 // static
-base::Optional<std::string>
+absl::optional<std::string>
 DataReductionProxyRequestOptions::GetSessionKeyFromRequestHeaders(
     const net::HttpRequestHeaders& request_headers) {
   base::StringPairs kv_pairs;
   if (!ParseChromeProxyHeader(request_headers, &kv_pairs))
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const auto& kv_pair : kv_pairs) {
     // Delete leading and trailing white space characters from the key before
@@ -248,16 +248,16 @@ DataReductionProxyRequestOptions::GetSessionKeyFromRequestHeaders(
           base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL));
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
-base::Optional<uint64_t>
+absl::optional<uint64_t>
 DataReductionProxyRequestOptions::GetPageIdFromRequestHeaders(
     const net::HttpRequestHeaders& request_headers) {
   base::StringPairs kv_pairs;
   if (!ParseChromeProxyHeader(request_headers, &kv_pairs))
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const auto& kv_pair : kv_pairs) {
     // Delete leading and trailing white space characters from the key before
@@ -279,7 +279,7 @@ DataReductionProxyRequestOptions::GetPageIdFromRequestHeaders(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 uint64_t DataReductionProxyRequestOptions::GeneratePageId() {

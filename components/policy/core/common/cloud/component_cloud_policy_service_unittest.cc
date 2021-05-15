@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -39,6 +38,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -124,7 +124,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
 
     owned_cache_ = std::make_unique<ResourceCache>(
         temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
-        /* max_cache_size */ base::nullopt);
+        /* max_cache_size */ absl::nullopt);
     cache_ = owned_cache_.get();
   }
 

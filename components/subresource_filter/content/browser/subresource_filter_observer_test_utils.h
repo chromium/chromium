@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -19,6 +18,7 @@
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -52,18 +52,18 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  base::Optional<mojom::ActivationLevel> GetPageActivation(
+  absl::optional<mojom::ActivationLevel> GetPageActivation(
       const GURL& url) const;
-  base::Optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
+  absl::optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
 
   bool GetIsAdSubframe(int frame_tree_node_id) const;
 
-  base::Optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
+  absl::optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
       const;
 
   using SafeBrowsingCheck =
       std::pair<safe_browsing::SBThreatType, safe_browsing::ThreatMetadata>;
-  base::Optional<SafeBrowsingCheck> GetSafeBrowsingResult(
+  absl::optional<SafeBrowsingCheck> GetSafeBrowsingResult(
       const GURL& url) const;
 
  private:
@@ -76,7 +76,7 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   std::map<GURL, SafeBrowsingCheck> safe_browsing_checks_;
   std::map<content::NavigationHandle*, mojom::ActivationLevel>
       pending_activations_;
-  base::Optional<mojom::ActivationLevel> last_committed_activation_;
+  absl::optional<mojom::ActivationLevel> last_committed_activation_;
 
   base::ScopedObservation<SubresourceFilterObserverManager,
                           SubresourceFilterObserver>

@@ -184,7 +184,7 @@ void PrefModelAssociator::WaitUntilReadyToSync(base::OnceClosure done) {
   std::move(done).Run();
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 PrefModelAssociator::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -242,7 +242,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   // Push updates to sync.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
     models_associated_ = true;
@@ -383,7 +383,7 @@ syncer::SyncDataList PrefModelAssociator::GetAllSyncDataForTesting(
   return current_data;
 }
 
-base::Optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
+absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
@@ -410,7 +410,7 @@ base::Optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       continue;
     }
 
-    base::Optional<base::Value> new_value(
+    absl::optional<base::Value> new_value(
         ReadPreferenceSpecifics(pref_specifics));
     if (!new_value) {
       // Skip values we can't deserialize.
@@ -438,11 +438,11 @@ base::Optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       synced_preferences_.insert(pref_specifics.name());
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
-base::Optional<base::Value> PrefModelAssociator::ReadPreferenceSpecifics(
+absl::optional<base::Value> PrefModelAssociator::ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(preference.value());
@@ -450,7 +450,7 @@ base::Optional<base::Value> PrefModelAssociator::ReadPreferenceSpecifics(
     std::string err =
         "Failed to deserialize preference value: " + parsed_json.error_message;
     LOG(ERROR) << err;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return std::move(parsed_json.value);
 }

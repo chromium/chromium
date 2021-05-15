@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/query_parser/query_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
 

@@ -13,11 +13,11 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -59,7 +59,7 @@ enum class HintsFetcherRequestStatus {
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
 using HintsFetchedCallback = base::OnceCallback<void(
-    base::Optional<std::unique_ptr<proto::GetHintsResponse>>)>;
+    absl::optional<std::unique_ptr<proto::GetHintsResponse>>)>;
 
 // A class to handle requests for optimization hints from a remote Optimization
 // Guide Service.

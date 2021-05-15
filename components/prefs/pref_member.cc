@@ -207,7 +207,7 @@ template <>
 bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
     const base::Value& value)
     const {
-  base::Optional<base::FilePath> path = util::ValueToFilePath(value);
+  absl::optional<base::FilePath> path = util::ValueToFilePath(value);
   if (!path)
     return false;
   value_ = *path;

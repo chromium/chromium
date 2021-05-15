@@ -34,7 +34,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   // DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* source) override {}
 
-  void OnTarget(const base::Optional<std::string>& mime_type) override {}
+  void OnTarget(const absl::optional<std::string>& mime_type) override {}
 
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
     base::WriteFileDescriptor(fd.get(), kText);

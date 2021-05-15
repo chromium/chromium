@@ -11,11 +11,11 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/history/core/browser/history_types.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history_clusters {
@@ -30,7 +30,7 @@ class MemoriesRemoteModelHelper {
   // Pass in a defined `debug_logger` to enable debug logging from this class.
   MemoriesRemoteModelHelper(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::Optional<DebugLoggerCallback> debug_logger);
+      absl::optional<DebugLoggerCallback> debug_logger);
   ~MemoriesRemoteModelHelper();
 
   // POSTs `visits` to the remote endpoint and invokes `callback` with the
@@ -51,10 +51,10 @@ class MemoriesRemoteModelHelper {
   // Used to make requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // This should be set to base::nullopt if debug logging is disabled.
-  // This is base::Optional, so we can skip the expense of constructing the log
+  // This should be set to absl::nullopt if debug logging is disabled.
+  // This is absl::optional, so we can skip the expense of constructing the log
   // messages if the logger is disabled.
-  base::Optional<DebugLoggerCallback> debug_logger_;
+  absl::optional<DebugLoggerCallback> debug_logger_;
 };
 
 }  // namespace history_clusters

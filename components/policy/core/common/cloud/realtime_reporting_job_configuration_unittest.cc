@@ -9,7 +9,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -23,6 +22,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
@@ -174,7 +174,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
 };
 
 TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
-  base::Optional<base::Value> payload =
+  absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
   EXPECT_TRUE(payload.has_value());
   EXPECT_EQ(kDummyToken, *payload->FindStringPath(
@@ -320,7 +320,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
       CreateResponseString(CreateResponse({ids[0]}, {ids[1]}, {ids[2]}));
   configuration_->OnBeforeRetry(DeviceManagementService::kSuccess,
                                 response_string);
-  base::Optional<base::Value> payload =
+  absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);

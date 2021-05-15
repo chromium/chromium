@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -13,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -86,7 +86,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
   // Records whether RecordSavePasswordProgress() gets called.
   bool called_record_save_;
   // Records data received via RecordSavePasswordProgress() call.
-  base::Optional<std::string> log_;
+  absl::optional<std::string> log_;
 
   mojo::Receiver<mojom::PasswordManagerDriver> receiver_{this};
 };

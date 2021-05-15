@@ -294,7 +294,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
 
 void ProfileOAuth2TokenServiceIOSDelegate::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const base::Optional<CoreAccountId>& primary_account_id) {
+        const absl::optional<CoreAccountId>& primary_account_id) {
   ReloadCredentials(primary_account_id.value_or(CoreAccountId()));
 }
 

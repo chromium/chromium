@@ -42,11 +42,11 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
       value.FindStringKey(kPositivePatternKey);
   const std::string* negative_pattern =
       value.FindStringKey(kNegativePatternKey);
-  base::Optional<double> positive_score =
+  absl::optional<double> positive_score =
       value.FindDoubleKey(kPositiveScoreKey);
-  base::Optional<int> match_field_attributes =
+  absl::optional<int> match_field_attributes =
       value.FindIntKey(kMatchFieldAttributesKey);
-  base::Optional<int> match_field_input_types =
+  absl::optional<int> match_field_input_types =
       value.FindIntKey(kMatchFieldInputTypesKey);
 
   if (!positive_pattern || !positive_score || !match_field_attributes ||
@@ -95,7 +95,7 @@ void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
   }
 
   base::Version version = ExtractVersionFromJsonObject(result.value.value());
-  base::Optional<PatternProvider::Map> patterns =
+  absl::optional<PatternProvider::Map> patterns =
       GetConfigurationFromJsonObject(result.value.value());
 
   if (patterns && version.IsValid()) {
@@ -110,13 +110,13 @@ void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
 
 }  // namespace
 
-base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
+absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
     const base::Value& root) {
   PatternProvider::Map patterns;
 
   if (!root.is_dict()) {
     DVLOG(1) << "JSON object is not a dictionary.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   for (const auto& kv : root.DictItems()) {
@@ -125,7 +125,7 @@ base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
 
     if (!field_type_dict->is_dict()) {
       DVLOG(1) << "|" << field_type << "| does not contain a dictionary.";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     for (const auto& value : field_type_dict->DictItems()) {
@@ -135,7 +135,7 @@ base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
       if (!inner_list->is_list()) {
         DVLOG(1) << "Language |" << language << "| in |" << field_type
                  << "| does not contain a list.";
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       for (const auto& matchingPatternObj : inner_list->GetList()) {
@@ -144,20 +144,20 @@ base::Optional<PatternProvider::Map> GetConfigurationFromJsonObject(
         if (!success) {
           DVLOG(1) << "Found incorrect |MatchingPattern| object in list |"
                    << field_type << "|, language |" << language.value() << "|.";
-          return base::nullopt;
+          return absl::nullopt;
         }
       }
     }
   }
 
-  return base::make_optional(patterns);
+  return absl::make_optional(patterns);
 }
 
 base::Version ExtractVersionFromJsonObject(base::Value& root) {
   if (!root.is_dict())
     return base::Version("0");
 
-  base::Optional<base::Value> version_str = root.ExtractKey(kVersionKey);
+  absl::optional<base::Value> version_str = root.ExtractKey(kVersionKey);
   if (!version_str || !version_str.value().is_string())
     return base::Version("0");
 
@@ -173,23 +173,23 @@ void PopulateFromJsonString(std::string json_string) {
                                                base::BindOnce(&OnJsonParsed));
 }
 
-base::Optional<PatternProvider::Map>
+absl::optional<PatternProvider::Map>
 GetPatternsFromResourceBundleSynchronously() {
   if (!ui::ResourceBundle::HasSharedInstance()) {
     VLOG(1) << "Resource Bundle unavailable to load Autofill Matching Pattern "
                "definitions.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   std::string resource_string =
       bundle.LoadDataResourceString(IDR_AUTOFILL_REGEX_JSON);
-  base::Optional<base::Value> json_object =
+  absl::optional<base::Value> json_object =
       base::JSONReader::Read(resource_string);
 
   // Discard version, since this is the only getter used in unit tests.
   base::Version version = ExtractVersionFromJsonObject(json_object.value());
-  base::Optional<PatternProvider::Map> configuration_map =
+  absl::optional<PatternProvider::Map> configuration_map =
       GetConfigurationFromJsonObject(json_object.value());
 
   return configuration_map;

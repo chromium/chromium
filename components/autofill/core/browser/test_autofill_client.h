@@ -272,16 +272,16 @@ class TestAutofillClient : public AutofillClient {
   bool confirm_save_credit_card_locally_called_ = false;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
-  base::Optional<bool> offer_to_save_credit_card_bubble_was_shown_;
+  absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
 
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
-  base::Optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
+  absl::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
   // Populated if local save or upload was offered.
-  base::Optional<SaveCreditCardOptions> save_credit_card_options_;
+  absl::optional<SaveCreditCardOptions> save_credit_card_options_;
 
   std::vector<std::string> migration_card_selection_;
 

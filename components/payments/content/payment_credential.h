@@ -123,11 +123,11 @@ class PaymentCredential : public mojom::PaymentCredential,
   State state_ = State::kIdle;
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
-  base::Optional<WebDataServiceBase::Handle> data_service_request_handle_;
+  absl::optional<WebDataServiceBase::Handle> data_service_request_handle_;
   DownloadIconAndShowUserPromptCallback prompt_callback_;
   StorePaymentCredentialAndHideUserPromptCallback storage_callback_;
   mojo::Receiver<mojom::PaymentCredential> receiver_{this};
-  base::Optional<int> pending_icon_download_request_id_;
+  absl::optional<int> pending_icon_download_request_id_;
   std::vector<uint8_t> encoded_icon_;
   std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken>
       ui_controller_token_;

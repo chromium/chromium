@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
@@ -20,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 namespace {
@@ -241,7 +241,7 @@ void AuthenticatedLeakCheck::DoLeakRequest(
 
 void AuthenticatedLeakCheck::OnLookupSingleLeakResponse(
     std::unique_ptr<SingleLookupResponse> response,
-    base::Optional<LeakDetectionError> error) {
+    absl::optional<LeakDetectionError> error) {
   request_.reset();
   if (!response) {
     delegate_->OnError(*error);

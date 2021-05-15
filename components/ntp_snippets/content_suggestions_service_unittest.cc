@@ -353,7 +353,7 @@ TEST_F(ContentSuggestionsServiceTest,
        ShouldNotReturnCategoryInfoForNonexistentCategory) {
   Category category =
       Category::FromKnownCategory(KnownCategories::READING_LIST);
-  base::Optional<CategoryInfo> result = service()->GetCategoryInfo(category);
+  absl::optional<CategoryInfo> result = service()->GetCategoryInfo(category);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -363,7 +363,7 @@ TEST_F(ContentSuggestionsServiceTest, ShouldReturnCategoryInfo) {
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
   provider->FireCategoryStatusChangedWithCurrentStatus(category);
-  base::Optional<CategoryInfo> result = service()->GetCategoryInfo(category);
+  absl::optional<CategoryInfo> result = service()->GetCategoryInfo(category);
   ASSERT_TRUE(result.has_value());
   CategoryInfo expected = provider->GetCategoryInfo(category);
   const CategoryInfo& actual = result.value();

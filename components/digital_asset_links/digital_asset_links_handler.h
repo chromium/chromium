@@ -11,10 +11,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -87,7 +87,7 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
   bool CheckDigitalAssetLinkRelationship(
       const std::string& web_domain,
       const std::string& relationship,
-      const base::Optional<std::string>& fingerprint,
+      const absl::optional<std::string>& fingerprint,
       const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
@@ -99,14 +99,14 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
  private:
   void OnURLLoadComplete(
       std::string relationship,
-      base::Optional<std::string> fingerprint,
+      absl::optional<std::string> fingerprint,
       std::map<std::string, std::set<std::string>> target_values,
       std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
   void OnJSONParseResult(
       std::string relationship,
-      base::Optional<std::string> fingerprint,
+      absl::optional<std::string> fingerprint,
       std::map<std::string, std::set<std::string>> target_values,
       data_decoder::DataDecoder::ValueOrError result);
 

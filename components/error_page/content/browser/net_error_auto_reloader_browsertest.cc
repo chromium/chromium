@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -22,6 +21,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace error_page {
@@ -187,11 +187,11 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
 
   // Returns the time-delay of the currently scheduled auto-reload task, if one
   // is scheduled. If no auto-reload is scheduled, this returns null.
-  base::Optional<base::TimeDelta> GetCurrentAutoReloadDelay() {
-    const base::Optional<base::OneShotTimer>& timer =
+  absl::optional<base::TimeDelta> GetCurrentAutoReloadDelay() {
+    const absl::optional<base::OneShotTimer>& timer =
         GetAutoReloader()->next_reload_timer_for_testing();
     if (!timer)
-      return base::nullopt;
+      return absl::nullopt;
     return timer->GetCurrentDelay();
   }
 
@@ -200,7 +200,7 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
   // logic without waiting a long time or painfully messing around with mock
   // time in browser tests.
   void ForceScheduledAutoReloadNow() {
-    base::Optional<base::OneShotTimer>& timer =
+    absl::optional<base::OneShotTimer>& timer =
         GetAutoReloader()->next_reload_timer_for_testing();
     if (timer && timer->IsRunning())
       timer->FireNow();
@@ -240,7 +240,7 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
 // A successful navigation results in no auto-reload being scheduled.
 IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, NoError) {
   EXPECT_TRUE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // A normal error page triggers a scheduled reload.
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, ErrorRecovery) {
   EXPECT_TRUE(navigation.was_successful());
 
   // No new auto-reload scheduled.
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // An auto-reload that fails in the same way as the original navigation will
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, StopCancelsAutoReload) {
       /*extra_headers=*/std::string());
   EXPECT_TRUE(navigation.WaitForRequestStart());
   shell()->web_contents()->Stop();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // Various specific types of network-layer errors do not trigger auto-reload.
@@ -372,42 +372,42 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_UNKNOWN_URL_SCHEME);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_BAD_SSL_CLIENT_AUTH_CERT);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_CERT_INVALID);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_SSL_PROTOCOL_ERROR);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_BLOCKED_BY_CLIENT);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_BLOCKED_BY_ADMINISTRATOR);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
   {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_INVALID_AUTH_CREDENTIALS);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
 }
 
@@ -418,14 +418,14 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     const GURL kTestDataUrl{"data://whatever"};
     NetErrorUrlInterceptor interceptor(kTestDataUrl, net::ERR_ACCESS_DENIED);
     EXPECT_FALSE(NavigateMainFrame(kTestDataUrl));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
 
   {
     const GURL kTestFileUrl{"file://whatever"};
     NetErrorUrlInterceptor interceptor(kTestFileUrl, net::ERR_ACCESS_DENIED);
     EXPECT_FALSE(NavigateMainFrame(kTestFileUrl));
-    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+    EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
   }
 }
 
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
       GetTestUrl(), content::Referrer(), ui::PAGE_TRANSITION_TYPED,
       /*extra_headers=*/std::string());
   deferrer.WaitForNextNavigationToBeDeferred();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   // Now cancel the deferred navigation and observe that auto-reload for the
   // error page is rescheduled.
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
   // This would normally schedule an auto-reload, but we're offline.
   NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_CONNECTION_RESET);
   EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // If the browser comes online while sitting at an error page that supports
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
   // This would normally schedule an auto-reload, but we're offline.
   NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_CONNECTION_RESET);
   EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   SimulateNetworkGoingOnline();
   EXPECT_EQ(GetDelayForReloadCount(0), GetCurrentAutoReloadDelay());
@@ -486,13 +486,13 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
                        NoAutoReloadOnNonErrorPageWhenBrowserComesOnline) {
   EXPECT_TRUE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   SimulateNetworkGoingOffline();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   SimulateNetworkGoingOnline();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // Auto-reload is not scheduled when the WebContents are hidden.
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 
   // Hiding the contents cancels the scheduled auto-reload.
   shell()->web_contents()->WasHidden();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // If the WebContents becomes visible while sitting at an error page that
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 
   // Hiding the contents cancels the scheduled auto-reload.
   shell()->web_contents()->WasHidden();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   // Becoming visible again reschedules auto-reload.
   shell()->web_contents()->WasShown();
@@ -529,13 +529,13 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
                        NoAutoReloadOnNonErrorPageWhenContentsBecomeVisible) {
   EXPECT_TRUE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   shell()->web_contents()->WasHidden();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 
   shell()->web_contents()->WasShown();
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 }  // namespace

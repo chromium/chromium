@@ -11,9 +11,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/client_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -150,7 +150,7 @@ enum class PrefetchItemState : int {
   kMaxValue = ZOMBIE
 };
 
-base::Optional<PrefetchItemState> ToPrefetchItemState(int value);
+absl::optional<PrefetchItemState> ToPrefetchItemState(int value);
 
 // Error codes used to identify the reason why a prefetch entry has finished
 // processing in the pipeline. This values are only meaningful for entries in
@@ -217,7 +217,7 @@ enum class PrefetchItemErrorCode : int {
   kMaxValue = SUGGESTION_INVALIDATED
 };
 
-base::Optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value);
+absl::optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value);
 
 // Callback invoked upon completion of a prefetch request.
 using PrefetchRequestFinishedCallback =

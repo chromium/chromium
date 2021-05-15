@@ -55,7 +55,7 @@ ModelTypeStoreBackend::CreateInMemoryForTest() {
   scoped_refptr<ModelTypeStoreBackend> backend =
       new ModelTypeStoreBackend(std::move(env));
 
-  base::Optional<ModelError> error = backend->Init(path);
+  absl::optional<ModelError> error = backend->Init(path);
   DCHECK(!error);
   return backend;
 }
@@ -72,7 +72,7 @@ ModelTypeStoreBackend::CreateUninitialized() {
 // due to the custom deleter used for |db_|.
 ModelTypeStoreBackend::~ModelTypeStoreBackend() = default;
 
-base::Optional<ModelError> ModelTypeStoreBackend::Init(
+absl::optional<ModelError> ModelTypeStoreBackend::Init(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
@@ -96,13 +96,13 @@ base::Optional<ModelError> ModelTypeStoreBackend::Init(
   }
 
   if (current_version != kLatestSchemaVersion) {
-    base::Optional<ModelError> error =
+    absl::optional<ModelError> error =
         Migrate(current_version, kLatestSchemaVersion);
     if (error) {
       return error;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ModelTypeStoreBackend::IsInitialized() const {
@@ -143,7 +143,7 @@ leveldb::Status ModelTypeStoreBackend::DestroyDatabase(const std::string& path,
   return leveldb::DestroyDB(path, options);
 }
 
-base::Optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
+absl::optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
     const std::string& prefix,
     const ModelTypeStore::IdList& id_list,
     ModelTypeStore::RecordList* record_list,
@@ -167,10 +167,10 @@ base::Optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
       return ModelError(FROM_HERE, status.ToString());
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
+absl::optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
     const std::string& prefix,
     ModelTypeStore::RecordList* record_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -187,12 +187,12 @@ base::Optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
     key.remove_prefix(prefix_slice.size());
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
-  return iter->status().ok() ? base::nullopt
-                             : base::Optional<ModelError>(
+  return iter->status().ok() ? absl::nullopt
+                             : absl::optional<ModelError>(
                                    {FROM_HERE, iter->status().ToString()});
 }
 
-base::Optional<ModelError> ModelTypeStoreBackend::WriteModifications(
+absl::optional<ModelError> ModelTypeStoreBackend::WriteModifications(
     std::unique_ptr<leveldb::WriteBatch> write_batch,
     leveldb::Status* outcome) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -202,11 +202,11 @@ base::Optional<ModelError> ModelTypeStoreBackend::WriteModifications(
   if (outcome)
     *outcome = status;
   return status.ok()
-             ? base::nullopt
-             : base::Optional<ModelError>({FROM_HERE, status.ToString()});
+             ? absl::nullopt
+             : absl::optional<ModelError>({FROM_HERE, status.ToString()});
 }
 
-base::Optional<ModelError>
+absl::optional<ModelError>
 ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
     const std::string& prefix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -224,11 +224,11 @@ ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   }
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);
   return status.ok()
-             ? base::nullopt
-             : base::Optional<ModelError>({FROM_HERE, status.ToString()});
+             ? absl::nullopt
+             : absl::optional<ModelError>({FROM_HERE, status.ToString()});
 }
 
-base::Optional<ModelError> ModelTypeStoreBackend::MigrateForTest(
+absl::optional<ModelError> ModelTypeStoreBackend::MigrateForTest(
     int64_t current_version,
     int64_t desired_version) {
   return Migrate(current_version, desired_version);
@@ -255,7 +255,7 @@ int64_t ModelTypeStoreBackend::GetStoreVersion() {
   return schema_descriptor.version_number();
 }
 
-base::Optional<ModelError> ModelTypeStoreBackend::Migrate(
+absl::optional<ModelError> ModelTypeStoreBackend::Migrate(
     int64_t current_version,
     int64_t desired_version) {
   DCHECK(db_);
@@ -265,7 +265,7 @@ base::Optional<ModelError> ModelTypeStoreBackend::Migrate(
     }
   }
   if (current_version == desired_version) {
-    return base::nullopt;
+    return absl::nullopt;
   } else if (current_version > desired_version) {
     return ModelError(FROM_HERE, "Schema version too high");
   } else {

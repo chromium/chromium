@@ -17,7 +17,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -33,6 +32,7 @@
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/remote/request_throttler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -396,7 +396,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // fetches at most |count_to_fetch| suggestions only from |fetched_category|.
   // TODO(vitaliii): Also support |count_to_fetch| when |fetched_category| is
   // nullopt.
-  RequestParams BuildFetchParams(base::Optional<Category> fetched_category,
+  RequestParams BuildFetchParams(absl::optional<Category> fetched_category,
                                  int count_to_fetch) const;
 
   bool AreArticlesEmpty() const;

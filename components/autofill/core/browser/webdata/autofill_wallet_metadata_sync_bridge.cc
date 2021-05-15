@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/pickle.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -27,6 +26,7 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -348,7 +348,7 @@ AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
       GetAutofillTable(), syncer::AUTOFILL_WALLET_METADATA);
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 AutofillWalletMetadataSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -360,7 +360,7 @@ AutofillWalletMetadataSyncBridge::MergeSyncData(
                             std::move(entity_data));
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 AutofillWalletMetadataSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -380,7 +380,7 @@ void AutofillWalletMetadataSyncBridge::GetData(StorageKeyList storage_keys,
 void AutofillWalletMetadataSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
   // Get all data by not providing any |storage_keys| filter.
-  GetDataImpl(/*storage_keys=*/base::nullopt, std::move(callback));
+  GetDataImpl(/*storage_keys=*/absl::nullopt, std::move(callback));
 }
 
 std::string AutofillWalletMetadataSyncBridge::GetClientTag(
@@ -548,7 +548,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
 }
 
 void AutofillWalletMetadataSyncBridge::GetDataImpl(
-    base::Optional<std::unordered_set<std::string>> storage_keys_set,
+    absl::optional<std::unordered_set<std::string>> storage_keys_set,
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -593,7 +593,7 @@ void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
   }
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -612,7 +612,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
         AutofillMetadata remote =
             CreateAutofillMetadataFromWalletMetadataSpecifics(specifics);
         auto it = cache_.find(change->storage_key());
-        base::Optional<AutofillMetadata> local = base::nullopt;
+        absl::optional<AutofillMetadata> local = absl::nullopt;
         if (it != cache_.end()) {
           local = it->second;
         }
@@ -701,7 +701,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
 
       AutofillMetadata new_entry = change.data_model()->GetMetadata();
       auto it = cache_.find(storage_key);
-      base::Optional<AutofillMetadata> existing_entry = base::nullopt;
+      absl::optional<AutofillMetadata> existing_entry = absl::nullopt;
       if (it != cache_.end()) {
         existing_entry = it->second;
       }

@@ -75,7 +75,7 @@ void MediaSessionNotificationItem::MediaSessionInfoChanged(
 }
 
 void MediaSessionNotificationItem::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   session_metadata_ = metadata.value_or(media_session::MediaMetadata());
 
   view_needs_metadata_update_ = true;
@@ -110,7 +110,7 @@ void MediaSessionNotificationItem::MediaSessionActionsChanged(
 }
 
 void MediaSessionNotificationItem::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
   if (!position.has_value())
     return;

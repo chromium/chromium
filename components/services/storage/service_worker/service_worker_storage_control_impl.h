@@ -60,7 +60,7 @@ class ServiceWorkerStorageControlImpl
       const StorageKey& key,
       FindRegistrationForScopeCallback callback) override;
   void FindRegistrationForId(int64_t registration_id,
-                             const base::Optional<StorageKey>& key,
+                             const absl::optional<StorageKey>& key,
                              FindRegistrationForIdCallback callback) override;
   void GetRegistrationsForStorageKey(
       const StorageKey& key,

@@ -315,7 +315,7 @@ void SiteDataImpl::NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
 }
 
 void SiteDataImpl::OnInitCallback(
-    base::Optional<SiteDataProto> db_site_characteristics) {
+    absl::optional<SiteDataProto> db_site_characteristics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Check if the initialization has succeeded.
   if (db_site_characteristics) {

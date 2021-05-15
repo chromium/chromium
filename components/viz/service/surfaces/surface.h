@@ -19,7 +19,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -30,6 +29,7 @@
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -122,7 +122,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   bool has_deadline() const { return deadline_ && deadline_->has_deadline(); }
 
-  base::Optional<base::TimeTicks> deadline_for_testing() const {
+  absl::optional<base::TimeTicks> deadline_for_testing() const {
     return deadline_->deadline_for_testing();
   }
 
@@ -337,7 +337,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // dependencies will be added even if they're not yet available.
   void UpdateActivationDependencies(const CompositorFrame& current_frame);
 
-  void UnrefFrameResourcesAndRunCallbacks(base::Optional<FrameData> frame_data);
+  void UnrefFrameResourcesAndRunCallbacks(absl::optional<FrameData> frame_data);
   void ClearCopyRequests();
 
   void TakePendingLatencyInfo(std::vector<ui::LatencyInfo>* latency_info);
@@ -351,9 +351,9 @@ class VIZ_SERVICE_EXPORT Surface final {
   base::WeakPtr<SurfaceClient> surface_client_;
   std::unique_ptr<SurfaceDependencyDeadline> deadline_;
 
-  base::Optional<FrameData> pending_frame_data_;
-  base::Optional<FrameData> active_frame_data_;
-  base::Optional<CompositorFrame> interpolated_frame_;
+  absl::optional<FrameData> pending_frame_data_;
+  absl::optional<FrameData> active_frame_data_;
+  absl::optional<CompositorFrame> interpolated_frame_;
   bool seen_first_frame_activation_ = false;
   bool seen_first_surface_embedding_ = false;
 

@@ -163,7 +163,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
                    AutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
                    base::WeakPtr<UIDelegate> ui_delegate,
-                   base::Optional<base::Value> fido_assertion_info);
+                   absl::optional<base::Value> fido_assertion_info);
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(

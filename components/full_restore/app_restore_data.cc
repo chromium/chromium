@@ -61,35 +61,35 @@ base::Value ConvertUintToValue(uint32_t number) {
 
 // Gets bool value from base::DictionaryValue, e.g. { "key": true } returns
 // true.
-base::Optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
+absl::optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
-  return dict.HasKey(key_name) ? dict.FindBoolKey(key_name) : base::nullopt;
+  return dict.HasKey(key_name) ? dict.FindBoolKey(key_name) : absl::nullopt;
 }
 
 // Gets int value from base::DictionaryValue, e.g. { "key": 100 } returns 100.
-base::Optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
+absl::optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
                                             const std::string& key_name) {
-  return dict.HasKey(key_name) ? dict.FindIntKey(key_name) : base::nullopt;
+  return dict.HasKey(key_name) ? dict.FindIntKey(key_name) : absl::nullopt;
 }
 
 // Gets uint32_t value from base::DictionaryValue, e.g. { "key": "123" } returns
 // 123.
-base::Optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
+absl::optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
                                               const std::string& key_name) {
   uint32_t result = 0;
   if (!dict.HasKey(key_name) ||
       !base::StringToUint(dict.FindStringKey(key_name)->c_str(), &result)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return result;
 }
 
 // Gets display id from base::DictionaryValue, e.g. { "display_id": "22000000" }
 // returns 22000000.
-base::Optional<int64_t> GetDisplayIdFromDict(
+absl::optional<int64_t> GetDisplayIdFromDict(
     const base::DictionaryValue& dict) {
   if (!dict.HasKey(kDisplayIdKey))
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* display_id_str = dict.FindStringKey(kDisplayIdKey);
   int64_t display_id_value;
@@ -98,21 +98,21 @@ base::Optional<int64_t> GetDisplayIdFromDict(
     return display_id_value;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Gets std::vector<base::FilePath> from base::DictionaryValue, e.g.
 // {"file_paths": { "aa.cc", "bb.h", ... }} returns
 // std::vector<base::FilePath>{"aa.cc", "bb.h", ...}.
-base::Optional<std::vector<base::FilePath>> GetFilePathsFromDict(
+absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
     const base::DictionaryValue& dict) {
   if (!dict.HasKey(kFilePathsKey))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* file_paths_value = dict.FindListKey(kFilePathsKey);
   if (!file_paths_value || !file_paths_value->is_list() ||
       file_paths_value->GetList().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<base::FilePath> file_paths;
   for (const auto& item : file_paths_value->GetList()) {
@@ -126,15 +126,15 @@ base::Optional<std::vector<base::FilePath>> GetFilePathsFromDict(
 
 // Gets gfx::Size from base::Value, e.g. { 100, 300 } returns
 // gfx::Size(100, 300).
-base::Optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
+absl::optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* size_value = dict.FindListKey(key_name);
   if (!size_value || !size_value->is_list() ||
       size_value->GetList().size() != 2) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<int> size;
@@ -146,34 +146,34 @@ base::Optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
 
 // Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
 // gfx::Rect(0, 100, 200, 300).
-base::Optional<gfx::Rect> GetBoundsRectFromDict(
+absl::optional<gfx::Rect> GetBoundsRectFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   if (!dict.HasKey(key_name))
-    return base::nullopt;
+    return absl::nullopt;
 
   const base::Value* rect_value = dict.FindListKey(key_name);
   if (!rect_value || !rect_value->is_list() || rect_value->GetList().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<int> rect;
   for (const auto& item : rect_value->GetList())
     rect.push_back(item.GetInt());
 
   if (rect.size() != 4)
-    return base::nullopt;
+    return absl::nullopt;
 
   return gfx::Rect(rect[0], rect[1], rect[2], rect[3]);
 }
 
 // Gets WindowStateType from base::DictionaryValue, e.g. { "window_state_type":
 // 2 } returns WindowStateType::kMinimized.
-base::Optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
+absl::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
     const base::DictionaryValue& dict) {
   return dict.HasKey(kWindowStateTypeKey)
-             ? base::make_optional(static_cast<chromeos::WindowStateType>(
+             ? absl::make_optional(static_cast<chromeos::WindowStateType>(
                    dict.FindIntKey(kWindowStateTypeKey).value()))
-             : base::nullopt;
+             : absl::nullopt;
 }
 
 }  // namespace

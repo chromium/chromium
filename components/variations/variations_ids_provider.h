@@ -94,7 +94,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   // Sets low entropy source value that was used for client-side randomization
   // of variations.
-  void SetLowEntropySourceValue(base::Optional<int> low_entropy_source_value);
+  void SetLowEntropySourceValue(absl::optional<int> low_entropy_source_value);
 
   // Result of ForceVariationIds() call.
   enum class ForceIdsResult {
@@ -224,7 +224,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   // Low entropy source value from client that was used for client-side
   // randomization of variations.
-  base::Optional<int> low_entropy_source_value_;
+  absl::optional<int> low_entropy_source_value_;
 
   // Whether or not we've initialized the caches.
   bool variation_ids_cache_initialized_;

@@ -11,23 +11,23 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/task_runner_util.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/model_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
 namespace {
 
-base::Optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
+absl::optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
     BlockingModelTypeStoreImpl* blocking_store,
     ModelTypeStore::PreprocessCallback
         preprocess_on_backend_sequence_callback) {
   DCHECK(blocking_store);
 
   auto record_list = std::make_unique<ModelTypeStoreBase::RecordList>();
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       blocking_store->ReadAllData(record_list.get());
   if (error) {
     return error;
@@ -87,7 +87,7 @@ void ModelTypeStoreImpl::ReadData(const IdList& id_list,
 void ModelTypeStoreImpl::ReadDataDone(ReadDataCallback callback,
                                       std::unique_ptr<RecordList> record_list,
                                       std::unique_ptr<IdList> missing_id_list,
-                                      const base::Optional<ModelError>& error) {
+                                      const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error, std::move(record_list),
                           std::move(missing_id_list));
@@ -110,7 +110,7 @@ void ModelTypeStoreImpl::ReadAllData(ReadAllDataCallback callback) {
 void ModelTypeStoreImpl::ReadAllDataDone(
     ReadAllDataCallback callback,
     std::unique_ptr<RecordList> record_list,
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error, std::move(record_list));
 }
@@ -133,7 +133,7 @@ void ModelTypeStoreImpl::ReadAllMetadata(ReadMetadataCallback callback) {
 void ModelTypeStoreImpl::ReadAllMetadataDone(
     ReadMetadataCallback callback,
     std::unique_ptr<MetadataBatch> metadata_batch,
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -166,7 +166,7 @@ void ModelTypeStoreImpl::ReadAllDataAndPreprocess(
 
 void ModelTypeStoreImpl::ReadAllDataAndPreprocessDone(
     CallbackWithResult callback,
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error);
 }
@@ -206,7 +206,7 @@ void ModelTypeStoreImpl::CommitWriteBatch(
 
 void ModelTypeStoreImpl::WriteModificationsDone(
     CallbackWithResult callback,
-    const base::Optional<ModelError>& error) {
+    const absl::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error);
 }

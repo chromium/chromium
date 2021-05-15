@@ -461,7 +461,7 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          (!params.valid_splash_icon || IsIconFetchComplete(IconUsage::kSplash));
 }
 
-void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
+void InstallableManager::Reset(absl::optional<InstallableStatusCode> error) {
   DCHECK(!error || error.value() != NO_ERROR_DETECTED);
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
@@ -965,7 +965,7 @@ void InstallableManager::DidFinishNavigation(
 
 void InstallableManager::DidUpdateWebManifestURL(
     content::RenderFrameHost* rfh,
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   // A change in the manifest URL invalidates our entire internal state.
   Reset(MANIFEST_URL_CHANGED);
 }

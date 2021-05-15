@@ -41,7 +41,7 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
 
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
-  base::Optional<ModelError> error = backend->Init(temp_dir.GetPath());
+  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath());
   ASSERT_FALSE(error) << error->ToString();
 
   // Write record.
@@ -80,7 +80,7 @@ TEST_F(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
   write_batch->Put("prefix1:id1", "data1");
   write_batch->Put("prefix2:id2", "data2");
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
 
@@ -102,7 +102,7 @@ TEST_F(ModelTypeStoreBackendTest, ReadDeletedRecord) {
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
   write_batch->Put("prefix:id1", "data1");
   write_batch->Put("prefix:id2", "data2");
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
 
@@ -145,7 +145,7 @@ TEST_F(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
   write_batch->Put("prefix2:id2", "data2");
   write_batch->Put("prefix2:id3", "data3");
   write_batch->Put("prefix3:id4", "data4");
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
 
@@ -190,7 +190,7 @@ TEST_F(ModelTypeStoreBackendTest, Migrate0To1Test) {
 
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
   write_batch->Delete(ModelTypeStoreBackend::kDBSchemaDescriptorRecordId);
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
   ASSERT_EQ(0, backend->GetStoreVersionForTest());
@@ -205,7 +205,7 @@ TEST_F(ModelTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
-  base::Optional<ModelError> error =
+  absl::optional<ModelError> error =
       backend->MigrateForTest(ModelTypeStoreBackend::kLatestSchemaVersion + 1,
                               ModelTypeStoreBackend::kLatestSchemaVersion);
   ASSERT_TRUE(error);
@@ -227,7 +227,7 @@ TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
 
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
-  base::Optional<ModelError> error = backend->Init(temp_dir.GetPath());
+  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath());
   ASSERT_FALSE(error) << error->ToString();
 }
 

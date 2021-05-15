@@ -42,7 +42,7 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      base::Optional<PasswordHashData> reused_protected_password_hash,
+      absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       int saved_passwords) override;
 
@@ -52,7 +52,7 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   void OnKeyPressed(const std::u16string& text, const bool is_committed);
   // Determines the type of password being reused.
   metrics_util::PasswordType GetReusedPasswordType(
-      base::Optional<PasswordHashData> reused_protected_password_hash,
+      absl::optional<PasswordHashData> reused_protected_password_hash,
       size_t match_domain_count);
 
   void CheckStoresForReuse(const std::u16string& input);

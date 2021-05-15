@@ -31,7 +31,7 @@ class EntityBuilderFactory {
 
   const BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
-      base::Optional<std::string> originator_client_item_id = base::nullopt);
+      absl::optional<std::string> originator_client_item_id = absl::nullopt);
 
  private:
   // An identifier used when creating entities. This value is used similarly to

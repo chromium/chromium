@@ -5,12 +5,12 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -73,16 +73,16 @@ TEST_F(InstallableManagerUnitTest, CheckMinimalValidManifest) {
 TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.name = base::nullopt;
+  manifest.name = absl::nullopt;
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
   manifest.name = u"foo";
-  manifest.short_name = base::nullopt;
+  manifest.short_name = absl::nullopt;
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = base::nullopt;
+  manifest.name = absl::nullopt;
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }

@@ -6,10 +6,10 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_RECEIVER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/cast_streaming_session.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_streaming {
 
@@ -67,10 +67,10 @@ class CastStreamingTestReceiver : public CastStreamingSession::Client {
   bool RunUntilVideoFramesCountIsAtLeast(size_t video_frames_count);
 
   bool is_active() { return is_active_; }
-  base::Optional<media::AudioDecoderConfig> audio_config() {
+  absl::optional<media::AudioDecoderConfig> audio_config() {
     return audio_config_;
   }
-  base::Optional<media::VideoDecoderConfig> video_config() {
+  absl::optional<media::VideoDecoderConfig> video_config() {
     return video_config_;
   }
   const std::vector<scoped_refptr<media::DecoderBuffer>>& audio_buffers() {
@@ -88,14 +88,14 @@ class CastStreamingTestReceiver : public CastStreamingSession::Client {
 
   // CastStreamingSession::Client implementation.
   void OnSessionInitialization(
-      base::Optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-      base::Optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
+      absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
+      absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
       final;
   void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
   void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
   void OnSessionReinitialization(
-      base::Optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-      base::Optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
+      absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
+      absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
       final;
   void OnSessionEnded() final;
 
@@ -103,11 +103,11 @@ class CastStreamingTestReceiver : public CastStreamingSession::Client {
   bool is_active_ = false;
   base::OnceClosure receiver_updated_closure_;
 
-  base::Optional<media::AudioDecoderConfig> audio_config_;
+  absl::optional<media::AudioDecoderConfig> audio_config_;
   std::unique_ptr<media::MojoDecoderBufferReader> audio_decoder_buffer_reader_;
   std::vector<scoped_refptr<media::DecoderBuffer>> audio_buffers_;
 
-  base::Optional<media::VideoDecoderConfig> video_config_;
+  absl::optional<media::VideoDecoderConfig> video_config_;
   std::unique_ptr<media::MojoDecoderBufferReader> video_decoder_buffer_reader_;
   std::vector<scoped_refptr<media::DecoderBuffer>> video_buffers_;
 };

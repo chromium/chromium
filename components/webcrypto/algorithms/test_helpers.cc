@@ -161,7 +161,7 @@ std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict) {
   re2::RE2::GlobalReplace(&file_contents, re2::RE2("\\s*//.*"), "");
 
   // Parse the JSON to a dictionary.
-  base::Optional<base::Value> read_value =
+  absl::optional<base::Value> read_value =
       base::JSONReader::Read(file_contents);
   if (!read_value.has_value()) {
     return ::testing::AssertionFailure()
@@ -381,17 +381,17 @@ Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                    usages, key);
 }
 
-base::Optional<base::DictionaryValue> GetJwkDictionary(
+absl::optional<base::DictionaryValue> GetJwkDictionary(
     const std::vector<uint8_t>& json) {
   base::StringPiece json_string(reinterpret_cast<const char*>(json.data()),
                                 json.size());
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
 
   base::DictionaryValue* dict_value = nullptr;
   if (!value.value().GetAsDictionary(&dict_value))
-    return base::nullopt;
+    return absl::nullopt;
 
   return std::move(*dict_value);
 }
@@ -451,7 +451,7 @@ base::Optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& alg_expected,
     const std::string& k_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  base::Optional<base::DictionaryValue> dict = GetJwkDictionary(json);
+  absl::optional<base::DictionaryValue> dict = GetJwkDictionary(json);
   if (!dict.has_value() || dict.value().DictEmpty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
@@ -478,7 +478,7 @@ base::Optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& n_expected_hex,
     const std::string& e_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  base::Optional<base::DictionaryValue> dict = GetJwkDictionary(json);
+  absl::optional<base::DictionaryValue> dict = GetJwkDictionary(json);
   if (!dict.has_value() || dict.value().DictEmpty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 

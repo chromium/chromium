@@ -85,7 +85,7 @@ class StandaloneTrustedVaultBackend
 
   // Sets/resets |primary_account_|.
   void SetPrimaryAccount(
-      const base::Optional<CoreAccountInfo>& primary_account);
+      const absl::optional<CoreAccountInfo>& primary_account);
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
@@ -98,7 +98,7 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
-  base::Optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
+  absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
       const std::string& gaia_id);
@@ -160,13 +160,13 @@ class StandaloneTrustedVaultBackend
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
-  base::Optional<CoreAccountInfo> primary_account_;
+  absl::optional<CoreAccountInfo> primary_account_;
 
   // Used to plumb FetchKeys() result to the caller.
   FetchKeysCallback ongoing_fetch_keys_callback_;
 
   // Account used in last FetchKeys() call.
-  base::Optional<std::string> ongoing_fetch_keys_gaia_id_;
+  absl::optional<std::string> ongoing_fetch_keys_gaia_id_;
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;

@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -15,6 +14,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -95,7 +95,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   testing::NiceMock<MockPasswordFeatureManager> password_feature_manager_;
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
-  base::Optional<PasswordManagerMetricsRecorder> metrics_recorder_;
+  absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerClient);
 };

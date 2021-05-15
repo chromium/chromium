@@ -11,10 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/optional.h"
 #include "components/web_cache/public/mojom/web_cache.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_cache {
 
@@ -50,7 +50,7 @@ class WebCacheImpl : public mojom::WebCache {
 
   mojo::ReceiverSet<mojom::WebCache> receivers_;
 
-  base::Optional<base::MemoryPressureListener> memory_pressure_listener_;
+  absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(WebCacheImpl);
 };

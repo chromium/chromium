@@ -23,7 +23,7 @@ class MockOfflineContentProvider : public OfflineContentProvider {
     MOCK_METHOD1(OnItemsAdded, void(const OfflineItemList&));
     MOCK_METHOD1(OnItemRemoved, void(const ContentId&));
     MOCK_METHOD2(OnItemUpdated,
-                 void(const OfflineItem&, const base::Optional<UpdateDelta>&));
+                 void(const OfflineItem&, const absl::optional<UpdateDelta>&));
     MOCK_METHOD0(OnContentProviderGoingDown, void());
   };
 
@@ -40,7 +40,7 @@ class MockOfflineContentProvider : public OfflineContentProvider {
   void NotifyOnItemsAdded(const OfflineItemList& items);
   void NotifyOnItemRemoved(const ContentId& id);
   void NotifyOnItemUpdated(const OfflineItem& item,
-                           const base::Optional<UpdateDelta>& update_delta);
+                           const absl::optional<UpdateDelta>& update_delta);
 
   // OfflineContentProvider implementation.
   MOCK_METHOD2(OpenItem, void(const OpenParams&, const ContentId&));
@@ -62,7 +62,7 @@ class MockOfflineContentProvider : public OfflineContentProvider {
                void(const ContentId&, const std::string&, RenameCallback));
   MOCK_METHOD(void,
               ChangeSchedule,
-              (const ContentId&, base::Optional<OfflineItemSchedule>),
+              (const ContentId&, absl::optional<OfflineItemSchedule>),
               (override));
 
  private:

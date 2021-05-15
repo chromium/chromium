@@ -82,7 +82,7 @@ void RunGetAllItemsCallback(const base::android::JavaRef<jobject>& j_callback,
 }
 
 void RunGetItemByIdCallback(const base::android::JavaRef<jobject>& j_callback,
-                            const base::Optional<OfflineItem>& item) {
+                            const absl::optional<OfflineItem>& item) {
   JNIEnv* env = AttachCurrentThread();
   RunObjectCallbackAndroid(
       j_callback, item.has_value()
@@ -255,11 +255,11 @@ void OfflineContentAggregatorBridge::ChangeSchedule(
     const base::android::JavaParamRef<jstring>& j_id,
     jboolean j_only_on_wifi,
     jlong j_start_time_ms) {
-  base::Optional<OfflineItemSchedule> schedule;
+  absl::optional<OfflineItemSchedule> schedule;
   if (j_only_on_wifi)
-    schedule = base::make_optional<OfflineItemSchedule>(true, base::nullopt);
+    schedule = absl::make_optional<OfflineItemSchedule>(true, absl::nullopt);
   else if (j_start_time_ms > 0) {
-    schedule = base::make_optional<OfflineItemSchedule>(
+    schedule = absl::make_optional<OfflineItemSchedule>(
         false, base::Time::FromJavaTime(j_start_time_ms));
   }
 
@@ -290,7 +290,7 @@ void OfflineContentAggregatorBridge::OnItemRemoved(const ContentId& id) {
 
 void OfflineContentAggregatorBridge::OnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   if (java_ref_.is_null())
     return;
 

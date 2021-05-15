@@ -7,12 +7,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace prerender {
@@ -64,7 +64,7 @@ class PrerenderURLLoaderThrottle
   // The throttle changes most request priorities to IDLE during prerendering.
   // The priority is reset back to the original priority when prerendering is
   // finished.
-  base::Optional<net::RequestPriority> original_request_priority_;
+  absl::optional<net::RequestPriority> original_request_priority_;
 
   base::OnceClosure destruction_closure_;
 

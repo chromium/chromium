@@ -232,7 +232,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // Callback that needs to be called by the data store once it has finished
   // trying to read the protobuf.
-  void OnInitCallback(base::Optional<SiteDataProto> site_characteristic_proto);
+  void OnInitCallback(absl::optional<SiteDataProto> site_characteristic_proto);
 
   // Decrement the |loaded_tabs_in_background_count_| counter and update the
   // local feature observation durations if necessary.

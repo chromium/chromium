@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/policy/core/common/async_policy_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -54,7 +54,7 @@ class POLICY_EXPORT PolicyLoaderLacros
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Serialized blob of PolicyFetchResponse object received from the server.
-  base::Optional<std::vector<uint8_t>> policy_fetch_response_;
+  absl::optional<std::vector<uint8_t>> policy_fetch_response_;
 
   // Checks that the method is called on the right sequence.
   SEQUENCE_CHECKER(sequence_checker_);

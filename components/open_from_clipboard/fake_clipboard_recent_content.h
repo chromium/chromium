@@ -19,8 +19,8 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   ~FakeClipboardRecentContent() override;
 
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<std::u16string> GetRecentTextFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
@@ -40,9 +40,9 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   void SetClipboardImage(const gfx::Image& image, base::TimeDelta content_age);
 
  private:
-  base::Optional<GURL> clipboard_url_content_;
-  base::Optional<std::u16string> clipboard_text_content_;
-  base::Optional<gfx::Image> clipboard_image_content_;
+  absl::optional<GURL> clipboard_url_content_;
+  absl::optional<std::u16string> clipboard_text_content_;
+  absl::optional<gfx::Image> clipboard_image_content_;
   base::TimeDelta content_age_;
   bool suppress_content_;
 

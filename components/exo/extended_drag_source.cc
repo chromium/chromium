@@ -13,9 +13,9 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "components/exo/data_source.h"
 #include "components/exo/surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -297,11 +297,11 @@ aura::Window* ExtendedDragSource::GetDraggedWindowForTesting() {
                                 : nullptr;
 }
 
-base::Optional<gfx::Vector2d> ExtendedDragSource::GetDragOffsetForTesting()
+absl::optional<gfx::Vector2d> ExtendedDragSource::GetDragOffsetForTesting()
     const {
   return dragged_window_holder_
-             ? base::Optional<gfx::Vector2d>(dragged_window_holder_->offset())
-             : base::nullopt;
+             ? absl::optional<gfx::Vector2d>(dragged_window_holder_->offset())
+             : absl::nullopt;
 }
 
 }  // namespace exo

@@ -35,10 +35,10 @@ class WebAppOriginAssociationParser {
  private:
   std::vector<mojom::AssociatedWebAppPtr> ParseAssociatedWebApps(
       const base::Value& root_dict);
-  base::Optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
+  absl::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
       const base::Value& app_dict);
-  base::Optional<GURL> ParseManifestURL(const base::Value& app_dict);
-  base::Optional<std::vector<std::string>> ParsePaths(
+  absl::optional<GURL> ParseManifestURL(const base::Value& app_dict);
+  absl::optional<std::vector<std::string>> ParsePaths(
       const base::Value& app_details_dict,
       const std::string& key);
   void AddErrorInfo(const std::string& error_msg,

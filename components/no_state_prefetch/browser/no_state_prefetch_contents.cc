@@ -55,7 +55,7 @@ class NoStatePrefetchContentsFactoryImpl
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       Origin origin) override {
     return new NoStatePrefetchContents(
         std::move(delegate), no_state_prefetch_manager, browser_context, url,
@@ -127,7 +127,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     Origin origin)
     : prerendering_has_started_(false),
       no_state_prefetch_manager_(no_state_prefetch_manager),

@@ -14,11 +14,11 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/session/arc_client_adapter.h"
 #include "components/arc/session/arc_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class DefaultScaleFactorRetriever;

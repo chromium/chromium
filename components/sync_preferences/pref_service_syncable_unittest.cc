@@ -90,7 +90,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
   explicit TestSyncProcessorStub(syncer::SyncChangeList* output)
       : output_(output), fail_next_(false) {}
 
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override {
     if (output_)
@@ -99,7 +99,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
       fail_next_ = false;
       return syncer::ModelError(FROM_HERE, "Error");
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   void FailNextProcessSyncChanges() { fail_next_ = true; }
@@ -226,7 +226,7 @@ class PrefServiceSyncableTest : public testing::Test {
 
   void InitWithSyncDataTakeOutput(const syncer::SyncDataList& initial_data,
                                   syncer::SyncChangeList* output) {
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         pref_sync_service_->MergeDataAndStartSyncing(
             syncer::PREFERENCES, initial_data,
             std::make_unique<TestSyncProcessorStub>(output),
@@ -471,7 +471,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
 
   void InitWithSyncDataTakeOutput(const syncer::SyncDataList& initial_data,
                                   syncer::SyncChangeList* output) {
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         pref_sync_service_->MergeDataAndStartSyncing(
             syncer::PREFERENCES, initial_data,
             std::make_unique<TestSyncProcessorStub>(output),
@@ -687,7 +687,7 @@ TEST_F(PrefServiceSyncableTest, FailModelAssociation) {
   syncer::SyncChangeList output;
   TestSyncProcessorStub* stub = new TestSyncProcessorStub(&output);
   stub->FailNextProcessSyncChanges();
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       pref_sync_service_->MergeDataAndStartSyncing(
           syncer::PREFERENCES, syncer::SyncDataList(), base::WrapUnique(stub),
           std::make_unique<syncer::SyncErrorFactoryMock>());
@@ -947,7 +947,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
   void InitSyncForType(ModelType type,
                        syncer::SyncChangeList* output = nullptr) {
     syncer::SyncDataList empty_data;
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         prefs_->GetSyncableService(type)->MergeDataAndStartSyncing(
             type, empty_data, std::make_unique<TestSyncProcessorStub>(output),
             std::make_unique<syncer::SyncErrorFactoryMock>());

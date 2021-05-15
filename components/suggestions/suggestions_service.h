@@ -8,9 +8,9 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/suggestions/proto/suggestions.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace suggestions {
@@ -30,7 +30,7 @@ class SuggestionsService : public KeyedService {
   virtual bool FetchSuggestionsData() = 0;
 
   // Returns the current set of suggestions from the cache.
-  virtual base::Optional<SuggestionsProfile> GetSuggestionsDataFromCache()
+  virtual absl::optional<SuggestionsProfile> GetSuggestionsDataFromCache()
       const = 0;
 
   // Adds a callback that is called when the suggestions are updated.

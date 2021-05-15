@@ -4,6 +4,8 @@
 
 #include "components/sync/model/model_type_store_service_impl.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -35,7 +37,7 @@ TEST(ModelTypeStoreServiceImplTest, ShouldSupportFactoryOutlivingService) {
   base::RunLoop loop;
   store_factory.Run(
       syncer::PREFERENCES,
-      base::BindLambdaForTesting([&](const base::Optional<ModelError>& error,
+      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error,
                                      std::unique_ptr<ModelTypeStore> store) {
         EXPECT_FALSE(error.has_value());
         EXPECT_THAT(store, NotNull());

@@ -15,7 +15,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
@@ -23,6 +22,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/system/sys_info.h"

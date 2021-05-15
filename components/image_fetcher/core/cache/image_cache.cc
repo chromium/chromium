@@ -182,7 +182,7 @@ void ImageCache::OnImageMetadataLoadedForLoadImage(
     const std::string& key,
     ImageDataCallback callback,
     base::TimeTicks start_time,
-    base::Optional<CachedImageMetadataProto> metadata) {
+    absl::optional<CachedImageMetadataProto> metadata) {
   // Record time spent to load metadata.
   ImageFetcherMetricsReporter::ReportLoadImageMetadata(start_time);
 

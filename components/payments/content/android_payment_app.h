@@ -10,11 +10,11 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/core/android_app_description.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -78,7 +78,7 @@ class AndroidPaymentApp : public PaymentApp {
 
  private:
   void OnPaymentAppResponse(base::WeakPtr<Delegate> delegate,
-                            const base::Optional<std::string>& error_message,
+                            const absl::optional<std::string>& error_message,
                             bool is_activity_result_ok,
                             const std::string& payment_method_identifier,
                             const std::string& stringified_details);

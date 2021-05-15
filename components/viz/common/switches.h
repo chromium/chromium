@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace switches {
 
@@ -44,7 +44,7 @@ VIZ_COMMON_EXPORT extern const char kTintCompositedContentModulate[];
 // incorrect damage rect borders after using overlays.
 VIZ_COMMON_EXPORT extern const char kShowDCLayerDebugBorders[];
 
-VIZ_COMMON_EXPORT base::Optional<uint32_t> GetDeadlineToSynchronizeSurfaces();
+VIZ_COMMON_EXPORT absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces();
 
 }  // namespace switches
 

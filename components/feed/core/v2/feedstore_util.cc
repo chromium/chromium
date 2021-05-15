@@ -59,9 +59,9 @@ void SetSessionId(Metadata& metadata,
       expiry_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
 }
 
-base::Optional<Metadata> MaybeUpdateSessionId(
+absl::optional<Metadata> MaybeUpdateSessionId(
     const Metadata& metadata,
-    base::Optional<std::string> token) {
+    absl::optional<std::string> token) {
   if (token && metadata.session_id().token() != *token) {
     base::Time expiry_time =
         token->empty()
@@ -71,7 +71,7 @@ base::Optional<Metadata> MaybeUpdateSessionId(
     SetSessionId(new_metadata, *token, expiry_time);
     return new_metadata;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 LocalActionId GetNextActionId(Metadata& metadata) {
@@ -129,11 +129,11 @@ feedstore::Metadata MakeMetadata(const std::string& gaia) {
   return md;
 }
 
-base::Optional<Metadata> SetStreamViewContentIds(
+absl::optional<Metadata> SetStreamViewContentIds(
     const Metadata& metadata,
     const feed::StreamType& stream_type,
     const feed::ContentIdSet& content_ids) {
-  base::Optional<Metadata> result;
+  absl::optional<Metadata> result;
   if (!(GetViewContentIds(metadata, stream_type) == content_ids)) {
     result = metadata;
     SetStreamViewContentIds(*result, stream_type, content_ids);

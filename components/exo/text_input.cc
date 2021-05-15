@@ -377,11 +377,11 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
   return false;
 }
 
-base::Optional<ui::GrammarFragment> TextInput::GetGrammarFragment(
+absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragment(
     const gfx::Range& range) {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool TextInput::ClearGrammarFragments(const gfx::Range& range) {

@@ -336,7 +336,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
      })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponse);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -409,7 +409,7 @@ TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
      })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -502,7 +502,7 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
     })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -587,7 +587,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
      })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -648,7 +648,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
      })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -711,7 +711,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
      })",
       SAMPLE_ORIGINAL_URL.c_str());
 
-  base::Optional<base::Value> response =
+  absl::optional<base::Value> response =
       base::JSONReader::Read(kGoodJSONResponseWithTies);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
@@ -758,7 +758,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
   ACMatches matches;
   ASSERT_FALSE(provider_->backoff_for_session_);
 
-  base::Optional<base::Value> bad_response = base::JSONReader::Read(
+  absl::optional<base::Value> bad_response = base::JSONReader::Read(
       kMismatchedMessageJSON, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(bad_response);
   ASSERT_TRUE(bad_response->is_dict());
@@ -910,7 +910,7 @@ TEST_F(DocumentProviderTest, Scoring) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(omnibox::kDocumentProvider,
                                                     parameters);
-    base::Optional<base::Value> response = base::JSONReader::Read(response_str);
+    absl::optional<base::Value> response = base::JSONReader::Read(response_str);
     provider_->input_.UpdateText(base::UTF8ToUTF16(input_text), 0, {});
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
 

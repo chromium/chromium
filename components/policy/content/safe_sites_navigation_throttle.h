@@ -7,9 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SafeSearchService;
 
@@ -67,7 +67,7 @@ class SafeSitesNavigationThrottle : public content::NavigationThrottle {
 
   // HTML to be displayed when navigation is canceled by the Safe Sites filter.
   // If null, a default error page will be displayed.
-  const base::Optional<std::string> safe_sites_error_page_content_;
+  const absl::optional<std::string> safe_sites_error_page_content_;
 
   // Whether the request was deferred in order to check the Safe Search API.
   bool deferred_ = false;

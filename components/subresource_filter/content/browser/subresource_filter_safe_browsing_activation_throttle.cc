@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -26,6 +25,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -37,7 +37,7 @@ namespace {
 using CheckResults =
     std::vector<SubresourceFilterSafeBrowsingClient::CheckResult>;
 
-base::Optional<RedirectPosition> GetEnforcementRedirectPosition(
+absl::optional<RedirectPosition> GetEnforcementRedirectPosition(
     const CheckResults& results) {
   // Safe cast since we have strict limits on HTTP redirects.
   int num_results = static_cast<int>(results.size());
@@ -55,7 +55,7 @@ base::Optional<RedirectPosition> GetEnforcementRedirectPosition(
       return RedirectPosition::kMiddle;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

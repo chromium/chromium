@@ -11,11 +11,11 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/metrics/structured/persistent_proto.h"
 #include "components/metrics/structured/storage.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 namespace structured {
@@ -101,8 +101,8 @@ class KeyData {
   void OnWrite(WriteStatus status);
 
   // Ensure that a valid key exists for |project|, and return it. Either returns
-  // a string of size |kKeySize| or base::nullopt, which indicates an error.
-  base::Optional<std::string> ValidateAndGetKey(uint64_t project_name_hash);
+  // a string of size |kKeySize| or absl::nullopt, which indicates an error.
+  absl::optional<std::string> ValidateAndGetKey(uint64_t project_name_hash);
 
   // Regenerate |key|, also updating the |last_rotation| and |rotation_period|.
   // This triggers a save.

@@ -37,13 +37,13 @@ class CopyingFileInputStream : public google::protobuf::io::CopyingInputStream {
   base::File file_;
 };
 
-base::Optional<uint64_t> ApplySortingLshOnBackgroundThread(
+absl::optional<uint64_t> ApplySortingLshOnBackgroundThread(
     uint64_t sim_hash,
     const base::FilePath& file_path) {
   base::File sorting_lsh_clusters_file(
       file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!sorting_lsh_clusters_file.IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   CopyingFileInputStream copying_stream(std::move(sorting_lsh_clusters_file));
   google::protobuf::io::CopyingInputStreamAdaptor zero_copy_stream_adaptor(
@@ -89,25 +89,25 @@ base::Optional<uint64_t> ApplySortingLshOnBackgroundThread(
   for (uint64_t index = 0; input_stream.ReadVarint32(&next_combined); ++index) {
     // Sanitizing error: the entry used more than |kSortingLshMaxBits| bits.
     if ((next_combined >> kSortingLshMaxBits) > 0)
-      return base::nullopt;
+      return absl::nullopt;
 
     bool is_blocked = next_combined & kSortingLshBlockedMask;
     uint32_t next = next_combined & kSortingLshSizeMask;
 
     // Sanitizing error
     if (next > kMaxNumberOfBitsInFloc)
-      return base::nullopt;
+      return absl::nullopt;
 
     cumulative_sum += (1ULL << next);
 
     // Sanitizing error
     if (cumulative_sum > kExpectedFinalCumulativeSum)
-      return base::nullopt;
+      return absl::nullopt;
 
     // Found the sim-hash upper bound. Use the index as the new floc.
     if (cumulative_sum > sim_hash) {
       if (is_blocked)
-        return base::nullopt;
+        return absl::nullopt;
 
       return index;
     }
@@ -115,7 +115,7 @@ base::Optional<uint64_t> ApplySortingLshOnBackgroundThread(
 
   // Sanitizing error: we didn't find a sim-hash upper bound, but we expect to
   // always find it after finish iterating through the list.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -173,7 +173,7 @@ void FlocSortingLshClustersService::SetBackgroundTaskRunnerForTesting(
 void FlocSortingLshClustersService::DidApplySortingLsh(
     ApplySortingLshCallback callback,
     base::Version version,
-    base::Optional<uint64_t> final_hash) {
+    absl::optional<uint64_t> final_hash) {
   std::move(callback).Run(std::move(final_hash), std::move(version));
 }
 

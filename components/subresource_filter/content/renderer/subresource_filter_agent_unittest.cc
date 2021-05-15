@@ -83,7 +83,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
            ad_evidence_->IndicatesAdSubframe();
   }
 
-  const base::Optional<blink::FrameAdEvidence>& AdEvidence() override {
+  const absl::optional<blink::FrameAdEvidence>& AdEvidence() override {
     return ad_evidence_;
   }
   void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override {
@@ -119,7 +119,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
 
   // Production can set this on the RenderFrame, which we intercept and store
   // here.
-  base::Optional<blink::FrameAdEvidence> ad_evidence_;
+  absl::optional<blink::FrameAdEvidence> ad_evidence_;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   mojom::ActivationState inherited_activation_state_for_new_document_;
 
@@ -203,13 +203,13 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   }
 
   void StartLoadWithoutSettingActivationState() {
-    agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
+    agent_as_rfo()->DidStartNavigation(GURL(), absl::nullopt);
     agent_as_rfo()->ReadyToCommitNavigation(nullptr);
     agent_as_rfo()->DidCreateNewDocument();
   }
 
   void PerformSameDocumentNavigationWithoutSettingActivationLevel() {
-    agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
+    agent_as_rfo()->DidStartNavigation(GURL(), absl::nullopt);
     agent_as_rfo()->ReadyToCommitNavigation(nullptr);
     // No DidCreateNewDocument, since same document navigations by definition
     // don't create a new document.
@@ -227,10 +227,10 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   void StartLoadAndSetActivationState(
       mojom::ActivationState state,
       AdFrameType ad_type = AdFrameType::kNonAd) {
-    agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
+    agent_as_rfo()->DidStartNavigation(GURL(), absl::nullopt);
     agent_as_rfo()->ReadyToCommitNavigation(nullptr);
 
-    base::Optional<blink::FrameAdEvidence> ad_evidence;
+    absl::optional<blink::FrameAdEvidence> ad_evidence;
     if (!agent()->IsMainFrame()) {
       // Generate an evidence object matching the `ad_type`.
       ad_evidence = blink::FrameAdEvidence(ad_type == AdFrameType::kChildAd);
@@ -527,14 +527,14 @@ TEST_F(SubresourceFilterAgentTest,
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
   ExpectNoSubresourceFilterGetsInjected();
-  agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
+  agent_as_rfo()->DidStartNavigation(GURL(), absl::nullopt);
   agent_as_rfo()->ReadyToCommitNavigation(nullptr);
   mojom::ActivationStatePtr state = mojom::ActivationState::New();
   state->activation_level = mojom::ActivationLevel::kEnabled;
   state->measure_performance = true;
-  agent()->ActivateForNextCommittedLoad(std::move(state), base::nullopt);
+  agent()->ActivateForNextCommittedLoad(std::move(state), absl::nullopt);
   agent_as_rfo()->DidFailProvisionalLoad();
-  agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
+  agent_as_rfo()->DidStartNavigation(GURL(), absl::nullopt);
   agent_as_rfo()->ReadyToCommitNavigation(nullptr);
   agent_as_rfo()->DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   FinishLoad();

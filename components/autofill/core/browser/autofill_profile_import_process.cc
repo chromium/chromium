@@ -164,7 +164,7 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
 
 void ProfileImportProcess::SetUserDecision(
     UserDecision decision,
-    base::Optional<AutofillProfile> edited_profile) {
+    absl::optional<AutofillProfile> edited_profile) {
   // A user decision should only be supplied once.
   DCHECK_EQ(user_decision_, UserDecision::kUndefined);
   DCHECK(!confirmed_import_candidate_.has_value());
@@ -215,7 +215,7 @@ void ProfileImportProcess::AcceptWithoutEdits() {
 }
 
 void ProfileImportProcess::AcceptWithEdits(AutofillProfile edited_profile) {
-  SetUserDecision(UserDecision::kEdited, base::make_optional(edited_profile));
+  SetUserDecision(UserDecision::kEdited, absl::make_optional(edited_profile));
 }
 
 void ProfileImportProcess::Declined() {

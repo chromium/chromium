@@ -105,11 +105,11 @@ class MediaNotificationBackgroundImplTest : public testing::Test {
     return background_.get();
   }
 
-  base::Optional<SkColor> GetBackgroundColor() const {
+  absl::optional<SkColor> GetBackgroundColor() const {
     return background_->background_color_;
   }
 
-  base::Optional<SkColor> GetForegroundColor() const {
+  absl::optional<SkColor> GetForegroundColor() const {
     return background_->foreground_color_;
   }
 

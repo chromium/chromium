@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -54,7 +54,7 @@ void AddObserver(content::WebContents* web_contents,
 void RemoveObserver(content::WebContents* web_contents,
                     DistillabilityObserver* observer);
 
-base::Optional<DistillabilityResult> GetLatestResult(
+absl::optional<DistillabilityResult> GetLatestResult(
     content::WebContents* web_contents);
 
 }  // namespace dom_distiller

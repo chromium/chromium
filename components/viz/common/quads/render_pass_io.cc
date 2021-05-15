@@ -76,10 +76,10 @@ bool RectFromDict(const base::Value& dict, gfx::Rect* rect) {
   DCHECK(rect);
   if (!dict.is_dict())
     return false;
-  base::Optional<int> x = dict.FindIntKey("x");
-  base::Optional<int> y = dict.FindIntKey("y");
-  base::Optional<int> width = dict.FindIntKey("width");
-  base::Optional<int> height = dict.FindIntKey("height");
+  absl::optional<int> x = dict.FindIntKey("x");
+  absl::optional<int> y = dict.FindIntKey("y");
+  absl::optional<int> width = dict.FindIntKey("width");
+  absl::optional<int> height = dict.FindIntKey("height");
   if (!x || !y || !width || !height) {
     return false;
   }
@@ -100,10 +100,10 @@ bool RectFFromDict(const base::Value& dict, gfx::RectF* rect) {
   DCHECK(rect);
   if (!dict.is_dict())
     return false;
-  base::Optional<double> x = dict.FindDoubleKey("x");
-  base::Optional<double> y = dict.FindDoubleKey("y");
-  base::Optional<double> width = dict.FindDoubleKey("width");
-  base::Optional<double> height = dict.FindDoubleKey("height");
+  absl::optional<double> x = dict.FindDoubleKey("x");
+  absl::optional<double> y = dict.FindDoubleKey("y");
+  absl::optional<double> width = dict.FindDoubleKey("width");
+  absl::optional<double> height = dict.FindDoubleKey("height");
   if (!x || !y || !width || !height) {
     return false;
   }
@@ -124,8 +124,8 @@ bool SizeFromDict(const base::Value& dict, gfx::Size* size) {
   DCHECK(size);
   if (!dict.is_dict())
     return false;
-  base::Optional<int> width = dict.FindIntKey("width");
-  base::Optional<int> height = dict.FindIntKey("height");
+  absl::optional<int> width = dict.FindIntKey("width");
+  absl::optional<int> height = dict.FindIntKey("height");
   if (!width || !height) {
     return false;
   }
@@ -145,8 +145,8 @@ bool PointFromDict(const base::Value& dict, gfx::Point* point) {
   DCHECK(point);
   if (!dict.is_dict())
     return false;
-  base::Optional<int> x = dict.FindIntKey("x");
-  base::Optional<int> y = dict.FindIntKey("y");
+  absl::optional<int> x = dict.FindIntKey("x");
+  absl::optional<int> y = dict.FindIntKey("y");
   if (!x || !y) {
     return false;
   }
@@ -166,8 +166,8 @@ bool PointFFromDict(const base::Value& dict, gfx::PointF* point) {
   DCHECK(point);
   if (!dict.is_dict())
     return false;
-  base::Optional<double> x = dict.FindDoubleKey("x");
-  base::Optional<double> y = dict.FindDoubleKey("y");
+  absl::optional<double> x = dict.FindDoubleKey("x");
+  absl::optional<double> y = dict.FindDoubleKey("y");
   if (!x || !y) {
     return false;
   }
@@ -296,14 +296,14 @@ bool RRectFFromDict(const base::Value& dict, gfx::RRectF* out) {
     return true;
   }
   const base::Value* rect = dict.FindDictKey("rect");
-  base::Optional<double> upper_left_x = dict.FindDoubleKey("upper_left.x");
-  base::Optional<double> upper_left_y = dict.FindDoubleKey("upper_left.y");
-  base::Optional<double> upper_right_x = dict.FindDoubleKey("upper_right.x");
-  base::Optional<double> upper_right_y = dict.FindDoubleKey("upper_right.y");
-  base::Optional<double> lower_right_x = dict.FindDoubleKey("lower_right.x");
-  base::Optional<double> lower_right_y = dict.FindDoubleKey("lower_right.y");
-  base::Optional<double> lower_left_x = dict.FindDoubleKey("lower_left.x");
-  base::Optional<double> lower_left_y = dict.FindDoubleKey("lower_left.y");
+  absl::optional<double> upper_left_x = dict.FindDoubleKey("upper_left.x");
+  absl::optional<double> upper_left_y = dict.FindDoubleKey("upper_left.y");
+  absl::optional<double> upper_right_x = dict.FindDoubleKey("upper_right.x");
+  absl::optional<double> upper_right_y = dict.FindDoubleKey("upper_right.y");
+  absl::optional<double> lower_right_x = dict.FindDoubleKey("lower_right.x");
+  absl::optional<double> lower_right_y = dict.FindDoubleKey("lower_right.y");
+  absl::optional<double> lower_left_x = dict.FindDoubleKey("lower_left.x");
+  absl::optional<double> lower_left_y = dict.FindDoubleKey("lower_left.y");
   if (!rect || !upper_left_x || !upper_left_y || !upper_right_x ||
       !upper_right_y || !lower_right_x || !lower_right_y || !lower_left_x ||
       !lower_left_y) {
@@ -469,18 +469,18 @@ bool FilterOperationFromDict(const base::Value& dict,
     return false;
   }
 
-  base::Optional<int> type = dict.FindIntKey("type");
-  base::Optional<double> amount = dict.FindDoubleKey("amount");
-  base::Optional<double> outer_threshold =
+  absl::optional<int> type = dict.FindIntKey("type");
+  absl::optional<double> amount = dict.FindDoubleKey("amount");
+  absl::optional<double> outer_threshold =
       dict.FindDoubleKey("outer_threshold");
   const base::Value* drop_shadow_offset =
       dict.FindDictKey("drop_shadow_offset");
-  base::Optional<int> drop_shadow_color = dict.FindIntKey("drop_shadow_color");
+  absl::optional<int> drop_shadow_color = dict.FindIntKey("drop_shadow_color");
   const std::string* image_filter = dict.FindStringKey("image_filter");
   const base::Value* matrix = dict.FindListKey("matrix");
-  base::Optional<int> zoom_inset = dict.FindIntKey("zoom_inset");
+  absl::optional<int> zoom_inset = dict.FindIntKey("zoom_inset");
   const base::Value* shape = dict.FindListKey("shape");
-  base::Optional<int> blur_tile_mode = dict.FindIntKey("blur_tile_mode");
+  absl::optional<int> blur_tile_mode = dict.FindIntKey("blur_tile_mode");
 
   cc::FilterOperation filter;
 
@@ -889,13 +889,13 @@ base::Value SurfaceIdToDict(const SurfaceId& id) {
   return dict;
 }
 
-base::Optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
-  base::Optional<int> client_id = dict.FindIntKey("client_id");
-  base::Optional<int> sink_id = dict.FindIntKey("sink_id");
-  base::Optional<int> parent_seq = dict.FindIntKey("parent_seq");
-  base::Optional<int> child_seq = dict.FindIntKey("child_seq");
+absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
+  absl::optional<int> client_id = dict.FindIntKey("client_id");
+  absl::optional<int> sink_id = dict.FindIntKey("sink_id");
+  absl::optional<int> parent_seq = dict.FindIntKey("parent_seq");
+  absl::optional<int> child_seq = dict.FindIntKey("child_seq");
   if (!client_id || !sink_id || !parent_seq || !child_seq)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::UnguessableToken token = base::UnguessableToken::Deserialize(1, 1);
   return SurfaceId(FrameSinkId(*client_id, *sink_id),
@@ -910,16 +910,16 @@ base::Value SurfaceRangeToDict(const SurfaceRange& range) {
   return dict;
 }
 
-base::Optional<SurfaceRange> SurfaceRangeFromDict(const base::Value& dict) {
+absl::optional<SurfaceRange> SurfaceRangeFromDict(const base::Value& dict) {
   const base::Value* start_dict = dict.FindDictKey("start");
   const base::Value* end_dict = dict.FindDictKey("end");
   if (!end_dict)
-    return base::nullopt;
-  base::Optional<SurfaceId> start =
-      start_dict ? SurfaceIdFromDict(*start_dict) : base::nullopt;
-  base::Optional<SurfaceId> end = SurfaceIdFromDict(*end_dict);
+    return absl::nullopt;
+  absl::optional<SurfaceId> start =
+      start_dict ? SurfaceIdFromDict(*start_dict) : absl::nullopt;
+  absl::optional<SurfaceId> end = SurfaceIdFromDict(*end_dict);
   if (!end || (start_dict && !start))
-    return base::nullopt;
+    return absl::nullopt;
 
   return SurfaceRange(start, *end);
 }
@@ -1013,38 +1013,38 @@ struct DrawQuadCommon {
   DrawQuad::Resources resources;
 };
 
-base::Optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
+absl::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
     const base::Value& dict,
     const SharedQuadStateList& shared_quad_state_list) {
   if (!dict.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
   const std::string* material = dict.FindStringKey("material");
   const base::Value* rect = dict.FindDictKey("rect");
   const base::Value* visible_rect = dict.FindDictKey("visible_rect");
-  base::Optional<bool> needs_blending = dict.FindBoolKey("needs_blending");
-  base::Optional<int> shared_quad_state_index =
+  absl::optional<bool> needs_blending = dict.FindBoolKey("needs_blending");
+  absl::optional<int> shared_quad_state_index =
       dict.FindIntKey("shared_quad_state_index");
   const base::Value* resources = dict.FindListKey("resources");
   if (!material || !rect || !visible_rect || !needs_blending ||
       !shared_quad_state_index || !resources) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   int material_index = StringToDrawQuadMaterial(*material);
   if (material_index < 0)
-    return base::nullopt;
+    return absl::nullopt;
   int sqs_index = shared_quad_state_index.value();
   if (sqs_index < 0 ||
       static_cast<size_t>(sqs_index) >= shared_quad_state_list.size()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   gfx::Rect t_rect, t_visible_rect;
   if (!RectFromDict(*rect, &t_rect) ||
       !RectFromDict(*visible_rect, &t_visible_rect)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   DrawQuad::Resources t_resources;
   if (!DrawQuadResourcesFromList(*resources, &t_resources))
-    return base::nullopt;
+    return absl::nullopt;
 
   return DrawQuadCommon{static_cast<DrawQuad::Material>(material_index),
                         t_rect,
@@ -1062,26 +1062,26 @@ struct ContentDrawQuadCommon {
   bool force_anti_aliasing_off;
 };
 
-base::Optional<ContentDrawQuadCommon> GetContentDrawQuadCommonFromDict(
+absl::optional<ContentDrawQuadCommon> GetContentDrawQuadCommonFromDict(
     const base::Value& dict) {
   if (!dict.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
   const base::Value* tex_coord_rect = dict.FindDictKey("tex_coord_rect");
   const base::Value* texture_size = dict.FindDictKey("texture_size");
-  base::Optional<bool> is_premultiplied = dict.FindBoolKey("is_premultiplied");
-  base::Optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
-  base::Optional<bool> force_anti_aliasing_off =
+  absl::optional<bool> is_premultiplied = dict.FindBoolKey("is_premultiplied");
+  absl::optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
+  absl::optional<bool> force_anti_aliasing_off =
       dict.FindBoolKey("force_anti_aliasing_off");
 
   if (!tex_coord_rect || !texture_size || !is_premultiplied ||
       !nearest_neighbor || !force_anti_aliasing_off) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   gfx::RectF t_tex_coord_rect;
   gfx::Size t_texture_size;
   if (!RectFFromDict(*tex_coord_rect, &t_tex_coord_rect) ||
       !SizeFromDict(*texture_size, &t_texture_size)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ContentDrawQuadCommon{
@@ -1288,11 +1288,11 @@ bool CompositorRenderPassDrawQuadFromDict(
   const base::Value* filters_scale = dict.FindDictKey("filters_scale");
   const base::Value* filters_origin = dict.FindDictKey("filters_origin");
   const base::Value* tex_coord_rect = dict.FindDictKey("tex_coord_rect");
-  base::Optional<double> backdrop_filter_quality =
+  absl::optional<double> backdrop_filter_quality =
       dict.FindDoubleKey("backdrop_filter_quality");
-  base::Optional<bool> force_anti_aliasing_off =
+  absl::optional<bool> force_anti_aliasing_off =
       dict.FindBoolKey("force_anti_aliasing_off");
-  base::Optional<bool> intersects_damage_under =
+  absl::optional<bool> intersects_damage_under =
       dict.FindBoolKey("intersects_damage_under");
 
   if (!render_pass_id || !mask_uv_rect || !mask_texture_size ||
@@ -1335,8 +1335,8 @@ bool SolidColorDrawQuadFromDict(const base::Value& dict,
   DCHECK(draw_quad);
   if (!dict.is_dict())
     return false;
-  base::Optional<int> color = dict.FindIntKey("color");
-  base::Optional<bool> force_anti_aliasing_off =
+  absl::optional<int> color = dict.FindIntKey("color");
+  absl::optional<bool> force_anti_aliasing_off =
       dict.FindBoolKey("force_anti_aliasing_off");
   if (!color || !force_anti_aliasing_off)
     return false;
@@ -1391,13 +1391,13 @@ bool SurfaceDrawQuadFromDict(const base::Value& dict,
   const base::Value* surface_range_dict = dict.FindDictKey("surface_range");
   if (!surface_range_dict)
     return false;
-  base::Optional<SurfaceRange> surface_range =
+  absl::optional<SurfaceRange> surface_range =
       SurfaceRangeFromDict(*surface_range_dict);
-  base::Optional<int> default_background_color =
+  absl::optional<int> default_background_color =
       dict.FindIntKey("default_background_color");
-  base::Optional<bool> stretch_content = dict.FindBoolKey("stretch_content");
-  base::Optional<bool> is_reflection = dict.FindBoolKey("is_reflection");
-  base::Optional<bool> allow_merge = dict.FindBoolKey("allow_merge");
+  absl::optional<bool> stretch_content = dict.FindBoolKey("stretch_content");
+  absl::optional<bool> is_reflection = dict.FindBoolKey("is_reflection");
+  absl::optional<bool> allow_merge = dict.FindBoolKey("allow_merge");
   if (!surface_range || !default_background_color || !stretch_content ||
       !is_reflection || !allow_merge)
     return false;
@@ -1418,15 +1418,15 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
   if (common.resources.count != 1u)
     return false;
 
-  base::Optional<bool> premultiplied_alpha =
+  absl::optional<bool> premultiplied_alpha =
       dict.FindBoolKey("premultiplied_alpha");
   const base::Value* uv_top_left = dict.FindDictKey("uv_top_left");
   const base::Value* uv_bottom_right = dict.FindDictKey("uv_bottom_right");
-  base::Optional<int> background_color = dict.FindIntKey("background_color");
+  absl::optional<int> background_color = dict.FindIntKey("background_color");
   const base::Value* vertex_opacity = dict.FindListKey("vertex_opacity");
-  base::Optional<bool> y_flipped = dict.FindBoolKey("y_flipped");
-  base::Optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
-  base::Optional<bool> secure_output_only =
+  absl::optional<bool> y_flipped = dict.FindBoolKey("y_flipped");
+  absl::optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
+  absl::optional<bool> secure_output_only =
       dict.FindBoolKey("secure_output_only");
   const std::string* protected_video_type =
       dict.FindStringKey("protected_video_type");
@@ -1474,7 +1474,7 @@ bool TileDrawQuadFromDict(const base::Value& dict,
   if (common.resources.count != 1u)
     return false;
 
-  base::Optional<ContentDrawQuadCommon> content_common =
+  absl::optional<ContentDrawQuadCommon> content_common =
       GetContentDrawQuadCommonFromDict(dict);
   if (!content_common)
     return false;
@@ -1503,11 +1503,11 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
   const base::Value* uv_tex_coord_rect = dict.FindDictKey("uv_tex_coord_rect");
   const base::Value* ya_tex_size = dict.FindDictKey("ya_tex_size");
   const base::Value* uv_tex_size = dict.FindDictKey("uv_tex_size");
-  base::Optional<double> resource_offset =
+  absl::optional<double> resource_offset =
       dict.FindDoubleKey("resource_offset");
-  base::Optional<double> resource_multiplier =
+  absl::optional<double> resource_multiplier =
       dict.FindDoubleKey("resource_multiplier");
-  base::Optional<int> bits_per_channel = dict.FindIntKey("bits_per_channel");
+  absl::optional<int> bits_per_channel = dict.FindIntKey("bits_per_channel");
   const base::Value* video_color_space = dict.FindDictKey("video_color_space");
   const std::string* protected_video_type =
       dict.FindStringKey("protected_video_type");
@@ -1565,7 +1565,7 @@ bool VideoHoleDrawQuadFromDict(const base::Value& dict,
   if (!dict.is_dict())
     return false;
 
-  base::Optional<bool> overlay_plane_id_empty =
+  absl::optional<bool> overlay_plane_id_empty =
       dict.FindBoolKey("overlay_plane_id.empty");
   if (!overlay_plane_id_empty)
     return false;
@@ -1616,7 +1616,7 @@ bool QuadListFromList(const base::Value& list,
   for (size_t ii = 0; ii < size; ++ii) {
     if (!list.GetList()[ii].is_dict())
       return false;
-    base::Optional<DrawQuadCommon> common =
+    absl::optional<DrawQuadCommon> common =
         GetDrawQuadCommonFromDict(list.GetList()[ii], shared_quad_state_list);
     if (!common)
       return false;
@@ -1751,16 +1751,16 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   const base::Value* rounded_corner_bounds =
       dict.FindDictKey("rounded_corner_bounds");
   const base::Value* clip_rect = dict.FindDictKey("clip_rect");
-  base::Optional<bool> is_clipped = dict.FindBoolKey("is_clipped");
-  base::Optional<bool> are_contents_opaque =
+  absl::optional<bool> is_clipped = dict.FindBoolKey("is_clipped");
+  absl::optional<bool> are_contents_opaque =
       dict.FindBoolKey("are_contents_opaque");
-  base::Optional<double> opacity = dict.FindDoubleKey("opacity");
+  absl::optional<double> opacity = dict.FindDoubleKey("opacity");
   const std::string* blend_mode = dict.FindStringKey("blend_mode");
-  base::Optional<int> sorting_context_id =
+  absl::optional<int> sorting_context_id =
       dict.FindIntKey("sorting_context_id");
-  base::Optional<bool> is_fast_rounded_corner =
+  absl::optional<bool> is_fast_rounded_corner =
       dict.FindBoolKey("is_fast_rounded_corner");
-  base::Optional<double> de_jelly_delta_y =
+  absl::optional<double> de_jelly_delta_y =
       dict.FindDoubleKey("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
@@ -1780,7 +1780,7 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       (clip_rect && !RectFromDict(*clip_rect, &t_clip_rect))) {
     return false;
   }
-  base::Optional<gfx::Rect> clip_rect_opt;
+  absl::optional<gfx::Rect> clip_rect_opt;
   // Some older files still use the is_clipped field.  If it's present, we'll
   // respect it, and ignore clip_rect if it's false.
   if (is_clipped.has_value()) {
@@ -1997,7 +1997,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassHasTransparentBackground)) {
-    const base::Optional<bool> has_transparent_background =
+    const absl::optional<bool> has_transparent_background =
         dict.FindBoolKey("has_transparent_background");
     if (!has_transparent_background)
       return nullptr;
@@ -2005,7 +2005,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassCacheRenderPass)) {
-    const base::Optional<bool> cache_render_pass =
+    const absl::optional<bool> cache_render_pass =
         dict.FindBoolKey("cache_render_pass");
     if (!cache_render_pass)
       return nullptr;
@@ -2013,7 +2013,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassHasDamageFromContributingContent)) {
-    const base::Optional<bool> has_damage_from_contributing_content =
+    const absl::optional<bool> has_damage_from_contributing_content =
         dict.FindBoolKey("has_damage_from_contributing_content");
     if (!has_damage_from_contributing_content)
       return nullptr;
@@ -2022,7 +2022,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassGenerateMipmap)) {
-    const base::Optional<bool> generate_mipmap =
+    const absl::optional<bool> generate_mipmap =
         dict.FindBoolKey("generate_mipmap");
     if (!generate_mipmap)
       return nullptr;

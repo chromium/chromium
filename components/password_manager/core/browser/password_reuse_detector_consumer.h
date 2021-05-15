@@ -10,9 +10,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -37,7 +37,7 @@ class PasswordReuseDetectorConsumer
   virtual void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      base::Optional<PasswordHashData> reused_protected_password_hash,
+      absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       int saved_passwords) = 0;
 };

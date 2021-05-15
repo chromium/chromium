@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
@@ -153,7 +153,7 @@ struct ColorStats {
   double color_to_total_x = 0.0;
   double color_to_total_y = 0.0;
 
-  base::Optional<QuantizedColor> quantized_color;
+  absl::optional<QuantizedColor> quantized_color;
 };
 
 bool GetHistogramForImage(const SkBitmap& image,
@@ -363,7 +363,7 @@ std::string GetHashFromBlurredImage(
   return output;
 }
 
-base::Optional<VisionMatchResult> IsVisualMatch(
+absl::optional<VisionMatchResult> IsVisualMatch(
     const SkBitmap& image,
     const std::string& blurred_image_hash,
     const VisualFeatures::ColorHistogram& histogram,
@@ -374,7 +374,7 @@ base::Optional<VisionMatchResult> IsVisualMatch(
 
   opencv::PointDistribution point_distribution =
       HistogramBinsToPointDistribution(histogram.bins());
-  base::Optional<double> color_distance = opencv::EMD(
+  absl::optional<double> color_distance = opencv::EMD(
       point_distribution, HistogramBinsToPointDistribution(target.bins()));
 
   for (const MatchRule& match_rule : target.match_config().match_rule()) {
@@ -409,7 +409,7 @@ base::Optional<VisionMatchResult> IsVisualMatch(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace visual_utils

@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/payments/core/native_error_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace payments {
 namespace {
@@ -23,7 +23,7 @@ class AndroidAppCommunicationStub : public AndroidAppCommunication {
   // AndroidAppCommunication implementation.
   void GetAppDescriptions(const std::string& twa_package_name,
                           GetAppDescriptionsCallback callback) override {
-    std::move(callback).Run(/*error_message=*/base::nullopt,
+    std::move(callback).Run(/*error_message=*/absl::nullopt,
                             /*app_descriptions=*/{});
   }
 

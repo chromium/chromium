@@ -9,11 +9,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -138,7 +138,7 @@ class CaptivePortalTabReloader {
   // |probe_trigger| should be specified.
   void SetState(
       State new_state,
-      base::Optional<CaptivePortalProbeReason> probe_reason = base::nullopt);
+      absl::optional<CaptivePortalProbeReason> probe_reason = absl::nullopt);
 
   // Called by a timer when an SSL main frame provisional load is taking a
   // while to commit.

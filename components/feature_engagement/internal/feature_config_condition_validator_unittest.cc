@@ -123,24 +123,24 @@ class TestAvailabilityModel : public AvailabilityModel {
 
   void SetIsReady(bool ready) { ready_ = ready; }
 
-  base::Optional<uint32_t> GetAvailability(
+  absl::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const override {
     auto search = availabilities_.find(feature.name);
     if (search == availabilities_.end())
-      return base::nullopt;
+      return absl::nullopt;
 
     return search->second;
   }
 
   void SetAvailability(const base::Feature* feature,
-                       base::Optional<uint32_t> availability) {
+                       absl::optional<uint32_t> availability) {
     availabilities_[feature->name] = availability;
   }
 
  private:
   bool ready_;
 
-  std::map<std::string, base::Optional<uint32_t>> availabilities_;
+  std::map<std::string, absl::optional<uint32_t>> availabilities_;
 
   DISALLOW_COPY_AND_ASSIGN(TestAvailabilityModel);
 };

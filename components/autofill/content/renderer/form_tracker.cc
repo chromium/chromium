@@ -155,7 +155,7 @@ void FormTracker::DidFinishSameDocumentNavigation() {
 
 void FormTracker::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   blink::WebLocalFrame* navigated_frame = render_frame()->GetWebFrame();
   // Ony handle main frame.

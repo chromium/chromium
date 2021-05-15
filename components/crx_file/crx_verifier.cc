@@ -156,7 +156,7 @@ VerifierResult VerifyCrx3(
 
   std::vector<uint8_t> publisher_key(std::begin(kPublisherKeyHash),
                                      std::end(kPublisherKeyHash));
-  base::Optional<std::vector<uint8_t>> publisher_test_key;
+  absl::optional<std::vector<uint8_t>> publisher_test_key;
   if (accept_publisher_test_key) {
     publisher_test_key.emplace(std::begin(kPublisherTestKeyHash),
                                std::end(kPublisherTestKeyHash));

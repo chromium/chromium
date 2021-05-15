@@ -307,7 +307,7 @@ PermissionContextBase* PermissionManager::GetPermissionContextForTesting(
 GURL PermissionManager::GetCanonicalOrigin(ContentSettingsType permission,
                                            const GURL& requesting_origin,
                                            const GURL& embedding_origin) const {
-  base::Optional<GURL> override_origin =
+  absl::optional<GURL> override_origin =
       PermissionsClient::Get()->OverrideCanonicalOrigin(requesting_origin,
                                                         embedding_origin);
   if (override_origin)
@@ -529,7 +529,7 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
 
 bool PermissionManager::IsPermissionOverridableByDevTools(
     content::PermissionType permission,
-    const base::Optional<url::Origin>& origin) {
+    const absl::optional<url::Origin>& origin) {
   ContentSettingsType type = PermissionTypeToContentSettingSafe(permission);
   PermissionContextBase* context = GetPermissionContext(type);
 
@@ -701,7 +701,7 @@ PermissionResult PermissionManager::GetPermissionStatusHelper(
 }
 
 void PermissionManager::SetPermissionOverridesForDevTools(
-    const base::Optional<url::Origin>& optional_origin,
+    const absl::optional<url::Origin>& optional_origin,
     const PermissionOverrides& overrides) {
   ContentSettingsTypeOverrides result;
   for (const auto& item : overrides) {

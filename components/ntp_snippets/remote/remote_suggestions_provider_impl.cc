@@ -332,7 +332,7 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
   // TODO(treib): Rethink this.
   category_contents_.insert(
       std::make_pair(articles_category_,
-                     CategoryContent(BuildArticleCategoryInfo(base::nullopt))));
+                     CategoryContent(BuildArticleCategoryInfo(absl::nullopt))));
   // Tell the observer about all the categories.
   for (const auto& entry : category_contents_) {
     observer->OnCategoryStatusChanged(this, entry.first, entry.second.status);
@@ -507,7 +507,7 @@ void RemoteSuggestionsProviderImpl::FetchSuggestions(
 
   // |count_to_fetch| is actually ignored, because the server does not support
   // this functionality.
-  RequestParams params = BuildFetchParams(/*fetched_category=*/base::nullopt,
+  RequestParams params = BuildFetchParams(/*fetched_category=*/absl::nullopt,
                                           /*count_to_fetch=*/10);
   params.interactive_request = interactive_request;
   suggestions_fetcher_->FetchSnippets(
@@ -556,7 +556,7 @@ void RemoteSuggestionsProviderImpl::Fetch(
 
 // Builds default fetcher params.
 RequestParams RemoteSuggestionsProviderImpl::BuildFetchParams(
-    base::Optional<Category> fetched_category,
+    absl::optional<Category> fetched_category,
     int count_to_fetch) const {
   RequestParams result;
   result.language_code = application_language_code_;
@@ -1599,7 +1599,7 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
     // avoid using a title that was calculated for a stale locale.
     CategoryInfo info =
         category == articles_category_
-            ? BuildArticleCategoryInfo(base::nullopt)
+            ? BuildArticleCategoryInfo(absl::nullopt)
             : BuildRemoteCategoryInfo(title, allow_fetching_more_results);
     CategoryContent* content = UpdateCategoryInfo(category, info);
     content->included_in_last_server_response =

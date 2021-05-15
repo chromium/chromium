@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Concise Binary Object Representation (CBOR) decoder as defined by
 // https://tools.ietf.org/html/rfc7049. This decoder only accepts canonical CBOR
@@ -122,18 +122,18 @@ class CBOR_EXPORT Reader {
   //
   // Returns an empty Optional if not all the data was consumed, and sets
   // |error_code_out| to EXTRANEOUS_DATA in this case.
-  static base::Optional<Value> Read(base::span<const uint8_t> input_data,
+  static absl::optional<Value> Read(base::span<const uint8_t> input_data,
                                     DecoderError* error_code_out = nullptr,
                                     int max_nesting_level = kCBORMaxDepth);
 
   // A version of |Read|, above, that takes a |Config| structure to allow
   // additional controls.
-  static base::Optional<Value> Read(base::span<const uint8_t> input_data,
+  static absl::optional<Value> Read(base::span<const uint8_t> input_data,
                                     const Config& config);
 
   // A version of |Read| that takes some fields of |Config| as parameters to
   // avoid having to construct a |Config| object explicitly.
-  static base::Optional<Value> Read(base::span<const uint8_t> input_data,
+  static absl::optional<Value> Read(base::span<const uint8_t> input_data,
                                     size_t* num_bytes_consumed,
                                     DecoderError* error_code_out = nullptr,
                                     int max_nesting_level = kCBORMaxDepth);
@@ -159,24 +159,24 @@ class CBOR_EXPORT Reader {
     uint64_t value;
   };
 
-  base::Optional<DataItemHeader> DecodeDataItemHeader();
-  base::Optional<Value> DecodeCompleteDataItem(const Config& config,
+  absl::optional<DataItemHeader> DecodeDataItemHeader();
+  absl::optional<Value> DecodeCompleteDataItem(const Config& config,
                                                int max_nesting_level);
-  base::Optional<Value> DecodeValueToNegative(uint64_t value);
-  base::Optional<Value> DecodeValueToUnsigned(uint64_t value);
-  base::Optional<Value> DecodeToSimpleValue(const DataItemHeader& header);
-  base::Optional<uint64_t> ReadVariadicLengthInteger(uint8_t additional_info);
-  base::Optional<Value> ReadByteStringContent(const DataItemHeader& header);
-  base::Optional<Value> ReadStringContent(const DataItemHeader& header,
+  absl::optional<Value> DecodeValueToNegative(uint64_t value);
+  absl::optional<Value> DecodeValueToUnsigned(uint64_t value);
+  absl::optional<Value> DecodeToSimpleValue(const DataItemHeader& header);
+  absl::optional<uint64_t> ReadVariadicLengthInteger(uint8_t additional_info);
+  absl::optional<Value> ReadByteStringContent(const DataItemHeader& header);
+  absl::optional<Value> ReadStringContent(const DataItemHeader& header,
                                           const Config& config);
-  base::Optional<Value> ReadArrayContent(const DataItemHeader& header,
+  absl::optional<Value> ReadArrayContent(const DataItemHeader& header,
                                          const Config& config,
                                          int max_nesting_level);
-  base::Optional<Value> ReadMapContent(const DataItemHeader& header,
+  absl::optional<Value> ReadMapContent(const DataItemHeader& header,
                                        const Config& config,
                                        int max_nesting_level);
-  base::Optional<uint8_t> ReadByte();
-  base::Optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
+  absl::optional<uint8_t> ReadByte();
+  absl::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
   bool IsKeyInOrder(const Value& new_key, Value::MapValue* map);
   bool IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data);
 

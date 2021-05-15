@@ -136,7 +136,7 @@ TEST_F(SetFormFieldValueActionTest, RequestedPasswordButNoLoginInClientMemory) {
 }
 
 TEST_F(SetFormFieldValueActionTest, RequestedPasswordButPasswordNotAvailable) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -169,7 +169,7 @@ TEST_F(SetFormFieldValueActionTest, NonAsciiKeycode) {
 }
 
 TEST_F(SetFormFieldValueActionTest, UsernameToFill) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -201,7 +201,7 @@ TEST_F(SetFormFieldValueActionTest, UsernameToFill) {
 }
 
 TEST_F(SetFormFieldValueActionTest, UsernameFillingFailsForMismatchingOrigin) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("http://www.example.com/"), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -225,7 +225,7 @@ TEST_F(SetFormFieldValueActionTest, UsernameFillingFailsForMismatchingOrigin) {
 }
 
 TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -258,7 +258,7 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
 }
 
 TEST_F(SetFormFieldValueActionTest, PasswordFillingFailsForMismatchingOrigin) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("http://www.example.com/"), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -283,7 +283,7 @@ TEST_F(SetFormFieldValueActionTest, PasswordFillingFailsForMismatchingOrigin) {
 }
 
 TEST_F(SetFormFieldValueActionTest, PasswordFillingSucceedsForSubdomain) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("http://www.example.com/"), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -316,7 +316,7 @@ TEST_F(SetFormFieldValueActionTest, PasswordFillingSucceedsForSubdomain) {
 }
 
 TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
@@ -597,7 +597,7 @@ TEST_F(SetFormFieldValueActionTest, FallbackToSimulateKeystrokes) {
 TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
   InSequence sequence;
 
-  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
   EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
       .WillOnce(testing::WithArgs<1>([this](auto&& callback) {

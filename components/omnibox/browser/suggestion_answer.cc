@@ -67,13 +67,13 @@ bool SuggestionAnswer::TextField::ParseTextField(const base::Value& field_json,
                                                  TextField* text_field) {
   DCHECK(field_json.is_dict());
   const std::string* text = field_json.FindStringKey(kAnswerJsonText);
-  base::Optional<int> type = field_json.FindIntKey(kAnswerJsonTextType);
+  absl::optional<int> type = field_json.FindIntKey(kAnswerJsonTextType);
   const bool parsed = text && !text->empty() && type;
   if (parsed) {
     text_field->type_ = *type;
     text_field->text_ = net::UnescapeForHTML(base::UTF8ToUTF16(*text));
 
-    base::Optional<int> num_lines = field_json.FindIntKey(kAnswerJsonNumLines);
+    absl::optional<int> num_lines = field_json.FindIntKey(kAnswerJsonNumLines);
     text_field->has_num_lines_ = num_lines.has_value();
     if (num_lines) {
       text_field->has_num_lines_ = true;
@@ -373,7 +373,7 @@ bool SuggestionAnswer::IsExceptedFromLineReversal() const {
 
 // static
 void SuggestionAnswer::LogAnswerUsed(
-    const base::Optional<SuggestionAnswer>& answer) {
+    const absl::optional<SuggestionAnswer>& answer) {
   auto answer_type = SuggestionAnswer::ANSWER_TYPE_INVALID;
   if (answer) {
     answer_type = static_cast<SuggestionAnswer::AnswerType>(answer->type());

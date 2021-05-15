@@ -67,7 +67,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+      /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
       /*opacity=*/src_opacity,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
@@ -110,7 +110,7 @@ void CreateAndAppendSharedRenderPassDrawQuad(
       /*quad_layer_rect=*/rect,
       /*visible_layer_rect=*/rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt,
+      /*clip_rect=*/absl::nullopt,
       /*are_contents_opaque=*/false,
       /*opacity=*/opacity,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -325,7 +325,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt,
+      /*clip_rect=*/absl::nullopt,
       /*are_contents_opaque=*/false,
       /*opacity=*/root_animation_.dst_opacity(),
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -477,7 +477,7 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
 
     // Now that we have updated the animations, we can append the interpolations
     // to the animation pass.
-    const base::Optional<TransferableResourceTracker::PositionedResource>&
+    const absl::optional<TransferableResourceTracker::PositionedResource>&
         src_texture = saved_textures_->shared[i];
 
     const gfx::Rect& rect = animation.rect();

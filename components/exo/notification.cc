@@ -21,7 +21,7 @@ class NotificationDelegate : public message_center::NotificationDelegate {
  public:
   NotificationDelegate(
       const base::RepeatingCallback<void(bool)>& close_callback,
-      const base::RepeatingCallback<void(const base::Optional<int>&)>&
+      const base::RepeatingCallback<void(const absl::optional<int>&)>&
           click_callback)
       : close_callback_(close_callback), click_callback_(click_callback) {}
 
@@ -32,8 +32,8 @@ class NotificationDelegate : public message_center::NotificationDelegate {
     close_callback_.Run(by_user);
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (!click_callback_)
       return;
     click_callback_.Run(button_index);
@@ -44,7 +44,7 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   ~NotificationDelegate() override = default;
 
   const base::RepeatingCallback<void(bool)> close_callback_;
-  const base::RepeatingCallback<void(const base::Optional<int>&)>
+  const base::RepeatingCallback<void(const absl::optional<int>&)>
       click_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationDelegate);
@@ -60,7 +60,7 @@ Notification::Notification(
     const std::string& notifier_id,
     const std::vector<std::string>& buttons,
     const base::RepeatingCallback<void(bool)>& close_callback,
-    const base::RepeatingCallback<void(const base::Optional<int>&)>&
+    const base::RepeatingCallback<void(const absl::optional<int>&)>&
         click_callback)
     : notification_id_(notification_id) {
   // Currently, exo::Notification is used only for Crostini notifications.

@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/driver_entry.h"
@@ -18,6 +17,7 @@
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 
@@ -55,7 +55,7 @@ class FileMonitorTest : public testing::Test {
   bool completion_callback_called_;
   std::unique_ptr<FileMonitor> monitor_;
 
-  base::Optional<bool> hard_recovery_result_;
+  absl::optional<bool> hard_recovery_result_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FileMonitorTest);

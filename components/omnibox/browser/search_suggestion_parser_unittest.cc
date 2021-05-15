@@ -31,7 +31,7 @@ TEST(SearchSuggestionParserTest, DeserializeMalformedJsonIsInvalid) {
 
 TEST(SearchSuggestionParserTest, DeserializeJsonData) {
   std::string json_data = R"([{"one": 1}])";
-  base::Optional<base::Value> manifest_value =
+  absl::optional<base::Value> manifest_value =
       base::JSONReader::Read(json_data);
   ASSERT_TRUE(manifest_value);
   std::unique_ptr<base::Value> result =
@@ -87,7 +87,7 @@ TEST(SearchSuggestionParserTest, ParseEmptyValueIsInvalid) {
 
 TEST(SearchSuggestionParserTest, ParseNonSuggestionValueIsInvalid) {
   std::string json_data = R"([{"one": 1}])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   AutocompleteInput input;
   TestSchemeClassifier scheme_classifier;
@@ -123,7 +123,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
         "google:suggesttype": ["QUERY", "ENTITY"],
         "google:verbatimrelevance": 851
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"chris", metrics::OmniboxEventProto::NTP,
@@ -266,7 +266,7 @@ TEST(SearchSuggestionParserTest, ParseHeaderInfo) {
         "google:suggestrelevance": [607, 606, 605, 604],
         "google:suggesttype": ["PERSONALIZED_QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -284,7 +284,7 @@ TEST(SearchSuggestionParserTest, ParseHeaderInfo) {
     const auto& suggestion_result = results.suggest_results[0];
     ASSERT_EQ(u"los angeles", suggestion_result.suggestion());
     // This suggestion does not belong to a group.
-    ASSERT_EQ(base::nullopt, suggestion_result.suggestion_group_id());
+    ASSERT_EQ(absl::nullopt, suggestion_result.suggestion_group_id());
   }
   {
     const auto& suggestion_result = results.suggest_results[1];
@@ -315,7 +315,7 @@ TEST(SearchSuggestionParserTest, ParseValidSubtypes) {
         "google:suggestrelevance": [607, 606, 605, 604],
         "google:suggesttype": ["QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -360,7 +360,7 @@ TEST(SearchSuggestionParserTest, IgnoresExcessiveSubtypeEntries) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -387,7 +387,7 @@ TEST(SearchSuggestionParserTest, IgnoresMissingSubtypeEntries) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -416,7 +416,7 @@ TEST(SearchSuggestionParserTest, IgnoresUnexpectedSubtypeValues) {
         "google:suggestrelevance": [607, 606, 605, 604, 603],
         "google:suggesttype": ["QUERY", "QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -446,7 +446,7 @@ TEST(SearchSuggestionParserTest, IgnoresSubtypesIfNotAList) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -473,7 +473,7 @@ TEST(SearchSuggestionParserTest, SubtypesWithEmptyArraysAreValid) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,

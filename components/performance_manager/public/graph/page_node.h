@@ -11,13 +11,13 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -171,12 +171,12 @@ class PageNode : public Node {
 
   // Indicates if there's a freezing vote for this page node. This has 3
   // possible values:
-  //   - base::nullopt: There's no active freezing vote for this page.
+  //   - absl::nullopt: There's no active freezing vote for this page.
   //   - freezing::FreezingVoteValue::kCanFreeze: There's one or more positive
   //     freezing vote for this page and no negative vote.
   //   - freezing::FreezingVoteValue::kCannotFreeze: There's at least one
   //     negative freezing vote for this page.
-  virtual const base::Optional<freezing::FreezingVote>& GetFreezingVote()
+  virtual const absl::optional<freezing::FreezingVote>& GetFreezingVote()
       const = 0;
 
  private:
@@ -268,7 +268,7 @@ class PageNodeObserver {
   // Called every time the aggregated freezing vote changes or gets invalidated.
   virtual void OnFreezingVoteChanged(
       const PageNode* page_node,
-      base::Optional<freezing::FreezingVote> previous_vote) = 0;
+      absl::optional<freezing::FreezingVote> previous_vote) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PageNodeObserver);
@@ -306,7 +306,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnFaviconUpdated(const PageNode* page_node) override {}
   void OnFreezingVoteChanged(
       const PageNode* page_node,
-      base::Optional<freezing::FreezingVote> previous_vote) override {}
+      absl::optional<freezing::FreezingVote> previous_vote) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);

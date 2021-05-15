@@ -131,7 +131,7 @@ SharedQuadState* CreateTestSharedQuadState(
   const int sorting_context_id = 0;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
-                       mask_filter_info, /*clip_rect=*/base::nullopt,
+                       mask_filter_info, /*clip_rect=*/absl::nullopt,
                        are_contents_opaque, opacity, blend_mode,
                        sorting_context_id);
   return shared_state;

@@ -9,9 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "net/http/http_response_headers.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace download {
@@ -24,7 +24,7 @@ struct CompletionInfo {
 
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
-  base::Optional<storage::BlobDataHandle> blob_handle;
+  absl::optional<storage::BlobDataHandle> blob_handle;
 
   // Download file size in bytes.
   uint64_t bytes_downloaded = 0u;
@@ -70,7 +70,7 @@ struct DownloadMetaData {
 
   // Info about successfully completed download, or null for in-progress
   // download. Failed download will not be persisted and exposed as meta data.
-  base::Optional<CompletionInfo> completion_info;
+  absl::optional<CompletionInfo> completion_info;
 
   DownloadMetaData();
   ~DownloadMetaData();

@@ -136,7 +136,7 @@ void LoadMoreTask::ProcessNetworkResponse(
   result_.loaded_new_content_from_network =
       !translated_response.model_update_request->stream_structures.empty();
 
-  base::Optional<feedstore::Metadata> updated_metadata =
+  absl::optional<feedstore::Metadata> updated_metadata =
       feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
                                       translated_response.session_id);
   if (updated_metadata) {

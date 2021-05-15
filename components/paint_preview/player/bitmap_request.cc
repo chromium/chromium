@@ -7,7 +7,7 @@
 namespace paint_preview {
 
 BitmapRequest::BitmapRequest(
-    const base::Optional<base::UnguessableToken>& frame_guid,
+    const absl::optional<base::UnguessableToken>& frame_guid,
     const gfx::Rect& clip_rect,
     float scale_factor,
     BitmapRequestCallback callback)

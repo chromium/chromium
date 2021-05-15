@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -45,7 +45,7 @@ class HashPasswordManager {
 
   // Returns empty if no hash matching |username| and |is_gaia_password| is
   // available.
-  base::Optional<PasswordHashData> RetrievePasswordHash(
+  absl::optional<PasswordHashData> RetrievePasswordHash(
       const std::string& username,
       bool is_gaia_password);
 

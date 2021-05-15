@@ -57,7 +57,7 @@ class ReadingListStore : public ReadingListModelStorage {
   // atomically, should save the metadata after the data changes, so that this
   // merge will be re-driven by sync if is not completely saved during the
   // current run.
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
 
@@ -66,7 +66,7 @@ class ReadingListStore : public ReadingListModelStorage {
   // |metadata_change_list| in case when some of the data changes are filtered
   // out, or even be empty in case when a commit confirmation is processed and
   // only the metadata needs to persisted.
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
 
@@ -127,7 +127,7 @@ class ReadingListStore : public ReadingListModelStorage {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // Methods used as callbacks given to DataTypeStore.
-  void OnStoreCreated(const base::Optional<syncer::ModelError>& error,
+  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
   class ScopedBatchUpdate : public ReadingListModelStorage::ScopedBatchUpdate {
@@ -147,10 +147,10 @@ class ReadingListStore : public ReadingListModelStorage {
   void CommitTransaction();
   // Callbacks needed for the database handling.
   void OnDatabaseLoad(
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
-  void OnDatabaseSave(const base::Optional<syncer::ModelError>& error);
-  void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
+  void OnDatabaseSave(const absl::optional<syncer::ModelError>& error);
+  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void AddEntryToBatch(syncer::MutableDataBatch* batch,

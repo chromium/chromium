@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/stats.h"
@@ -17,6 +16,7 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -62,7 +62,7 @@ class PersistentEventStoreTest : public ::testing::Test {
   }
 
   // Callback results.
-  base::Optional<bool> load_successful_;
+  absl::optional<bool> load_successful_;
   std::unique_ptr<std::vector<Event>> load_results_;
 
   EventStore::OnLoadedCallback load_callback_;

@@ -786,7 +786,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UnfreezingDoesntMissUpdates) {
   EXPECT_CALL(unfrozen_callback, Run).Times(0);
   GetItem()->Freeze(unfrozen_callback.Get());
   GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(base::nullopt);
+  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
 
   // The item should be frozen and the view should contain the old data.
   EXPECT_TRUE(GetItem()->frozen());
@@ -850,7 +850,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   EXPECT_CALL(unfrozen_callback, Run).Times(0);
   GetItem()->Freeze(unfrozen_callback.Get());
   GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(base::nullopt);
+  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
   GetItem()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 
@@ -923,7 +923,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UnfreezingWaitsForActions) {
   EXPECT_CALL(unfrozen_callback, Run).Times(0);
   GetItem()->Freeze(unfrozen_callback.Get());
   GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(base::nullopt);
+  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
   DisableAction(MediaSessionAction::kPlay);
   DisableAction(MediaSessionAction::kPause);
   DisableAction(MediaSessionAction::kNextTrack);
@@ -1011,7 +1011,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest,
   EXPECT_CALL(unfrozen_callback, Run).Times(0);
   GetItem()->Freeze(unfrozen_callback.Get());
   GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(base::nullopt);
+  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
   GetItem()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 

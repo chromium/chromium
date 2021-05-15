@@ -105,7 +105,7 @@ void LayerTreeFrameSinkHolder::DidNotProduceFrame(
 ////////////////////////////////////////////////////////////////////////////////
 // cc::LayerTreeFrameSinkClient overrides:
 
-base::Optional<viz::HitTestRegionList>
+absl::optional<viz::HitTestRegionList>
 LayerTreeFrameSinkHolder::BuildHitTestData() {
   return {};
 }

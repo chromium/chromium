@@ -2166,7 +2166,7 @@ TEST_F(IdentityManagerTest,
   const AccountInfo foo_account_info =
       MakeAccountAvailable(identity_manager(), "foo@bar.com");
 
-  base::Optional<AccountInfo> maybe_account_info;
+  absl::optional<AccountInfo> maybe_account_info;
   maybe_account_info =
       identity_manager()
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
@@ -2193,7 +2193,7 @@ TEST_F(IdentityManagerTest,
   const AccountInfo foo_account_info =
       MakeAccountAvailable(identity_manager(), "foo@bar.com");
 
-  base::Optional<AccountInfo> maybe_account_info;
+  absl::optional<AccountInfo> maybe_account_info;
   maybe_account_info =
       identity_manager()
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
@@ -2220,7 +2220,7 @@ TEST_F(IdentityManagerTest,
   const AccountInfo foo_account_info =
       MakeAccountAvailable(identity_manager(), "foo@bar.com");
 
-  base::Optional<AccountInfo> maybe_account_info;
+  absl::optional<AccountInfo> maybe_account_info;
   maybe_account_info =
       identity_manager()
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
@@ -2374,7 +2374,7 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoForAccountWithRefreshToken) {
 
   // FindExtendedAccountInfoForAccountWithRefreshToken() returns extended
   // account information if the account is known and has valid refresh token.
-  const base::Optional<AccountInfo> extended_account_info =
+  const absl::optional<AccountInfo> extended_account_info =
       identity_manager()->FindExtendedAccountInfoForAccountWithRefreshToken(
           account_info);
 

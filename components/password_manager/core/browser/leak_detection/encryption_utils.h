@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -32,7 +32,7 @@ std::string BucketizeUsername(base::StringPiece canonicalized_username);
 // Produces the username/password pair hash using scrypt algorithm.
 // |canonicalized_username| and |password| are UTF-8 strings.
 // Returns nullopt in case of encryption failure.
-base::Optional<std::string> ScryptHashUsernameAndPassword(
+absl::optional<std::string> ScryptHashUsernameAndPassword(
     base::StringPiece canonicalized_username,
     base::StringPiece password);
 
@@ -42,12 +42,12 @@ base::Optional<std::string> ScryptHashUsernameAndPassword(
 // Internally the function does some hashing first and then encrypts the result.
 // In case of an encryption failure this returns nullopt and does not modify
 // |key|.
-base::Optional<std::string> CipherEncrypt(const std::string& plaintext,
+absl::optional<std::string> CipherEncrypt(const std::string& plaintext,
                                           std::string* key);
 
 // Encrypts |plaintext| with the existing key.
 // Returns nullopt in case of encryption failure.
-base::Optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
+absl::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
                                                  const std::string& key);
 
 // |already_encrypted| is an already encrypted string (output of CipherEncrypt).
@@ -56,19 +56,19 @@ base::Optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
 // the input.
 // In case of an encryption failure this returns nullopt and does not modify
 // |key|.
-base::Optional<std::string> CipherReEncrypt(
+absl::optional<std::string> CipherReEncrypt(
     const std::string& already_encrypted,
     std::string* key);
 
 // Decrypts |ciphertext| using |key|. The result isn't the original string but a
 // hash of it.
 // Returns nullopt in case of decryption failure.
-base::Optional<std::string> CipherDecrypt(const std::string& ciphertext,
+absl::optional<std::string> CipherDecrypt(const std::string& ciphertext,
                                           const std::string& key);
 
 // Returns a new key suitable for the encryption functions above, or nullopt if
 // the operation failed.
-base::Optional<std::string> CreateNewKey();
+absl::optional<std::string> CreateNewKey();
 
 }  // namespace password_manager
 

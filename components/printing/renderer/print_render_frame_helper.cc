@@ -1137,7 +1137,7 @@ bool PrintRenderFrameHelper::IsScriptInitiatedPrintAllowed(
 
 void PrintRenderFrameHelper::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   is_loading_ = true;
 }
 
@@ -1465,7 +1465,7 @@ void PrintRenderFrameHelper::GetPageSizeAndContentAreaFromPageLayout(
 
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
     const base::DictionaryValue& settings) {
-  base::Optional<int> margins_type = settings.FindIntKey(kSettingMarginsType);
+  absl::optional<int> margins_type = settings.FindIntKey(kSettingMarginsType);
   ignore_css_margins_ = margins_type.value_or(static_cast<int>(
                             mojom::MarginType::kDefaultMargins)) !=
                         static_cast<int>(mojom::MarginType::kDefaultMargins);

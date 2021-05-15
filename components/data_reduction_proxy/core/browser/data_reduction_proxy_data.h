@@ -11,10 +11,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace data_reduction_proxy {
@@ -76,7 +76,7 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
 
   // An identifier that is guaranteed to be unique to each page load during a
   // data saver session. Only present on main frame requests.
-  const base::Optional<uint64_t>& page_id() const { return page_id_; }
+  const absl::optional<uint64_t>& page_id() const { return page_id_; }
   void set_page_id(uint64_t page_id) { page_id_ = page_id; }
 
   // Whether the blacklist prevented a preview.
@@ -119,7 +119,7 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
 
   // An identifier that is guaranteed to be unique to each page load during a
   // data saver session. Only present on main frame requests.
-  base::Optional<uint64_t> page_id_;
+  absl::optional<uint64_t> page_id_;
 
   DISALLOW_ASSIGN(DataReductionProxyData);
 };

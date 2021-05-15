@@ -14,7 +14,6 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -25,6 +24,7 @@
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 #include "url/url_constants.h"
 
@@ -149,7 +149,7 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdated(
     intent_filters_[filter.package_name()].push_back(std::move(filter));
 
   for (auto& observer : observer_list_)
-    observer.OnIntentFiltersUpdated(base::nullopt);
+    observer.OnIntentFiltersUpdated(absl::nullopt);
 }
 
 void ArcIntentHelperBridge::OnOpenDownloads() {

@@ -236,7 +236,7 @@ void ArcMetricsService::ParseProcessList(
 void ArcMetricsService::OnArcStartTimeRetrieved(
     std::vector<mojom::BootProgressEventPtr> events,
     mojom::BootType boot_type,
-    base::Optional<base::TimeTicks> arc_start_time) {
+    absl::optional<base::TimeTicks> arc_start_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!arc_start_time.has_value()) {
     LOG(ERROR) << "Failed to retrieve ARC start timeticks.";
@@ -277,7 +277,7 @@ void ArcMetricsService::ReportBootProgress(
     // For VM builds, do not call into session_manager since we don't use it
     // for the builds. The upgrade time is included in the events vector so we
     // can extract it here.
-    base::Optional<base::TimeTicks> arc_start_time =
+    absl::optional<base::TimeTicks> arc_start_time =
         GetArcStartTimeFromEvents(events);
     OnArcStartTimeRetrieved(std::move(events), boot_type, arc_start_time);
     return;
@@ -362,7 +362,7 @@ void ArcMetricsService::ReportArcCorePriAbiMigDowngradeDelay(
 
 void ArcMetricsService::OnArcStartTimeForPriAbiMigration(
     base::TimeTicks durationTicks,
-    base::Optional<base::TimeTicks> arc_start_time) {
+    absl::optional<base::TimeTicks> arc_start_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!arc_start_time.has_value()) {
     LOG(ERROR) << "Failed to retrieve ARC start timeticks.";
@@ -472,7 +472,7 @@ void ArcMetricsService::RemoveUserInteractionObserver(
   user_interaction_observers_.RemoveObserver(obs);
 }
 
-base::Optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
+absl::optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
     std::vector<mojom::BootProgressEventPtr>& events) {
   mojom::BootProgressEventPtr arc_upgraded_event;
   for (auto it = events.begin(); it != events.end(); ++it) {
@@ -484,7 +484,7 @@ base::Optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
              base::TimeTicks();
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)

@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_FEDERATED_LEARNING_FLOC_ID_H_
 #define COMPONENTS_FEDERATED_LEARNING_FLOC_ID_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/prefs/prefs_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
 
 #include <stdint.h>
@@ -95,14 +95,14 @@ class FlocId {
 
   // Create a floc with stated params. This will only be used to create a floc
   // read from prefs.
-  explicit FlocId(base::Optional<uint64_t> id,
+  explicit FlocId(absl::optional<uint64_t> id,
                   base::Time history_begin_time,
                   base::Time history_end_time,
                   uint32_t finch_config_version,
                   uint32_t sorting_lsh_version,
                   base::Time compute_time);
 
-  base::Optional<uint64_t> id_;
+  absl::optional<uint64_t> id_;
 
   // The time range of the actual history used to compute the floc. This should
   // always be within the time range of each history query.

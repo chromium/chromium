@@ -200,7 +200,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     // Resets all variables related to credit card fetching.
     credit_card_access_manager_->is_authentication_in_progress_ = false;
     credit_card_access_manager_->can_fetch_unmask_details_.Signal();
-    credit_card_access_manager_->is_user_verifiable_ = base::nullopt;
+    credit_card_access_manager_->is_user_verifiable_ = absl::nullopt;
   }
 
   void ClearCards() { personal_data_manager_.ClearCreditCards(); }

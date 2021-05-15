@@ -25,7 +25,7 @@ bool StructTraits<media_router::mojom::IssueDataView, media_router::IssueInfo>::
   if (!data.ReadSeverity(&out->severity))
     return false;
 
-  base::Optional<std::string> message;
+  absl::optional<std::string> message;
   if (!data.ReadMessage(&message))
     return false;
 
@@ -81,14 +81,14 @@ bool StructTraits<media_router::mojom::MediaSinkDataView,
 
   out->sink().set_name(name);
 
-  base::Optional<std::string> description;
+  absl::optional<std::string> description;
   if (!data.ReadDescription(&description))
     return false;
 
   if (description)
     out->sink().set_description(*description);
 
-  base::Optional<std::string> domain;
+  absl::optional<std::string> domain;
   if (!data.ReadDomain(&domain))
     return false;
 
@@ -189,7 +189,7 @@ bool StructTraits<media_router::mojom::MediaRouteDataView,
     return false;
   out->set_presentation_id(presentation_id);
 
-  base::Optional<media_router::MediaSource::Id> media_source_id;
+  absl::optional<media_router::MediaSource::Id> media_source_id;
   if (!data.ReadMediaSource(&media_source_id))
     return false;
   if (media_source_id)

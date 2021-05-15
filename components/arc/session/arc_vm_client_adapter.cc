@@ -28,7 +28,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,6 +56,7 @@
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -95,9 +95,9 @@ constexpr base::TimeDelta kConnectTimeoutLimit =
 constexpr base::TimeDelta kConnectSleepDurationInitial =
     base::TimeDelta::FromMilliseconds(100);
 
-base::Optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
-base::Optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
-base::Optional<int> g_boot_notification_server_fd;
+absl::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
+absl::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
+absl::optional<int> g_boot_notification_server_fd;
 
 chromeos::ConciergeClient* GetConciergeClient() {
   return chromeos::ConciergeClient::Get();
@@ -643,7 +643,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void OnGetVmReply(
-      base::Optional<vm_tools::concierge::GetVmInfoResponse> reply) {
+      absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
     vm_tools::concierge::StopVmRequest request;
     request.set_name(kArcVmName);
 
@@ -716,7 +716,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnExistingMiniVmStopped(
       chromeos::VoidDBusMethodCallback callback,
-      base::Optional<vm_tools::concierge::StopVmResponse> reply) {
+      absl::optional<vm_tools::concierge::StopVmResponse> reply) {
     // reply->success() returns true even when there was no VM running.
     if (!reply.has_value() || !reply->success()) {
       LOG(ERROR) << "StopVm failed: "
@@ -788,7 +788,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnStartArcVmReply(
       chromeos::VoidDBusMethodCallback callback,
-      base::Optional<vm_tools::concierge::StartVmResponse> reply) {
+      absl::optional<vm_tools::concierge::StartVmResponse> reply) {
     if (!reply.has_value()) {
       LOG(ERROR) << "Failed to start arcvm. Empty response.";
       std::move(callback).Run(false);
@@ -811,7 +811,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   void OnExistingFullVmStopped(
       UpgradeParams params,
       chromeos::VoidDBusMethodCallback callback,
-      base::Optional<vm_tools::concierge::StopVmResponse> reply) {
+      absl::optional<vm_tools::concierge::StopVmResponse> reply) {
     // reply->success() returns true even when there was no VM running.
     if (!reply.has_value() || !reply->success()) {
       LOG(ERROR) << "StopVm failed: "
@@ -894,7 +894,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnSetVmId(UpgradeParams params,
                  chromeos::VoidDBusMethodCallback callback,
-                 base::Optional<vm_tools::concierge::SetVmIdResponse> reply) {
+                 absl::optional<vm_tools::concierge::SetVmIdResponse> reply) {
     if (!reply.has_value()) {
       LOG(ERROR) << "Failed to set VM ID. Empty response.";
       StopArcInstanceInternal();
@@ -971,7 +971,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void OnStopVmReply(
-      base::Optional<vm_tools::concierge::StopVmResponse> reply) {
+      absl::optional<vm_tools::concierge::StopVmResponse> reply) {
     // If the reply indicates the D-Bus call is successfully done, do nothing.
     // Concierge will call OnVmStopped() eventually.
     if (reply.has_value() && reply.value().success())
@@ -986,7 +986,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnTrimVmMemory(
       TrimVmMemoryCallback callback,
-      base::Optional<vm_tools::concierge::ReclaimVmMemoryResponse> reply) {
+      absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse> reply) {
     bool success = false;
     std::string failure_reason;
 
@@ -1005,7 +1005,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     std::move(callback).Run(success, failure_reason);
   }
 
-  base::Optional<bool> is_dev_mode_;
+  absl::optional<bool> is_dev_mode_;
   // True when the *host* is running on a VM.
   const bool is_host_on_vm_;
   // A cryptohome ID of the primary profile.
@@ -1057,7 +1057,7 @@ void SetArcVmBootNotificationServerAddressForTesting(
   g_connect_sleep_duration_initial_for_testing = connect_sleep_duration_initial;
 }
 
-void SetArcVmBootNotificationServerFdForTesting(base::Optional<int> fd) {
+void SetArcVmBootNotificationServerFdForTesting(absl::optional<int> fd) {
   g_boot_notification_server_fd = fd;
 }
 

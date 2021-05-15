@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -26,12 +26,12 @@ class NigoriSyncBridge {
   virtual ~NigoriSyncBridge() = default;
 
   // Perform the initial merge between local and sync data.
-  virtual base::Optional<ModelError> MergeSyncData(
-      base::Optional<EntityData> data) = 0;
+  virtual absl::optional<ModelError> MergeSyncData(
+      absl::optional<EntityData> data) = 0;
 
   // Apply changes from the sync server locally.
-  virtual base::Optional<ModelError> ApplySyncChanges(
-      base::Optional<EntityData> data) = 0;
+  virtual absl::optional<ModelError> ApplySyncChanges(
+      absl::optional<EntityData> data) = 0;
 
   // Retrieve Nigori sync data.
   virtual std::unique_ptr<EntityData> GetData() = 0;

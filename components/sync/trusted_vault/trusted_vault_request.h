@@ -10,8 +10,8 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 struct CoreAccountId;
@@ -56,7 +56,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   TrustedVaultRequest(
       HttpMethod http_method,
       const GURL& request_url,
-      const base::Optional<std::string>& serialized_request_proto);
+      const absl::optional<std::string>& serialized_request_proto);
   TrustedVaultRequest(const TrustedVaultRequest& other) = delete;
   TrustedVaultRequest& operator=(const TrustedVaultRequest& other) = delete;
   ~TrustedVaultRequest() override;
@@ -73,7 +73,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
  private:
   void OnAccessTokenFetched(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::Optional<signin::AccessTokenInfo> access_token_info);
+      absl::optional<signin::AccessTokenInfo> access_token_info);
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
@@ -88,7 +88,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
 
   const HttpMethod http_method_;
   const GURL request_url_;
-  const base::Optional<std::string> serialized_request_proto_;
+  const absl::optional<std::string> serialized_request_proto_;
 
   CompletionCallback completion_callback_;
 

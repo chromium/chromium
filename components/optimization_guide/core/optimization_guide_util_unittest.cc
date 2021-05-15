@@ -16,7 +16,7 @@ TEST(OptimizationGuideUtilTest, ParsedAnyMetadataMismatchedTypeTest) {
   dase_metadata.set_delay_type(proto::DELAY_TYPE_FINISHED_PARSING);
   dase_metadata.SerializeToString(any_metadata.mutable_value());
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           ParsedAnyMetadata<proto::DelayAsyncScriptExecutionMetadata>(
               any_metadata);
@@ -29,7 +29,7 @@ TEST(OptimizationGuideUtilTest, ParsedAnyMetadataNotSerializableTest) {
       "type.googleapis.com/com.foo.DelayAsyncScriptExecutionMetadata");
   any_metadata.set_value("12345678garbage");
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           ParsedAnyMetadata<proto::DelayAsyncScriptExecutionMetadata>(
               any_metadata);
@@ -44,7 +44,7 @@ TEST(OptimizationGuideUtilTest, ParsedAnyMetadataTest) {
   dase_metadata.set_delay_type(proto::DELAY_TYPE_FINISHED_PARSING);
   dase_metadata.SerializeToString(any_metadata.mutable_value());
 
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata>
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata>
       parsed_dase_metadata =
           ParsedAnyMetadata<proto::DelayAsyncScriptExecutionMetadata>(
               any_metadata);

@@ -44,7 +44,7 @@ class PerformanceManagerLifetime {
   // used in tests. This needs to be set before PerformanceManagerLifetime is
   // created. In browser tests this occurs as part of Chrome browser main parts.
   static void SetDecoratorsOverrideForTesting(
-      base::Optional<Decorators> decorators_override);
+      absl::optional<Decorators> decorators_override);
 
  private:
   std::unique_ptr<PerformanceManager> performance_manager_;

@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +25,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using autofill::FieldPropertiesFlags;
@@ -91,15 +91,15 @@ struct FormParsingTestCase {
   const ValueElementVector* all_possible_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
-  base::Optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
-  base::Optional<FormDataParser::ReadonlyPasswordFields>
+  absl::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
+  absl::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_saving;
-  base::Optional<FormDataParser::ReadonlyPasswordFields>
+  absl::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_filling;
   // If the result should be marked as only useful for fallbacks.
   bool fallback_only = false;
   SubmissionIndicatorEvent submission_event = SubmissionIndicatorEvent::NONE;
-  base::Optional<bool> is_new_password_reliable;
+  absl::optional<bool> is_new_password_reliable;
   bool form_has_autofilled_value = false;
 };
 
@@ -399,7 +399,7 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
       if (test_case.readonly_status) {
         EXPECT_EQ(*test_case.readonly_status, parser.readonly_status());
       } else {
-        const base::Optional<FormDataParser::ReadonlyPasswordFields>*
+        const absl::optional<FormDataParser::ReadonlyPasswordFields>*
             expected_readonly_status =
                 mode == FormDataParser::Mode::kSaving
                     ? &test_case.readonly_status_for_saving

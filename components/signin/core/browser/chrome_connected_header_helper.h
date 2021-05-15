@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -47,7 +47,7 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
   std::string BuildRequestHeader(bool is_header_request,
                                  const GURL& url,
                                  const std::string& gaia_id,
-                                 const base::Optional<bool>& is_child_account,
+                                 const absl::optional<bool>& is_child_account,
                                  int profile_mode_mask,
                                  const std::string& source,
                                  bool force_account_consistency);

@@ -30,7 +30,7 @@ int FidoAuthenticationStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 FidoAuthenticationStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is six months.
   return base::TimeDelta::FromDays(183);

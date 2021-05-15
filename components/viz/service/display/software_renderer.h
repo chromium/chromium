@@ -97,10 +97,10 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   gfx::Rect GetBackdropBoundingBoxForRenderPassQuad(
       const AggregatedRenderPassDrawQuad* quad,
       const cc::FilterOperations* backdrop_filters,
-      base::Optional<gfx::RRectF> backdrop_filter_bounds_input,
+      absl::optional<gfx::RRectF> backdrop_filter_bounds_input,
       gfx::Transform contents_device_transform,
       gfx::Transform* backdrop_filter_bounds_transform,
-      base::Optional<gfx::RRectF>* backdrop_filter_bounds,
+      absl::optional<gfx::RRectF>* backdrop_filter_bounds,
       gfx::Rect* unclipped_rect) const;
 
   SkBitmap GetBackdropBitmap(const gfx::Rect& bounding_rect) const;

@@ -85,8 +85,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "scoped_id", "manufacturer",
       "model", "full_hardware_class", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      send_tab_to_self_receiving_enabled, /*sharing_info=*/base::nullopt,
-      /*paask_info=*/base::nullopt,
+      send_tab_to_self_receiving_enabled, /*sharing_info=*/absl::nullopt,
+      /*paask_info=*/absl::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

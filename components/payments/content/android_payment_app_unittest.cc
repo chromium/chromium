@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace payments {

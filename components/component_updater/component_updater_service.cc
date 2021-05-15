@@ -210,7 +210,7 @@ OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
   return *this;
 }
 
-base::Optional<CrxComponent> CrxUpdateService::GetComponent(
+absl::optional<CrxComponent> CrxUpdateService::GetComponent(
     const std::string& id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   return component_updater::GetComponent(components_, id);
@@ -374,7 +374,7 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
   return false;
 }
 
-std::vector<base::Optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
+std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
   return component_updater::GetCrxComponents(components_, ids);

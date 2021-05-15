@@ -10,8 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -70,7 +70,7 @@ struct DriverEntry {
 
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
-  base::Optional<storage::BlobDataHandle> blob_handle;
+  absl::optional<storage::BlobDataHandle> blob_handle;
 
   // Time the download was marked as complete, base::Time() if the download is
   // not yet complete.

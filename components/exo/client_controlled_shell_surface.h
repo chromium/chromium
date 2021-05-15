@@ -261,7 +261,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetWidgetBounds(const gfx::Rect& bounds) override;
   gfx::Rect GetShadowBounds() const override;
   void InitializeWindowState(ash::WindowState* window_state) override;
-  base::Optional<gfx::Rect> GetWidgetBounds() const override;
+  absl::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   bool OnPreWidgetCommit() override;
   void OnPostWidgetCommit() override;
@@ -376,7 +376,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   std::unique_ptr<ClientControlledAcceleratorTarget> accelerator_target_;
 
   // Accessibility ID provided by client.
-  base::Optional<int32_t> client_accessibility_id_;
+  absl::optional<int32_t> client_accessibility_id_;
 
   bool pending_resize_lock_ = false;
 

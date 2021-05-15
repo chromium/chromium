@@ -35,14 +35,14 @@ namespace data_reduction_proxy {
 
 namespace {
 
-base::Optional<base::Value> GetSaveDataSavingsPercentEstimateFromFieldTrial() {
+absl::optional<base::Value> GetSaveDataSavingsPercentEstimateFromFieldTrial() {
   if (!base::FeatureList::IsEnabled(features::kReportSaveDataSavings))
-    return base::nullopt;
+    return absl::nullopt;
   const auto origin_savings_estimate_json =
       base::GetFieldTrialParamValueByFeature(features::kReportSaveDataSavings,
                                              "origin_savings_estimate");
   if (origin_savings_estimate_json.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto origin_savings_estimates =
       base::JSONReader::Read(origin_savings_estimate_json);

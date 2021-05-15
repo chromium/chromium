@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/kalman_predictor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
@@ -66,7 +66,7 @@ void DelegatedInkTrailData::PredictPoints(
 
   // Used to know if the user enabled prediction, and if so, which prediction
   // config they opted into.
-  base::Optional<int> should_draw_predicted_ink_points =
+  absl::optional<int> should_draw_predicted_ink_points =
       features::ShouldDrawPredictedInkPoints();
 
   for (int experiment = 0; experiment < kNumberOfPredictionConfigs;

@@ -9,11 +9,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 

@@ -10,12 +10,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class AutocompleteInput;
@@ -166,12 +166,12 @@ class SearchSuggestionParser {
     void set_suggestion_group_id(int suggestion_group_id) {
       suggestion_group_id_ = suggestion_group_id;
     }
-    base::Optional<int> suggestion_group_id() const {
+    absl::optional<int> suggestion_group_id() const {
       return suggestion_group_id_;
     }
 
     void SetAnswer(const SuggestionAnswer& answer);
-    const base::Optional<SuggestionAnswer>& answer() const { return answer_; }
+    const absl::optional<SuggestionAnswer>& answer() const { return answer_; }
 
     const std::string& image_dominant_color() const {
       return image_dominant_color_;
@@ -215,10 +215,10 @@ class SearchSuggestionParser {
     // server supplied map of suggestion group Ids to headers.
     // Note: Use kNoSuggestionGroupId in place of a missing suggestion group Id
     // when this is to be converted to a primitive type.
-    base::Optional<int> suggestion_group_id_;
+    absl::optional<int> suggestion_group_id_;
 
     // Optional short answer to the input that produced this suggestion.
-    base::Optional<SuggestionAnswer> answer_;
+    absl::optional<SuggestionAnswer> answer_;
 
     // Optional image information. Used for entity suggestions. The dominant
     // color can be used to paint the image placeholder while fetching the

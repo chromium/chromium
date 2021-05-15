@@ -329,11 +329,11 @@ void {{ base_fixture_name }}::ValidateEventsImpl(uint32_t target_interface_versi
         "{{ target_interface.name }}::{{ event.name }}";
     constexpr uint32_t event_since_version =
         {{ event.since or 1 }}u;
-    base::Optional<uint32_t> received_at_version =
+    absl::optional<uint32_t> received_at_version =
         recorder.MaybeGetReceivedAtVersion(event_name);
 
     if (target_interface_version == event_since_version) {
-      EXPECT_THAT(received_at_version, ::testing::Not(::testing::Eq(base::nullopt)))
+      EXPECT_THAT(received_at_version, ::testing::Not(::testing::Eq(absl::nullopt)))
           << "Failed to receive " << event_name << " at interface version "
           << target_interface_version
           << " as the event is defined as since version "
@@ -346,7 +346,7 @@ void {{ base_fixture_name }}::ValidateEventsImpl(uint32_t target_interface_versi
 
     if (target_interface_version >= event_since_version) {
       ASSERT_THAT(received_at_version, ::testing::AnyOf(
-                      ::testing::Eq(base::nullopt),
+                      ::testing::Eq(absl::nullopt),
                       ::testing::Optional(::testing::Eq(target_interface_version))))
           << "Unexpected version mismatch. Test expected to create a\n"
           << "   {{ target_interface.name }}"
@@ -358,7 +358,7 @@ void {{ base_fixture_name }}::ValidateEventsImpl(uint32_t target_interface_versi
     }
 
     if (target_interface_version < event_since_version) {
-      EXPECT_THAT(received_at_version, ::testing::Eq(base::nullopt))
+      EXPECT_THAT(received_at_version, ::testing::Eq(absl::nullopt))
           << "Unexpectedly received "
           << event_name
           << " at interface version "

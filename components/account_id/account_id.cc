@@ -244,7 +244,7 @@ std::string AccountId::Serialize() const {
 // static
 bool AccountId::Deserialize(const std::string& serialized,
                             AccountId* account_id) {
-  base::Optional<base::Value> value(base::JSONReader::Read(serialized));
+  absl::optional<base::Value> value(base::JSONReader::Read(serialized));
   if (!value || !value->is_dict())
     return false;
 

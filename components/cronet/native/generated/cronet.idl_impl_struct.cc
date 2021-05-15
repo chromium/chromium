@@ -1079,21 +1079,21 @@ void Cronet_Metrics_received_byte_count_set(Cronet_MetricsPtr self,
 Cronet_DateTimePtr Cronet_Metrics_request_start_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->request_start == base::nullopt)
+  if (self->request_start == absl::nullopt)
     return nullptr;
   return &self->request_start.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_dns_start_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->dns_start == base::nullopt)
+  if (self->dns_start == absl::nullopt)
     return nullptr;
   return &self->dns_start.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_dns_end_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->dns_end == base::nullopt)
+  if (self->dns_end == absl::nullopt)
     return nullptr;
   return &self->dns_end.value();
 }
@@ -1101,7 +1101,7 @@ Cronet_DateTimePtr Cronet_Metrics_dns_end_get(const Cronet_MetricsPtr self) {
 Cronet_DateTimePtr Cronet_Metrics_connect_start_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->connect_start == base::nullopt)
+  if (self->connect_start == absl::nullopt)
     return nullptr;
   return &self->connect_start.value();
 }
@@ -1109,21 +1109,21 @@ Cronet_DateTimePtr Cronet_Metrics_connect_start_get(
 Cronet_DateTimePtr Cronet_Metrics_connect_end_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->connect_end == base::nullopt)
+  if (self->connect_end == absl::nullopt)
     return nullptr;
   return &self->connect_end.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_ssl_start_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->ssl_start == base::nullopt)
+  if (self->ssl_start == absl::nullopt)
     return nullptr;
   return &self->ssl_start.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_ssl_end_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->ssl_end == base::nullopt)
+  if (self->ssl_end == absl::nullopt)
     return nullptr;
   return &self->ssl_end.value();
 }
@@ -1131,7 +1131,7 @@ Cronet_DateTimePtr Cronet_Metrics_ssl_end_get(const Cronet_MetricsPtr self) {
 Cronet_DateTimePtr Cronet_Metrics_sending_start_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->sending_start == base::nullopt)
+  if (self->sending_start == absl::nullopt)
     return nullptr;
   return &self->sending_start.value();
 }
@@ -1139,21 +1139,21 @@ Cronet_DateTimePtr Cronet_Metrics_sending_start_get(
 Cronet_DateTimePtr Cronet_Metrics_sending_end_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->sending_end == base::nullopt)
+  if (self->sending_end == absl::nullopt)
     return nullptr;
   return &self->sending_end.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_push_start_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->push_start == base::nullopt)
+  if (self->push_start == absl::nullopt)
     return nullptr;
   return &self->push_start.value();
 }
 
 Cronet_DateTimePtr Cronet_Metrics_push_end_get(const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->push_end == base::nullopt)
+  if (self->push_end == absl::nullopt)
     return nullptr;
   return &self->push_end.value();
 }
@@ -1161,7 +1161,7 @@ Cronet_DateTimePtr Cronet_Metrics_push_end_get(const Cronet_MetricsPtr self) {
 Cronet_DateTimePtr Cronet_Metrics_response_start_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->response_start == base::nullopt)
+  if (self->response_start == absl::nullopt)
     return nullptr;
   return &self->response_start.value();
 }
@@ -1169,7 +1169,7 @@ Cronet_DateTimePtr Cronet_Metrics_response_start_get(
 Cronet_DateTimePtr Cronet_Metrics_request_end_get(
     const Cronet_MetricsPtr self) {
   DCHECK(self);
-  if (self->request_end == base::nullopt)
+  if (self->request_end == absl::nullopt)
     return nullptr;
   return &self->request_end.value();
 }
@@ -1242,7 +1242,7 @@ void Cronet_RequestFinishedInfo_finished_reason_set(
 Cronet_MetricsPtr Cronet_RequestFinishedInfo_metrics_get(
     const Cronet_RequestFinishedInfoPtr self) {
   DCHECK(self);
-  if (self->metrics == base::nullopt)
+  if (self->metrics == absl::nullopt)
     return nullptr;
   return &self->metrics.value();
 }

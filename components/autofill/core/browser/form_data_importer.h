@@ -107,7 +107,7 @@ class FormDataImporter {
                       bool credit_card_autofill_enabled,
                       bool should_return_local_card,
                       std::unique_ptr<CreditCard>* imported_credit_card,
-                      base::Optional<std::string>* imported_upi_id);
+                      absl::optional<std::string>* imported_upi_id);
 
   // Go through the |form| fields and attempt to extract and import valid
   // address profiles. Returns true on extraction success of at least one
@@ -139,7 +139,7 @@ class FormDataImporter {
 
   // Go through the |form| fields and find a UPI ID to import. The return value
   // will be empty if no UPI ID was found.
-  base::Optional<std::string> ImportUpiId(const FormStructure& form);
+  absl::optional<std::string> ImportUpiId(const FormStructure& form);
 
   // Whether a dynamic change form is imported.
   bool from_dynamic_change_form_ = false;

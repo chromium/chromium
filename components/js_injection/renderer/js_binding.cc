@@ -150,7 +150,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   for (auto& obj : objs) {
-    base::Optional<blink::MessagePortChannel> port =
+    absl::optional<blink::MessagePortChannel> port =
         blink::WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
             args->isolate(), obj);
     // If the port is null we should throw an exception.

@@ -140,11 +140,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // For Mac, if we successfully generated a candidate list for CALayerOverlay,
   // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the base::Optional instance so the instance can be reset.
+  // to the absl::optional instance so the instance can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   virtual void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are

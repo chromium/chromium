@@ -187,8 +187,8 @@ class RestoreDataTest : public testing::Test {
                             const gfx::Rect& restore_bounds,
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type,
-                            base::Optional<gfx::Size> max_size,
-                            base::Optional<gfx::Size> min_size,
+                            absl::optional<gfx::Size> max_size,
+                            absl::optional<gfx::Size> min_size,
                             uint32_t primary_color,
                             uint32_t status_bar_color) {
     EXPECT_TRUE(data->container.has_value());
@@ -295,7 +295,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kRestoreBounds2,
-        kCurrentBounds2, kWindowStateType2, base::nullopt, kMinSize2,
+        kCurrentBounds2, kWindowStateType2, absl::nullopt, kMinSize2,
         kPrimaryColor2, kStatusBarColor2);
 
     // Verify for |kAppId2|.
@@ -312,7 +312,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kRestoreBounds3,
-        kCurrentBounds3, kWindowStateType3, base::nullopt, base::nullopt, 0, 0);
+        kCurrentBounds3, kWindowStateType3, absl::nullopt, absl::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }

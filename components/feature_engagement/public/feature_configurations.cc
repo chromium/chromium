@@ -10,12 +10,12 @@
 
 namespace feature_engagement {
 
-base::Optional<FeatureConfig> GetClientSideFeatureConfig(
+absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     const base::Feature* feature) {
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
   if (kIPHPasswordsAccountStorageFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
@@ -30,7 +30,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHProfileSwitchFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
@@ -49,7 +49,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
   constexpr int k10YearsInDays = 365 * 10;
 
   if (kIPHDataSaverDetailFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
@@ -63,7 +63,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHDataSaverPreviewFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
@@ -74,7 +74,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHPreviewsOmniboxUIFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
@@ -87,7 +87,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHDownloadHomeFeature.name == feature->name) {
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
     config->session_rate = Comparator(EQUAL, 0);
@@ -102,7 +102,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHDownloadIndicatorFeature.name == feature->name) {
     // A config that allows the DownloadIndicator IPH to be shown up to 2 times,
     // but only if download home hasn't been opened in the last 90 days.
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
@@ -116,7 +116,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     // A config that allows the ExploreSites IPH to be shown:
     // * Once per day
     // * Up to 3 times but only if unused in the last 90 days.
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
@@ -133,7 +133,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     // A config that allows the feed header menu IPH to be shown only once when
     // the user starts using a version of the feed that uploads click and view
     // actions.
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
 
@@ -161,7 +161,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.
-    base::Optional<FeatureConfig> config = FeatureConfig();
+    absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = false;
     config->availability = Comparator(LESS_THAN, 0);
     config->session_rate = Comparator(LESS_THAN, 0);
@@ -172,7 +172,7 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace feature_engagement

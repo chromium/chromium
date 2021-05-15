@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
@@ -24,6 +23,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -111,7 +111,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   // The origin of the context which initiated the request. See
   // net::URLRequest::initiator().
-  void set_initiator(const base::Optional<url::Origin>& initiator) {
+  void set_initiator(const absl::optional<url::Origin>& initiator) {
     initiator_ = initiator;
   }
 
@@ -272,7 +272,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   const GURL& referrer() const { return referrer_; }
   net::ReferrerPolicy referrer_policy() const { return referrer_policy_; }
   const std::string& referrer_encoding() const { return referrer_encoding_; }
-  const base::Optional<url::Origin>& initiator() const { return initiator_; }
+  const absl::optional<url::Origin>& initiator() const { return initiator_; }
   const std::string& request_origin() const { return request_origin_; }
   BlobStorageContextGetter get_blob_storage_context_getter() {
     return std::move(blob_storage_context_getter_);
@@ -305,7 +305,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool is_transient() const { return transient_; }
   std::string guid() const { return guid_; }
   bool require_safety_checks() const { return require_safety_checks_; }
-  const base::Optional<net::IsolationInfo>& isolation_info() const {
+  const absl::optional<net::IsolationInfo>& isolation_info() const {
     return isolation_info_;
   }
 
@@ -337,7 +337,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool prefer_cache_;
   GURL referrer_;
   net::ReferrerPolicy referrer_policy_;
-  base::Optional<url::Origin> initiator_;
+  absl::optional<url::Origin> initiator_;
   std::string referrer_encoding_;
   int render_process_host_id_;
   int render_frame_host_routing_id_;
@@ -353,7 +353,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   DownloadSource download_source_;
   UploadProgressCallback upload_callback_;
   bool require_safety_checks_;
-  base::Optional<net::IsolationInfo> isolation_info_;
+  absl::optional<net::IsolationInfo> isolation_info_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadUrlParameters);
 };

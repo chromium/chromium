@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -62,7 +62,7 @@ class DeletePageTaskTest : public ModelTaskTestBase {
   DeletePageTask::DeletePageTaskCallback delete_page_callback();
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
-  const base::Optional<DeletePageResult>& last_delete_page_result() {
+  const absl::optional<DeletePageResult>& last_delete_page_result() {
     return last_delete_page_result_;
   }
   const std::vector<OfflinePageItem>& last_deleted_page_items() {
@@ -72,7 +72,7 @@ class DeletePageTaskTest : public ModelTaskTestBase {
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  base::Optional<DeletePageResult> last_delete_page_result_;
+  absl::optional<DeletePageResult> last_delete_page_result_;
   std::vector<OfflinePageItem> last_deleted_page_items_;
 };
 

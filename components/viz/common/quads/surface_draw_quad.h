@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 
-#include "base/optional.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace viz {

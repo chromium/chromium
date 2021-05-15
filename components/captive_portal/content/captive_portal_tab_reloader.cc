@@ -24,7 +24,7 @@ const int kDefaultSlowSSLTimeSeconds = 30;
 
 // Returns the appropriate CaptivePortalProbeReason if |error| may indicate a
 // captive portal, otherwise returns nullopt.
-base::Optional<CaptivePortalProbeReason> SslNetErrorMayImplyCaptivePortal(
+absl::optional<CaptivePortalProbeReason> SslNetErrorMayImplyCaptivePortal(
     int error) {
   // May be returned when a captive portal silently blocks an SSL request.
   if (error == net::ERR_CONNECTION_TIMED_OUT)
@@ -39,7 +39,7 @@ base::Optional<CaptivePortalProbeReason> SslNetErrorMayImplyCaptivePortal(
   if (net::IsCertificateError(error))
     return CaptivePortalProbeReason::kCertificateError;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -90,7 +90,7 @@ void CaptivePortalTabReloader::OnLoadCommitted(
 
   // If |net_error| is not an error code that could indicate there's a captive
   // portal, reset the state.
-  base::Optional<CaptivePortalProbeReason> probe_reason =
+  absl::optional<CaptivePortalProbeReason> probe_reason =
       SslNetErrorMayImplyCaptivePortal(net_error);
   if (!probe_reason.has_value()) {
     // TODO(mmenke):  If the new URL is the same as the old broken URL, and the
@@ -212,7 +212,7 @@ void CaptivePortalTabReloader::OnSecureDnsNetworkError() {
 
 void CaptivePortalTabReloader::SetState(
     State new_state,
-    base::Optional<CaptivePortalProbeReason> probe_reason) {
+    absl::optional<CaptivePortalProbeReason> probe_reason) {
   // Stop the timer even when old and new states are the same.
   if (state_ == STATE_TIMER_RUNNING) {
     slow_ssl_load_timer_.Stop();

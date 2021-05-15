@@ -1214,7 +1214,7 @@ class CopiesTicketItemTraits : public NoValueValidation,
                                public ItemsTraits<kOptionCopies> {
  public:
   static bool Load(const base::Value& dict, int32_t* option) {
-    base::Optional<int> copies = dict.FindIntKey(kOptionCopies);
+    absl::optional<int> copies = dict.FindIntKey(kOptionCopies);
     if (!copies)
       return false;
 
@@ -1231,11 +1231,11 @@ class CopiesCapabilityTraits : public NoValueValidation,
                                public ItemsTraits<kOptionCopies> {
  public:
   static bool Load(const base::Value& dict, Copies* option) {
-    base::Optional<int> default_copies = dict.FindIntKey(kDefaultValue);
+    absl::optional<int> default_copies = dict.FindIntKey(kDefaultValue);
     if (!default_copies)
       return false;
 
-    base::Optional<int> max_copies = dict.FindIntKey(kMaxValue);
+    absl::optional<int> max_copies = dict.FindIntKey(kMaxValue);
     if (!max_copies)
       return false;
 
@@ -1257,10 +1257,10 @@ class MarginsTraits : public NoValueValidation,
     const std::string* type = dict.FindStringKey(kKeyType);
     if (!type || !TypeFromString(kMarginsNames, *type, &option->type))
       return false;
-    base::Optional<int> top_um = dict.FindIntKey(kMarginTop);
-    base::Optional<int> right_um = dict.FindIntKey(kMarginRight);
-    base::Optional<int> bottom_um = dict.FindIntKey(kMarginBottom);
-    base::Optional<int> left_um = dict.FindIntKey(kMarginLeft);
+    absl::optional<int> top_um = dict.FindIntKey(kMarginTop);
+    absl::optional<int> right_um = dict.FindIntKey(kMarginRight);
+    absl::optional<int> bottom_um = dict.FindIntKey(kMarginBottom);
+    absl::optional<int> left_um = dict.FindIntKey(kMarginLeft);
     if (!top_um || !right_um || !bottom_um || !left_um)
       return false;
     option->top_um = top_um.value();
@@ -1285,8 +1285,8 @@ class DpiTraits : public ItemsTraits<kOptionDpi> {
   static bool IsValid(const Dpi& option) { return option.IsValid(); }
 
   static bool Load(const base::Value& dict, Dpi* option) {
-    base::Optional<int> horizontal = dict.FindIntKey(kDpiHorizontal);
-    base::Optional<int> vertical = dict.FindIntKey(kDpiVertical);
+    absl::optional<int> horizontal = dict.FindIntKey(kDpiHorizontal);
+    absl::optional<int> vertical = dict.FindIntKey(kDpiVertical);
     if (!horizontal || !vertical)
       return false;
     option->horizontal = horizontal.value();
@@ -1361,13 +1361,13 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
     const std::string* type = dict.FindStringKey(kKeyName);
     if (type && !TypeFromString(kMediaDefinitions, *type, &option->type))
       return false;
-    base::Optional<int> width_um = dict.FindIntKey(kMediaWidth);
+    absl::optional<int> width_um = dict.FindIntKey(kMediaWidth);
     if (width_um)
       option->width_um = width_um.value();
-    base::Optional<int> height_um = dict.FindIntKey(kMediaHeight);
+    absl::optional<int> height_um = dict.FindIntKey(kMediaHeight);
     if (height_um)
       option->height_um = height_um.value();
-    base::Optional<bool> is_continuous_feed =
+    absl::optional<bool> is_continuous_feed =
         dict.FindBoolKey(kMediaIsContinuous);
     if (is_continuous_feed)
       option->is_continuous_feed = is_continuous_feed.value();
@@ -1408,7 +1408,7 @@ class CollateTraits : public NoValueValidation,
   static const bool kDefault = true;
 
   static bool Load(const base::Value& dict, bool* option) {
-    base::Optional<bool> collate = dict.FindBoolKey(kOptionCollate);
+    absl::optional<bool> collate = dict.FindBoolKey(kOptionCollate);
     if (!collate)
       return false;
     *option = collate.value();
@@ -1426,7 +1426,7 @@ class ReverseTraits : public NoValueValidation,
   static const bool kDefault = false;
 
   static bool Load(const base::Value& dict, bool* option) {
-    base::Optional<bool> reverse = dict.FindBoolKey(kOptionReverse);
+    absl::optional<bool> reverse = dict.FindBoolKey(kOptionReverse);
     if (!reverse)
       return false;
     *option = reverse.value();
@@ -1442,7 +1442,7 @@ class ReverseTraits : public NoValueValidation,
 class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
  public:
   static bool Load(const base::Value& dict, bool* option) {
-    base::Optional<bool> supported = dict.FindBoolKey(kPinSupported);
+    absl::optional<bool> supported = dict.FindBoolKey(kPinSupported);
     if (!supported)
       return false;
     *option = supported.value();

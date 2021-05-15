@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,6 +17,7 @@
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace embedder_support {
 class InputStream;
@@ -88,7 +88,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       std::unique_ptr<ResponseDelegate> response_delegate,
-      base::Optional<SecurityOptions> security_options);
+      absl::optional<SecurityOptions> security_options);
   ~AndroidStreamReaderURLLoader() override;
 
   void Start();
@@ -98,7 +98,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;

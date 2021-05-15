@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
  protected:
   // KeyStorageLinux
   bool Init() override;
-  base::Optional<std::string> GetKeyImpl() override;
+  absl::optional<std::string> GetKeyImpl() override;
 
  private:
   enum class InitResult {

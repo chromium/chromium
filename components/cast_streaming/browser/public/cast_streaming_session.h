@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_streaming {
 
@@ -36,8 +36,8 @@ class CastStreamingSession {
     // It is guaranteed that at least one of |audio_stream_info| or
     // |video_stream_info| will be set.
     virtual void OnSessionInitialization(
-        base::Optional<AudioStreamInfo> audio_stream_info,
-        base::Optional<VideoStreamInfo> video_stream_info) = 0;
+        absl::optional<AudioStreamInfo> audio_stream_info,
+        absl::optional<VideoStreamInfo> video_stream_info) = 0;
 
     // Called on every new audio buffer after OnSessionInitialization(). The
     // frame data must be accessed via the |data_pipe| property in StreamInfo.
@@ -52,8 +52,8 @@ class CastStreamingSession {
     // Called on receiver session reinitialization. It is guaranteed that at
     // least one of |audio_stream_info| or |video_stream_info| will be set.
     virtual void OnSessionReinitialization(
-        base::Optional<AudioStreamInfo> audio_stream_info,
-        base::Optional<VideoStreamInfo> video_stream_info) = 0;
+        absl::optional<AudioStreamInfo> audio_stream_info,
+        absl::optional<VideoStreamInfo> video_stream_info) = 0;
 
     // Called when the Cast Streaming Session has ended.
     virtual void OnSessionEnded() = 0;

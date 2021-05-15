@@ -409,12 +409,12 @@ int GetValueSize(const ValueProto& value) {
   }
 }
 
-base::Optional<ValueProto> GetNthValue(const ValueProto& value, int index) {
+absl::optional<ValueProto> GetNthValue(const ValueProto& value, int index) {
   if (value == ValueProto()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (index < 0 || index >= GetValueSize(value)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   ValueProto nth_value;
   if (value.is_client_side_only())
@@ -458,7 +458,7 @@ base::Optional<ValueProto> GetNthValue(const ValueProto& value, int index) {
       DCHECK(index == 0);
       return value;
     case ValueProto::KIND_NOT_SET:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

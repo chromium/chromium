@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -16,6 +15,7 @@
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -132,7 +132,7 @@ class FormEventLoggerBase {
   bool has_logged_edited_autofilled_field_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
-  base::Optional<base::TimeDelta> time_from_interaction_to_submission_;
+  absl::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;

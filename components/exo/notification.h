@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 
@@ -23,7 +23,7 @@ class Notification {
                const std::string& notifier_id,
                const std::vector<std::string>& buttons,
                const base::RepeatingCallback<void(bool)>& close_callback,
-               const base::RepeatingCallback<void(const base::Optional<int>&)>&
+               const base::RepeatingCallback<void(const absl::optional<int>&)>&
                    click_callback);
 
   // Closes this notification.

@@ -12,7 +12,7 @@ ExternalUseClient::ImageContext::ImageContext(
     const gpu::MailboxHolder& mailbox_holder,
     const gfx::Size& size,
     ResourceFormat resource_format,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space)
     : mailbox_holder_(mailbox_holder),
       size_(size),

@@ -9,7 +9,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DEVTOOLS_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DEVTOOLS_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "base/values.h"
 {% for domain_name in domain.dependencies %}
 #include "components/autofill_assistant/browser/devtools/devtools/internal/types_forward_declarations_{{domain_name | camelcase_to_hacker_style}}.h"
@@ -102,7 +102,7 @@ class {{type.id}} {
 
   {% for property in type.properties %}
     {% if property.optional %}
-  base::Optional<{{resolve_type(property).type}}> {{property.name | camelcase_to_hacker_style}}_;
+  absl::optional<{{resolve_type(property).type}}> {{property.name | camelcase_to_hacker_style}}_;
     {% else %}
   {{resolve_type(property).type}} {{property.name | camelcase_to_hacker_style}}_;
     {% endif %}

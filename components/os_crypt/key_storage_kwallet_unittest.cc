@@ -77,7 +77,7 @@ class MockKWalletDBus : public KWalletDBus {
                                   const std::string&,
                                   const std::string&,
                                   const std::string&,
-                                  base::Optional<std::string>*));
+                                  absl::optional<std::string>*));
 
   MOCK_METHOD6(WritePassword,
                KWalletDBus::Error(int,
@@ -164,7 +164,7 @@ TEST_F(KeyStorageKWalletTest, GenerateNewPassword) {
       .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_,
               ReadPassword(123, kExpectedFolderName, kExpectedEntryName, _, _))
-      .WillOnce(DoAll(SetArgPointee<4>(base::nullopt), Return(SUCCESS)));
+      .WillOnce(DoAll(SetArgPointee<4>(absl::nullopt), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, WritePassword(123, kExpectedFolderName,
                                                  kExpectedEntryName, _, _, _))
       .WillOnce(DoAll(SaveArg<3>(&generated_password), SetArgPointee<5>(true),
@@ -309,7 +309,7 @@ TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureWritePassword) {
   EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, _, _, _))
       .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, ReadPassword(123, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<4>(base::nullopt), Return(SUCCESS)));
+      .WillOnce(DoAll(SetArgPointee<4>(absl::nullopt), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, WritePassword(123, _, _, _, _, _))
       .WillOnce(Return(GetParam()));
 

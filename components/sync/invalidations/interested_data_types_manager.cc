@@ -27,7 +27,7 @@ void InterestedDataTypesManager::SetInterestedDataTypesHandler(
   interested_data_types_handler_ = handler;
 }
 
-base::Optional<ModelTypeSet>
+absl::optional<ModelTypeSet>
 InterestedDataTypesManager::GetInterestedDataTypes() const {
   return data_types_;
 }

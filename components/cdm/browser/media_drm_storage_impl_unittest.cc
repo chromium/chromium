@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -18,6 +17,7 @@
 #include "media/mojo/services/mojo_media_drm_storage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,7 +45,7 @@ void CreateOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
 
 void CreateEmptyOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
   // |callback| has to fail in order to check if empty origin ID allowed.
-  std::move(callback).Run(false, base::nullopt);
+  std::move(callback).Run(false, absl::nullopt);
 }
 
 void CreateOriginIdAsync(MediaDrmStorageImpl::OriginIdObtainedCB callback) {

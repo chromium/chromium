@@ -116,7 +116,7 @@ VariationsIdsProvider::GetVariationsVectorForWebPropertiesKeys() {
 }
 
 void VariationsIdsProvider::SetLowEntropySourceValue(
-    base::Optional<int> low_entropy_source_value) {
+    absl::optional<int> low_entropy_source_value) {
   // The low entropy source value is an integer that is between 0 and 7999,
   // inclusive. See components/metrics/metrics_state_manager.cc for the logic to
   // generate it.

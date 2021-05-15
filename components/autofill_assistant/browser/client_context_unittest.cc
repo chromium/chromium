@@ -128,7 +128,7 @@ TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
   ClientContextImpl client_context(&mock_client_);
 
   // When we update the context, there is no window size anymore.
-  EXPECT_CALL(mock_client_, GetWindowSize()).WillOnce(Return(base::nullopt));
+  EXPECT_CALL(mock_client_, GetWindowSize()).WillOnce(Return(absl::nullopt));
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));

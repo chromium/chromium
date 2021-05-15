@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/arc/mojom/cast_receiver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -33,12 +33,12 @@ class FakeCastReceiverInstance : public mojom::CastReceiverInstance {
       base::OnceCallback<void(mojom::CastReceiverInstance::Result)>;
   void SetName(const std::string& name, SetNameCallback callback) override;
 
-  const base::Optional<bool>& last_enabled() const { return last_enabled_; }
-  const base::Optional<std::string>& last_name() const { return last_name_; }
+  const absl::optional<bool>& last_enabled() const { return last_enabled_; }
+  const absl::optional<std::string>& last_name() const { return last_name_; }
 
  private:
-  base::Optional<bool> last_enabled_;
-  base::Optional<std::string> last_name_;
+  absl::optional<bool> last_enabled_;
+  absl::optional<std::string> last_name_;
 };
 
 }  // namespace arc

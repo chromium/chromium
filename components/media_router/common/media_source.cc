@@ -157,7 +157,7 @@ int MediaSource::TabId() const {
   return tab_id;
 }
 
-base::Optional<std::string> MediaSource::DesktopStreamId() const {
+absl::optional<std::string> MediaSource::DesktopStreamId() const {
   if (base::StartsWith(id_, kDesktopMediaUrnPrefix,
                        base::CompareCase::SENSITIVE)) {
     const auto begin = id_.begin() + kDesktopMediaUrnPrefix.size();
@@ -168,7 +168,7 @@ base::Optional<std::string> MediaSource::DesktopStreamId() const {
     }
     return std::string(begin, end);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool MediaSource::IsDesktopSourceWithAudio() const {

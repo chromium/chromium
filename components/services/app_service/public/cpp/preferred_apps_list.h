@@ -11,8 +11,8 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -69,11 +69,11 @@ class PreferredAppsList {
   using PreferredApps = std::vector<apps::mojom::PreferredAppPtr>;
 
   // Find preferred app id for an |intent|.
-  base::Optional<std::string> FindPreferredAppForIntent(
+  absl::optional<std::string> FindPreferredAppForIntent(
       const apps::mojom::IntentPtr& intent);
 
   // Find preferred app id for an |url|.
-  base::Optional<std::string> FindPreferredAppForUrl(const GURL& url);
+  absl::optional<std::string> FindPreferredAppForUrl(const GURL& url);
 
   // Add a preferred app for an |intent_filter|, and returns a group of
   // |app_ids| that is no longer preferred app of their corresponding

@@ -15,7 +15,7 @@ constexpr int kMaxLines = 9;
 namespace captions {
 
 CaptionBubbleModel::CaptionBubbleModel(
-    const base::Optional<gfx::Rect>& context_bounds_in_screen,
+    const absl::optional<gfx::Rect>& context_bounds_in_screen,
     base::RepeatingClosure activate_context_callback)
     : context_bounds_in_screen_(context_bounds_in_screen),
       activate_context_callback_(activate_context_callback) {}

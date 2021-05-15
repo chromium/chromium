@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -67,10 +67,10 @@ class ArcTimerStore {
 
   void ClearTimers() { return arc_timers_.clear(); }
 
-  base::Optional<int> GetTimerReadFd(clockid_t clock_id) {
+  absl::optional<int> GetTimerReadFd(clockid_t clock_id) {
     if (!HasTimer(clock_id))
-      return base::nullopt;
-    return base::Optional<int>(arc_timers_[clock_id].get());
+      return absl::nullopt;
+    return absl::optional<int>(arc_timers_[clock_id].get());
   }
 
   bool HasTimer(clockid_t clock_id) const {
@@ -222,7 +222,7 @@ bool ArcTimerTest::WaitForExpiration(clockid_t clock_id) {
 
   // Wait for the host to indicate expiration by watching the read end of the
   // socket pair.
-  base::Optional<int> timer_read_fd_opt =
+  absl::optional<int> timer_read_fd_opt =
       arc_timer_store_.GetTimerReadFd(clock_id);
   // This should never happen if the timer was present in the store.
   if (!timer_read_fd_opt.has_value()) {

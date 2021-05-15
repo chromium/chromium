@@ -28,7 +28,7 @@ class BertModelExecutorTest : public testing::Test {
         optimization_guide_decider_.get(),
         task_environment_.GetMainThreadTaskRunner(),
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-        /*model_metadata=*/base::nullopt);
+        /*model_metadata=*/absl::nullopt);
   }
 
   void PushModelFileToModelExecutor(bool is_valid) {
@@ -44,7 +44,7 @@ class BertModelExecutorTest : public testing::Test {
         is_valid ? model_file_path.AppendASCII("bert_page_topics_model.tflite")
                  : model_file_path.AppendASCII("simple_test.tflite");
     model_executor_handle_->OnModelFileUpdated(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt,
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt,
         model_file_path);
     task_environment_.RunUntilIdle();
   }
@@ -71,7 +71,7 @@ TEST_F(BertModelExecutorTest, ValidBertModel) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<tflite::task::core::Category>>&
+             const absl::optional<std::vector<tflite::task::core::Category>>&
                  output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
@@ -92,7 +92,7 @@ TEST_F(BertModelExecutorTest, InvalidBertModel) {
   model_executor_handle()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::vector<tflite::task::core::Category>>&
+             const absl::optional<std::vector<tflite::task::core::Category>>&
                  output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();

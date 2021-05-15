@@ -156,7 +156,7 @@ SharedQuadState* CreateTestSharedQuadState(
   int sorting_context_id = 0;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
-                       mask_filter_info, /**clip_rect=*/base::nullopt,
+                       mask_filter_info, /**clip_rect=*/absl::nullopt,
                        are_contents_opaque, opacity, blend_mode,
                        sorting_context_id);
   return shared_state;
@@ -3007,7 +3007,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
 
   AggregatedRenderPassList pass_list_;
   cc::FilterOperations backdrop_filters_;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds_;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds_;
   bool include_backdrop_mask_ = false;
   gfx::Transform filter_pass_to_target_transform_;
   gfx::Rect filter_pass_layer_rect_;
@@ -3135,7 +3135,7 @@ class GLRendererPixelTestWithBackdropFilter : public VizPixelTest {
 
   AggregatedRenderPassList pass_list_;
   cc::FilterOperations backdrop_filters_;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds_;
+  absl::optional<gfx::RRectF> backdrop_filter_bounds_;
   float backdrop_filter_quality_ = 1.0f;
   bool intersects_damage_under_ = true;
   gfx::Transform filter_pass_to_target_transform_;

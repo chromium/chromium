@@ -24,7 +24,6 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -38,6 +37,7 @@
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/visit_tracker.h"
 #include "sql/init_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SkBitmap;
 
@@ -699,7 +699,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       VisitSource visit_source,
       bool should_increment_typed_count,
       bool floc_allowed,
-      base::Optional<std::u16string> title = base::nullopt);
+      absl::optional<std::u16string> title = absl::nullopt);
 
   // Returns a redirect chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that

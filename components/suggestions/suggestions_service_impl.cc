@@ -140,12 +140,12 @@ bool SuggestionsServiceImpl::FetchSuggestionsData() {
   return true;
 }
 
-base::Optional<SuggestionsProfile>
+absl::optional<SuggestionsProfile>
 SuggestionsServiceImpl::GetSuggestionsDataFromCache() const {
   SuggestionsProfile suggestions;
   // In case of empty cache or error, return empty.
   if (!suggestions_store_->LoadSuggestions(&suggestions))
-    return base::nullopt;
+    return absl::nullopt;
   blocklist_store_->FilterSuggestions(&suggestions);
   return suggestions;
 }

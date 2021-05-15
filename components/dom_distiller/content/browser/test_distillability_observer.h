@@ -34,7 +34,7 @@ class TestDistillabilityObserver : public DistillabilityObserver {
 
   content::WebContents* web_contents_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::Optional<DistillabilityResult> result_to_wait_for_;
+  absl::optional<DistillabilityResult> result_to_wait_for_;
   std::vector<DistillabilityResult> results_;
 };
 

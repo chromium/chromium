@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
@@ -20,6 +19,7 @@
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/offline_pages/task/task.h"
 #include "components/version_info/channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 class FeedStream;
@@ -66,13 +66,13 @@ class LoadStreamTask : public offline_pages::Task {
     ContentIdSet content_ids;
     LoadType load_type;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
-    base::Optional<RequestSchedule> request_schedule;
+    absl::optional<RequestSchedule> request_schedule;
 
     // Information about the network request, if one was made.
-    base::Optional<NetworkResponseInfo> network_response_info;
+    absl::optional<NetworkResponseInfo> network_response_info;
     bool loaded_new_content_from_network = false;
     std::unique_ptr<LoadLatencyTimes> latencies;
-    base::Optional<bool> fetched_content_has_notice_card;
+    absl::optional<bool> fetched_content_has_notice_card;
 
     // Result of the upload actions task.
     std::unique_ptr<UploadActionsTask::Result> upload_actions_result;
@@ -110,13 +110,13 @@ class LoadStreamTask : public offline_pages::Task {
 
   // Information to be stuffed in |Result|.
   LoadStreamStatus load_from_store_status_ = LoadStreamStatus::kNoStatus;
-  base::Optional<NetworkResponseInfo> network_response_info_;
+  absl::optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
   ContentIdSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
-  base::Optional<RequestSchedule> request_schedule_;
+  absl::optional<RequestSchedule> request_schedule_;
 
   std::unique_ptr<LoadLatencyTimes> latencies_;
   base::TimeTicks task_creation_time_;
@@ -124,7 +124,7 @@ class LoadStreamTask : public offline_pages::Task {
   base::OnceCallback<void(Result)> done_callback_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
-  base::Optional<bool> fetched_content_has_notice_card_;
+  absl::optional<bool> fetched_content_has_notice_card_;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
 

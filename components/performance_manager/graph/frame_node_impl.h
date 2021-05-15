@@ -122,7 +122,7 @@ class FrameNodeImpl
   const PriorityAndReason& priority_and_reason() const;
   bool had_form_interaction() const;
   bool is_audible() const;
-  const base::Optional<gfx::Rect>& viewport_intersection() const;
+  const absl::optional<gfx::Rect>& viewport_intersection() const;
   Visibility visibility() const;
 
   // Setters are not thread safe.
@@ -205,7 +205,7 @@ class FrameNodeImpl
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool IsAudible() const override;
-  const base::Optional<gfx::Rect>& GetViewportIntersection() const override;
+  const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
 
   // Properties associated with a Document, which are reset when a
@@ -360,7 +360,7 @@ class FrameNodeImpl
   // so there is no point in tracking it. To avoid programming mistakes, it is
   // forbidden to query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      base::Optional<gfx::Rect>,
+      absl::optional<gfx::Rect>,
       &FrameNodeObserver::OnViewportIntersectionChanged>
       viewport_intersection_;
 

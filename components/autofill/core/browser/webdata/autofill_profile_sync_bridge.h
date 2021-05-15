@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class MetadataChangeList;
@@ -66,10 +66,10 @@ class AutofillProfileSyncBridge
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -89,7 +89,7 @@ class AutofillProfileSyncBridge
   void ActOnLocalChange(const AutofillProfileChange& change);
 
   // Flushes changes accumulated within |tracker| both to local and to sync.
-  base::Optional<syncer::ModelError> FlushSyncTracker(
+  absl::optional<syncer::ModelError> FlushSyncTracker(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       AutofillProfileSyncDifferenceTracker* tracker);
 

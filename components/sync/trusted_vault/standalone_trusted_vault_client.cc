@@ -100,7 +100,7 @@ void PrimaryAccountObserver::UpdatePrimaryAccountIfNeeded() {
 
   // IdentityManager returns empty CoreAccountInfo if there is no primary
   // account.
-  base::Optional<CoreAccountInfo> optional_primary_account;
+  absl::optional<CoreAccountInfo> optional_primary_account;
   if (!primary_account_.IsEmpty()) {
     optional_primary_account = primary_account_;
   }
@@ -267,7 +267,7 @@ void StandaloneTrustedVaultClient::WaitForFlushForTesting(
 }
 
 void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
-    base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> cb) const {
+    base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   base::PostTaskAndReplyWithResult(

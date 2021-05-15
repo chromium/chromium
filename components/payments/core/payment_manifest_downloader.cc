@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -30,6 +29,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace payments {
@@ -256,7 +256,7 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
     std::string link_url;
-    std::unordered_map<std::string, base::Optional<std::string>> params;
+    std::unordered_map<std::string, absl::optional<std::string>> params;
     if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
                                                 &link_url, &params)) {
       continue;

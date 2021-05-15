@@ -215,7 +215,7 @@ int MaxServerBloomFilterByteSize() {
       kOptimizationHints, "max_bloom_filter_byte_size", 250 * 1024 /* 250KB */);
 }
 
-base::Optional<net::EffectiveConnectionType>
+absl::optional<net::EffectiveConnectionType>
 GetMaxEffectiveConnectionTypeForNavigationHintsFetch() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kRemoteOptimizationGuideFetching,

@@ -302,26 +302,26 @@ TEST(UserAgentUtilsTest, GenerateBrandVersionList) {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list =
-      GenerateBrandVersionList(84, base::nullopt, "84", base::nullopt);
+      GenerateBrandVersionList(84, absl::nullopt, "84", absl::nullopt);
   std::string brand_list = metadata.SerializeBrandVersionList();
   EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")", brand_list);
 
   metadata.brand_version_list =
-      GenerateBrandVersionList(85, base::nullopt, "85", base::nullopt);
+      GenerateBrandVersionList(85, absl::nullopt, "85", absl::nullopt);
   std::string brand_list_diff = metadata.SerializeBrandVersionList();
   // Make sure the lists are different for different seeds
   EXPECT_EQ(R"("Chromium";v="85", " Not;A Brand";v="99")", brand_list_diff);
   EXPECT_NE(brand_list, brand_list_diff);
 
   metadata.brand_version_list =
-      GenerateBrandVersionList(84, "Totally A Brand", "84", base::nullopt);
+      GenerateBrandVersionList(84, "Totally A Brand", "84", absl::nullopt);
   std::string brand_list_w_brand = metadata.SerializeBrandVersionList();
   EXPECT_EQ(
       R"(" Not A;Brand";v="99", "Chromium";v="84", "Totally A Brand";v="84")",
       brand_list_w_brand);
 
   metadata.brand_version_list =
-      GenerateBrandVersionList(84, base::nullopt, "84", "Clean GREASE");
+      GenerateBrandVersionList(84, absl::nullopt, "84", "Clean GREASE");
   std::string brand_list_grease_override = metadata.SerializeBrandVersionList();
   EXPECT_EQ(R"("Clean GREASE";v="99", "Chromium";v="84")",
             brand_list_grease_override);
@@ -329,7 +329,7 @@ TEST(UserAgentUtilsTest, GenerateBrandVersionList) {
 
   // Should DCHECK on negative numbers
   EXPECT_DCHECK_DEATH(
-      GenerateBrandVersionList(-1, base::nullopt, "99", base::nullopt));
+      GenerateBrandVersionList(-1, absl::nullopt, "99", absl::nullopt));
 }
 
 }  // namespace embedder_support

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
@@ -29,6 +28,7 @@
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -80,7 +80,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   std::string TrackedAccountId() override;
   std::string TrackedCacheGuid() override;
   void ReportError(const ModelError& error) override;
-  base::Optional<ModelError> GetError() const override;
+  absl::optional<ModelError> GetError() const override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
 
   // ModelTypeProcessor implementation.
@@ -158,13 +158,13 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // Handle the first update received from the server after being enabled. If
   // the data type does not support incremental updates, this will be called for
   // any server update.
-  base::Optional<ModelError> OnFullUpdateReceived(
+  absl::optional<ModelError> OnFullUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList updates);
 
   // Handle any incremental updates received from the server after being
   // enabled.
-  base::Optional<ModelError> OnIncrementalUpdateReceived(
+  absl::optional<ModelError> OnIncrementalUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList updates);
 
@@ -251,7 +251,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // The first model error that occurred, if any. Stored to track model state
   // and so it can be passed to sync if it happened prior to sync being ready.
-  base::Optional<ModelError> model_error_;
+  absl::optional<ModelError> model_error_;
 
   // Whether the model has initialized its internal state for sync (and provided
   // metadata).

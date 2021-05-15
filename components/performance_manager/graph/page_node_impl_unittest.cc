@@ -5,7 +5,6 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -15,6 +14,7 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -204,14 +204,14 @@ TEST_F(PageNodeImplTest, GetFreezingVote) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto* page_node = mock_graph.page.get();
 
-  // This should be initialized to base::nullopt.
+  // This should be initialized to absl::nullopt.
   EXPECT_FALSE(page_node->freezing_vote());
 
   page_node->set_freezing_vote(kFreezingVote);
   ASSERT_TRUE(page_node->freezing_vote().has_value());
   EXPECT_EQ(kFreezingVote, page_node->freezing_vote().value());
 
-  page_node->set_freezing_vote(base::nullopt);
+  page_node->set_freezing_vote(absl::nullopt);
   EXPECT_FALSE(page_node->freezing_vote());
 }
 
@@ -243,7 +243,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
   MOCK_METHOD2(OnFreezingVoteChanged,
-               void(const PageNode*, base::Optional<freezing::FreezingVote>));
+               void(const PageNode*, absl::optional<freezing::FreezingVote>));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
@@ -329,7 +329,7 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->OnFaviconUpdated();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
-  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(base::nullopt)))
+  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(absl::nullopt)))
       .WillOnce(testing::WithArg<0>(
           Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
   page_node->set_freezing_vote(kFreezingVote);

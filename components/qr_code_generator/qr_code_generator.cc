@@ -263,7 +263,7 @@ constexpr QRVersionInfo version_infos[] = {
 };
 
 const QRVersionInfo* GetVersionForDataSize(size_t num_data_bytes,
-                                           base::Optional<int> min_version) {
+                                           absl::optional<int> min_version) {
   for (const auto& version : version_infos) {
     if (version.input_bytes() >= num_data_bytes &&
         (!min_version || *min_version <= version.version)) {
@@ -404,10 +404,10 @@ QRCodeGenerator::GeneratedCode::GeneratedCode(
     QRCodeGenerator::GeneratedCode&&) = default;
 QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 
-base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
+absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     base::span<const uint8_t> in,
-    base::Optional<int> min_version,
-    base::Optional<uint8_t> mask) {
+    absl::optional<int> min_version,
+    absl::optional<uint8_t> mask) {
   CHECK(!mask || *mask <= kMaxMask);
 
   const bool is_alphanum =
@@ -446,7 +446,7 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   const QRVersionInfo* version_info =
       GetVersionForDataSize(small_length_bytes, min_version);
   if (!version_info) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (version_info->version > kMaxVersionWithSmallLengths) {
@@ -454,7 +454,7 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     // now needed may change the selected version.
     version_info = GetVersionForDataSize(large_length_bytes, min_version);
     if (!version_info) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -636,7 +636,7 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   DCHECK_EQ(k, total_bytes);
 
   uint8_t best_mask = mask.value_or(0);
-  base::Optional<unsigned> lowest_penalty;
+  absl::optional<unsigned> lowest_penalty;
 
   // If |mask| was not specified, then evaluate each masking function to find
   // the one with the lowest penalty score.

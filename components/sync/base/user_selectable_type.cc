@@ -7,10 +7,10 @@
 #include <type_traits>
 
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -136,7 +136,7 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).type_name;
 }
 
-base::Optional<UserSelectableType> GetUserSelectableTypeFromString(
+absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type) {
   if (type == kBookmarksTypeName) {
     return UserSelectableType::kBookmarks;
@@ -171,7 +171,7 @@ base::Optional<UserSelectableType> GetUserSelectableTypeFromString(
   if (type == kWifiConfigurationsTypeName) {
     return UserSelectableType::kWifiConfigurations;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
@@ -198,7 +198,7 @@ const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;
 }
 
-base::Optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
+absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
   if (type == kOsAppsTypeName) {
     return UserSelectableOsType::kOsApps;
@@ -225,7 +225,7 @@ base::Optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
   if (type == kPreferencesTypeName) {
     return UserSelectableOsType::kOsPreferences;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {

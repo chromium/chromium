@@ -9,11 +9,11 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -77,7 +77,7 @@ class OptimizationGuideDecider {
   // builds and be a no-op in release builds.
   virtual void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) = 0;
 
   // Removes an observer for updates to the model for |optimization_target|.

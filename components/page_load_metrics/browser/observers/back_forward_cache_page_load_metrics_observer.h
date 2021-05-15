@@ -72,8 +72,8 @@ class BackForwardCachePageLoadMetricsObserver
 
   // The layout shift score. These are recorded when the page is navigated away.
   // These serve as "deliminators" between back-forward cache navigations.
-  base::Optional<double> last_main_frame_layout_shift_score_;
-  base::Optional<double> last_layout_shift_score_;
+  absl::optional<double> last_main_frame_layout_shift_score_;
+  absl::optional<double> last_layout_shift_score_;
 
   // IDs for the navigations when the page is restored from the back-forward
   // cache.

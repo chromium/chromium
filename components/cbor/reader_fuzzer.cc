@@ -12,10 +12,10 @@ namespace cbor {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<uint8_t> input(data, data + size);
-  base::Optional<Value> cbor = Reader::Read(input);
+  absl::optional<Value> cbor = Reader::Read(input);
 
   if (cbor.has_value()) {
-    base::Optional<std::vector<uint8_t>> serialized_cbor =
+    absl::optional<std::vector<uint8_t>> serialized_cbor =
         Writer::Write(cbor.value());
     CHECK(serialized_cbor.has_value());
     if (serialized_cbor.has_value()) {

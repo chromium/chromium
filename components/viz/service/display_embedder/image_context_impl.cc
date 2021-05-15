@@ -23,7 +23,7 @@ ImageContextImpl::ImageContextImpl(
     const gfx::Size& size,
     ResourceFormat resource_format,
     bool maybe_concurrent_reads,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space)
     : ImageContext(mailbox_holder,
                    size,
@@ -40,7 +40,7 @@ ImageContextImpl::ImageContextImpl(AggregatedRenderPassId render_pass_id,
     : ImageContext(gpu::MailboxHolder(),
                    size,
                    resource_format,
-                   /*ycbcr_info=*/base::nullopt,
+                   /*ycbcr_info=*/absl::nullopt,
                    std::move(color_space)),
       render_pass_id_(render_pass_id),
       mipmap_(mipmap ? GrMipMapped::kYes : GrMipMapped::kNo) {}

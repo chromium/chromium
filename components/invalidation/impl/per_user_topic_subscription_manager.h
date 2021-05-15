@@ -92,7 +92,7 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
   base::DictionaryValue CollectDebugData() const;
 
-  virtual base::Optional<Topic> LookupSubscribedPublicTopicByPrivateTopic(
+  virtual absl::optional<Topic> LookupSubscribedPublicTopicByPrivateTopic(
       const std::string& private_topic) const;
 
   TopicSet GetSubscribedTopicsForTest() const;

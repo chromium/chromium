@@ -101,7 +101,7 @@ void PasswordReuseDetectionManager::OnPaste(const std::u16string text) {
 void PasswordReuseDetectionManager::OnReuseCheckDone(
     bool is_reuse_found,
     size_t password_length,
-    base::Optional<PasswordHashData> reused_protected_password_hash,
+    absl::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords) {
   // Cache the results.
@@ -183,7 +183,7 @@ void PasswordReuseDetectionManager::SetClockForTesting(base::Clock* clock) {
 }
 
 metrics_util::PasswordType PasswordReuseDetectionManager::GetReusedPasswordType(
-    base::Optional<PasswordHashData> reused_protected_password_hash,
+    absl::optional<PasswordHashData> reused_protected_password_hash,
     size_t matching_domain_count) {
   if (!reused_protected_password_hash.has_value()) {
     DCHECK_GT(matching_domain_count, 0u);

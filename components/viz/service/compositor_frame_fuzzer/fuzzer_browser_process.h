@@ -22,7 +22,7 @@ namespace viz {
 // A fake browser process to use as a fuzzer target. Uses software compositing.
 class FuzzerBrowserProcess {
  public:
-  explicit FuzzerBrowserProcess(base::Optional<base::FilePath> png_dir_path);
+  explicit FuzzerBrowserProcess(absl::optional<base::FilePath> png_dir_path);
   ~FuzzerBrowserProcess();
 
   // Fuzz target mimicking the process of submitting a rendered CompositorFrame

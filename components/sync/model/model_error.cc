@@ -27,11 +27,11 @@ std::string ModelError::ToString() const {
 
 // TODO(https://crbug.com/1057577): Remove this once ProcessSyncChanges in
 // SyncableService has been refactored.
-base::Optional<ModelError> ConvertToModelError(const SyncError& sync_error) {
+absl::optional<ModelError> ConvertToModelError(const SyncError& sync_error) {
   if (sync_error.IsSet()) {
     return ModelError(sync_error.location(), sync_error.message());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace syncer

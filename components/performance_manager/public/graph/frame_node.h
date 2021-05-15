@@ -8,12 +8,12 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -204,7 +204,7 @@ class FrameNode : public Node {
   // Returns the intersection of this frame with the viewport. This is initially
   // null on node creation and is initialized during layout when the viewport
   // intersection is first calculated. May only be called for a child frame.
-  virtual const base::Optional<gfx::Rect>& GetViewportIntersection() const = 0;
+  virtual const absl::optional<gfx::Rect>& GetViewportIntersection() const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.

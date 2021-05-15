@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_SCHEDULE_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_SCHEDULE_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -15,7 +15,7 @@ namespace download {
 // feature.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadSchedule {
  public:
-  DownloadSchedule(bool only_on_wifi, base::Optional<base::Time> start_time);
+  DownloadSchedule(bool only_on_wifi, absl::optional<base::Time> start_time);
   DownloadSchedule(const DownloadSchedule&);
   ~DownloadSchedule();
 
@@ -23,14 +23,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadSchedule {
 
   bool only_on_wifi() const { return only_on_wifi_; }
 
-  const base::Optional<base::Time>& start_time() const { return start_time_; }
+  const absl::optional<base::Time>& start_time() const { return start_time_; }
 
  private:
   // Whether to download only on WIFI. If true, |start_time_| will be ignored.
   bool only_on_wifi_;
 
   // Time to start the download. Will be ignored if |only_on_wifi_| is true.
-  base::Optional<base::Time> start_time_;
+  absl::optional<base::Time> start_time_;
 };
 
 }  // namespace download

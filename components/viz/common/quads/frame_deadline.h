@@ -43,8 +43,8 @@ class VIZ_COMMON_EXPORT FrameDeadline {
   // Converts this FrameDeadline object into a wall time given a system default
   // deadline in frames.
   base::TimeTicks ToWallTime(
-      base::Optional<uint32_t> default_deadline_in_frames =
-          base::nullopt) const;
+      absl::optional<uint32_t> default_deadline_in_frames =
+          absl::nullopt) const;
 
   bool operator==(const FrameDeadline& other) const {
     return other.frame_start_time_ == frame_start_time_ &&

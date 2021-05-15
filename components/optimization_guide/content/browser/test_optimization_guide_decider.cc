@@ -34,7 +34,7 @@ void TestOptimizationGuideDecider::CanApplyOptimizationAsync(
 
 void TestOptimizationGuideDecider::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
+    const absl::optional<proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {}
 
 void TestOptimizationGuideDecider::RemoveObserverForOptimizationTargetModel(

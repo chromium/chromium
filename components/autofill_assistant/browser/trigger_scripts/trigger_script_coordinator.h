@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -82,7 +82,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
              base::OnceCallback<void(
                  Metrics::TriggerScriptFinishedState result,
                  std::unique_ptr<TriggerContext> trigger_context,
-                 base::Optional<TriggerScriptProto> trigger_script)> callback);
+                 absl::optional<TriggerScriptProto> trigger_script)> callback);
 
   // Stops the currently running trigger script. Hides any currently shown UI
   // (both trigger script UI and onboarding, if applicable) and returns |state|
@@ -147,7 +147,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
   void RunCallback(TriggerUIType trigger_ui_type,
                    Metrics::TriggerScriptFinishedState state,
-                   const base::Optional<TriggerScriptProto>& trigger_script);
+                   const absl::optional<TriggerScriptProto>& trigger_script);
 
   // Value of trigger_ui_type for the currently visible script, if there is one.
   //
@@ -164,7 +164,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // The callback to run once the current trigger script flow has finished.
   base::OnceCallback<void(Metrics::TriggerScriptFinishedState,
                           std::unique_ptr<TriggerContext> trigger_context,
-                          base::Optional<TriggerScriptProto>)>
+                          absl::optional<TriggerScriptProto>)>
       callback_;
 
   // The original deeplink to request trigger scripts for.

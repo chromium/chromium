@@ -24,7 +24,7 @@ namespace storage {
 class FilesystemProxy;
 
 using LegacyDomStorageValuesMap =
-    std::map<std::u16string, base::Optional<std::u16string>>;
+    std::map<std::u16string, absl::optional<std::u16string>>;
 
 // Represents a SQLite based backing for DOM storage data. This
 // class is designed to be used on a single thread.

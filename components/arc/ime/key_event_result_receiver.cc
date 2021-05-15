@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/arc/ime/arc_ime_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
@@ -109,7 +109,7 @@ void KeyEventResultReceiver::RecordImeLatency() {
       kImeLatencyHistogramName,
       base::TimeTicks::Now() - callback_set_time_.value(), kKeyEventLatencyMin,
       kKeyEventLatencyMax, 50);
-  callback_set_time_ = base::nullopt;
+  callback_set_time_ = absl::nullopt;
 }
 
 }  // namespace arc

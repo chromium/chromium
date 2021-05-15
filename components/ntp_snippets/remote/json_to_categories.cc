@@ -4,9 +4,9 @@
 
 #include "components/ntp_snippets/remote/json_to_categories.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_snippets {
@@ -51,7 +51,7 @@ FetchedCategory::~FetchedCategory() = default;
 FetchedCategory& FetchedCategory::operator=(FetchedCategory&&) = default;
 
 CategoryInfo BuildArticleCategoryInfo(
-    const base::Optional<std::u16string>& title) {
+    const absl::optional<std::u16string>& title) {
   return CategoryInfo(
       title.has_value() ? title.value()
                         : l10n_util::GetStringUTF16(

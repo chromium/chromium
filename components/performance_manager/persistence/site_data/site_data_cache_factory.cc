@@ -104,7 +104,7 @@ void SiteDataCacheFactory::SetCacheInspectorForTesting(
 void SiteDataCacheFactory::OnBrowserContextCreated(
     const std::string& browser_context_id,
     const base::FilePath& context_path,
-    base::Optional<std::string> parent_context_id) {
+    absl::optional<std::string> parent_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!base::Contains(data_cache_map_, browser_context_id));

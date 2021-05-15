@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -97,7 +97,7 @@ class CookieSettingsBase {
   bool IsCookieAccessAllowed(
       const GURL& url,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) const;
+      const absl::optional<url::Origin>& top_frame_origin) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsCookieAccessAllowed|

@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace invalidation {
 
@@ -42,7 +42,7 @@ void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
   prefs->ClearPref(kTopicsToHandlerDeprecated);
 }
 
-base::Optional<TopicData> FindAnyDuplicatedTopic(
+absl::optional<TopicData> FindAnyDuplicatedTopic(
     const std::set<TopicData>& lhs,
     const std::set<TopicData>& rhs) {
   auto intersection =
@@ -50,7 +50,7 @@ base::Optional<TopicData> FindAnyDuplicatedTopic(
   if (!intersection.empty()) {
     return intersection[0];
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -258,7 +258,7 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
       continue;
     }
 
-    if (base::Optional<TopicData> duplicate =
+    if (absl::optional<TopicData> duplicate =
             FindAnyDuplicatedTopic(topics, handler_and_topics.second)) {
       DVLOG(1) << "Duplicate registration: trying to register "
                << duplicate->name << " for " << handler

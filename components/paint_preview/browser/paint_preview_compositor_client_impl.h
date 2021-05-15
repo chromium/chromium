@@ -6,12 +6,12 @@
 #define COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_COMPOSITOR_CLIENT_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -36,7 +36,7 @@ class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
   ~PaintPreviewCompositorClientImpl() override;
 
   // PaintPreviewCompositorClient implementation.
-  const base::Optional<base::UnguessableToken>& Token() const override;
+  const absl::optional<base::UnguessableToken>& Token() const override;
   void SetDisconnectHandler(base::OnceClosure closure) override;
   void BeginSeparatedFrameComposite(
       mojom::PaintPreviewBeginCompositeRequestPtr request,
@@ -89,7 +89,7 @@ class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
   base::WeakPtr<PaintPreviewCompositorServiceImpl> service_;
   CompositorPtr compositor_;
 
-  base::Optional<base::UnguessableToken> token_;
+  absl::optional<base::UnguessableToken> token_;
   base::OnceClosure user_disconnect_closure_;
 
   base::WeakPtrFactory<PaintPreviewCompositorClientImpl> weak_ptr_factory_{

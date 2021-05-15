@@ -947,7 +947,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     VisitSource visit_source,
     bool should_increment_typed_count,
     bool floc_allowed,
-    base::Optional<std::u16string> title) {
+    absl::optional<std::u16string> title) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);

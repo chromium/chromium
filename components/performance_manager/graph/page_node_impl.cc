@@ -257,7 +257,7 @@ bool PageNodeImpl::had_form_interaction() const {
   return had_form_interaction_.value();
 }
 
-const base::Optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
+const absl::optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return freezing_vote_.value();
@@ -351,7 +351,7 @@ void PageNodeImpl::set_has_nonempty_beforeunload(
 }
 
 void PageNodeImpl::set_freezing_vote(
-    base::Optional<freezing::FreezingVote> freezing_vote) {
+    absl::optional<freezing::FreezingVote> freezing_vote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   freezing_vote_.SetAndMaybeNotify(this, freezing_vote);
 }
@@ -498,7 +498,7 @@ const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
   return contents_proxy();
 }
 
-const base::Optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
+const absl::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return freezing_vote();

@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/download/internal/background_service/controller.h"
 #include "components/download/internal/background_service/download_blockage_status.h"
@@ -29,6 +28,7 @@
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "components/download/public/task/task_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -113,7 +113,7 @@ class ControllerImpl : public Controller,
   Controller::State GetControllerState() override;
   const StartupStatus& GetStartupStatus() override;
   LogSource::EntryDetailsList GetServiceDownloads() override;
-  base::Optional<EntryDetails> GetServiceDownload(
+  absl::optional<EntryDetails> GetServiceDownload(
       const std::string& guid) override;
 
   // MemoryDumpProvider implementation.

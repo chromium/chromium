@@ -114,8 +114,8 @@ void CastStreamingTestReceiver::OnVideoBufferRead(
 }
 
 void CastStreamingTestReceiver::OnSessionInitialization(
-    base::Optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-    base::Optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
+    absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
+    absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
   VLOG(1) << __func__;
   if (audio_stream_info) {
     audio_decoder_buffer_reader_ =
@@ -156,8 +156,8 @@ void CastStreamingTestReceiver::OnVideoBufferReceived(
 }
 
 void CastStreamingTestReceiver::OnSessionReinitialization(
-    base::Optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-    base::Optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
+    absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
+    absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
   VLOG(1) << __func__;
 
   // TODO(crbug.com/1110490): Add tests handling the session reinitialization

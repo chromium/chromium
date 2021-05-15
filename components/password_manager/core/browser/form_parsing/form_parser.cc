@@ -911,7 +911,7 @@ std::vector<ProcessedField> ProcessFields(
 // |form_predictions| has |may_use_prefilled_placeholder| == true for the
 // username field.
 bool GetMayUsePrefilledPlaceholder(
-    const base::Optional<FormPredictions>& form_predictions,
+    const absl::optional<FormPredictions>& form_predictions,
     const SignificantFields& significant_fields) {
   if (!form_predictions || !significant_fields.username)
     return false;
@@ -938,7 +938,7 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
     const SignificantFields& significant_fields,
     ValueElementVector all_possible_passwords,
     ValueElementVector all_possible_usernames,
-    const base::Optional<FormPredictions>& form_predictions) {
+    const absl::optional<FormPredictions>& form_predictions) {
   if (!significant_fields.HasPasswords() &&
       !significant_fields.is_single_username) {
     return nullptr;

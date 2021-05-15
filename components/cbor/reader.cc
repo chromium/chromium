@@ -71,7 +71,7 @@ Reader::Reader(base::span<const uint8_t> data)
 Reader::~Reader() {}
 
 // static
-base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
+absl::optional<Value> Reader::Read(base::span<uint8_t const> data,
                                    DecoderError* error_code_out,
                                    int max_nesting_level) {
   Config config;
@@ -82,7 +82,7 @@ base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
 }
 
 // static
-base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
+absl::optional<Value> Reader::Read(base::span<uint8_t const> data,
                                    size_t* num_bytes_consumed,
                                    DecoderError* error_code_out,
                                    int max_nesting_level) {
@@ -97,10 +97,10 @@ base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
 }
 
 // static
-base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
+absl::optional<Value> Reader::Read(base::span<uint8_t const> data,
                                    const Config& config) {
   Reader reader(data);
-  base::Optional<Value> value =
+  absl::optional<Value> value =
       reader.DecodeCompleteDataItem(config, config.max_nesting_level);
 
   auto error = reader.GetErrorCode();
@@ -122,16 +122,16 @@ base::Optional<Value> Reader::Read(base::span<uint8_t const> data,
   return value;
 }
 
-base::Optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
+absl::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
                                                      int max_nesting_level) {
   if (max_nesting_level < 0 || max_nesting_level > kCBORMaxDepth) {
     error_code_ = DecoderError::TOO_MUCH_NESTING;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<DataItemHeader> header = DecodeDataItemHeader();
+  absl::optional<DataItemHeader> header = DecodeDataItemHeader();
   if (!header.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   switch (header->type) {
@@ -156,29 +156,29 @@ base::Optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
   }
 
   error_code_ = DecoderError::UNSUPPORTED_MAJOR_TYPE;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<Reader::DataItemHeader> Reader::DecodeDataItemHeader() {
-  const base::Optional<uint8_t> initial_byte = ReadByte();
+absl::optional<Reader::DataItemHeader> Reader::DecodeDataItemHeader() {
+  const absl::optional<uint8_t> initial_byte = ReadByte();
   if (!initial_byte) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const auto major_type = GetMajorType(initial_byte.value());
   const uint8_t additional_info = GetAdditionalInfo(initial_byte.value());
 
-  base::Optional<uint64_t> value = ReadVariadicLengthInteger(additional_info);
-  return value ? base::make_optional(
+  absl::optional<uint64_t> value = ReadVariadicLengthInteger(additional_info);
+  return value ? absl::make_optional(
                      DataItemHeader{major_type, additional_info, value.value()})
-               : base::nullopt;
+               : absl::nullopt;
 }
 
-base::Optional<uint64_t> Reader::ReadVariadicLengthInteger(
+absl::optional<uint64_t> Reader::ReadVariadicLengthInteger(
     uint8_t additional_info) {
   uint8_t additional_bytes = 0;
   if (additional_info < 24) {
-    return base::make_optional(additional_info);
+    return absl::make_optional(additional_info);
   } else if (additional_info == 24) {
     additional_bytes = 1;
   } else if (additional_info == 25) {
@@ -189,13 +189,13 @@ base::Optional<uint64_t> Reader::ReadVariadicLengthInteger(
     additional_bytes = 8;
   } else {
     error_code_ = DecoderError::UNKNOWN_ADDITIONAL_INFO;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  const base::Optional<base::span<const uint8_t>> bytes =
+  const absl::optional<base::span<const uint8_t>> bytes =
       ReadBytes(additional_bytes);
   if (!bytes) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   uint64_t int_data = 0;
@@ -205,36 +205,36 @@ base::Optional<uint64_t> Reader::ReadVariadicLengthInteger(
   }
 
   return IsEncodingMinimal(additional_bytes, int_data)
-             ? base::make_optional(int_data)
-             : base::nullopt;
+             ? absl::make_optional(int_data)
+             : absl::nullopt;
 }
 
-base::Optional<Value> Reader::DecodeValueToNegative(uint64_t value) {
+absl::optional<Value> Reader::DecodeValueToNegative(uint64_t value) {
   auto negative_value = -base::CheckedNumeric<int64_t>(value) - 1;
   if (!negative_value.IsValid()) {
     error_code_ = DecoderError::OUT_OF_RANGE_INTEGER_VALUE;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return Value(negative_value.ValueOrDie());
 }
 
-base::Optional<Value> Reader::DecodeValueToUnsigned(uint64_t value) {
+absl::optional<Value> Reader::DecodeValueToUnsigned(uint64_t value) {
   auto unsigned_value = base::CheckedNumeric<int64_t>(value);
   if (!unsigned_value.IsValid()) {
     error_code_ = DecoderError::OUT_OF_RANGE_INTEGER_VALUE;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return Value(unsigned_value.ValueOrDie());
 }
 
-base::Optional<Value> Reader::DecodeToSimpleValue(
+absl::optional<Value> Reader::DecodeToSimpleValue(
     const DataItemHeader& header) {
   // ReadVariadicLengthInteger provides this bound.
   CHECK_LE(header.additional_info, 27);
   // Floating point numbers are not supported.
   if (header.additional_info > 24) {
     error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Since |header.additional_info| <= 24, ReadVariadicLengthInteger also
@@ -253,16 +253,16 @@ base::Optional<Value> Reader::DecodeToSimpleValue(
   }
 
   error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<Value> Reader::ReadStringContent(
+absl::optional<Value> Reader::ReadStringContent(
     const Reader::DataItemHeader& header,
     const Config& config) {
   uint64_t num_bytes = header.value;
-  const base::Optional<base::span<const uint8_t>> bytes = ReadBytes(num_bytes);
+  const absl::optional<base::span<const uint8_t>> bytes = ReadBytes(num_bytes);
   if (!bytes) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string cbor_string(bytes->begin(), bytes->end());
@@ -275,22 +275,22 @@ base::Optional<Value> Reader::ReadStringContent(
   }
 
   error_code_ = DecoderError::INVALID_UTF8;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<Value> Reader::ReadByteStringContent(
+absl::optional<Value> Reader::ReadByteStringContent(
     const Reader::DataItemHeader& header) {
   uint64_t num_bytes = header.value;
-  const base::Optional<base::span<const uint8_t>> bytes = ReadBytes(num_bytes);
+  const absl::optional<base::span<const uint8_t>> bytes = ReadBytes(num_bytes);
   if (!bytes) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<uint8_t> cbor_byte_string(bytes->begin(), bytes->end());
   return Value(std::move(cbor_byte_string));
 }
 
-base::Optional<Value> Reader::ReadArrayContent(
+absl::optional<Value> Reader::ReadArrayContent(
     const Reader::DataItemHeader& header,
     const Config& config,
     int max_nesting_level) {
@@ -298,17 +298,17 @@ base::Optional<Value> Reader::ReadArrayContent(
 
   Value::ArrayValue cbor_array;
   for (uint64_t i = 0; i < length; ++i) {
-    base::Optional<Value> cbor_element =
+    absl::optional<Value> cbor_element =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
     if (!cbor_element.has_value()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     cbor_array.push_back(std::move(cbor_element.value()));
   }
   return Value(std::move(cbor_array));
 }
 
-base::Optional<Value> Reader::ReadMapContent(
+absl::optional<Value> Reader::ReadMapContent(
     const Reader::DataItemHeader& header,
     const Config& config,
     int max_nesting_level) {
@@ -316,12 +316,12 @@ base::Optional<Value> Reader::ReadMapContent(
 
   Value::MapValue cbor_map;
   for (uint64_t i = 0; i < length; ++i) {
-    base::Optional<Value> key =
+    absl::optional<Value> key =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
-    base::Optional<Value> value =
+    absl::optional<Value> value =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
     if (!key.has_value() || !value.has_value()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     switch (key.value().type()) {
@@ -332,13 +332,13 @@ base::Optional<Value> Reader::ReadMapContent(
         break;
       case Value::Type::INVALID_UTF8:
         error_code_ = DecoderError::INVALID_UTF8;
-        return base::nullopt;
+        return absl::nullopt;
       default:
         error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
-        return base::nullopt;
+        return absl::nullopt;
     }
     if (!IsKeyInOrder(key.value(), &cbor_map)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     cbor_map.insert_or_assign(std::move(key.value()), std::move(value.value()));
@@ -346,16 +346,16 @@ base::Optional<Value> Reader::ReadMapContent(
   return Value(std::move(cbor_map));
 }
 
-base::Optional<uint8_t> Reader::ReadByte() {
-  const base::Optional<base::span<const uint8_t>> bytes = ReadBytes(1);
-  return bytes ? base::make_optional(bytes.value()[0]) : base::nullopt;
+absl::optional<uint8_t> Reader::ReadByte() {
+  const absl::optional<base::span<const uint8_t>> bytes = ReadBytes(1);
+  return bytes ? absl::make_optional(bytes.value()[0]) : absl::nullopt;
 }
 
-base::Optional<base::span<const uint8_t>> Reader::ReadBytes(
+absl::optional<base::span<const uint8_t>> Reader::ReadBytes(
     uint64_t num_bytes) {
   if (base::strict_cast<uint64_t>(rest_.size()) < num_bytes) {
     error_code_ = DecoderError::INCOMPLETE_CBOR_DATA;
-    return base::nullopt;
+    return absl::nullopt;
   }
   const base::span<const uint8_t> ret = rest_.first(num_bytes);
   rest_ = rest_.subspan(num_bytes);

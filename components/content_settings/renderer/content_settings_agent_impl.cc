@@ -77,18 +77,18 @@ bool ContentSettingsAgentImpl::Delegate::IsSchemeAllowlisted(
   return false;
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ContentSettingsAgentImpl::Delegate::AllowReadFromClipboard() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
-  return base::nullopt;
+absl::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
+  return absl::nullopt;
 }
 
 void ContentSettingsAgentImpl::Delegate::PassiveInsecureContentFound(

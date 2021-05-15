@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,6 +23,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -45,7 +45,7 @@ class PredictionModelFetcherTest : public testing::Test {
 
   ~PredictionModelFetcherTest() override {}
 
-  void OnModelsFetched(base::Optional<std::unique_ptr<proto::GetModelsResponse>>
+  void OnModelsFetched(absl::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response) {
     if (get_models_response)
       models_fetched_ = true;

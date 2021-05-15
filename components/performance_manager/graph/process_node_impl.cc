@@ -292,7 +292,7 @@ base::Time ProcessNodeImpl::GetLaunchTime() const {
   return launch_time();
 }
 
-base::Optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
+absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exit_status();
 }

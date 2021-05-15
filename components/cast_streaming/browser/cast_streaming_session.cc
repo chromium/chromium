@@ -89,7 +89,7 @@ class CastStreamingSession::Internal
 
   // Initializes the audio consumer with |audio_capture_config|. Returns an
   // empty Optional on failure.
-  base::Optional<AudioStreamInfo> InitializeAudioConsumer(
+  absl::optional<AudioStreamInfo> InitializeAudioConsumer(
       openscreen::cast::Receiver* audio_receiver,
       const openscreen::cast::AudioCaptureConfig& audio_capture_config) {
     DCHECK(audio_receiver);
@@ -100,7 +100,7 @@ class CastStreamingSession::Internal
     if (!CreateDataPipeForStreamType(media::DemuxerStream::Type::AUDIO,
                                      &data_pipe_producer,
                                      &data_pipe_consumer)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // We can use unretained pointers here because StreamConsumer is owned by
@@ -120,7 +120,7 @@ class CastStreamingSession::Internal
 
   // Initializes the video consumer with |video_capture_config|. Returns an
   // empty Optional on failure.
-  base::Optional<VideoStreamInfo> InitializeVideoConsumer(
+  absl::optional<VideoStreamInfo> InitializeVideoConsumer(
       openscreen::cast::Receiver* video_receiver,
       const openscreen::cast::VideoCaptureConfig& video_capture_config) {
     DCHECK(video_receiver);
@@ -131,7 +131,7 @@ class CastStreamingSession::Internal
     if (!CreateDataPipeForStreamType(media::DemuxerStream::Type::VIDEO,
                                      &data_pipe_producer,
                                      &data_pipe_consumer)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // We can use unretained pointers here because StreamConsumer is owned by
@@ -182,7 +182,7 @@ class CastStreamingSession::Internal
     // Set |is_initialized_| now so we can return early on failure.
     is_initialized_ = true;
 
-    base::Optional<AudioStreamInfo> audio_stream_info;
+    absl::optional<AudioStreamInfo> audio_stream_info;
     if (receivers.audio_receiver) {
       audio_stream_info = InitializeAudioConsumer(receivers.audio_receiver,
                                                   receivers.audio_config);
@@ -195,7 +195,7 @@ class CastStreamingSession::Internal
       }
     }
 
-    base::Optional<VideoStreamInfo> video_stream_info;
+    absl::optional<VideoStreamInfo> video_stream_info;
     if (receivers.video_receiver) {
       video_stream_info = InitializeVideoConsumer(receivers.video_receiver,
                                                   receivers.video_config);

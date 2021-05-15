@@ -130,7 +130,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   std::unique_ptr<gpu::SysmemBufferCollection> buffer_collection_;
 
   // The next frame to be submitted by SwapBuffers().
-  base::Optional<PendingFrame> next_frame_;
+  absl::optional<PendingFrame> next_frame_;
 
   base::circular_deque<PendingFrame> pending_frames_;
 
@@ -143,7 +143,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   // Presentation information received from ImagePipe after rendering a frame.
   // Used to calculate target presentation time for the frames presented in the
   // future.
-  base::Optional<PresentationState> presentation_state_;
+  absl::optional<PresentationState> presentation_state_;
 
   // Target presentation time of tha last frame sent to ImagePipe. Stored here
   // to ensure ImagePipe.Present() is not called with decreasing timestamps.

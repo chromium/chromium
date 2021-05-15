@@ -30,12 +30,12 @@ int LocalCardMigrationStrikeDatabase::GetMaxStrikesLimit() const {
   return 6;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 LocalCardMigrationStrikeDatabase::GetExpiryTimeDelta() const {
   // Ideally, we should be able to annotate cards deselected at migration time
   // as cards the user is not interested in uploading.  Until then, we have been
   // asked to not expire local card migration strikes.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool LocalCardMigrationStrikeDatabase::UniqueIdsRequired() const {

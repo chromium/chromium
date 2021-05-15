@@ -709,7 +709,7 @@ void ProfileSyncService::NotifyShutdown() {
 }
 
 void ProfileSyncService::ClearUnrecoverableError() {
-  unrecoverable_error_reason_ = base::nullopt;
+  unrecoverable_error_reason_ = absl::nullopt;
   unrecoverable_error_message_.clear();
   unrecoverable_error_location_ = base::Location();
 }

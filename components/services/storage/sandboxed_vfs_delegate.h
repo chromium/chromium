@@ -21,7 +21,7 @@ class SandboxedVfsDelegate : public sql::SandboxedVfs::Delegate {
   // sql::SandboxedVfs::Delegate implementation:
   base::File OpenFile(const base::FilePath& file_path,
                       int sqlite_requested_flags) override;
-  base::Optional<sql::SandboxedVfs::PathAccessInfo> GetPathAccess(
+  absl::optional<sql::SandboxedVfs::PathAccessInfo> GetPathAccess(
       const base::FilePath& file_path) override;
   int DeleteFile(const base::FilePath& file_path, bool sync_dir) override;
   bool SetFileLength(const base::FilePath& file_path,

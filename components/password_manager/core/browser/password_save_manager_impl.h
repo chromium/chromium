@@ -95,7 +95,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       const PasswordForm& parsed_submitted_form,
       const autofill::FormData* observed_form,
       const autofill::FormData& submitted_form,
-      const base::Optional<std::u16string>& generated_password,
+      const absl::optional<std::u16string>& generated_password,
       bool is_http_auth,
       bool is_credential_api_save,
       const PasswordForm* similar_saved_form);

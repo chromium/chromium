@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -21,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 namespace {
@@ -94,7 +94,7 @@ LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
 AnalyzeResponseResult CheckIfCredentialWasLeaked(
     std::unique_ptr<SingleLookupResponse> response,
     const std::string& encryption_key) {
-  base::Optional<std::string> decrypted_username_password =
+  absl::optional<std::string> decrypted_username_password =
       CipherDecrypt(response->reencrypted_lookup_hash, encryption_key);
   if (!decrypted_username_password) {
     DLOG(ERROR) << "Can't decrypt data="

@@ -132,7 +132,7 @@ TEST(NameProcessingUtil,
             0U);
 }
 
-// Tests that a |base::nullopt| is returned if no common affix was removed.
+// Tests that a |absl::nullopt| is returned if no common affix was removed.
 TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible_NotPossible) {
   std::vector<std::u16string> strings;
   strings.push_back(u"abc");
@@ -141,7 +141,7 @@ TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible_NotPossible) {
   strings.push_back(u"abcdef");
 
   EXPECT_EQ(RemoveCommonAffixesIfPossible(StringsToStringPieces(strings)),
-            base::nullopt);
+            absl::nullopt);
 }
 
 // Tests that both the prefix and the suffix are removed.
@@ -160,7 +160,7 @@ TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible) {
             StringsToStringPieces(expectation));
 }
 
-// Tests that a |base::nullopt| is returned if no common prefix was removed.
+// Tests that a |absl::nullopt| is returned if no common prefix was removed.
 TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_NotPossible) {
   std::vector<std::u16string> strings;
   strings.push_back(u"abc");
@@ -169,7 +169,7 @@ TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_NotPossible) {
   strings.push_back(u"abcdef");
 
   EXPECT_EQ(RemoveCommonPrefixIfPossible(StringsToStringPieces(strings)),
-            base::nullopt);
+            absl::nullopt);
 }
 
 // Tests that prefix is removed correctly.
@@ -217,7 +217,7 @@ TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_TooShort) {
   strings.push_back(u"abccczzz");
 
   EXPECT_EQ(RemoveCommonPrefixIfPossible(StringsToStringPieces(strings)),
-            base::nullopt);
+            absl::nullopt);
 }
 
 // Tests that the strings are correctly stripped.
@@ -237,7 +237,7 @@ TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid) {
       StringsToStringPieces(expectation));
 }
 
-// Tests that a |base::nullopt| is returned if one of stripped names is not
+// Tests that a |absl::nullopt| is returned if one of stripped names is not
 // valid.
 TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid_NotValid) {
   std::vector<std::u16string> strings;
@@ -253,7 +253,7 @@ TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid_NotValid) {
 
   EXPECT_EQ(
       GetStrippedParseableNamesIfValid(StringsToStringPieces(strings), 3, 2, 1),
-      base::nullopt);
+      absl::nullopt);
 }
 
 // Tests that the parseable names are returned correctly.

@@ -42,7 +42,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
     ResourceFrame& operator=(ResourceFrame&& other);
 
     PositionedResource root;
-    std::vector<base::Optional<PositionedResource>> shared;
+    std::vector<absl::optional<PositionedResource>> shared;
   };
 
   explicit TransferableResourceTracker(

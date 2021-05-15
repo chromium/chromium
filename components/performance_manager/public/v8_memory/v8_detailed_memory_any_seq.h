@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -153,7 +153,7 @@ class V8DetailedMemoryRequestAnySeq {
   explicit V8DetailedMemoryRequestAnySeq(
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode = MeasurementMode::kDefault,
-      base::Optional<RenderProcessHostId> process_to_measure = base::nullopt);
+      absl::optional<RenderProcessHostId> process_to_measure = absl::nullopt);
   ~V8DetailedMemoryRequestAnySeq();
 
   V8DetailedMemoryRequestAnySeq(const V8DetailedMemoryRequestAnySeq&) = delete;
@@ -184,7 +184,7 @@ class V8DetailedMemoryRequestAnySeq {
   void InitializeWrappedRequest(
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode,
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure);
+      absl::optional<base::WeakPtr<ProcessNode>> process_to_measure);
 
   std::unique_ptr<V8DetailedMemoryRequest> request_
       GUARDED_BY_CONTEXT(sequence_checker_);

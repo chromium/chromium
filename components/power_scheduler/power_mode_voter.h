@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) DebouncedPowerModeVoter {
   std::unique_ptr<PowerModeVoter> voter_;
   const base::TimeDelta timeout_;
 
-  base::Optional<PowerMode> last_vote_;
+  absl::optional<PowerMode> last_vote_;
   base::TimeTicks last_vote_timestamp_;
 };
 

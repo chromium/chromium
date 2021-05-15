@@ -5,47 +5,47 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_UTIL_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_UTIL_H_
 
-#include "base/optional.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 
 namespace account_manager {
 
-// Returns `base::nullopt` if `mojom_account` cannot be parsed.
+// Returns `absl::nullopt` if `mojom_account` cannot be parsed.
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-base::Optional<account_manager::Account> FromMojoAccount(
+absl::optional<account_manager::Account> FromMojoAccount(
     const crosapi::mojom::AccountPtr& mojom_account);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountPtr ToMojoAccount(
     const account_manager::Account& account);
 
-// Returns `base::nullopt` if `mojom_account_key` cannot be parsed.
+// Returns `absl::nullopt` if `mojom_account_key` cannot be parsed.
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-base::Optional<account_manager::AccountKey> FromMojoAccountKey(
+absl::optional<account_manager::AccountKey> FromMojoAccountKey(
     const crosapi::mojom::AccountKeyPtr& mojom_account_key);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountKeyPtr ToMojoAccountKey(
     const account_manager::AccountKey& account_key);
 
-// Returns `base::nullopt` if `account_type` cannot be parsed.
+// Returns `absl::nullopt` if `account_type` cannot be parsed.
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-base::Optional<account_manager::AccountType> FromMojoAccountType(
+absl::optional<account_manager::AccountType> FromMojoAccountType(
     const crosapi::mojom::AccountType& account_type);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountType ToMojoAccountType(
     const account_manager::AccountType& account_type);
 
-// Returns `base::nullopt` if `mojo_error` cannot be parsed. This probably means
+// Returns `absl::nullopt` if `mojo_error` cannot be parsed. This probably means
 // that a new error type was added, so it should be considered a persistent
 // error.
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
+absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     const crosapi::mojom::GoogleServiceAuthErrorPtr& mojo_error);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
@@ -53,7 +53,7 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
     GoogleServiceAuthError error);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-base::Optional<account_manager::AccountAdditionResult>
+absl::optional<account_manager::AccountAdditionResult>
 FromMojoAccountAdditionResult(
     const crosapi::mojom::AccountAdditionResultPtr& mojo_result);
 

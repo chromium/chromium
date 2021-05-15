@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
@@ -43,6 +42,7 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -69,7 +69,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     InitParams& operator=(InitParams&& other);
 
     SharedBitmapManager* shared_bitmap_manager = nullptr;
-    base::Optional<uint32_t> activation_deadline_in_frames =
+    absl::optional<uint32_t> activation_deadline_in_frames =
         kDefaultActivationDeadlineInFrames;
     OutputSurfaceProvider* output_surface_provider = nullptr;
     uint32_t restart_id = BeginFrameSource::kNotRestartableId;
@@ -182,7 +182,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void SubmitHitTestRegionList(
       const SurfaceId& surface_id,
       uint64_t frame_index,
-      base::Optional<HitTestRegionList> hit_test_region_list);
+      absl::optional<HitTestRegionList> hit_test_region_list);
 
   // Instantiates |video_detector_| for tests where we simulate the passage of
   // time.

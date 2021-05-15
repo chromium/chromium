@@ -1153,7 +1153,7 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks app_background_time) {
-  base::Optional<base::TimeDelta> foreground_duration =
+  absl::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
   if (!foreground_duration)

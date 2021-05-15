@@ -47,7 +47,7 @@ class GeneratePasswordForFormFieldActionTest : public testing::Test {
         .WillByDefault(Return(kGeneratedPassword));
 
     user_data_.selected_login_ =
-        base::make_optional<WebsiteLoginManager::Login>(GURL(kFakeUrl),
+        absl::make_optional<WebsiteLoginManager::Login>(GURL(kFakeUrl),
                                                         kFakeUsername);
   }
 

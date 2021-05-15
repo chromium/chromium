@@ -47,7 +47,7 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
 };
 
 DistillabilityDriver::DistillabilityDriver(content::WebContents* web_contents)
-    : latest_result_(base::nullopt), web_contents_(web_contents) {
+    : latest_result_(absl::nullopt), web_contents_(web_contents) {
   if (!web_contents)
     return;
 }

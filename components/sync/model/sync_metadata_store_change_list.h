@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -34,7 +34,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
-  base::Optional<syncer::ModelError> TakeError();
+  absl::optional<syncer::ModelError> TakeError();
 
   const SyncMetadataStore* GetMetadataStoreForTesting() const;
 
@@ -46,7 +46,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   syncer::ModelType type_;
 
   // The first error encountered by this object, if any.
-  base::Optional<syncer::ModelError> error_;
+  absl::optional<syncer::ModelError> error_;
 };
 
 }  // namespace syncer

@@ -150,7 +150,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
         (length > 0) ? base::RandBytesAsString(length) : std::string();
 
     params->greased_http2_frame =
-        base::Optional<net::SpdySessionPool::GreasedHttp2Frame>(
+        absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
             {type, flags, payload});
   }
 

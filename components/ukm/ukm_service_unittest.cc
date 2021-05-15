@@ -306,7 +306,7 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   report.SerializeToString(&serialized_log);
   // Makes sure that the serialized ukm report can be parsed.
   ASSERT_TRUE(UkmService::LogCanBeParsed(serialized_log));
-  unsent_log_store->StoreLog(serialized_log, base::nullopt);
+  unsent_log_store->StoreLog(serialized_log, absl::nullopt);
 
   // Do extension purging.
   service.PurgeExtensions();

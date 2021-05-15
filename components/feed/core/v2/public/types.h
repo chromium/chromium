@@ -9,12 +9,12 @@
 #include <map>
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/util/type_safety/id_type.h"
 #include "base/version.h"
 #include "components/version_info/channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace feed {
@@ -86,13 +86,13 @@ struct DebugStreamData {
   DebugStreamData(const DebugStreamData&);
   DebugStreamData& operator=(const DebugStreamData&);
 
-  base::Optional<NetworkResponseInfo> fetch_info;
-  base::Optional<NetworkResponseInfo> upload_info;
+  absl::optional<NetworkResponseInfo> fetch_info;
+  absl::optional<NetworkResponseInfo> upload_info;
   std::string load_stream_status;
 };
 
 std::string SerializeDebugStreamData(const DebugStreamData& data);
-base::Optional<DebugStreamData> DeserializeDebugStreamData(
+absl::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded);
 
 // Information about a web page which may be used to determine an associated web

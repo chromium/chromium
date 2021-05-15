@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -21,6 +20,7 @@
 #include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/updater_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using base::Value;

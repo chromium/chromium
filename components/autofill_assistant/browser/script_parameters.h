@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -37,31 +37,31 @@ class ScriptParameters {
       bool only_trigger_script_allowlisted = false) const;
 
   // Getters for specific parameters.
-  base::Optional<std::string> GetOverlayColors() const;
-  base::Optional<std::string> GetPasswordChangeUsername() const;
-  base::Optional<std::string> GetBase64TriggerScriptsResponseProto() const;
-  base::Optional<bool> GetRequestsTriggerScript() const;
-  base::Optional<bool> GetStartImmediately() const;
-  base::Optional<bool> GetEnabled() const;
-  base::Optional<std::string> GetOriginalDeeplink() const;
-  base::Optional<bool> GetTriggerScriptExperiment() const;
-  base::Optional<std::string> GetIntent() const;
-  base::Optional<std::string> GetCallerEmail() const;
+  absl::optional<std::string> GetOverlayColors() const;
+  absl::optional<std::string> GetPasswordChangeUsername() const;
+  absl::optional<std::string> GetBase64TriggerScriptsResponseProto() const;
+  absl::optional<bool> GetRequestsTriggerScript() const;
+  absl::optional<bool> GetStartImmediately() const;
+  absl::optional<bool> GetEnabled() const;
+  absl::optional<std::string> GetOriginalDeeplink() const;
+  absl::optional<bool> GetTriggerScriptExperiment() const;
+  absl::optional<std::string> GetIntent() const;
+  absl::optional<std::string> GetCallerEmail() const;
 
   // Details parameters.
-  base::Optional<bool> GetDetailsShowInitial() const;
-  base::Optional<std::string> GetDetailsTitle() const;
-  base::Optional<std::string> GetDetailsDescriptionLine1() const;
-  base::Optional<std::string> GetDetailsDescriptionLine2() const;
-  base::Optional<std::string> GetDetailsDescriptionLine3() const;
-  base::Optional<std::string> GetDetailsImageUrl() const;
-  base::Optional<std::string> GetDetailsImageAccessibilityHint() const;
-  base::Optional<std::string> GetDetailsImageClickthroughUrl() const;
-  base::Optional<std::string> GetDetailsTotalPriceLabel() const;
-  base::Optional<std::string> GetDetailsTotalPrice() const;
+  absl::optional<bool> GetDetailsShowInitial() const;
+  absl::optional<std::string> GetDetailsTitle() const;
+  absl::optional<std::string> GetDetailsDescriptionLine1() const;
+  absl::optional<std::string> GetDetailsDescriptionLine2() const;
+  absl::optional<std::string> GetDetailsDescriptionLine3() const;
+  absl::optional<std::string> GetDetailsImageUrl() const;
+  absl::optional<std::string> GetDetailsImageAccessibilityHint() const;
+  absl::optional<std::string> GetDetailsImageClickthroughUrl() const;
+  absl::optional<std::string> GetDetailsTotalPriceLabel() const;
+  absl::optional<std::string> GetDetailsTotalPrice() const;
 
  private:
-  base::Optional<std::string> GetParameter(const std::string& name) const;
+  absl::optional<std::string> GetParameter(const std::string& name) const;
 
   std::map<std::string, std::string> parameters_;
 };

@@ -251,7 +251,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         "", "", "", std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
         std::make_unique<base::FeatureList>(), &platform_field_trials,
-        safe_seed_manager_, base::nullopt);
+        safe_seed_manager_, absl::nullopt);
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -503,7 +503,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
       "", "", "", std::vector<std::string>(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
       std::make_unique<base::FeatureList>(), &platform_field_trials,
-      &safe_seed_manager, base::nullopt));
+      &safe_seed_manager, absl::nullopt));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));

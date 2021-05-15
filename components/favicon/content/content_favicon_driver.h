@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "url/gurl.h"
 
@@ -92,7 +92,7 @@ class ContentFaviconDriver
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
   void DidUpdateWebManifestURL(
       content::RenderFrameHost* rfh,
-      const base::Optional<GURL>& manifest_url) override;
+      const absl::optional<GURL>& manifest_url) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(

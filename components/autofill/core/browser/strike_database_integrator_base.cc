@@ -186,13 +186,13 @@ std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {
   return GetProjectPrefix() + kKeyDeliminator + id;
 }
 
-base::Optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {
-  return base::nullopt;
+absl::optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {
+  return absl::nullopt;
 }
 
-base::Optional<size_t>
+absl::optional<size_t>
 StrikeDatabaseIntegratorBase::GetMaximumEntriesAfterCleanup() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace autofill

@@ -12,10 +12,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -34,7 +34,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
                               std::unique_ptr<std::vector<DownloadDBEntry>>)>;
   void Initialize(InitializeCallback callback);
 
-  base::Optional<DownloadDBEntry> RetrieveEntry(const std::string& guid);
+  absl::optional<DownloadDBEntry> RetrieveEntry(const std::string& guid);
   void AddOrReplaceEntry(const DownloadDBEntry& entry);
 
   // Remove an entry from the DownloadDB.

@@ -4,13 +4,13 @@
 
 #include "components/sync/model/model_type_store_service_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +20,7 @@
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/model/model_type_store_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 namespace {
@@ -33,7 +34,7 @@ constexpr base::FilePath::CharType kLevelDBFolderName[] =
 // Initialized ModelTypeStoreBackend, on the backend sequence.
 void InitOnBackendSequence(const base::FilePath& level_db_path,
                            scoped_refptr<ModelTypeStoreBackend> store_backend) {
-  base::Optional<ModelError> error = store_backend->Init(level_db_path);
+  absl::optional<ModelError> error = store_backend->Init(level_db_path);
   if (error) {
     LOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
                << error->ToString();
@@ -63,7 +64,7 @@ void ConstructModelTypeStoreOnFrontendSequence(
         blocking_store) {
   if (blocking_store) {
     std::move(callback).Run(
-        /*error=*/base::nullopt,
+        /*error=*/absl::nullopt,
         std::make_unique<ModelTypeStoreImpl>(type, std::move(blocking_store),
                                              backend_task_runner));
   } else {

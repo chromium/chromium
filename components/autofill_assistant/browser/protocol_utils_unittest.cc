@@ -5,11 +5,11 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -121,7 +121,7 @@ TEST_F(ProtocolUtilsTest, CreateInitialScriptActionsRequest) {
       request.ParseFromString(ProtocolUtils::CreateInitialScriptActionsRequest(
           "script_path", GURL("http://example.com/"), "global_payload",
           "script_payload", client_context_proto_, parameters,
-          base::Optional<ScriptStoreConfig>(config))));
+          absl::optional<ScriptStoreConfig>(config))));
 
   const InitialScriptActionsRequestProto& initial = request.initial_request();
   EXPECT_THAT(initial.query().script_path(), ElementsAre("script_path"));
@@ -324,7 +324,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  base::Optional<int> timeout_ms;
+  absl::optional<int> timeout_ms;
   EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts("invalid", &trigger_scripts,
                                                   &additional_allowed_domains,
                                                   &interval_ms, &timeout_ms));
@@ -370,7 +370,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  base::Optional<int> timeout_ms;
+  absl::optional<int> timeout_ms;
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
                                                  &additional_allowed_domains,
                                                  &interval_ms, &timeout_ms));
@@ -401,7 +401,7 @@ TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  base::Optional<int> timeout_ms;
+  absl::optional<int> timeout_ms;
 
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
                                                  &additional_allowed_domains,
@@ -434,7 +434,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsFailsOnInvalidConditions) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
-  base::Optional<int> timeout_ms;
+  absl::optional<int> timeout_ms;
 
   EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
                                                   &additional_allowed_domains,

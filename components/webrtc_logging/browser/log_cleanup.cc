@@ -12,10 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc_logging {
 
@@ -28,7 +28,7 @@ namespace {
 // be populated with the relevant values. Note that |upload_time| is optional.
 bool ReadLineFromIndex(const std::string& line,
                        base::Time* capture_time,
-                       base::Optional<base::Time>* upload_time) {
+                       absl::optional<base::Time>* upload_time) {
   DCHECK(capture_time);
   DCHECK(upload_time);
 
@@ -84,8 +84,8 @@ bool ReadLineFromIndex(const std::string& line,
   *capture_time = base::Time::FromDoubleT(capture_time_double);
   *upload_time =
       has_upload_time
-          ? base::make_optional(base::Time::FromDoubleT(upload_time_double))
-          : base::nullopt;
+          ? absl::make_optional(base::Time::FromDoubleT(upload_time_double))
+          : absl::nullopt;
 
   return true;
 }
@@ -122,7 +122,7 @@ std::string RemoveObsoleteEntriesFromLogIndex(
     const std::string line = log_index.substr(pos, line_end - pos);
 
     base::Time capture_time;
-    base::Optional<base::Time> upload_time;
+    absl::optional<base::Time> upload_time;
     if (ReadLineFromIndex(line, &capture_time, &upload_time)) {
       bool line_retained;
       if (delete_begin_time.is_max()) {

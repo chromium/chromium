@@ -94,7 +94,7 @@ void StorageServiceImpl::SetDataDirectory(
 #endif  // !defined(OS_ANDROID)
 
 void StorageServiceImpl::BindPartition(
-    const base::Optional<base::FilePath>& path,
+    const absl::optional<base::FilePath>& path,
     mojo::PendingReceiver<mojom::Partition> receiver) {
   if (path.has_value()) {
     if (!path->IsAbsolute()) {

@@ -434,8 +434,8 @@ class ProfileSyncService : public SyncService,
   bool sync_allowed_by_platform_ = true;
 
   // Information describing an unrecoverable error.
-  base::Optional<UnrecoverableErrorReason> unrecoverable_error_reason_ =
-      base::nullopt;
+  absl::optional<UnrecoverableErrorReason> unrecoverable_error_reason_ =
+      absl::nullopt;
   std::string unrecoverable_error_message_;
   base::Location unrecoverable_error_location_;
 
@@ -444,7 +444,7 @@ class ProfileSyncService : public SyncService,
 
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
-  base::Optional<base::ObserverList<SyncServiceObserver,
+  absl::optional<base::ObserverList<SyncServiceObserver,
                                     /*check_empty=*/true>::Unchecked>
       observers_;
 

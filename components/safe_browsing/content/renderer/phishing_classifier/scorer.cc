@@ -60,7 +60,7 @@ std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
   VisualFeatures::ColorHistogram histogram;
   if (visual_utils::GetHistogramForImage(bitmap, &histogram)) {
     for (const VisualTarget& target : model.vision_model().targets()) {
-      base::Optional<VisionMatchResult> result = visual_utils::IsVisualMatch(
+      absl::optional<VisionMatchResult> result = visual_utils::IsVisualMatch(
           bitmap, blurred_image_hash, histogram, target);
       if (result.has_value()) {
         *request->add_vision_match() = result.value();

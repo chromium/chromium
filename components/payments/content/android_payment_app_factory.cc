@@ -84,7 +84,7 @@ class AppFinder : public base::SupportsUserData::Data {
 
  private:
   void OnGetAppDescriptions(
-      const base::Optional<std::string>& error_message,
+      const absl::optional<std::string>& error_message,
       std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser could be shutting down.
@@ -147,7 +147,7 @@ class AppFinder : public base::SupportsUserData::Data {
           single_activity_app->service_names.empty()) {
         OnIsReadyToPay(std::move(single_activity_app), payment_method_names,
                        std::move(stringified_method_data),
-                       /*error_message=*/base::nullopt,
+                       /*error_message=*/absl::nullopt,
                        /*is_ready_to_pay=*/true);
         continue;
       }
@@ -173,7 +173,7 @@ class AppFinder : public base::SupportsUserData::Data {
       const std::set<std::string>& payment_method_names,
       std::unique_ptr<std::map<std::string, std::set<std::string>>>
           stringified_method_data,
-      const base::Optional<std::string>& error_message,
+      const absl::optional<std::string>& error_message,
       bool is_ready_to_pay) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_LT(0U, number_of_pending_is_ready_to_pay_queries_);

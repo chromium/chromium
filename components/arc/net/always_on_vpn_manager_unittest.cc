@@ -23,7 +23,7 @@ const base::Value kVpnPackageValue(kVpnPackage);
 void OnGetProperties(bool* success_out,
                      std::string* package_name_out,
                      base::OnceClosure callback,
-                     base::Optional<base::Value> result) {
+                     absl::optional<base::Value> result) {
   *success_out = result.has_value();
   if (result) {
     const base::Value* value = result->FindKeyOfType(

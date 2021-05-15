@@ -1001,7 +1001,7 @@ syncer::SyncDataList TemplateURLService::GetAllSyncData(
   return current_data;
 }
 
-base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
+absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
@@ -1122,7 +1122,7 @@ base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
   return sync_processor_->ProcessSyncChanges(from_here, new_changes);
 }
 
-base::Optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
+absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
@@ -1231,7 +1231,7 @@ base::Optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   PruneSyncChanges(&sync_data_map, &new_changes);
 
   LogDuplicatesHistogram(GetTemplateURLs());
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
     // The ACTION_DELETEs from this set are processed. Empty it so we don't try

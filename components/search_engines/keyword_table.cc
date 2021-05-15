@@ -490,7 +490,7 @@ bool KeywordTable::GetKeywordDataFromStatement(const sql::Statement& s,
   data->sync_guid = s.ColumnString(14);
 
   data->alternate_urls.clear();
-  base::Optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
+  absl::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
   base::ListValue* alternate_urls_value;
   if (value && value->GetAsList(&alternate_urls_value)) {
     std::string alternate_url;

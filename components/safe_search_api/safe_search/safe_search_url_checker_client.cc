@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -22,6 +21,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace safe_search_api {
@@ -42,7 +42,7 @@ std::string BuildRequestData(const std::string& api_key, const GURL& url) {
 // Parses a SafeSearch API |response| and stores the result in |is_porn|,
 // returns true on success. Otherwise, returns false and doesn't set |is_porn|.
 bool ParseResponse(const std::string& response, bool* is_porn) {
-  base::Optional<base::Value> optional_value = base::JSONReader::Read(response);
+  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
   const base::DictionaryValue* dict = nullptr;
   if (!optional_value || !optional_value.value().GetAsDictionary(&dict)) {
     DLOG(WARNING) << "ParseResponse failed to parse global dictionary";

@@ -346,7 +346,7 @@ void Surface::SetInputRegion(const cc::Region& region) {
 void Surface::ResetInputRegion() {
   TRACE_EVENT0("exo", "Surface::ResetInputRegion");
 
-  pending_state_.basic_state.input_region = base::nullopt;
+  pending_state_.basic_state.input_region = absl::nullopt;
 }
 
 void Surface::SetInputOutset(int outset) {
@@ -1227,7 +1227,7 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
   quad_state->SetAll(
       quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
       quad_rect /*visible_quad_layer_rect=*/,
-      gfx::MaskFilterInfo() /*mask_filter_info=*/, base::nullopt /*clip_rect=*/,
+      gfx::MaskFilterInfo() /*mask_filter_info=*/, absl::nullopt /*clip_rect=*/,
       are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
       SkBlendMode::kSrcOver /*blend_mode=*/, 0 /*sorting_context_id=*/);
   quad_state->no_damage = damage_rect.IsEmpty();

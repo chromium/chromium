@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -18,6 +17,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 namespace {
@@ -161,7 +161,7 @@ void BulkLeakCheckImpl::OnTokenReady(
 void BulkLeakCheckImpl::OnLookupLeakResponse(
     CredentialHolder* weak_holder,
     std::unique_ptr<SingleLookupResponse> response,
-    base::Optional<LeakDetectionError> error) {
+    absl::optional<LeakDetectionError> error) {
   std::unique_ptr<CredentialHolder> holder =
       RemoveFromQueue(weak_holder, &waiting_response_);
 

@@ -1269,7 +1269,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
     // Valid response.
     case net::HTTP_OK: {
       std::string error_code;
-      base::Optional<base::Value> message_value = base::JSONReader::Read(data);
+      absl::optional<base::Value> message_value = base::JSONReader::Read(data);
       if (message_value && message_value->is_dict()) {
         const auto* found = message_value->FindPathOfType(
             {"error", "code"}, base::Value::Type::STRING);

@@ -97,7 +97,7 @@ class CachedImageFetcherTest : public testing::Test {
     // Use an initial request to start the cache up.
     image_cache_->SaveImage(ImageUrl().spec(), kImageData,
                             /* needs_transcoding */ false,
-                            /* expiration_interval */ base::nullopt);
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     image_cache_->DeleteImage(ImageUrl().spec());
@@ -171,7 +171,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   // Save the image in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -196,7 +196,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   // Save the image in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageData,
                            /* needs_transcoding */ true,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -223,7 +223,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
   // Save the image in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
   RunUntilIdle();
   {
@@ -376,7 +376,7 @@ TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
   // Save the image in the database.
   image_cache()->SaveImage(ImageUrl().spec(), kImageDataOther,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ base::nullopt);
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
   test_url_loader_factory()->AddResponse(ImageUrl().spec(), kImageData);
 

@@ -419,7 +419,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     HistoryAddPageArgs request(
         url2, time, dummy_context_id, 0, url1, redirects, redirect_transition,
         false, history::SOURCE_BROWSED, did_replace, true, false,
-        base::Optional<std::u16string>(page2_title));
+        absl::optional<std::u16string>(page2_title));
     backend_->AddPage(request);
 
     transition1 = GetTransition(url1);
@@ -1013,7 +1013,7 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
   HistoryAddPageArgs request(url_a, base::Time::Now(), nullptr, 0, GURL(),
                              history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
                              false, history::SOURCE_BROWSED, false, true, false,
-                             base::Optional<std::u16string>(page1_title));
+                             absl::optional<std::u16string>(page1_title));
   backend_->AddPage(request);
 
   // Check that URL was added.

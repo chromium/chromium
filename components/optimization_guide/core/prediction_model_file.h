@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -31,15 +31,15 @@ class PredictionModelFile {
 
   // Returns the metadata that the server provided specific to this model, if
   // applicable.
-  base::Optional<proto::Any> GetModelMetadata() const;
+  absl::optional<proto::Any> GetModelMetadata() const;
 
  private:
   PredictionModelFile(const base::FilePath& model_file_path,
                       const int64_t version,
-                      const base::Optional<proto::Any>& model_metadata);
+                      const absl::optional<proto::Any>& model_metadata);
   base::FilePath model_file_path_;
   int64_t version_;
-  base::Optional<proto::Any> model_metadata_;
+  absl::optional<proto::Any> model_metadata_;
 };
 
 }  // namespace optimization_guide

@@ -56,8 +56,8 @@ void CheckValuesMatch(LegacyDomStorageDatabase* db,
   LegacyDomStorageValuesMap::const_iterator it = values_read.begin();
   for (; it != values_read.end(); ++it) {
     const std::u16string& key = it->first;
-    const base::Optional<std::u16string>& value = it->second;
-    const base::Optional<std::u16string>& expected_value =
+    const absl::optional<std::u16string>& value = it->second;
+    const absl::optional<std::u16string>& expected_value =
         expected.find(key)->second;
     EXPECT_EQ(expected_value, value);
   }
@@ -135,7 +135,7 @@ TEST(LegacyDomStorageDatabaseTest, CloseEmptyDatabaseDeletesFile) {
     ASSERT_TRUE(db.CommitChanges(false, storage));
     auto it = storage.begin();
     for (; it != storage.end(); ++it)
-      it->second = base::nullopt;
+      it->second = absl::nullopt;
     ASSERT_TRUE(db.CommitChanges(false, storage));
   }
   EXPECT_FALSE(base::PathExists(file_name));
@@ -229,7 +229,7 @@ TEST(LegacyDomStorageDatabaseTest, TestSimpleRemoveOneValue) {
   LegacyDomStorageValuesMap values;
   // A null string in the map should mean that that key gets
   // removed.
-  values[kCannedKey] = base::nullopt;
+  values[kCannedKey] = absl::nullopt;
   EXPECT_TRUE(db.CommitChanges(false, values));
 
   expected.clear();

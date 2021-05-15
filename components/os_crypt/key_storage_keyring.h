@@ -10,8 +10,8 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/os_crypt/key_storage_linux.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -28,11 +28,11 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKeyring : public KeyStorageLinux {
   // KeyStorageLinux
   base::SequencedTaskRunner* GetTaskRunner() override;
   bool Init() override;
-  base::Optional<std::string> GetKeyImpl() override;
+  absl::optional<std::string> GetKeyImpl() override;
 
  private:
   // Generate a random string and store it as OScrypt's new password.
-  base::Optional<std::string> AddRandomPasswordInKeyring();
+  absl::optional<std::string> AddRandomPasswordInKeyring();
 
   // Keyring calls need to originate from the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;

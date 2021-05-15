@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -33,7 +33,7 @@ google::protobuf::RepeatedPtrField<proto::FieldTrial>
 GetActiveFieldTrialsAllowedForFetch();
 
 // Returns the file path that holds the model file for |model|, if applicable.
-base::Optional<base::FilePath> GetFilePathFromPredictionModel(
+absl::optional<base::FilePath> GetFilePathFromPredictionModel(
     const proto::PredictionModel& model);
 
 // Fills |model| with the path for which the corresponding model file can be
@@ -46,29 +46,29 @@ void SetFilePathInPredictionModel(const base::FilePath& file_path,
 template <class T,
           class = typename std::enable_if<
               std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
-base::Optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
+absl::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
   // Verify type is the same - the Any type URL should be wrapped as:
   // "type.googleapis.com/com.foo.Name".
   std::vector<std::string> any_type_parts =
       base::SplitString(any_metadata.type_url(), ".", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
   if (any_type_parts.empty())
-    return base::nullopt;
+    return absl::nullopt;
   T metadata;
   std::vector<std::string> type_parts =
       base::SplitString(metadata.GetTypeName(), ".", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
   if (type_parts.empty())
-    return base::nullopt;
+    return absl::nullopt;
   std::string any_type_name = any_type_parts.back();
   std::string type_name = type_parts.back();
   if (type_name != any_type_name)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Return metadata if parseable.
   if (metadata.ParseFromString(any_metadata.value()))
     return metadata;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace optimization_guide

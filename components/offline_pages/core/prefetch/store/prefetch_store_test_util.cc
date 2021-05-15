@@ -102,17 +102,17 @@ int CountPrefetchItemsSync(sql::Database* db) {
 
 // Populates the PrefetchItem with the data from the current row of the passed
 // in statement following the natural column ordering.
-base::Optional<PrefetchItem> ReadPrefetchItem(const sql::Statement& statement) {
+absl::optional<PrefetchItem> ReadPrefetchItem(const sql::Statement& statement) {
   PrefetchItem item;
   DCHECK_EQ(23, statement.ColumnCount());
 
   // Fields are assigned to the item in the order they are stored in the SQL
   // store (integer fields first).
   item.offline_id = statement.ColumnInt64(0);
-  base::Optional<PrefetchItemState> state =
+  absl::optional<PrefetchItemState> state =
       ToPrefetchItemState(statement.ColumnInt(1));
   if (!state)
-    return base::nullopt;
+    return absl::nullopt;
   item.state = state.value();
   item.generate_bundle_attempts = statement.ColumnInt(2);
   item.get_operation_attempts = statement.ColumnInt(3);
@@ -120,10 +120,10 @@ base::Optional<PrefetchItem> ReadPrefetchItem(const sql::Statement& statement) {
   item.archive_body_length = statement.ColumnInt64(5);
   item.creation_time = store_utils::FromDatabaseTime(statement.ColumnInt64(6));
   item.freshness_time = store_utils::FromDatabaseTime(statement.ColumnInt64(7));
-  base::Optional<PrefetchItemErrorCode> error_code =
+  absl::optional<PrefetchItemErrorCode> error_code =
       ToPrefetchItemErrorCode(statement.ColumnInt(8));
   if (!error_code)
-    return base::nullopt;
+    return absl::nullopt;
   item.error_code = error_code.value();
   item.guid = statement.ColumnString(9);
   item.client_id.name_space = statement.ColumnString(10);
@@ -143,7 +143,7 @@ base::Optional<PrefetchItem> ReadPrefetchItem(const sql::Statement& statement) {
   return item;
 }
 
-base::Optional<PrefetchItem> GetPrefetchItemSync(int64_t offline_id,
+absl::optional<PrefetchItem> GetPrefetchItemSync(int64_t offline_id,
                                                  sql::Database* db) {
   static const std::string kSql = base::StringPrintf(
       "SELECT %s FROM prefetch_items WHERE offline_id = ?", kSqlAllColumnNames);
@@ -152,7 +152,7 @@ base::Optional<PrefetchItem> GetPrefetchItemSync(int64_t offline_id,
   statement.BindInt64(0, offline_id);
 
   if (!statement.Step())
-    return base::nullopt;
+    return absl::nullopt;
 
   return ReadPrefetchItem(statement);
 }
@@ -164,7 +164,7 @@ std::set<PrefetchItem> GetAllItemsSync(sql::Database* db) {
       base::StringPrintf("SELECT %s FROM prefetch_items", kSqlAllColumnNames);
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql.c_str()));
   while (statement.Step()) {
-    base::Optional<PrefetchItem> item = ReadPrefetchItem(statement);
+    absl::optional<PrefetchItem> item = ReadPrefetchItem(statement);
     if (item)
       items.insert(std::move(item).value());
   }
@@ -271,13 +271,13 @@ std::unique_ptr<PrefetchItem> PrefetchStoreTestUtil::GetPrefetchItem(
   store_->Execute(
       base::BindOnce(&GetPrefetchItemSync, offline_id),
       base::BindOnce(
-          base::BindLambdaForTesting([&](base::Optional<PrefetchItem> result) {
+          base::BindLambdaForTesting([&](absl::optional<PrefetchItem> result) {
             if (result) {
               item = std::make_unique<PrefetchItem>(std::move(result).value());
             }
             run_loop.Quit();
           })),
-      base::Optional<PrefetchItem>());
+      absl::optional<PrefetchItem>());
   run_loop.Run();
   return item;
 }

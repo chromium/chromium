@@ -4,12 +4,12 @@
 
 #include "components/download/database/download_db_conversions.h"
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -50,8 +50,8 @@ InProgressInfo CreateInProgressInfo() {
       std::make_pair<std::string, std::string>("123", "456"));
   info.request_headers.emplace_back(
       std::make_pair<std::string, std::string>("ABC", "def"));
-  info.download_schedule = base::make_optional<DownloadSchedule>(
-      false /*only_on_wifi*/, base::nullopt);
+  info.download_schedule = absl::make_optional<DownloadSchedule>(
+      false /*only_on_wifi*/, absl::nullopt);
   return info;
 }
 
@@ -183,7 +183,7 @@ TEST_F(DownloadDBConversionsTest, DownloadDBEntry) {
 
 TEST_F(DownloadDBConversionsTest, DownloadSchedule) {
   const bool kOnlyOnWifi = true;
-  DownloadSchedule download_schedule(kOnlyOnWifi, base::nullopt /*start_time*/);
+  DownloadSchedule download_schedule(kOnlyOnWifi, absl::nullopt /*start_time*/);
   // InProgressInfo.metered is used to set DownloadSchedule.only_on_wifi.
   auto persisted_download_schedule = DownloadScheduleFromProto(
       DownloadScheduleToProto(download_schedule), !kOnlyOnWifi);

@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PERMISSIONS_REQUEST_TYPE_H_
 #define COMPONENTS_PERMISSIONS_REQUEST_TYPE_H_
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class ContentSettingsType;
 

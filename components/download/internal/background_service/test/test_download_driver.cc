@@ -108,10 +108,10 @@ void TestDownloadDriver::Resume(const std::string& guid) {
   it->second.paused = false;
 }
 
-base::Optional<DriverEntry> TestDownloadDriver::Find(const std::string& guid) {
+absl::optional<DriverEntry> TestDownloadDriver::Find(const std::string& guid) {
   auto it = entries_.find(guid);
   if (it == entries_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return it->second;
 }
 

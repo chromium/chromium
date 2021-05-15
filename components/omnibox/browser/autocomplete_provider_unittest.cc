@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -40,6 +39,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/image/image_util.h"
@@ -250,7 +250,7 @@ class AutocompleteProviderTest : public testing::Test {
 
   struct HeaderTestData {
     SearchSuggestionParser::HeadersMap headers_map;
-    std::vector<base::Optional<int>> suggestion_group_ids;
+    std::vector<absl::optional<int>> suggestion_group_ids;
   };
 
   struct AssistedQueryStatsTestData {
@@ -304,7 +304,7 @@ class AutocompleteProviderTest : public testing::Test {
 
   // Returns the image from the clipboard as it would be from
   // AutocompleteController::GetImageFromClipboard().
-  base::Optional<gfx::Image> GetImageFromClipboard() const;
+  absl::optional<gfx::Image> GetImageFromClipboard() const;
 
   void set_search_provider_field_trial_triggered_in_session(bool val) {
     controller_->search_provider_->set_field_trial_triggered_in_session(val);
@@ -780,9 +780,9 @@ TEST_F(AutocompleteProviderTest, Headers) {
 
   {
     HeaderTestData test_data = {headers_map,
-                                {{base::nullopt},
-                                 {base::nullopt},
-                                 {base::nullopt},
+                                {{absl::nullopt},
+                                 {absl::nullopt},
+                                 {absl::nullopt},
                                  {kRecentSearchesGroupId},
                                  {kRecommendedForYouGroupId}}};
     UpdateResultsWithHeaderTestData(test_data);
@@ -804,9 +804,9 @@ TEST_F(AutocompleteProviderTest, Headers) {
   {
     HeaderTestData test_data = {headers_map,
                                 {
-                                    {base::nullopt},
+                                    {absl::nullopt},
                                     {kRecentSearchesGroupId},
-                                    {base::nullopt},
+                                    {absl::nullopt},
                                     {kRecommendedForYouGroupId},
                                     {kRecentSearchesGroupId},
                                 }};

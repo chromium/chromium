@@ -17,12 +17,12 @@
 #include "base/callback.h"
 #include "base/containers/stack_container.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -352,7 +352,7 @@ struct HistoryAddPageArgs {
   //       GURL(), base::Time(), nullptr, 0, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true,
-  //       base::nullopt)
+  //       absl::nullopt)
   HistoryAddPageArgs();
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
@@ -366,7 +366,7 @@ struct HistoryAddPageArgs {
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
                      bool floc_allowed,
-                     base::Optional<std::u16string> title = base::nullopt);
+                     absl::optional<std::u16string> title = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -388,7 +388,7 @@ struct HistoryAddPageArgs {
   // Indicates whether this URL visit can be included in FLoC computation. See
   // VisitRow::floc_allowed for details.
   bool floc_allowed;
-  base::Optional<std::u16string> title;
+  absl::optional<std::u16string> title;
 };
 
 // TopSites -------------------------------------------------------------------
@@ -447,9 +447,9 @@ struct DomainMetricSet {
 
   DomainMetricSet& operator=(const DomainMetricSet&);
 
-  base::Optional<DomainMetricCountType> one_day_metric;
-  base::Optional<DomainMetricCountType> seven_day_metric;
-  base::Optional<DomainMetricCountType> twenty_eight_day_metric;
+  absl::optional<DomainMetricCountType> one_day_metric;
+  absl::optional<DomainMetricCountType> seven_day_metric;
+  absl::optional<DomainMetricCountType> twenty_eight_day_metric;
 
   // The end time of the spanning periods. All 3 metrics should have the same
   // end time.
@@ -574,7 +574,7 @@ class DeletionInfo {
                bool is_from_expiration,
                URLRows deleted_rows,
                std::set<GURL> favicon_urls,
-               base::Optional<std::set<GURL>> restrict_urls);
+               absl::optional<std::set<GURL>> restrict_urls);
 
   ~DeletionInfo();
   // Move-only because of potentially large containers.
@@ -590,7 +590,7 @@ class DeletionInfo {
   const DeletionTimeRange& time_range() const { return time_range_; }
 
   // Restricts deletions within `time_range()`.
-  const base::Optional<std::set<GURL>>& restrict_urls() const {
+  const absl::optional<std::set<GURL>>& restrict_urls() const {
     return restrict_urls_;
   }
 
@@ -624,7 +624,7 @@ class DeletionInfo {
   bool is_from_expiration_;
   URLRows deleted_rows_;
   std::set<GURL> favicon_urls_;
-  base::Optional<std::set<GURL>> restrict_urls_;
+  absl::optional<std::set<GURL>> restrict_urls_;
   OriginCountAndLastVisitMap deleted_urls_origin_map_;
 
   DISALLOW_COPY_AND_ASSIGN(DeletionInfo);

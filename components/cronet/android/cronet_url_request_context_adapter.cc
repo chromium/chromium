@@ -266,8 +266,8 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
       jenable_network_quality_estimator,
       jbypass_public_key_pinning_for_local_trust_anchors,
       jnetwork_thread_priority >= -20 && jnetwork_thread_priority <= 19
-          ? base::Optional<double>(jnetwork_thread_priority)
-          : base::Optional<double>()));
+          ? absl::optional<double>(jnetwork_thread_priority)
+          : absl::optional<double>()));
 }
 
 // Add a QUIC hint to a URLRequestContextConfig.

@@ -84,7 +84,7 @@ TEST_F(AppBannerSettingsHelperTest, SingleEvents) {
   for (int event = AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW;
        event < AppBannerSettingsHelper::APP_BANNER_EVENT_NUM_EVENTS; ++event) {
     // Check that by default, there is no event.
-    base::Optional<base::Time> event_time =
+    absl::optional<base::Time> event_time =
         AppBannerSettingsHelper::GetSingleBannerEvent(
             web_contents(), url, kTestPackageName,
             AppBannerSettingsHelper::AppBannerEvent(event));
@@ -380,7 +380,7 @@ TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url, url_same_origin2,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, one_day_ago);
-  base::Optional<base::Time> event_time =
+  absl::optional<base::Time> event_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents(), url, url_same_origin2,
           AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW);

@@ -244,7 +244,7 @@ class PasswordStoreTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreTest);
 };
 
-base::Optional<PasswordHashData> GetPasswordFromPref(
+absl::optional<PasswordHashData> GetPasswordFromPref(
     const std::string& username,
     bool is_gaia_password,
     PrefService* prefs) {
@@ -1280,7 +1280,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
            PasswordForm::Store::kProfileStore}};
       EXPECT_CALL(mock_consumer,
                   OnReuseCheckDone(true, test_data.reused_password_len,
-                                   Matches(base::nullopt),
+                                   Matches(absl::nullopt),
                                    ElementsAreArray(credentials), 2));
     } else {
       EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
@@ -1314,7 +1314,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
       metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
   WaitForPasswordStore();
   EXPECT_TRUE(prefs.HasPrefPath(prefs::kPasswordHashDataList));
-  base::Optional<PasswordHashData> sync_password_hash =
+  absl::optional<PasswordHashData> sync_password_hash =
       GetPasswordFromPref("sync_username", /*is_gaia_password=*/true, &prefs);
   ASSERT_TRUE(sync_password_hash.has_value());
 
@@ -1332,7 +1332,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   store->SaveGaiaPasswordHash("other_gaia_username", gaia_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
-  base::Optional<PasswordHashData> gaia_password_hash = GetPasswordFromPref(
+  absl::optional<PasswordHashData> gaia_password_hash = GetPasswordFromPref(
       "other_gaia_username", /*is_gaia_password=*/true, &prefs);
   ASSERT_TRUE(gaia_password_hash.has_value());
 
@@ -1365,7 +1365,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // Save a enterprise password this time.
   const std::u16string enterprise_password = u"23password";
   store->SaveEnterprisePasswordHash("enterprise_username", enterprise_password);
-  base::Optional<PasswordHashData> enterprise_password_hash =
+  absl::optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
                           &prefs);
   ASSERT_TRUE(enterprise_password_hash.has_value());
@@ -1394,7 +1394,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   WaitForPasswordStore();
   EXPECT_TRUE(prefs.HasPrefPath(prefs::kPasswordHashDataList));
-  base::Optional<PasswordHashData> gmail_password_hash = GetPasswordFromPref(
+  absl::optional<PasswordHashData> gmail_password_hash = GetPasswordFromPref(
       "username@gmail.com", /*is_gaia_password=*/true, &prefs);
   ASSERT_TRUE(gmail_password_hash.has_value());
 
@@ -1412,7 +1412,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
                               non_sync_gaia_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
-  base::Optional<PasswordHashData> non_sync_gaia_password_hash =
+  absl::optional<PasswordHashData> non_sync_gaia_password_hash =
       GetPasswordFromPref("non_sync_gaia_password@gsuite.com",
                           /*is_gaia_password=*/true, &prefs);
   ASSERT_TRUE(non_sync_gaia_password_hash.has_value());

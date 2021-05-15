@@ -18,7 +18,7 @@ NavigationParams::NavigationParams(
     bool is_main_frame,
     bool is_renderer_initiated,
     const GURL& base_url_for_data_url,
-    const base::Optional<url::Origin>& initiator_origin)
+    const absl::optional<url::Origin>& initiator_origin)
     : url_(url),
       referrer_(referrer),
       navigation_id_(navigation_id),
