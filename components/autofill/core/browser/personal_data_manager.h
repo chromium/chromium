@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -462,6 +463,18 @@ class PersonalDataManager : public KeyedService,
   // valid or has no host.
   void RemoveStrikesToBlockNewProfileImportForDomain(const GURL& url);
 
+  // Returns true if a profile identified by its `guid` is blocked for updates.
+  // Returns false if the database is not available.
+  bool IsProfileUpdateBlocked(const std::string& guid) const;
+
+  // Adds a strike to block a profile identified by its `guid` for updates.
+  // Does nothing if the strike database is not available.
+  void AddStrikeToBlockProfileUpdate(const std::string& guid);
+
+  // Removes potential strikes to block a profile identified by its `guid` for
+  // updates. Does nothing if the strike database is not available.
+  void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
+
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.
@@ -558,11 +571,17 @@ class PersonalDataManager : public KeyedService,
   friend void SetTestProfiles(Profile* base_profile,
                               std::vector<AutofillProfile>* profiles);
 
-  // Used to get a pointer to the strike database. Note, the result can be a
-  // nullptr.
+  // Used to get a pointer to the strike database for importing new profiles.
+  // Note, the result can be a nullptr.
   AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase();
   virtual const AutofillProfileSaveStrikeDatabase*
   GetProfileSaveStrikeDatabase() const;
+
+  // Used to get a pointer to the strike database for updating existing
+  // profiles. Note, the result can be a nullptr.
+  AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
+  virtual const AutofillProfileUpdateStrikeDatabase*
+  GetProfileUpdateStrikeDatabase() const;
 
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
@@ -851,6 +870,11 @@ class PersonalDataManager : public KeyedService,
   // import of new profiles.
   std::unique_ptr<AutofillProfileSaveStrikeDatabase>
       profile_save_strike_database_;
+
+  // The database that is used to count guid-keyed strikes to suppress updates
+  // of existing profiles.
+  std::unique_ptr<AutofillProfileUpdateStrikeDatabase>
+      profile_update_strike_database_;
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;

@@ -317,6 +317,8 @@ void PersonalDataManager::Init(
   if (strike_database) {
     profile_save_strike_database_ =
         std::make_unique<AutofillProfileSaveStrikeDatabase>(strike_database);
+    profile_update_strike_database_ =
+        std::make_unique<AutofillProfileUpdateStrikeDatabase>(strike_database);
   }
 
   // WebDataService may not be available in tests.
@@ -1645,6 +1647,30 @@ void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
   GetProfileSaveStrikeDatabase()->ClearStrikes(url.host());
 }
 
+bool PersonalDataManager::IsProfileUpdateBlocked(
+    const std::string& guid) const {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return false;
+  }
+  return GetProfileUpdateStrikeDatabase()->IsMaxStrikesLimitReached(guid);
+}
+
+void PersonalDataManager::AddStrikeToBlockProfileUpdate(
+    const std::string& guid) {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return;
+  }
+  GetProfileUpdateStrikeDatabase()->AddStrike(guid);
+}
+
+void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
+    const std::string& guid) {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return;
+  }
+  GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
+}
+
 AutofillProfileSaveStrikeDatabase*
 PersonalDataManager::GetProfileSaveStrikeDatabase() {
   return const_cast<AutofillProfileSaveStrikeDatabase*>(
@@ -1654,6 +1680,17 @@ PersonalDataManager::GetProfileSaveStrikeDatabase() {
 const AutofillProfileSaveStrikeDatabase*
 PersonalDataManager::GetProfileSaveStrikeDatabase() const {
   return profile_save_strike_database_.get();
+}
+
+AutofillProfileUpdateStrikeDatabase*
+PersonalDataManager::GetProfileUpdateStrikeDatabase() {
+  return const_cast<AutofillProfileUpdateStrikeDatabase*>(
+      base::as_const(*this).GetProfileUpdateStrikeDatabase());
+}
+
+const AutofillProfileUpdateStrikeDatabase*
+PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
+  return profile_update_strike_database_.get();
 }
 
 void PersonalDataManager::SetCreditCards(
