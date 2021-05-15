@@ -58,6 +58,9 @@ mojom::SuggestionsRequestPtr ProtoToSuggestionsRequest(
 std::vector<TextSuggestion> ProtoToTextSuggestions(
     const chromeos::ime::DisplaySuggestions& display_suggestions);
 
+// Converts a proto to InputChannel::UkmEntry.
+mojom::UkmEntryPtr ProtoToUkmEntry(const RecordUkm& record_ukm);
+
 }  // namespace ime
 }  // namespace chromeos
 

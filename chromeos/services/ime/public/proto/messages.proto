@@ -43,6 +43,7 @@ message PublicMessage {
     SuggestionsRequest suggestions_request = 15;
     SuggestionsResponse suggestions_response = 16;
     DisplaySuggestions display_suggestions = 17;
+    RecordUkm record_ukm = 18;
   }
 }
 
@@ -261,4 +262,23 @@ message SuggestionsResponse {
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message DisplaySuggestions {
   repeated SuggestionCandidate candidates = 1;
+}
+
+// Protobuf version of InputEngine::RecordUkm in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message RecordUkm {
+  oneof entry { NonCompliantApiMetric non_compliant_api = 1; }
+}
+
+// Protobuf version of NonCompliantApiMetric in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message NonCompliantApiMetric {
+  enum InputMethodApiOperation {
+    OPERATION_UNSPECIFIED = 0;  // Reserved
+    OPERATION_COMMIT_TEXT = 1;
+    OPERATION_SET_COMPOSITION_TEXT = 2;
+    OPERATION_DELETE_SURROUNDING_TEXT = 3;
+  }
+
+  optional InputMethodApiOperation non_compliant_operation = 1;
 }

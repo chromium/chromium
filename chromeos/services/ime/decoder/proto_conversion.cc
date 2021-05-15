@@ -110,6 +110,20 @@ base::Optional<TextSuggestionType> ProtoToTextSuggestionType(
   }
 }
 
+base::Optional<mojom::InputMethodApiOperation> InputMethodApiOperationToMojo(
+    NonCompliantApiMetric::InputMethodApiOperation operation) {
+  switch (operation) {
+    case NonCompliantApiMetric::OPERATION_UNSPECIFIED:
+      return base::nullopt;
+    case NonCompliantApiMetric::OPERATION_COMMIT_TEXT:
+      return mojom::InputMethodApiOperation::kCommitText;
+    case NonCompliantApiMetric::OPERATION_SET_COMPOSITION_TEXT:
+      return mojom::InputMethodApiOperation::kSetCompositionText;
+    case NonCompliantApiMetric::OPERATION_DELETE_SURROUNDING_TEXT:
+      return mojom::InputMethodApiOperation::kDeleteSurroundingText;
+  }
+}
+
 }  // namespace
 
 ime::PublicMessage OnInputMethodChangedToProto(uint64_t seq_id,
@@ -246,6 +260,21 @@ std::vector<TextSuggestion> ProtoToTextSuggestions(
     }
   }
   return suggestions;
+}
+
+mojom::UkmEntryPtr ProtoToUkmEntry(const RecordUkm& record_ukm) {
+  switch (record_ukm.entry_case()) {
+    case RecordUkm::ENTRY_NOT_SET:
+      return nullptr;
+    case RecordUkm::kNonCompliantApi: {
+      auto operation = InputMethodApiOperationToMojo(
+          record_ukm.non_compliant_api().non_compliant_operation());
+      if (!operation)
+        return nullptr;
+      return mojom::UkmEntry::NewNonCompliantApi(
+          mojom::NonCompliantApiMetric::New(*operation));
+    }
+  }
 }
 
 }  // namespace ime

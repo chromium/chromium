@@ -76,6 +76,7 @@ class InputEngine : public mojom::InputChannel {
                           RequestSuggestionsCallback callback) override;
   void DisplaySuggestions(
       const std::vector<TextSuggestion>& suggestions) override;
+  void RecordUkm(mojom::UkmEntryPtr entry) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 

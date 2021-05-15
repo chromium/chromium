@@ -445,5 +445,29 @@ TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
   mock_channel.FlushForTesting();
 }
 
+TEST_F(SystemEngineTest, RecordUkmSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  Wrapper proto;
+  proto.mutable_public_message()
+      ->mutable_record_ukm()
+      ->mutable_non_compliant_api()
+      ->set_non_compliant_operation(
+          NonCompliantApiMetric::OPERATION_SET_COMPOSITION_TEXT);
+
+  EXPECT_CALL(mock_channel, RecordUkm)
+      .WillOnce([proto](mojom::UkmEntryPtr entry) {
+        EXPECT_EQ(entry, ProtoToUkmEntry(proto.public_message().record_ukm()));
+      });
+
+  const std::string serialized = proto.SerializeAsString();
+  decoder_entry_points_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
+}
+
 }  // namespace ime
 }  // namespace chromeos

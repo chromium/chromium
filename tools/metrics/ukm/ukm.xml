@@ -7375,6 +7375,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InputMethod.NonCompliantApi">
+  <owner>shend@chromium.org</owner>
+  <summary>
+    Metrics indicating what Input Method Editor (IME) operations are behaving
+    incorrectly on an input field. This event is recorded whenever an IME
+    operation is executed on the input field but the result does not match the
+    IME's expectations (e.g. IME wants to insert 'a' but the input field
+    inserted 'b' instead).
+  </summary>
+  <metric name="NonCompliantOperation" enum="InputMethodApiOperation">
+    <summary>
+      The operation that behaved incorrectly.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="InstalledRelatedApps">
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>

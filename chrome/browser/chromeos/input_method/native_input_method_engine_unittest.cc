@@ -13,15 +13,22 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/chromeos/input_method_chromeos.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -40,8 +47,7 @@ using testing::StrictMock;
 
 constexpr char kEngineIdUs[] = "xkb:us::eng";
 
-void SetPhysicalTypingAutocorrectEnabled(TestingProfile& profile,
-                                         bool enabled) {
+void SetPhysicalTypingAutocorrectEnabled(Profile& profile, bool enabled) {
   base::Value input_method_setting(base::Value::Type::DICTIONARY);
   input_method_setting.SetPath(
       std::string(kEngineIdUs) + ".physicalKeyboardAutoCorrectionLevel",
@@ -346,6 +352,94 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_A, ui::EF_NONE},
                          base::DoNothing());
   engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
+// TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
+// hidden dependencies on globals such as ImeBridge.
+class NativeInputMethodEngineWithRenderViewHostTest
+    : public content::RenderViewHostTestHarness {
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAssistPersonalInfo,
+                              features::kAssistPersonalInfoEmail,
+                              features::kAssistPersonalInfoName,
+                              features::kEmojiSuggestAddition,
+                              features::kImeMojoDecoder,
+                              features::kSystemLatinPhysicalTyping},
+        /*disabled_features=*/{});
+
+    // Needed by NativeInputMethodEngine to interact with the input field.
+    ui::IMEBridge::Initialize();
+
+    // Needed by NativeInputMethodEngine for the virtual keyboard.
+    keyboard_controller_client_test_helper_ =
+        ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
+  }
+
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    return std::make_unique<TestingProfile>();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
+      keyboard_controller_client_test_helper_;
+};
+
+TEST_F(NativeInputMethodEngineWithRenderViewHostTest, RecordUkmAddsUkmEntry) {
+  GURL url("https://www.example.com/");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+
+  auto* testing_profile = static_cast<TestingProfile*>(browser_context());
+  SetPhysicalTypingAutocorrectEnabled(*testing_profile, true);
+
+  testing::NiceMock<ime::MockInputChannel> mock_input_channel;
+  mojo::Remote<ime::mojom::InputChannel> remote;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel, &remote));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", testing_profile);
+  ui::IMEEngineHandlerInterface::InputContext input_context(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true);
+  engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();
+
+  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.set_source_id(
+      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+
+  ui::InputMethodChromeOS ime(nullptr);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+
+  ukm::TestAutoSetUkmRecorder test_recorder;
+  test_recorder.EnableRecording(false /* extensions */);
+  ASSERT_EQ(0u, test_recorder.entries_count());
+
+  auto entry = ime::mojom::UkmEntry::New();
+  auto metric = ime::mojom::NonCompliantApiMetric::New();
+  metric->non_compliant_operation =
+      ime::mojom::InputMethodApiOperation::kSetCompositionText;
+  entry->set_non_compliant_api(std::move(metric));
+  remote->RecordUkm(std::move(entry));
+  remote.FlushForTesting();
+
+  EXPECT_EQ(0u, test_recorder.sources_count());
+  EXPECT_EQ(1u, test_recorder.entries_count());
+  const auto entries =
+      test_recorder.GetEntriesByName("InputMethod.NonCompliantApi");
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0], "NonCompliantOperation",
+      (int)ime::mojom::InputMethodApiOperation::kSetCompositionText);
 
   InputMethodManager::Shutdown();
 }

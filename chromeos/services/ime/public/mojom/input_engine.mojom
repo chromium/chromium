@@ -220,6 +220,21 @@ struct SuggestionsResponse {
   array<SuggestionCandidate> candidates;
 };
 
+// A URL-Keyed Metric (UKM) entry.
+union UkmEntry {
+  NonCompliantApiMetric non_compliant_api;
+};
+
+enum InputMethodApiOperation {
+  kCommitText = 0,
+  kSetCompositionText = 1,
+  kDeleteSurroundingText = 2,
+};
+
+struct NonCompliantApiMetric {
+  InputMethodApiOperation non_compliant_operation;
+};
+
 // Manages access to a set of IME engines, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
@@ -353,6 +368,9 @@ interface InputChannel {
 
   // Asks the system to display the given suggestions to the user
   DisplaySuggestions(array<SuggestionCandidate> suggestions);
+
+  // Record a Url-Keyed Metric (UKM).
+  RecordUkm(UkmEntry entry);
 };
 
 // Implemented in the browser process, used to perform network requests or
