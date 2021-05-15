@@ -103,6 +103,8 @@ class CORE_EXPORT HTMLPlugInElement
                     const CreateElementFlags);
 
   // Node functions:
+  InsertionNotificationRequest InsertedInto(
+      ContainerNode& insertion_point) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
   void DidMoveToNewDocument(Document& old_document) override;
   void AttachLayoutTree(AttachContext&) override;
