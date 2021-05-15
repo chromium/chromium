@@ -13,6 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.GoogleAPIKeys;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.FeedImageFetchClient;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -119,5 +120,10 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public long getReliabilityLoggingId() {
         return FeedServiceBridge.getReliabilityLoggingId();
+    }
+
+    @Override
+    public String getGoogleApiKey() {
+        return GoogleAPIKeys.GOOGLE_API_KEY;
     }
 }
