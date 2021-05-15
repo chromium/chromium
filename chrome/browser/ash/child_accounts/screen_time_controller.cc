@@ -366,7 +366,7 @@ ScreenTimeController::GetLastStateFromPref() {
   const base::DictionaryValue* last_state =
       pref_service_->GetDictionary(prefs::kScreenTimeLastState);
   usage_time_limit::State result;
-  if (last_state->empty())
+  if (last_state->DictEmpty())
     return base::nullopt;
 
   // Verify is_locked from the pref is a boolean value.
