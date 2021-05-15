@@ -17,6 +17,7 @@ import org.chromium.content_public.browser.WebContents;
  * The class to handle Lens chip data and actions.
  */
 public class LensChipDelegate implements ChipDelegate {
+    private boolean mIsChipSupported;
     private LensQueryParams mLensQueryParams;
     private LensController mLensController;
     private ContextMenuNativeDelegate mNativeDelegate;
@@ -27,7 +28,8 @@ public class LensChipDelegate implements ChipDelegate {
             boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
             Callback<Integer> onChipClickedCallback, Callback<Integer> onChipShownCallback) {
         mLensController = AppHooks.get().getLensController();
-        if (!mLensController.isQueryEnabled()) {
+        mIsChipSupported = mLensController.isQueryEnabled();
+        if (!mIsChipSupported) {
             return;
         }
         mLensQueryParams =
@@ -41,6 +43,11 @@ public class LensChipDelegate implements ChipDelegate {
         mNativeDelegate = nativeDelegate;
         mOnChipClickedCallback = onChipClickedCallback;
         mOnChipShownCallback = onChipShownCallback;
+    }
+
+    @Override
+    public boolean isChipSupported() {
+        return mIsChipSupported;
     }
 
     @Override
@@ -76,9 +83,8 @@ public class LensChipDelegate implements ChipDelegate {
 
     @Override
     public void onMenuClosed() {
-        if (mLensController.isQueryEnabled()) {
-            mLensController.terminateClassification();
-        }
+        // Lens controller will not react if a classification was not in progress.
+        mLensController.terminateClassification();
     }
 
     @Override

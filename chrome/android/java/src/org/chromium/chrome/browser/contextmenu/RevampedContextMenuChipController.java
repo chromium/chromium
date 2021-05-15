@@ -34,6 +34,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     private AnchoredPopupWindow mPopupWindow;
     private Context mContext;
     private ChipRenderParams mChipRenderParams;
+    private final Runnable mDismissContextMenuCallback;
 
     @VisibleForTesting
     @IntDef({ChipEvent.SHOWN, ChipEvent.CLICKED, ChipEvent.DISMISSED})
@@ -50,9 +51,11 @@ class RevampedContextMenuChipController implements View.OnClickListener {
                 "ContextMenu.LensChip.Event", chipEvent, ChipEvent.NUM_ENTRIES);
     }
 
-    RevampedContextMenuChipController(Context context, View anchorView) {
+    RevampedContextMenuChipController(
+            Context context, View anchorView, final Runnable dismissContextMenuCallback) {
         mContext = context;
         mAnchorView = anchorView;
+        mDismissContextMenuCallback = dismissContextMenuCallback;
     }
 
     /**
@@ -110,8 +113,10 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     public void onClick(View v) {
         if (v == mChipView) {
             recordChipEvent(ChipEvent.CLICKED);
+            // The onClick callback may result in a cross-app switch so dismiss the menu before
+            // executing that logic. Also note that dismissing the menu will also dismiss the chip.
+            mDismissContextMenuCallback.run();
             mChipRenderParams.onClickCallback.run();
-            dismissLensChipIfShowing();
         }
     }
 
@@ -119,7 +124,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
      * Dismiss the lens chip. Needed for cases where a user dismisses
      * the context menu without closing the chip manually.
      */
-    void dismissLensChipIfShowing() {
+    void dismissChipIfShowing() {
         if (mPopupWindow != null && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
         }
@@ -171,7 +176,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
         if (!chipRenderParams.isRemoveIconHidden) {
             mChipView.addRemoveIcon();
             mChipView.setRemoveIconClickListener(v -> {
-                dismissLensChipIfShowing();
+                dismissChipIfShowing();
                 recordChipEvent(ChipEvent.DISMISSED);
             });
         }

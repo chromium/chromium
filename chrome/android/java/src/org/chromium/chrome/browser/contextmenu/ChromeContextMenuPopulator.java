@@ -91,7 +91,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
-    private boolean mIsLensIntentInProgress;
     private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
     private ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SEARCH_MENU_ITEM_KEY = "searchWithGoogleLensMenuItem";
@@ -755,11 +754,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
             if (tracker.isInitialized()) tracker.dismissed(FeatureConstants.EPHEMERAL_TAB_FEATURE);
         }
-
-        if (!mIsLensIntentInProgress) {
-            // TODO(crbug/1158604): Remove leftover Lens dependencies.
-            LensUtils.terminateLensConnectionsIfNecessary(mItemDelegate.isIncognito());
-        }
     }
 
     private WindowAndroid getWindow() {
@@ -820,7 +814,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     protected void searchWithGoogleLens(
             @LensEntryPoint int lensEntryPoint, boolean requiresConfirmation) {
-        mIsLensIntentInProgress = true;
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
             ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, mItemDelegate.isIncognito(),
                     mParams.getSrcUrl(), mParams.getTitleText(), mParams.getPageUrl(),
@@ -836,13 +829,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
             return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
                     mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(),
-                    mItemDelegate.getWebContents(), mNativeDelegate, getOnLensChipClickedCallback(),
-                    getOnLensChipShownCallback());
+                    mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
+                    getOnChipShownCallback());
         }
         return null;
     }
 
-    private Callback<Integer> getOnLensChipShownCallback() {
+    private Callback<Integer> getOnChipShownCallback() {
         return (Integer result) -> {
             int chipType = result.intValue();
             switch (chipType) {
@@ -860,7 +853,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         };
     }
 
-    private Callback<Integer> getOnLensChipClickedCallback() {
+    private Callback<Integer> getOnChipClickedCallback() {
         return (Integer result) -> {
             int chipType = result.intValue();
             switch (chipType) {

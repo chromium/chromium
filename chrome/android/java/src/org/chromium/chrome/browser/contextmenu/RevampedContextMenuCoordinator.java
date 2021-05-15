@@ -115,9 +115,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 R.layout.context_menu_fullscreen_container, null);
 
         // Only display a chip if an image was selected and the menu isn't a popup.
-        if (params.isImage() && chipDelegate != null && !isPopup) {
+        if (params.isImage() && chipDelegate != null && chipDelegate.isChipSupported()
+                && !isPopup) {
             View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
-            mChipController = new RevampedContextMenuChipController(activity, chipAnchorView);
+            mChipController = new RevampedContextMenuChipController(
+                    activity, chipAnchorView, () -> dismiss());
             chipDelegate.getChipRenderParams((chipRenderParams) -> {
                 if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
                     mChipController.showChip(chipRenderParams);
@@ -283,7 +285,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             mWebContentsObserver.destroy();
         }
         if (mChipController != null) {
-            mChipController.dismissLensChipIfShowing();
+            mChipController.dismissChipIfShowing();
         }
         mDialog.dismiss();
     }

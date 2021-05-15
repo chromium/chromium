@@ -11,6 +11,12 @@ import org.chromium.base.Callback;
  */
 public interface ChipDelegate {
     /**
+     * Determines whether the chip delegate is able to support a chip in the chosen context.
+     * @return Whether the chip can be supported and rendered.
+     */
+    boolean isChipSupported();
+
+    /**
      * Retrieves the data for displaying a chip below the context menu.
      * @param callback The callback will always be called with the retrieved ChipRenderParams.
      *                 The ChipRenderParams will be null in the event there is no chip to show.

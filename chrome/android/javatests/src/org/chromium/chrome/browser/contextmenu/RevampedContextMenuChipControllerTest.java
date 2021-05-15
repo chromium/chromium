@@ -73,7 +73,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testChipShownWhenCallbackReturnsChipRenderParams() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChipRenderParams chipRenderParams = new ChipRenderParams();
             chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
@@ -93,8 +93,8 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissLensChipIfShowing(); });
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
+        TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissChipIfShowing(); });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNull("Popup window was initialized unexpectedly.",
@@ -105,14 +105,14 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testDismissChipWhenShown() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChipRenderParams chipRenderParams = new ChipRenderParams();
             chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
             chipRenderParams.iconResourceId = R.drawable.lens_icon;
             chipRenderParams.onClickCallback = mEmptyChipClickCallbackForTesting;
             chipController.showChip(chipRenderParams);
-            chipController.dismissLensChipIfShowing();
+            chipController.dismissChipIfShowing();
         });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
@@ -126,7 +126,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
@@ -136,7 +136,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(false));
@@ -146,7 +146,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
         RevampedContextMenuChipController chipController =
-                new RevampedContextMenuChipController(getActivity(), mAnchorView);
+                new RevampedContextMenuChipController(getActivity(), mAnchorView, () -> {});
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(true));
