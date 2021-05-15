@@ -51,6 +51,8 @@
 
 namespace {
 
+using ::testing::Return;
+
 // Allows for default hour to pass + random delay between 30 and 60 seconds.
 constexpr int kUpdateFetchHintsTimeSecs = 61 * 60;  // 1 hours and 1 minutes.
 
@@ -2994,6 +2996,11 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   }
 
   {
+    ON_CALL(*navigation_handle, NavigationStart)
+        .WillByDefault(Return(base::TimeTicks::Now()));
+
+    EXPECT_CALL(*navigation_handle, NavigationStart);
+
     base::HistogramTester histogram_tester;
     hints_manager()->SetHintsFetcherFactoryForTesting(
         BuildTestHintsFetcherFactory(
@@ -3008,6 +3015,16 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
     // Should not be recorded since we are not attempting a new fetch.
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches", 0);
+
+    OptimizationGuideNavigationData* navigation_data =
+        OptimizationGuideNavigationData::GetFromNavigationHandle(
+            navigation_handle.get());
+    // Set hints fetch end.so we can figure out if hints fetch start was set.
+    navigation_data->set_hints_fetch_end(base::TimeTicks::Now());
+    EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
+    EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
+              optimization_guide::RaceNavigationFetchAttemptStatus::
+                  kRaceNavigationFetchAlreadyInProgress);
   }
 }
 
