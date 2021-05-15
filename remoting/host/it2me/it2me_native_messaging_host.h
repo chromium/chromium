@@ -11,13 +11,13 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/it2me/it2me_host.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/signaling/delegating_signal_strategy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/native_messaging/log_message_handler.h"
@@ -104,7 +104,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   std::string ExtractAccessToken(const base::DictionaryValue* message);
 
   // Returns the value of the 'allow_elevated_host' platform policy or empty.
-  base::Optional<bool> GetAllowElevatedHostPolicyValue();
+  absl::optional<bool> GetAllowElevatedHostPolicyValue();
 
   // Indicates whether the current process is already elevated.
   bool is_process_elevated_ = false;

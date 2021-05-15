@@ -2400,9 +2400,9 @@ base::Value PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
     if (PageIndexInBounds(page_index)) {
       dict.SetIntKey("page", page_index);
 
-      base::Optional<float> x;
-      base::Optional<float> y;
-      base::Optional<float> zoom;
+      absl::optional<float> x;
+      absl::optional<float> y;
+      absl::optional<float> zoom;
       pages_[page_index]->GetPageDestinationTarget(dest, &x, &y, &zoom);
 
       if (x)
@@ -2505,7 +2505,7 @@ void PDFiumEngine::ScrollToGlobalPoint(const gfx::Rect& target_rect,
   client_->ScrollBy(scroll_offset - global_point);
 }
 
-base::Optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
+absl::optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
     const std::string& destination) {
   // Look for the destination.
   FPDF_DEST dest = FPDF_GetNamedDestByName(doc(), destination.c_str());
@@ -2600,7 +2600,7 @@ uint32_t PDFiumEngine::GetCharUnicode(int page_index, int char_index) {
   return pages_[page_index]->GetCharUnicode(char_index);
 }
 
-base::Optional<AccessibilityTextRunInfo> PDFiumEngine::GetTextRunInfo(
+absl::optional<AccessibilityTextRunInfo> PDFiumEngine::GetTextRunInfo(
     int page_index,
     int start_char_index) {
   DCHECK(PageIndexInBounds(page_index));
@@ -2650,14 +2650,14 @@ int PDFiumEngine::GetDuplexType() {
   return static_cast<int>(FPDF_VIEWERREF_GetDuplex(doc()));
 }
 
-base::Optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
+absl::optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
   if (pages_.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   gfx::Size page_size = GetPageSize(0);
   for (size_t i = 1; i < pages_.size(); ++i) {
     if (page_size != GetPageSize(i))
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   // Convert `page_size` back to points.
@@ -3123,19 +3123,19 @@ void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
              static_cast<int>(ceil(inset_sizes.bottom * multiplier)));
 }
 
-base::Optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
+absl::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
     size_t page_index,
     size_t num_of_pages) const {
   DCHECK_LT(page_index, num_of_pages);
 
   if (layout_.options().page_spread() == DocumentLayout::PageSpread::kOneUp) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int adjacent_page_offset = page_index % 2 ? -1 : 1;
   size_t adjacent_page_index = page_index + adjacent_page_offset;
   if (adjacent_page_index >= num_of_pages)
-    return base::nullopt;
+    return absl::nullopt;
 
   return adjacent_page_index;
 }
@@ -3434,7 +3434,7 @@ gfx::Rect PDFiumEngine::GetPageScreenRect(int page_index) const {
       GetInsetSizes(layout_.options(), page_index, pages_.size());
 
   int max_page_height = page_rect.height();
-  base::Optional<size_t> adjacent_page_index =
+  absl::optional<size_t> adjacent_page_index =
       GetAdjacentPageIndexForTwoUpView(page_index, pages_.size());
   if (adjacent_page_index.has_value()) {
     max_page_height = std::max(

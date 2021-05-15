@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "pdf/document_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Size;
@@ -23,8 +23,8 @@ namespace chrome_pdf {
 // ->  210 x 297 mm (portrait)
 // ->  11.00 x 8.50 in (landscape)
 //
-// Returns the string "Varies" if `size_points` is `base::nullopt`.
-std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points);
+// Returns the string "Varies" if `size_points` is `absl::nullopt`.
+std::u16string FormatPageSize(const absl::optional<gfx::Size>& size_points);
 
 // Formats `version` to a string suitable for display to a user. Version numbers
 // do not require localization.

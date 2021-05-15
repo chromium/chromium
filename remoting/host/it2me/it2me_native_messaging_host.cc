@@ -563,7 +563,7 @@ void It2MeNativeMessagingHost::OnPolicyUpdate(
   }
 }
 
-base::Optional<bool>
+absl::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
 #if defined(OS_WIN)
@@ -581,7 +581,7 @@ It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   }
 #endif  // defined(OS_WIN)
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void It2MeNativeMessagingHost::OnPolicyError() {

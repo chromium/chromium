@@ -26,7 +26,6 @@
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -46,6 +45,7 @@
 #include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
 #include "pdf/ui/thumbnail.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -742,7 +742,7 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
       message.FindStringKey("namedDestination");
   CHECK(destination_name);
 
-  base::Optional<PDFEngine::NamedDestination> named_destination =
+  absl::optional<PDFEngine::NamedDestination> named_destination =
       engine()->GetNamedDestination(*destination_name);
 
   const int page_number = named_destination.has_value()

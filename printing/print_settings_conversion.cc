@@ -84,8 +84,8 @@ PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings) {
       if (!page_range.is_dict())
         continue;
 
-      base::Optional<int> from = page_range.FindIntKey(kSettingPageRangeFrom);
-      base::Optional<int> to = page_range.FindIntKey(kSettingPageRangeTo);
+      absl::optional<int> from = page_range.FindIntKey(kSettingPageRangeFrom);
+      absl::optional<int> to = page_range.FindIntKey(kSettingPageRangeTo);
       if (!from.has_value() || !to.has_value())
         continue;
 
@@ -100,7 +100,7 @@ PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings) {
 std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     const base::Value& job_settings) {
   auto settings = std::make_unique<PrintSettings>();
-  base::Optional<bool> display_header_footer =
+  absl::optional<bool> display_header_footer =
       job_settings.FindBoolKey(kSettingHeaderFooterEnabled);
   if (!display_header_footer.has_value())
     return nullptr;
@@ -118,9 +118,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     settings->set_url(base::UTF8ToUTF16(*url));
   }
 
-  base::Optional<bool> backgrounds =
+  absl::optional<bool> backgrounds =
       job_settings.FindBoolKey(kSettingShouldPrintBackgrounds);
-  base::Optional<bool> selection_only =
+  absl::optional<bool> selection_only =
       job_settings.FindBoolKey(kSettingShouldPrintSelectionOnly);
   if (!backgrounds.has_value() || !selection_only.has_value())
     return nullptr;
@@ -132,9 +132,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   const base::Value* media_size_value = job_settings.FindKeyOfType(
       kSettingMediaSize, base::Value::Type::DICTIONARY);
   if (media_size_value) {
-    base::Optional<int> width_microns =
+    absl::optional<int> width_microns =
         media_size_value->FindIntKey(kSettingMediaSizeWidthMicrons);
-    base::Optional<int> height_microns =
+    absl::optional<int> height_microns =
         media_size_value->FindIntKey(kSettingMediaSizeHeightMicrons);
     if (width_microns.has_value() && height_microns.has_value()) {
       requested_media.size_microns =
@@ -164,16 +164,16 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 
-  base::Optional<bool> collate = job_settings.FindBoolKey(kSettingCollate);
-  base::Optional<int> copies = job_settings.FindIntKey(kSettingCopies);
-  base::Optional<int> color = job_settings.FindIntKey(kSettingColor);
-  base::Optional<int> duplex_mode = job_settings.FindIntKey(kSettingDuplexMode);
-  base::Optional<bool> landscape = job_settings.FindBoolKey(kSettingLandscape);
-  base::Optional<int> scale_factor =
+  absl::optional<bool> collate = job_settings.FindBoolKey(kSettingCollate);
+  absl::optional<int> copies = job_settings.FindIntKey(kSettingCopies);
+  absl::optional<int> color = job_settings.FindIntKey(kSettingColor);
+  absl::optional<int> duplex_mode = job_settings.FindIntKey(kSettingDuplexMode);
+  absl::optional<bool> landscape = job_settings.FindBoolKey(kSettingLandscape);
+  absl::optional<int> scale_factor =
       job_settings.FindIntKey(kSettingScaleFactor);
-  base::Optional<bool> rasterize_pdf =
+  absl::optional<bool> rasterize_pdf =
       job_settings.FindBoolKey(kSettingRasterizePdf);
-  base::Optional<int> pages_per_sheet =
+  absl::optional<int> pages_per_sheet =
       job_settings.FindIntKey(kSettingPagesPerSheet);
 
   if (!collate.has_value() || !copies.has_value() || !color.has_value() ||
@@ -183,9 +183,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     return nullptr;
   }
 
-  base::Optional<int> dpi_horizontal =
+  absl::optional<int> dpi_horizontal =
       job_settings.FindIntKey(kSettingDpiHorizontal);
-  base::Optional<int> dpi_vertical =
+  absl::optional<int> dpi_vertical =
       job_settings.FindIntKey(kSettingDpiVertical);
   if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
     return nullptr;
@@ -202,7 +202,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_scale_factor(static_cast<double>(scale_factor.value()) / 100.0);
   settings->set_rasterize_pdf(rasterize_pdf.value());
   settings->set_pages_per_sheet(pages_per_sheet.value());
-  base::Optional<bool> is_modifiable =
+  absl::optional<bool> is_modifiable =
       job_settings.FindBoolKey(kSettingPreviewModifiable);
   if (is_modifiable.has_value()) {
     settings->set_is_modifiable(is_modifiable.value());

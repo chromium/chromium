@@ -51,8 +51,8 @@ class RtcLogFileOperationsTest : public testing::Test {
   std::unique_ptr<FileOperations::Reader> reader_;
 
   // These are the most-recent results from the callbacks.
-  base::Optional<FileOperations::Reader::OpenResult> open_result_;
-  base::Optional<FileOperations::Reader::ReadResult> read_result_;
+  absl::optional<FileOperations::Reader::OpenResult> open_result_;
+  absl::optional<FileOperations::Reader::ReadResult> read_result_;
 
   FileOperations::Reader::OpenCallback MakeOpenCallback() {
     return base::BindOnce(&RtcLogFileOperationsTest::OnOpenResult,

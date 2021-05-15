@@ -105,7 +105,7 @@ void NotificationPresenter::FetchNotificationIfNecessary() {
 }
 
 void NotificationPresenter::OnNotificationFetched(
-    base::Optional<NotificationMessage> notification) {
+    absl::optional<NotificationMessage> notification) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::FETCHING, state_);
 

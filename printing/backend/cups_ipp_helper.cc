@@ -12,7 +12,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "printing/backend/cups_connection.h"
@@ -23,6 +22,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_CHROMEOS)
 #include "base/callback.h"
@@ -185,7 +185,7 @@ void ExtractCopies(const CupsOptionProvider& printer,
 }
 
 // Reads resolution from `attr` and puts into `size` in dots per inch.
-base::Optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
+absl::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
   ipp_res_t units;
   int yres;
   int xres = ippGetResolution(attr, i, &yres, &units);
@@ -211,12 +211,12 @@ void ExtractResolutions(const CupsOptionProvider& printer,
 
   int num_options = ippGetCount(attr);
   for (int i = 0; i < num_options; i++) {
-    base::Optional<gfx::Size> size = GetResolution(attr, i);
+    absl::optional<gfx::Size> size = GetResolution(attr, i);
     if (size)
       printer_info->dpis.push_back(size.value());
   }
   ipp_attribute_t* def_attr = printer.GetDefaultOptionValue(kIppResolution);
-  base::Optional<gfx::Size> size = GetResolution(def_attr, 0);
+  absl::optional<gfx::Size> size = GetResolution(def_attr, 0);
   if (size)
     printer_info->default_dpi = size.value();
 }

@@ -36,7 +36,7 @@ class BufferedFileWriterTest : public testing::Test {
   void OnError(protocol::FileTransfer_Error error);
 
   bool complete_called_ = false;
-  base::Optional<protocol::FileTransfer_Error> error_ = base::nullopt;
+  absl::optional<protocol::FileTransfer_Error> error_ = absl::nullopt;
 
   base::test::TaskEnvironment task_environment_;
 };

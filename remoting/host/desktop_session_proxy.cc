@@ -337,7 +337,7 @@ void DesktopSessionProxy::SetKeyboardLayoutMonitor(
   keyboard_layout_monitor_ = std::move(keyboard_layout_monitor);
 }
 
-const base::Optional<protocol::KeyboardLayout>&
+const absl::optional<protocol::KeyboardLayout>&
 DesktopSessionProxy::GetKeyboardCurrentLayout() const {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

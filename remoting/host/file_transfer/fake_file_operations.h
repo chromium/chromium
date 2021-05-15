@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -45,7 +45,7 @@ class FakeFileOperations : public FileOperations {
     InputFile();
     InputFile(base::FilePath filename,
               std::vector<std::uint8_t> data,
-              base::Optional<protocol::FileTransfer_Error> io_error);
+              absl::optional<protocol::FileTransfer_Error> io_error);
     InputFile(const InputFile& other);
     InputFile(InputFile&& other);
     InputFile& operator=(const InputFile&);
@@ -60,7 +60,7 @@ class FakeFileOperations : public FileOperations {
 
     // If set, this error will be returned instead of EOF once the provided data
     // has been read.
-    base::Optional<protocol::FileTransfer_Error> io_error;
+    absl::optional<protocol::FileTransfer_Error> io_error;
   };
 
   // Used to interact with FakeFileOperations after ownership is passed
@@ -78,7 +78,7 @@ class FakeFileOperations : public FileOperations {
     std::vector<OutputFile> files_written;
 
     // If set, file operations will return this error.
-    base::Optional<protocol::FileTransfer_Error> io_error = base::nullopt;
+    absl::optional<protocol::FileTransfer_Error> io_error = absl::nullopt;
   };
 
   explicit FakeFileOperations(TestIo* test_io);

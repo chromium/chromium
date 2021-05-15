@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -29,6 +28,7 @@
 #include "pdf/pdfium/pdfium_range.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/cpp/dev/buffer_dev.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_progressive.h"
@@ -133,7 +133,7 @@ class PDFiumEngine : public PDFEngine,
   const DocumentMetadata& GetDocumentMetadata() const override;
   int GetNumberOfPages() const override;
   base::Value GetBookmarks() override;
-  base::Optional<PDFEngine::NamedDestination> GetNamedDestination(
+  absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
   gfx::Rect GetPageBoundsRect(int index) override;
@@ -143,7 +143,7 @@ class PDFiumEngine : public PDFEngine,
   int GetCharCount(int page_index) override;
   gfx::RectF GetCharBounds(int page_index, int char_index) override;
   uint32_t GetCharUnicode(int page_index, int char_index) override;
-  base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(
+  absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) override;
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
@@ -161,7 +161,7 @@ class PDFiumEngine : public PDFEngine,
   bool GetPrintScaling() override;
   int GetCopiesToPrint() override;
   int GetDuplexType() override;
-  base::Optional<gfx::Size> GetUniformPageSizePoints() override;
+  absl::optional<gfx::Size> GetUniformPageSizePoints() override;
   void AppendBlankPages(size_t num_pages) override;
   void AppendPage(PDFEngine* engine, int index) override;
   std::vector<uint8_t> GetSaveData() override;
@@ -365,9 +365,9 @@ class PDFiumEngine : public PDFEngine,
                  gfx::Rect& rect) const;
 
   // If two-up view is enabled, returns the index of the page beside
-  // `page_index` page. Returns base::nullopt if there is no adjacent page or
+  // `page_index` page. Returns absl::nullopt if there is no adjacent page or
   // if two-up view is disabled.
-  base::Optional<size_t> GetAdjacentPageIndexForTwoUpView(
+  absl::optional<size_t> GetAdjacentPageIndexForTwoUpView(
       size_t page_index,
       size_t num_of_pages) const;
 
@@ -728,9 +728,9 @@ class PDFiumEngine : public PDFEngine,
   int last_page_to_search_ = -1;
   int last_character_index_to_search_ = -1;  // -1 if search until end of page.
   // Which result the user has currently selected. (0-based)
-  base::Optional<size_t> current_find_index_;
+  absl::optional<size_t> current_find_index_;
   // Where to resume searching. (0-based)
-  base::Optional<size_t> resume_find_index_;
+  absl::optional<size_t> resume_find_index_;
 
   std::unique_ptr<PDFiumPermissions> permissions_;
 
@@ -764,7 +764,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Holds the page index requested by PDFium while the scroll operation
   // is being handled (asynchronously).
-  base::Optional<int> in_flight_visible_page_;
+  absl::optional<int> in_flight_visible_page_;
 
   // Set to true after FORM_DoDocumentJSAction/FORM_DoDocumentOpenAction have
   // been called. Only after that can we call FORM_DoPageAAction.

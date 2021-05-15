@@ -27,7 +27,7 @@ class JniNotificationPresenter final {
   void Destroy(JNIEnv* env);
 
  private:
-  void OnNotificationFetched(base::Optional<NotificationMessage> notification);
+  void OnNotificationFetched(absl::optional<NotificationMessage> notification);
 
   JavaObjectWeakGlobalRef java_presenter_;
   NotificationClient notification_client_;

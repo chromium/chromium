@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -27,7 +27,7 @@ struct NotificationMessage;
 class NotificationClient final {
  public:
   using NotificationCallback =
-      base::OnceCallback<void(base::Optional<NotificationMessage>)>;
+      base::OnceCallback<void(absl::optional<NotificationMessage>)>;
 
   explicit NotificationClient(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
@@ -35,7 +35,7 @@ class NotificationClient final {
 
   // Fetches notifications from the server and calls |callback| with the
   // best matched notification. If notifications failed to fetch or no matching
-  // notification is found then base::nullopt will be returned. |callback| will
+  // notification is found then absl::nullopt will be returned. |callback| will
   // be silently dropped if |this| is deleted before the notification is
   // fetched.
   void GetNotification(const std::string& user_email,
@@ -53,12 +53,12 @@ class NotificationClient final {
 
   void OnRulesFetched(const std::string& user_email,
                       NotificationCallback callback,
-                      base::Optional<base::Value> rules);
+                      absl::optional<base::Value> rules);
 
   // Returns non-empty NotificationMessage if the rule is parsed successfully
   // and the rule should apply to the user. |message_text| and |link_text| will
   // not be set and caller needs to call FetchTranslatedText to fill them up.
-  base::Optional<NotificationMessage> ParseAndMatchRule(
+  absl::optional<NotificationMessage> ParseAndMatchRule(
       const base::Value& rule,
       const std::string& user_email,
       std::string* out_message_text_filename,
@@ -66,7 +66,7 @@ class NotificationClient final {
 
   void FetchTranslatedTexts(const std::string& message_text_filename,
                             const std::string& link_text_filename,
-                            base::Optional<NotificationMessage> partial_message,
+                            absl::optional<NotificationMessage> partial_message,
                             NotificationCallback done);
 
   std::unique_ptr<JsonFetcher> fetcher_;

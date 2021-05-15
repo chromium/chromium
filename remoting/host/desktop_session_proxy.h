@@ -13,7 +13,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_channel_handle.h"
@@ -27,6 +26,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace base {
@@ -135,7 +135,7 @@ class DesktopSessionProxy
   // changes. Called on the |caller_task_runner_| thread.
   void SetKeyboardLayoutMonitor(
       const base::WeakPtr<IpcKeyboardLayoutMonitor>& keyboard_layout_monitor);
-  const base::Optional<protocol::KeyboardLayout>& GetKeyboardCurrentLayout()
+  const absl::optional<protocol::KeyboardLayout>& GetKeyboardCurrentLayout()
       const;
 
   // APIs used to implement the InputInjector interface.
@@ -267,7 +267,7 @@ class DesktopSessionProxy
 
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
-  base::Optional<protocol::KeyboardLayout> keyboard_layout_;
+  absl::optional<protocol::KeyboardLayout> keyboard_layout_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopSessionProxy);
 };

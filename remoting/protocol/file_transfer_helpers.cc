@@ -10,7 +10,7 @@ namespace protocol {
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
     FileTransfer_Error_Type type,
-    base::Optional<int32_t> api_error_code) {
+    absl::optional<int32_t> api_error_code) {
   FileTransfer_Error error;
   error.set_type(type);
   if (api_error_code) {

@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
@@ -106,14 +106,13 @@ void DesktopEnvironmentOptions::set_enable_file_transfer(bool enabled) {
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
 #if defined(OS_WIN)
-  base::Optional<bool> directx_capturer =
-      options.GetBool("DirectX-Capturer");
+  absl::optional<bool> directx_capturer = options.GetBool("DirectX-Capturer");
   if (directx_capturer) {
     desktop_capture_options_.set_allow_directx_capturer(*directx_capturer);
   }
 #endif
   // This field is for test purpose. Usually it should not be set to false.
-  base::Optional<bool> detect_updated_region =
+  absl::optional<bool> detect_updated_region =
       options.GetBool("Detect-Updated-Region");
   if (detect_updated_region) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);

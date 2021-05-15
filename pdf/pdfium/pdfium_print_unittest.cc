@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/hash/md5.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
@@ -18,6 +17,7 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -46,7 +46,7 @@ void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
   ASSERT_EQ(expected_dimensions.size(), static_cast<size_t>(page_count));
 
   for (int i = 0; i < page_count; ++i) {
-    base::Optional<gfx::SizeF> page_size =
+    absl::optional<gfx::SizeF> page_size =
         exports.GetPDFPageSizeByIndex(pdf_data, i);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(expected_dimensions[i], page_size.value());

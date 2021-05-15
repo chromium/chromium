@@ -121,7 +121,7 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  base::Optional<base::Value> token_data(base::JSONReader::Read(file_contents));
+  absl::optional<base::Value> token_data(base::JSONReader::Read(file_contents));
   base::DictionaryValue* tokens = nullptr;
   if (!token_data.has_value() || !token_data->GetAsDictionary(&tokens)) {
     LOG(ERROR) << "File contents were not valid JSON, "
@@ -160,7 +160,7 @@ bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
     }
   }
 
-  base::Optional<base::Value> token_data(base::JSONReader::Read(file_contents));
+  absl::optional<base::Value> token_data(base::JSONReader::Read(file_contents));
   base::DictionaryValue* tokens = nullptr;
   if (!token_data.has_value() || !token_data->GetAsDictionary(&tokens)) {
     LOG(ERROR) << "Invalid token file format, could not store token.";

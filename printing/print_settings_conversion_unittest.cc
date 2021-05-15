@@ -50,13 +50,13 @@ const char kPrinterSettings[] = R"({
 }  // namespace
 
 TEST(PrintSettingsConversionTest, ConversionTest_InvalidSettings) {
-  base::Optional<base::Value> value = base::JSONReader::Read("{}");
+  absl::optional<base::Value> value = base::JSONReader::Read("{}");
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(PrintSettingsFromJobSettings(value.value()));
 }
 
 TEST(PrintSettingsConversionTest, ConversionTest) {
-  base::Optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
+  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(value.value());
@@ -80,7 +80,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
 
 #if defined(OS_CHROMEOS)
 TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
-  base::Optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
+  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
   value->SetKey(kSettingSendUserInfo, base::Value(false));
   std::unique_ptr<PrintSettings> settings =

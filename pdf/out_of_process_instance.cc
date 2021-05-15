@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -57,6 +56,7 @@
 #include "ppapi/cpp/size.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -632,7 +632,7 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
       static_cast<PP_PrivateDuplexMode_Dev>(engine()->GetDuplexType());
   options->copies = engine()->GetCopiesToPrint();
 
-  base::Optional<gfx::Size> uniform_page_size =
+  absl::optional<gfx::Size> uniform_page_size =
       engine()->GetUniformPageSizePoints();
   options->is_page_size_uniform = PP_FromBool(uniform_page_size.has_value());
   options->uniform_page_size = PPSizeFromSize(

@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +23,7 @@
 #include "pdf/ui/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -268,7 +268,7 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
   constexpr int kFirstRunStartIndex = 0;
   constexpr int kFirstRunEndIndex = 20;
   constexpr int kPageIndex = 0;
-  base::Optional<AccessibilityTextRunInfo> text_run_info_1 =
+  absl::optional<AccessibilityTextRunInfo> text_run_info_1 =
       engine->GetTextRunInfo(kPageIndex, kFirstRunStartIndex);
   ASSERT_TRUE(text_run_info_1.has_value());
 
@@ -304,7 +304,7 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
   // Test the properties of second text run.
   // Note: The leading spaces in second text run are accounted for in the end
   // of first text run. Hence we won't see a space leading the second text run.
-  base::Optional<AccessibilityTextRunInfo> text_run_info_2 =
+  absl::optional<AccessibilityTextRunInfo> text_run_info_2 =
       engine->GetTextRunInfo(kPageIndex, kSecondRunStartIndex);
   ASSERT_TRUE(text_run_info_2.has_value());
 
@@ -385,7 +385,7 @@ TEST_F(PDFiumPageTextTest, GetTextRunInfo) {
   }
 
   // Test negative char index returns nullopt
-  base::Optional<AccessibilityTextRunInfo> text_run_info_result =
+  absl::optional<AccessibilityTextRunInfo> text_run_info_result =
       engine->GetTextRunInfo(0, -1);
   ASSERT_FALSE(text_run_info_result.has_value());
 
@@ -439,7 +439,7 @@ TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
 
   int current_char_index = 0;
   for (const auto& expected_text_run : expected_text_runs) {
-    base::Optional<AccessibilityTextRunInfo> text_run_info_result =
+    absl::optional<AccessibilityTextRunInfo> text_run_info_result =
         engine->GetTextRunInfo(0, current_char_index);
     ASSERT_TRUE(text_run_info_result.has_value());
     const auto& actual_text_run = text_run_info_result.value();

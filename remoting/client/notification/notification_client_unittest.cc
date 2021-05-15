@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "remoting/client/notification/json_fetcher.h"
 #include "remoting/client/notification/notification_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -31,7 +31,7 @@ class MockJsonFetcher : public JsonFetcher {
  public:
   // GMock doesn't work with rvalue parameters. This works around it.
   MOCK_CONST_METHOD1(FetchJsonFile,
-                     base::Optional<base::Value>(const std::string&));
+                     absl::optional<base::Value>(const std::string&));
   void FetchJsonFile(const std::string& relative_path,
                      FetchJsonFileCallback done,
                      const net::NetworkTrafficAnnotationTag&) override {
@@ -217,9 +217,9 @@ TEST_F(NotificationClientTest, TextFilesNotFound) {
   base::Value translation = CreateDefaultTranslations("message");
 
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
-      .WillOnce(ReturnByMove(base::nullopt));
+      .WillOnce(ReturnByMove(absl::nullopt));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
-      .WillOnce(ReturnByMove(base::nullopt));
+      .WillOnce(ReturnByMove(absl::nullopt));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));

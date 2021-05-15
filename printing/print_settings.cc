@@ -189,7 +189,7 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   if (color_model == mojom::ColorModel::kUnknownColorModel)
     return CUPS_PRINT_COLOR_MODE_MONOCHROME;
 
-  base::Optional<bool> is_color = IsColorModelSelected(color_model);
+  absl::optional<bool> is_color = IsColorModelSelected(color_model);
   if (!is_color.has_value()) {
     NOTREACHED();
     return std::string();
@@ -201,7 +201,7 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
 #endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
 #endif  // defined(USE_CUPS)
 
-base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
+absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   switch (color_model) {
     case mojom::ColorModel::kColor:
     case mojom::ColorModel::kCMYK:
@@ -237,7 +237,7 @@ base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
       return false;
     case mojom::ColorModel::kUnknownColorModel:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.

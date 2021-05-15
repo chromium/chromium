@@ -443,14 +443,14 @@ void PDFiumPage::LogOverlappingAnnotations() {
                                  overlap_count, 1, 100, 50);
 }
 
-base::Optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
+absl::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
     int start_char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   int chars_count = FPDFText_CountChars(text_page);
   // Check to make sure `start_char_index` is within bounds.
   if (start_char_index < 0 || start_char_index >= chars_count)
-    return base::nullopt;
+    return absl::nullopt;
 
   int actual_start_char_index = GetFirstNonUnicodeWhiteSpaceCharIndex(
       text_page, start_char_index, chars_count);
@@ -874,8 +874,8 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
 
   target->page = page_index;
 
-  base::Optional<float> x;
-  base::Optional<float> y;
+  absl::optional<float> x;
+  absl::optional<float> y;
   GetPageDestinationTarget(destination, &x, &y, &target->zoom);
 
   if (x) {
@@ -889,12 +889,12 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
 }
 
 void PDFiumPage::GetPageDestinationTarget(FPDF_DEST destination,
-                                          base::Optional<float>* dest_x,
-                                          base::Optional<float>* dest_y,
-                                          base::Optional<float>* zoom_value) {
-  *dest_x = base::nullopt;
-  *dest_y = base::nullopt;
-  *zoom_value = base::nullopt;
+                                          absl::optional<float>* dest_x,
+                                          absl::optional<float>* dest_y,
+                                          absl::optional<float>* zoom_value) {
+  *dest_x = absl::nullopt;
+  *dest_y = absl::nullopt;
+  *zoom_value = absl::nullopt;
   if (!available_)
     return;
 

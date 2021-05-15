@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -110,7 +110,7 @@ bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
 // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
 // Returns true if it's a tagged (accessible) PDF, false if it's a valid
 // PDF but untagged, and nullopt if the PDF can't be parsed.
-base::Optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer);
+absl::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer);
 
 // Given a tagged PDF (see IsPDFDocTagged, above), return the portion of
 // the structure tree for a given page as a hierarchical tree of base::Values.
@@ -124,7 +124,7 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 //     of.
 // Returns the size of the page in points, or nullopt if the document or the
 // page number are not valid.
-base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
+absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_number);
 

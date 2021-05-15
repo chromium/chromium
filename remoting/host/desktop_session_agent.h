@@ -241,7 +241,7 @@ class DesktopSessionAgent
 
   // Routes file-transfer messages to the corresponding reader/writer to be
   // executed.
-  base::Optional<SessionFileOperationsHandler> session_file_operations_handler_;
+  absl::optional<SessionFileOperationsHandler> session_file_operations_handler_;
 
   // Reports process statistic data to network process.
   std::unique_ptr<ProcessStatsSender> stats_sender_;

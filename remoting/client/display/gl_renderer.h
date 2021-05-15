@@ -11,12 +11,12 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/display/gl_cursor.h"
 #include "remoting/client/display/gl_cursor_feedback.h"
 #include "remoting/client/display/gl_desktop.h"
 #include "remoting/proto/control.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc {
 class DesktopFrame;
@@ -136,7 +136,7 @@ class GlRenderer {
   std::unique_ptr<Canvas> canvas_;
 
   // Used to recover the transformation matrix when the canvas is recreated.
-  base::Optional<std::array<float, 9>> transformation_matrix_;
+  absl::optional<std::array<float, 9>> transformation_matrix_;
 
   GlCursor cursor_;
   GlCursorFeedback cursor_feedback_;

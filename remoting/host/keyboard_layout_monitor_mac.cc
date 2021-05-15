@@ -16,11 +16,11 @@
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/proto/control.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -59,8 +59,8 @@ class KeyboardLayoutMonitorMac : public KeyboardLayoutMonitor {
   base::WeakPtrFactory<KeyboardLayoutMonitorMac> weak_ptr_factory_;
 };
 
-base::Optional<protocol::LayoutKeyFunction> GetFixedKeyFunction(int keycode);
-base::Optional<protocol::LayoutKeyFunction> GetCharFunction(UniChar char_code,
+absl::optional<protocol::LayoutKeyFunction> GetFixedKeyFunction(int keycode);
+absl::optional<protocol::LayoutKeyFunction> GetCharFunction(UniChar char_code,
                                                             int keycode);
 
 KeyboardLayoutMonitorMac::KeyboardLayoutMonitorMac(
@@ -168,7 +168,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
         *(*layout_message.mutable_keys())[usb_code].mutable_actions();
 
     for (int shift_level = 0; shift_level < 4; ++shift_level) {
-      base::Optional<protocol::LayoutKeyFunction> fixed_function =
+      absl::optional<protocol::LayoutKeyFunction> fixed_function =
           GetFixedKeyFunction(keycode);
       if (fixed_function) {
         key_actions[shift_level].set_function(*fixed_function);
@@ -197,7 +197,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       }
 
       if (result_length == 1) {
-        base::Optional<protocol::LayoutKeyFunction> char_function =
+        absl::optional<protocol::LayoutKeyFunction> char_function =
             GetCharFunction(result_array[0], keycode);
         if (char_function) {
           key_actions[shift_level].set_function(*char_function);
@@ -221,7 +221,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
                      callback_context->weak_ptr, std::move(layout_message)));
 }
 
-base::Optional<protocol::LayoutKeyFunction> GetFixedKeyFunction(int keycode) {
+absl::optional<protocol::LayoutKeyFunction> GetFixedKeyFunction(int keycode) {
   // Some keys are not represented in the layout and always have the same
   // function.
   switch (keycode) {
@@ -282,11 +282,11 @@ base::Optional<protocol::LayoutKeyFunction> GetFixedKeyFunction(int keycode) {
     case kVK_JIS_Eisu:
       return protocol::LayoutKeyFunction::EISU;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<protocol::LayoutKeyFunction> GetCharFunction(UniChar char_code,
+absl::optional<protocol::LayoutKeyFunction> GetCharFunction(UniChar char_code,
                                                             int keycode) {
   switch (char_code) {
     case kHomeCharCode:
@@ -332,7 +332,7 @@ base::Optional<protocol::LayoutKeyFunction> GetCharFunction(UniChar char_code,
     case kDeleteCharCode:
       return protocol::LayoutKeyFunction::DELETE_;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

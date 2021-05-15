@@ -11,10 +11,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "remoting/protocol/stream_channel_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -91,7 +91,7 @@ class FakeStreamSocket : public P2PStreamSocket {
   int write_limit_ = 0;
   int next_write_error_ = 0;
 
-  base::Optional<int> next_read_error_;
+  absl::optional<int> next_read_error_;
   scoped_refptr<net::IOBuffer> read_buffer_;
   int read_buffer_size_ = 0;
   net::CompletionOnceCallback read_callback_;

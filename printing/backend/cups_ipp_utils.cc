@@ -8,10 +8,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/print_backend_consts.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace printing {

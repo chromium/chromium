@@ -30,13 +30,13 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/nix/xdg_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/glib/glib_signal.h"
@@ -166,7 +166,7 @@ gboolean SessionDialog::OnClose(GtkWidget* dialog, GdkEvent*) {
   return true;
 }
 
-base::Optional<XSession> TryLoadSession(base::FilePath path) {
+absl::optional<XSession> TryLoadSession(base::FilePath path) {
   std::unique_ptr<GKeyFile, void (*)(GKeyFile*)> key_file(g_key_file_new(),
                                                           &g_key_file_free);
   GError* error;
@@ -175,14 +175,14 @@ base::Optional<XSession> TryLoadSession(base::FilePath path) {
                                  G_KEY_FILE_NONE, &error)) {
     LOG(WARNING) << "Failed to load " << path << ": " << error->message;
     g_error_free(error);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Files without a "Desktop Entry" group can be ignored. (An empty file can be
   // put in a higher-priority directory to hide entries from a lower-priority
   // directory.)
   if (!g_key_file_has_group(key_file.get(), G_KEY_FILE_DESKTOP_GROUP)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Files with "NoDisplay" or "Hidden" set should be ignored.
@@ -190,7 +190,7 @@ base::Optional<XSession> TryLoadSession(base::FilePath path) {
        {G_KEY_FILE_DESKTOP_KEY_NO_DISPLAY, G_KEY_FILE_DESKTOP_KEY_HIDDEN}) {
     if (g_key_file_get_boolean(key_file.get(), G_KEY_FILE_DESKTOP_GROUP, key,
                                nullptr)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -209,7 +209,7 @@ base::Optional<XSession> TryLoadSession(base::FilePath path) {
             : !base::ExecutableExistsInPath(base::Environment::Create().get(),
                                             try_exec_path.value())) {
       LOG(INFO) << "Rejecting " << path << " due to TryExec=" << try_exec_path;
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -223,7 +223,7 @@ base::Optional<XSession> TryLoadSession(base::FilePath path) {
   } else {
     LOG(WARNING) << "Failed to load value of " << G_KEY_FILE_DESKTOP_KEY_NAME
                  << " from " << path;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (gchar* exec =
@@ -234,7 +234,7 @@ base::Optional<XSession> TryLoadSession(base::FilePath path) {
   } else {
     LOG(WARNING) << "Failed to load value of " << G_KEY_FILE_DESKTOP_KEY_EXEC
                  << " from " << path;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Optional fields.
@@ -296,7 +296,7 @@ std::vector<XSession> CollectXSessions() {
        "default"});
 
   for (const auto& session : session_files) {
-    base::Optional<XSession> loaded_session = TryLoadSession(session.second);
+    absl::optional<XSession> loaded_session = TryLoadSession(session.second);
     if (loaded_session) {
       sessions.push_back(std::move(*loaded_session));
     }

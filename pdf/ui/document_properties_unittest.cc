@@ -8,11 +8,11 @@
 
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
-#include "base/optional.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/document_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -89,7 +89,7 @@ class FormatPageSizeTest : public testing::Test {
 }  // namespace
 
 TEST_F(FormatPageSizeTest, NoUniformSize) {
-  EXPECT_EQ(FormatPageSize(base::nullopt), u"Varies");
+  EXPECT_EQ(FormatPageSize(absl::nullopt), u"Varies");
 }
 
 class FormatPageSizeMillimetersTest : public FormatPageSizeTest {

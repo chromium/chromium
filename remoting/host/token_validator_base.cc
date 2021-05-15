@@ -300,7 +300,7 @@ std::string TokenValidatorBase::ProcessResponse(int net_result) {
           ? data_.substr(sizeof(kJsonSafetyPrefix) - 1)
           : data_;
 
-  base::Optional<base::Value> value = base::JSONReader::Read(responseData);
+  absl::optional<base::Value> value = base::JSONReader::Read(responseData);
   if (!value || !value->is_dict()) {
     LOG(ERROR) << "Invalid token validation response: '" << data_ << "'";
     return std::string();

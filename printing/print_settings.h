@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -34,9 +34,9 @@ mojom::ColorModel ColorModeToColorModel(int color_mode);
 
 // Returns true if `color_model` is color and false if it is B&W.  Callers
 // are not supposed to pass in `mojom::ColorModel::kUnknownColorModel`, but
-// if they do then the result will be base::nullopt.
+// if they do then the result will be absl::nullopt.
 COMPONENT_EXPORT(PRINTING)
-base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
+absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
 
 #if defined(USE_CUPS)
 // Get the color model setting name and value for the `color_model`.

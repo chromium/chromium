@@ -11,9 +11,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/protocol/file_transfer_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 

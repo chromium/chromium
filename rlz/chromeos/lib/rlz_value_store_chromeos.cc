@@ -157,13 +157,13 @@ void OnSetRlzPingSent(int retry_count, bool success) {
 }
 
 // Copy |value| without empty children.
-base::Optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
+absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::DICTIONARY: {
       base::Value::DictStorage storage;
 
       for (const auto& key_value_pair : value.DictItems()) {
-        base::Optional<base::Value> item_copy =
+        absl::optional<base::Value> item_copy =
             CopyWithoutEmptyChildren(key_value_pair.second);
         if (item_copy)
           storage.insert(
@@ -171,7 +171,7 @@ base::Optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
       }
 
       if (storage.empty())
-        return base::nullopt;
+        return absl::nullopt;
 
       return base::Value(std::move(storage));
     }
@@ -181,13 +181,13 @@ base::Optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
       storage.reserve(value.GetList().size());
 
       for (const base::Value& item : value.GetList()) {
-        base::Optional<base::Value> item_copy = CopyWithoutEmptyChildren(item);
+        absl::optional<base::Value> item_copy = CopyWithoutEmptyChildren(item);
         if (item_copy)
           storage.push_back(std::move(*item_copy));
       }
 
       if (storage.empty())
-        return base::nullopt;
+        return absl::nullopt;
 
       return base::Value(std::move(storage));
     }

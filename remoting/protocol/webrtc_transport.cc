@@ -175,25 +175,25 @@ std::string GetTransportProtocol(
 // Returns true if the RTC stats report indicates a relay connection. If the
 // connection type cannot be determined (which should never happen with a valid
 // RTCStatsReport), nullopt is returned.
-base::Optional<bool> IsConnectionRelayed(
+absl::optional<bool> IsConnectionRelayed(
     const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
   const webrtc::RTCIceCandidatePairStats* selected_candidate_pair =
       GetSelectedCandidatePair(report);
   if (!selected_candidate_pair) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto* local_candidate =
       GetIceCandidate<webrtc::RTCLocalIceCandidateStats>(
           report, *selected_candidate_pair->local_candidate_id);
   if (!local_candidate) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string local_candidate_type = *local_candidate->candidate_type;
   const auto* remote_candidate =
       GetIceCandidate<webrtc::RTCRemoteIceCandidateStats>(
           report, *selected_candidate_pair->remote_candidate_id);
   if (!remote_candidate) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string remote_candidate_type = *remote_candidate->candidate_type;
 
@@ -716,8 +716,8 @@ const SessionOptions& WebrtcTransport::session_options() const {
 }
 
 void WebrtcTransport::SetPreferredBitrates(
-    base::Optional<int> min_bitrate_bps,
-    base::Optional<int> max_bitrate_bps) {
+    absl::optional<int> min_bitrate_bps,
+    absl::optional<int> max_bitrate_bps) {
   preferred_min_bitrate_bps_ = min_bitrate_bps;
   preferred_max_bitrate_bps_ = max_bitrate_bps;
   if (connected_) {
@@ -838,7 +838,7 @@ void WebrtcTransport::Close(ErrorCode error) {
 void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   DCHECK(thread_checker_.CalledOnValidThread());
   session_options_ = options;
-  base::Optional<std::string> video_codec = options.Get("Video-Codec");
+  absl::optional<std::string> video_codec = options.Get("Video-Codec");
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
@@ -1117,7 +1117,7 @@ void WebrtcTransport::OnStatsDelivered(
     event_handler_->OnWebrtcTransportProtocolChanged();
   }
 
-  base::Optional<bool> connection_relayed = IsConnectionRelayed(report);
+  absl::optional<bool> connection_relayed = IsConnectionRelayed(report);
   if (connection_relayed == connection_relayed_) {
     // No change in connection type. Unknown -> direct/relayed is treated as a
     // change, so the correct initial bitrate caps are set.

@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/time/time.h"
@@ -27,6 +26,7 @@
 #include "remoting/host/linux/x11_keyboard_impl.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/proto/internal.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -144,8 +144,8 @@ class InputInjectorX11 : public InputInjector {
     bool IsLockKey(x11::KeyCode keycode);
 
     // Sets the keyboard lock states to those provided.
-    void SetLockStates(base::Optional<bool> caps_lock,
-                       base::Optional<bool> num_lock);
+    void SetLockStates(absl::optional<bool> caps_lock,
+                       absl::optional<bool> num_lock);
 
     void InjectScrollWheelClicks(int button, int count);
     // Compensates for global button mappings and resets the XTest device
@@ -296,8 +296,8 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
     }
 
     if (!IsLockKey(static_cast<x11::KeyCode>(keycode))) {
-      base::Optional<bool> caps_lock;
-      base::Optional<bool> num_lock;
+      absl::optional<bool> caps_lock;
+      absl::optional<bool> num_lock;
 
       // For caps lock, check both the new caps_lock field and the old
       // lock_states field.
@@ -399,8 +399,8 @@ bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
     return false;
 }
 
-void InputInjectorX11::Core::SetLockStates(base::Optional<bool> caps_lock,
-                                           base::Optional<bool> num_lock) {
+void InputInjectorX11::Core::SetLockStates(absl::optional<bool> caps_lock,
+                                           absl::optional<bool> num_lock) {
   // The lock bits associated with each lock key.
   auto caps_lock_mask = static_cast<unsigned int>(x11::ModMask::Lock);
   auto num_lock_mask = static_cast<unsigned int>(x11::ModMask::c_2);
