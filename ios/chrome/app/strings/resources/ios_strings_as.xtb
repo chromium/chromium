@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্ৰাউজ কৰক</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
+<translation id="2022352537516230970">আপোনাৰ iPhoneৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="2074131957428911366">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ যেতিয়াই মন যায় তেতিয়াই সলনি কৰিব পাৰে।</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">সদায় দেখুৱাওক</translation>
 <translation id="418156467088430727">নতুন টেবত অফলাইন সংস্কৰণটো চাওক</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
+<translation id="4184011057600693970">আপোনাৰ iPadৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="424315890655130736">পাছফ্ৰেজ লিখক</translation>
 <translation id="4263576668337963058">উপলব্ধ পৃষ্ঠাৰ কার্যসমূহ দেখুৱাওক</translation>
 <translation id="4267380167363222949">পৰৱৰ্তী টেব</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপোনাৰ কাহিনীসমূহ আৰু কাৰ্যকলাপ ইয়াত নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6066301408025741299">বাতিল কৰিবলৈ টিপক।</translation>
+<translation id="60829778314739003">গ্ৰহণ কৰি অব্যাহত ৰাখক</translation>
 <translation id="6108923351542677676">ছেট আপ প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="6119050551270742952">বৰ্তমানৰ ৱেবপৃষ্ঠাটো ইনক’গনিট’ত আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ কোনো ইনক’গনিট’ টেব খোলক</translation>
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
+<translation id="6830804042318138535">অধিক পঢ়ক</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6851516051005285358">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="6858855187367714033">স্কেন কৰা হ’ল</translation>
@@ -628,11 +632,13 @@
 <translation id="7203585745079012652">সঁহাৰিটো কৈ দিয়ক</translation>
 <translation id="7207383424303353046">নতুন: Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই ছাইটসমূহ স্বয়ংক্ৰিয়ভাৱে তাত খোলক। <ph name="BEGIN_LINK" />ছেটিংসমূহ খোলক<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">কার্ডৰ উপনাম অমান্য</translation>
+<translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7265758999917665941">এই ছাইটটোৰ বাবে কেতিয়াও নহয়</translation>
 <translation id="7272437679830969316">আপোনাৰ পৰিচয় সত্যাপন কৰিব পৰা নগ’ল। পাছৱৰ্ড প্ৰতিলিপি কৰা নহ’ল।</translation>
 <translation id="7291368939935408496">পাছৱর্ড সাজু কৰি থকা হৈছে...</translation>
 <translation id="7293171162284876153">ছিংক কৰা আৰম্ভ কৰিবলৈ "আপোনাৰ Chrome ডেটা ছিংক কৰক" অন কৰক।</translation>
 <translation id="7313347584264171202">ইয়াত আপুনি নিজৰ ইনক’গনিট’ টেবসমূহ বিচাৰি পাব</translation>
+<translation id="7319242366286515846">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK" />ত সন্মত হৈছে</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনল’ড কৰা হ’ল</translation>
 <translation id="7340958967809483333">Discoverৰ বিকল্পসমূহ</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুজি পালোঁ</translation>
@@ -777,6 +783,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">আপোনাক নিজৰ Google Accountৰ পৰা ছাইন আউট কৰোৱা নহয়।</translation>
 <translation id="8870413625673593573">শেহতীয়াকৈ বন্ধ কৰা</translation>
+<translation id="8876882697946675716">আপোনাৰ ডিভাইচসমূহ ছিংক কৰি ৰাখক</translation>
 <translation id="8881801611828450202">এই প্ৰতিচ্ছবিটোৰ কাৰণে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
 <translation id="8917490105272468696">হয়, মই সন্মত</translation>

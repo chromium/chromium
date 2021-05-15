@@ -4312,11 +4312,6 @@
 
       注意：对于未加入 <ph name="MS_AD_NAME" /> 网域的 Windows® 实例，强制安装仅限于 Chrome 网上应用店中所列的应用和扩展程序。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
-<translation id="682408981080798691">如果此政策已启用或未设置，系统会开启“渲染程序代码完整性”。
-
-      停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
-
-      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="6833023569065717572">如果此政策设为 True，设备的登录屏幕将采用 24 小时制的时钟格式。
 
       如果此政策设为 False，设备的登录屏幕将采用 12 小时制的时钟格式。

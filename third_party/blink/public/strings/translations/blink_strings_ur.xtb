@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">ٹائمر</translation>
 <translation id="3199563858620722075">کومبو باکس</translation>
 <translation id="3220661731597678625">موجودہ قدم</translation>
+<translation id="3321030238473337787">پلے بیک کی رفتار</translation>
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3450233048674729344">قدر <ph name="MAXIMUM" /> سے کم یا اس کے برابر ہونی چاہیے۔</translation>
 <translation id="3486220673238053218">وضاحت</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">مینو بار</translation>
 <translation id="4293574643247337246">صفحے کا ہیڈر</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
+<translation id="4371899966896349864">پلے بیک اسپیڈ مینو کو چھپائیں</translation>
 <translation id="4384249794467006333">یہ تصویر لیبل شدہ نہیں ہے۔ تصویر کی تفصیلات حاصل کرنے کے لیے اوپر دائيں جانب مزید اختیارات کا مینو کھولیں۔</translation>
 <translation id="4384583879834880242">سوال و جواب</translation>
 <translation id="4444765639179266822">بظاہر یہ لکھا ہے: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ٹری آئٹم</translation>
 <translation id="5466621249238537318">براہ کرم ایک یا مزید فائلیں منتخب کریں۔</translation>
 <translation id="5468998798572797635">پوری اسکرین سے خارج ہوں</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">تاریخ منتخب کنندہ</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="5546461542133609677">آواز چلائیں</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">مزید اختیارات</translation>
 <translation id="576709008726043716">تعارف</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
+<translation id="5786442179789148008">پلے بیک اسپیڈ مینو دکھائیں</translation>
 <translation id="5787939484346677755">پھیلایا گیا، خود کار تکمیل کے اختیارات دستیاب ہیں۔</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5966707198760109579">ہفتہ</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">اسپن بٹن</translation>
 <translation id="6011459053400940133">والیوم سلائیڈر</translation>
 <translation id="6015796118275082299">سال</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">خاموش کریں</translation>
 <translation id="6885760532393684712">ڈائریکٹری</translation>
 <translation id="689129560213475294">خاتمہ کتاب</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">بلاک کوٹ</translation>
 <translation id="693476918119313863">ہیڈر</translation>
 <translation id="6941933287844615239">میڈیا ڈاؤن لوڈ کریں</translation>
@@ -252,6 +258,7 @@
 <translation id="7745230546936012372">تصویر کی غائب تفصیلات حاصل کرنے کے لئے سیاق و سبق کا مینو کھولیں۔</translation>
 <translation id="7750228210027921155">تصویر میں تصویر</translation>
 <translation id="775297008183122718">غلط اندراج</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">موقوف کریں</translation>
 <translation id="7802800022689234070">افشاء کا مثلث</translation>
 <translation id="7852167693871241274">رنگین سلائیڈر</translation>
@@ -265,6 +272,7 @@
 <translation id="8105797009065549151">نوٹ کا حوالہ</translation>
 <translation id="811583516810654505">تفصیل حاصل ہو رہی ہے...</translation>
 <translation id="8117451130807776954">یہ ہفتہ</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">مقامی تاریخ اور وقت کا منتخب کنندہ</translation>
 <translation id="8261464734335370856">غلط املا</translation>
@@ -289,6 +297,7 @@
 <translation id="8613126697340063924">ریموٹ پلے بیک کو کنٹرول کریں</translation>
 <translation id="862370744433916922">ذیلی عنوان</translation>
 <translation id="8634971699417195529">مہینہ منتخب کرنے والا دکھائیں</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">لائن رَیپ کریں | لائن ملفوف کریں</translation>
 <translation id="8711688047404765493">آؤٹ پٹ</translation>
 <translation id="8750798805984357768">براہ کرم ان اختیارات میں سے ایک کو منتخب کریں۔</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="2905036901251765993">సమీపంలోని వ్యక్తులతో షేర్ చేయడానికి, ఈ QR కోడ్‌ను స్కాన్ చేయాల్సిందిగా వాళ్లను అడగండి</translation>
 <translation id="2909615210195135082">Google నోటిఫికేషన్‌ల ప్లాట్‌ఫామ్</translation>
+<translation id="2912296070571964914">మీరు ఆసక్తిని కలిగి ఉన్న అంశాలను మేనేజ్ చేయండి</translation>
 <translation id="2923908459366352541">పేరు చెల్లదు</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> నిల్వ</translation>
 <translation id="2932222164150889403">మీ కీబోర్డ్ మారదు</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">ఈ పేజీని బుక్‌మార్క్ చేయి</translation>
 <translation id="3259831549858767975">పేజీలోని అన్నింటినీ చిన్నవిగా చేయండి</translation>
 <translation id="3264124641674805320">తర్వాత ఉపయోగించడానికి కంటెంట్‌ను డౌన్‌లోడ్ చేయడం ఎలా</translation>
+<translation id="3264259168916048410">సైట్‌కు సైన్ ఇన్ చేయడానికి మీ కంప్యూటర్ ఈ పరికరాన్ని ఉపయోగించాలనుకుంటుంది</translation>
+<translation id="3265534588625245297">మీరు ఫాలో చేసే సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="3269093882174072735">చిత్రాన్ని లోడ్ చేయి</translation>
 <translation id="3269956123044984603">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, Android ఖాతా సెట్టింగ్‌ల‌లో "ఆటో-సింక్‌ డేటా" ఆన్ చేయండి.</translation>
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయి</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4384468725000734951">శోధన కోసం Sogouను ఉపయోగిస్తుంది</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - డౌన్‌లోడ్ చేస్తోంది…</translation>
 <translation id="4404568932422911380">బుక్‌మార్క్‌లు లేవు</translation>
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
 <translation id="4411535500181276704">లైట్ మోడ్</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">ఫైల్ పేరు మార్చండి</translation>
 <translation id="4882831918239250449">Search, యాడ్స్‌లతో పాటు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="4885273946141277891">మద్దతు లేనన్ని సార్లు Chromeను ప్రారంభించడానికి ప్రయత్నించారు.</translation>
+<translation id="4905269543817054577">హిస్టరీ అజ్ఞాతంలో సేవ్ చేయబడలేదు</translation>
 <translation id="4908869848243824489">Google ద్వారా Discover</translation>
 <translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4913161338056004800">గణాంకాలను రీసెట్ చేయి</translation>
@@ -951,6 +956,7 @@
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
+<translation id="7252076891734325316">మీ ఫోన్‌ను కంప్యూటర్‌కు దగ్గరగా ఉంచండి</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> మార్చాలా?</translation>
 <translation id="7290209999329137901">పేరు మార్పు అందుబాటులో లేదు</translation>
@@ -1017,6 +1023,7 @@
 <translation id="7630202231528827509">ప్రొవైడర్ URL</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయి…</translation>
+<translation id="764170292089748542">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయడాన్ని ఎంచుకున్న తర్వాత Chrome మీ బ్రౌజింగ్ హిస్టరీని సేవ్ చేయదు. మీ ఇష్టమైన సైట్‌లను యాక్సెస్ చేయడానికి మీరు ఇప్పటికీ బుక్‌మార్క్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
@@ -1042,6 +1049,7 @@
 <translation id="7810647596859435254">దీనితో తెరువు…</translation>
 <translation id="7815484226266492798">పొడవైన స్క్రీన్‌షాట్</translation>
 <translation id="7821588508402923572">మీ డేటా పొదుపులు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="78270725016672455">సైట్‌కు సైన్ ఇన్ చేయడానికి మీ కంప్యూటర్ ఈ పరికరాన్ని రిజిస్టర్ చేయాలనుకుంటుంది</translation>
 <translation id="7844171778363018843">సింక్ చేయడానికి డేటా ఏదీ ఎంచుకోబడలేదు</translation>
 <translation id="7846296061357476882">Google సర్వీస్‌లు</translation>
 <translation id="784934925303690534">సమయ పరిధి</translation>
@@ -1138,6 +1146,7 @@
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - భాష సిద్ధంగా ఉంది, <ph name="APP_NAME" />ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="8442258441309440798">కథనాలు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="8443209985646068659">Chrome అప్‌డేట్ అవదు</translation>
 <translation id="8445448999790540984">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8937267401510745927">టాస్క్‌లు పూర్తి చేయడంలో మీకు సహాయపడటానికి, మీరు Assistantను ఉపయోగించే సైట్‌ల URLలు అలాగే వాటిలోని కంటెంట్‌ను, వీటితో పాటు మీరు Assistant ద్వారా సమర్పించే సమాచారాన్ని Google పొందుతుంది. ఈ సమాచారం మీ Google ఖాతాలో స్టోర్ చేయబడవచ్చు. మీరు Assistantను Chrome సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="8937772741022875483">డిజిటల్ సంక్షేమం నుండి మీ Chrome కార్యకలాపం తీసివేయాలా?</translation>
 <translation id="8942627711005830162">మరొక విండోలో తెరువు</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - ఈ భాషను డౌన్‌లోడ్ చేయడం సాధ్యపడదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8951232171465285730">Chrome మీకు <ph name="MEGABYTES" /> MB ఆదా చేసింది</translation>
 <translation id="8965591936373831584">పెండింగ్‌లో ఉంది</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>

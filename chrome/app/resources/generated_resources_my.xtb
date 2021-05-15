@@ -441,7 +441,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{အုပ်စုအသစ်သို့ တဘ်ထည့်ခြင်း}other{အုပ်စုအသစ်သို့ တဘ်များထည့်ခြင်း}}</translation>
 <translation id="1470350905258700113">ဤစက်ကို သုံးရန်</translation>
 <translation id="1470946456740188591">Caret ဖြင့်ရှာကြည့်ခြင်းကို ဖွင့်ရန် သို့မဟုတ် ပိတ်ရန် Ctrl+Search+7 ဖြတ်လမ်းလင့်ခ်ကိုသုံးပါ</translation>
-<translation id="1472675084647422956">ပိုပြရန်</translation>
+<translation id="1472675084647422956">ပိုပြပါ</translation>
 <translation id="1474785664565228650">မိုက်ခရိုဖုန်းဆက်တင် ပြောင်းလဲမှု အကျိုးသက်ရောက်စေရန် Parallels Desktop ကို ပြန်ဖွင့်ရပါမည်။ ရှေ့ဆက်ရန် Parallels Desktop ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="1475502736924165259">အခြားအုပ်စုများနှင့် ကိုက်ညီမှုမရှိသည့် အသိအမှတ်ပြုလက်မှတ်များ သင့်ထံတွင် ရှိပါသည်</translation>
 <translation id="1476088332184200792">သင့်စက်သို့ မိတ္တူကူးခြင်း</translation>
@@ -2209,7 +2209,7 @@
 <translation id="3364986687961713424">သင်၏ စီမံခန့်ခွဲသူထံမှ- <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl သို့မဟုတ် Alt သုံးရန်</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
-<translation id="3369067987974711168">ဤပို့တ်အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ ပိုပြရန်</translation>
+<translation id="3369067987974711168">ဤပို့တ်အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ ပိုပြပါ</translation>
 <translation id="3369624026883419694">အိမ်ရှင်ကို ဖြေရှင်းနေ...</translation>
 <translation id="3370260763947406229">အလိုအလျောက် အမှားပြင်ရန်</translation>
 <translation id="3371140690572404006">USB-C ကိရိယာ (ညာ ပို့တ် အရှေ့ပိုင်း)</translation>
@@ -3419,7 +3419,7 @@
 <translation id="4665014895760275686">ထုတ်လုပ်သူ</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> က သိမ်းဆည်းထားသည့် ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="4666472247053585787">သင့် <ph name="DEVICE_TYPE" /> တွင် သင်၏ဖုန်းမှ အကြောင်းကြားချက်များကို ကြည့်ခြင်း</translation>
-<translation id="4666911709726371538">အက်ပ်များ ပိုပြရန်</translation>
+<translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4668721319092543482"><ph name="PLUGIN_NAME" /> ကို အသုံးပြုရန် နှိပ်ပါ</translation>
 <translation id="4670064810192446073">ပကတိအသွင်</translation>
 <translation id="46733273239502219">ထည့်သွင်းထားသည့် အက်ပ်များအတွင်းရှိ အော့ဖ်လိုင်းဒေတာများအားလုံးကိုလည်း ရှင်းလင်းလိုက်ပါမည်</translation>

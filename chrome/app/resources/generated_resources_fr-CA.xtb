@@ -3398,7 +3398,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Image}one{# image}other{# images}}</translation>
 <translation id="4660476621274971848">Version « <ph name="NEW_ID" /> » reçue au lieu de la version « <ph name="EXPECTED_VERSION" /> » attendue</translation>
 <translation id="4660540330091848931">Redimensionnement en cours…</translation>
-<translation id="4661407454952063730">Les données d'application correspondent à toutes les données enregistrées par une application (en fonction des paramètres définis par le concepteur), y compris les données comme les contacts, les messages et les photos.</translation>
+<translation id="4661407454952063730">Les données d'application correspondent à toutes les données enregistrées par une application (en fonction des paramètres définis par le développeur), y compris les données comme les contacts, les messages et les photos.</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
 <translation id="4662788913887017617">Partagez ce favori avec votre iPhone</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
@@ -5584,7 +5584,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="711902386174337313">Consulter la liste de vos appareils sur lesquels vous êtes connectés</translation>
 <translation id="7120762240626567834">À moins qu'un RPV soit connecté, le trafic du navigateur Chrome et d'Android sera bloqué</translation>
 <translation id="7120865473764644444">Impossible de se connecter au serveur de synchronisation. Nouvelle tentative...</translation>
-<translation id="7121438501124788993">Mode Concepteur</translation>
+<translation id="7121438501124788993">Mode Développeur</translation>
 <translation id="7121728544325372695">Tirets intelligents</translation>
 <translation id="7123030151043029868">Autorisés à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7123360114020465152">N'est plus prise en charge</translation>

@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">টেব এটা শ্বেয়াৰ কৰিবলৈ সম্পূর্ণকৈ খোল খোৱা ডিভাইচসমূহৰ সূচী।</translation>
 <translation id="2905036901251765993">আশে-পাশে থকা লোকসকলৰ সৈতে শ্বেয়াৰ কৰিবলৈ তেওঁলোকক এই কিউআৰ ক’ডটো স্কেন কৰিবলৈ দিয়ক</translation>
 <translation id="2909615210195135082">Googleৰ জাননীসমূহৰ প্লেটফৰ্ম</translation>
+<translation id="2912296070571964914">আপুনি আগ্ৰহ প্ৰকাশ কৰা বিষয়বস্তু পৰিচালনা কৰক</translation>
 <translation id="2923908459366352541">নামটো অমান্য</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ষ্ট'ৰেজ</translation>
 <translation id="2932222164150889403">আপোনাৰ কীব’ৰ্ড সলনি নহ’ব</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">এই পৃষ্ঠাটো বুকমার্ক কৰক</translation>
 <translation id="3259831549858767975">পৃষ্ঠাটোৰ সকলো সমলৰ আকাৰ সৰু কৰক</translation>
 <translation id="3264124641674805320">পৰৱৰ্তী সময়ৰ বাবে সমল কেনেকৈ ডাউনল'ড কৰিব লাগে</translation>
+<translation id="3264259168916048410">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো ব্যৱহাৰ কৰিব বিচাৰে</translation>
+<translation id="3265534588625245297">আপুনি ফ'ল' কৰা ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="3269093882174072735">ছবি ল’ড কৰক</translation>
 <translation id="3269956123044984603">আপোনাৰ অন্য ডিভাইচৰ টেব এইটোত পাবলৈ Android একাউণ্ট ছেটিঙত "ডেটা স্বয়ংক্রিয়ভাৱে ছিংক কৰক" অন কৰক।</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">ডায়ল'গ বন্ধ কৰক</translation>
 <translation id="4378154925671717803">ফ'ন</translation>
 <translation id="4384468725000734951">সন্ধান কৰিবলৈ Sogou ব্যৱহাৰ কৰি থকা হৈছে</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="4404568932422911380">কোনো বুকমাৰ্ক নাই</translation>
 <translation id="4405224443901389797">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
 <translation id="4411535500181276704">লাইট ম’ড</translation>
@@ -583,6 +587,7 @@
 <translation id="488187801263602086">ফাইলটোৰ নতুন নাম দিয়ক</translation>
 <translation id="4882831918239250449">Search, বিজ্ঞাপন আৰু অন্য সুবিধাসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস কেনেদৰে ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যক Chromeৰ কাৰ্যকলাপ।</translation>
+<translation id="4905269543817054577">ইনক’গনিট’ ম’ডত ইতিহাস ছেভ কৰা নহয়</translation>
 <translation id="4908869848243824489">Googleৰ Discover</translation>
 <translation id="4910889077668685004">পৰিশোধ এপ্</translation>
 <translation id="4913161338056004800">পৰিসংখ্যা ৰিছেট কৰক</translation>
@@ -950,6 +955,7 @@
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7233236755231902816">আপোনাৰ ভাষাত ৱেবটো চাবলৈ, Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটো ব্যৱহাৰ কৰক</translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
+<translation id="7252076891734325316">আপোনাৰ ফ'নটো কম্পিউটাৰটোৰ ওচৰত ৰাখক</translation>
 <translation id="7274013316676448362">অৱৰোধ কৰা ছাইট</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> সলনি কৰিবনে?</translation>
 <translation id="7290209999329137901">নতুন নাম দিয়াৰ সুবিধা উপলব্ধ নহয়</translation>
@@ -1016,6 +1022,7 @@
 <translation id="7630202231528827509">প্ৰদানকাৰীৰ URL</translation>
 <translation id="7638584964844754484">ভুল পাছফ্ৰেজ</translation>
 <translation id="7641339528570811325">ব্ৰাউজ কৰা ডেটা মচক…</translation>
+<translation id="764170292089748542">আপুনি ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ সিদ্ধান্ত ল'লে Chromeএ আপোনাৰ ব্ৰাউজ কৰাৰ ইতিহাস ছেভ নকৰে। আপুনি তথাপি নিজৰ প্ৰিয় ছাইটসমূহ এক্সেছ কৰিবলৈ বুকমাৰ্কসমূহ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7646772052135772216">পাছৱৰ্ড ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7665369617277396874">একাউণ্ট যোগ কৰক</translation>
@@ -1041,6 +1048,7 @@
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
 <translation id="7821588508402923572">আপোনাৰ কিমান ডেটা ৰাহি হৈছে ইয়াত দেখা যাব</translation>
+<translation id="78270725016672455">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো পঞ্জীয়ন কৰিব বিচাৰে</translation>
 <translation id="7844171778363018843">ছিংক কৰিবলৈ কোনো ডেটা বাছনি কৰা হোৱা নাই</translation>
 <translation id="7846296061357476882">Google সেৱাসমূহ</translation>
 <translation id="784934925303690534">সময় অৱধি</translation>
@@ -1136,6 +1144,7 @@
 <translation id="8427875596167638501">পূৰ্বদৰ্শন টেবটো আধা খোলা আছে</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8438566539970814960">সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - ভাষা সাজু আছে, <ph name="APP_NAME" /> ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="8442258441309440798">কোনো কাহিনী উপলব্ধ নহয়</translation>
 <translation id="8443209985646068659">Chrome আপডে’ট কৰিব নোৱাৰি</translation>
 <translation id="8445448999790540984">পাছৱর্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
@@ -1208,6 +1217,7 @@
 <translation id="8937267401510745927">আপোনাক কামবোৰ সম্পূৰ্ণ কৰাত সহায় কৰিবলৈ, আপুনি Assistant ব্যৱহাৰ কৰা ছাইটসমূহৰ URL আৰু সমল তথা আপুনি Assistantৰ জৰিয়তে দাখিল কৰা তথ্য Googleএ লাভ কৰিব। এই তথ্যখিনি আপোনাৰ Google একাউণ্টত ষ্ট’ৰ কৰা হ’ব পাৰে। আপুনি Chromeৰ ছেটিঙত Assistant অফ কৰিব পাৰে।</translation>
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8951232171465285730">Chromeএ আপোনাৰ <ph name="MEGABYTES" /> এমবি ডেটা ৰাহি কৰিছে</translation>
 <translation id="8965591936373831584">বিবেচনাধীন হৈ আছে</translation>
 <translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>

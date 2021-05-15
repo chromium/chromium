@@ -295,6 +295,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2904414404539560095">Lista e pajisjeve për të ndarë një skedë e hapur në lartësi të plotë.</translation>
 <translation id="2905036901251765993">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR</translation>
 <translation id="2909615210195135082">Platforma e njoftimeve të Google</translation>
+<translation id="2912296070571964914">Menaxho temat që të interesojnë</translation>
 <translation id="2923908459366352541">Emri është i pavlefshëm</translation>
 <translation id="2932150158123903946">Hapësira ruajtëse e Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastiera jote nuk do të ndryshojë</translation>
@@ -339,6 +340,8 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3254409185687681395">Regjistroje këtë faqe në faqeshënues</translation>
 <translation id="3259831549858767975">Bëje më të vogël gjithçka në faqe</translation>
 <translation id="3264124641674805320">Si të shkarkosh përmbajtje për më vonë</translation>
+<translation id="3264259168916048410">Kompjuteri yt kërkon ta përdorë këtë pajisje për t'u identifikuar në një faqe</translation>
+<translation id="3265534588625245297">Menaxho faqet që ndjek</translation>
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="3269956123044984603">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo "Sinkronizo automatikisht të dhënat" në cilësimet e llogarisë së Android.</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
@@ -497,6 +500,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4351244548802238354">Mbyll dialogun</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - Po shkarkohet…</translation>
 <translation id="4404568932422911380">Nuk ka faqeshënues</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
 <translation id="4411535500181276704">Modaliteti i lehtë</translation>
@@ -583,6 +587,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="488187801263602086">Riemërto skedarin</translation>
 <translation id="4882831918239250449">Kontrollo se si përdoret historiku i shfletimit për të personalizuar "Kërkimin", reklamat dhe shumë të tjera</translation>
 <translation id="4885273946141277891">Numër i pambështetur i versioneve të Chrome.</translation>
+<translation id="4905269543817054577">Historiku nuk ruhet në "I fshehtë"</translation>
 <translation id="4908869848243824489">"Zbulo" nga Google</translation>
 <translation id="4910889077668685004">Aplikacionet e pagesës</translation>
 <translation id="4913161338056004800">Rivendos statistikat</translation>
@@ -951,6 +956,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7191430249889272776">Skeda u hap në sfond.</translation>
 <translation id="7233236755231902816">Për ta parë uebin në gjuhën tënde, merr versionin e fundit të Chrome</translation>
 <translation id="7248069434667874558">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome</translation>
+<translation id="7252076891734325316">Vendose telefonin tënd pranë kompjuterit</translation>
 <translation id="7274013316676448362">Sajt i bllokuar</translation>
 <translation id="7286572596625053347">Të ndryshohet <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Riemërtimi nuk ofrohet</translation>
@@ -1017,6 +1023,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7630202231528827509">URL-ja e ofruesit</translation>
 <translation id="7638584964844754484">Shprehje kalimi e pasaktë</translation>
 <translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
+<translation id="764170292089748542">Chrome nuk e ruan historikun tënd të shfletimit kur zgjedh të shfletosh privatisht. Mund të përdorësh gjithsesi faqeshënuesit për t'u qasur te faqet e tua të preferuara.</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
@@ -1042,6 +1049,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7810647596859435254">Hape me...</translation>
 <translation id="7815484226266492798">Pamje e gjatë e ekranit</translation>
 <translation id="7821588508402923572">Kursimet e të dhënave të tua do të shfaqen këtu</translation>
+<translation id="78270725016672455">Kompjuteri yt kërkon ta regjistrojë këtë pajisje për t'u identifikuar në një faqe</translation>
 <translation id="7844171778363018843">Nuk janë zgjedhur të dhëna për t'u sinkronizuar</translation>
 <translation id="7846296061357476882">Shërbimet e Google</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
@@ -1137,6 +1145,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8427875596167638501">Skeda e shikimit paraprak është gjysmë e hapur</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - Gjuha është gati, rinise <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nuk ofrohet asnjë histori</translation>
 <translation id="8443209985646068659">Chrome s'mund të përditësohet</translation>
 <translation id="8445448999790540984">Fjalëkalimet nuk mund të eksportohen</translation>
@@ -1209,6 +1218,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8937267401510745927">Për të të ndihmuar të përfundosh detyrat, Google do të marrë URL-të dhe përmbajtjet e sajteve ku ti përdor "Asistentin", si dhe informacionet që dërgon nëpërmjet "Asistentit". Këto informacione mund të ruhen në "Llogarinë tënde të Google". "Asistentin" mund ta çaktivizosh te cilësimet e Chrome.</translation>
 <translation id="8937772741022875483">Dëshiron të heqësh aktivitetin tënd të Chrome nga "Mirëqenia dixhitale"?</translation>
 <translation id="8942627711005830162">Hap në një dritare tjetër</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - Kjo gjuhë nuk mund të shkarkohet. Provo përsëri më vonë.</translation>
 <translation id="8951232171465285730">Chrome të ka kursyer <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">në pritje</translation>
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>

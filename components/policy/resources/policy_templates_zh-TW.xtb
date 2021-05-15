@@ -4305,11 +4305,6 @@
 
       注意：如果 Windows® 執行個體未加入 <ph name="MS_AD_NAME" /> 網域，系統只會強制安裝 Chrome 線上應用程式商店中的應用程式和擴充功能。</translation>
 <translation id="6823711520976094072">如果設為 1 MB 以下的值或不設定，針對擁有多位使用者的單一裝置，<ph name="PRODUCT_OS_NAME" />會使用 256 MiB 的預設大小快取要安裝的應用程式和擴充功能，讓每位使用者不必重新下載每個應用程式和擴充功能。</translation>
-<translation id="682408981080798691">如果將這項政策設為啟用或不設定，系統會啟用轉譯器程式碼完整性功能。
-
-      將這項政策設為停用會對 <ph name="PRODUCT_NAME" /> 的安全性和穩定性造成負面影響，因為這樣一來，<ph name="PRODUCT_NAME" /> 會允許轉譯器程序載入可能具有惡意的未知程式碼。建議只有必須在 <ph name="PRODUCT_NAME" /> 的轉譯器程序中執行的第三方軟體發生相容性問題時，才停用這項政策。
-
-      注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6833023569065717572">如果將這項政策設為 True，裝置登入畫面將使用 24 小時制的時鐘格式。
 
       如果將這項政策設為 False，裝置登入畫面將使用 12 小時制的時鐘格式。

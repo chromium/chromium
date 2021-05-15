@@ -4323,11 +4323,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Voor Windows®-instanties die niet zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, is afgedwongen installatie beperkt tot apps en extensies die in de Chrome Web Store worden vermeld.</translation>
 <translation id="6823711520976094072">Als je het beleid instelt op een waarde lager dan 1 MB of als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte van 256 MB voor het opslaan van apps en extensies in het cachegeheugen voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
-<translation id="682408981080798691">Als je dit beleid toepast of niet instelt, staat Code-integriteit van weergaveprogramma aan.
-
-      Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" /> omdat onbekende en potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" />. Pas het beleid niet toe als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" /> moeten worden uitgevoerd.
-
-      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6833023569065717572">Als je het beleid instelt op True, krijgt het inlogscherm van een apparaat de 24-uurs kloknotatie.
 
       Als je het beleid instelt op False, krijgt het inlogscherm van een apparaat de 12-uurs kloknotatie.

@@ -297,6 +297,7 @@
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -345,6 +346,7 @@
 <translation id="8372477600026034341">Pritësit e tjerë</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8461329675984532579">Emri i ofruesit të rrjetit bazë</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>

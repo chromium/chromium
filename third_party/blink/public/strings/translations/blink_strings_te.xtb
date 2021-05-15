@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">టైమర్</translation>
 <translation id="3199563858620722075">కాంబో పెట్టె</translation>
 <translation id="3220661731597678625">ప్రస్తుత దశ</translation>
+<translation id="3321030238473337787">ప్లేబ్యాక్ వేగం</translation>
 <translation id="3329013043687509092">సంతృప్తత</translation>
 <translation id="3450233048674729344">విలువ ఖచ్చితంగా <ph name="MAXIMUM" /> కంటే తగ్గువగా లేదా సమానంగా ఉండాలి.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">మెనూ బార్</translation>
 <translation id="4293574643247337246">పేజీ హెడర్</translation>
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
+<translation id="4371899966896349864">ప్లేబ్యాక్ వేగం మెనూను దాచండి</translation>
 <translation id="4384249794467006333">ఈ ఇమేజ్ లేబుల్ చేయబడలేదు. ఇమేజ్ వివరణలు పొందడానికి ఎగువ కుడి వైపున 'మరిన్ని ఆప్షన్‌లు' మెనూని తెరవండి.</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4444765639179266822">ఇది చెబుతున్నట్లుగా ఉంది: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">వృక్షాంశం</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
 <translation id="5468998798572797635">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">తేదీ ఎంపిక</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">అన్‌మ్యూట్ చేయి</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">మరిన్ని ఎంపికలు</translation>
 <translation id="576709008726043716">పరిచయం</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
+<translation id="5786442179789148008">ప్లేబ్యాక్ వేగం మెనూను చూపు</translation>
 <translation id="5787939484346677755">విస్తరించబడింది, ఆటోకంప్లీట్ ఆప్షన్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
 <translation id="5966707198760109579">వారం</translation>
+<translation id="5985507339671257014">0.5</translation>
 <translation id="5987525920412732405">స్పిన్ బటన్</translation>
 <translation id="6011459053400940133">వాల్యూమ్ స్లయిడర్</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">మ్యూట్ చేయి</translation>
 <translation id="6885760532393684712">డైరెక్టరీ</translation>
 <translation id="689129560213475294">ఆఖరిమాట</translation>
+<translation id="6919891270253167948">1.5</translation>
 <translation id="6934078000481955284">బ్లాక్‌కోట్</translation>
 <translation id="693476918119313863">ముఖ్య శీర్షిక</translation>
 <translation id="6941933287844615239">మీడియా అంశం డౌన్‌లోడ్ చేయి</translation>
@@ -266,6 +272,7 @@
 <translation id="8105797009065549151">గమనిక సూచన</translation>
 <translation id="811583516810654505">వివరణను పొందుతోంది...</translation>
 <translation id="8117451130807776954">ఈ వారం</translation>
+<translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">స్థానిక తేదీ మరియు సమయం ఎంపిక</translation>
 <translation id="8261464734335370856">చెల్లని అక్షరక్రమం</translation>
@@ -290,6 +297,7 @@
 <translation id="8613126697340063924">రిమోట్ ప్లేబ్యాక్‌ను నియంత్రిస్తుంది</translation>
 <translation id="862370744433916922">ఉపశీర్షిక</translation>
 <translation id="8634971699417195529">నెల పికర్‌ను చూపుతుంది</translation>
+<translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">లైన్ ర్యాప్</translation>
 <translation id="8711688047404765493">అవుట్‌పుట్</translation>
 <translation id="8750798805984357768">దయచేసి ఈ ఎంపికలలో ఒకదాన్ని ఎంచుకోండి.</translation>

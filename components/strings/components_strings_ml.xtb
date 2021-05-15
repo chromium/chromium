@@ -505,6 +505,7 @@
 <translation id="2850739647070081192">ക്ഷണം (എൻവലപ്പ്)</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ വിവരം മോഷ്‌ടിക്കാൻ അക്രമികൾ ശ്രമിക്കുന്നുണ്ടാവാം (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, അല്ലെങ്കിൽ ക്രെഡിറ്റ് കാർഡുകൾ). <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ഈ സൈറ്റ്, അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങൾ കാണിക്കുന്നു.</translation>
+<translation id="287596039013813457">സൗഹാർദ്ദപരം</translation>
 <translation id="2876489322757410363">ബാഹ്യ ആപ്പ് വഴി പണമടയ്‌ക്കാൻ അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു. തുടരണോ?</translation>
 <translation id="2878197950673342043">പോസ്‌റ്റർ മടക്ക്</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -601,6 +602,7 @@
 <translation id="3229041911291329567">നിങ്ങളുടെ ഉപകരണത്തെയും ബ്രൗസറിനെയും കുറിച്ചുള്ള പതിപ്പ് വിവരങ്ങൾ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-ന്‍റെ CVC നൽകുക</translation>
 <translation id="3234666976984236645">ഈ സൈറ്റിൽ എപ്പോഴും പ്രധാന ഉള്ളടക്കം കണ്ടെത്തുക</translation>
+<translation id="3249845759089040423">ഗ്രൂവി</translation>
 <translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
 <translation id="3266793032086590337">മൂല്യം (വൈരുദ്ധ്യം)</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
@@ -976,6 +978,7 @@
 <translation id="4594403342090139922">&amp;ഇല്ലാതാക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="4597348597567598915">വലുപ്പം 8</translation>
 <translation id="4600854749408232102">C6/C5 (എൻവലപ്പ്)</translation>
+<translation id="4606870351894164739">ഫലപ്രദമായത്</translation>
 <translation id="4628948037717959914">ഫോട്ടോ</translation>
 <translation id="4631649115723685955">ക്യാഷ് ബാക്ക് ലിങ്ക് ചെയ്‌തു</translation>
 <translation id="4636930964841734540">വിവരം</translation>
@@ -1039,6 +1042,8 @@
 <translation id="4813512666221746211">നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
+<translation id="4825507807291741242">ശക്തമായത്</translation>
+<translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
@@ -1197,6 +1202,7 @@
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="540969355065856584">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയുള്ളതല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
+<translation id="541143247543991491">ക്ലൗഡ് (സിസ്‌റ്റത്തിലുടനീളം)</translation>
 <translation id="541416427766103491">സ്റ്റാക്കർ 4</translation>
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
@@ -1702,6 +1708,7 @@
       
 നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് എങ്ങനെയാണ് സോഫ്റ്റ്‌വെയർ ശാശ്വതമായി നീക്കംചെയ്യുന്നത് എന്നറിയാൻ &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome സഹായ കേന്ദ്രം&lt;/a&gt; സന്ദർശിക്കുക &lt;/ol&gt;</translation>
 <translation id="741007362987735528">വിസ്‌തൃത-ഫോർമാറ്റ്</translation>
+<translation id="7410471291937727359">മനോഹരമായത്</translation>
 <translation id="7416351320495623771">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="7419106976560586862">പ്രൊഫൈൽ പാത</translation>
 <translation id="7437289804838430631">ബന്ധപ്പെടാനുള്ള വിവരങ്ങൾ ചേർക്കുക</translation>
@@ -2125,6 +2132,7 @@
 <translation id="9020542370529661692">ഈ പേജ് <ph name="TARGET_LANGUAGE" />-ലേക്ക് വിവർത്തനം ചെയ്‌തു</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9025348182339809926">(അസാധുവാണ്)</translation>
+<translation id="9030265603405983977">മോണോക്രോം</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
 <translation id="9038649477754266430">പേജുകൾ കൂടുതൽ വേഗത്തിൽ ലോഡ് ചെയ്യാൻ ഒരു പ്രവചന സേവനം ഉപയോഗിക്കുക</translation>
 <translation id="9039213469156557790">ഈ പേജിൽ സുരക്ഷിതമല്ലാത്ത മറ്റ് ഉറവിടങ്ങൾ ഉൾപ്പെടുന്നു. ഈ ഉറവിടങ്ങൾ കൈമാറുന്നതിനിടെ മറ്റുള്ളവർക്ക് കാണാനും പേജിന്റെ പ്രവർത്തനരീതി മാറ്റുന്ന തരത്തിൽ ഒരു ആക്രമണകാരിയ്‌ക്ക് പരിഷ്‌ക്കരിക്കാനുമായേക്കും.</translation>
@@ -2148,6 +2156,7 @@
 <translation id="91108059142052966">രഹസ്യാത്മകമായ ഉള്ളടക്കം ദൃശ്യമാകുമ്പോൾ <ph name="APPLICATION_TITLE" /> എന്നതുമായി സ്ക്രീൻ പങ്കിടുന്നത് അഡ്‌മിൻ നയം പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="9114524666733003316">കാർഡ് സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="9114581008513152754">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="9117930699067497412">പുതിയത്</translation>
 <translation id="9119042192571987207">അപ്‌ലോഡ് ചെയ്തു</translation>
 <translation id="9128016270925453879">നയങ്ങൾ ലോഡ് ചെയ്തു</translation>
 <translation id="9128870381267983090">നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>

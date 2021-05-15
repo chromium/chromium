@@ -85,6 +85,7 @@
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">ашылмалы тізімді терезе</translation>
 <translation id="3220661731597678625">ағымдағы қадам</translation>
+<translation id="3321030238473337787">Ойнату жылдамдығы</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
 <translation id="3450233048674729344">Мән <ph name="MAXIMUM" /> шамасынан кіші немесе оған тең болуы керек.</translation>
 <translation id="3486220673238053218">анықтама</translation>
@@ -112,6 +113,7 @@
 <translation id="4248100235867064564">мәзір жолағы</translation>
 <translation id="4293574643247337246">беттің үстіңгі деректемесі</translation>
 <translation id="4360991593054037559">Жарамды мән енгізіңіз. Екі ең жақын жарамды мән — <ph name="VALID_VALUE_LOW" /> және <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4371899966896349864">ойнату жылдамдығы мәзірін жасыру</translation>
 <translation id="4384249794467006333">Бұл сурет белгіленбеген. Сурет сипаттамаларын алу үшін оң жақ жоғарыдағы "Қосымша опциялар" мәзірін ашыңыз.</translation>
 <translation id="4384583879834880242">Сұрақ-жауап</translation>
 <translation id="4444765639179266822">Келесі сөз шығатын сияқты: <ph name="OCR_TEXT" /></translation>
@@ -159,6 +161,7 @@
 <translation id="5453733299334684579">ағаш тәрізді элемент</translation>
 <translation id="5466621249238537318">Бір немесе бірнеше файлды таңдаңыз.</translation>
 <translation id="5468998798572797635">толық экраннан шығу</translation>
+<translation id="5516235301412634559">0,75</translation>
 <translation id="5516424706154626233">күн таңдағышы</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">дыбысын қосу</translation>
@@ -170,6 +173,7 @@
 <translation id="5677946354068040947">басқа да опциялар</translation>
 <translation id="576709008726043716">кіріспе</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
+<translation id="5786442179789148008">ойнату жылдамдығы мәзірін көрсету</translation>
 <translation id="5787939484346677755">жайылды, автоматты толтыру опциялары қолжетімді.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="588258955323874662">Толық экран</translation>
@@ -178,6 +182,7 @@
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
 <translation id="5966707198760109579">Апта</translation>
+<translation id="5985507339671257014">0,5</translation>
 <translation id="5987525920412732405">айналдыру түймесі</translation>
 <translation id="6011459053400940133">дыбыс деңгейі ысырмасы</translation>
 <translation id="6015796118275082299">Жыл</translation>
@@ -216,6 +221,7 @@
 <translation id="6843725295806269523">үнсіз</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">баспа белгісі</translation>
+<translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">дәйексөз</translation>
 <translation id="693476918119313863">тақырып</translation>
 <translation id="6941933287844615239">мультимедиа файлын жүктеп алу</translation>
@@ -252,6 +258,7 @@
 <translation id="7745230546936012372">Жеткіліксіз сурет сипаттамаларын алу үшін контекстік мәзірді ашыңыз.</translation>
 <translation id="7750228210027921155">Суреттегі сурет</translation>
 <translation id="775297008183122718">Жазба жарамсыз.</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">кідірту</translation>
 <translation id="7802800022689234070">ашу үшбұрышы</translation>
 <translation id="7852167693871241274">Реңк сырғытпасы</translation>
@@ -265,6 +272,7 @@
 <translation id="8105797009065549151">ескертпе сілтемесі</translation>
 <translation id="811583516810654505">Сипаттамасы ашылуда…</translation>
 <translation id="8117451130807776954">Осы апта</translation>
+<translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">жжжж</translation>
 <translation id="8208673686607688524">жергілікті күн мен уақыт таңдағышы</translation>
 <translation id="8261464734335370856">Емле қатесі</translation>
@@ -289,6 +297,7 @@
 <translation id="8613126697340063924">қашықтан ойнатуды басқару</translation>
 <translation id="862370744433916922">тақырыпша</translation>
 <translation id="8634971699417195529">Ай таңдау құралын көрсету</translation>
+<translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Жаңа жолға көшіру</translation>
 <translation id="8711688047404765493">шығыс</translation>
 <translation id="8750798805984357768">Осы параметрлердің біреуін таңдаңыз.</translation>
