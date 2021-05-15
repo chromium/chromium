@@ -408,9 +408,14 @@ class WebrtcTransport::PeerConnectionWrapper
 
     webrtc::PeerConnectionDependencies dependencies(this);
     dependencies.allocator = std::move(port_allocator);
-    peer_connection_ = peer_connection_factory_->CreatePeerConnection(
+    auto result = peer_connection_factory_->CreatePeerConnectionOrError(
         rtc_config, std::move(dependencies));
-
+    if (!result.ok()) {
+      LOG(ERROR) << "CreatePeerConnection() failed: "
+                 << result.error().message();
+      return;
+    }
+    peer_connection_ = result.MoveValue();
     thread_join_watchdog_ = std::make_unique<ThreadJoinWatchdog>();
   }
 
