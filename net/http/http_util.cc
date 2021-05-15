@@ -96,8 +96,48 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
                                 std::string* charset,
                                 bool* had_charset,
                                 std::string* boundary) {
-  net::ParseContentType(content_type_str, mime_type, charset, had_charset,
-                        boundary);
+  std::string mime_type_value;
+  base::StringPairs params;
+  bool result = ParseMimeType(content_type_str, &mime_type_value, &params);
+  // If the server sent "*/*", it is meaningless, so do not store it.
+  // Also, reject a mime-type if it does not include a slash.
+  // Some servers give junk after the charset parameter, which may
+  // include a comma, so this check makes us a bit more tolerant.
+  if (!result || content_type_str == "*/*")
+    return;
+
+  std::string charset_value;
+  bool type_has_charset = false;
+  bool type_has_boundary = false;
+  for (const auto& param : params) {
+    // Trim LWS from param value, ParseMimeType() leaves WS for quoted-string.
+    // TODO(mmenke): Check that name has only valid characters.
+    if (!type_has_charset &&
+        base::LowerCaseEqualsASCII(param.first, "charset")) {
+      type_has_charset = true;
+      charset_value = std::string(HttpUtil::TrimLWS(param.second));
+      continue;
+    }
+
+    if (boundary && !type_has_boundary &&
+        base::LowerCaseEqualsASCII(param.first, "boundary")) {
+      type_has_boundary = true;
+      *boundary = std::string(HttpUtil::TrimLWS(param.second));
+      continue;
+    }
+  }
+
+  // If `mime_type_value` is the same as `mime_type`, then just update
+  // `charset`. However, if `charset` is empty and `mime_type` hasn't changed,
+  // then don't wipe-out an existing `charset`.
+  bool eq = base::LowerCaseEqualsASCII(mime_type->data(), mime_type_value);
+  if (!eq) {
+    *mime_type = base::ToLowerASCII(mime_type_value);
+  }
+  if ((!eq && *had_charset) || type_has_charset) {
+    *had_charset = true;
+    *charset = base::ToLowerASCII(charset_value);
+  }
 }
 
 // static

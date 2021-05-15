@@ -192,6 +192,77 @@ TEST(MimeUtilTest, MatchesMimeType) {
   EXPECT_TRUE(MatchesMimeType("ab/*cd", "ab/xxxcd"));
 }
 
+TEST(MimeUtilTest, TestParseMimeType) {
+  const struct {
+    std::string type_str;
+    std::string mime_type;
+    base::StringPairs params;
+  } tests[] = {
+      // Simple tests.
+      {"image/jpeg", "image/jpeg"},
+      {"application/octet-stream;foo=bar;name=\"test.jpg\"",
+       "application/octet-stream",
+       {{"foo", "bar"}, {"name", "test.jpg"}}},
+      // Quoted string parsing.
+      {"t/s;name=\"t\\\\est\\\".jpg\"", "t/s", {{"name", "t\\est\".jpg"}}},
+      {"t/s;name=\"test.jpg\"", "t/s", {{"name", "test.jpg"}}},
+      {"t/s;name=\"test;jpg\"", "t/s", {{"name", "test;jpg"}}},
+      // Lenient for no closing quote.
+      {"t/s;name=\"test.jpg", "t/s", {{"name", "test.jpg"}}},
+      {"t/s;name=\"ab\\\"", "t/s", {{"name", "ab\""}}},
+      // Strip whitespace from start/end of mime_type.
+      {" t/s", "t/s"},
+      {"t/s ", "t/s"},
+      {" t/s ", "t/s"},
+      {"t/=", "t/="},
+      // Generally ignore whitespace.
+      {"t/s;a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s ;a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s; a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      // Special case, include whitespace after param name until equals.
+      {"t/s;a =1;b=2", "t/s", {{"a ", "1"}, {"b", "2"}}},
+      {"t/s;a= 1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s;a=1 ;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s;a=1; b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s; a = 1;b=2", "t/s", {{"a ", "1"}, {"b", "2"}}},
+      // Do not trim whitespace from quoted-string param values.
+      {"t/s;a=\" 1\";b=2", "t/s", {{"a", " 1"}, {"b", "2"}}},
+      {"t/s;a=\"1 \";b=2", "t/s", {{"a", "1 "}, {"b", "2"}}},
+      {"t/s;a=\" 1 \";b=2", "t/s", {{"a", " 1 "}, {"b", "2"}}},
+      // Ignore incomplete params.
+      {"t/s;a", "t/s", {}},
+      {"t/s;a=", "t/s", {}},
+      {"t/s;a=1;", "t/s", {{"a", "1"}}},
+      {"t/s;a=1;b", "t/s", {{"a", "1"}}},
+      {"t/s;a=1;b=", "t/s", {{"a", "1"}}},
+      // Allow empty subtype.
+      {"t/", "t/", {}},
+      {"ts/", "ts/", {}},
+      {"t/;", "t/", {}},
+      {"t/ s", "t/", {}},
+      // Questionable: allow anything as long as there is a slash somewhere.
+      {"/ts", "/ts", {}},
+      {"/s", "/s", {}},
+      {"/", "/", {}},
+      // TODO(crbug.com/1202034): This is a bug and should fail.
+      {"t / s", "t", {}},
+  };
+  for (const auto& test : tests) {
+    std::string mime_type;
+    base::StringPairs params;
+    EXPECT_TRUE(ParseMimeType(test.type_str, &mime_type, &params));
+    EXPECT_EQ(test.mime_type, mime_type);
+    EXPECT_EQ(test.params, params);
+  }
+  for (auto* type_str : {
+           // Must have slash in mime type.
+           "",
+           "ts",
+       }) {
+    EXPECT_FALSE(ParseMimeType(type_str, nullptr, nullptr));
+  }
+}
+
 TEST(MimeUtilTest, TestParseMimeTypeWithoutParameter) {
   std::string nonAscii("application/nonutf8");
   EXPECT_TRUE(ParseMimeTypeWithoutParameter(nonAscii, nullptr, nullptr));

@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/strings/string_split.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -57,27 +58,17 @@ NET_EXPORT bool GetPreferredExtensionForMimeType(
 NET_EXPORT bool MatchesMimeType(const std::string& mime_type_pattern,
                                 const std::string& mime_type);
 
-// Parses the value of a Content-Type header.  |mime_type|, |charset|, and
-// |had_charset| output parameters must be valid pointers.  |boundary| may be
-// nullptr.  |*mime_type| and |*charset| should be empty and |*had_charset|
-// false when called with the first Content-Type header value in a given
-// header list.
+// Parses |type_str| for |mime_type| and any |params|. Returns false if mime
+// cannot be parsed, and does not modify |mime_type| or |params|.
 //
-// ParseContentType() supports parsing multiple Content-Type headers in the
-// same header list.  For this operation, subsequent calls should pass in the
-// same |mime_type|, |charset|, and |had_charset| arguments without clearing
-// them.
-//
-// The resulting mime_type and charset values are normalized to lowercase.
-// The mime_type and charset output values are only modified if the
-// content_type_str contains a mime type and charset value, respectively.  If
-// |boundary| is not null, then |*boundary| will be assigned the (unquoted)
-// value of the boundary parameter, if any.
-NET_EXPORT void ParseContentType(const std::string& content_type_str,
-                                 std::string* mime_type,
-                                 std::string* charset,
-                                 bool* had_charset,
-                                 std::string* boundary);
+// Returns true when mime can be parsed and:
+// If |mime_type| is non-NULL, sets it to parsed mime string.
+// If |params| is non-NULL, clears it and sets it with name-value pairs of
+// parsed parameters. Parsing of parameters is lenient, and invalid params are
+// ignored.
+NET_EXPORT bool ParseMimeType(const std::string& type_str,
+                              std::string* mime_type,
+                              base::StringPairs* params);
 
 // Returns true if the |type_string| is a correctly-formed mime type specifier
 // with no parameter, i.e. string that matches the following ABNF (see the
