@@ -239,7 +239,7 @@ uint16_t BluetoothDeviceWinrt::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceWinrt::GetName() const {
+absl::optional<std::string> BluetoothDeviceWinrt::GetName() const {
   if (!ble_device_)
     return local_name_;
 
@@ -450,7 +450,7 @@ std::string BluetoothDeviceWinrt::CanonicalizeAddress(uint64_t address) {
 }
 
 void BluetoothDeviceWinrt::UpdateLocalName(
-    base::Optional<std::string> local_name) {
+    absl::optional<std::string> local_name) {
   if (!local_name)
     return;
 
@@ -458,7 +458,7 @@ void BluetoothDeviceWinrt::UpdateLocalName(
 }
 
 void BluetoothDeviceWinrt::CreateGattConnectionImpl(
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   ComPtr<IBluetoothLEDeviceStatics> device_statics;
   HRESULT hr = GetBluetoothLEDeviceStaticsActivationFactory(&device_statics);
   if (FAILED(hr)) {

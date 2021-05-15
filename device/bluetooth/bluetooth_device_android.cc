@@ -84,11 +84,11 @@ uint16_t BluetoothDeviceAndroid::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceAndroid::GetName() const {
+absl::optional<std::string> BluetoothDeviceAndroid::GetName() const {
   auto name =
       Java_ChromeBluetoothDevice_getName(AttachCurrentThread(), j_device_);
   if (name.is_null())
-    return base::nullopt;
+    return absl::nullopt;
   return ConvertJavaStringToUTF8(name);
 }
 
@@ -251,7 +251,7 @@ BluetoothDeviceAndroid::BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter)
     : BluetoothDevice(adapter) {}
 
 void BluetoothDeviceAndroid::CreateGattConnectionImpl(
-    base::Optional<device::BluetoothUUID> service_uuid) {
+    absl::optional<device::BluetoothUUID> service_uuid) {
   Java_ChromeBluetoothDevice_createGattConnectionImpl(AttachCurrentThread(),
                                                       j_device_);
 }

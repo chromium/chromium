@@ -14,10 +14,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/test/test_hook.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
@@ -184,7 +184,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
                                     bool left);
   XrResult UpdateAction(XrAction action);
   void SetSessionState(XrSessionState state);
-  base::Optional<gfx::Transform> GetPose();
+  absl::optional<gfx::Transform> GetPose();
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(

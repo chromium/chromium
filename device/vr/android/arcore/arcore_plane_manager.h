@@ -48,11 +48,11 @@ class ArCorePlaneManager {
 
   bool PlaneExists(PlaneId id) const;
 
-  // Returns base::nullopt if plane with the given address does not exist.
-  base::Optional<PlaneId> GetPlaneId(void* plane_address) const;
+  // Returns absl::nullopt if plane with the given address does not exist.
+  absl::optional<PlaneId> GetPlaneId(void* plane_address) const;
 
-  // Returns base::nullopt if plane with the given id does not exist.
-  base::Optional<gfx::Transform> GetMojoFromPlane(PlaneId id) const;
+  // Returns absl::nullopt if plane with the given id does not exist.
+  absl::optional<gfx::Transform> GetMojoFromPlane(PlaneId id) const;
 
   // Creates Anchor object given a plane ID. This is needed since Plane objects
   // are managed by this class in its entirety and are not accessible outside

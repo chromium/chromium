@@ -67,7 +67,7 @@ static_assert(
 
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
-  base::Optional<std::string> rp_id;
+  absl::optional<std::string> rp_id;
 };
 
 uint8_t GetSupportedPermissionsMask(const VirtualCtap2Device::Config& config) {
@@ -138,7 +138,7 @@ CtapDeviceResponseCode ExtractPermissions(
 void ReturnCtap2Response(
     FidoDevice::DeviceCallback cb,
     CtapDeviceResponseCode response_code,
-    base::Optional<base::span<const uint8_t>> data = base::nullopt) {
+    absl::optional<base::span<const uint8_t>> data = absl::nullopt) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(cb),
@@ -157,11 +157,11 @@ std::vector<uint8_t> ConstructSignatureBuffer(
 }
 
 std::vector<uint8_t> ConstructMakeCredentialResponse(
-    const base::Optional<std::vector<uint8_t>> attestation_certificate,
+    const absl::optional<std::vector<uint8_t>> attestation_certificate,
     base::span<const uint8_t> signature,
     AuthenticatorData authenticator_data,
     bool enterprise_attestation_requested,
-    base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key) {
+    absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key) {
   cbor::Value::MapValue attestation_map;
   attestation_map.emplace("alg", -7);
   attestation_map.emplace("sig", fido_parsing_utils::Materialize(signature));
@@ -186,27 +186,27 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   return AsCTAPStyleCBORBytes(make_credential_response);
 }
 
-base::Optional<std::vector<uint8_t>> GetPINBytestring(
+absl::optional<std::vector<uint8_t>> GetPINBytestring(
     const cbor::Value::MapValue& request,
     pin::RequestKey key) {
   const auto it = request.find(cbor::Value(static_cast<int>(key)));
   if (it == request.end() || !it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second.GetBytestring();
 }
 
-base::Optional<bssl::UniquePtr<EC_POINT>> GetPINKey(
+absl::optional<bssl::UniquePtr<EC_POINT>> GetPINKey(
     const cbor::Value::MapValue& request,
     pin::RequestKey map_key) {
   const auto it = request.find(cbor::Value(static_cast<int>(map_key)));
   if (it == request.end() || !it->second.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& cose_key = it->second.GetMap();
   auto response = pin::KeyAgreementResponse::ParseFromCOSE(cose_key);
   if (!response) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bssl::UniquePtr<EC_GROUP> group(
@@ -273,7 +273,7 @@ CtapDeviceResponseCode SetPIN(
     const std::vector<uint8_t>& shared_key,
     const std::vector<uint8_t>& encrypted_pin,
     const std::vector<uint8_t>& pin_auth,
-    base::Optional<base::span<const uint8_t>> current_encrypted_pin_hash) {
+    absl::optional<base::span<const uint8_t>> current_encrypted_pin_hash) {
   const pin::Protocol& pin_protocol = pin::ProtocolVersion(protocol);
   std::vector<uint8_t> pin_auth_bytes;
   pin_auth_bytes.insert(pin_auth_bytes.begin(), encrypted_pin.begin(),
@@ -341,7 +341,7 @@ CtapDeviceResponseCode VerifyPINUVAuthToken(
       !pin_protocol_it->second.is_unsigned()) {
     return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
   }
-  base::Optional<PINUVAuthProtocol> protocol =
+  absl::optional<PINUVAuthProtocol> protocol =
       ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
   if (!protocol ||
       !base::Contains(*authenticator_info.pin_protocols, *protocol)) {
@@ -360,7 +360,7 @@ CtapDeviceResponseCode VerifyPINUVAuthToken(
 
 // Like AsCBOR(const PublicKeyCredentialRpEntity&), but optionally allows name
 // to be INVALID_UTF8.
-base::Optional<cbor::Value> RpEntityAsCBOR(
+absl::optional<cbor::Value> RpEntityAsCBOR(
     const PublicKeyCredentialRpEntity& rp,
     bool allow_invalid_utf8) {
   if (!allow_invalid_utf8) {
@@ -381,7 +381,7 @@ base::Optional<cbor::Value> RpEntityAsCBOR(
 
 // Like AsCBOR(const PublicKeyCredentialUserEntity&), but optionally allows name
 // or displayName to be INVALID_UTF8.
-base::Optional<cbor::Value> UserEntityAsCBOR(
+absl::optional<cbor::Value> UserEntityAsCBOR(
     const PublicKeyCredentialUserEntity& user,
     bool allow_invalid_utf8) {
   if (!allow_invalid_utf8) {
@@ -789,13 +789,13 @@ void VirtualCtap2Device::Init(std::vector<ProtocolVersion> versions) {
   };
 }
 
-base::Optional<CtapDeviceResponseCode>
+absl::optional<CtapDeviceResponseCode>
 VirtualCtap2Device::CheckUserVerification(
     CheckUserVerificationMode mode,
     const AuthenticatorGetInfoResponse& authenticator_info,
     const std::string& rp_id,
-    const base::Optional<std::vector<uint8_t>>& pin_auth,
-    const base::Optional<PINUVAuthProtocol>& pin_protocol,
+    const absl::optional<std::vector<uint8_t>>& pin_auth,
+    const absl::optional<PINUVAuthProtocol>& pin_protocol,
     base::span<const uint8_t> pin_token,
     base::span<const uint8_t> client_data_hash,
     UserVerificationRequirement user_verification,
@@ -813,7 +813,7 @@ VirtualCtap2Device::CheckUserVerification(
       AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported;
   if (supports_pin && pin_auth && pin_auth->empty()) {
     if (!SimulatePress())
-      return base::nullopt;
+      return absl::nullopt;
 
     switch (options.client_pin_availability) {
       case AuthenticatorSupportedOptions::ClientPinAvailability::
@@ -826,7 +826,7 @@ VirtualCtap2Device::CheckUserVerification(
         NOTREACHED();
     }
   }
-  const base::Optional<base::flat_set<PINUVAuthProtocol>>&
+  const absl::optional<base::flat_set<PINUVAuthProtocol>>&
       supported_pin_protocols = authenticator_info.pin_protocols;
   DCHECK(!supports_pin ||
          (supported_pin_protocols && !supported_pin_protocols->empty()));
@@ -902,7 +902,7 @@ VirtualCtap2Device::CheckUserVerification(
           AuthenticatorSupportedOptions::UserVerificationAvailability::
               kSupportedAndConfigured) {
         if (!SimulatePress())
-          return base::nullopt;
+          return absl::nullopt;
 
         if (!config_.user_verification_succeeds) {
           if (mode != CheckUserVerificationMode::kGetAssertion)
@@ -965,7 +965,7 @@ VirtualCtap2Device::CheckUserVerification(
   return CtapDeviceResponseCode::kSuccess;
 }
 
-base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
+absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
   request_state_.Reset();
@@ -993,7 +993,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
        device_info_->options.make_cred_uv_not_required)
           ? CheckUserVerificationMode::kMakeCredentialUvNotRequired
           : CheckUserVerificationMode::kMakeCredential;
-  const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
+  const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       check_uv_mode, *device_info_, request.rp.id, request.pin_auth,
       request.pin_protocol, mutable_state()->pin_token,
       request.client_data_hash, request.user_verification,
@@ -1026,7 +1026,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
         continue;
       }
       if (!SimulatePress()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       return CtapDeviceResponseCode::kCtap2ErrCredentialExcluded;
     }
@@ -1077,13 +1077,13 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   if ((!user_verified || request.user_verification ==
                              UserVerificationRequirement::kDiscouraged) &&
       !SimulatePress()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Our key handles are simple hashes of the public key.
   const auto key_handle = crypto::SHA256Hash(public_key->cose_key_bytes);
 
-  base::Optional<cbor::Value> extensions;
+  absl::optional<cbor::Value> extensions;
   cbor::Value::MapValue extensions_map;
   if (request.hmac_secret) {
     if (!config_.hmac_secret_support) {
@@ -1167,7 +1167,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       Sign(attestation_private_key.get(), std::move(sign_buffer), &sig);
   DCHECK(status);
 
-  base::Optional<std::vector<uint8_t>> attestation_cert;
+  absl::optional<std::vector<uint8_t>> attestation_cert;
   bool enterprise_attestation_requested = false;
   if (!mutable_state()->self_attestation) {
     if (config_.support_enterprise_attestation) {
@@ -1197,7 +1197,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
   }
 
-  base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
   if (request.large_blob_key) {
     large_blob_key.emplace();
     RAND_bytes(large_blob_key->data(), large_blob_key->size());
@@ -1246,7 +1246,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   return CtapDeviceResponseCode::kSuccess;
 }
 
-base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
+absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
   request_state_.Reset();
@@ -1272,7 +1272,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   mutable_state()->allow_list_sizes.push_back(request.allow_list.size());
 
   bool user_verified;
-  const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
+  const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       CheckUserVerificationMode::kGetAssertion, *device_info_, request.rp_id,
       request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
       request.client_data_hash, request.user_verification,
@@ -1366,7 +1366,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       (!user_verified || request.user_verification ==
                              UserVerificationRequirement::kDiscouraged) &&
       !SimulatePress()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Step 8.
@@ -1374,9 +1374,9 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
   }
 
-  base::Optional<std::array<uint8_t, SHA256_DIGEST_LENGTH>> hmac_shared_key;
-  base::Optional<std::array<uint8_t, 32>> hmac_salt1;
-  base::Optional<std::array<uint8_t, 32>> hmac_salt2;
+  absl::optional<std::array<uint8_t, SHA256_DIGEST_LENGTH>> hmac_shared_key;
+  absl::optional<std::array<uint8_t, 32>> hmac_salt1;
+  absl::optional<std::array<uint8_t, 32>> hmac_salt2;
 
   if (request.hmac_secret) {
     if (!mutable_state()->ecdh_key) {
@@ -1438,7 +1438,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   for (const auto& registration : found_registrations) {
     registration.second->counter++;
 
-    base::Optional<AttestedCredentialData> opt_attested_cred_data;
+    absl::optional<AttestedCredentialData> opt_attested_cred_data;
     if (config_.return_attested_cred_data_in_get_assertion_response) {
       opt_attested_cred_data.emplace(ConstructAttestedCredentialData(
           registration.first,
@@ -1489,7 +1489,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
           registration.second->cred_blob.value_or(std::vector<uint8_t>()));
     }
 
-    base::Optional<cbor::Value> extensions;
+    absl::optional<cbor::Value> extensions;
     if (!extensions_map.empty()) {
       extensions.emplace(std::move(extensions_map));
     }
@@ -1584,7 +1584,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnGetNextAssertion(
   return CtapDeviceResponseCode::kSuccess;
 }
 
-base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
+absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
   request_state_.Reset();
@@ -1600,7 +1600,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
   if (protocol_it == request_map.end() || !protocol_it->second.is_unsigned()) {
     return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
   }
-  base::Optional<PINUVAuthProtocol> pin_protocol =
+  absl::optional<PINUVAuthProtocol> pin_protocol =
       ToPINUVAuthProtocol(protocol_it->second.GetUnsigned());
   if (!pin_protocol) {
     return CtapDeviceResponseCode::kCtap1ErrInvalidCommand;
@@ -1683,7 +1683,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       CtapDeviceResponseCode err =
           SetPIN(*pin_protocol, mutable_state(), shared_key, *encrypted_pin,
-                 *pin_auth, /*current_encrypted_pin_hash=*/base::nullopt);
+                 *pin_auth, /*current_encrypted_pin_hash=*/absl::nullopt);
       if (err != CtapDeviceResponseCode::kSuccess) {
         return err;
       }
@@ -1852,7 +1852,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       // Simulate internal UV.
       if (!SimulatePress()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       if (!config_.user_verification_succeeds) {
         return mutable_state()->uv_retries > 0
@@ -2141,8 +2141,8 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
   }
 
   // Template id from subcommand parameters, if it exists.
-  base::Optional<uint8_t> template_id;
-  base::Optional<std::string> name;
+  absl::optional<uint8_t> template_id;
+  absl::optional<std::string> name;
   auto params_it = request_map.find(cbor::Value(
       static_cast<int>(BioEnrollmentRequestKey::kSubCommandParams)));
   if (params_it != request_map.end()) {
@@ -2255,7 +2255,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
             base::StrCat(
                 {"Template", base::NumberToString(
                                  *mutable_state()->bio_current_template_id)});
-        mutable_state()->bio_current_template_id = base::nullopt;
+        mutable_state()->bio_current_template_id = absl::nullopt;
         mutable_state()->fingerprints_enrolled = true;
       }
       break;
@@ -2309,7 +2309,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
       mutable_state()->bio_templates.erase(*template_id);
       return CtapDeviceResponseCode::kSuccess;
     case SubCmd::kCancelCurrentEnrollment:
-      mutable_state()->bio_current_template_id = base::nullopt;
+      mutable_state()->bio_current_template_id = absl::nullopt;
       return CtapDeviceResponseCode::kSuccess;
     default:
       // Handle all other commands as if they were unsupported (will change
@@ -2517,7 +2517,7 @@ void VirtualCtap2Device::InitPendingRegistrations(
         AsCBOR(PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
                                              registration.first)));
 
-    base::Optional<cbor::Value> cose_key = cbor::Reader::Read(
+    absl::optional<cbor::Value> cose_key = cbor::Reader::Read(
         registration.second.private_key->GetPublicKey()->cose_key_bytes);
     response_map.emplace(
         static_cast<int>(CredentialManagementResponseKey::kPublicKey),

@@ -39,7 +39,7 @@ gfx::Transform ArCore::GetDepthUvFromScreenUvTransform() const {
 
 ArCore::InitializeResult::InitializeResult(
     const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
-    base::Optional<device::mojom::XRDepthConfig> depth_configuration)
+    absl::optional<device::mojom::XRDepthConfig> depth_configuration)
     : enabled_features(enabled_features),
       depth_configuration(std::move(depth_configuration)) {}
 

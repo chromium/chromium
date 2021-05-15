@@ -44,13 +44,13 @@ TEST(MakeAuthenticatorDataTest, TestTimestampSignatureCounter) {
   EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x00, 0x00));
   // Time counter increments in seconds.
   g_fake_now += base::TimeDelta::FromSeconds(1);
-  auth_data = MakeAuthenticatorData(rp_id, base::nullopt);
+  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
   EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x00, 0x01));
   g_fake_now += base::TimeDelta::FromSeconds(1024);
-  auth_data = MakeAuthenticatorData(rp_id, base::nullopt);
+  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
   EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x04, 0x01));
   ASSERT_TRUE(base::Time::FromUTCExploded({2106, 1, 0, 1}, &g_fake_now));
-  auth_data = MakeAuthenticatorData(rp_id, base::nullopt);
+  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
   EXPECT_THAT(auth_data.counter(), ElementsAre(0xff, 0xce, 0xdd, 0x80));
 }
 

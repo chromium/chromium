@@ -5,9 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 #define DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -53,13 +53,13 @@ FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
 
 // Record outcome of user attempting to pair to a device.
 DEVICE_BLUETOOTH_EXPORT void RecordPairingResult(
-    base::Optional<ConnectionFailureReason> failure_reason,
+    absl::optional<ConnectionFailureReason> failure_reason,
     BluetoothTransport transport,
     base::TimeDelta duration);
 
 // Record outcome of user attempting to reconnect to a previously paired device.
 DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptResult(
-    base::Optional<ConnectionFailureReason> failure_reason,
+    absl::optional<ConnectionFailureReason> failure_reason,
     BluetoothUiSurface surface);
 
 // Record how long it took for a user to find and select the device they wished

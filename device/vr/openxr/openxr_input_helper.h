@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
@@ -38,7 +38,7 @@ class OpenXRInputHelper {
   XrResult OnInteractionProfileChanged();
 
  private:
-  base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
+  absl::optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
   XrResult Initialize(XrInstance instance,
                       XrSystemId system,

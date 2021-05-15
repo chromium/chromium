@@ -45,7 +45,7 @@ static bool HasAtLeastFourCodepoints(const std::string& pin) {
 
 PINEntryError ValidatePIN(const std::string& pin,
                           uint32_t min_pin_length,
-                          base::Optional<std::string> current_pin) {
+                          absl::optional<std::string> current_pin) {
   if (pin.size() < min_pin_length) {
     return PINEntryError::kTooShort;
   }
@@ -63,7 +63,7 @@ PINEntryError ValidatePIN(const std::string& pin,
 
 PINEntryError ValidatePIN(const std::u16string& pin16,
                           uint32_t min_pin_length,
-                          base::Optional<std::string> current_pin) {
+                          absl::optional<std::string> current_pin) {
   std::string pin;
   if (!base::UTF16ToUTF8(pin16.c_str(), pin16.size(), &pin)) {
     return pin::PINEntryError::kInvalidCharacters;
@@ -74,7 +74,7 @@ PINEntryError ValidatePIN(const std::u16string& pin16,
 // EncodePINCommand returns a CTAP2 PIN command for the operation |subcommand|.
 // Additional elements of the top-level CBOR map can be added with the optional
 // |add_additional| callback.
-static std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+static std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 EncodePINCommand(
     PINUVAuthProtocol protocol_version,
     Subcommand subcommand,
@@ -96,36 +96,36 @@ EncodePINCommand(
 RetriesResponse::RetriesResponse() = default;
 
 // static
-base::Optional<RetriesResponse> RetriesResponse::ParsePinRetries(
-    const base::Optional<cbor::Value>& cbor) {
+absl::optional<RetriesResponse> RetriesResponse::ParsePinRetries(
+    const absl::optional<cbor::Value>& cbor) {
   return RetriesResponse::Parse(std::move(cbor),
                                 static_cast<int>(ResponseKey::kRetries));
 }
 
 // static
-base::Optional<RetriesResponse> RetriesResponse::ParseUvRetries(
-    const base::Optional<cbor::Value>& cbor) {
+absl::optional<RetriesResponse> RetriesResponse::ParseUvRetries(
+    const absl::optional<cbor::Value>& cbor) {
   return RetriesResponse::Parse(std::move(cbor),
                                 static_cast<int>(ResponseKey::kUvRetries));
 }
 
 // static
-base::Optional<RetriesResponse> RetriesResponse::Parse(
-    const base::Optional<cbor::Value>& cbor,
+absl::optional<RetriesResponse> RetriesResponse::Parse(
+    const absl::optional<cbor::Value>& cbor,
     const int retries_key) {
   if (!cbor || !cbor->is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& response_map = cbor->GetMap();
 
   auto it = response_map.find(cbor::Value(retries_key));
   if (it == response_map.end() || !it->second.is_unsigned()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const int64_t retries = it->second.GetUnsigned();
   if (retries > INT_MAX) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   RetriesResponse ret;
@@ -136,10 +136,10 @@ base::Optional<RetriesResponse> RetriesResponse::Parse(
 KeyAgreementResponse::KeyAgreementResponse() = default;
 
 // static
-base::Optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
-    const base::Optional<cbor::Value>& cbor) {
+absl::optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
+    const absl::optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& response_map = cbor->GetMap();
 
@@ -147,7 +147,7 @@ base::Optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
   auto it = response_map.find(
       cbor::Value(static_cast<int>(ResponseKey::kKeyAgreement)));
   if (it == response_map.end() || !it->second.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& cose_key = it->second.GetMap();
 
@@ -155,7 +155,7 @@ base::Optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
 }
 
 // static
-base::Optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
+absl::optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
     const cbor::Value::MapValue& cose_key) {
   // The COSE key must be a P-256 point. See
   // https://tools.ietf.org/html/rfc8152#section-7.1
@@ -167,7 +167,7 @@ base::Optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
     auto it = cose_key.find(cbor::Value(pair.first));
     if (it == cose_key.end() || !it->second.is_integer() ||
         it->second.GetInteger() != pair.second) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -176,14 +176,14 @@ base::Optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
   const auto& y_it = cose_key.find(cbor::Value(-3));
   if (x_it == cose_key.end() || y_it == cose_key.end() ||
       !x_it->second.is_bytestring() || !y_it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const auto& x = x_it->second.GetBytestring();
   const auto& y = y_it->second.GetBytestring();
   KeyAgreementResponse ret;
   if (x.size() != sizeof(ret.x) || y.size() != sizeof(ret.y)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   memcpy(ret.x, x.data(), sizeof(ret.x));
   memcpy(ret.y, y.data(), sizeof(ret.y));
@@ -194,7 +194,7 @@ base::Optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
   // Check that the point is on the curve.
   auto point = PointFromKeyAgreementResponse(group.get(), ret);
   if (!point) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ret;
@@ -248,14 +248,14 @@ ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
 }
 
 // static
-base::Optional<EmptyResponse> EmptyResponse::Parse(
-    const base::Optional<cbor::Value>& cbor) {
+absl::optional<EmptyResponse> EmptyResponse::Parse(
+    const absl::optional<cbor::Value>& cbor) {
   // Yubikeys can return just the status byte, and no CBOR bytes, for the empty
   // response, which will end up here with |cbor| being |nullopt|. This seems
   // wrong, but is handled. (The response should, instead, encode an empty CBOR
   // map.)
   if (cbor && (!cbor->is_map() || !cbor->GetMap().empty())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   EmptyResponse ret;
@@ -268,23 +268,23 @@ TokenResponse::~TokenResponse() = default;
 TokenResponse::TokenResponse(const TokenResponse&) = default;
 TokenResponse& TokenResponse::operator=(const TokenResponse&) = default;
 
-base::Optional<TokenResponse> TokenResponse::Parse(
+absl::optional<TokenResponse> TokenResponse::Parse(
     PINUVAuthProtocol protocol,
     base::span<const uint8_t> shared_key,
-    const base::Optional<cbor::Value>& cbor) {
+    const absl::optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& response_map = cbor->GetMap();
 
   auto it =
       response_map.find(cbor::Value(static_cast<int>(ResponseKey::kPINToken)));
   if (it == response_map.end() || !it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& encrypted_token = it->second.GetBytestring();
   if (encrypted_token.size() % AES_BLOCK_SIZE != 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<uint8_t> token =
@@ -297,12 +297,12 @@ base::Optional<TokenResponse> TokenResponse::Parse(
       // may be any multiple of 16 bytes. We don't know the CTAP version, so
       // only enforce the latter.
       if (token.empty() || token.size() % AES_BLOCK_SIZE != 0) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       break;
     case PINUVAuthProtocol::kV2:
       if (token.size() != 32u) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       break;
   }
@@ -319,25 +319,25 @@ std::pair<PINUVAuthProtocol, std::vector<uint8_t>> TokenResponse::PinAuth(
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const PinRetriesRequest& request) {
   return EncodePINCommand(request.protocol, Subcommand::kGetRetries);
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const UvRetriesRequest& request) {
   return EncodePINCommand(request.protocol, Subcommand::kGetUvRetries);
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const KeyAgreementRequest& request) {
   return EncodePINCommand(request.protocol, Subcommand::kGetKeyAgreement);
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const SetRequest& request) {
   // See
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#settingNewPin
@@ -367,7 +367,7 @@ AsCTAPRequestValuePair(const SetRequest& request) {
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const ChangeRequest& request) {
   // See
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#changingExistingPin
@@ -411,9 +411,9 @@ AsCTAPRequestValuePair(const ChangeRequest& request) {
 }
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const ResetRequest&) {
-  return std::make_pair(CtapRequestCommand::kAuthenticatorReset, base::nullopt);
+  return std::make_pair(CtapRequestCommand::kAuthenticatorReset, absl::nullopt);
 }
 
 TokenRequest::TokenRequest(PINUVAuthProtocol protocol,
@@ -444,7 +444,7 @@ PinTokenRequest::~PinTokenRequest() = default;
 PinTokenRequest::PinTokenRequest(PinTokenRequest&& other) = default;
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const PinTokenRequest& request) {
   static_assert((sizeof(request.pin_hash_) % AES_BLOCK_SIZE) == 0,
                 "pin_hash_ is not a multiple of the AES block size");
@@ -467,13 +467,13 @@ PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
     const std::string& pin,
     const KeyAgreementResponse& peer_key,
     base::span<const pin::Permissions> permissions,
-    const base::Optional<std::string> rp_id)
+    const absl::optional<std::string> rp_id)
     : PinTokenRequest(protocol, pin, peer_key),
       permissions_(PermissionsToByte(permissions)),
       rp_id_(rp_id) {}
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const PinTokenWithPermissionsRequest& request) {
   std::vector<uint8_t> encrypted_pin =
       ProtocolVersion(request.protocol_)
@@ -502,7 +502,7 @@ PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
 
 UvTokenRequest::UvTokenRequest(PINUVAuthProtocol protocol,
                                const KeyAgreementResponse& peer_key,
-                               base::Optional<std::string> rp_id,
+                               absl::optional<std::string> rp_id,
                                base::span<const pin::Permissions> permissions)
     : TokenRequest(protocol, peer_key),
       rp_id_(rp_id),
@@ -513,7 +513,7 @@ UvTokenRequest::~UvTokenRequest() = default;
 UvTokenRequest::UvTokenRequest(UvTokenRequest&& other) = default;
 
 // static
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const UvTokenRequest& request) {
   return EncodePINCommand(
       request.protocol_, Subcommand::kGetUvToken,
@@ -531,7 +531,7 @@ AsCTAPRequestValuePair(const UvTokenRequest& request) {
 
 static std::vector<uint8_t> ConcatSalts(
     base::span<const uint8_t, 32> salt1,
-    const base::Optional<std::array<uint8_t, 32>>& salt2) {
+    const absl::optional<std::array<uint8_t, 32>>& salt2) {
   const size_t salts_size =
       salt1.size() + (salt2.has_value() ? salt2->size() : 0);
   std::vector<uint8_t> salts(salts_size);
@@ -548,7 +548,7 @@ HMACSecretRequest::HMACSecretRequest(
     PINUVAuthProtocol protocol,
     const KeyAgreementResponse& peer_key,
     base::span<const uint8_t, 32> salt1,
-    const base::Optional<std::array<uint8_t, 32>>& salt2)
+    const absl::optional<std::array<uint8_t, 32>>& salt2)
     : protocol_(protocol),
       public_key_x962(
           ProtocolVersion(protocol_).Encapsulate(peer_key, &shared_key_)),
@@ -562,10 +562,10 @@ HMACSecretRequest::~HMACSecretRequest() = default;
 
 HMACSecretRequest::HMACSecretRequest(const HMACSecretRequest& other) = default;
 
-base::Optional<std::vector<uint8_t>> HMACSecretRequest::Decrypt(
+absl::optional<std::vector<uint8_t>> HMACSecretRequest::Decrypt(
     base::span<const uint8_t> ciphertext) {
   if (ciphertext.size() != this->encrypted_salts.size()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return pin::ProtocolVersion(protocol_).Decrypt(shared_key_, ciphertext);

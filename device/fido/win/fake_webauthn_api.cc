@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +18,7 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -158,8 +158,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
           /*user_verified=*/options->dwUserVerificationRequirement !=
               WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
           registration->counter++,
-          /*attested_credential_data=*/base::nullopt,
-          /*extensions=*/base::nullopt)
+          /*attested_credential_data=*/absl::nullopt,
+          /*extensions=*/absl::nullopt)
           .SerializeToByteArray();
 
   // Create the assertion signature.

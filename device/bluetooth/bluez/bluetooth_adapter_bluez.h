@@ -153,7 +153,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   void ConnectDevice(
       const std::string& address,
-      const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ErrorCallback error_callback) override;
 

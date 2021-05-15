@@ -108,7 +108,7 @@ void OnWriteRemoteCharacteristicError(
 
 void OnReadServiceRevisionBitfield(
     ServiceRevisionsCallback callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     FIDO_LOG(ERROR) << "Error while reading Service Revision Bitfield: "
@@ -199,14 +199,14 @@ void FidoBleConnection::ReadControlPointLength(
   const auto* fido_service = GetFidoService();
   if (!fido_service) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
   if (!control_point_length_id_) {
     FIDO_LOG(ERROR) << "Failed to get Control Point Length.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -215,7 +215,7 @@ void FidoBleConnection::ReadControlPointLength(
   if (!control_point_length) {
     FIDO_LOG(ERROR) << "No Control Point Length characteristic present.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -517,18 +517,18 @@ const BluetoothRemoteGattService* FidoBleConnection::GetFidoService() {
 // static
 void FidoBleConnection::OnReadControlPointLength(
     ControlPointLengthCallback callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     FIDO_LOG(ERROR) << "Error reading Control Point Length: "
                     << ToString(error_code.value());
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   if (value.size() != 2) {
     FIDO_LOG(ERROR) << "Wrong Control Point Length: " << value.size()
                     << " bytes";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

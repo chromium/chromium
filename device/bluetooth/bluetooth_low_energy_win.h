@@ -13,9 +13,9 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace win {
@@ -104,7 +104,7 @@ struct DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceInfo {
 
   base::FilePath path;
   std::string id;
-  base::Optional<std::string> friendly_name;
+  absl::optional<std::string> friendly_name;
   BLUETOOTH_ADDRESS address;
   bool visible;
   bool authenticated;

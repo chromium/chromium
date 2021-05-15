@@ -47,19 +47,19 @@ bool OpaqueAttestationStatement::
   return false;
 }
 
-base::Optional<base::span<const uint8_t>>
+absl::optional<base::span<const uint8_t>>
 OpaqueAttestationStatement::GetLeafCertificate() const {
   DCHECK(attestation_statement_map_.is_map());
   const Value::MapValue& m(attestation_statement_map_.GetMap());
   const Value x5c("x5c");
   const auto it = m.find(x5c);
   if (it == m.end() || !it->second.is_array()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const Value::ArrayValue& certs = it->second.GetArray();
   if (certs.empty() || !certs[0].is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return certs[0].GetBytestring();

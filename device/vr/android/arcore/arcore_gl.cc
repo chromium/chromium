@@ -125,7 +125,7 @@ ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
 
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-    base::Optional<device::mojom::XRDepthConfig> depth_configuration,
+    absl::optional<device::mojom::XRDepthConfig> depth_configuration,
     viz::FrameSinkId frame_sink_id)
     : enabled_features(enabled_features),
       depth_configuration(depth_configuration),
@@ -156,7 +156,7 @@ ArCoreGl::~ArCoreGl() {
   // If anyone is still waiting for our initialization to finish, let them know
   // that it failed.
   if (initialized_callback_)
-    std::move(initialized_callback_).Run(base::nullopt);
+    std::move(initialized_callback_).Run(absl::nullopt);
 
   // Make sure mojo bindings are closed before proceeding with member
   // destruction. Specifically, destroying pending_getframedata_
@@ -207,7 +207,7 @@ void ArCoreGl::Initialize(
     drawing_widget = gfx::kNullAcceleratedWidget;
   }
   if (!InitializeGl(drawing_widget)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -216,11 +216,11 @@ void ArCoreGl::Initialize(
       session_utils->GetApplicationContext();
   if (!application_context.obj()) {
     DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
+  absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
   if (depth_options) {
     depth_sensing_config = ArCore::DepthSensingConfiguration(
         depth_options->usage_preferences,
@@ -239,13 +239,13 @@ void ArCoreGl::Initialize(
   }
 
   arcore_ = arcore_factory->Create();
-  base::Optional<ArCore::InitializeResult> maybe_initialize_result =
+  absl::optional<ArCore::InitializeResult> maybe_initialize_result =
       arcore_->Initialize(application_context, required_features,
                           optional_features, tracked_images,
                           std::move(depth_sensing_config));
   if (!maybe_initialize_result) {
     DLOG(ERROR) << "ARCore failed to initialize";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -333,7 +333,7 @@ void ArCoreGl::OnArImageTransportReady() {
 void ArCoreGl::OnArCompositorInitialized(bool initialized) {
   DVLOG(1) << __func__ << " intialized=" << initialized;
   if (!initialized) {
-    std::move(initialized_callback_).Run(base::nullopt);
+    std::move(initialized_callback_).Run(absl::nullopt);
     return;
   }
 
@@ -1426,7 +1426,7 @@ void ArCoreGl::SubscribeToHitTest(
     return;
   }
 
-  base::Optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
+  absl::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
       std::move(native_origin_information), entity_types, std::move(ray));
 
   if (maybe_subscription_id) {
@@ -1449,7 +1449,7 @@ void ArCoreGl::SubscribeToHitTestForTransientInput(
   DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
            << ", ray direction=" << ray->direction.ToString();
 
-  base::Optional<uint64_t> maybe_subscription_id =
+  absl::optional<uint64_t> maybe_subscription_id =
       arcore_->SubscribeToHitTestForTransientInput(profile_name, entity_types,
                                                    std::move(ray));
 

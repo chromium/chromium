@@ -263,7 +263,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   std::string address_;
   bool classic_powered_ = false;
-  base::Optional<bool> is_present_for_testing_;
+  absl::optional<bool> is_present_for_testing_;
 
   // Function returning the state of the HostController. Can be overridden for
   // tests.

@@ -48,15 +48,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;
-  base::Optional<int8_t> GetInquiryRSSI() const override;
-  base::Optional<int8_t> GetInquiryTxPower() const override;
+  absl::optional<int8_t> GetInquiryRSSI() const override;
+  absl::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -104,7 +104,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
-      base::Optional<BluetoothUUID> service_uuid) override;
+      absl::optional<BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
  private:
@@ -143,7 +143,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   uint32_t bluetooth_class_;
 
   // The name of the device, as supplied by the remote device.
-  base::Optional<std::string> name_;
+  absl::optional<std::string> name_;
 
   // The Bluetooth address of the device.
   std::string address_;

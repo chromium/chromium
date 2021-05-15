@@ -109,14 +109,14 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
       CancelActiveAuthenticators(authenticator->GetId());
       std::move(get_pin_callback_)
           .Run(authenticator->CurrentMinPINLength(),
-               authenticator->NewMinPINLength(), base::nullopt);
+               authenticator->NewMinPINLength(), absl::nullopt);
       break;
   }
 }
 
 void SetPINRequestHandler::OnRetriesResponse(
     CtapDeviceResponseCode status,
-    base::Optional<pin::RetriesResponse> response) {
+    absl::optional<pin::RetriesResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
 
@@ -134,7 +134,7 @@ void SetPINRequestHandler::OnRetriesResponse(
 
 void SetPINRequestHandler::OnSetPINComplete(
     CtapDeviceResponseCode status,
-    base::Optional<pin::EmptyResponse> response) {
+    absl::optional<pin::EmptyResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kSettingPIN);
 

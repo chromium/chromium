@@ -17,10 +17,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   using WriteCallback = base::OnceCallback<void(bool)>;
   using ReadCallback = base::RepeatingCallback<void(std::vector<uint8_t>)>;
   using ControlPointLengthCallback =
-      base::OnceCallback<void(base::Optional<uint16_t>)>;
+      base::OnceCallback<void(absl::optional<uint16_t>)>;
 
   FidoBleConnection(BluetoothAdapter* adapter,
                     std::string device_address,
@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
 
   static void OnReadControlPointLength(
       ControlPointLengthCallback callback,
-      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   std::unique_ptr<BluetoothGattConnection> connection_;
@@ -117,11 +117,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   bool waiting_for_gatt_discovery_ = false;
   const BluetoothUUID service_uuid_;
 
-  base::Optional<std::string> control_point_length_id_;
-  base::Optional<std::string> control_point_id_;
-  base::Optional<std::string> status_id_;
-  base::Optional<std::string> service_revision_id_;
-  base::Optional<std::string> service_revision_bitfield_id_;
+  absl::optional<std::string> control_point_length_id_;
+  absl::optional<std::string> control_point_id_;
+  absl::optional<std::string> status_id_;
+  absl::optional<std::string> service_revision_id_;
+  absl::optional<std::string> service_revision_bitfield_id_;
 
   base::WeakPtrFactory<FidoBleConnection> weak_factory_{this};
 

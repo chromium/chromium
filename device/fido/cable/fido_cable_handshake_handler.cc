@@ -47,7 +47,7 @@ constexpr size_t kClientHelloMessageSize = 58;
 
 constexpr size_t kCableHandshakeMacMessageSize = 16;
 
-base::Optional<std::array<uint8_t, kClientHelloMessageSize>>
+absl::optional<std::array<uint8_t, kClientHelloMessageSize>>
 ConstructHandshakeMessage(base::StringPiece handshake_key,
                           base::span<const uint8_t, 16> client_random_nonce) {
   cbor::Value::MapValue map;
@@ -58,12 +58,12 @@ ConstructHandshakeMessage(base::StringPiece handshake_key,
 
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   if (!hmac.Init(handshake_key))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::array<uint8_t, 32> client_hello_mac;
   if (!hmac.Sign(fido_parsing_utils::ConvertToStringPiece(*client_hello),
                  client_hello_mac.data(), client_hello_mac.size())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DCHECK_EQ(kClientHelloMessageSize,
@@ -106,7 +106,7 @@ void FidoCableV1HandshakeHandler::InitiateCableHandshake(
       ConstructHandshakeMessage(handshake_key_, client_session_random_);
   if (!handshake_message) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 

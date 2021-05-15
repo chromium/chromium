@@ -29,7 +29,7 @@ namespace {
 
 using TestSignCallback = ::device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    base::Optional<AuthenticatorGetAssertionResponse>>;
+    absl::optional<AuthenticatorGetAssertionResponse>>;
 
 }  // namespace
 

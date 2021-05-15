@@ -18,11 +18,11 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -47,7 +47,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
   BluetoothGattDiscovererWinrt(
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice> ble_device,
-      base::Optional<BluetoothUUID> service_uuid);
+      absl::optional<BluetoothUUID> service_uuid);
   ~BluetoothGattDiscovererWinrt();
 
   // Note: In order to avoid running |callback| multiple times on errors,
@@ -97,7 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
       service_to_characteristics_map_;
   base::flat_map<uint16_t, GattDescriptorList>
       characteristic_to_descriptors_map_;
-  base::Optional<BluetoothUUID> service_uuid_;
+  absl::optional<BluetoothUUID> service_uuid_;
   size_t num_services_ = 0;
   size_t num_characteristics_ = 0;
 

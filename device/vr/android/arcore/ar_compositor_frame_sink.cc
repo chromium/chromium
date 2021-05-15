@@ -157,7 +157,7 @@ void ArCompositorFrameSink::OnRootCompositorFrameSinkReady(
     // If the frame sink client doesn't have a valid SurfaceId at this point,
     // then the compositor hierarchy did not get set up, which means that we'll
     // be unable to composite DOM content.
-    base::Optional<viz::SurfaceId> dom_surface =
+    absl::optional<viz::SurfaceId> dom_surface =
         xr_frame_sink_client_->GetDOMSurface();
     if (dom_surface && dom_surface->is_valid()) {
       should_composite_dom_overlay_ = true;
@@ -207,7 +207,7 @@ void ArCompositorFrameSink::SubmitFrame(WebXrFrame* xr_frame,
   DCHECK(xr_frame);
   sink_remote_->SubmitCompositorFrame(allocator_.GetCurrentLocalSurfaceId(),
                                       CreateFrame(xr_frame, frame_type),
-                                      base::Optional<viz::HitTestRegionList>(),
+                                      absl::optional<viz::HitTestRegionList>(),
                                       /*trace_time=*/0);
 }
 
@@ -370,7 +370,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
           gfx::Transform(),
           /*quad_layer_rect=*/output_rect,
           /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-          /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+          /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
           /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
       viz::SurfaceDrawQuad* dom_quad =
@@ -398,7 +398,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         gfx::Transform(),
         /*quad_layer_rect=*/output_rect,
         /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-        /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+        /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
         /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
     viz::TextureDrawQuad* xr_content_quad =
@@ -437,7 +437,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/true,
+      /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/true,
       /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   viz::TextureDrawQuad* camera_quad =

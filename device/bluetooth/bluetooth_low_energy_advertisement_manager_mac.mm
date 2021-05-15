@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -105,7 +105,7 @@ void BluetoothLowEnergyAdvertisementManagerMac::RegisterAdvertisement(
     std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
     BluetoothAdapter::CreateAdvertisementCallback callback,
     BluetoothAdapter::AdvertisementErrorCallback error_callback) {
-  base::Optional<BluetoothAdvertisement::ErrorCode> error_code;
+  absl::optional<BluetoothAdvertisement::ErrorCode> error_code;
 
   std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids =
       advertisement_data->service_uuids();

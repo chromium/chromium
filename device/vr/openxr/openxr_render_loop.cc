@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
@@ -18,6 +17,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/transform.h"
@@ -72,8 +72,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   frame_data->pose = mojom::VRPose::New();
 
-  base::Optional<gfx::Quaternion> orientation;
-  base::Optional<gfx::Point3F> position;
+  absl::optional<gfx::Quaternion> orientation;
+  absl::optional<gfx::Point3F> position;
   if (XR_SUCCEEDED(openxr_->GetHeadPose(
           &orientation, &position, &frame_data->pose->emulated_position))) {
     if (orientation.has_value())

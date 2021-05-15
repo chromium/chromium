@@ -13,12 +13,12 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/keychain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido {
@@ -68,7 +68,7 @@ void FilterKeychainItemsByCreationDate(
       });
 }
 
-base::Optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
+absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
 QueryKeychainItemsForProfile(const std::string& keychain_access_group,
                              const std::string& metadata_secret,
                              base::Time created_not_before,
@@ -98,11 +98,11 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
         query, reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
     if (status == errSecItemNotFound) {
       DVLOG(1) << "no credentials found";
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (status != errSecSuccess) {
       OSSTATUS_DLOG(ERROR, status) << "SecItemCopyMatching failed";
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -111,7 +111,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
         CFArrayGetValueAtIndex(keychain_items, i));
     if (!attributes) {
       DLOG(ERROR) << "unexpected result type";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // Skip items that don't belong to the correct keychain access group
@@ -134,7 +134,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
       DLOG(ERROR) << "missing label";
       continue;
     }
-    base::Optional<std::string> opt_rp_id =
+    absl::optional<std::string> opt_rp_id =
         DecodeRpId(metadata_secret, base::SysCFStringRefToUTF8(sec_attr_label));
     if (!opt_rp_id) {
       DVLOG(1) << "key doesn't belong to this profile";
@@ -155,7 +155,7 @@ bool DoDeleteWebAuthnCredentials(const std::string& keychain_access_group,
                                  base::Time created_not_after)
     API_AVAILABLE(macosx(10.12.2)) {
   bool result = true;
-  base::Optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
+  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
       keychain_items =
           QueryKeychainItemsForProfile(keychain_access_group, metadata_secret,
                                        created_not_before, created_not_after);
@@ -201,7 +201,7 @@ size_t DoCountWebAuthnCredentials(const std::string& keychain_access_group,
                                   base::Time created_not_before,
                                   base::Time created_not_after)
     API_AVAILABLE(macosx(10.12.2)) {
-  base::Optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
+  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
       keychain_items =
           QueryKeychainItemsForProfile(keychain_access_group, metadata_secret,
                                        created_not_before, created_not_after);
@@ -226,7 +226,7 @@ TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
     : config_(std::move(config)) {}
 TouchIdCredentialStore::~TouchIdCredentialStore() = default;
 
-base::Optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
+absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
 TouchIdCredentialStore::CreateCredential(
     const std::string& rp_id,
     const PublicKeyCredentialUserEntity& user,
@@ -269,13 +269,13 @@ TouchIdCredentialStore::CreateCredential(
                                                  cferr.InitializeInto()));
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr;
-    return base::nullopt;
+    return absl::nullopt;
   }
   base::ScopedCFTypeRef<SecKeyRef> public_key(
       Keychain::GetInstance().KeyCopyPublicKey(private_key));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::make_pair(
@@ -283,7 +283,7 @@ TouchIdCredentialStore::CreateCredential(
       std::move(public_key));
 }
 
-base::Optional<std::list<Credential>>
+absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
     const std::string& rp_id,
     const std::vector<PublicKeyCredentialDescriptor>& descriptors) const {
@@ -304,13 +304,13 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
   return FindCredentialsImpl(rp_id, credential_ids);
 }
 
-base::Optional<std::list<Credential>>
+absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindResidentCredentials(
     const std::string& rp_id) const {
-  base::Optional<std::list<Credential>> credentials =
+  absl::optional<std::list<Credential>> credentials =
       FindCredentialsImpl(rp_id, /*credential_ids=*/{});
   if (!credentials) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   credentials->remove_if([this, &rp_id](const Credential& credential) {
     auto opt_metadata = UnsealCredentialId(config_.metadata_secret, rp_id,
@@ -324,7 +324,7 @@ TouchIdCredentialStore::FindResidentCredentials(
   return credentials;
 }
 
-base::Optional<CredentialMetadata> TouchIdCredentialStore::UnsealMetadata(
+absl::optional<CredentialMetadata> TouchIdCredentialStore::UnsealMetadata(
     const std::string& rp_id,
     const Credential& credential) const {
   return UnsealCredentialId(config_.metadata_secret, rp_id,
@@ -371,7 +371,7 @@ size_t TouchIdCredentialStore::CountCredentials(base::Time created_not_before,
 }
 
 API_AVAILABLE(macosx(10.12.2))
-base::Optional<std::list<Credential>>
+absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindCredentialsImpl(
     const std::string& rp_id,
     const std::set<std::vector<uint8_t>>& credential_ids) const {
@@ -394,7 +394,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
   if (status != errSecSuccess) {
     FIDO_LOG(ERROR) << "SecItemCopyMatching failed: "
                     << logging::DescriptionFromOSStatus(status);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Filter credentials for the RP down to |credential_ids|, unless it's
@@ -407,13 +407,13 @@ TouchIdCredentialStore::FindCredentialsImpl(
         attributes, kSecAttrApplicationLabel);
     if (!application_label) {
       FIDO_LOG(ERROR) << "credential with missing application label";
-      return base::nullopt;
+      return absl::nullopt;
     }
     SecKeyRef key =
         base::mac::GetValueFromDictionary<SecKeyRef>(attributes, kSecValueRef);
     if (!key) {
       FIDO_LOG(ERROR) << "credential with missing value ref";
-      return base::nullopt;
+      return absl::nullopt;
     }
     std::vector<uint8_t> credential_id(CFDataGetBytePtr(application_label),
                                        CFDataGetBytePtr(application_label) +

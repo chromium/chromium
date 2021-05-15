@@ -14,12 +14,12 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -37,7 +37,7 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
   // state after |DiscoverSupportedProtocolAndDeviceInfo| has been called by
   // the FidoDeviceDiscovery.
   static std::unique_ptr<MockFidoDevice> MakeCtap(
-      base::Optional<AuthenticatorGetInfoResponse> device_info = base::nullopt);
+      absl::optional<AuthenticatorGetInfoResponse> device_info = absl::nullopt);
   // MakeU2fWithDeviceInfoExpectation returns a uninitialized U2F device
   // suitable for injecting into a FidoDeviceDiscovery, which will determine its
   // protocol version by invoking |DiscoverSupportedProtocolAndDeviceInfo|.
@@ -48,16 +48,16 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
   // response is supplied, the mock will use that to reply; otherwise it will
   // use |test_data::kTestAuthenticatorGetInfoResponse|.
   static std::unique_ptr<MockFidoDevice> MakeCtapWithGetInfoExpectation(
-      base::Optional<base::span<const uint8_t>> get_info_response =
-          base::nullopt);
+      absl::optional<base::span<const uint8_t>> get_info_response =
+          absl::nullopt);
   // EncodeCBORRequest is a helper function for use with the |Expect*|
   // functions, below, that take a serialised request.
   static std::vector<uint8_t> EncodeCBORRequest(
-      std::pair<CtapRequestCommand, base::Optional<cbor::Value>> request);
+      std::pair<CtapRequestCommand, absl::optional<cbor::Value>> request);
 
   MockFidoDevice();
   MockFidoDevice(ProtocolVersion protocol_version,
-                 base::Optional<AuthenticatorGetInfoResponse> device_info);
+                 absl::optional<AuthenticatorGetInfoResponse> device_info);
   ~MockFidoDevice() override;
 
   // TODO(crbug.com/729950): Remove these workarounds once support for move-only
@@ -84,21 +84,21 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
   void ExpectWinkedAtLeastOnce();
   void ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand command,
-      base::Optional<base::span<const uint8_t>> response,
+      absl::optional<base::span<const uint8_t>> response,
       base::TimeDelta delay = base::TimeDelta(),
       testing::Matcher<base::span<const uint8_t>> request_matcher =
           testing::A<base::span<const uint8_t>>(),
       bool repeatedly = false);
   void ExpectCtap2CommandAndRespondRepeatedlyWith(
       CtapRequestCommand command,
-      base::Optional<base::span<const uint8_t>> response);
+      absl::optional<base::span<const uint8_t>> response);
   void ExpectCtap2CommandAndRespondWithError(
       CtapRequestCommand command,
       CtapDeviceResponseCode response_code,
       base::TimeDelta delay = base::TimeDelta());
   void ExpectRequestAndRespondWith(
       base::span<const uint8_t> request,
-      base::Optional<base::span<const uint8_t>> response,
+      absl::optional<base::span<const uint8_t>> response,
       base::TimeDelta delay = base::TimeDelta());
   void ExpectCtap2CommandAndDoNotRespond(CtapRequestCommand command);
   void ExpectRequestAndDoNotRespond(base::span<const uint8_t> request);

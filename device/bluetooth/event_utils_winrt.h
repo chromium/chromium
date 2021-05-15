@@ -15,8 +15,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -30,14 +30,14 @@ using IMemberFunction = HRESULT (__stdcall Interface::*)(Args...);
 // Convenience template function to construct a TypedEventHandler from a
 // base::RepeatingCallback of a matching signature. In case of success, the
 // EventRegistrationToken is returned to the caller. A return value of
-// base::nullopt indicates a failure. Events are posted to the same thread the
+// absl::nullopt indicates a failure. Events are posted to the same thread the
 // event handler was created on.
 template <typename Interface,
           typename Sender,
           typename Args,
           typename SenderAbi,
           typename ArgsAbi>
-base::Optional<EventRegistrationToken> AddTypedEventHandler(
+absl::optional<EventRegistrationToken> AddTypedEventHandler(
     Interface* i,
     internal::IMemberFunction<
         Interface,
@@ -63,7 +63,7 @@ base::Optional<EventRegistrationToken> AddTypedEventHandler(
   if (FAILED(hr)) {
     DVLOG(2) << "Adding EventHandler failed: "
              << logging::SystemErrorCodeToString(hr);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return token;

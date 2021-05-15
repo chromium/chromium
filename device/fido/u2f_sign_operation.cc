@@ -60,7 +60,7 @@ void U2fSignOperation::TrySign() {
 }
 
 void U2fSignOperation::OnSignResponseReceived(
-    base::Optional<std::vector<uint8_t>> device_response) {
+    absl::optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
     return;
   }
@@ -69,7 +69,7 @@ void U2fSignOperation::OnSignResponseReceived(
   const auto apdu_response =
       device_response
           ? apdu::ApduResponse::CreateFromMessage(std::move(*device_response))
-          : base::nullopt;
+          : absl::nullopt;
   if (apdu_response) {
     result = apdu_response->status();
   }
@@ -93,7 +93,7 @@ void U2fSignOperation::OnSignResponseReceived(
               key_handle());
       if (!sign_response) {
         std::move(callback())
-            .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+            .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
         return;
       }
 
@@ -138,7 +138,7 @@ void U2fSignOperation::OnSignResponseReceived(
     default:
       // Some sort of failure occurred. Abandon this device and move on.
       std::move(callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
       return;
   }
 }
@@ -156,7 +156,7 @@ void U2fSignOperation::TryFakeEnrollment() {
 }
 
 void U2fSignOperation::OnEnrollmentResponseReceived(
-    base::Optional<std::vector<uint8_t>> device_response) {
+    absl::optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
     return;
   }
@@ -173,7 +173,7 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
   switch (result) {
     case apdu::ApduResponse::Status::SW_NO_ERROR:
       std::move(callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, absl::nullopt);
       break;
 
     case apdu::ApduResponse::Status::SW_CONDITIONS_NOT_SATISFIED:
@@ -188,7 +188,7 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
     default:
       // Some sort of failure occurred. Abandon this device and move on.
       std::move(callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
       return;
   }
 }

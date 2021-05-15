@@ -84,7 +84,7 @@ void AuthTokenRequester::ObtainPINUVAuthToken() {
   switch (client_pin_availability) {
     case ClientPinAvailability::kNotSupported:
       delegate_->HavePINUVAuthTokenResultForAuthenticator(
-          authenticator_, Result::kPreTouchUnsatisfiableRequest, base::nullopt);
+          authenticator_, Result::kPreTouchUnsatisfiableRequest, absl::nullopt);
       return;
     case ClientPinAvailability::kSupportedAndPinSet:
       if (options_.skip_pin_touch) {
@@ -113,11 +113,11 @@ void AuthTokenRequester::ObtainTokenFromInternalUV() {
 
 void AuthTokenRequester::OnGetUVRetries(
     CtapDeviceResponseCode status,
-    base::Optional<pin::RetriesResponse> response) {
+    absl::optional<pin::RetriesResponse> response) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPreTouchAuthenticatorResponseInvalid,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -154,7 +154,7 @@ void AuthTokenRequester::OnGetUVRetries(
 
 void AuthTokenRequester::OnGetUVToken(
     CtapDeviceResponseCode status,
-    base::Optional<pin::TokenResponse> response) {
+    absl::optional<pin::TokenResponse> response) {
   if (!base::Contains(
           std::set<CtapDeviceResponseCode>{
               CtapDeviceResponseCode::kCtap2ErrUvInvalid,
@@ -167,7 +167,7 @@ void AuthTokenRequester::OnGetUVToken(
                     << " from " << authenticator_->GetDisplayName();
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPreTouchAuthenticatorResponseInvalid,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -178,7 +178,7 @@ void AuthTokenRequester::OnGetUVToken(
     // a display.
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPostTouchAuthenticatorOperationDenied,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -202,7 +202,7 @@ void AuthTokenRequester::OnGetUVToken(
     // remaining retries just before that to handle that case.
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPostTouchAuthenticatorInternalUVLock,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -220,17 +220,17 @@ void AuthTokenRequester::ObtainTokenFromPIN() {
 
 void AuthTokenRequester::OnGetPINRetries(
     CtapDeviceResponseCode status,
-    base::Optional<pin::RetriesResponse> response) {
+    absl::optional<pin::RetriesResponse> response) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPostTouchAuthenticatorResponseInvalid,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
   if (response->retries == 0) {
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPostTouchAuthenticatorPINHardLock,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
   pin_retries_ = response->retries;
@@ -273,7 +273,7 @@ void AuthTokenRequester::HavePIN(std::u16string pin16) {
 void AuthTokenRequester::OnGetPINToken(
     std::string pin,
     CtapDeviceResponseCode status,
-    base::Optional<pin::TokenResponse> response) {
+    absl::optional<pin::TokenResponse> response) {
   if (status == CtapDeviceResponseCode::kCtap2ErrPinInvalid) {
     pin_invalid_ = true;
     ObtainTokenFromPIN();
@@ -304,7 +304,7 @@ void AuthTokenRequester::OnGetPINToken(
         break;
     }
     delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, ret,
-                                                        base::nullopt);
+                                                        absl::nullopt);
     return;
   }
 
@@ -348,11 +348,11 @@ void AuthTokenRequester::HaveNewPIN(std::u16string pin16) {
 
 void AuthTokenRequester::OnSetPIN(std::string pin,
                                   CtapDeviceResponseCode status,
-                                  base::Optional<pin::EmptyResponse> response) {
+                                  absl::optional<pin::EmptyResponse> response) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     delegate_->HavePINUVAuthTokenResultForAuthenticator(
         authenticator_, Result::kPostTouchAuthenticatorResponseInvalid,
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -378,7 +378,7 @@ void AuthTokenRequester::NotifyAuthenticatorSelectedAndFailWithResult(
     Result result) {
   NotifyAuthenticatorSelected();
   delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, result,
-                                                      base::nullopt);
+                                                      absl::nullopt);
 }
 
 }  // namespace device

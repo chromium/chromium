@@ -25,26 +25,26 @@ namespace fido {
 namespace mac {
 
 // MakeAttestedCredentialData returns an AttestedCredentialData instance for
-// the Touch ID authenticator credential ID and public key or |base::nullopt|
+// the Touch ID authenticator credential ID and public key or |absl::nullopt|
 // on failure.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AttestedCredentialData> MakeAttestedCredentialData(
+absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key);
 
 // MakeAuthenticatorData returns an AuthenticatorData instance for the Touch ID
 // authenticator with the given Relying Party ID and AttestedCredentialData,
-// which may be |base::nullopt| in GetAssertion operations.
+// which may be |absl::nullopt| in GetAssertion operations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 AuthenticatorData MakeAuthenticatorData(
     const std::string& rp_id,
-    base::Optional<AttestedCredentialData> attested_credential_data);
+    absl::optional<AttestedCredentialData> attested_credential_data);
 
 // GenerateSignature signs the concatenation of the serialization of the given
 // authenticator data and the given client data hash, as required for
-// (self-)attestation and assertion. Returns |base::nullopt| if the operation
+// (self-)attestation and assertion. Returns |absl::nullopt| if the operation
 // fails.
-base::Optional<std::vector<uint8_t>> GenerateSignature(
+absl::optional<std::vector<uint8_t>> GenerateSignature(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash,
     SecKeyRef private_key) API_AVAILABLE(macosx(10.12.2));

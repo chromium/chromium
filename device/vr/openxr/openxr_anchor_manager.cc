@@ -55,7 +55,7 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     const mojom::VRStageParametersPtr& current_stage_parameters,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   for (auto& request : create_anchor_requests_) {
-    base::Optional<XrLocation> anchor_location =
+    absl::optional<XrLocation> anchor_location =
         GetXrLocationFromNativeOriginInformation(
             openxr, current_stage_parameters,
             request.GetNativeOriginInformation(),
@@ -171,7 +171,7 @@ mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
         !(anchor_from_mojo.locationFlags &
           XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)) {
       updated_anchors[index] =
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), base::nullopt);
+          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt);
     } else {
       updated_anchors[index] =
           mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(),
@@ -184,7 +184,7 @@ mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
                                    std::move(updated_anchors));
 }
 
-base::Optional<OpenXrAnchorManager::XrLocation>
+absl::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     OpenXrApiWrapper* openxr,
     const mojom::VRStageParametersPtr& current_stage_parameters,
@@ -195,7 +195,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_ID:
       // Currently unimplemented as only anchors are supported and are never
       // created relative to input sources
-      return base::nullopt;
+      return absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
       return GetXrLocationFromReferenceSpace(openxr, current_stage_parameters,
                                              native_origin_information,
@@ -203,7 +203,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       // Unsupported for now
-      return base::nullopt;
+      return absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
       return XrLocation{
           GfxTransformToXrPose(native_origin_from_anchor),
@@ -211,7 +211,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
   }
 }
 
-base::Optional<OpenXrAnchorManager::XrLocation>
+absl::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
     OpenXrApiWrapper* openxr,
     const mojom::VRStageParametersPtr& current_stage_parameters,
@@ -222,7 +222,7 @@ OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
   auto type = native_origin_information.get_reference_space_type();
   if (type == device::mojom::XRReferenceSpaceType::kLocalFloor) {
     if (!current_stage_parameters) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     // The offset from the floor to mojo (aka local) is encoded in
     // current_stage_parameters->mojo_from_floor. mojo_from_floor *

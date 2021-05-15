@@ -15,10 +15,10 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
     kExtensionDataIncluded = 1u << 7,
   };
 
-  static base::Optional<AuthenticatorData> DecodeAuthenticatorData(
+  static absl::optional<AuthenticatorData> DecodeAuthenticatorData(
       base::span<const uint8_t> auth_data);
 
   //  The attested credential |data| must be specified iff |flags| have
@@ -41,8 +41,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
                     uint8_t flags,
                     base::span<const uint8_t, kSignCounterLength> sign_counter,
-                    base::Optional<AttestedCredentialData> data,
-                    base::Optional<cbor::Value> extensions = base::nullopt);
+                    absl::optional<AttestedCredentialData> data,
+                    absl::optional<cbor::Value> extensions = absl::nullopt);
 
   // Creates an AuthenticatorData with flags and signature counter encoded
   // according to the supplied arguments.
@@ -51,8 +51,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
       bool user_present,
       bool user_verified,
       uint32_t sign_counter,
-      base::Optional<AttestedCredentialData> attested_credential_data,
-      base::Optional<cbor::Value> extensions);
+      absl::optional<AttestedCredentialData> attested_credential_data,
+      absl::optional<cbor::Value> extensions);
 
   AuthenticatorData(AuthenticatorData&& other);
   AuthenticatorData& operator=(AuthenticatorData&& other);
@@ -74,13 +74,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   // authenticator data.
   std::vector<uint8_t> GetCredentialId() const;
 
-  const base::Optional<AttestedCredentialData>& attested_data() const {
+  const absl::optional<AttestedCredentialData>& attested_data() const {
     return attested_data_;
   }
 
   // If a value is returned then the result of calling |is_map()| on it can be
   // assumed to be true.
-  const base::Optional<cbor::Value>& extensions() const { return extensions_; }
+  const absl::optional<cbor::Value>& extensions() const { return extensions_; }
 
   const std::array<uint8_t, kRpIdHashLength>& application_parameter() const {
     return application_parameter_;
@@ -121,9 +121,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
 
   // Signature counter, 32-bit unsigned big-endian integer.
   std::array<uint8_t, kSignCounterLength> counter_;
-  base::Optional<AttestedCredentialData> attested_data_;
+  absl::optional<AttestedCredentialData> attested_data_;
   // If |extensions_| has a value, then it will be a CBOR map.
-  base::Optional<cbor::Value> extensions_;
+  absl::optional<cbor::Value> extensions_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorData);
 };

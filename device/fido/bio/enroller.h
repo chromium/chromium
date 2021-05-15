@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -27,9 +27,9 @@ class BioEnroller {
     virtual void OnSampleCollected(BioEnrollmentSampleStatus status,
                                    int samples_remaining) = 0;
     // Called when the enrollment has completed. |template_id| may be
-    // base::nullopt if the enrollment has been cancelled.
+    // absl::nullopt if the enrollment has been cancelled.
     virtual void OnEnrollmentDone(
-        base::Optional<std::vector<uint8_t>> template_id) = 0;
+        absl::optional<std::vector<uint8_t>> template_id) = 0;
     virtual void OnEnrollmentError(CtapDeviceResponseCode status) = 0;
   };
 
@@ -56,18 +56,18 @@ class BioEnroller {
   };
 
   void FinishWithError(CtapDeviceResponseCode status);
-  void FinishSuccessfully(base::Optional<std::vector<uint8_t>> template_id);
+  void FinishSuccessfully(absl::optional<std::vector<uint8_t>> template_id);
 
   void OnEnrollResponse(CtapDeviceResponseCode status,
-                        base::Optional<BioEnrollmentResponse> response);
+                        absl::optional<BioEnrollmentResponse> response);
   void OnEnrollCancelled(CtapDeviceResponseCode status,
-                         base::Optional<BioEnrollmentResponse> response);
+                         absl::optional<BioEnrollmentResponse> response);
 
   State state_ = State::kInProgress;
   Delegate* delegate_;
   FidoAuthenticator* authenticator_;
   pin::TokenResponse token_;
-  base::Optional<std::vector<uint8_t>> template_id_;
+  absl::optional<std::vector<uint8_t>> template_id_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<BioEnroller> weak_factory_{this};

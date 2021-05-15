@@ -13,7 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -69,8 +69,8 @@ class OpenXrApiWrapper {
   bool HasPendingFrame() const;
   bool HasFrameState() const;
 
-  XrResult GetHeadPose(base::Optional<gfx::Quaternion>* orientation,
-                       base::Optional<gfx::Point3F>* position,
+  XrResult GetHeadPose(absl::optional<gfx::Quaternion>* orientation,
+                       absl::optional<gfx::Point3F>* position,
                        bool* emulated_position) const;
   void GetHeadFromEyes(XrView* left, XrView* right) const;
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(

@@ -34,7 +34,7 @@ class API_AVAILABLE(macosx(10.12.2))
  public:
   using Callback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorGetAssertionResponse>)>;
+      absl::optional<AuthenticatorGetAssertionResponse>)>;
 
   GetAssertionOperation(CtapGetAssertionRequest request,
                         TouchIdCredentialStore* credential_store,
@@ -50,7 +50,7 @@ class API_AVAILABLE(macosx(10.12.2))
 
  private:
   void PromptTouchIdDone(bool success);
-  base::Optional<AuthenticatorGetAssertionResponse> ResponseForCredential(
+  absl::optional<AuthenticatorGetAssertionResponse> ResponseForCredential(
       const Credential& credential);
 
   const std::unique_ptr<TouchIdContext> touch_id_context_ =

@@ -9,10 +9,10 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,7 +34,7 @@ using ContactCallback = base::RepeatingCallback<void(
 // |nullopt| then all contact requests will be rejected with an HTTP 410 status
 // to indicate that the contact ID is disabled.
 std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
-    base::Optional<ContactCallback> contact_callback);
+    absl::optional<ContactCallback> contact_callback);
 
 namespace authenticator {
 

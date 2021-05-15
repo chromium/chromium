@@ -748,8 +748,8 @@ XrTime OpenXrApiWrapper::GetPredictedDisplayTime() const {
 }
 
 XrResult OpenXrApiWrapper::GetHeadPose(
-    base::Optional<gfx::Quaternion>* orientation,
-    base::Optional<gfx::Point3F>* position,
+    absl::optional<gfx::Quaternion>* orientation,
+    absl::optional<gfx::Point3F>* position,
     bool* emulated_position) const {
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_VIEW));
@@ -772,7 +772,7 @@ XrResult OpenXrApiWrapper::GetHeadPose(
         view_from_local.pose.orientation.x, view_from_local.pose.orientation.y,
         view_from_local.pose.orientation.z, view_from_local.pose.orientation.w);
   } else {
-    *orientation = base::nullopt;
+    *orientation = absl::nullopt;
   }
 
   if (view_from_local.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) {
@@ -780,7 +780,7 @@ XrResult OpenXrApiWrapper::GetHeadPose(
                              view_from_local.pose.position.y,
                              view_from_local.pose.position.z);
   } else {
-    *position = base::nullopt;
+    *position = absl::nullopt;
   }
 
   *emulated_position = true;

@@ -10,8 +10,8 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   virtual bool IsAttestationCertificateInappropriatelyIdentifying() const = 0;
 
   // Return the DER bytes of the leaf X.509 certificate, if any.
-  virtual base::Optional<base::span<const uint8_t>> GetLeafCertificate()
+  virtual absl::optional<base::span<const uint8_t>> GetLeafCertificate()
       const = 0;
 
   const std::string& format_name() const { return format_; }
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
   cbor::Value AsCBOR() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
-  base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;
+  absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoneAttestationStatement);

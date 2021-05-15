@@ -19,12 +19,12 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -55,7 +55,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   // have a value and |value| may be used. When unsuccessful |error_code| will
   // have a value and |value| must be ignored.
   using ValueCallback = base::OnceCallback<void(
-      base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value)>;
 
   // The NotifySessionCallback is used to return sessions after they have
@@ -230,12 +230,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 
   struct CommandStatus {
     explicit CommandStatus(CommandType type = CommandType::kNone,
-                           base::Optional<BluetoothGattService::GattErrorCode>
-                               error_code = base::nullopt);
+                           absl::optional<BluetoothGattService::GattErrorCode>
+                               error_code = absl::nullopt);
     CommandStatus(CommandStatus&& other);
 
     CommandType type;
-    base::Optional<BluetoothGattService::GattErrorCode> error_code;
+    absl::optional<BluetoothGattService::GattErrorCode> error_code;
   };
 
   // Stops an active notify session for the remote characteristic. On success,
@@ -271,11 +271,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   };
 
   void StartNotifySessionInternal(
-      const base::Optional<NotificationType>& notification_type,
+      const absl::optional<NotificationType>& notification_type,
       NotifySessionCallback callback,
       ErrorCallback error_callback);
   void ExecuteStartNotifySession(
-      const base::Optional<NotificationType>& notification_type,
+      const absl::optional<NotificationType>& notification_type,
       NotifySessionCallback callback,
       ErrorCallback error_callback,
       CommandStatus previous_command);
@@ -294,7 +294,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
                                 base::OnceClosure callback,
                                 BluetoothGattService::GattErrorCode error);
   bool IsNotificationTypeSupported(
-      const base::Optional<NotificationType>& notification_type);
+      const absl::optional<NotificationType>& notification_type);
 
   // Pending StartNotifySession / StopNotifySession calls.
   base::queue<std::unique_ptr<NotifySessionCommand>> pending_notify_commands_;

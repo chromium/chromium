@@ -500,7 +500,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   bool read_characteristic_failed = false;
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>&) {
         EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
         read_characteristic_failed = true;
@@ -928,7 +928,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadRemoteCharacteristic) {
 static void TestCallback(
     BluetoothRemoteGattCharacteristic::ValueCallback callback,
     const TestBluetoothAdapterObserver& callback_observer,
-    base::Optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   EXPECT_EQ(0, callback_observer.gatt_characteristic_value_changed_count());
   std::move(callback).Run(error_code, value);
@@ -1421,7 +1421,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
             .Run(error_code, data);
@@ -1583,7 +1583,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ASSERT_FALSE(error_code.has_value())
             << "unexpected error: " << error_code.value();
@@ -1641,7 +1641,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
             .Run(error_code, data);
@@ -1703,9 +1703,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         EXPECT_EQ(test_vector_1, last_write_value_);
 
         characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-            [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+            [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
                 const std::vector<uint8_t>& data) {
-              EXPECT_EQ(error_code, base::nullopt);
+              EXPECT_EQ(error_code, absl::nullopt);
               EXPECT_EQ(1, gatt_read_characteristic_attempts_);
               EXPECT_EQ(1, gatt_write_characteristic_attempts_);
               EXPECT_EQ(test_vector_2, data);
@@ -2172,7 +2172,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             loop1.Quit();
           }));
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS, error_code);
         loop2.Quit();
@@ -2258,7 +2258,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop loop2;
   std::vector<uint8_t> empty_vector;
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         EXPECT_FALSE(error_code.has_value()) << "unexpected failure";
         loop1.Quit();

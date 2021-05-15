@@ -19,13 +19,13 @@
 #include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -134,11 +134,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     // returns the raw values that have been parsed from EIR.
     virtual void DeviceAdvertisementReceived(
         const std::string& device_address,
-        const base::Optional<std::string>& device_name,
-        const base::Optional<std::string>& advertisement_name,
-        base::Optional<int8_t> rssi,
-        base::Optional<int8_t> tx_power,
-        base::Optional<uint16_t> appearance,
+        const absl::optional<std::string>& device_name,
+        const absl::optional<std::string>& advertisement_name,
+        absl::optional<int8_t> rssi,
+        absl::optional<int8_t> tx_power,
+        absl::optional<uint16_t> appearance,
         const BluetoothDevice::UUIDList& advertised_uuids,
         const BluetoothDevice::ServiceDataMap& service_data_map,
         const BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {}
@@ -181,7 +181,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     virtual void DeviceBatteryChanged(
         BluetoothAdapter* adapter,
         BluetoothDevice* device,
-        base::Optional<uint8_t> new_battery_percentage) {}
+        absl::optional<uint8_t> new_battery_percentage) {}
 #endif
 
     // Called when the device |device| is removed from the adapter |adapter|,
@@ -312,9 +312,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     ServiceOptions();
     ~ServiceOptions();
 
-    base::Optional<int> channel;
-    base::Optional<int> psm;
-    base::Optional<std::string> name;
+    absl::optional<int> channel;
+    absl::optional<int> psm;
+    absl::optional<std::string> name;
 
     // Clients can configure this option to choose if they want to enforce
     // bonding with remote devices that connect to this device. Options:
@@ -324,7 +324,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     //     use this are responsible for securing their communication at the
     //     application level.
     //   * Set to true: bonding is enforced by the local device.
-    base::Optional<bool> require_authentication;
+    absl::optional<bool> require_authentication;
   };
 
   // The ErrorCallback is used for methods that can fail in which case it is
@@ -602,7 +602,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // a valid reference (in which case this method will fail).
   virtual void ConnectDevice(
       const std::string& address,
-      const base::Optional<BluetoothDevice::AddressType>& address_type,
+      const absl::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ErrorCallback error_callback) = 0;
 #endif

@@ -70,18 +70,18 @@ class LargeBlobsRequest {
 
   void SetPinParam(const pin::TokenResponse& pin_uv_auth_token);
 
-  friend std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+  friend std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
   AsCTAPRequestValuePair(const LargeBlobsRequest& request);
 
  private:
   LargeBlobsRequest();
 
-  base::Optional<int64_t> get_;
-  base::Optional<std::vector<uint8_t>> set_;
+  absl::optional<int64_t> get_;
+  absl::optional<std::vector<uint8_t>> set_;
   int64_t offset_ = 0;
-  base::Optional<int64_t> length_;
-  base::Optional<std::vector<uint8_t>> pin_uv_auth_param_;
-  base::Optional<PINUVAuthProtocol> pin_uv_auth_protocol_;
+  absl::optional<int64_t> length_;
+  absl::optional<std::vector<uint8_t>> pin_uv_auth_param_;
+  absl::optional<PINUVAuthProtocol> pin_uv_auth_protocol_;
 };
 
 class LargeBlobsResponse {
@@ -92,26 +92,26 @@ class LargeBlobsResponse {
   LargeBlobsResponse& operator=(LargeBlobsResponse&&);
   ~LargeBlobsResponse();
 
-  static base::Optional<LargeBlobsResponse> ParseForRead(
+  static absl::optional<LargeBlobsResponse> ParseForRead(
       size_t bytes_to_read,
-      const base::Optional<cbor::Value>& cbor_response);
-  static base::Optional<LargeBlobsResponse> ParseForWrite(
-      const base::Optional<cbor::Value>& cbor_response);
+      const absl::optional<cbor::Value>& cbor_response);
+  static absl::optional<LargeBlobsResponse> ParseForWrite(
+      const absl::optional<cbor::Value>& cbor_response);
 
-  base::Optional<std::vector<uint8_t>> config() { return config_; }
+  absl::optional<std::vector<uint8_t>> config() { return config_; }
 
  private:
   explicit LargeBlobsResponse(
-      base::Optional<std::vector<uint8_t>> config = base::nullopt);
+      absl::optional<std::vector<uint8_t>> config = absl::nullopt);
 
-  base::Optional<std::vector<uint8_t>> config_;
+  absl::optional<std::vector<uint8_t>> config_;
 };
 
 // Represents the large-blob map structure
 // https://drafts.fidoalliance.org/fido-2/stable-links-to-latest/fido-client-to-authenticator-protocol.html#large-blob
 class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobData {
  public:
-  static base::Optional<LargeBlobData> Parse(const cbor::Value& cbor_response);
+  static absl::optional<LargeBlobData> Parse(const cbor::Value& cbor_response);
 
   LargeBlobData(LargeBlobKey key, base::span<const uint8_t> blob);
   LargeBlobData(const LargeBlobData&) = delete;
@@ -121,7 +121,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobData {
   ~LargeBlobData();
   bool operator==(const LargeBlobData&) const;
 
-  base::Optional<std::vector<uint8_t>> Decrypt(LargeBlobKey key) const;
+  absl::optional<std::vector<uint8_t>> Decrypt(LargeBlobKey key) const;
   cbor::Value::MapValue AsCBOR() const;
 
  private:
@@ -149,7 +149,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayReader {
   // Verifies the integrity of the large blob array. This should be called after
   // all fragments have been |Append|ed.
   // If successful, parses and returns the array.
-  base::Optional<std::vector<LargeBlobData>> Materialize();
+  absl::optional<std::vector<LargeBlobData>> Materialize();
 
   // Returns the current size of the array fragments.
   size_t size() const { return bytes_.size(); }
@@ -189,7 +189,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayWriter {
   size_t offset_ = 0;
 };
 
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const LargeBlobsRequest& request);
 
 }  // namespace device

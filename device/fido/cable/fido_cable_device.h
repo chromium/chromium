@@ -14,11 +14,11 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/fido_ble_connection.h"
 #include "device/fido/cable/fido_ble_transaction.h"
 #include "device/fido/fido_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   };
 
   void OnResponseFrame(FrameCallback callback,
-                       base::Optional<FidoBleFrame> frame);
+                       absl::optional<FidoBleFrame> frame);
   void Transition();
   CancelToken AddToPendingFrames(FidoBleDeviceCommand cmd,
                                  std::vector<uint8_t> request,
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   void OnConnected(bool success);
   void OnStatusMessage(std::vector<uint8_t> data);
 
-  void OnReadControlPointLength(base::Optional<uint16_t> length);
+  void OnReadControlPointLength(absl::optional<uint16_t> length);
 
   void SendRequestFrame(FidoBleFrame frame, FrameCallback callback);
 
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   void OnTimeout();
 
   void OnBleResponseReceived(DeviceCallback callback,
-                             base::Optional<FidoBleFrame> frame);
+                             absl::optional<FidoBleFrame> frame);
   void ProcessBleDeviceError(base::span<const uint8_t> data);
 
   bool EncryptOutgoingMessage(std::vector<uint8_t>* message_to_encrypt);
@@ -131,11 +131,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   std::list<PendingFrame> pending_frames_;
   // current_token_ contains the cancelation token of the currently running
   // request, or else is empty if no request is currently pending.
-  base::Optional<CancelToken> current_token_;
-  base::Optional<FidoBleTransaction> transaction_;
+  absl::optional<CancelToken> current_token_;
+  absl::optional<FidoBleTransaction> transaction_;
   Observer* observer_ = nullptr;
 
-  base::Optional<EncryptionData> encryption_data_;
+  absl::optional<EncryptionData> encryption_data_;
   base::WeakPtrFactory<FidoCableDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoCableDevice);

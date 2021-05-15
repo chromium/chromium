@@ -108,7 +108,7 @@ uint16_t BluetoothDeviceCast::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceCast::GetName() const {
+absl::optional<std::string> BluetoothDeviceCast::GetName() const {
   return name_;
 }
 
@@ -133,12 +133,12 @@ bool BluetoothDeviceCast::IsConnecting() const {
   return pending_connect_;
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
   // TODO(slan): Plumb this from the type_to_data field of ScanResult.
   return BluetoothDevice::GetInquiryRSSI();
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
   // TODO(slan): Remove if we do not need this.
   return BluetoothDevice::GetInquiryTxPower();
 }
@@ -244,7 +244,7 @@ bool BluetoothDeviceCast::UpdateWithScanResult(
   DVLOG(3) << __func__;
   bool changed = false;
 
-  base::Optional<std::string> result_name = result.Name();
+  absl::optional<std::string> result_name = result.Name();
 
   // Advertisements for the same device can use different names. For now, the
   // last name wins. An empty string represents no name.
@@ -347,7 +347,7 @@ bool BluetoothDeviceCast::UpdateCharacteristicValue(
 }
 
 void BluetoothDeviceCast::CreateGattConnectionImpl(
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   DVLOG(2) << __func__ << " " << pending_connect_;
   if (pending_connect_)
     return;

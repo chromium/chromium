@@ -55,7 +55,7 @@ void MakeCredentialOperation::Run() {
   if (!std::any_of(key_params.begin(), key_params.end(), is_es256)) {
     DVLOG(1) << "No supported algorithm found.";
     std::move(callback_).Run(
-        CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm, base::nullopt);
+        CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm, absl::nullopt);
     return;
   }
 
@@ -70,7 +70,7 @@ void MakeCredentialOperation::Run() {
 void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   if (!success) {
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-                             base::nullopt);
+                             absl::nullopt);
     return;
   }
 
@@ -81,18 +81,18 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
       touch_id_context_->authentication_context());
 
   if (!request_.exclude_list.empty()) {
-    base::Optional<std::list<Credential>> credentials =
+    absl::optional<std::list<Credential>> credentials =
         credential_store_->FindCredentialsFromCredentialDescriptorList(
             request_.rp.id, request_.exclude_list);
     if (!credentials) {
       FIDO_LOG(ERROR) << "Failed to check for excluded credentials";
       std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                               base::nullopt);
+                               absl::nullopt);
       return;
     }
     if (!credentials->empty()) {
       std::move(callback_).Run(
-          CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, base::nullopt);
+          CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, absl::nullopt);
       return;
     }
   }
@@ -104,42 +104,42 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   if (!credential_store_->DeleteCredentialsForUserId(request_.rp.id,
                                                      request_.user.id)) {
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             base::nullopt);
+                             absl::nullopt);
     return;
   }
 
   // Generate the new key pair.
-  base::Optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
+  absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
       credential = credential_store_->CreateCredential(
           request_.rp.id, request_.user, request_.resident_key_required,
           touch_id_context_->access_control());
   if (!credential) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             base::nullopt);
+                             absl::nullopt);
     return;
   }
 
   // Create attestation object. There is no separate attestation key pair, so
   // we perform self-attestation.
-  base::Optional<AttestedCredentialData> attested_credential_data =
+  absl::optional<AttestedCredentialData> attested_credential_data =
       MakeAttestedCredentialData(credential->first.credential_id,
                                  SecKeyRefToECPublicKey(credential->second));
   if (!attested_credential_data) {
     FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             base::nullopt);
+                             absl::nullopt);
     return;
   }
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
       request_.rp.id, std::move(*attested_credential_data));
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       GenerateSignature(authenticator_data, request_.client_data_hash,
                         credential->first.private_key);
   if (!signature) {
     FIDO_LOG(ERROR) << "MakeSignature failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             base::nullopt);
+                             absl::nullopt);
     return;
   }
   AuthenticatorMakeCredentialResponse response(

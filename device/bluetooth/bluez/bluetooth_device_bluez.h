@@ -62,7 +62,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -72,8 +72,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   bool IsBlockedByPolicy() const override;
 #endif
   UUIDSet GetUUIDs() const override;
-  base::Optional<int8_t> GetInquiryRSSI() const override;
-  base::Optional<int8_t> GetInquiryTxPower() const override;
+  absl::optional<int8_t> GetInquiryRSSI() const override;
+  absl::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -183,7 +183,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
-      base::Optional<device::BluetoothUUID> service_uuid) override;
+      absl::optional<device::BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
  private:

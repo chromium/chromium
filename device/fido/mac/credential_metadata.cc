@@ -58,7 +58,7 @@ class Cryptor {
                             base::span<const uint8_t> plaintext,
                             base::span<const uint8_t> authenticated_data) const;
 
-  base::Optional<std::vector<uint8_t>> Unseal(
+  absl::optional<std::vector<uint8_t>> Unseal(
       Algorithm alg,
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> ciphertext,
@@ -67,7 +67,7 @@ class Cryptor {
   std::string HmacForStorage(base::StringPiece data) const;
 
  private:
-  static base::Optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
+  static absl::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
       Algorithm alg);
 
   // Derives an Algorithm-specific key from |secret_| to avoid using the same
@@ -94,7 +94,7 @@ std::vector<uint8_t> Cryptor::Seal(
   return aead.Seal(plaintext, nonce, authenticated_data);
 }
 
-base::Optional<std::vector<uint8_t>> Cryptor::Unseal(
+absl::optional<std::vector<uint8_t>> Cryptor::Unseal(
     Algorithm algorithm,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> ciphertext,
@@ -119,7 +119,7 @@ std::string Cryptor::HmacForStorage(base::StringPiece data) const {
 }
 
 // static
-base::Optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
+absl::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     Algorithm alg) {
   switch (alg) {
     case Algorithm::kAes256Gcm:
@@ -128,7 +128,7 @@ base::Optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
       return crypto::Aead::AES_256_GCM_SIV;
     case Algorithm::kHmacSha256:
       NOTREACHED() << "invalid AEAD";
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -228,7 +228,7 @@ std::vector<uint8_t> SealCredentialId(const std::string& secret,
       cbor::Value(MaybeTruncateWithTrailingEllipsis(metadata.user_display_name),
                   cbor::Value::Type::BYTE_STRING));
   cbor_user.emplace_back(cbor::Value(metadata.is_resident));
-  base::Optional<std::vector<uint8_t>> pt =
+  absl::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_user)));
   DCHECK(pt);
 
@@ -244,7 +244,7 @@ std::vector<uint8_t> SealCredentialId(const std::string& secret,
 //    | (1 byte) | (12 bytes) |      nonce=nonce,          |
 //    |          |            |      ad=(version, rpID))   |
 // Note the absence of the rk bit, which is always false.
-static base::Optional<CredentialMetadata> UnsealLegacyCredentialId(
+static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
@@ -252,25 +252,25 @@ static base::Optional<CredentialMetadata> UnsealLegacyCredentialId(
   // decrypt the remaining bytes.
   if (credential_id.size() <= 1 + kNonceLength ||
       credential_id[0] != kVersionLegacy0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
+  absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(1, kNonceLength),
       credential_id.subspan(1 + kNonceLength), MakeAad(kVersionLegacy0, rp_id));
   if (!plaintext) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // The recovered plaintext should decode into the CredentialMetadata struct.
-  base::Optional<cbor::Value> maybe_array = cbor::Reader::Read(*plaintext);
+  absl::optional<cbor::Value> maybe_array = cbor::Reader::Read(*plaintext);
   if (!maybe_array || !maybe_array->is_array()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::ArrayValue& array = maybe_array->GetArray();
   if (array.size() != 3 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return CredentialMetadata(array[0].GetBytestring(),
                             std::string(array[1].GetBytestringAsString()),
@@ -278,7 +278,7 @@ static base::Optional<CredentialMetadata> UnsealLegacyCredentialId(
                             /*is_resident=*/false);
 }
 
-base::Optional<CredentialMetadata> UnsealCredentialId(
+absl::optional<CredentialMetadata> UnsealCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
@@ -288,27 +288,27 @@ base::Optional<CredentialMetadata> UnsealCredentialId(
 
   if (credential_id.size() <= 1 + kNonceLength ||
       credential_id[0] != kVersion) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
+  absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(1, kNonceLength),
       credential_id.subspan(1 + kNonceLength), MakeAad(kVersion, rp_id));
   if (!plaintext) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // The recovered plaintext should decode into the CredentialMetadata struct.
-  base::Optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
+  absl::optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
       reinterpret_cast<const uint8_t*>(plaintext->data()), plaintext->size()));
   if (!maybe_array || !maybe_array->is_array()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::ArrayValue& array = maybe_array->GetArray();
   if (array.size() != 4 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring() ||
       !array[3].is_bool()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return CredentialMetadata(
       array[0].GetBytestring(), std::string(array[1].GetBytestringAsString()),
@@ -342,18 +342,18 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
   return base::HexEncode(ct.data(), ct.size());
 }
 
-base::Optional<std::string> DecodeRpId(const std::string& secret,
+absl::optional<std::string> DecodeRpId(const std::string& secret,
                                        const std::string& ciphertext) {
   std::vector<uint8_t> ct;
   if (!base::HexStringToBytes(ciphertext, &ct)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   static constexpr std::array<uint8_t, kNonceLength> fixed_zero_nonce = {};
-  base::Optional<std::vector<uint8_t>> pt = Cryptor(secret).Unseal(
+  absl::optional<std::vector<uint8_t>> pt = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256GcmSiv, fixed_zero_nonce, ct,
       /*authenticated_data=*/{});
   if (!pt) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return std::string(pt->begin(), pt->end());
 }
@@ -379,7 +379,7 @@ std::vector<uint8_t> SealLegacyV0CredentialIdForTestingOnly(
       cbor::Value(user_name, cbor::Value::Type::BYTE_STRING));
   cbor_user.emplace_back(
       cbor::Value(user_display_name, cbor::Value::Type::BYTE_STRING));
-  base::Optional<std::vector<uint8_t>> pt =
+  absl::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_user)));
   DCHECK(pt);
 

@@ -164,11 +164,11 @@ void TestBluetoothAdapterObserver::DeviceAddressChanged(
 
 void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
     const std::string& device_address,
-    const base::Optional<std::string>& device_name,
-    const base::Optional<std::string>& advertisement_name,
-    base::Optional<int8_t> rssi,
-    base::Optional<int8_t> tx_power,
-    base::Optional<uint16_t> appearance,
+    const absl::optional<std::string>& device_name,
+    const absl::optional<std::string>& advertisement_name,
+    absl::optional<int8_t> rssi,
+    absl::optional<int8_t> tx_power,
+    absl::optional<uint16_t> appearance,
     const device::BluetoothDevice::UUIDList& advertised_uuids,
     const device::BluetoothDevice::ServiceDataMap& service_data_map,
     const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {

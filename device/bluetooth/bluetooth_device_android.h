@@ -13,9 +13,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -56,7 +56,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -117,7 +117,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // BluetoothDevice:
   void CreateGattConnectionImpl(
-      base::Optional<device::BluetoothUUID> service_uuid) override;
+      absl::optional<device::BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
   // Java object org.chromium.device.bluetooth.ChromeBluetoothDevice.

@@ -16,22 +16,22 @@
 namespace device {
 
 // static
-base::Optional<AttestationObject> AttestationObject::Parse(
+absl::optional<AttestationObject> AttestationObject::Parse(
     const cbor::Value& value) {
   if (!value.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& map = value.GetMap();
 
   const auto& format_it = map.find(cbor::Value(kFormatKey));
   if (format_it == map.end() || !format_it->second.is_string()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const std::string& fmt = format_it->second.GetString();
 
   const auto& att_stmt_it = map.find(cbor::Value(kAttestationStatementKey));
   if (att_stmt_it == map.end() || !att_stmt_it->second.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::unique_ptr<AttestationStatement> attestation_statement =
       std::make_unique<OpaqueAttestationStatement>(
@@ -39,13 +39,13 @@ base::Optional<AttestationObject> AttestationObject::Parse(
 
   const auto& auth_data_it = map.find(cbor::Value(kAuthDataKey));
   if (auth_data_it == map.end() || !auth_data_it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<AuthenticatorData> authenticator_data =
+  absl::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
           auth_data_it->second.GetBytestring());
   if (!authenticator_data) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return AttestationObject(std::move(*authenticator_data),
                            std::move(attestation_statement));

@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/udev_linux/udev_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace testing {
 
@@ -26,8 +26,8 @@ class FakeUdevLoader : public device::UdevLoader {
   udev_device* AddFakeDevice(std::string name,
                              std::string syspath,
                              std::string subsystem,
-                             base::Optional<std::string> devnode,
-                             base::Optional<std::string> devtype,
+                             absl::optional<std::string> devnode,
+                             absl::optional<std::string> devtype,
                              std::map<std::string, std::string> sysattrs,
                              std::map<std::string, std::string> properties);
 

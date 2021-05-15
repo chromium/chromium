@@ -575,7 +575,7 @@ void FakeBluetoothGattCharacteristicClient::DelayedReadValueCallback(
   DCHECK(properties);
 
   properties->value.ReplaceValue(value);
-  std::move(callback).Run(/*error_code=*/base::nullopt, value);
+  std::move(callback).Run(/*error_code=*/absl::nullopt, value);
 }
 
 std::vector<uint8_t>

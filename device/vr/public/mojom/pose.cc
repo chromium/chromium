@@ -21,10 +21,10 @@ Pose::Pose(const gfx::Point3F& position, const gfx::Quaternion& orientation)
   other_from_this_ = gfx::ComposeTransform(decomposed_pose);
 }
 
-base::Optional<Pose> Pose::Create(const gfx::Transform& other_from_this) {
+absl::optional<Pose> Pose::Create(const gfx::Transform& other_from_this) {
   gfx::DecomposedTransform decomposed_other_from_this;
   if (!gfx::DecomposeTransform(&decomposed_other_from_this, other_from_this)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return Pose(gfx::Point3F(decomposed_other_from_this.translate[0],

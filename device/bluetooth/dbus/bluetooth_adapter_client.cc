@@ -119,7 +119,7 @@ BluetoothAdapterClient::Error ErrorResponseToError(
 void OnResponseAdapter(
     base::OnceClosure callback,
     BluetoothAdapterClient::ErrorCallback error_callback,
-    const base::Optional<BluetoothAdapterClient::Error>& error) {
+    const absl::optional<BluetoothAdapterClient::Error>& error) {
   if (!error) {
     std::move(callback).Run();
     return;
@@ -451,7 +451,7 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   // BluetoothAdapterClient override.
   void ConnectDevice(const dbus::ObjectPath& object_path,
                      const std::string& address,
-                     const base::Optional<AddressType>& address_type,
+                     const absl::optional<AddressType>& address_type,
                      ConnectDeviceCallback callback,
                      ErrorCallback error_callback) override {
     dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
@@ -557,7 +557,7 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
                   dbus::Response* response,
                   dbus::ErrorResponse* error_response) {
     if (response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 

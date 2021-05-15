@@ -39,18 +39,18 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) XRStandardGamepadBuilder {
   void AddOptionalButtonData(const GamepadBuilder::ButtonData& data);
   void AddOptionalButtonData(const GamepadButton& button);
 
-  base::Optional<Gamepad> GetGamepad() const;
+  absl::optional<Gamepad> GetGamepad() const;
 
   bool HasSecondaryButton() const { return !!secondary_button_; }
   bool HasTouchpad() const { return !!touchpad_data_; }
   bool HasThumbstick() const { return !!thumbstick_data_; }
 
  private:
-  base::Optional<GamepadButton> primary_button_;
-  base::Optional<GamepadButton> secondary_button_;
+  absl::optional<GamepadButton> primary_button_;
+  absl::optional<GamepadButton> secondary_button_;
 
-  base::Optional<GamepadBuilder::ButtonData> touchpad_data_;
-  base::Optional<GamepadBuilder::ButtonData> thumbstick_data_;
+  absl::optional<GamepadBuilder::ButtonData> touchpad_data_;
+  absl::optional<GamepadBuilder::ButtonData> thumbstick_data_;
 
   std::vector<GamepadBuilder::ButtonData> optional_button_data_;
 

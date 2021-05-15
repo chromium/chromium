@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
     ObservedDeviceData();
     ~ObservedDeviceData();
 
-    base::Optional<CableEidArray> service_data;
+    absl::optional<CableEidArray> service_data;
     std::vector<CableEidArray> uuids;
   };
 
@@ -84,8 +84,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   // description of |result|, if present.
   static std::string ResultDebugString(
       const CableEidArray& eid,
-      const base::Optional<V1DiscoveryDataAndEID>& result);
-  static base::Optional<CableEidArray> MaybeGetEidFromServiceData(
+      const absl::optional<V1DiscoveryDataAndEID>& result);
+  static absl::optional<CableEidArray> MaybeGetEidFromServiceData(
       const BluetoothDevice* device);
   static std::vector<CableEidArray> GetUUIDs(const BluetoothDevice* device);
 
@@ -116,11 +116,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   void ValidateAuthenticatorHandshakeMessage(
       CableDiscoveryData::Version cable_version,
       FidoCableHandshakeHandler* handshake_handler,
-      base::Optional<std::vector<uint8_t>> handshake_response);
+      absl::optional<std::vector<uint8_t>> handshake_response);
 
-  base::Optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
+  absl::optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
       const BluetoothDevice* device);
-  base::Optional<V1DiscoveryDataAndEID>
+  absl::optional<V1DiscoveryDataAndEID>
   GetCableDiscoveryDataFromAuthenticatorEid(CableEidArray authenticator_eid);
   void RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent event);
 

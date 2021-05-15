@@ -12,12 +12,12 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 class GURL;
@@ -66,7 +66,7 @@ std::array<uint8_t, kAdvertSize> Encrypt(
 // Decrypt turns a BLE advert payload into a plaintext EID (suitable for passing
 // to |FromComponents|) by decrypting with |key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<CableEidArray> Decrypt(
+absl::optional<CableEidArray> Decrypt(
     const std::array<uint8_t, kAdvertSize>& advert,
     base::span<const uint8_t, kEIDKeySize> key);
 
@@ -101,7 +101,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<Components> Parse(const std::string& qr_url);
+absl::optional<Components> Parse(const std::string& qr_url);
 
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -167,13 +167,13 @@ bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret);
 // should be hidden. The function can fail if the CBOR encoding fails or,
 // somehow, the size overflows.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
+absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map);
 
 // DecodePaddedCBORMap unpads and decodes a CBOR map as produced by
 // |EncodePaddedCBORMap|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<cbor::Value> DecodePaddedCBORMap(
+absl::optional<cbor::Value> DecodePaddedCBORMap(
     base::span<const uint8_t> input);
 
 // Crypter handles the post-handshake encryption of CTAP2 messages.
@@ -215,7 +215,7 @@ using HandshakeHash = std::array<uint8_t, 32>;
 // |Crypter| that can encrypt and decrypt future messages on the connection, and
 // the handshake hash that can be used to tie signatures to the connection.
 using HandshakeResult =
-    base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
+    absl::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
 
 // HandshakeInitiator starts a caBLE v2 handshake and processes the single
 // response message from the other party. The handshake is always initiated from
@@ -229,11 +229,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
       // peer_identity, if not nullopt, specifies that this is a paired
       // handshake and then contains a P-256 public key for the peer. Otherwise
       // this is a QR handshake.
-      base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+      absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
       // identity_seed, if not nullopt, specifies that this is a QR handshake
       // and contains the seed for QR key for this client. identity_seed must be
       // provided iff |peer_identity| is not.
-      base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
+      absl::optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
 
   ~HandshakeInitiator();
 
@@ -250,7 +250,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   Noise noise_;
   std::array<uint8_t, 32> psk_;
 
-  base::Optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
+  absl::optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   bssl::UniquePtr<EC_KEY> local_identity_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
 };
@@ -267,7 +267,7 @@ HandshakeResult RespondToHandshake(
     bssl::UniquePtr<EC_KEY> identity,
     // peer_identity, which must be non-nullopt iff |identity| is nullptr,
     // contains the peer's public key as taken from the QR code.
-    base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+    absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     // in contains the initial handshake message from the peer.
     base::span<const uint8_t> in,
     // out_response is set to the response handshake message, if successful.

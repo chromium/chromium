@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/numerics/math_constants.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
@@ -19,6 +18,7 @@
 #include "device/vr/android/arcore/arcore_session_utils.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 
 using base::android::JavaRef;
@@ -89,7 +89,7 @@ ArCoreDevice::ArCoreDevice(
 
 ArCoreDevice::~ArCoreDevice() {
   // If there's still a pending session request, reject it.
-  CallDeferredRequestSessionCallback(base::nullopt);
+  CallDeferredRequestSessionCallback(absl::nullopt);
 
   // Ensure that any active sessions are terminated. Terminating the GL thread
   // would normally do so via its session_shutdown_callback_, but that happens
@@ -218,7 +218,7 @@ void ArCoreDevice::OnDrawingSurfaceTouch(bool is_primary,
 void ArCoreDevice::OnDrawingSurfaceDestroyed() {
   DVLOG(1) << __func__;
 
-  CallDeferredRequestSessionCallback(base::nullopt);
+  CallDeferredRequestSessionCallback(absl::nullopt);
 
   OnSessionEnded();
 }
@@ -279,7 +279,7 @@ void ArCoreDevice::OnSessionEnded() {
 }
 
 void ArCoreDevice::CallDeferredRequestSessionCallback(
-    base::Optional<ArCoreGlInitializeResult> initialize_result) {
+    absl::optional<ArCoreGlInitializeResult> initialize_result) {
   DVLOG(1) << __func__ << " success=" << initialize_result.has_value();
   DCHECK(IsOnMainThread());
 
@@ -375,7 +375,7 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 
   if (!arcore_session_utils_->EnsureLoaded()) {
     DLOG(ERROR) << "ARCore was not loaded properly.";
-    OnArCoreGlInitializationComplete(base::nullopt);
+    OnArCoreGlInitializationComplete(absl::nullopt);
     return;
   }
 
@@ -407,7 +407,7 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 }
 
 void ArCoreDevice::OnArCoreGlInitializationComplete(
-    base::Optional<ArCoreGlInitializeResult> arcore_initialization_result) {
+    absl::optional<ArCoreGlInitializeResult> arcore_initialization_result) {
   DVLOG(1) << __func__ << ": arcore_initialization_result.has_value()="
            << arcore_initialization_result.has_value();
   DCHECK(IsOnMainThread());
@@ -424,7 +424,7 @@ void ArCoreDevice::OnArCoreGlInitializationComplete(
         arcore_initialization_result->frame_sink_id;
   } else {
     session_state_->enabled_features_ = {};
-    session_state_->depth_configuration_ = base::nullopt;
+    session_state_->depth_configuration_ = absl::nullopt;
   }
 
   // We only start GL initialization after the user has granted consent, so we

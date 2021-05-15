@@ -21,7 +21,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,6 +29,7 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -248,7 +248,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   virtual uint16_t GetAppearance() const = 0;
 
   // Returns the name of the device, which may be empty.
-  virtual base::Optional<std::string> GetName() const = 0;
+  virtual absl::optional<std::string> GetName() const = 0;
 
   // Returns the name of the device suitable for displaying, this may
   // be a synthesized string containing the address and localized type name
@@ -364,22 +364,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // The received signal strength, in dBm. This field is avaliable and valid
   // only during discovery.
   // TODO(http://crbug.com/580406): Devirtualize once BlueZ sets inquiry_rssi_.
-  virtual base::Optional<int8_t> GetInquiryRSSI() const;
+  virtual absl::optional<int8_t> GetInquiryRSSI() const;
 
   // The transmitted power level. This field is avaliable only for LE devices
   // that include this field in AD. It is avaliable and valid only during
   // discovery.
   // TODO(http://crbug.com/580406): Devirtualize once BlueZ sets
   // inquiry_tx_power_.
-  virtual base::Optional<int8_t> GetInquiryTxPower() const;
+  virtual absl::optional<int8_t> GetInquiryTxPower() const;
 
   // Returns Advertising Data Flags.
   // Returns cached value if the adapter is not discovering.
   //
   // Only Chrome OS and WinRT support this now. Upstream BlueZ has this feature
-  // as experimental. This method returns base::nullopt on platforms that don't
+  // as experimental. This method returns absl::nullopt on platforms that don't
   // support this feature.
-  base::Optional<uint8_t> GetAdvertisingDataFlags() const;
+  absl::optional<uint8_t> GetAdvertisingDataFlags() const;
 
   // The ErrorCallback is used for methods that can fail in which case it
   // is called, in the success case the callback is simply not called.
@@ -547,7 +547,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   virtual void CreateGattConnection(
       GattConnectionCallback callback,
       ConnectErrorCallback error_callback,
-      base::Optional<BluetoothUUID> service_uuid = base::nullopt);
+      absl::optional<BluetoothUUID> service_uuid = absl::nullopt);
 
   // Set the gatt services discovery complete flag for this device.
   virtual void SetGattServicesDiscoveryComplete(bool complete);
@@ -578,9 +578,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // arguments matches the order of their corresponding Data Type specified in
   // https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile.
   void UpdateAdvertisementData(int8_t rssi,
-                               base::Optional<uint8_t> flags,
+                               absl::optional<uint8_t> flags,
                                UUIDList advertised_uuids,
-                               base::Optional<int8_t> tx_power,
+                               absl::optional<int8_t> tx_power,
                                ServiceDataMap service_data,
                                ManufacturerDataMap manufacturer_data);
 
@@ -613,10 +613,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // be between 0 and 100, inclusive.
   // Only device::BluetoothAdapterBlueZ has control over this field with the
   // value originating from a single source, the BlueZ Battery API.
-  void SetBatteryPercentage(base::Optional<uint8_t> battery_percentage);
+  void SetBatteryPercentage(absl::optional<uint8_t> battery_percentage);
 
   // Returns the remaining battery for the device.
-  const base::Optional<uint8_t>& battery_percentage() const {
+  const absl::optional<uint8_t>& battery_percentage() const {
     return battery_percentage_;
   }
 #endif
@@ -696,7 +696,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // DidDisconnectGatt immediately or asynchronously as the connection state
   // changes.
   virtual void CreateGattConnectionImpl(
-      base::Optional<BluetoothUUID> service_uuid) = 0;
+      absl::optional<BluetoothUUID> service_uuid) = 0;
 
   // UpgradeToFullDiscovery is called when there is a pending or current GATT
   // connection that was created with a service UUID, but now discovery of all
@@ -745,7 +745,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
 
   // Contains the specified service that was targeted for discovery. Only ever
   // contains a value if |supports_service_specific_discovery_| is true.
-  base::Optional<BluetoothUUID> target_service_;
+  absl::optional<BluetoothUUID> target_service_;
 
   // Callbacks for pending success and error result of CreateGattConnection.
   std::vector<GattConnectionCallback> create_gatt_connection_success_callbacks_;
@@ -758,13 +758,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   bool gatt_services_discovery_complete_;
 
   // Received Signal Strength Indicator of the advertisement received.
-  base::Optional<int8_t> inquiry_rssi_;
+  absl::optional<int8_t> inquiry_rssi_;
 
   // Advertising Data flags of the device.
-  base::Optional<uint8_t> advertising_data_flags_;
+  absl::optional<uint8_t> advertising_data_flags_;
 
   // Tx Power advertised by the device.
-  base::Optional<int8_t> inquiry_tx_power_;
+  absl::optional<int8_t> inquiry_tx_power_;
 
   // Class that holds the union of Advertised UUIDs and Service UUIDs.
   DeviceUUIDs device_uuids_;
@@ -788,7 +788,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // TODO(https://crbug.com/973237): This field is different from others because
   // it is not filled by the platform. In the future, when there is a unified
   // Mojo service, this field will be moved to BluetoothDeviceInfo.
-  base::Optional<uint8_t> battery_percentage_;
+  absl::optional<uint8_t> battery_percentage_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDevice);

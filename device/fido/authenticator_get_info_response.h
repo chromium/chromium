@@ -13,10 +13,10 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -43,23 +43,23 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   base::flat_set<ProtocolVersion> versions;
   base::flat_set<Ctap2Version> ctap2_versions;
   std::array<uint8_t, kAaguidLength> aaguid;
-  base::Optional<uint32_t> max_msg_size;
-  base::Optional<uint32_t> max_credential_count_in_list;
-  base::Optional<uint32_t> max_credential_id_length;
-  base::Optional<base::flat_set<PINUVAuthProtocol>> pin_protocols;
-  base::Optional<std::vector<std::string>> extensions;
+  absl::optional<uint32_t> max_msg_size;
+  absl::optional<uint32_t> max_credential_count_in_list;
+  absl::optional<uint32_t> max_credential_id_length;
+  absl::optional<base::flat_set<PINUVAuthProtocol>> pin_protocols;
+  absl::optional<std::vector<std::string>> extensions;
   std::vector<int32_t> algorithms = {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
   };
-  base::Optional<uint32_t> max_serialized_large_blob_array;
-  base::Optional<uint32_t> remaining_discoverable_credentials;
-  base::Optional<bool> force_pin_change;
-  base::Optional<uint32_t> min_pin_length;
+  absl::optional<uint32_t> max_serialized_large_blob_array;
+  absl::optional<uint32_t> remaining_discoverable_credentials;
+  absl::optional<bool> force_pin_change;
+  absl::optional<uint32_t> min_pin_length;
 
   // max_cred_blob_length is the maximum size credBlob that the authenticator
   // supports per credential, or nullopt if credBlob is not supported. If
   // present, this value will be >= 32.
-  base::Optional<uint32_t> max_cred_blob_length;
+  absl::optional<uint32_t> max_cred_blob_length;
 
   AuthenticatorSupportedOptions options;
 

@@ -116,7 +116,7 @@ void AndroidAccessoryDiscovery::OnDeviceAdded(
                                   std::move(device)));
 }
 
-static base::Optional<AndroidAccessoryDiscovery::InterfaceInfo>
+static absl::optional<AndroidAccessoryDiscovery::InterfaceInfo>
 FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
   for (const device::mojom::UsbConfigurationInfoPtr& config :
        device_info->configurations) {
@@ -132,8 +132,8 @@ FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
       if (info->class_code == 0xff && info->subclass_code == 0xff &&
           info->endpoints.size() == 2) {
         // This is the AOA interface. (ADB, if enabled, has a subclass of 66.)
-        base::Optional<uint8_t> in_endpoint_num;
-        base::Optional<uint8_t> out_endpoint_num;
+        absl::optional<uint8_t> in_endpoint_num;
+        absl::optional<uint8_t> out_endpoint_num;
 
         for (const device::mojom::UsbEndpointInfoPtr& endpoint :
              info->endpoints) {
@@ -159,7 +159,7 @@ FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AndroidAccessoryDiscovery::HandleAccessoryDevice(

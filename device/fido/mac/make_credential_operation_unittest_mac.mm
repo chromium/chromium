@@ -47,7 +47,7 @@ TEST(MakeCredentialOperationTest, DISABLED_TestRun)
 API_AVAILABLE(macosx(10.12.2)) {
   base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       base::Optional<AuthenticatorMakeCredentialResponse>>
+                       absl::optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;
   auto request = MakeTestRequest();
   TouchIdCredentialStore credential_store(

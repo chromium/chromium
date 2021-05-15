@@ -29,7 +29,7 @@ FakePeripheral::FakePeripheral(FakeCentral* fake_central,
 
 FakePeripheral::~FakePeripheral() = default;
 
-void FakePeripheral::SetName(base::Optional<std::string> name) {
+void FakePeripheral::SetName(absl::optional<std::string> name) {
   name_ = std::move(name);
 }
 
@@ -172,7 +172,7 @@ uint16_t FakePeripheral::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> FakePeripheral::GetName() const {
+absl::optional<std::string> FakePeripheral::GetName() const {
   return name_;
 }
 
@@ -292,7 +292,7 @@ void FakePeripheral::ConnectToServiceInsecurely(
 void FakePeripheral::CreateGattConnection(
     GattConnectionCallback callback,
     ConnectErrorCallback error_callback,
-    base::Optional<device::BluetoothUUID> service_uuid) {
+    absl::optional<device::BluetoothUUID> service_uuid) {
   create_gatt_connection_success_callbacks_.push_back(std::move(callback));
   create_gatt_connection_error_callbacks_.push_back(std::move(error_callback));
 
@@ -330,7 +330,7 @@ bool FakePeripheral::IsGattServicesDiscoveryComplete() const {
 }
 
 void FakePeripheral::CreateGattConnectionImpl(
-    base::Optional<device::BluetoothUUID>) {
+    absl::optional<device::BluetoothUUID>) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FakePeripheral::DispatchConnectionResponse,
                                 weak_ptr_factory_.GetWeakPtr()));

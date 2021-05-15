@@ -228,21 +228,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
       adapter_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadio> radio_;
-  base::Optional<EventRegistrationToken> radio_state_changed_token_;
+  absl::optional<EventRegistrationToken> radio_state_changed_token_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Enumeration::IDeviceWatcher>
       powered_radio_watcher_;
-  base::Optional<EventRegistrationToken> powered_radio_added_token_;
-  base::Optional<EventRegistrationToken> powered_radio_removed_token_;
-  base::Optional<EventRegistrationToken> powered_radios_enumerated_token_;
+  absl::optional<EventRegistrationToken> powered_radio_added_token_;
+  absl::optional<EventRegistrationToken> powered_radio_removed_token_;
+  absl::optional<EventRegistrationToken> powered_radios_enumerated_token_;
   size_t num_powered_radios_ = 0;
 
   bool radio_was_powered_ = false;
 
   std::vector<scoped_refptr<BluetoothAdvertisement>> pending_advertisements_;
 
-  base::Optional<EventRegistrationToken> advertisement_received_token_;
-  base::Optional<EventRegistrationToken> advertisement_watcher_stopped_token_;
+  absl::optional<EventRegistrationToken> advertisement_received_token_;
+  absl::optional<EventRegistrationToken> advertisement_watcher_stopped_token_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                              IBluetoothLEAdvertisementWatcher>
       ble_advertisement_watcher_;

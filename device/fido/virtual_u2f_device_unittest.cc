@@ -21,7 +21,7 @@ namespace device {
 namespace {
 
 using TestCallbackReceiver =
-    test::ValueCallbackReceiver<base::Optional<std::vector<uint8_t>>>;
+    test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
 
 void SendCommand(VirtualU2fDevice* device, base::span<const uint8_t> command) {
   device->DeviceTransact(fido_parsing_utils::Materialize(command),

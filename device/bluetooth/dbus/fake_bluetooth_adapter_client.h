@@ -69,7 +69,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
                            ErrorCallback error_callback) override;
   void ConnectDevice(const dbus::ObjectPath& object_path,
                      const std::string& address,
-                     const base::Optional<AddressType>& address_type,
+                     const absl::optional<AddressType>& address_type,
                      ConnectDeviceCallback callback,
                      ErrorCallback error_callback) override;
 

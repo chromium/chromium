@@ -28,7 +28,7 @@ const char kBlueZFailedError[] = "org.bluez.Error.Failed";
 
 }  // namespace
 
-base::Optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
+absl::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string) {
   if (base::Contains(error_string, kBlueZInvalidArgumentsError))
     return ConnectToServiceInsecurelyResult::kInvalidArgumentsError;
@@ -72,7 +72,7 @@ base::Optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
   if (base::Contains(error_string, kBlueZFailedError))
     return ConnectToServiceInsecurelyResult::kFailedError;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void RecordConnectToServiceInsecurelyResult(

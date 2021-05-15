@@ -259,10 +259,10 @@ void FakeBluetoothLEDeviceWinrt::SimulatePairingPinCode(std::string pin_code) {
       Make<FakeDeviceInformationPairingWinrt>(std::move(pin_code)));
 }
 
-base::Optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
+absl::optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
     const {
   if (!service_uuid_)
-    return base::nullopt;
+    return absl::nullopt;
   return BluetoothUUID(*service_uuid_);
 }
 

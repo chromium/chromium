@@ -82,7 +82,7 @@ class BluetoothPairingWinrt {
   Callback callback_;
   ErrorCallback error_callback_;
 
-  base::Optional<EventRegistrationToken> pairing_requested_token_;
+  absl::optional<EventRegistrationToken> pairing_requested_token_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IDeferral> pairing_deferral_;
   Microsoft::WRL::ComPtr<

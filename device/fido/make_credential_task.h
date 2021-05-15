@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -22,6 +21,7 @@
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_task.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
  public:
   using MakeCredentialTaskCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorMakeCredentialResponse>)>;
+      absl::optional<AuthenticatorMakeCredentialResponse>)>;
   using SignOperation = DeviceOperation<CtapGetAssertionRequest,
                                         AuthenticatorGetAssertionResponse>;
   using RegisterOperation =
@@ -58,15 +58,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
   CtapGetAssertionRequest NextSilentRequest();
   void HandleResponseToSilentSignRequest(
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorGetAssertionResponse> response_data);
+      absl::optional<AuthenticatorGetAssertionResponse> response_data);
   void HandleResponseToDummyTouch(
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorMakeCredentialResponse> response_data);
+      absl::optional<AuthenticatorMakeCredentialResponse> response_data);
 
   void U2fRegister();
   void MaybeRevertU2fFallback(
       CtapDeviceResponseCode status,
-      base::Optional<AuthenticatorMakeCredentialResponse> response);
+      absl::optional<AuthenticatorMakeCredentialResponse> response);
 
   CtapMakeCredentialRequest request_;
   std::vector<std::vector<PublicKeyCredentialDescriptor>> exclude_list_batches_;

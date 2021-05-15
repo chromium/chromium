@@ -14,8 +14,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -28,10 +28,10 @@ class FakeBluetoothLEAdvertisementWinrt
  public:
   FakeBluetoothLEAdvertisementWinrt();
   FakeBluetoothLEAdvertisementWinrt(
-      base::Optional<std::string> local_name,
-      base::Optional<uint8_t> flags,
+      absl::optional<std::string> local_name,
+      absl::optional<uint8_t> flags,
       BluetoothDevice::UUIDList advertised_uuids,
-      base::Optional<int8_t> tx_power,
+      absl::optional<int8_t> tx_power,
       BluetoothDevice::ServiceDataMap service_data,
       BluetoothDevice::ManufacturerDataMap manufacturer_data);
   ~FakeBluetoothLEAdvertisementWinrt() override;
@@ -67,10 +67,10 @@ class FakeBluetoothLEAdvertisementWinrt
               BluetoothLEAdvertisementDataSection*>** section_list) override;
 
  private:
-  base::Optional<std::string> local_name_;
-  base::Optional<uint8_t> flags_;
+  absl::optional<std::string> local_name_;
+  absl::optional<uint8_t> flags_;
   BluetoothDevice::UUIDList advertised_uuids_;
-  base::Optional<int8_t> tx_power_;
+  absl::optional<int8_t> tx_power_;
   BluetoothDevice::ServiceDataMap service_data_;
   BluetoothDevice::ManufacturerDataMap manufacturer_data_;
 

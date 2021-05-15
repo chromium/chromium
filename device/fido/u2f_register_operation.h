@@ -12,9 +12,9 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -47,11 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fRegisterOperation
   void WinkAndTrySign();
   void TrySign();
   void OnCheckForExcludedKeyHandle(
-      base::Optional<std::vector<uint8_t>> device_response);
+      absl::optional<std::vector<uint8_t>> device_response);
   void WinkAndTryRegistration();
   void TryRegistration();
   void OnRegisterResponseReceived(
-      base::Optional<std::vector<uint8_t>> device_response);
+      absl::optional<std::vector<uint8_t>> device_response);
   const std::vector<uint8_t>& excluded_key_handle() const;
 
   size_t current_key_handle_index_ = 0;

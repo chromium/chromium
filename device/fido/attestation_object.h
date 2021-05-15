@@ -25,7 +25,7 @@ class AttestationStatement;
 // https://www.w3.org/TR/2017/WD-webauthn-20170505/#cred-attestation.
 class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
  public:
-  static base::Optional<AttestationObject> Parse(const cbor::Value& value);
+  static absl::optional<AttestationObject> Parse(const cbor::Value& value);
 
   AttestationObject(AuthenticatorData data,
                     std::unique_ptr<AttestationStatement> statement);

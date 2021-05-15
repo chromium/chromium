@@ -88,7 +88,7 @@ void VRDeviceBase::SetArBlendModeSupported(bool is_ar_blend_mode_supported) {
 void VRDeviceBase::SetLuid(const LUID& luid) {
   if (luid.HighPart != 0 || luid.LowPart != 0) {
     // Only set the LUID if it exists and is nonzero.
-    device_data_.luid = base::make_optional<LUID>(luid);
+    device_data_.luid = absl::make_optional<LUID>(luid);
   }
 }
 #endif

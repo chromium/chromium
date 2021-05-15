@@ -27,11 +27,11 @@ std::vector<uint8_t> Materialize(base::span<const uint8_t> span) {
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
-base::Optional<std::vector<uint8_t>> MaterializeOrNull(
-    base::Optional<base::span<const uint8_t>> span) {
+absl::optional<std::vector<uint8_t>> MaterializeOrNull(
+    absl::optional<base::span<const uint8_t>> span) {
   if (span)
     return Materialize(*span);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void Append(std::vector<uint8_t>* target, base::span<const uint8_t> in_values) {

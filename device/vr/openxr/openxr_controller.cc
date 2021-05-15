@@ -369,7 +369,7 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
   return description_.Clone();
 }
 
-base::Optional<GamepadButton> OpenXrController::GetButton(
+absl::optional<GamepadButton> OpenXrController::GetButton(
     OpenXrButtonType type) const {
   GamepadButton ret;
   // Button should at least have one of the three actions;
@@ -408,7 +408,7 @@ base::Optional<GamepadButton> OpenXrController::GetButton(
   }
 
   if (!has_value) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ret;
@@ -504,7 +504,7 @@ mojom::XRHandTrackingDataPtr OpenXrController::GetHandTrackingData(
   return hand_tracking_data;
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
+absl::optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
     XrTime predicted_display_time,
     XrSpace local_space,
     bool* emulated_position) const {
@@ -512,14 +512,14 @@ base::Optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
                                 local_space, emulated_position);
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetPointerFromGripTransform(
+absl::optional<gfx::Transform> OpenXrController::GetPointerFromGripTransform(
     XrTime predicted_display_time) const {
   bool emulated_position;
   return GetTransformFromSpaces(predicted_display_time, pointer_pose_space_,
                                 grip_pose_space_, &emulated_position);
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
+absl::optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
     XrTime predicted_display_time,
     XrSpace target,
     XrSpace origin,
@@ -536,7 +536,7 @@ base::Optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
           xrLocateSpace(target, origin, predicted_display_time, &location)) ||
       !(location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) ||
       !(location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   *emulated_position = true;

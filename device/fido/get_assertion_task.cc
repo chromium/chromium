@@ -241,7 +241,7 @@ void GetAssertionTask::U2fSign() {
 void GetAssertionTask::HandleResponse(
     std::vector<PublicKeyCredentialDescriptor> allow_list,
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorGetAssertionResponse> response_data) {
+    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (canceled_) {
     return;
   }
@@ -251,12 +251,12 @@ void GetAssertionTask::HandleResponse(
       FIDO_LOG(DEBUG)
           << "Assertion response has invalid credential information";
       std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                               base::nullopt);
+                               absl::nullopt);
       return;
     }
 
     // Decrypt any hmac-secret response.
-    const base::Optional<cbor::Value>& extensions_cbor =
+    const absl::optional<cbor::Value>& extensions_cbor =
         response_data->authenticator_data.extensions();
     if (extensions_cbor) {
       // Parsing has already checked that |extensions_cbor| is a map.
@@ -266,15 +266,15 @@ void GetAssertionTask::HandleResponse(
         if (!hmac_secret_request_ || !it->second.is_bytestring()) {
           FIDO_LOG(DEBUG) << "Unexpected or invalid hmac_secret extension";
           std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                                   base::nullopt);
+                                   absl::nullopt);
           return;
         }
-        base::Optional<std::vector<uint8_t>> plaintext =
+        absl::optional<std::vector<uint8_t>> plaintext =
             hmac_secret_request_->Decrypt(it->second.GetBytestring());
         if (!plaintext) {
           FIDO_LOG(DEBUG) << "Failed to decrypt hmac_secret extension";
           std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                                   base::nullopt);
+                                   absl::nullopt);
           return;
         }
         response_data->hmac_secret = std::move(plaintext.value());
@@ -287,7 +287,7 @@ void GetAssertionTask::HandleResponse(
 
 void GetAssertionTask::HandleResponseToSilentRequest(
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorGetAssertionResponse> response_data) {
+    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
   DCHECK(request_.allow_list.size() > 0);
   DCHECK(allow_list_batches_.size() > 0);
   DCHECK(0 < current_allow_list_batch_ &&
@@ -309,7 +309,7 @@ void GetAssertionTask::HandleResponseToSilentRequest(
       FIDO_LOG(DEBUG)
           << "Assertion response has invalid credential information";
       std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                               base::nullopt);
+                               absl::nullopt);
       return;
     }
 
@@ -369,9 +369,9 @@ void GetAssertionTask::HandleResponseToSilentRequest(
 
 void GetAssertionTask::HandleDummyMakeCredentialComplete(
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorMakeCredentialResponse> response_data) {
+    absl::optional<AuthenticatorMakeCredentialResponse> response_data) {
   std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
-                           base::nullopt);
+                           absl::nullopt);
 }
 
 void GetAssertionTask::MaybeSetPRFParameters(
@@ -391,7 +391,7 @@ void GetAssertionTask::MaybeSetPRFParameters(
 
 void GetAssertionTask::MaybeRevertU2fFallbackAndInvokeCallback(
     CtapDeviceResponseCode status,
-    base::Optional<AuthenticatorGetAssertionResponse> response) {
+    absl::optional<AuthenticatorGetAssertionResponse> response) {
   DCHECK_EQ(ProtocolVersion::kU2f, device()->supported_protocol());
   if (device()->device_info()) {
     // This was actually a CTAP2 device, but the protocol version was set to U2F

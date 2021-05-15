@@ -6,8 +6,8 @@
 #define DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <unordered_map>
 
@@ -53,10 +53,10 @@ class AddressToIdMap {
   }
 
   // Gets the id for the corresponding address, if it's available.
-  base::Optional<IdType> GetId(void* address) const {
+  absl::optional<IdType> GetId(void* address) const {
     auto it = address_to_id_.find(address);
     if (it == address_to_id_.end()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return it->second;

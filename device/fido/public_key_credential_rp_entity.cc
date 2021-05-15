@@ -12,25 +12,25 @@
 namespace device {
 
 // static
-base::Optional<PublicKeyCredentialRpEntity>
+absl::optional<PublicKeyCredentialRpEntity>
 PublicKeyCredentialRpEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map() || cbor.GetMap().size() > 3) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& rp_map = cbor.GetMap();
   for (const auto& element : rp_map) {
     if (!element.first.is_string() || !element.second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     const std::string& key = element.first.GetString();
     if (key != kEntityIdMapKey && key != kEntityNameMapKey &&
         key != kIconUrlMapKey) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
   const auto id_it = rp_map.find(cbor::Value(kEntityIdMapKey));
   if (id_it == rp_map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   PublicKeyCredentialRpEntity rp(id_it->second.GetString());
   const auto name_it = rp_map.find(cbor::Value(kEntityNameMapKey));
@@ -51,8 +51,8 @@ PublicKeyCredentialRpEntity::PublicKeyCredentialRpEntity(std::string id_)
 
 PublicKeyCredentialRpEntity::PublicKeyCredentialRpEntity(
     std::string id_,
-    base::Optional<std::string> name_,
-    base::Optional<GURL> icon_url_)
+    absl::optional<std::string> name_,
+    absl::optional<GURL> icon_url_)
     : id(std::move(id_)),
       name(std::move(name_)),
       icon_url(std::move(icon_url_)) {}

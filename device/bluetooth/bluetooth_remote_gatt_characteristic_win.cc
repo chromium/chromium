@@ -367,7 +367,7 @@ void BluetoothRemoteGattCharacteristicWin::
     for (ULONG i = 0; i < value->DataSize; i++)
       characteristic_value_.push_back(value->Data[i]);
 
-    std::move(callback).Run(base::nullopt, characteristic_value_);
+    std::move(callback).Run(absl::nullopt, characteristic_value_);
   }
 }
 

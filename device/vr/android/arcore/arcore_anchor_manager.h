@@ -36,16 +36,16 @@ class ArCoreAnchorManager {
 
   bool AnchorExists(AnchorId id) const;
 
-  // Returns base::nullopt if anchor with the given id does not exist.
-  base::Optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
+  // Returns absl::nullopt if anchor with the given id does not exist.
+  absl::optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
 
   // Creates Anchor object given a plane ID.
-  base::Optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
+  absl::optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
                                         const device::mojom::Pose& pose,
                                         PlaneId plane_id);
 
   // Creates free-floating Anchor.
-  base::Optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
+  absl::optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
 
   void DetachAnchor(AnchorId anchor_id);
 

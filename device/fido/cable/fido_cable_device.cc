@@ -27,12 +27,12 @@ namespace {
 // counter larger than |kMaxCounter| FidoCableDevice should error out.
 constexpr uint32_t kMaxCounter = (1 << 24) - 1;
 
-base::Optional<std::vector<uint8_t>> ConstructV1Nonce(
+absl::optional<std::vector<uint8_t>> ConstructV1Nonce(
     base::span<const uint8_t> nonce,
     bool is_sender_client,
     uint32_t counter) {
   if (counter > kMaxCounter)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto constructed_nonce = fido_parsing_utils::Materialize(nonce);
   constructed_nonce.push_back(is_sender_client ? 0x00 : 0x01);
@@ -129,7 +129,7 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
     DeviceCallback callback) {
   if (!encryption_data_ || !EncryptOutgoingMessage(&command)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     state_ = State::kDeviceError;
     FIDO_LOG(ERROR) << "Failed to encrypt outgoing caBLE message.";
     return 0;
@@ -141,7 +141,7 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
 }
 
 void FidoCableDevice::OnResponseFrame(FrameCallback callback,
-                                      base::Optional<FidoBleFrame> frame) {
+                                      absl::optional<FidoBleFrame> frame) {
   // The request is done, time to reset |transaction_|.
   ResetTransaction();
   state_ = frame ? State::kReady : State::kDeviceError;
@@ -149,7 +149,7 @@ void FidoCableDevice::OnResponseFrame(FrameCallback callback,
   if (frame && frame->command() != FidoBleDeviceCommand::kControl) {
     if (!encryption_data_ || !DecryptIncomingMessage(&frame.value())) {
       state_ = State::kDeviceError;
-      frame = base::nullopt;
+      frame = absl::nullopt;
     }
   }
 
@@ -190,7 +190,7 @@ void FidoCableDevice::Transition() {
         // Respond to any pending frames.
         FrameCallback cb = std::move(pending_frames_.front().callback);
         pending_frames_.pop_front();
-        std::move(cb).Run(base::nullopt);
+        std::move(cb).Run(absl::nullopt);
       }
       break;
   }
@@ -277,7 +277,7 @@ void FidoCableDevice::OnStatusMessage(std::vector<uint8_t> data) {
 }
 
 void FidoCableDevice::OnReadControlPointLength(
-    base::Optional<uint16_t> length) {
+    absl::optional<uint16_t> length) {
   if (state_ == State::kDeviceError) {
     return;
   }
@@ -321,16 +321,16 @@ void FidoCableDevice::OnTimeout() {
 
 void FidoCableDevice::OnBleResponseReceived(
     DeviceCallback callback,
-    base::Optional<FidoBleFrame> frame) {
+    absl::optional<FidoBleFrame> frame) {
   if (!frame || !frame->IsValid()) {
     state_ = State::kDeviceError;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   if (frame->command() == FidoBleDeviceCommand::kError) {
     ProcessBleDeviceError(frame->data());
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -390,7 +390,7 @@ bool FidoCableDevice::DecryptIncomingMessage(FidoBleFrame* incoming_frame) {
 
   const uint8_t additional_data[1] = {
       base::strict_cast<uint8_t>(incoming_frame->command())};
-  base::Optional<std::vector<uint8_t>> plaintext =
+  absl::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(incoming_frame->data(), *nonce, additional_data);
   if (!plaintext) {
     FIDO_LOG(ERROR) << "Failed to decrypt caBLE message.";

@@ -95,16 +95,16 @@ void FakeCentral::SimulateAdvertisementReceived(
     observer.DeviceAdvertisementReceived(
         scan_result_ptr->device_address, scan_record->name, scan_record->name,
         scan_result_ptr->rssi, scan_record->tx_power->value,
-        base::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         uuids, service_data, manufacturer_data);
   }
 
   fake_peripheral->SetName(std::move(scan_record->name));
   fake_peripheral->UpdateAdvertisementData(
-      scan_result_ptr->rssi, base::nullopt /* flags */, uuids,
+      scan_result_ptr->rssi, absl::nullopt /* flags */, uuids,
       scan_record->tx_power->has_value
-          ? base::make_optional(scan_record->tx_power->value)
-          : base::nullopt,
+          ? absl::make_optional(scan_record->tx_power->value)
+          : absl::nullopt,
       service_data, manufacturer_data);
 
   if (is_new_device) {
@@ -232,7 +232,7 @@ void FakeCentral::AddFakeService(const std::string& peripheral_address,
                                  AddFakeServiceCallback callback) {
   FakePeripheral* fake_peripheral = GetFakePeripheral(peripheral_address);
   if (fake_peripheral == nullptr) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -259,7 +259,7 @@ void FakeCentral::AddFakeCharacteristic(
   FakeRemoteGattService* fake_remote_gatt_service =
       GetFakeRemoteGattService(peripheral_address, service_id);
   if (fake_remote_gatt_service == nullptr) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -293,7 +293,7 @@ void FakeCentral::AddFakeDescriptor(
       GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
                                       characteristic_id);
   if (fake_remote_gatt_characteristic == nullptr) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -320,7 +320,7 @@ void FakeCentral::RemoveFakeDescriptor(const std::string& descriptor_id,
 
 void FakeCentral::SetNextReadCharacteristicResponse(
     uint16_t gatt_code,
-    const base::Optional<std::vector<uint8_t>>& value,
+    const absl::optional<std::vector<uint8_t>>& value,
     const std::string& characteristic_id,
     const std::string& service_id,
     const std::string& peripheral_address,
@@ -417,7 +417,7 @@ void FakeCentral::GetLastWrittenCharacteristicValue(
       GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
                                       characteristic_id);
   if (fake_remote_gatt_characteristic == nullptr) {
-    std::move(callback).Run(false, base::nullopt, mojom::WriteType::kNone);
+    std::move(callback).Run(false, absl::nullopt, mojom::WriteType::kNone);
     return;
   }
 
@@ -428,7 +428,7 @@ void FakeCentral::GetLastWrittenCharacteristicValue(
 
 void FakeCentral::SetNextReadDescriptorResponse(
     uint16_t gatt_code,
-    const base::Optional<std::vector<uint8_t>>& value,
+    const absl::optional<std::vector<uint8_t>>& value,
     const std::string& descriptor_id,
     const std::string& characteristic_id,
     const std::string& service_id,
@@ -475,7 +475,7 @@ void FakeCentral::GetLastWrittenDescriptorValue(
       GetFakeRemoteGattDescriptor(peripheral_address, service_id,
                                   characteristic_id, descriptor_id);
   if (!fake_remote_gatt_descriptor) {
-    std::move(callback).Run(false, base::nullopt);
+    std::move(callback).Run(false, absl::nullopt);
     return;
   }
 
@@ -597,7 +597,7 @@ void FakeCentral::ResetAdvertising(base::OnceClosure callback,
 }
 void FakeCentral::ConnectDevice(
     const std::string& address,
-    const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+    const absl::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ErrorCallback error_callback) {
   NOTREACHED();

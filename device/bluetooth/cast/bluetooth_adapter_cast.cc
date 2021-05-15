@@ -177,7 +177,7 @@ void BluetoothAdapterCast::SetAdvertisingInterval(
 
 void BluetoothAdapterCast::ConnectDevice(
     const std::string& address,
-    const base::Optional<BluetoothDevice::AddressType>& address_type,
+    const absl::optional<BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ErrorCallback error_callback) {
   NOTIMPLEMENTED() << __func__ << " GATT server mode not supported";

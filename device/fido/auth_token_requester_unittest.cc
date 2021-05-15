@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -22,6 +21,7 @@
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/pin.h"
 #include "device/fido/virtual_ctap2_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace {
@@ -59,8 +59,8 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
       : expectations_(std::move(expectations)) {}
 
   void WaitForResult() { wait_for_result_loop_.Run(); }
-  base::Optional<AuthTokenRequester::Result>& result() { return result_; }
-  base::Optional<pin::TokenResponse>& response() { return response_; }
+  absl::optional<AuthTokenRequester::Result>& result() { return result_; }
+  absl::optional<pin::TokenResponse>& response() { return response_; }
   bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
   size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
   std::list<TestExpectation> expectations() { return expectations_; }
@@ -95,7 +95,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   void HavePINUVAuthTokenResultForAuthenticator(
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
-      base::Optional<pin::TokenResponse> response) override {
+      absl::optional<pin::TokenResponse> response) override {
     if (!base::Contains(
             std::vector<AuthTokenRequester::Result>{
                 AuthTokenRequester::Result::
@@ -112,8 +112,8 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
 
   std::list<TestExpectation> expectations_;
 
-  base::Optional<AuthTokenRequester::Result> result_;
-  base::Optional<pin::TokenResponse> response_;
+  absl::optional<AuthTokenRequester::Result> result_;
+  absl::optional<pin::TokenResponse> response_;
 
   bool authenticator_selected_ = false;
   size_t internal_uv_num_retries_ = 0u;

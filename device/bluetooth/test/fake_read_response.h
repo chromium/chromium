@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 
@@ -17,15 +17,15 @@ namespace bluetooth {
 class FakeReadResponse {
  public:
   FakeReadResponse(uint16_t gatt_code,
-                   const base::Optional<std::vector<uint8_t>>& value);
+                   const absl::optional<std::vector<uint8_t>>& value);
   ~FakeReadResponse();
 
   uint16_t gatt_code() { return gatt_code_; }
-  const base::Optional<std::vector<uint8_t>>& value() { return value_; }
+  const absl::optional<std::vector<uint8_t>>& value() { return value_; }
 
  private:
   uint16_t gatt_code_;
-  base::Optional<std::vector<uint8_t>> value_;
+  absl::optional<std::vector<uint8_t>> value_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeReadResponse);
 };

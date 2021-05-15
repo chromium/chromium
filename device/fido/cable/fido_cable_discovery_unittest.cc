@@ -216,8 +216,8 @@ class CableMockAdapter : public MockBluetoothAdapter {
                              std::move(service_data));
 
     mock_device->UpdateAdvertisementData(
-        1 /* rssi */, base::nullopt /* flags */, BluetoothDevice::UUIDList(),
-        base::nullopt /* tx_power */, std::move(service_data_map),
+        1 /* rssi */, absl::nullopt /* flags */, BluetoothDevice::UUIDList(),
+        absl::nullopt /* tx_power */, std::move(service_data_map),
         BluetoothDevice::ManufacturerDataMap());
 
     auto* mock_device_ptr = mock_device.get();

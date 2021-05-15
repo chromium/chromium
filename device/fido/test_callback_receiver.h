@@ -13,8 +13,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace test {
@@ -50,7 +50,7 @@ class TestCallbackReceiver {
 
   // The result, which is non-null exactly if the callback was already invoked
   // and the result has not yet been taken with TakeResult().
-  const base::Optional<TupleOfNonReferenceArgs>& result() const {
+  const absl::optional<TupleOfNonReferenceArgs>& result() const {
     return result_;
   }
 
@@ -88,7 +88,7 @@ class TestCallbackReceiver {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  base::Optional<TupleOfNonReferenceArgs> result_;
+  absl::optional<TupleOfNonReferenceArgs> result_;
 
   DISALLOW_COPY_AND_ASSIGN(TestCallbackReceiver);
 };

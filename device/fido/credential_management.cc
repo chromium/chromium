@@ -18,7 +18,7 @@ namespace device {
 CredentialManagementRequest::CredentialManagementRequest(
     Version version_,
     CredentialManagementSubCommand subcommand_,
-    base::Optional<cbor::Value::MapValue> params_)
+    absl::optional<cbor::Value::MapValue> params_)
     : version(version_), subcommand(subcommand_), params(std::move(params_)) {}
 CredentialManagementRequest::CredentialManagementRequest(
     CredentialManagementRequest&&) = default;
@@ -32,7 +32,7 @@ CredentialManagementRequest CredentialManagementRequest::ForGetCredsMetadata(
     const pin::TokenResponse& token) {
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kGetCredsMetadata,
-      /*params=*/base::nullopt);
+      /*params=*/absl::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
       token.PinAuth({{static_cast<uint8_t>(
           CredentialManagementSubCommand::kGetCredsMetadata)}});
@@ -45,7 +45,7 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsBegin(
     const pin::TokenResponse& token) {
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kEnumerateRPsBegin,
-      /*params=*/base::nullopt);
+      /*params=*/absl::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
       token.PinAuth({{static_cast<uint8_t>(
           CredentialManagementSubCommand::kEnumerateRPsBegin)}});
@@ -57,7 +57,7 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsGetNext(
     Version version) {
   return CredentialManagementRequest(
       version, CredentialManagementSubCommand::kEnumerateRPsGetNextRP,
-      /*params=*/base::nullopt);
+      /*params=*/absl::nullopt);
 }
 
 // static
@@ -90,7 +90,7 @@ CredentialManagementRequest::ForEnumerateCredentialsGetNext(Version version) {
   return CredentialManagementRequest(
       version,
       CredentialManagementSubCommand::kEnumerateCredentialsGetNextCredential,
-      /*params=*/base::nullopt);
+      /*params=*/absl::nullopt);
 }
 
 // static
@@ -116,23 +116,23 @@ CredentialManagementRequest CredentialManagementRequest::ForDeleteCredential(
 }
 
 // static
-base::Optional<CredentialsMetadataResponse> CredentialsMetadataResponse::Parse(
-    const base::Optional<cbor::Value>& cbor_response) {
+absl::optional<CredentialsMetadataResponse> CredentialsMetadataResponse::Parse(
+    const absl::optional<cbor::Value>& cbor_response) {
   CredentialsMetadataResponse response;
 
   if (!cbor_response || !cbor_response->is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& response_map = cbor_response->GetMap();
 
   auto it = response_map.find(cbor::Value(static_cast<int>(
       CredentialManagementResponseKey::kExistingResidentCredentialsCount)));
   if (it == response_map.end() || !it->second.is_unsigned()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const int64_t existing_count = it->second.GetUnsigned();
   if (existing_count > std::numeric_limits<size_t>::max()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   response.num_existing_credentials = static_cast<size_t>(existing_count);
 
@@ -140,11 +140,11 @@ base::Optional<CredentialsMetadataResponse> CredentialsMetadataResponse::Parse(
       static_cast<int>(CredentialManagementResponseKey::
                            kMaxPossibleRemainingResidentCredentialsCount)));
   if (it == response_map.end() || !it->second.is_unsigned()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const int64_t remaining_count = it->second.GetUnsigned();
   if (remaining_count > std::numeric_limits<size_t>::max()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   response.num_estimated_remaining_credentials =
       static_cast<size_t>(remaining_count);
@@ -153,16 +153,16 @@ base::Optional<CredentialsMetadataResponse> CredentialsMetadataResponse::Parse(
 }
 
 // static
-base::Optional<EnumerateRPsResponse> EnumerateRPsResponse::Parse(
+absl::optional<EnumerateRPsResponse> EnumerateRPsResponse::Parse(
     bool expect_rp_count,
-    const base::Optional<cbor::Value>& cbor_response) {
+    const absl::optional<cbor::Value>& cbor_response) {
   if (!cbor_response) {
     // Some authenticators send an empty response if there are no RPs (though
     // the spec doesn't say that).
-    return EnumerateRPsResponse(base::nullopt, base::nullopt, 0);
+    return EnumerateRPsResponse(absl::nullopt, absl::nullopt, 0);
   }
   if (!cbor_response->is_map() || cbor_response->GetMap().empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& response_map = cbor_response->GetMap();
 
@@ -170,40 +170,40 @@ base::Optional<EnumerateRPsResponse> EnumerateRPsResponse::Parse(
   auto it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kTotalRPs)));
   if (!expect_rp_count && it != response_map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (expect_rp_count) {
     if (it == response_map.end() || !it->second.is_unsigned() ||
         it->second.GetUnsigned() > std::numeric_limits<size_t>::max()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     rp_count = static_cast<size_t>(it->second.GetUnsigned());
     if (rp_count == 0) {
       if (response_map.size() != 1) {
-        return base::nullopt;
+        return absl::nullopt;
       }
-      return EnumerateRPsResponse(base::nullopt, base::nullopt, 0);
+      return EnumerateRPsResponse(absl::nullopt, absl::nullopt, 0);
     }
   }
 
   it = response_map.find(
       cbor::Value(static_cast<int>(CredentialManagementResponseKey::kRP)));
   if (it == response_map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto opt_rp = PublicKeyCredentialRpEntity::CreateFromCBORValue(it->second);
   if (!opt_rp) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kRPIDHash)));
   if (it == response_map.end() || !it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const std::vector<uint8_t>& rp_id_hash_bytes = it->second.GetBytestring();
   if (rp_id_hash_bytes.size() != kRpIdHashLength) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::array<uint8_t, kRpIdHashLength> rp_id_hash;
   std::copy_n(rp_id_hash_bytes.begin(), kRpIdHashLength, rp_id_hash.begin());
@@ -230,54 +230,54 @@ EnumerateRPsResponse& EnumerateRPsResponse::operator=(EnumerateRPsResponse&&) =
     default;
 EnumerateRPsResponse::~EnumerateRPsResponse() = default;
 EnumerateRPsResponse::EnumerateRPsResponse(
-    base::Optional<PublicKeyCredentialRpEntity> rp_,
-    base::Optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash_,
+    absl::optional<PublicKeyCredentialRpEntity> rp_,
+    absl::optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash_,
     size_t rp_count_)
     : rp(std::move(rp_)),
       rp_id_hash(std::move(rp_id_hash_)),
       rp_count(rp_count_) {}
 
 //  static
-base::Optional<EnumerateCredentialsResponse>
+absl::optional<EnumerateCredentialsResponse>
 EnumerateCredentialsResponse::Parse(
     bool expect_credential_count,
-    const base::Optional<cbor::Value>& cbor_response) {
+    const absl::optional<cbor::Value>& cbor_response) {
   if (!cbor_response || !cbor_response->is_map()) {
     // Note that some authenticators may send an empty response if they don't
     // have a credential for a given RP ID hash (though the spec doesn't say
     // that). However, that case should not be reached from
     // CredentialManagementHandler.
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& response_map = cbor_response->GetMap();
 
   auto it = response_map.find(
       cbor::Value(static_cast<int>(CredentialManagementResponseKey::kUser)));
   if (it == response_map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto opt_user =
       PublicKeyCredentialUserEntity::CreateFromCBORValue(it->second);
   if (!opt_user) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kCredentialID)));
   if (it == response_map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto opt_credential_id =
       PublicKeyCredentialDescriptor::CreateFromCBORValue(it->second);
   if (!opt_credential_id) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Ignore the public key's value.
   it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kPublicKey)));
   if (it == response_map.end() || !it->second.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   size_t credential_count = 0;
@@ -285,7 +285,7 @@ EnumerateCredentialsResponse::Parse(
     if (response_map.find(cbor::Value(static_cast<int>(
             CredentialManagementResponseKey::kTotalCredentials))) !=
         response_map.end()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   } else {
     it = response_map.find(cbor::Value(
@@ -293,7 +293,7 @@ EnumerateCredentialsResponse::Parse(
     if (it == response_map.end() || !it->second.is_unsigned() ||
         it->second.GetUnsigned() == 0 ||
         it->second.GetUnsigned() > std::numeric_limits<size_t>::max()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     credential_count = static_cast<size_t>(it->second.GetUnsigned());
   }
@@ -341,7 +341,7 @@ AggregatedEnumerateCredentialsResponse::operator=(
 AggregatedEnumerateCredentialsResponse::
     ~AggregatedEnumerateCredentialsResponse() = default;
 
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CredentialManagementRequest& request) {
   cbor::Value::MapValue request_map;
   request_map.emplace(

@@ -233,7 +233,7 @@ class FidoDeviceEnumerateCallbackReceiver
 };
 
 using TestDeviceCallbackReceiver =
-    ::device::test::ValueCallbackReceiver<base::Optional<std::vector<uint8_t>>>;
+    ::device::test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
 
 }  // namespace
 

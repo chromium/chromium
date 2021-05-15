@@ -10,10 +10,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cbor {
@@ -80,11 +80,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
     CableEidArray authenticator_eid;
     CableSessionPreKeyArray session_pre_key;
   };
-  base::Optional<V1Data> v1;
+  absl::optional<V1Data> v1;
 
   // For caBLEv2, the payload is the server-link data provided in the extension
   // as the "sessionPreKey".
-  base::Optional<std::vector<uint8_t>> v2;
+  absl::optional<std::vector<uint8_t>> v2;
 };
 
 namespace cablev2 {
@@ -100,7 +100,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // Parse builds a |Pairing| from an authenticator message. The signature
   // within the structure is validated by using |local_identity_seed| and
   // |handshake_hash|.
-  static base::Optional<std::unique_ptr<Pairing>> Parse(
+  static absl::optional<std::unique_ptr<Pairing>> Parse(
       const cbor::Value& cbor,
       uint32_t tunnel_server_domain,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,

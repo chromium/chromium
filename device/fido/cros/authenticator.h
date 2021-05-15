@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/dbus/u2f/u2f_interface.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -19,6 +18,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -60,9 +60,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   void GetNextAssertion(GetAssertionCallback callback) override {}
   void Cancel() override;
   std::string GetId() const override;
-  const base::Optional<AuthenticatorSupportedOptions>& Options() const override;
+  const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
 
-  base::Optional<FidoTransportProtocol> AuthenticatorTransport() const override;
+  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
 
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
@@ -77,16 +77,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   void OnMakeCredentialResponse(
       CtapMakeCredentialRequest request,
       MakeCredentialCallback callback,
-      base::Optional<u2f::MakeCredentialResponse> response);
+      absl::optional<u2f::MakeCredentialResponse> response);
   void OnGetAssertionResponse(
       CtapGetAssertionRequest request,
       GetAssertionCallback callback,
-      base::Optional<u2f::GetAssertionResponse> response);
+      absl::optional<u2f::GetAssertionResponse> response);
   void OnHasLegacyCredentialsResponse(
       base::OnceCallback<void(bool has_credential)> callback,
-      base::Optional<u2f::HasCredentialsResponse> response);
+      absl::optional<u2f::HasCredentialsResponse> response);
   void OnCancelResponse(
-      base::Optional<u2f::CancelWebAuthnFlowResponse> response);
+      absl::optional<u2f::CancelWebAuthnFlowResponse> response);
 
   // Current request_id, used for cancelling the request.
   uint32_t current_request_id_ = 0u;

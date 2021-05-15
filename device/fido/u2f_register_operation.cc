@@ -52,7 +52,7 @@ void U2fRegisterOperation::WinkAndTrySign() {
 }
 
 void U2fRegisterOperation::TrySign() {
-  base::Optional<std::vector<uint8_t>> sign_command;
+  absl::optional<std::vector<uint8_t>> sign_command;
   if (probing_alternative_rp_id_) {
     CtapMakeCredentialRequest sign_request(request());
     sign_request.rp.id = *request().app_id;
@@ -70,7 +70,7 @@ void U2fRegisterOperation::TrySign() {
 }
 
 void U2fRegisterOperation::OnCheckForExcludedKeyHandle(
-    base::Optional<std::vector<uint8_t>> device_response) {
+    absl::optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
     return;
   }
@@ -97,7 +97,7 @@ void U2fRegisterOperation::OnCheckForExcludedKeyHandle(
       // user-presence.
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrCredentialExcluded,
-               base::nullopt);
+               absl::nullopt);
       break;
 
     case apdu::ApduResponse::Status::SW_CONDITIONS_NOT_SATISFIED:
@@ -135,7 +135,7 @@ void U2fRegisterOperation::OnCheckForExcludedKeyHandle(
       FIDO_LOG(ERROR) << "Unexpected status " << static_cast<int>(result)
                       << " from U2F device";
       std::move(callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
       break;
   }
 }
@@ -153,7 +153,7 @@ void U2fRegisterOperation::TryRegistration() {
 }
 
 void U2fRegisterOperation::OnRegisterResponseReceived(
-    base::Optional<std::vector<uint8_t>> device_response) {
+    absl::optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
     return;
   }
@@ -162,7 +162,7 @@ void U2fRegisterOperation::OnRegisterResponseReceived(
   const auto apdu_response =
       device_response
           ? apdu::ApduResponse::CreateFromMessage(std::move(*device_response))
-          : base::nullopt;
+          : absl::nullopt;
   if (apdu_response) {
     result = apdu_response->status();
   }
@@ -197,7 +197,7 @@ void U2fRegisterOperation::OnRegisterResponseReceived(
       FIDO_LOG(ERROR) << "Unexpected status " << static_cast<int>(result)
                       << " from U2F device";
       std::move(callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
       break;
   }
 }

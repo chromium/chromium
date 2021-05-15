@@ -21,7 +21,7 @@ namespace device {
 
 BluetoothRemoteGattCharacteristic::CommandStatus::CommandStatus(
     CommandType type,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code)
+    absl::optional<BluetoothRemoteGattService::GattErrorCode> error_code)
     : type(type), error_code(error_code) {}
 
 BluetoothRemoteGattCharacteristic::CommandStatus::CommandStatus(
@@ -96,7 +96,7 @@ void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Cancel() {
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotifySessionCallback callback,
     ErrorCallback error_callback) {
-  StartNotifySessionInternal(base::nullopt, std::move(callback),
+  StartNotifySessionInternal(absl::nullopt, std::move(callback),
                              std::move(error_callback));
 }
 
@@ -122,7 +122,7 @@ bool BluetoothRemoteGattCharacteristic::AddDescriptor(
 }
 
 void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
-    const base::Optional<NotificationType>& notification_type,
+    const absl::optional<NotificationType>& notification_type,
     NotifySessionCallback callback,
     ErrorCallback error_callback) {
   auto split_error_callback =
@@ -145,7 +145,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
 }
 
 void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
-    const base::Optional<NotificationType>& notification_type,
+    const absl::optional<NotificationType>& notification_type,
     NotifySessionCallback callback,
     ErrorCallback error_callback,
     CommandStatus previous_command) {
@@ -392,7 +392,7 @@ void BluetoothRemoteGattCharacteristic::OnStopNotifySessionError(
 }
 
 bool BluetoothRemoteGattCharacteristic::IsNotificationTypeSupported(
-    const base::Optional<NotificationType>& notification_type) {
+    const absl::optional<NotificationType>& notification_type) {
   Properties properties = GetProperties();
   bool hasNotify = (properties & PROPERTY_NOTIFY) != 0;
   bool hasIndicate = (properties & PROPERTY_INDICATE) != 0;

@@ -88,7 +88,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterCast
                         AdvertisementErrorCallback error_callback) override;
   void ConnectDevice(
       const std::string& address,
-      const base::Optional<BluetoothDevice::AddressType>& address_type,
+      const absl::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(

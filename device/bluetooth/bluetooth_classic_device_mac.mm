@@ -74,7 +74,7 @@ uint32_t BluetoothClassicDeviceMac::GetBluetoothClass() const {
 }
 
 void BluetoothClassicDeviceMac::CreateGattConnectionImpl(
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   // Classic devices do not support GATT connection.
   DidFailToConnectGatt(ERROR_UNSUPPORTED_DEVICE);
 }
@@ -114,10 +114,10 @@ uint16_t BluetoothClassicDeviceMac::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothClassicDeviceMac::GetName() const {
+absl::optional<std::string> BluetoothClassicDeviceMac::GetName() const {
   if ([device_ name])
     return base::SysNSStringToUTF8([device_ name]);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool BluetoothClassicDeviceMac::IsPaired() const {
@@ -156,12 +156,12 @@ BluetoothDevice::UUIDSet BluetoothClassicDeviceMac::GetUUIDs() const {
   return uuids;
 }
 
-base::Optional<int8_t> BluetoothClassicDeviceMac::GetInquiryRSSI() const {
-  return base::nullopt;
+absl::optional<int8_t> BluetoothClassicDeviceMac::GetInquiryRSSI() const {
+  return absl::nullopt;
 }
 
-base::Optional<int8_t> BluetoothClassicDeviceMac::GetInquiryTxPower() const {
-  return base::nullopt;
+absl::optional<int8_t> BluetoothClassicDeviceMac::GetInquiryTxPower() const {
+  return absl::nullopt;
 }
 
 bool BluetoothClassicDeviceMac::ExpectingPinCode() const {

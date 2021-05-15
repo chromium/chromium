@@ -47,12 +47,12 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 Discovery::Discovery(
     FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
-    base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+    absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
     std::vector<std::unique_ptr<Pairing>> pairings,
     std::unique_ptr<EventStream<size_t>> contact_device_stream,
     const std::vector<CableDiscoveryData>& extension_contents,
-    base::Optional<base::RepeatingCallback<void(PairingEvent)>>
+    absl::optional<base::RepeatingCallback<void(PairingEvent)>>
         pairing_callback)
     : FidoDeviceDiscovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
@@ -135,7 +135,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
 
   if (qr_keys_) {
     // Check whether the EID matches a QR code.
-    base::Optional<CableEidArray> plaintext =
+    absl::optional<CableEidArray> plaintext =
         eid::Decrypt(advert_array, qr_keys_->eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
@@ -151,7 +151,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
 
   // Check whether the EID matches the extension.
   if (extension_keys_) {
-    base::Optional<CableEidArray> plaintext =
+    absl::optional<CableEidArray> plaintext =
         eid::Decrypt(advert_array, extension_keys_->eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
@@ -197,11 +197,11 @@ void Discovery::PairingIsInvalid(size_t pairing_index) {
 }
 
 // static
-base::Optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
-    const base::Optional<base::span<const uint8_t, kQRKeySize>>
+absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
+    const absl::optional<base::span<const uint8_t, kQRKeySize>>
         qr_generator_key) {
   if (!qr_generator_key) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   UnpairedKeys ret;
@@ -216,7 +216,7 @@ base::Optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
 }
 
 // static
-base::Optional<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
+absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
     const std::vector<CableDiscoveryData>& extension_contents) {
   for (auto const& data : extension_contents) {
     if (data.version != CableDiscoveryData::Version::V2) {
@@ -232,7 +232,7 @@ base::Optional<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
     return KeysFromQRGeneratorKey(base::make_span<kQRKeySize>(*data.v2));
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace cablev2

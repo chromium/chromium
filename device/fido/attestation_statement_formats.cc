@@ -153,10 +153,10 @@ bool FidoAttestationStatement::
   return false;
 }
 
-base::Optional<base::span<const uint8_t>>
+absl::optional<base::span<const uint8_t>>
 FidoAttestationStatement::GetLeafCertificate() const {
   if (x509_certificates_.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return x509_certificates_[0];
 }
@@ -209,10 +209,10 @@ bool PackedAttestationStatement::
   return false;
 }
 
-base::Optional<base::span<const uint8_t>>
+absl::optional<base::span<const uint8_t>>
 PackedAttestationStatement::GetLeafCertificate() const {
   if (x509_certificates_.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return x509_certificates_[0];
 }

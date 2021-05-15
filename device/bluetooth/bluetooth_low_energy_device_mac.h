@@ -12,10 +12,10 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
@@ -48,7 +48,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -84,7 +84,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
  protected:
   // BluetoothDevice override.
   void CreateGattConnectionImpl(
-      base::Optional<BluetoothUUID> serivce_uuid) override;
+      absl::optional<BluetoothUUID> serivce_uuid) override;
   void DisconnectGatt() override;
 
   // Methods used by BluetoothLowEnergyPeripheralBridge.

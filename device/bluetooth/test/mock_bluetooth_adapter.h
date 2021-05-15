@@ -123,7 +123,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   MOCK_METHOD4(
       ConnectDevice,
       void(const std::string& address,
-           const base::Optional<BluetoothDevice::AddressType>& address_type,
+           const absl::optional<BluetoothDevice::AddressType>& address_type,
            ConnectDeviceCallback callback,
            ErrorCallback error_callback));
 

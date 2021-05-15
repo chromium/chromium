@@ -4,9 +4,9 @@
 
 #include "device/fido/large_blob.h"
 
-#include "base/optional.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

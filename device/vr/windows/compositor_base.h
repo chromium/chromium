@@ -190,7 +190,7 @@ class XRCompositorCommon : public base::Thread,
   SlidingTimeDeltaAverage webxr_js_time_;
   SlidingTimeDeltaAverage webxr_gpu_time_;
 
-  base::Optional<OutstandingFrame> pending_frame_;
+  absl::optional<OutstandingFrame> pending_frame_;
 
   bool is_presenting_ = false;  // True if we have a presenting session.
   bool webxr_visible_ = true;   // The browser may hide a presenting session.

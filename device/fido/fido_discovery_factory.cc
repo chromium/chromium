@@ -107,7 +107,7 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 void FidoDiscoveryFactory::set_cable_data(
     FidoRequestType request_type,
     std::vector<CableDiscoveryData> cable_data,
-    const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+    const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
         qr_generator_key,
     std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
   request_type_ = request_type;

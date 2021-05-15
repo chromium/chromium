@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
     SensorInfo& operator=(const SensorInfo&) = delete;
     SensorInfo& operator=(SensorInfo&&);
 
-    base::Optional<uint8_t> max_samples_for_enroll;
+    absl::optional<uint8_t> max_samples_for_enroll;
     uint32_t max_template_friendly_name;
   };
 
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   // EnumerationCallback is invoked upon the completion of EnumerateTemplates.
   using EnumerationCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<std::map<TemplateId, std::string>>)>;
+      absl::optional<std::map<TemplateId, std::string>>)>;
 
   // SampleCallback is invoked repeatedly during an ongoing EnrollTemplate()
   // operation to indicate the status of a single sample collection (i.e. user
@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
 
   // Requests a map of current enrollments from the authenticator. On success,
   // the callback is invoked with a map from template IDs to human-readable
-  // names. On failure, the callback is invoked with base::nullopt.
+  // names. On failure, the callback is invoked with absl::nullopt.
   void EnumerateTemplates(EnumerationCallback);
 
   // Renames the enrollment identified by |template_id| to |name|.
@@ -145,26 +145,26 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   void OnSampleCollected(BioEnrollmentSampleStatus status,
                          int samples_remaining) override;
   void OnEnrollmentDone(
-      base::Optional<std::vector<uint8_t>> template_id) override;
+      absl::optional<std::vector<uint8_t>> template_id) override;
   void OnEnrollmentError(CtapDeviceResponseCode status) override;
 
   void OnTouch(FidoAuthenticator* authenticator);
   void OnRetriesResponse(CtapDeviceResponseCode,
-                         base::Optional<pin::RetriesResponse>);
+                         absl::optional<pin::RetriesResponse>);
   void OnHavePIN(std::string pin);
   void OnHavePINToken(CtapDeviceResponseCode,
-                      base::Optional<pin::TokenResponse>);
+                      absl::optional<pin::TokenResponse>);
   void OnGetSensorInfo(CtapDeviceResponseCode,
-                       base::Optional<BioEnrollmentResponse>);
+                       absl::optional<BioEnrollmentResponse>);
   void OnEnumerateTemplates(EnumerationCallback,
                             CtapDeviceResponseCode,
-                            base::Optional<BioEnrollmentResponse>);
+                            absl::optional<BioEnrollmentResponse>);
   void OnRenameTemplate(StatusCallback,
                         CtapDeviceResponseCode,
-                        base::Optional<BioEnrollmentResponse>);
+                        absl::optional<BioEnrollmentResponse>);
   void OnDeleteTemplate(StatusCallback,
                         CtapDeviceResponseCode,
-                        base::Optional<BioEnrollmentResponse>);
+                        absl::optional<BioEnrollmentResponse>);
 
   void RunErrorCallback(Error error);
 
@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentHandler
   GetPINCallback get_pin_callback_;
   EnrollmentCallback enrollment_callback_;
   SampleCallback sample_callback_;
-  base::Optional<pin::TokenResponse> pin_token_response_;
+  absl::optional<pin::TokenResponse> pin_token_response_;
   base::WeakPtrFactory<BioEnrollmentHandler> weak_factory_{this};
 };
 

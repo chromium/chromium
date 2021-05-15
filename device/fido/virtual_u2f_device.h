@@ -35,13 +35,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualU2fDevice
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
  private:
-  base::Optional<std::vector<uint8_t>> DoRegister(
+  absl::optional<std::vector<uint8_t>> DoRegister(
       uint8_t ins,
       uint8_t p1,
       uint8_t p2,
       base::span<const uint8_t> data);
 
-  base::Optional<std::vector<uint8_t>> DoSign(uint8_t ins,
+  absl::optional<std::vector<uint8_t>> DoSign(uint8_t ins,
                                               uint8_t p1,
                                               uint8_t p2,
                                               base::span<const uint8_t> data);

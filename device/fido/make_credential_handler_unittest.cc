@@ -48,7 +48,7 @@ namespace {
 
 using TestMakeCredentialRequestCallback = test::StatusAndValuesCallbackReceiver<
     MakeCredentialStatus,
-    base::Optional<AuthenticatorMakeCredentialResponse>,
+    absl::optional<AuthenticatorMakeCredentialResponse>,
     const FidoAuthenticator*>;
 
 }  // namespace
@@ -393,7 +393,7 @@ ACTION_P(Reply, reply) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::OnceCallback<void(base::Optional<std::vector<uint8_t>>)>
+          [](base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
                  callback,
              std::vector<uint8_t> reply) {
             std::move(callback).Run(std::move(reply));

@@ -28,7 +28,7 @@ namespace device {
 namespace {
 
 using TestCallbackReceiver =
-    test::ValueCallbackReceiver<base::Optional<std::vector<uint8_t>>>;
+    test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
 
 void SendCommand(VirtualCtap2Device* device,
                  base::span<const uint8_t> command,
@@ -39,7 +39,7 @@ void SendCommand(VirtualCtap2Device* device,
 
 // DecodeCBOR parses a CBOR structure, ignoring the first byte of |in|, which is
 // assumed to be a CTAP2 status byte.
-base::Optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
+absl::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
   return cbor::Reader::Read(in.subspan(1));
 }
@@ -69,7 +69,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseMakeCredentialRequestForVirtualCtapKey) {
       base::make_span(test_data::kCtapMakeCredentialRequest).subspan(1));
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
-  const base::Optional<CtapMakeCredentialRequest> request =
+  const absl::optional<CtapMakeCredentialRequest> request =
       CtapMakeCredentialRequest::Parse(cbor_request->GetMap());
   ASSERT_TRUE(request);
   EXPECT_THAT(request->client_data_hash,
@@ -121,7 +121,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
 
-  const base::Optional<CtapGetAssertionRequest> request =
+  const absl::optional<CtapGetAssertionRequest> request =
       CtapGetAssertionRequest::Parse(cbor_request->GetMap());
   EXPECT_THAT(request->client_data_hash,
               ::testing::ElementsAreArray(test_data::kClientDataHash));
@@ -158,9 +158,9 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
               callback_receiver.callback());
   callback_receiver.WaitForCallback();
 
-  base::Optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
-  base::Optional<AuthenticatorMakeCredentialResponse> response =
+  absl::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   ASSERT_TRUE(response);

@@ -35,7 +35,7 @@ namespace {
 // caBLEv2 tunnel server.
 class TestNetworkContext : public network::TestNetworkContext {
  public:
-  explicit TestNetworkContext(base::Optional<ContactCallback> contact_callback)
+  explicit TestNetworkContext(absl::optional<ContactCallback> contact_callback)
       : contact_callback_(std::move(contact_callback)) {}
 
   void CreateWebSocket(
@@ -99,7 +99,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       CHECK(base::HexStringToBytes(additional_headers[0]->value,
                                    &client_payload_bytes));
 
-      base::Optional<cbor::Value> client_payload =
+      absl::optional<cbor::Value> client_payload =
           cbor::Reader::Read(client_payload_bytes);
       const cbor::Value::MapValue& map = client_payload->GetMap();
 
@@ -341,7 +341,7 @@ class TestNetworkContext : public network::TestNetworkContext {
   };
 
   std::map<std::string, std::unique_ptr<Connection>> connections_;
-  const base::Optional<ContactCallback> contact_callback_;
+  const absl::optional<ContactCallback> contact_callback_;
 };
 
 class DummyBLEAdvert
@@ -369,14 +369,14 @@ class TestPlatform : public authenticator::Platform {
         device::PublicKeyCredentialRpEntity(params->rp_id),
         device::PublicKeyCredentialUserEntity(
             device::fido_parsing_utils::Materialize(params->user_id),
-            /*name=*/base::nullopt, /*display_name=*/base::nullopt,
-            /*icon_url=*/base::nullopt),
+            /*name=*/absl::nullopt, /*display_name=*/absl::nullopt,
+            /*icon_url=*/absl::nullopt),
         device::PublicKeyCredentialParams(std::move(cred_infos)));
     CHECK_EQ(request.client_data_hash.size(), params->client_data_hash.size());
     memcpy(request.client_data_hash.data(), params->client_data_hash.data(),
            params->client_data_hash.size());
 
-    std::pair<device::CtapRequestCommand, base::Optional<cbor::Value>>
+    std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
 
     ctap2_device_->DeviceTransact(
@@ -391,7 +391,7 @@ class TestPlatform : public authenticator::Platform {
   }
 
   void OnStatus(Status status) override {}
-  void OnCompleted(base::Optional<Error> maybe_error) override {}
+  void OnCompleted(absl::optional<Error> maybe_error) override {}
 
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) override {
@@ -409,12 +409,12 @@ class TestPlatform : public authenticator::Platform {
   }
 
   std::vector<uint8_t> ToCTAP2Command(
-      const std::pair<device::CtapRequestCommand, base::Optional<cbor::Value>>&
+      const std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>&
           parts) {
     std::vector<uint8_t> ret;
 
     if (parts.second.has_value()) {
-      base::Optional<std::vector<uint8_t>> cbor_bytes =
+      absl::optional<std::vector<uint8_t>> cbor_bytes =
           cbor::Writer::Write(std::move(*parts.second));
       ret.swap(*cbor_bytes);
     }
@@ -424,7 +424,7 @@ class TestPlatform : public authenticator::Platform {
   }
 
   void OnMakeCredentialResult(MakeCredentialCallback callback,
-                              base::Optional<std::vector<uint8_t>> result) {
+                              absl::optional<std::vector<uint8_t>> result) {
     if (!result || result->empty()) {
       std::move(callback).Run(
           static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
@@ -440,7 +440,7 @@ class TestPlatform : public authenticator::Platform {
       return;
     }
 
-    base::Optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    absl::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
     const cbor::Value::MapValue& in_map = v->GetMap();
 
     cbor::Value::MapValue out_map;
@@ -449,7 +449,7 @@ class TestPlatform : public authenticator::Platform {
                     in_map.find(cbor::Value(2))->second.GetBytestring());
     out_map.emplace("attStmt", in_map.find(cbor::Value(3))->second.GetMap());
 
-    base::Optional<std::vector<uint8_t>> attestation_obj =
+    absl::optional<std::vector<uint8_t>> attestation_obj =
         cbor::Writer::Write(cbor::Value(std::move(out_map)));
 
     std::move(callback).Run(
@@ -465,7 +465,7 @@ class TestPlatform : public authenticator::Platform {
 }  // namespace
 
 std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
-    base::Optional<ContactCallback> contact_callback) {
+    absl::optional<ContactCallback> contact_callback) {
   return std::make_unique<TestNetworkContext>(std::move(contact_callback));
 }
 

@@ -86,17 +86,17 @@ std::array<uint8_t, 4> GetTimestampSignatureCounter() {
 }  // namespace
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AttestedCredentialData> MakeAttestedCredentialData(
+absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key) {
   if (credential_id.empty() || credential_id.size() > 255) {
     LOG(ERROR) << "invalid credential id: "
                << base::HexEncode(credential_id.data(), credential_id.size());
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (!public_key) {
     LOG(ERROR) << "no public key";
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::array<uint8_t, 2> encoded_credential_id_length = {
       0, static_cast<uint8_t>(credential_id.size())};
@@ -107,7 +107,7 @@ base::Optional<AttestedCredentialData> MakeAttestedCredentialData(
 
 AuthenticatorData MakeAuthenticatorData(
     const std::string& rp_id,
-    base::Optional<AttestedCredentialData> attested_credential_data) {
+    absl::optional<AttestedCredentialData> attested_credential_data) {
   const uint8_t flags =
       static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
       static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification) |
@@ -119,7 +119,7 @@ AuthenticatorData MakeAuthenticatorData(
                            std::move(attested_credential_data));
 }
 
-base::Optional<std::vector<uint8_t>> GenerateSignature(
+absl::optional<std::vector<uint8_t>> GenerateSignature(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash,
     SecKeyRef private_key) API_AVAILABLE(macosx(10.12.2)) {
@@ -140,7 +140,7 @@ base::Optional<std::vector<uint8_t>> GenerateSignature(
           sig_input, err.InitializeInto()));
   if (!sig_data) {
     LOG(ERROR) << "SecKeyCreateSignature failed: " << err;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return std::vector<uint8_t>(
       CFDataGetBytePtr(sig_data),

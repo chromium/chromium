@@ -11,11 +11,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/optional.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/transform.h"
 
@@ -47,10 +47,10 @@ class OpenXrController {
   mojom::XRInputSourceDescriptionPtr GetDescription(
       XrTime predicted_display_time);
 
-  base::Optional<GamepadButton> GetButton(OpenXrButtonType type) const;
+  absl::optional<GamepadButton> GetButton(OpenXrButtonType type) const;
   std::vector<double> GetAxis(OpenXrAxisType type) const;
 
-  base::Optional<gfx::Transform> GetMojoFromGripTransform(
+  absl::optional<gfx::Transform> GetMojoFromGripTransform(
       XrTime predicted_display_time,
       XrSpace local_space,
       bool* emulated_position) const;
@@ -83,10 +83,10 @@ class OpenXrController {
       XrAction action,
       std::string binding_string) const;
 
-  base::Optional<gfx::Transform> GetPointerFromGripTransform(
+  absl::optional<gfx::Transform> GetPointerFromGripTransform(
       XrTime predicted_display_time) const;
 
-  base::Optional<gfx::Transform> GetTransformFromSpaces(
+  absl::optional<gfx::Transform> GetTransformFromSpaces(
       XrTime predicted_display_time,
       XrSpace target,
       XrSpace origin,

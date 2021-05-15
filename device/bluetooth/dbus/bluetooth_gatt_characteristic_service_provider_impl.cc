@@ -484,7 +484,7 @@ void BluetoothGattCharacteristicServiceProviderImpl::OnExported(
 void BluetoothGattCharacteristicServiceProviderImpl::OnReadValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     DVLOG(2) << "Failed to read characteristic value. Report error.";

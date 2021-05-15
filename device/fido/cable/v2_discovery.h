@@ -14,12 +14,12 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_discovery.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace cablev2 {
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   Discovery(
       FidoRequestType request_type,
       network::mojom::NetworkContext* network_context,
-      base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+      absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
       std::vector<std::unique_ptr<Pairing>> pairings,
       // contact_device_stream contains a series of indexes into |pairings|
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       // pairing_callback will be called when a QR-initiated connection
       // receives pairing information from the peer, or when an existing
       // pairing is found to be invalid.
-      base::Optional<base::RepeatingCallback<void(PairingEvent)>>
+      absl::optional<base::RepeatingCallback<void(PairingEvent)>>
           pairing_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
@@ -70,19 +70,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   void OnContactDevice(size_t pairing_index);
   void AddPairing(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(size_t pairing_index);
-  static base::Optional<UnpairedKeys> KeysFromQRGeneratorKey(
-      base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
-  static base::Optional<UnpairedKeys> KeysFromExtension(
+  static absl::optional<UnpairedKeys> KeysFromQRGeneratorKey(
+      absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
+  static absl::optional<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
   const FidoRequestType request_type_;
   network::mojom::NetworkContext* const network_context_;
-  const base::Optional<UnpairedKeys> qr_keys_;
-  const base::Optional<UnpairedKeys> extension_keys_;
+  const absl::optional<UnpairedKeys> qr_keys_;
+  const absl::optional<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   std::unique_ptr<EventStream<size_t>> contact_device_stream_;
-  const base::Optional<base::RepeatingCallback<void(PairingEvent)>>
+  const absl::optional<base::RepeatingCallback<void(PairingEvent)>>
       pairing_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
   base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;

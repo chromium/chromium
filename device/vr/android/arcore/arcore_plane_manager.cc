@@ -257,7 +257,7 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
 
       updated_planes.push_back(mojom::XRPlaneData::New(
           plane_id.GetUnsafeValue(), device::mojom::XRPlaneOrientation::UNKNOWN,
-          base::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
+          absl::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
     }
   }
 
@@ -265,7 +265,7 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
                                           std::move(updated_planes));
 }
 
-base::Optional<PlaneId> ArCorePlaneManager::GetPlaneId(
+absl::optional<PlaneId> ArCorePlaneManager::GetPlaneId(
     void* plane_address) const {
   return plane_address_to_id_.GetId(plane_address);
 }
@@ -274,11 +274,11 @@ bool ArCorePlaneManager::PlaneExists(PlaneId id) const {
   return base::Contains(plane_id_to_plane_info_, id);
 }
 
-base::Optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
+absl::optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
     PlaneId id) const {
   auto it = plane_id_to_plane_info_.find(id);
   if (it == plane_id_to_plane_info_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Naked pointer is fine here, ArAsPlane does not increase the internal

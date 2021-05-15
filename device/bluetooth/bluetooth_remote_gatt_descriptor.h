@@ -38,7 +38,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
   // will contain a value and |value| should be ignored. When successful
   // |error_code| will have no value and |value| may be used.
   using ValueCallback = base::OnceCallback<void(
-      base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value)>;
 
   // Returns the value of the descriptor. For remote descriptors, this is the

@@ -112,7 +112,7 @@ void Device::GetCharacteristics(const std::string& service_id,
   device::BluetoothRemoteGattService* service =
       device->GetGattService(service_id);
   if (service == nullptr) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -143,7 +143,7 @@ void Device::ReadValueForCharacteristic(
       device->GetGattService(service_id);
   if (service == nullptr) {
     std::move(callback).Run(mojom::GattResult::SERVICE_NOT_FOUND,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -151,7 +151,7 @@ void Device::ReadValueForCharacteristic(
       service->GetCharacteristic(characteristic_id);
   if (characteristic == nullptr) {
     std::move(callback).Run(mojom::GattResult::CHARACTERISTIC_NOT_FOUND,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -198,21 +198,21 @@ void Device::GetDescriptors(const std::string& service_id,
                             GetDescriptorsCallback callback) {
   device::BluetoothDevice* device = adapter_->GetDevice(GetAddress());
   if (!device) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   device::BluetoothRemoteGattService* service =
       device->GetGattService(service_id);
   if (!service) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   device::BluetoothRemoteGattCharacteristic* characteristic =
       service->GetCharacteristic(characteristic_id);
   if (!characteristic) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -242,7 +242,7 @@ void Device::ReadValueForDescriptor(const std::string& service_id,
       device->GetGattService(service_id);
   if (!service) {
     std::move(callback).Run(mojom::GattResult::SERVICE_NOT_FOUND,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -250,7 +250,7 @@ void Device::ReadValueForDescriptor(const std::string& service_id,
       service->GetCharacteristic(characteristic_id);
   if (!characteristic) {
     std::move(callback).Run(mojom::GattResult::CHARACTERISTIC_NOT_FOUND,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -258,7 +258,7 @@ void Device::ReadValueForDescriptor(const std::string& service_id,
       characteristic->GetDescriptor(descriptor_id);
   if (!descriptor) {
     std::move(callback).Run(mojom::GattResult::DESCRIPTOR_NOT_FOUND,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -340,12 +340,12 @@ mojom::ServiceInfoPtr Device::ConstructServiceInfoStruct(
 
 void Device::OnReadRemoteCharacteristic(
     ReadValueForCharacteristicCallback callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     std::move(callback).Run(
         mojo::ConvertTo<mojom::GattResult>(error_code.value()),
-        base::nullopt /* value */);
+        absl::nullopt /* value */);
     return;
   }
   std::move(callback).Run(mojom::GattResult::SUCCESS, std::move(value));
@@ -364,12 +364,12 @@ void Device::OnWriteRemoteCharacteristicError(
 
 void Device::OnReadRemoteDescriptor(
     ReadValueForDescriptorCallback callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     std::move(callback).Run(
         mojo::ConvertTo<mojom::GattResult>(error_code.value()),
-        /*value=*/base::nullopt);
+        /*value=*/absl::nullopt);
     return;
   }
   std::move(callback).Run(mojom::GattResult::SUCCESS, std::move(value));

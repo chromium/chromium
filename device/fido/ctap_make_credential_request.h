@@ -14,13 +14,13 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -43,11 +43,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
 
   // Decodes a CTAP2 authenticatorMakeCredential request message. The request's
   // |client_data_json| will be empty and |client_data_hash| will be set.
-  static base::Optional<CtapMakeCredentialRequest> Parse(
+  static absl::optional<CtapMakeCredentialRequest> Parse(
       const cbor::Value::MapValue& request_map) {
     return Parse(request_map, ParseOpts());
   }
-  static base::Optional<CtapMakeCredentialRequest> Parse(
+  static absl::optional<CtapMakeCredentialRequest> Parse(
       const cbor::Value::MapValue& request_map,
       const ParseOpts& opts);
 
@@ -93,29 +93,29 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // The pinUvAuthParam field. This is the result of calling
   // |pin::TokenResponse::PinAuth(client_data_hash)| with the PIN/UV Auth Token
   // response obtained from the authenticator.
-  base::Optional<std::vector<uint8_t>> pin_auth;
+  absl::optional<std::vector<uint8_t>> pin_auth;
 
   // The pinUvAuthProtocol field. It is the version of the PIN/UV Auth Token
   // response obtained from the authenticator.
-  base::Optional<PINUVAuthProtocol> pin_protocol;
+  absl::optional<PINUVAuthProtocol> pin_protocol;
 
   // The PIN/UV Auth Token response obtained from the authenticator. This field
   // is only used for computing a fresh pinUvAuthParam for getAssertion requests
   // during silent probing of |exclude_list| credentials. It is ignored when
   // encoding this request to CBOR (|pin_auth| and |pin_protocol| are used for
   // that).
-  base::Optional<pin::TokenResponse> pin_token_for_exclude_list_probing;
+  absl::optional<pin::TokenResponse> pin_token_for_exclude_list_probing;
 
   AttestationConveyancePreference attestation_preference =
       AttestationConveyancePreference::kNone;
 
   // U2F AppID for excluding credentials.
-  base::Optional<std::string> app_id;
+  absl::optional<std::string> app_id;
 
   // cred_protect indicates the level of protection afforded to a credential.
   // This depends on a CTAP2 extension that not all authenticators will support.
   // This is filled out by |MakeCredentialRequestHandler|.
-  base::Optional<CredProtect> cred_protect;
+  absl::optional<CredProtect> cred_protect;
 
   // If |cred_protect| is not |nullopt|, this is true if the credProtect level
   // must be provided by the target authenticator for the MakeCredential request
@@ -125,14 +125,14 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
 
   // cred_blob contains an optional credBlob extension.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
-  base::Optional<std::vector<uint8_t>> cred_blob;
+  absl::optional<std::vector<uint8_t>> cred_blob;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with
 // integer keys and CBOR encoded values as defined by the CTAP spec.
 // https://drafts.fidoalliance.org/fido-2/latest/fido-client-to-authenticator-protocol-v2.0-wd-20180305.html#authenticatorMakeCredential
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request);
 
 }  // namespace device

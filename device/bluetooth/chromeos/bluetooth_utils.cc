@@ -10,11 +10,11 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/base/features.h"
 
@@ -196,7 +196,7 @@ device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
   return GetLimitedNumDevices(max_devices, filtered_devices);
 }
 
-void RecordPairingResult(base::Optional<ConnectionFailureReason> failure_reason,
+void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,
                          BluetoothTransport transport,
                          base::TimeDelta duration) {
   RecordPairingTransport(transport);
@@ -247,7 +247,7 @@ void RecordPairingResult(base::Optional<ConnectionFailureReason> failure_reason,
 }
 
 void RecordUserInitiatedReconnectionAttemptResult(
-    base::Optional<ConnectionFailureReason> failure_reason,
+    absl::optional<ConnectionFailureReason> failure_reason,
     BluetoothUiSurface surface) {
   bool success = !failure_reason.has_value();
   std::string base_histogram_name =

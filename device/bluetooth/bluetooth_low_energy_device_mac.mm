@@ -102,10 +102,10 @@ uint16_t BluetoothLowEnergyDeviceMac::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothLowEnergyDeviceMac::GetName() const {
+absl::optional<std::string> BluetoothLowEnergyDeviceMac::GetName() const {
   if ([peripheral_ name])
     return base::SysNSStringToUTF8([peripheral_ name]);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool BluetoothLowEnergyDeviceMac::IsPaired() const {
@@ -209,7 +209,7 @@ void BluetoothLowEnergyDeviceMac::ConnectToServiceInsecurely(
 }
 
 void BluetoothLowEnergyDeviceMac::CreateGattConnectionImpl(
-    base::Optional<BluetoothUUID> serivce_uuid) {
+    absl::optional<BluetoothUUID> serivce_uuid) {
   if (!IsGattConnected()) {
     GetMacAdapter()->CreateGattConnection(this);
   }
@@ -550,7 +550,7 @@ std::ostream& operator<<(std::ostream& out,
                          const BluetoothLowEnergyDeviceMac& device) {
   // TODO(crbug.com/703878): Should use
   // BluetoothLowEnergyDeviceMac::GetNameForDisplay() instead.
-  base::Optional<std::string> name = device.GetName();
+  absl::optional<std::string> name = device.GetName();
   const char* is_gatt_connected =
       device.IsGattConnected() ? "GATT connected" : "GATT disconnected";
   return out << "<BluetoothLowEnergyDeviceMac " << device.GetAddress() << "/"

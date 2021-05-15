@@ -1727,7 +1727,7 @@ void NintendoController::ReadInputReport() {
 void NintendoController::OnReadInputReport(
     bool success,
     uint8_t report_id,
-    const base::Optional<std::vector<uint8_t>>& report_bytes) {
+    const absl::optional<std::vector<uint8_t>>& report_bytes) {
   if (success) {
     DCHECK(report_bytes);
     HandleInputReport(report_id, *report_bytes);

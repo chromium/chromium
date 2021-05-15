@@ -34,7 +34,7 @@ class GamepadBuilder {
   virtual ~GamepadBuilder();
 
   virtual bool IsValid() const;
-  virtual base::Optional<Gamepad> GetGamepad();
+  virtual absl::optional<Gamepad> GetGamepad();
 
   void AddButton(const GamepadButton& button);
   void AddButton(const ButtonData& data);

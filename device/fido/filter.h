@@ -104,8 +104,8 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 Action Evaluate(
     Operation op,
     base::StringPiece rp_id,
-    base::Optional<base::StringPiece> device,
-    base::Optional<std::pair<IDType, base::span<const uint8_t>>> id);
+    absl::optional<base::StringPiece> device,
+    absl::optional<std::pair<IDType, base::span<const uint8_t>>> id);
 
 // ScopedFilterForTesting sets the current filter JSON for the duration of its
 // lifetime. It is a fatal error if |json| is ill-formed.
@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedFilterForTesting {
   ~ScopedFilterForTesting();
 
  private:
-  const base::Optional<std::string> previous_json_;
+  const absl::optional<std::string> previous_json_;
 };
 
 // ParseForTesting returns true iff |json| is a well-formed filter.

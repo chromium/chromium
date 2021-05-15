@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -26,6 +25,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -72,12 +72,12 @@ class BluetoothTestBase : public testing::Test {
     LowEnergyDeviceData(LowEnergyDeviceData&& data);
     ~LowEnergyDeviceData();
 
-    base::Optional<std::string> name;
+    absl::optional<std::string> name;
     std::string address;
     int8_t rssi = 0;
-    base::Optional<uint8_t> flags;
+    absl::optional<uint8_t> flags;
     BluetoothDevice::UUIDList advertised_uuids;
-    base::Optional<int8_t> tx_power;
+    absl::optional<int8_t> tx_power;
     BluetoothDevice::ServiceDataMap service_data;
     BluetoothDevice::ManufacturerDataMap manufacturer_data;
     BluetoothTransport transport = BLUETOOTH_TRANSPORT_LE;
@@ -324,14 +324,14 @@ class BluetoothTestBase : public testing::Test {
   // given, |SimulateGattConnection| is called but the callback argument lets
   // one override that.
   bool ConnectGatt(BluetoothDevice* device,
-                   base::Optional<BluetoothUUID> service_uuid = base::nullopt,
-                   base::Optional<base::OnceCallback<void(BluetoothDevice*)>> =
-                       base::nullopt);
+                   absl::optional<BluetoothUUID> service_uuid = absl::nullopt,
+                   absl::optional<base::OnceCallback<void(BluetoothDevice*)>> =
+                       absl::nullopt);
 
   // GetTargetGattService returns the specific GATT service, if any, that was
   // targeted for discovery, i.e. via the |service_uuid| argument to
   // |CreateGattConnection|.
-  virtual base::Optional<BluetoothUUID> GetTargetGattService(
+  virtual absl::optional<BluetoothUUID> GetTargetGattService(
       BluetoothDevice* device);
 
   // Simulates success of implementation details of CreateGattConnection.
@@ -619,7 +619,7 @@ class BluetoothTestBase : public testing::Test {
   void ReadValueCallback(
       Call expected,
       Result expected_result,
-      base::Optional<BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
   void ErrorCallback(Call expected);
   void AdvertisementErrorCallback(Call expected,

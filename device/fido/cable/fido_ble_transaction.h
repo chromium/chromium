@@ -12,9 +12,9 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "device/fido/cable/fido_ble_frames.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -25,7 +25,7 @@ class FidoBleConnection;
 // class that should make use of this class.
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleTransaction {
  public:
-  using FrameCallback = base::OnceCallback<void(base::Optional<FidoBleFrame>)>;
+  using FrameCallback = base::OnceCallback<void(absl::optional<FidoBleFrame>)>;
 
   FidoBleTransaction(FidoBleConnection* connection,
                      uint16_t control_point_length);
@@ -44,16 +44,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleTransaction {
 
   void StartTimeout();
   void StopTimeout();
-  void OnError(base::Optional<FidoBleFrame> response_frame);
+  void OnError(absl::optional<FidoBleFrame> response_frame);
 
   FidoBleConnection* connection_;
   uint16_t control_point_length_;
 
-  base::Optional<FidoBleFrame> request_frame_;
+  absl::optional<FidoBleFrame> request_frame_;
   FrameCallback callback_;
 
   base::queue<FidoBleFrameContinuationFragment> request_cont_fragments_;
-  base::Optional<FidoBleFrameAssembler> response_frame_assembler_;
+  absl::optional<FidoBleFrameAssembler> response_frame_assembler_;
 
   std::vector<uint8_t> buffer_;
   base::OneShotTimer timer_;

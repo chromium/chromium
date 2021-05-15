@@ -9,10 +9,10 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
-#include "base/optional.h"
 #include "device/vr/openxr/openxr_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -56,14 +56,14 @@ class OpenXrAnchorManager {
     XrPosef pose;
     XrSpace space;
   };
-  base::Optional<XrLocation> GetXrLocationFromNativeOriginInformation(
+  absl::optional<XrLocation> GetXrLocationFromNativeOriginInformation(
       OpenXrApiWrapper* openxr,
       const mojom::VRStageParametersPtr& current_stage_parametersm,
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state) const;
 
-  base::Optional<XrLocation> GetXrLocationFromReferenceSpace(
+  absl::optional<XrLocation> GetXrLocationFromReferenceSpace(
       OpenXrApiWrapper* openxr,
       const mojom::VRStageParametersPtr& current_stage_parameters,
       const mojom::XRNativeOriginInformation& native_origin_information,

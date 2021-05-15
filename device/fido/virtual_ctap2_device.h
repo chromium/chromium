@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
@@ -24,6 +23,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/virtual_fido_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // force_cred_protect, if set and if |cred_protect_support| is true, is a
     // credProtect level that will be forced for all registrations. This
     // overrides any level requested in the makeCredential.
-    base::Optional<device::CredProtect> force_cred_protect;
+    absl::optional<device::CredProtect> force_cred_protect;
 
     // default_cred_protect, if |cred_protect_support| is true, is the
     // credProtect level that will be set for makeCredential requests that do
@@ -264,26 +264,26 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     kMakeCredential,
     kMakeCredentialUvNotRequired,
   };
-  base::Optional<CtapDeviceResponseCode> CheckUserVerification(
+  absl::optional<CtapDeviceResponseCode> CheckUserVerification(
       CheckUserVerificationMode mode,
       const AuthenticatorGetInfoResponse& authenticator_info,
       const std::string& rp_id,
-      const base::Optional<std::vector<uint8_t>>& pin_auth,
-      const base::Optional<PINUVAuthProtocol>& pin_protocol,
+      const absl::optional<std::vector<uint8_t>>& pin_auth,
+      const absl::optional<PINUVAuthProtocol>& pin_protocol,
       base::span<const uint8_t> pin_token,
       base::span<const uint8_t> client_data_hash,
       UserVerificationRequirement user_verification,
       bool user_presence_required,
       bool* out_user_verified);
-  base::Optional<CtapDeviceResponseCode> OnMakeCredential(
+  absl::optional<CtapDeviceResponseCode> OnMakeCredential(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);
-  base::Optional<CtapDeviceResponseCode> OnGetAssertion(
+  absl::optional<CtapDeviceResponseCode> OnGetAssertion(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnGetNextAssertion(base::span<const uint8_t> request,
                                             std::vector<uint8_t>* response);
-  base::Optional<CtapDeviceResponseCode> OnPINCommand(
+  absl::optional<CtapDeviceResponseCode> OnPINCommand(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnCredentialManagement(

@@ -25,7 +25,7 @@
 namespace device {
 namespace pin {
 
-base::Optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
+absl::optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
     const EC_GROUP* group,
     const KeyAgreementResponse& response) {
   bssl::UniquePtr<EC_POINT> ret(EC_POINT_new(group));
@@ -38,7 +38,7 @@ base::Optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
                                           y_bn.get(), nullptr /* ctx */) == 1;
 
   if (!on_curve) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ret;
@@ -55,7 +55,7 @@ class ProtocolV1 : public Protocol {
       std::vector<uint8_t>* out_shared_key) const override {
     bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
     CHECK(EC_KEY_generate_key(key.get()));
-    base::Optional<bssl::UniquePtr<EC_POINT>> peers_point =
+    absl::optional<bssl::UniquePtr<EC_POINT>> peers_point =
         PointFromKeyAgreementResponse(EC_KEY_get0_group(key.get()), peers_key);
     *out_shared_key = CalculateSharedKey(key.get(), peers_point->get());
     // KeyAgreementResponse parsing ensures that the point is on the curve.

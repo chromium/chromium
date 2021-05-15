@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Noise {
   void MixKey(base::span<const uint8_t> ikm);
   void MixKeyAndHash(base::span<const uint8_t> ikm);
   std::vector<uint8_t> EncryptAndHash(base::span<const uint8_t> plaintext);
-  base::Optional<std::vector<uint8_t>> DecryptAndHash(
+  absl::optional<std::vector<uint8_t>> DecryptAndHash(
       base::span<const uint8_t> ciphertext);
   std::array<uint8_t, 32> handshake_hash() const;
 

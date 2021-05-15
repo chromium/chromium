@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "device/fido/mac/authenticator_config.h"
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual void set_cable_data(
       FidoRequestType request_type,
       std::vector<CableDiscoveryData> cable_data,
-      const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+      const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
           qr_generator_key,
       std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
 
@@ -84,9 +84,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
 #if defined(OS_MAC)
-  // Configures the Touch ID authenticator. Set to base::nullopt to disable it.
+  // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
   void set_mac_touch_id_info(
-      base::Optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
+      absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
     mac_touch_id_config_ = std::move(mac_touch_id_config);
   }
 #endif  // defined(OS_MAC)
@@ -130,19 +130,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif
 
 #if defined(OS_MAC)
-  base::Optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
+  absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
 #endif  // defined(OS_MAC)
-  base::Optional<mojo::Remote<device::mojom::UsbDeviceManager>>
+  absl::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
   std::string aoa_request_description_;
   network::mojom::NetworkContext* network_context_ = nullptr;
-  base::Optional<std::vector<CableDiscoveryData>> cable_data_;
-  base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
-  base::Optional<FidoRequestType> request_type_;
+  absl::optional<std::vector<CableDiscoveryData>> cable_data_;
+  absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
+  absl::optional<FidoRequestType> request_type_;
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
   std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
       contact_device_stream_;
-  base::Optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
+  absl::optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
       cable_pairing_callback_;
 #if defined(OS_WIN)
   WinWebAuthnApi* win_webauthn_api_ = nullptr;
@@ -150,7 +150,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;
-  base::Optional<CtapGetAssertionRequest>
+  absl::optional<CtapGetAssertionRequest>
       get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::flat_set<VidPid> hid_ignore_list_;

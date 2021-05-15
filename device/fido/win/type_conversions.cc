@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/reader.h"
@@ -22,10 +21,11 @@
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation) {
   auto authenticator_data = AuthenticatorData::DecodeAuthenticatorData(
@@ -35,19 +35,19 @@ ToAuthenticatorMakeCredentialResponse(
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(credential_attestation.pbAuthenticatorData,
                                    credential_attestation.cbAuthenticatorData);
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
+  absl::optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
       base::span<const uint8_t>(credential_attestation.pbAttestation,
                                 credential_attestation.cbAttestation));
   if (!cbor_attestation_statement || !cbor_attestation_statement->is_map()) {
     DLOG(ERROR) << "CBOR decoding attestation statement failed: "
                 << base::HexEncode(credential_attestation.pbAttestation,
                                    credential_attestation.cbAttestation);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<FidoTransportProtocol> transport_used;
+  absl::optional<FidoTransportProtocol> transport_used;
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3) {
     // dwUsedTransport should have exactly one of the
@@ -80,7 +80,7 @@ ToAuthenticatorMakeCredentialResponse(
               std::move(*cbor_attestation_statement))));
 }
 
-base::Optional<AuthenticatorGetAssertionResponse>
+absl::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& assertion,
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
@@ -91,7 +91,7 @@ ToAuthenticatorGetAssertionResponse(
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(assertion.pbAuthenticatorData,
                                    assertion.cbAuthenticatorData);
-    return base::nullopt;
+    return absl::nullopt;
   }
   AuthenticatorGetAssertionResponse response(
       std::move(*authenticator_data),

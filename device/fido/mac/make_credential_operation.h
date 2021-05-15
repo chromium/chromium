@@ -51,7 +51,7 @@ class API_AVAILABLE(macosx(10.12.2))
  public:
   using Callback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorMakeCredentialResponse>)>;
+      absl::optional<AuthenticatorMakeCredentialResponse>)>;
 
   MakeCredentialOperation(CtapMakeCredentialRequest request,
                           TouchIdCredentialStore* credential_store,

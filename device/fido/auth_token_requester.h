@@ -12,9 +12,9 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     std::set<pin::Permissions> token_permissions;
 
     // rp_id is the permissions RP ID for the token to be requested.
-    base::Optional<std::string> rp_id;
+    absl::optional<std::string> rp_id;
 
     // skip_pin_touch indicates whether not to request a touch before attempting
     // to obtain a token using a PIN.
@@ -103,12 +103,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     virtual void PromptForInternalUVRetry(int attempts) = 0;
 
     // HavePINUVAuthTokenResultForAuthenticator notifies the delegate of the
-    // outcome of ObtainPINUVAuthToken(). |response| is `base::nullopt`, unless
+    // outcome of ObtainPINUVAuthToken(). |response| is `absl::nullopt`, unless
     // |result| is |Result::kSuccess|.
     virtual void HavePINUVAuthTokenResultForAuthenticator(
         FidoAuthenticator* authenticator,
         Result result,
-        base::Optional<pin::TokenResponse> response) = 0;
+        absl::optional<pin::TokenResponse> response) = 0;
   };
 
   // Instantiates a new AuthTokenRequester. |delegate| and |authenticator| must
@@ -131,23 +131,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
  private:
   void ObtainTokenFromInternalUV();
   void OnGetUVRetries(CtapDeviceResponseCode status,
-                      base::Optional<pin::RetriesResponse> response);
+                      absl::optional<pin::RetriesResponse> response);
   void OnGetUVToken(CtapDeviceResponseCode status,
-                    base::Optional<pin::TokenResponse> response);
+                    absl::optional<pin::TokenResponse> response);
 
   void ObtainTokenFromPIN();
   void OnGetPINRetries(CtapDeviceResponseCode status,
-                       base::Optional<pin::RetriesResponse> response);
+                       absl::optional<pin::RetriesResponse> response);
   void HavePIN(std::u16string pin);
   void OnGetPINToken(std::string pin,
                      CtapDeviceResponseCode status,
-                     base::Optional<pin::TokenResponse> response);
+                     absl::optional<pin::TokenResponse> response);
 
   void ObtainTokenFromNewPIN();
   void HaveNewPIN(std::u16string pin);
   void OnSetPIN(std::string pin,
                 CtapDeviceResponseCode status,
-                base::Optional<pin::EmptyResponse> response);
+                absl::optional<pin::EmptyResponse> response);
 
   void NotifyAuthenticatorSelected();
   void NotifyAuthenticatorSelectedAndFailWithResult(Result result);
@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
 
   bool authenticator_was_selected_ = false;
   bool is_internal_uv_retry_ = false;
-  base::Optional<std::string> current_pin_;
+  absl::optional<std::string> current_pin_;
   bool internal_uv_locked_ = false;
   bool pin_invalid_ = false;
   int pin_retries_ = 0;

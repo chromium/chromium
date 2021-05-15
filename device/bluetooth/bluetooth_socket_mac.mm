@@ -20,7 +20,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -32,6 +31,7 @@
 #include "device/bluetooth/bluetooth_rfcomm_channel_mac.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using device::BluetoothSocket;
 
@@ -247,7 +247,7 @@ NSString* IntToNSString(int integer) {
 // corresponding to the provided |uuid|, |name|, and |protocol_definition|. Does
 // not include a service name in the definition if |name| is null.
 NSDictionary* BuildServiceDefinition(const BluetoothUUID& uuid,
-                                     const base::Optional<std::string>& name,
+                                     const absl::optional<std::string>& name,
                                      NSArray* protocol_definition) {
   NSMutableDictionary* service_definition = [NSMutableDictionary dictionary];
 
@@ -339,7 +339,7 @@ IOBluetoothSDPServiceRecord* RegisterService(
 // Returns true iff the |requested_channel_id| was registered in the RFCOMM
 // |service_record|. If it was, also updates |registered_channel_id| with the
 // registered value, as the requested id may have been left unspecified.
-bool VerifyRfcommService(const base::Optional<int>& requested_channel_id,
+bool VerifyRfcommService(const absl::optional<int>& requested_channel_id,
                          BluetoothRFCOMMChannelID* registered_channel_id,
                          IOBluetoothSDPServiceRecord* service_record) {
   // Test whether the requested channel id was available.
@@ -375,7 +375,7 @@ IOBluetoothSDPServiceRecord* RegisterRfcommService(
 // Returns true iff the |requested_psm| was registered in the L2CAP
 // |service_record|. If it was, also updates |registered_psm| with the
 // registered value, as the requested PSM may have been left unspecified.
-bool VerifyL2capService(const base::Optional<int>& requested_psm,
+bool VerifyL2capService(const absl::optional<int>& requested_psm,
                         BluetoothL2CAPPSM* registered_psm,
                         IOBluetoothSDPServiceRecord* service_record) {
   // Test whether the requested PSM was available.

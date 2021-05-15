@@ -143,7 +143,7 @@ void BluetoothRemoteGattDescriptorAndroid::OnRead(
 
   if (status == 0) {  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
     base::android::JavaByteArrayToByteVector(env, value, &value_);
-    std::move(read_callback).Run(/*error_code=*/base::nullopt, value_);
+    std::move(read_callback).Run(/*error_code=*/absl::nullopt, value_);
     // TODO(https://crbug.com/584369): Call GattDescriptorValueChanged.
   } else {
     std::move(read_callback)

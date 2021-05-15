@@ -20,24 +20,24 @@ TEST(FidoFilter, Basic) {
     const char* filter;
     Operation op;
     base::StringPiece rp_id;
-    base::Optional<base::StringPiece> device;
-    base::Optional<std::pair<IDType, base::span<const uint8_t>>> id;
+    absl::optional<base::StringPiece> device;
+    absl::optional<std::pair<IDType, base::span<const uint8_t>>> id;
     Action expected;
   } kTests[] = {
       {
           "",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
       {
           R"({"filters": []})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
       {
@@ -48,8 +48,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -60,8 +60,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -72,8 +72,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -84,8 +84,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::NO_ATTESTATION,
       },
       {
@@ -95,8 +95,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -106,8 +106,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
       {
@@ -118,7 +118,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-1234:4321",
-          base::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -129,7 +129,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-0000:4321",
-          base::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
       {
@@ -140,7 +140,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-0000:4321",
-          base::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -151,7 +151,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-0000:4321",
-          base::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -162,7 +162,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -174,7 +174,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::ALLOW,
       },
@@ -187,7 +187,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -200,7 +200,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -213,7 +213,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -226,7 +226,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::ALLOW,
       },
@@ -240,7 +240,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -255,7 +255,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "example.com",
-          base::nullopt,
+          absl::nullopt,
           empty_cred_id,
           Action::BLOCK,
       },
@@ -268,8 +268,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "a.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -280,8 +280,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "b.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -292,8 +292,8 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "c.com",
-          base::nullopt,
-          base::nullopt,
+          absl::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
       // id can be a list of strings, any of which may match.
@@ -307,7 +307,7 @@ TEST(FidoFilter, Basic) {
           }]})",
           Operation::MAKE_CREDENTIAL,
           "a.com",
-          base::nullopt,
+          absl::nullopt,
           cred_id,
           Action::BLOCK,
       },
@@ -326,7 +326,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-1234:5678",
-          base::nullopt,
+          absl::nullopt,
           Action::BLOCK,
       },
       {
@@ -342,7 +342,7 @@ TEST(FidoFilter, Basic) {
           Operation::MAKE_CREDENTIAL,
           "example.com",
           "usb-1234:1234",
-          base::nullopt,
+          absl::nullopt,
           Action::ALLOW,
       },
   };
@@ -446,11 +446,11 @@ TEST(FidoFilter, InvalidJSON) {
   // Testing that nothing crashes, etc.
   ScopedFilterForTesting filter(
       "nonsense", ScopedFilterForTesting::PermitInvalidJSON::kYes);
-  ASSERT_EQ(Evaluate(Operation::GET_ASSERTION, "example.com", base::nullopt,
-                     base::nullopt),
+  ASSERT_EQ(Evaluate(Operation::GET_ASSERTION, "example.com", absl::nullopt,
+                     absl::nullopt),
             Action::ALLOW);
-  ASSERT_EQ(Evaluate(Operation::MAKE_CREDENTIAL, "example.com", base::nullopt,
-                     base::nullopt),
+  ASSERT_EQ(Evaluate(Operation::MAKE_CREDENTIAL, "example.com", absl::nullopt,
+                     absl::nullopt),
             Action::ALLOW);
 }
 

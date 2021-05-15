@@ -62,7 +62,7 @@ mojom::XRAnchorsDataPtr ArCoreAnchorManager::GetAnchorsData() const {
                << ", position=untracked, orientation=untracked";
 
       updated_anchors.push_back(
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), base::nullopt));
+          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt));
     }
   }
 
@@ -177,7 +177,7 @@ void ArCoreAnchorManager::Update(ArFrame* ar_frame) {
   updated_anchor_ids_.swap(updated_anchor_ids);
 }
 
-base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
+absl::optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
     const device::mojom::Pose& pose) {
   auto ar_pose = GetArPoseFromMojomPose(arcore_session_, pose);
 
@@ -188,7 +188,7 @@ base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
           .get());
 
   if (status != AR_SUCCESS) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto result = anchor_address_to_id_.CreateOrGetId(ar_anchor.get());
@@ -208,7 +208,7 @@ base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
   return result.id;
 }
 
-base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
+absl::optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
     ArCorePlaneManager* plane_manager,
     const device::mojom::Pose& pose,
     PlaneId plane_id) {
@@ -219,7 +219,7 @@ base::Optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
   auto ar_anchor = plane_manager->CreateAnchor(
       base::PassKey<ArCoreAnchorManager>(), plane_id, pose);
   if (!ar_anchor.is_valid()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto result = anchor_address_to_id_.CreateOrGetId(ar_anchor.get());
@@ -254,11 +254,11 @@ bool ArCoreAnchorManager::AnchorExists(AnchorId id) const {
   return base::Contains(anchor_id_to_anchor_info_, id);
 }
 
-base::Optional<gfx::Transform> ArCoreAnchorManager::GetMojoFromAnchor(
+absl::optional<gfx::Transform> ArCoreAnchorManager::GetMojoFromAnchor(
     AnchorId id) const {
   auto it = anchor_id_to_anchor_info_.find(id);
   if (it == anchor_id_to_anchor_info_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ArAnchor_getPose(arcore_session_, it->second.anchor.get(), ar_pose_.get());

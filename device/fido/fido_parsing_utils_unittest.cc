@@ -118,7 +118,7 @@ TEST(U2fParsingUtils, MaterializeOrNull) {
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(*result, ::testing::ElementsAreArray(kOneTwoThree));
 
-  EXPECT_EQ(MaterializeOrNull(base::nullopt), base::nullopt);
+  EXPECT_EQ(MaterializeOrNull(absl::nullopt), absl::nullopt);
 }
 
 TEST(U2fParsingUtils, Append) {

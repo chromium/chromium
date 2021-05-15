@@ -15,11 +15,11 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "crypto/aead.h"
 #include "crypto/hmac.h"
 #include "crypto/symmetric_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -93,7 +93,7 @@ std::vector<uint8_t> SealCredentialId(const std::string& secret,
 // UnsealCredentialId attempts to decrypt a CredentialMetadata from a credential
 // id.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<CredentialMetadata> UnsealCredentialId(
+absl::optional<CredentialMetadata> UnsealCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id);
@@ -118,7 +118,7 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id);
 // under the given secret without knowing the RP ID (which would be required to
 // unseal a credential ID).
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::string> DecodeRpId(const std::string& secret,
+absl::optional<std::string> DecodeRpId(const std::string& secret,
                                        const std::string& ciphertext);
 
 // Seals a legacy V0 credential ID.

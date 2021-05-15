@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   AuthenticatorGetAssertionResponse& operator=(
       const AuthenticatorGetAssertionResponse&) = delete;
 
-  static base::Optional<AuthenticatorGetAssertionResponse>
+  static absl::optional<AuthenticatorGetAssertionResponse>
   CreateFromU2fSignResponse(
       base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
       base::span<const uint8_t> u2f_data,
@@ -43,13 +43,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   ~AuthenticatorGetAssertionResponse();
 
   AuthenticatorData authenticator_data;
-  base::Optional<PublicKeyCredentialDescriptor> credential;
+  absl::optional<PublicKeyCredentialDescriptor> credential;
   std::vector<uint8_t> signature;
-  base::Optional<PublicKeyCredentialUserEntity> user_entity;
-  base::Optional<uint8_t> num_credentials;
+  absl::optional<PublicKeyCredentialUserEntity> user_entity;
+  absl::optional<uint8_t> num_credentials;
 
   // hmac_secret contains the output of the hmac_secret extension.
-  base::Optional<std::vector<uint8_t>> hmac_secret;
+  absl::optional<std::vector<uint8_t>> hmac_secret;
 
   // hmac_secret_not_evaluated will be true in cases where the
   // |FidoAuthenticator| was unable to process the extension, even though it
@@ -61,10 +61,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // The large blob key associated to the credential. This value is only
   // returned if the assertion request contains the largeBlobKey extension on a
   // capable authenticator and the credential has an associated large blob key.
-  base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 
   // The large blob associated with the credential.
-  base::Optional<std::vector<uint8_t>> large_blob;
+  absl::optional<std::vector<uint8_t>> large_blob;
 
   // Whether a large blob was successfully written as part of this GetAssertion
   // request.

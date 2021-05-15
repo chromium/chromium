@@ -13,10 +13,10 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -26,14 +26,14 @@ namespace device {
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
 class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
-  static base::Optional<AuthenticatorMakeCredentialResponse>
+  static absl::optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
-      base::Optional<FidoTransportProtocol> transport_used,
+      absl::optional<FidoTransportProtocol> transport_used,
       base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
       base::span<const uint8_t> u2f_data);
 
   AuthenticatorMakeCredentialResponse(
-      base::Optional<FidoTransportProtocol> transport_used,
+      absl::optional<FidoTransportProtocol> transport_used,
       AttestationObject attestation_object);
   AuthenticatorMakeCredentialResponse(
       AuthenticatorMakeCredentialResponse&& that);
@@ -64,11 +64,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
     return attestation_object_;
   }
 
-  base::Optional<FidoTransportProtocol> transport_used() const {
+  absl::optional<FidoTransportProtocol> transport_used() const {
     return transport_used_;
   }
 
-  base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key()
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key()
       const {
     return large_blob_key_;
   }
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // is_resident_key indicates whether the created credential is client-side
   // discoverable. It is nullopt if no discoverable credential was requested,
   // but the authenticator may have created one anyway.
-  base::Optional<bool> is_resident_key;
+  absl::optional<bool> is_resident_key;
 
   // attestation_should_be_filtered is true iff a filter indicated that the
   // attestation should not be returned. This is acted upon by
@@ -96,12 +96,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
 
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).
-  base::Optional<FidoTransportProtocol> transport_used_;
+  absl::optional<FidoTransportProtocol> transport_used_;
 
   // The large blob key associated to the credential. This value is only
   // returned if the credential is created with the largeBlobKey extension on a
   // capable authenticator.
-  base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key_;
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorMakeCredentialResponse);
 };

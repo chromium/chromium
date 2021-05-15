@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -19,7 +19,7 @@ namespace device {
 struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   PublicKey(int32_t algorithm,
             base::span<const uint8_t> cbor_bytes,
-            base::Optional<std::vector<uint8_t>> der_bytes);
+            absl::optional<std::vector<uint8_t>> der_bytes);
   ~PublicKey();
 
   // algorithm contains the COSE algorithm identifier for this public key.
@@ -33,7 +33,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   // public key, if possible. (WebAuthn can negotiate the use of unknown
   // public-key algorithms so not all public keys can be transformed into SPKI
   // form.)
-  const base::Optional<std::vector<uint8_t>> der_bytes;
+  const absl::optional<std::vector<uint8_t>> der_bytes;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PublicKey);

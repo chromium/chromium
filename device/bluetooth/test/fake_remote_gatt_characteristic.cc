@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 
@@ -65,7 +65,7 @@ bool FakeRemoteGattCharacteristic::RemoveFakeDescriptor(
 
 void FakeRemoteGattCharacteristic::SetNextReadResponse(
     uint16_t gatt_code,
-    const base::Optional<std::vector<uint8_t>>& value) {
+    const absl::optional<std::vector<uint8_t>>& value) {
   DCHECK(!next_read_response_);
   next_read_response_.emplace(gatt_code, value);
 }
@@ -232,14 +232,14 @@ void FakeRemoteGattCharacteristic::DispatchReadResponse(
     ValueCallback callback) {
   DCHECK(next_read_response_);
   uint16_t gatt_code = next_read_response_->gatt_code();
-  base::Optional<std::vector<uint8_t>> value = next_read_response_->value();
+  absl::optional<std::vector<uint8_t>> value = next_read_response_->value();
   next_read_response_.reset();
 
   switch (gatt_code) {
     case mojom::kGATTSuccess:
       DCHECK(value);
       value_ = std::move(value.value());
-      std::move(callback).Run(base::nullopt, value_);
+      std::move(callback).Run(absl::nullopt, value_);
       break;
     case mojom::kGATTInvalidHandle:
       DCHECK(!value);

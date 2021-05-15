@@ -150,7 +150,7 @@ TEST_F(
   auto* mock_bluetooth_device =
       AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
   EXPECT_CALL(*mock_bluetooth_device, GetName)
-      .WillOnce(testing::Return(base::nullopt));
+      .WillOnce(testing::Return(absl::nullopt));
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);

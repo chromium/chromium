@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/test/bluetooth_test.h"
@@ -22,6 +21,7 @@
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -30,7 +30,7 @@ namespace {
 constexpr uint16_t kDefaultControlPointLength = 20;
 
 using FrameCallbackReceiver =
-    test::ValueCallbackReceiver<base::Optional<FidoBleFrame>>;
+    test::ValueCallbackReceiver<absl::optional<FidoBleFrame>>;
 
 std::vector<std::vector<uint8_t>> ToByteFragments(const FidoBleFrame& frame) {
   std::vector<std::vector<uint8_t>> byte_fragments;
@@ -85,7 +85,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_FailWrite) {
   FrameCallbackReceiver receiver;
   transaction().WriteRequestFrame(FidoBleFrame(), receiver.callback());
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a case where the control point write succeeds.
@@ -173,7 +173,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ControlPointLength_TooSmall) {
   transaction().WriteRequestFrame(frame, receiver.callback());
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests that valid KeepaliveCodes are ignored, and only a valid
@@ -228,7 +228,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidKeepAlive_Fail) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a scenario where the response frame contains a valid error command.
@@ -271,7 +271,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidErrorCommand) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a scenario where the command of the response frame does not match the
@@ -293,7 +293,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidResponseFrameCommand) {
     transaction().OnResponseFragment(std::move(byte_fragment));
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a scenario where the response initialization fragment is invalid.
@@ -314,7 +314,7 @@ TEST_F(FidoBleTransactionTest,
   transaction().OnResponseFragment(std::move(byte_fragments.front()));
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a scenario where a response continuation fragment is invalid.
@@ -337,7 +337,7 @@ TEST_F(FidoBleTransactionTest,
   transaction().OnResponseFragment(byte_fragments.front());
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 // Tests a scenario where the order of response continuation fragments is
@@ -361,7 +361,7 @@ TEST_F(FidoBleTransactionTest,
   transaction().OnResponseFragment(byte_fragments[1]);
 
   receiver.WaitForCallback();
-  EXPECT_EQ(base::nullopt, receiver.value());
+  EXPECT_EQ(absl::nullopt, receiver.value());
 }
 
 }  // namespace device

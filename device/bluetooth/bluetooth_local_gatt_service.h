@@ -12,12 +12,12 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -47,7 +47,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
    public:
     // Callbacks used for communicating GATT request responses.
     using ValueCallback = base::OnceCallback<void(
-        base::Optional<BluetoothGattService::GattErrorCode> error_code,
+        absl::optional<BluetoothGattService::GattErrorCode> error_code,
         const std::vector<uint8_t>&)>;
     using ErrorCallback = base::OnceClosure;
 

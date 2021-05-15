@@ -312,7 +312,7 @@ class BluetoothGattCharacteristicClientImpl
     if (bytes)
       value.assign(bytes, bytes + length);
 
-    std::move(callback).Run(/*error_code=*/base::nullopt, value);
+    std::move(callback).Run(/*error_code=*/absl::nullopt, value);
   }
 
   // Called when a response for a failed method call is received.

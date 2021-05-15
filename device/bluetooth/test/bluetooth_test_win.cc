@@ -328,7 +328,7 @@ BluetoothDevice* BluetoothTestWin::SimulateLowEnergyDevice(int device_ordinal) {
   return adapter_->GetDevice(data.address);
 }
 
-base::Optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
+absl::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
     BluetoothDevice* device) {
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();

@@ -73,14 +73,14 @@ bool FidoDevice::SupportedProtocolIsInitialized() {
 
 void FidoDevice::OnDeviceInfoReceived(
     base::OnceClosure done,
-    base::Optional<std::vector<uint8_t>> response) {
+    absl::optional<std::vector<uint8_t>> response) {
   // TODO(hongjunchoi): Add tests that verify this behavior.
   if (state_ == FidoDevice::State::kDeviceError)
     return;
 
   state_ = FidoDevice::State::kReady;
-  base::Optional<AuthenticatorGetInfoResponse> get_info_response =
-      response ? ReadCTAPGetInfoResponse(*response) : base::nullopt;
+  absl::optional<AuthenticatorGetInfoResponse> get_info_response =
+      response ? ReadCTAPGetInfoResponse(*response) : absl::nullopt;
   if (!get_info_response ||
       !base::Contains(get_info_response->versions, ProtocolVersion::kCtap2)) {
     supported_protocol_ = ProtocolVersion::kU2f;

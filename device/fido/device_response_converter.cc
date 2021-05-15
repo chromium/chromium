@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -24,6 +23,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -40,14 +40,14 @@ ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
   return ProtocolVersion::kUnknown;
 }
 
-base::Optional<Ctap2Version> ConvertStringToCtap2Version(
+absl::optional<Ctap2Version> ConvertStringToCtap2Version(
     base::StringPiece version) {
   if (version == kCtap2Version)
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
     return Ctap2Version::kCtap2_1;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -65,30 +65,30 @@ CtapDeviceResponseCode GetResponseCode(base::span<const uint8_t> buffer) {
 
 // Decodes byte array response from authenticator to CBOR value object and
 // checks for correct encoding format.
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
-                               const base::Optional<cbor::Value>& cbor) {
+                               const absl::optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto& decoded_map = cbor->GetMap();
   auto it = decoded_map.find(CBOR(0x01));
   if (it == decoded_map.end() || !it->second.is_string())
-    return base::nullopt;
+    return absl::nullopt;
   auto format = it->second.GetString();
 
   it = decoded_map.find(CBOR(0x02));
   if (it == decoded_map.end() || !it->second.is_bytestring())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(it->second.GetBytestring());
   if (!authenticator_data)
-    return base::nullopt;
+    return absl::nullopt;
 
   it = decoded_map.find(CBOR(0x03));
   if (it == decoded_map.end() || !it->second.is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   AuthenticatorMakeCredentialResponse response(
       transport_used,
@@ -99,7 +99,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
   it = decoded_map.find(CBOR(0x04));
   if (it != decoded_map.end()) {
     if (!it->second.is_bool()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     response.enterprise_attestation_returned = it->second.GetBool();
   }
@@ -108,7 +108,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
   if (it != decoded_map.end()) {
     if (!it->second.is_bytestring() ||
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     response.set_large_blob_key(
         base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
@@ -117,25 +117,25 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
   return response;
 }
 
-base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
-    const base::Optional<cbor::Value>& cbor) {
+absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
+    const absl::optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto& response_map = cbor->GetMap();
 
   auto it = response_map.find(CBOR(0x02));
   if (it == response_map.end() || !it->second.is_bytestring())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto auth_data =
       AuthenticatorData::DecodeAuthenticatorData(it->second.GetBytestring());
   if (!auth_data)
-    return base::nullopt;
+    return absl::nullopt;
 
   it = response_map.find(CBOR(0x03));
   if (it == response_map.end() || !it->second.is_bytestring())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto signature = it->second.GetBytestring();
   AuthenticatorGetAssertionResponse response(std::move(*auth_data),
@@ -146,7 +146,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     auto credential =
         PublicKeyCredentialDescriptor::CreateFromCBORValue(it->second);
     if (!credential)
-      return base::nullopt;
+      return absl::nullopt;
     response.credential = std::move(*credential);
   }
 
@@ -154,14 +154,14 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   if (it != response_map.end()) {
     auto user = PublicKeyCredentialUserEntity::CreateFromCBORValue(it->second);
     if (!user)
-      return base::nullopt;
+      return absl::nullopt;
     response.user_entity = std::move(*user);
   }
 
   it = response_map.find(CBOR(0x05));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
-      return base::nullopt;
+      return absl::nullopt;
 
     response.num_credentials = it->second.GetUnsigned();
   }
@@ -169,12 +169,12 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     const std::vector<uint8_t>& key = it->second.GetBytestring();
     response.large_blob_key.emplace();
     if (key.size() != response.large_blob_key->size()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     memcpy(response.large_blob_key->data(), key.data(),
            response.large_blob_key->size());
@@ -183,20 +183,20 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   return response;
 }
 
-base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
+absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     base::span<const uint8_t> buffer) {
   if (buffer.size() <= kResponseCodeLength) {
     FIDO_LOG(ERROR) << "-> (GetInfo response too short: " << buffer.size()
                     << " bytes)";
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
     FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   cbor::Reader::DecoderError error;
-  base::Optional<CBOR> decoded_response =
+  absl::optional<CBOR> decoded_response =
       cbor::Reader::Read(buffer.subspan(1), &error);
 
   if (!decoded_response) {
@@ -204,18 +204,18 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
                     << cbor::Reader::ErrorCodeToString(error)
                     << "' from raw message "
                     << base::HexEncode(buffer.data(), buffer.size()) << ")";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!decoded_response->is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(*decoded_response);
   const auto& response_map = decoded_response->GetMap();
 
   auto it = response_map.find(CBOR(0x01));
   if (it == response_map.end() || !it->second.is_array()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::flat_set<ProtocolVersion> protocol_versions;
@@ -223,12 +223,12 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   base::flat_set<base::StringPiece> advertised_protocols;
   for (const auto& version : it->second.GetArray()) {
     if (!version.is_string())
-      return base::nullopt;
+      return absl::nullopt;
     const std::string& version_string = version.GetString();
 
     if (!advertised_protocols.insert(version_string).second) {
       // Duplicate versions are not allowed.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     ProtocolVersion protocol = ConvertStringToProtocolVersion(version_string);
@@ -238,7 +238,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     }
 
     if (protocol == ProtocolVersion::kCtap2) {
-      base::Optional<Ctap2Version> ctap2_version =
+      absl::optional<Ctap2Version> ctap2_version =
           ConvertStringToCtap2Version(version_string);
       if (ctap2_version) {
         ctap2_versions.insert(*ctap2_version);
@@ -251,13 +251,13 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   if (protocol_versions.empty() ||
       (base::Contains(protocol_versions, ProtocolVersion::kCtap2) &&
        ctap2_versions.empty())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   it = response_map.find(CBOR(0x03));
   if (it == response_map.end() || !it->second.is_bytestring() ||
       it->second.GetBytestring().size() != kAaguidLength) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   AuthenticatorGetInfoResponse response(
@@ -269,12 +269,12 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x02));
   if (it != response_map.end()) {
     if (!it->second.is_array())
-      return base::nullopt;
+      return absl::nullopt;
 
     std::vector<std::string> extensions;
     for (const auto& extension : it->second.GetArray()) {
       if (!extension.is_string())
-        return base::nullopt;
+        return absl::nullopt;
 
       const std::string& extension_str = extension.GetString();
       if (extension_str == kExtensionCredProtect) {
@@ -289,19 +289,19 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
   // credBlob requires credProtect support.
   if (cred_blob_extension_seen && !options.supports_cred_protect) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   it = response_map.find(CBOR(0x04));
   if (it != response_map.end()) {
     if (!it->second.is_map())
-      return base::nullopt;
+      return absl::nullopt;
 
     const auto& option_map = it->second.GetMap();
     auto option_map_it = option_map.find(CBOR(kPlatformDeviceMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool())
-        return base::nullopt;
+        return absl::nullopt;
 
       options.is_platform_device = option_map_it->second.GetBool();
     }
@@ -309,7 +309,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kResidentKeyMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool())
-        return base::nullopt;
+        return absl::nullopt;
 
       options.supports_resident_key = option_map_it->second.GetBool();
     }
@@ -317,7 +317,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kUserPresenceMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool())
-        return base::nullopt;
+        return absl::nullopt;
 
       options.supports_user_presence = option_map_it->second.GetBool();
     }
@@ -325,7 +325,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kUserVerificationMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool())
-        return base::nullopt;
+        return absl::nullopt;
 
       if (option_map_it->second.GetBool()) {
         options.user_verification_availability = AuthenticatorSupportedOptions::
@@ -339,7 +339,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kClientPinMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool())
-        return base::nullopt;
+        return absl::nullopt;
 
       if (option_map_it->second.GetBool()) {
         options.client_pin_availability = AuthenticatorSupportedOptions::
@@ -353,7 +353,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kCredentialManagementMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.supports_credential_management = option_map_it->second.GetBool();
     }
@@ -361,7 +361,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kCredentialManagementPreviewMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.supports_credential_management_preview =
           option_map_it->second.GetBool();
@@ -370,7 +370,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kBioEnrollmentMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       using Availability =
           AuthenticatorSupportedOptions::BioEnrollmentAvailability;
@@ -384,7 +384,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kBioEnrollmentPreviewMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       using Availability =
           AuthenticatorSupportedOptions::BioEnrollmentAvailability;
@@ -398,7 +398,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kPinUvTokenMapKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.supports_pin_uv_auth_token = option_map_it->second.GetBool();
     }
@@ -406,12 +406,12 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kDefaultCredProtectKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_unsigned()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       const int64_t value = option_map_it->second.GetInteger();
       if (value != static_cast<uint8_t>(CredProtect::kUVOrCredIDRequired) &&
           value != static_cast<uint8_t>(CredProtect::kUVRequired)) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.default_cred_protect = static_cast<CredProtect>(value);
     }
@@ -419,7 +419,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kEnterpriseAttestationKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.enterprise_attestation = option_map_it->second.GetBool();
     }
@@ -427,7 +427,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kLargeBlobsKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool() || !options.supports_resident_key) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.supports_large_blobs = option_map_it->second.GetBool();
     }
@@ -435,7 +435,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kAlwaysUvKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.always_uv = option_map_it->second.GetBool();
     }
@@ -443,7 +443,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     option_map_it = option_map.find(CBOR(kMakeCredUvNotRqdKey));
     if (option_map_it != option_map.end()) {
       if (!option_map_it->second.is_bool()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       options.make_cred_uv_not_required = option_map_it->second.GetBool();
     }
@@ -454,7 +454,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x05));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
-      return base::nullopt;
+      return absl::nullopt;
 
     response.max_msg_size =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
@@ -463,14 +463,14 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x06));
   if (it != response_map.end()) {
     if (!it->second.is_array())
-      return base::nullopt;
+      return absl::nullopt;
 
     base::flat_set<PINUVAuthProtocol> pin_protocols;
     for (const auto& protocol : it->second.GetArray()) {
       if (!protocol.is_unsigned()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
-      base::Optional<PINUVAuthProtocol> pin_protocol =
+      absl::optional<PINUVAuthProtocol> pin_protocol =
           ToPINUVAuthProtocol(protocol.GetUnsigned());
       if (!pin_protocol) {
         continue;
@@ -483,7 +483,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       response.options.client_pin_availability !=
           AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported) {
     if (!response.pin_protocols) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (response.pin_protocols->empty()) {
       // The authenticator only offers unsupported pinUvAuthToken versions.
@@ -498,7 +498,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
-      return base::nullopt;
+      return absl::nullopt;
 
     response.max_credential_count_in_list =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
@@ -507,7 +507,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x08));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
-      return base::nullopt;
+      return absl::nullopt;
 
     response.max_credential_id_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
@@ -516,7 +516,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x0a));
   if (it != response_map.end()) {
     if (!it->second.is_array()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     response.algorithms.clear();
@@ -526,13 +526,13 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       // Entries are PublicKeyCredentialParameters
       // https://w3c.github.io/webauthn/#dictdef-publickeycredentialparameters
       if (!algorithm.is_map()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       const auto& map = algorithm.GetMap();
       const auto type_it = map.find(CBOR("type"));
       if (type_it == map.end() || !type_it->second.is_string()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       if (type_it->second.GetString() != "public-key") {
@@ -541,7 +541,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
       const auto alg_it = map.find(CBOR("alg"));
       if (alg_it == map.end() || !alg_it->second.is_integer()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       const int64_t alg = alg_it->second.GetInteger();
@@ -557,7 +557,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x0b));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     response.max_serialized_large_blob_array =
@@ -567,7 +567,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x0c));
   if (it != response_map.end()) {
     if (!it->second.is_bool()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     response.force_pin_change = it->second.GetBool();
@@ -576,7 +576,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x0d));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     response.min_pin_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
@@ -585,17 +585,17 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x0f));
   // The maxCredBlobLength field is present iff credBlob is supported.
   if ((it != response_map.end()) != cred_blob_extension_seen) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (cred_blob_extension_seen) {
     if (!it->second.is_unsigned()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     const uint32_t max_cred_blob_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
     // CTAP 2.1 requires at least 32 bytes of credBlob to be supported.
     if (max_cred_blob_length < 32) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     response.max_cred_blob_length = max_cred_blob_length;
   }
@@ -603,22 +603,22 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   it = response_map.find(CBOR(0x14));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     response.remaining_discoverable_credentials =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
-  return base::Optional<AuthenticatorGetInfoResponse>(std::move(response));
+  return absl::optional<AuthenticatorGetInfoResponse>(std::move(response));
 }
 
-static base::Optional<std::string> FixInvalidUTF8String(
+static absl::optional<std::string> FixInvalidUTF8String(
     base::span<const uint8_t> utf8_bytes) {
   // CTAP2 devices must store at least 64 bytes of any string.
   if (utf8_bytes.size() < 64) {
     FIDO_LOG(ERROR) << "Not accepting invalid UTF-8 string because it's only "
                     << utf8_bytes.size() << " bytes long";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::StreamingUtf8Validator validator;
@@ -634,7 +634,7 @@ static base::Optional<std::string> FixInvalidUTF8String(
         break;
 
       case base::StreamingUtf8Validator::INVALID:
-        return base::nullopt;
+        return absl::nullopt;
 
       case base::StreamingUtf8Validator::VALID_MIDPOINT:
         break;
@@ -648,13 +648,13 @@ static base::Optional<std::string> FixInvalidUTF8String(
       // points that should never appear. Therefore, if this case occurs, the
       // string is structurally valid as UTF-8, but includes invalid code points
       // and thus we reject it.
-      return base::nullopt;
+      return absl::nullopt;
 
     case base::StreamingUtf8Validator::INVALID:
       // This shouldn't happen because we should return immediately if
       // |INVALID| occurs.
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
 
     case base::StreamingUtf8Validator::VALID_MIDPOINT: {
       // This string has been truncated. This is the case that we expect to
@@ -670,26 +670,26 @@ static base::Optional<std::string> FixInvalidUTF8String(
       if (base::IsStringUTF8(candidate)) {
         return candidate;
       }
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 }
 
 typedef bool (*PathPredicate)(const std::vector<const cbor::Value*>&);
 
-static base::Optional<cbor::Value> FixInvalidUTF8Value(
+static absl::optional<cbor::Value> FixInvalidUTF8Value(
     const cbor::Value& v,
     std::vector<const cbor::Value*>* path,
     PathPredicate predicate) {
   switch (v.type()) {
     case cbor::Value::Type::INVALID_UTF8: {
       if (!predicate(*path)) {
-        return base::nullopt;
+        return absl::nullopt;
       }
-      base::Optional<std::string> maybe_fixed(
+      absl::optional<std::string> maybe_fixed(
           FixInvalidUTF8String(v.GetInvalidUTF8()));
       if (!maybe_fixed) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       return cbor::Value(*maybe_fixed);
     }
@@ -709,10 +709,10 @@ static base::Optional<cbor::Value> FixInvalidUTF8Value(
       new_array.reserve(old_array.size());
 
       for (const auto& child : old_array) {
-        base::Optional<cbor::Value> maybe_fixed =
+        absl::optional<cbor::Value> maybe_fixed =
             FixInvalidUTF8Value(child, path, predicate);
         if (!maybe_fixed) {
-          return base::nullopt;
+          return absl::nullopt;
         }
         new_array.emplace_back(std::move(*maybe_fixed));
       }
@@ -729,7 +729,7 @@ static base::Optional<cbor::Value> FixInvalidUTF8Value(
         switch (it.first.type()) {
           case cbor::Value::Type::INVALID_UTF8:
             // Invalid strings in map keys are not supported.
-            return base::nullopt;
+            return absl::nullopt;
 
           case cbor::Value::Type::UNSIGNED:
           case cbor::Value::Type::NEGATIVE:
@@ -738,15 +738,15 @@ static base::Optional<cbor::Value> FixInvalidUTF8Value(
 
           default:
             // Other types are not permitted as map keys in CTAP2.
-            return base::nullopt;
+            return absl::nullopt;
         }
 
         path->push_back(&it.first);
-        base::Optional<cbor::Value> maybe_fixed =
+        absl::optional<cbor::Value> maybe_fixed =
             FixInvalidUTF8Value(it.second, path, predicate);
         path->pop_back();
         if (!maybe_fixed) {
-          return base::nullopt;
+          return absl::nullopt;
         }
 
         new_map.emplace(it.first.Clone(), std::move(*maybe_fixed));
@@ -799,7 +799,7 @@ static bool ContainsInvalidUTF8(const cbor::Value& v) {
   }
 }
 
-base::Optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
+absl::optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
                                            PathPredicate predicate) {
   if (!ContainsInvalidUTF8(in)) {
     // Common case that everything is fine.
@@ -810,10 +810,10 @@ base::Optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
   return FixInvalidUTF8Value(in, &path, predicate);
 }
 
-base::Optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
+absl::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
   if (in != static_cast<uint8_t>(PINUVAuthProtocol::kV1) &&
       in != static_cast<uint8_t>(PINUVAuthProtocol::kV2)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return static_cast<PINUVAuthProtocol>(in);
 }

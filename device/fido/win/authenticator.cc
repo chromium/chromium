@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -27,6 +26,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/win/type_conversions.h"
 #include "device/fido/win/webauthn_api.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
@@ -89,7 +89,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
 void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     MakeCredentialCallback callback,
     std::pair<CtapDeviceResponseCode,
-              base::Optional<AuthenticatorMakeCredentialResponse>> result) {
+              absl::optional<AuthenticatorMakeCredentialResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
   is_pending_ = false;
@@ -100,12 +100,12 @@ void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     return;
   }
   if (result.first != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(result.first, base::nullopt);
+    std::move(callback).Run(result.first, absl::nullopt);
     return;
   }
   if (!result.second) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR,
-                            base::nullopt);
+                            absl::nullopt);
     return;
   }
   std::move(callback).Run(result.first, std::move(result.second));
@@ -133,7 +133,7 @@ void WinWebAuthnApiAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 void WinWebAuthnApiAuthenticator::GetAssertionDone(
     GetAssertionCallback callback,
     std::pair<CtapDeviceResponseCode,
-              base::Optional<AuthenticatorGetAssertionResponse>> result) {
+              absl::optional<AuthenticatorGetAssertionResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
   is_pending_ = false;
@@ -142,12 +142,12 @@ void WinWebAuthnApiAuthenticator::GetAssertionDone(
     return;
   }
   if (result.first != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(result.first, base::nullopt);
+    std::move(callback).Run(result.first, absl::nullopt);
     return;
   }
   if (!result.second) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR,
-                            base::nullopt);
+                            absl::nullopt);
     return;
   }
   std::move(callback).Run(result.first, std::move(result.second));
@@ -182,11 +182,11 @@ bool WinWebAuthnApiAuthenticator::RequiresBlePairingPin() const {
   return false;
 }
 
-base::Optional<FidoTransportProtocol>
+absl::optional<FidoTransportProtocol>
 WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   // The Windows API could potentially use any external or
   // platform authenticator.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool WinWebAuthnApiAuthenticator::IsWinNativeApiAuthenticator() const {
@@ -201,13 +201,13 @@ bool WinWebAuthnApiAuthenticator::SupportsHMACSecretExtension() const {
   return true;
 }
 
-const base::Optional<AuthenticatorSupportedOptions>&
+const absl::optional<AuthenticatorSupportedOptions>&
 WinWebAuthnApiAuthenticator::Options() const {
   // The request can potentially be fulfilled by any device that Windows
   // communicates with, so returning AuthenticatorSupportedOptions really
   // doesn't make much sense.
-  static const base::Optional<AuthenticatorSupportedOptions> no_options =
-      base::nullopt;
+  static const absl::optional<AuthenticatorSupportedOptions> no_options =
+      absl::nullopt;
   return no_options;
 }
 

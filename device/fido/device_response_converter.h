@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_get_info_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Converts response from authenticators to CTAPResponse objects. If the
 // response of the authenticator does not conform to format specified by the
@@ -31,30 +31,30 @@ CtapDeviceResponseCode GetResponseCode(base::span<const uint8_t> buffer);
 // that conform to format of attestation object defined by the Webauthn spec:
 // https://w3c.github.io/webauthn/#fig-attStructs
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
-                               const base::Optional<cbor::Value>& cbor);
+                               const absl::optional<cbor::Value>& cbor);
 
 // Converts |cbor|, the response to an |AuthenticatorGetAssertion| /
 // |AuthenticatorGetNextAssertion| request, to an
 // |AuthenticatorGetAssertionResponse|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
-    const base::Optional<cbor::Value>& cbor);
+absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
+    const absl::optional<cbor::Value>& cbor);
 
 // De-serializes CBOR encoded response to AuthenticatorGetInfo request to
 // AuthenticatorGetInfoResponse object.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
+absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     base::span<const uint8_t> buffer);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<cbor::Value> FixInvalidUTF8(
+absl::optional<cbor::Value> FixInvalidUTF8(
     cbor::Value in,
     bool (*predicate)(const std::vector<const cbor::Value*>&));
 
 // Converts |in| to the equivalent |PINUVAuthProtocol|.
-base::Optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in);
+absl::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in);
 
 }  // namespace device
 

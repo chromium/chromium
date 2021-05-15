@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
@@ -20,6 +19,7 @@
 #include "device/fido/virtual_fido_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -29,10 +29,10 @@ using WriteCallback =
     device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
 using ReadCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>>;
+    absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>>;
 using PinCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    base::Optional<pin::TokenResponse>>;
+    absl::optional<pin::TokenResponse>>;
 using TouchCallback = device::test::TestCallbackReceiver<>;
 
 constexpr LargeBlobKey kDummyKey1 = {{0x01}};
@@ -80,7 +80,7 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
 
 TEST_F(FidoDeviceAuthenticatorTest, TestReadEmptyLargeBlob) {
   ReadCallback callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
                                 callback.callback());
 
   callback.WaitForCallback();
@@ -91,7 +91,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestReadEmptyLargeBlob) {
 TEST_F(FidoDeviceAuthenticatorTest, TestReadInvalidLargeBlob) {
   authenticator_state_->large_blob[0] += 1;
   ReadCallback callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
                                 callback.callback());
 
   callback.WaitForCallback();
@@ -105,14 +105,14 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlob) {
   std::vector<uint8_t> small_blob =
       fido_parsing_utils::Materialize(kSmallBlob1);
   WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(small_blob, {kDummyKey1}, base::nullopt,
+  authenticator_->WriteLargeBlob(small_blob, {kDummyKey1}, absl::nullopt,
                                  write_callback.callback());
 
   write_callback.WaitForCallback();
   ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
 
   ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
                                 read_callback.callback());
   read_callback.WaitForCallback();
   ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
@@ -132,14 +132,14 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlob) {
   }
 
   WriteCallback write_callback;
-  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, base::nullopt,
+  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, absl::nullopt,
                                  write_callback.callback());
 
   write_callback.WaitForCallback();
   ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
 
   ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
                                 read_callback.callback());
   read_callback.WaitForCallback();
   ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
@@ -155,7 +155,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlobWithToken) {
   virtual_device_->SetPin(kPin);
   PinCallback pin_callback;
   authenticator_->GetPINToken(kPin, {pin::Permissions::kLargeBlobWrite},
-                              /*rp_id=*/base::nullopt, pin_callback.callback());
+                              /*rp_id=*/absl::nullopt, pin_callback.callback());
   pin_callback.WaitForCallback();
   ASSERT_EQ(pin_callback.status(), CtapDeviceResponseCode::kSuccess);
   pin::TokenResponse pin_token = *pin_callback.value();
@@ -185,7 +185,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlobWithToken) {
 TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
   WriteCallback write_callback1;
   authenticator_->WriteLargeBlob(fido_parsing_utils::Materialize(kSmallBlob1),
-                                 {kDummyKey1}, base::nullopt,
+                                 {kDummyKey1}, absl::nullopt,
                                  write_callback1.callback());
   write_callback1.WaitForCallback();
   ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
@@ -193,7 +193,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
   WriteCallback write_callback2;
   std::vector<uint8_t> small_blob2 =
       fido_parsing_utils::Materialize(kSmallBlob2);
-  authenticator_->WriteLargeBlob(small_blob2, {kDummyKey2}, base::nullopt,
+  authenticator_->WriteLargeBlob(small_blob2, {kDummyKey2}, absl::nullopt,
                                  write_callback2.callback());
   write_callback2.WaitForCallback();
   ASSERT_EQ(write_callback2.value(), CtapDeviceResponseCode::kSuccess);
@@ -202,13 +202,13 @@ TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
   WriteCallback write_callback3;
   std::vector<uint8_t> small_blob3 =
       fido_parsing_utils::Materialize(kSmallBlob3);
-  authenticator_->WriteLargeBlob(small_blob3, {kDummyKey1}, base::nullopt,
+  authenticator_->WriteLargeBlob(small_blob3, {kDummyKey1}, absl::nullopt,
                                  write_callback3.callback());
   write_callback3.WaitForCallback();
   ASSERT_EQ(write_callback3.value(), CtapDeviceResponseCode::kSuccess);
 
   ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1, kDummyKey2}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1, kDummyKey2}, absl::nullopt,
                                 read_callback.callback());
   read_callback.WaitForCallback();
   ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
@@ -226,7 +226,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
   WriteCallback write_callback1;
   std::vector<uint8_t> small_blob =
       fido_parsing_utils::Materialize(kSmallBlob1);
-  authenticator_->WriteLargeBlob(small_blob, {kDummyKey1}, base::nullopt,
+  authenticator_->WriteLargeBlob(small_blob, {kDummyKey1}, absl::nullopt,
                                  write_callback1.callback());
   write_callback1.WaitForCallback();
   ASSERT_EQ(write_callback1.value(), CtapDeviceResponseCode::kSuccess);
@@ -238,7 +238,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
     large_blob.emplace_back(i % 0xFF);
   }
   WriteCallback write_callback2;
-  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, base::nullopt,
+  authenticator_->WriteLargeBlob(large_blob, {kDummyKey1}, absl::nullopt,
                                  write_callback2.callback());
   write_callback2.WaitForCallback();
   ASSERT_EQ(write_callback2.value(),
@@ -246,7 +246,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
 
   // Make sure the first blob was not overwritten.
   ReadCallback read_callback;
-  authenticator_->ReadLargeBlob({kDummyKey1}, base::nullopt,
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
                                 read_callback.callback());
   read_callback.WaitForCallback();
   ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);

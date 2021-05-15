@@ -74,13 +74,13 @@ Pairing::Pairing() = default;
 Pairing::~Pairing() = default;
 
 // static
-base::Optional<std::unique_ptr<Pairing>> Pairing::Parse(
+absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
     const cbor::Value& cbor,
     uint32_t tunnel_server_domain,
     base::span<const uint8_t, kQRSeedSize> local_identity_seed,
     base::span<const uint8_t, 32> handshake_hash) {
   if (!cbor.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const cbor::Value::MapValue& map = cbor.GetMap();
@@ -115,7 +115,7 @@ base::Optional<std::unique_ptr<Pairing>> Pairing::Parse(
   if (!VerifyPairingSignature(local_identity_seed,
                               pairing->peer_public_key_x962, handshake_hash,
                               its[4]->second.GetBytestring())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return pairing;

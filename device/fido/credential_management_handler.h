@@ -48,8 +48,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   using FinishedCallback = base::OnceCallback<void(CredentialManagementStatus)>;
   using GetCredentialsCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
-      base::Optional<size_t>)>;
+      absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
+      absl::optional<size_t>)>;
   using GetPINCallback =
       base::RepeatingCallback<void(uint32_t min_pin_length,
                                    int64_t retries,
@@ -107,29 +107,29 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
 
   void OnTouch(FidoAuthenticator* authenticator);
   void OnRetriesResponse(CtapDeviceResponseCode status,
-                         base::Optional<pin::RetriesResponse> response);
+                         absl::optional<pin::RetriesResponse> response);
   void OnHavePIN(std::string pin);
   void OnHavePINToken(CtapDeviceResponseCode status,
-                      base::Optional<pin::TokenResponse> response);
+                      absl::optional<pin::TokenResponse> response);
   void OnCredentialsMetadata(
       CtapDeviceResponseCode status,
-      base::Optional<CredentialsMetadataResponse> response);
+      absl::optional<CredentialsMetadataResponse> response);
   void OnEnumerateCredentials(
       CredentialsMetadataResponse metadata_response,
       CtapDeviceResponseCode status,
-      base::Optional<std::vector<AggregatedEnumerateCredentialsResponse>>
+      absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
           responses);
   void OnDeleteCredentials(
       std::vector<std::vector<uint8_t>> remaining_credential_ids,
       CredentialManagementHandler::DeleteCredentialCallback callback,
       CtapDeviceResponseCode status,
-      base::Optional<DeleteCredentialResponse> response);
+      absl::optional<DeleteCredentialResponse> response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   State state_ = State::kWaitingForTouch;
   FidoAuthenticator* authenticator_ = nullptr;
-  base::Optional<pin::TokenResponse> pin_token_;
+  absl::optional<pin::TokenResponse> pin_token_;
 
   ReadyCallback ready_callback_;
   GetPINCallback get_pin_callback_;

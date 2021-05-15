@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager.h"
 #include "chromecast/device/bluetooth/le/le_scan_manager.h"
@@ -25,6 +24,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -45,14 +45,14 @@ class BluetoothDeviceCast : public BluetoothDevice {
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
-  base::Optional<int8_t> GetInquiryRSSI() const override;
-  base::Optional<int8_t> GetInquiryTxPower() const override;
+  absl::optional<int8_t> GetInquiryRSSI() const override;
+  absl::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -113,7 +113,7 @@ class BluetoothDeviceCast : public BluetoothDevice {
   // DidDisconnectGatt immediately or asynchronously as the connection state
   // changes.
   void CreateGattConnectionImpl(
-      base::Optional<BluetoothUUID> service_uuid) override;
+      absl::optional<BluetoothUUID> service_uuid) override;
 
   // Disconnects GATT connection on platforms that maintain a specific GATT
   // connection.
@@ -132,7 +132,7 @@ class BluetoothDeviceCast : public BluetoothDevice {
 
   const scoped_refptr<chromecast::bluetooth::RemoteDevice> remote_device_;
   const std::string address_;
-  base::Optional<std::string> name_;
+  absl::optional<std::string> name_;
 
   base::WeakPtrFactory<BluetoothDeviceCast> weak_factory_;
 

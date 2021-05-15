@@ -110,7 +110,7 @@ BluetoothDevice::ConnectionInfo::ConnectionInfo(int rssi,
 BluetoothDevice::ConnectionInfo::~ConnectionInfo() = default;
 
 std::u16string BluetoothDevice::GetNameForDisplay() const {
-  base::Optional<std::string> name = GetName();
+  absl::optional<std::string> name = GetName();
   if (name && HasGraphicCharacter(name.value())) {
     return base::UTF8ToUTF16(name.value());
   } else {
@@ -342,22 +342,22 @@ const std::vector<uint8_t>* BluetoothDevice::GetManufacturerDataForID(
   return nullptr;
 }
 
-base::Optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
   return inquiry_rssi_;
 }
 
-base::Optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
+absl::optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
   return advertising_data_flags_;
 }
 
-base::Optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
   return inquiry_tx_power_;
 }
 
 void BluetoothDevice::CreateGattConnection(
     GattConnectionCallback callback,
     ConnectErrorCallback error_callback,
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   if (!supports_service_specific_discovery_)
     service_uuid.reset();
 
@@ -421,9 +421,9 @@ std::string BluetoothDevice::GetIdentifier() const {
 
 void BluetoothDevice::UpdateAdvertisementData(
     int8_t rssi,
-    base::Optional<uint8_t> flags,
+    absl::optional<uint8_t> flags,
     UUIDList advertised_uuids,
-    base::Optional<int8_t> tx_power,
+    absl::optional<int8_t> tx_power,
     ServiceDataMap service_data,
     ManufacturerDataMap manufacturer_data) {
   UpdateTimestamp();
@@ -473,7 +473,7 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 void BluetoothDevice::SetBatteryPercentage(
-    base::Optional<uint8_t> battery_percentage) {
+    absl::optional<uint8_t> battery_percentage) {
   if (battery_percentage)
     DCHECK_LE(battery_percentage.value(), 100);
 

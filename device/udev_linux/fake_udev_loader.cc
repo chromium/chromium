@@ -17,8 +17,8 @@ struct udev_device {
   udev_device(std::string name,
               std::string syspath,
               std::string subsystem,
-              base::Optional<std::string> devnode,
-              base::Optional<std::string> devtype,
+              absl::optional<std::string> devnode,
+              absl::optional<std::string> devtype,
               std::map<std::string, std::string> sysattrs,
               std::map<std::string, std::string> properties)
       : name(std::move(name)),
@@ -34,8 +34,8 @@ struct udev_device {
   const std::string name;
   const std::string syspath;
   const std::string subsystem;
-  const base::Optional<std::string> devnode;
-  const base::Optional<std::string> devtype;
+  const absl::optional<std::string> devnode;
+  const absl::optional<std::string> devtype;
   std::map<std::string, std::string> sysattrs;
   std::map<std::string, std::string> properties;
 };
@@ -98,8 +98,8 @@ udev_device* FakeUdevLoader::AddFakeDevice(
     std::string name,
     std::string syspath,
     std::string subsystem,
-    base::Optional<std::string> devnode,
-    base::Optional<std::string> devtype,
+    absl::optional<std::string> devnode,
+    absl::optional<std::string> devtype,
     std::map<std::string, std::string> sysattrs,
     std::map<std::string, std::string> properties) {
   devices_.emplace_back(

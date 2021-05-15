@@ -38,7 +38,7 @@ CtapGetAssertionRequest MakeTestRequest() {
 
 bool MakeCredential() API_AVAILABLE(macos(10.12.2)) {
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       base::Optional<AuthenticatorMakeCredentialResponse>>
+                       absl::optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;
   auto request = CtapMakeCredentialRequest(
       test_data::kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
@@ -68,7 +68,7 @@ API_AVAILABLE(macos(10.12.2)) {
   ASSERT_TRUE(MakeCredential());
 
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       base::Optional<AuthenticatorGetAssertionResponse>>
+                       absl::optional<AuthenticatorGetAssertionResponse>>
       callback_receiver;
   auto request = MakeTestRequest();
   TouchIdCredentialStore credential_store(

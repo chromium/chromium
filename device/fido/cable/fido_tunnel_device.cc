@@ -158,7 +158,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       break;
   }
   client_payload.emplace(3, request_type_str);
-  const base::Optional<std::vector<uint8_t>> client_payload_bytes =
+  const absl::optional<std::vector<uint8_t>> client_payload_bytes =
       cbor::Writer::Write(cbor::Value(std::move(client_payload)));
   CHECK(client_payload_bytes.has_value());
   const std::string client_payload_hex = base::HexEncode(*client_payload_bytes);
@@ -202,7 +202,7 @@ bool FidoTunnelDevice::MatchAdvert(
     const std::array<uint8_t, kAdvertSize>& advert) {
   PairedInfo& info = absl::get<PairedInfo>(info_);
 
-  base::Optional<CableEidArray> plaintext =
+  absl::optional<CableEidArray> plaintext =
       eid::Decrypt(advert, info.eid_encryption_key);
   if (!plaintext) {
     return false;
@@ -215,7 +215,7 @@ bool FidoTunnelDevice::MatchAdvert(
     // We were waiting for this BLE advert in order to start the handshake.
     DCHECK(!handshake_);
     handshake_.emplace(*info.psk, info.peer_identity,
-                       /*local_identity=*/base::nullopt);
+                       /*local_identity=*/absl::nullopt);
     websocket_client_->Write(handshake_->BuildInitialMessage());
     state_ = State::kHandshakeSent;
   }
@@ -231,7 +231,7 @@ FidoDevice::CancelToken FidoTunnelDevice::DeviceTransact(
 
   if (state_ == State::kError) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
   } else {
     pending_message_ = std::move(command);
     callback_ = std::move(callback);
@@ -266,7 +266,7 @@ base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {
 
 void FidoTunnelDevice::OnTunnelReady(
     WebSocketAdapter::Result result,
-    base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id) {
+    absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::kConnecting, state_);
 
@@ -277,7 +277,7 @@ void FidoTunnelDevice::OnTunnelReady(
 
       if (auto* info = absl::get_if<QRInfo>(&info_)) {
         // A QR handshake can start as soon as the tunnel is connected.
-        handshake_.emplace(info->psk, /*peer_identity=*/base::nullopt,
+        handshake_.emplace(info->psk, /*peer_identity=*/absl::nullopt,
                            info->local_identity_seed);
       } else {
         // A paired handshake may be able to start if we have already seen
@@ -285,7 +285,7 @@ void FidoTunnelDevice::OnTunnelReady(
         PairedInfo& paired_info = absl::get<PairedInfo>(info_);
         if (paired_info.psk) {
           handshake_.emplace(*paired_info.psk, paired_info.peer_identity,
-                             /*local_identity=*/base::nullopt);
+                             /*local_identity=*/absl::nullopt);
         }
       }
 
@@ -320,7 +320,7 @@ void FidoTunnelDevice::OnTunnelReady(
 }
 
 void FidoTunnelDevice::OnTunnelData(
-    base::Optional<base::span<const uint8_t>> data) {
+    absl::optional<base::span<const uint8_t>> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!data) {
@@ -366,7 +366,7 @@ void FidoTunnelDevice::OnTunnelData(
         OnError();
         return;
       }
-      base::Optional<cbor::Value> payload = DecodePaddedCBORMap(decrypted);
+      absl::optional<cbor::Value> payload = DecodePaddedCBORMap(decrypted);
       if (!payload || !payload->is_map()) {
         FIDO_LOG(ERROR) << GetId()
                         << ": decode failed for caBLE post-handshake message";
@@ -403,7 +403,7 @@ void FidoTunnelDevice::OnTunnelData(
           return;
         }
         if (auto* info = absl::get_if<QRInfo>(&info_)) {
-          base::Optional<std::unique_ptr<Pairing>> maybe_pairing =
+          absl::optional<std::unique_ptr<Pairing>> maybe_pairing =
               Pairing::Parse(linking_it->second, info->tunnel_server_domain,
                              info->local_identity_seed, *handshake_hash_);
           if (!maybe_pairing) {
@@ -450,7 +450,7 @@ void FidoTunnelDevice::OnError() {
   state_ = State::kError;
   websocket_client_.reset();
   if (callback_) {
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
   }
 }
 

@@ -26,17 +26,17 @@ using device::cbor_extract::Stop;
 namespace device {
 
 // static
-base::Optional<std::pair<AttestedCredentialData, base::span<const uint8_t>>>
+absl::optional<std::pair<AttestedCredentialData, base::span<const uint8_t>>>
 AttestedCredentialData::ConsumeFromCtapResponse(
     base::span<const uint8_t> buffer) {
   if (buffer.size() < kAaguidLength)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto aaguid = buffer.first<kAaguidLength>();
   buffer = buffer.subspan(kAaguidLength);
 
   if (buffer.size() < kCredentialIdLengthLength)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto credential_id_length_span = buffer.first<kCredentialIdLengthLength>();
   const size_t credential_id_length =
@@ -45,17 +45,17 @@ AttestedCredentialData::ConsumeFromCtapResponse(
   buffer = buffer.subspan(kCredentialIdLengthLength);
 
   if (buffer.size() < credential_id_length)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto credential_id = buffer.first(credential_id_length);
   buffer = buffer.subspan(credential_id_length);
 
   size_t public_key_byte_len;
-  base::Optional<cbor::Value> public_key_cbor =
+  absl::optional<cbor::Value> public_key_cbor =
       cbor::Reader::Read(buffer, &public_key_byte_len);
   if (!public_key_cbor || !public_key_cbor->is_map()) {
     FIDO_LOG(ERROR) << "CBOR error in COSE public key";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const base::span<const uint8_t> public_key_cbor_bytes(
@@ -93,7 +93,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
 
   if (!cbor_extract::Extract<COSEKey>(&cose_key, kSteps, public_key_map)) {
     FIDO_LOG(ERROR) << "Failed to parse COSE key";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // In WebIDL, a |long| is an |int32_t|[1].
@@ -103,7 +103,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
   if (algorithm64 > std::numeric_limits<int32_t>::max() ||
       algorithm64 < std::numeric_limits<int32_t>::min()) {
     FIDO_LOG(ERROR) << "COSE algorithm in public key is out of range";
-    return base::nullopt;
+    return absl::nullopt;
   }
   const int32_t algorithm = static_cast<int32_t>(algorithm64);
   const int64_t key_type = *cose_key.kty;
@@ -115,7 +115,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
     auto curve = public_key_map.find(
         cbor::Value(static_cast<int64_t>(CoseKeyKey::kEllipticCurve)));
     if (curve == public_key_map.end() || !curve->second.is_integer()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     const int64_t curve_id = curve->second.GetInteger();
 
@@ -125,7 +125,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
           algorithm, public_key_cbor_bytes, public_key_map);
       if (!p256_key) {
         FIDO_LOG(ERROR) << "Invalid P-256 public key";
-        return base::nullopt;
+        return absl::nullopt;
       }
       public_key = std::move(p256_key);
     } else if (key_type == static_cast<int64_t>(CoseKeyTypes::kOKP) &&
@@ -134,7 +134,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
           algorithm, public_key_cbor_bytes, public_key_map);
       if (!ed25519_key) {
         FIDO_LOG(ERROR) << "Invalid Ed25519 public key";
-        return base::nullopt;
+        return absl::nullopt;
       }
       public_key = std::move(ed25519_key);
     }
@@ -143,14 +143,14 @@ AttestedCredentialData::ConsumeFromCtapResponse(
         algorithm, public_key_cbor_bytes, public_key_map);
     if (!rsa_key) {
       FIDO_LOG(ERROR) << "Invalid RSA public key";
-      return base::nullopt;
+      return absl::nullopt;
     }
     public_key = std::move(rsa_key);
   }
 
   if (!public_key) {
     public_key = std::make_unique<PublicKey>(algorithm, public_key_cbor_bytes,
-                                             base::nullopt);
+                                             absl::nullopt);
   }
 
   return std::make_pair(
@@ -161,7 +161,7 @@ AttestedCredentialData::ConsumeFromCtapResponse(
 }
 
 // static
-base::Optional<AttestedCredentialData>
+absl::optional<AttestedCredentialData>
 AttestedCredentialData::CreateFromU2fRegisterResponse(
     base::span<const uint8_t> u2f_data,
     std::unique_ptr<PublicKey> public_key) {
@@ -172,7 +172,7 @@ AttestedCredentialData::CreateFromU2fRegisterResponse(
       fido_parsing_utils::Extract(u2f_data, kU2fKeyHandleLengthOffset, 1);
 
   if (extracted_length.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // For U2F register request, device AAGUID is set to zeros.
@@ -188,7 +188,7 @@ AttestedCredentialData::CreateFromU2fRegisterResponse(
       base::strict_cast<size_t>(credential_id_length[1]));
 
   if (credential_id.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return AttestedCredentialData(aaguid, credential_id_length,
