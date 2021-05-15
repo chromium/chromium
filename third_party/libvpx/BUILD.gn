@@ -138,8 +138,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_mmx
+      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_mmx
+      deps = [ ":libvpx_x86_64_headers" ]
     }
   }
 
@@ -152,8 +154,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_sse2
+      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_sse2
+      deps = [ ":libvpx_x86_64_headers" ]
     }
   }
 
@@ -166,8 +170,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_ssse3
+      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_ssse3
+      deps = [ ":libvpx_x86_64_headers" ]
     }
   }
 
@@ -179,8 +185,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-msse4.1" ]
     }
     if (current_cpu == "x86") {
+      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_sse4_1
     } else if (current_cpu == "x64") {
+      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_sse4_1
     }
   }
@@ -195,8 +203,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mavx" ]
     }
     if (current_cpu == "x86") {
+      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx
     } else if (current_cpu == "x64") {
+      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx
     }
   }
@@ -211,8 +221,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mavx2" ]
     }
     if (current_cpu == "x86") {
+      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx2
     } else if (current_cpu == "x64") {
+      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx2
     }
   }
@@ -235,8 +247,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       ]
     }
     if (current_cpu == "x86") {
+      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx512
     } else if (current_cpu == "x64") {
+      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx512
     }
   }
@@ -248,6 +262,7 @@ if (cpu_arch_full == "arm-neon-cpu-detect") {
     configs += [ ":libvpx_config" ]
     cflags = [ "-mfpu=neon" ]
     sources = libvpx_srcs_arm_neon_cpu_detect_neon
+    deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
   }
 }
 
@@ -306,6 +321,50 @@ if (current_cpu == "arm" && arm_assembly_sources != []) {
   }
 }
 
+source_set("libvpx_x86_headers") {
+  sources = libvpx_srcs_x86_headers
+}
+
+source_set("libvpx_x86_64_headers") {
+  sources = libvpx_srcs_x86_64_headers
+}
+
+source_set("libvpx_arm_headers") {
+  sources = libvpx_srcs_arm_headers
+}
+
+source_set("libvpx_arm_neon_headers") {
+  sources = libvpx_srcs_arm_neon_headers
+}
+
+source_set("libvpx_arm_neon_cpu_detect_headers") {
+  sources = libvpx_srcs_arm_neon_cpu_detect_headers
+}
+
+source_set("libvpx_arm64_headers") {
+  sources = libvpx_srcs_arm64_headers
+}
+
+source_set("libvpx_arm_neon_highbd_headers") {
+  sources = libvpx_srcs_arm_neon_highbd_headers
+}
+
+source_set("libvpx_arm64_highbd_headers") {
+  sources = libvpx_srcs_arm64_highbd_headers
+}
+
+source_set("libvpx_mips_headers") {
+  sources = libvpx_srcs_mips_headers
+}
+
+source_set("libvpx_nacl_headers") {
+  sources = libvpx_srcs_nacl_headers
+}
+
+source_set("libvpx_generic_headers") {
+  sources = libvpx_srcs_generic_headers
+}
+
 static_library("libvpx") {
   if (!is_debug && (is_win || is_chromeos)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -322,31 +381,42 @@ static_library("libvpx") {
 
   if (is_nacl || _force_generic_srcs) {
     sources = libvpx_srcs_generic
+    public_deps = [ ":libvpx_generic_headers" ]
   } else if (current_cpu == "x86") {
     sources = libvpx_srcs_x86
+    public_deps = [ ":libvpx_x86_headers" ]
   } else if (current_cpu == "x64") {
     if (is_msan) {
       sources = libvpx_srcs_generic
+      public_deps = [ ":libvpx_generic_headers" ]
     } else {
       sources = libvpx_srcs_x86_64
+      public_deps = [ ":libvpx_x86_64_headers" ]
     }
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     sources = libvpx_srcs_mips
+    public_deps = [ ":libvpx_mips_headers" ]
   } else if (current_cpu == "arm") {
     if (is_chromeos_ash) {
       sources = libvpx_srcs_arm_neon_highbd
+      public_deps = [ ":libvpx_arm_neon_highbd_headers" ]
     } else if (arm_use_neon) {
       sources = libvpx_srcs_arm_neon
+      public_deps = [ ":libvpx_arm_neon_headers" ]
     } else if (is_android) {
       sources = libvpx_srcs_arm_neon_cpu_detect
+      public_deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
     } else {
       sources = libvpx_srcs_arm
+      public_deps = [ ":libvpx_arm_headers" ]
     }
   } else if (current_cpu == "arm64") {
     if (is_chromeos_ash || is_win || is_mac) {
       sources = libvpx_srcs_arm64_highbd
+      public_deps = [ ":libvpx_arm64_highbd_headers" ]
     } else {
       sources = libvpx_srcs_arm64
+      public_deps = [ ":libvpx_arm64_headers" ]
     }
   }
 

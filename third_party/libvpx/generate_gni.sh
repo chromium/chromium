@@ -118,6 +118,15 @@ function convert_srcs_to_project_files {
   # Ignore include files.
   source_list=$(echo "$source_list" | grep -v 'x86_abi_support\.asm')
 
+  # These headers are #included conditionally with #if VPX_ARCH_ARM and
+  # similar. However, only the header(s) relevant for the current architecture
+  # are present in $1, hence "gn check" will detect them as invalid includes
+  # unless explicitly added.
+  source_list=$(echo -e "$source_list\\nvpx_ports/arm.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
+  source_list=$(echo "$source_list" | sort -u)
+
   # The actual ARM files end in .asm. We have rules to translate them to .S
   source_list=$(echo "$source_list" | sed s/\.asm\.s$/.asm/)
 
@@ -142,8 +151,9 @@ function convert_srcs_to_project_files {
 
   # Write a single .gni file that includes all source files for all archs.
   if [ 0 -ne ${#x86_list} ]; then
-    local c_sources=$(echo "$source_list" | egrep '.(c|h)$')
-    local assembly_sources=$(echo "$source_list" | egrep '.asm$')
+    local c_sources=$(echo "$source_list" | egrep '\.c$')
+    local c_headers=$(echo "$source_list" | egrep '\.h$')
+    local assembly_sources=$(echo "$source_list" | egrep '\.asm$')
     local mmx_sources=$(echo "$intrinsic_list" | grep '_mmx\.c$')
     local sse2_sources=$(echo "$intrinsic_list" | grep '_sse2\.c$')
     local sse3_sources=$(echo "$intrinsic_list" | grep '_sse3\.c$')
@@ -154,6 +164,7 @@ function convert_srcs_to_project_files {
     local avx512_sources=$(echo "$intrinsic_list" | grep '_avx512\.c$')
 
     write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
+    write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
     write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
     write_gni mmx_sources $2_mmx "$BASE_DIR/libvpx_srcs.gni"
     write_gni sse2_sources $2_sse2 "$BASE_DIR/libvpx_srcs.gni"
@@ -164,11 +175,13 @@ function convert_srcs_to_project_files {
     write_gni avx2_sources $2_avx2 "$BASE_DIR/libvpx_srcs.gni"
     write_gni avx512_sources $2_avx512 "$BASE_DIR/libvpx_srcs.gni"
   else
-    local c_sources=$(echo "$source_list" | egrep '.(c|h)$')
+    local c_sources=$(echo "$source_list" | egrep '\.c$')
+    local c_headers=$(echo "$source_list" | egrep '\.h$')
     local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" | \
-      egrep '.asm$')
+      egrep '\.asm$')
     local neon_sources=$(echo "$intrinsic_list" | grep '_neon\.c$')
     write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
+    write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
     write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
     if [ 0 -ne ${#neon_sources} ]; then
       write_gni neon_sources $2_neon "$BASE_DIR/libvpx_srcs.gni"

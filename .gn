@@ -106,7 +106,6 @@ no_check_targets = [
   "//sandbox/win:*",  # 7 errors
 
   "//third_party/icu/*",
-  "//third_party/libvpx:*",  # 164 errors
   "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
 
   # //v8, https://crbug.com/v8/7330
