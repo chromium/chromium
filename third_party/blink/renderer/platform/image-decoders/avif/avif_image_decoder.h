@@ -86,14 +86,14 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   // Decodes the frame at index |index| and checks if the frame's size, bit
   // depth, and YUV format matches those reported by the container. The decoded
-  // frame is available in decoder_->image.
+  // frame is available in decoded_image_.
   avifResult DecodeImage(size_t index);
 
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.
   void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
 
-  // Crops |image| and stores the result in |cropped_image|.
-  void CropImage(const avifImage* image, avifImage& cropped_image);
+  // Crops |decoded_image_|.
+  void CropDecodedImage();
 
   // Renders |image| in |buffer|. Returns whether |image| was rendered
   // successfully.
@@ -124,6 +124,14 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // the image has a 'clap' (clean aperture) property.
   int clap_leftmost_ = 0;
   int clap_topmost_ = 0;
+  // A copy of decoder_->image with the width, height, and plane buffers
+  // adjusted to those of the clean aperture. Used only when the image has a
+  // 'clap' (clean aperture) property.
+  avifImage cropped_image_;
+  // Set by a successful DecodeImage() call to either decoder_->image or
+  // &cropped_image_ depending on whether the image has a 'clap' (clean
+  // aperture) property.
+  const avifImage* decoded_image_ = nullptr;
   std::unique_ptr<avifDecoder, void (*)(avifDecoder*)> decoder_{nullptr,
                                                                 nullptr};
   avifIO avif_io_ = {};

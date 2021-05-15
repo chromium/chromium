@@ -518,13 +518,7 @@ void AVIFImageDecoder::DecodeToYUV() {
       SetFailed();
     return;
   }
-
-  const auto* image = decoder_->image;
-  avifImage cropped_image;
-  if (image->transformFlags & AVIF_TRANSFORM_CLAP) {
-    CropImage(image, cropped_image);
-    image = &cropped_image;
-  }
+  const auto* image = decoded_image_;
 
   DCHECK(!image->alphaPlane);
   static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
@@ -715,13 +709,7 @@ void AVIFImageDecoder::Decode(size_t index) {
       SetFailed();
     return;
   }
-
-  const auto* image = decoder_->image;
-  avifImage cropped_image;
-  if (image->transformFlags & AVIF_TRANSFORM_CLAP) {
-    CropImage(image, cropped_image);
-    image = &cropped_image;
-  }
+  const auto* image = decoded_image_;
 
   ImageFrame& buffer = frame_buffer_cache_[index];
   DCHECK_EQ(buffer.GetStatus(), ImageFrame::kFrameEmpty);
@@ -1029,6 +1017,10 @@ avifResult AVIFImageDecoder::DecodeImage(size_t index) {
     DVLOG(1) << "Frame YUV format must be equal to container YUV format";
     return AVIF_RESULT_UNKNOWN_ERROR;
   }
+
+  decoded_image_ = image;
+  if (image->transformFlags & AVIF_TRANSFORM_CLAP)
+    CropDecodedImage();
   return AVIF_RESULT_OK;
 }
 
@@ -1044,34 +1036,34 @@ void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,
       gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
 }
 
-void AVIFImageDecoder::CropImage(const avifImage* image,
-                                 avifImage& cropped_image) {
-  cropped_image = *image;
-  cropped_image.width = Size().Width();
-  cropped_image.height = Size().Height();
-  const size_t bytes_per_pixel = (image->depth + 7) / 8;
-  cropped_image.yuvPlanes[AVIF_CHAN_Y] =
-      image->yuvPlanes[AVIF_CHAN_Y] +
-      static_cast<size_t>(clap_topmost_) * image->yuvRowBytes[AVIF_CHAN_Y] +
+void AVIFImageDecoder::CropDecodedImage() {
+  DCHECK_NE(decoded_image_, &cropped_image_);
+  cropped_image_ = *decoded_image_;
+  cropped_image_.width = Size().Width();
+  cropped_image_.height = Size().Height();
+  const size_t bytes_per_pixel = (cropped_image_.depth + 7) / 8;
+  cropped_image_.yuvPlanes[AVIF_CHAN_Y] +=
+      static_cast<size_t>(clap_topmost_) *
+          cropped_image_.yuvRowBytes[AVIF_CHAN_Y] +
       static_cast<size_t>(clap_leftmost_) * bytes_per_pixel;
-  if (image->yuvFormat != AVIF_PIXEL_FORMAT_YUV400) {
+  if (cropped_image_.yuvFormat != AVIF_PIXEL_FORMAT_YUV400) {
     const int leftmost_uv = UVSize(clap_leftmost_, chroma_shift_x_);
     const int topmost_uv = UVSize(clap_topmost_, chroma_shift_y_);
-    cropped_image.yuvPlanes[AVIF_CHAN_U] =
-        image->yuvPlanes[AVIF_CHAN_U] +
-        static_cast<size_t>(topmost_uv) * image->yuvRowBytes[AVIF_CHAN_U] +
+    cropped_image_.yuvPlanes[AVIF_CHAN_U] +=
+        static_cast<size_t>(topmost_uv) *
+            cropped_image_.yuvRowBytes[AVIF_CHAN_U] +
         static_cast<size_t>(leftmost_uv) * bytes_per_pixel;
-    cropped_image.yuvPlanes[AVIF_CHAN_V] =
-        image->yuvPlanes[AVIF_CHAN_V] +
-        static_cast<size_t>(topmost_uv) * image->yuvRowBytes[AVIF_CHAN_V] +
+    cropped_image_.yuvPlanes[AVIF_CHAN_V] +=
+        static_cast<size_t>(topmost_uv) *
+            cropped_image_.yuvRowBytes[AVIF_CHAN_V] +
         static_cast<size_t>(leftmost_uv) * bytes_per_pixel;
   }
-  if (image->alphaPlane) {
-    cropped_image.alphaPlane =
-        image->alphaPlane +
-        static_cast<size_t>(clap_topmost_) * image->alphaRowBytes +
+  if (cropped_image_.alphaPlane) {
+    cropped_image_.alphaPlane +=
+        static_cast<size_t>(clap_topmost_) * cropped_image_.alphaRowBytes +
         static_cast<size_t>(clap_leftmost_) * bytes_per_pixel;
   }
+  decoded_image_ = &cropped_image_;
 }
 
 bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
